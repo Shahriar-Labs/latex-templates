@@ -1,0 +1,229 @@
+% Edited and compiled online at https://letx.app
+\documentclass[11pt,a4paper]{article}
+
+% Page geometry
+\usepackage[margin=1.0in]{geometry}
+
+% Typography & Fonts
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgpagella} % TeX Gyre Pagella (Palatino clone) for elegant academic serif
+\usepackage{microtype} % Microtypography styling
+
+% Colors
+\usepackage{xcolor}
+\definecolor{accent}{HTML}{0D5C75} % Deep Teal Accent
+\definecolor{neutraldark}{HTML}{2B2D42} % Slate Dark for headings/text
+\definecolor{neutrallight}{HTML}{F4F4F9} % Soft grey-blue for tables/boxes
+
+% Table formatting
+\usepackage{booktabs}
+\usepackage{tabularx}
+
+% Headings customization
+\usepackage{titlesec}
+\titleformat{\section}
+  {\color{accent}\normalfont\large\bfseries}
+  {\thesection}{1em}{}
+  [{\color{accent}\titlerule[0.8pt]}]
+\titleformat{\subsection}
+  {\color{accent}\normalfont\normalsize\bfseries}
+  {\thesubsection}{1em}{}
+
+% Lists & spacing
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=*,noitemsep,topsep=2pt}
+\setlist[enumerate]{leftmargin=*,noitemsep,topsep=2pt}
+
+% TikZ for beautiful diagrams
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta}
+
+% Bibliography setup
+\usepackage{filecontents}
+\begin{filecontents*}[overwrite]{references.bib}
+@article{vaswani2017attention,
+  author    = {Vaswani, Ashish and Shazeer, Noam and Parmar, Niki and Uszkoreit, Jakob and Jones, Llion and Gomez, Aidan N and Kaiser, {\L}ukasz and Polosukhin, Illia},
+  title     = {Attention is all you need},
+  journal   = {Advances in Neural Information Processing Systems},
+  volume    = {30},
+  pages     = {5998--6008},
+  year      = {2017}
+}
+@article{devlin2018bert,
+  author    = {Devlin, Jacob and Chang, Ming-Wei and Lee, Kenton and Toutanova, Kristina},
+  title     = {{BERT}: Pre-training of deep bidirectional transformers for language understanding},
+  journal   = {arXiv preprint arXiv:1810.04805},
+  year      = {2018}
+}
+@book{goodfellow2016deep,
+  author    = {Goodfellow, Ian and Bengio, Yoshua and Courville, Aaron},
+  title     = {Deep Learning},
+  publisher = {MIT Press},
+  year      = {2016}
+}
+\end{filecontents*}
+
+\usepackage[backend=biber,style=numeric-comp,sorting=none]{biblatex}
+\addbibresource{references.bib}
+
+% Hyperref (loaded last)
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=accent,
+    citecolor=accent,
+    urlcolor=accent
+}
+
+\begin{document}
+
+% =========================================================================
+% TITLE PAGE
+% =========================================================================
+\begin{titlepage}
+    \pagenumbering{gobble} % Fix hyperref page.1 warning
+    \centering
+    \vspace*{1.0cm}
+    
+    % Institutional Header
+    {\scshape\large Department of Computer Science \& Engineering \par}
+    {\scshape\normalsize University of Engineering and Technology \par}
+    
+    \vspace{2.2cm}
+    
+    % Proposal Title
+    {\color{accent}\hrule height 2pt}
+    \vspace{0.4cm}
+    {\Huge\bfseries\color{accent} Scalable Neural Architectures for\\ Heterogeneous Edge Devices\par}
+    \vspace{0.4cm}
+    {\color{accent}\hrule height 1.5pt}
+    
+    \vspace{1.5cm}
+    
+    % Document Subtitle
+    {\large\scshape A Doctoral Dissertation Proposal\par}
+    
+    \vspace{2.2cm}
+    
+    % Candidate and Advisor Info
+    \begin{minipage}[t]{0.45\textwidth}
+        \flushleft
+        \textbf{Candidate:}\\
+        Alex J. Mercer\\
+        Department of CSE\\
+        \href{mailto:alex.mercer@uet.edu}{\texttt{alex.mercer@uet.edu}}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.45\textwidth}
+        \flushright
+        \textbf{Advisory Committee:}\\
+        Prof. Sarah Jenkins (\textit{Advisor})\\
+        Dr. Marcus Aurelius (\textit{Co-advisor})
+    \end{minipage}
+    
+    \vfill
+    
+    % Date
+    {\large \today \par}
+    
+    \vspace{1.0cm}
+\end{titlepage}
+
+\newpage
+\pagenumbering{arabic} % Start page numbering for body
+
+% =========================================================================
+% BODY SECTIONS
+% =========================================================================
+
+\section{Abstract}
+As deep neural networks (DNNs) become increasingly ubiquitous in real-time embedded systems, deploying them on resource-constrained edge devices remains a critical bottleneck. Heterogeneous edge platforms—comprising CPUs, GPUs, DSPs, and dedicated Neural Processing Units (NPUs)—offer high theoretical computational density but suffer from extreme programming complexity and fragmented execution. This proposal presents a framework for scalable neural architectures tailored to heterogeneous edge environments. By combining hardware-aware neural architecture search (NAS), specialized compilers, and dynamic runtime execution schedulers, the proposed framework enables optimal performance, low latency, and energy efficiency across diverse and evolving hardware backends.
+
+\section{Introduction \& Motivation}
+Deploying state-of-the-art deep learning models to the edge is constrained by hardware diversity and strict resource budgets. Modern edge hardware is rarely homogeneous; instead, system-on-chip (SoC) architectures deploy multiple asymmetric compute engines to balance throughput and power. However, optimization workflows remain highly siloed. Developers must manually tune networks for specific target devices, leading to long deployment cycles and suboptimal resource utilization. 
+
+To address these challenges, this research proposes a co-design paradigm that unifies model architecture optimization and heterogeneous hardware scheduling. By automatically exploring the joint design space of neural network topologies and hardware compiler settings, we can systematically discover architectures that maximize operational intensity while minimizing latency and power consumption.
+
+\section{Research Questions}
+This dissertation proposal aims to address three fundamental research questions:
+\begin{enumerate}
+    \item \textbf{RQ1: Hardware-Aware Estimation.} How can we accurately model heterogeneous execution latency and energy consumption across diverse edge hardware backends without exhaustive physical benchmarking?
+    \item \textbf{RQ2: Multi-Objective NAS.} What optimization algorithms can efficiently search the joint neural-compilation design space under tight hardware constraints?
+    \item \textbf{RQ3: Dynamic Runtime Scheduling.} How can dynamic runtime scheduling partition neural network execution graph blocks across concurrent heterogeneous accelerators to minimize end-to-end latency?
+\end{enumerate}
+
+\section{Related Work}
+Existing methodologies in hardware-aware neural architecture search (HW-NAS) primarily target single-device deployment, such as a mobile CPU or a micro-controller. Standard approaches utilize reinforcement learning or evolutionary algorithms to navigate search spaces. However, these methods do not scale well to heterogeneous systems where multiple accelerators execute model segments concurrently.
+
+Compiler frameworks like Apache TVM and Halide have introduced automated tensor program optimization. While effective, they operate on fixed neural architectures. Our proposed method builds upon these compiler techniques but integrates them directly into the NAS loop, enabling the model's structural parameters (e.g., channel width, kernel size) to be co-optimized with compiler parameters (e.g., loop tiling, thread binding) as detailed in Goodfellow et al.~\cite{goodfellow2016deep} and Vaswani et al.~\cite{vaswani2017attention}.
+
+\section{Proposed Methodology}
+The proposed framework consists of three primary components:
+\begin{itemize}
+    \item \textbf{Component 1: Multi-Backend Profiler.} A lightweight profiling tool that builds predictive models of layer-wise latency and energy using Gaussian Process Regression.
+    \item \textbf{Component 2: Co-Design NAS Engine.} A differentiable search engine that optimizes both operator-level parameters (e.g., convolutional block choices) and compilation schedules.
+    \item \textbf{Component 3: Heterogeneous Runtime Scheduler.} A runtime scheduler that partitions the optimized model graph dynamically across available CPU, GPU, and NPU cores based on current system load.
+\end{itemize}
+
+\section{Preliminary Results}
+We implemented a proof-of-concept version of our profiler and NAS engine on an embedded SoC containing an ARM Cortex-A72 CPU and a Mali-G71 GPU. Preliminary results show that our co-design approach yields a $1.8\times$ speedup compared to standard single-device search baselines (like MobileNetV3) while maintaining equivalent classification accuracy on ImageNet. Figure~\ref{fig:pipeline} outlines the workflow of our proposed three-stage pipeline.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[
+        node distance=1.2cm and 2cm,
+        block/.style={
+            rectangle,
+            draw=accent,
+            fill=accent!5,
+            very thick,
+            rounded corners=4pt,
+            align=center,
+            text width=3.3cm,
+            minimum height=1.2cm,
+            font=\small\bfseries
+        },
+        arrow/.style={
+            -{Stealth[scale=1.0]},
+            thick,
+            draw=accent
+        }
+    ]
+        % Nodes
+        \node[block] (step1) {1. Design Space\\Exploration};
+        \node[block, right=of step1] (step2) {2. Hardware-Aware\\Compilation};
+        \node[block, right=of step2] (step3) {3. Dynamic Runtime\\Scheduling};
+        
+        % Arrow lines
+        \draw[arrow] (step1) -- (step2);
+        \draw[arrow] (step2) -- (step3);
+    \end{tikzpicture}
+    \caption{Overview of the proposed three-stage co-design and scheduling framework.}
+    \label{fig:pipeline}
+\end{figure}
+
+\section{Timeline}
+The research tasks are structured into four main phases over the next two academic years, as summarized in Table~\ref{tab:timeline}.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Proposed Research Timeline and Milestones}
+    \label{tab:timeline}
+    \vspace{0.2cm}
+    \begin{tabularx}{\linewidth}{l X l l}
+        \toprule
+        \textbf{Phase} & \textbf{Research Milestone / Key Deliverables} & \textbf{Timeline} & \textbf{Status} \\
+        \midrule
+        Phase 1 & Literature review, backend profiler design, and model target definition & Q3--Q4 2026 & Completed \\
+        Phase 2 & Differentiable search space formulation and co-design optimizer & Q1--Q2 2027 & In Progress \\
+        Phase 3 & Dynamic runtime partition scheduler development and evaluation & Q3--Q4 2027 & Planned \\
+        Phase 4 & Multi-platform edge deployment and dissertation writing & Q1--Q2 2028 & Planned \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\section{References}
+\printbibliography[heading=none]
+
+\end{document}

@@ -1,6 +1,6 @@
 # LetX LaTeX Template Library
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Templates](https://img.shields.io/badge/templates-27-success.svg)](https://letx.app/templates)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Templates](https://img.shields.io/badge/templates-36-success.svg)](https://letx.app/templates)
 
 **Free, elegant, open-source LaTeX templates** — research papers, CVs, grants, lab reports, posters, letters and more. Every template is compile-tested and designed to look genuinely good, not plain.
 
@@ -86,6 +86,38 @@
 <table>
 <tr>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/posters/poster-a1-modern"><img src="poster-a1-modern/preview.png" width="240" alt="Modern Conference Poster (A1)"></a><br><b>Modern Conference Poster (A1)</b><br><a href="https://letx.app/templates/posters/poster-a1-modern">Open in LetX</a> · <a href="./poster-a1-modern">Source</a></td>
+</tr>
+</table>
+
+### Academic Career (CVs, Statements, Applications)
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/academic-career/diversity-statement"><img src="diversity-statement/preview.png" width="240" alt="Diversity Statement"></a><br><b>Diversity Statement</b><br><a href="https://letx.app/templates/academic-career/diversity-statement">Open in LetX</a> · <a href="./diversity-statement">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/academic-career/phd-progress-report"><img src="phd-progress-report/preview.png" width="240" alt="PhD Progress Report"></a><br><b>PhD Progress Report</b><br><a href="https://letx.app/templates/academic-career/phd-progress-report">Open in LetX</a> · <a href="./phd-progress-report">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/academic-career/postdoc-application"><img src="postdoc-application/preview.png" width="240" alt="Postdoc Application"></a><br><b>Postdoc Application</b><br><a href="https://letx.app/templates/academic-career/postdoc-application">Open in LetX</a> · <a href="./postdoc-application">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/academic-career/research-statement"><img src="research-statement/preview.png" width="240" alt="Research Statement"></a><br><b>Research Statement</b><br><a href="https://letx.app/templates/academic-career/research-statement">Open in LetX</a> · <a href="./research-statement">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/academic-career/teaching-statement"><img src="teaching-statement/preview.png" width="240" alt="Teaching Statement"></a><br><b>Teaching Statement</b><br><a href="https://letx.app/templates/academic-career/teaching-statement">Open in LetX</a> · <a href="./teaching-statement">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/academic-career/thesis-proposal"><img src="thesis-proposal/preview.png" width="240" alt="Thesis Proposal"></a><br><b>Thesis Proposal</b><br><a href="https://letx.app/templates/academic-career/thesis-proposal">Open in LetX</a> · <a href="./thesis-proposal">Source</a></td>
+</tr>
+</table>
+
+### Books & Theses
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/books/academic-book-proposal"><img src="academic-book-proposal/preview.png" width="240" alt="Academic Book Proposal"></a><br><b>Academic Book Proposal</b><br><a href="https://letx.app/templates/books/academic-book-proposal">Open in LetX</a> · <a href="./academic-book-proposal">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/books/product-user-manual"><img src="product-user-manual/preview.png" width="240" alt="Product User Manual"></a><br><b>Product User Manual</b><br><a href="https://letx.app/templates/books/product-user-manual">Open in LetX</a> · <a href="./product-user-manual">Source</a></td>
+</tr>
+</table>
+
+### Calendars & Planners
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/calendars/monthly-calendar"><img src="monthly-calendar/preview.png" width="240" alt="Monthly Calendar"></a><br><b>Monthly Calendar</b><br><a href="https://letx.app/templates/calendars/monthly-calendar">Open in LetX</a> · <a href="./monthly-calendar">Source</a></td>
 </tr>
 </table>
 
