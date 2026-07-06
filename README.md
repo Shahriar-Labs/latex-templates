@@ -1,6 +1,6 @@
 # LetX LaTeX Template Library
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Templates](https://img.shields.io/badge/templates-36-success.svg)](https://letx.app/templates)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Templates](https://img.shields.io/badge/templates-44-success.svg)](https://letx.app/templates)
 
 **Free, elegant, open-source LaTeX templates** — research papers, CVs, grants, lab reports, posters, letters and more. Every template is compile-tested and designed to look genuinely good, not plain.
 
@@ -101,6 +101,25 @@
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/academic-career/research-statement"><img src="research-statement/preview.png" width="240" alt="Research Statement"></a><br><b>Research Statement</b><br><a href="https://letx.app/templates/academic-career/research-statement">Open in LetX</a> · <a href="./research-statement">Source</a></td>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/academic-career/teaching-statement"><img src="teaching-statement/preview.png" width="240" alt="Teaching Statement"></a><br><b>Teaching Statement</b><br><a href="https://letx.app/templates/academic-career/teaching-statement">Open in LetX</a> · <a href="./teaching-statement">Source</a></td>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/academic-career/thesis-proposal"><img src="thesis-proposal/preview.png" width="240" alt="Thesis Proposal"></a><br><b>Thesis Proposal</b><br><a href="https://letx.app/templates/academic-career/thesis-proposal">Open in LetX</a> · <a href="./thesis-proposal">Source</a></td>
+</tr>
+</table>
+
+### CVs & Resumes
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/cvs-resumes/college-student-resume"><img src="college-student-resume/preview.png" width="240" alt="College Student Resume"></a><br><b>College Student Resume</b><br><a href="https://letx.app/templates/cvs-resumes/college-student-resume">Open in LetX</a> · <a href="./college-student-resume">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/cvs-resumes/consultant-resume"><img src="consultant-resume/preview.png" width="240" alt="Management Consultant Resume"></a><br><b>Management Consultant Resume</b><br><a href="https://letx.app/templates/cvs-resumes/consultant-resume">Open in LetX</a> · <a href="./consultant-resume">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/cvs-resumes/creative-designer-resume"><img src="creative-designer-resume/preview.png" width="240" alt="Creative Designer Resume"></a><br><b>Creative Designer Resume</b><br><a href="https://letx.app/templates/cvs-resumes/creative-designer-resume">Open in LetX</a> · <a href="./creative-designer-resume">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/cvs-resumes/executive-director-cv"><img src="executive-director-cv/preview.png" width="240" alt="Executive Director CV"></a><br><b>Executive Director CV</b><br><a href="https://letx.app/templates/cvs-resumes/executive-director-cv">Open in LetX</a> · <a href="./executive-director-cv">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/cvs-resumes/modern-minimalist-resume"><img src="modern-minimalist-resume/preview.png" width="240" alt="Modern Minimalist Resume"></a><br><b>Modern Minimalist Resume</b><br><a href="https://letx.app/templates/cvs-resumes/modern-minimalist-resume">Open in LetX</a> · <a href="./modern-minimalist-resume">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/cvs-resumes/nurse-medical-resume"><img src="nurse-medical-resume/preview.png" width="240" alt="Nurse / Medical Resume"></a><br><b>Nurse / Medical Resume</b><br><a href="https://letx.app/templates/cvs-resumes/nurse-medical-resume">Open in LetX</a> · <a href="./nurse-medical-resume">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/cvs-resumes/teacher-educator-resume"><img src="teacher-educator-resume/preview.png" width="240" alt="Teacher / Educator Resume"></a><br><b>Teacher / Educator Resume</b><br><a href="https://letx.app/templates/cvs-resumes/teacher-educator-resume">Open in LetX</a> · <a href="./teacher-educator-resume">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/cvs-resumes/two-column-resume"><img src="two-column-resume/preview.png" width="240" alt="Two-Column Resume"></a><br><b>Two-Column Resume</b><br><a href="https://letx.app/templates/cvs-resumes/two-column-resume">Open in LetX</a> · <a href="./two-column-resume">Source</a></td>
 </tr>
 </table>
 

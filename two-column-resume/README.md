@@ -1,0 +1,35 @@
+# Two-Column Resume — Free LaTeX Template
+
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/cvs-resumes/two-column-resume)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
+
+**Modern two-column resume LaTeX template — tinted left sidebar for photo, contact, skills & languages; wide right column for summary, experience & education. One page, ATS-friendly.**
+
+Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/cvs-resumes/two-column-resume)**, with real-time collaboration and one-second compiles.
+
+![Two-Column Resume preview](preview.png)
+
+## Features
+- Two-column layout: tinted sidebar + wide main column
+- Modern sans font, one accent color, FontAwesome icons
+- Photo-optional name block; skills & languages in sidebar
+- Summary, experience, education in the main column
+- One page, ATS-readable, easy to recolor
+
+## Use it online (recommended)
+Open **[Two-Column Resume on LetX »](https://letx.app/templates/cvs-resumes/two-column-resume)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+
+## <a name="compile"></a>Compile locally
+```bash
+git clone https://github.com/Shahriar-Labs/two-column-resume.git
+cd two-column-resume
+latexmk -pdf main.tex
+```
+Compiler: **pdflatex** (see `metadata.json`).
+
+## About
+Part of the free, open-source [LetX template library](https://letx.app/templates) — CV & resume templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+
+## License
+MIT — free for personal and commercial use. See [LICENSE](LICENSE).
