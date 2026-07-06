@@ -1,6 +1,6 @@
 # LetX LaTeX Template Library
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Templates](https://img.shields.io/badge/templates-19-success.svg)](https://letx.app/templates)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Templates](https://img.shields.io/badge/templates-27-success.svg)](https://letx.app/templates)
 
 **Free, elegant, open-source LaTeX templates** — research papers, CVs, grants, lab reports, posters, letters and more. Every template is compile-tested and designed to look genuinely good, not plain.
 
@@ -17,12 +17,18 @@
 
 <table>
 <tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/journal-articles/aastex-apj-paper"><img src="aastex-apj-paper/preview.png" width="240" alt="AASTeX Astronomy Paper"></a><br><b>AASTeX Astronomy Paper</b><br><a href="https://letx.app/templates/journal-articles/aastex-apj-paper">Open in LetX</a> · <a href="./aastex-apj-paper">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/journal-articles/arxiv-preprint"><img src="arxiv-preprint/preview.png" width="240" alt="arXiv Preprint"></a><br><b>arXiv Preprint</b><br><a href="https://letx.app/templates/journal-articles/arxiv-preprint">Open in LetX</a> · <a href="./arxiv-preprint">Source</a></td>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/journal-articles/clinical-case-report"><img src="clinical-case-report/preview.png" width="240" alt="Clinical Case Report"></a><br><b>Clinical Case Report</b><br><a href="https://letx.app/templates/journal-articles/clinical-case-report">Open in LetX</a> · <a href="./clinical-case-report">Source</a></td>
+</tr>
+<tr>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/journal-articles/journal-cover-letter"><img src="journal-cover-letter/preview.png" width="240" alt="Journal Cover Letter"></a><br><b>Journal Cover Letter</b><br><a href="https://letx.app/templates/journal-articles/journal-cover-letter">Open in LetX</a> · <a href="./journal-cover-letter">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/journal-articles/mnras-paper"><img src="mnras-paper/preview.png" width="240" alt="MNRAS Journal Paper"></a><br><b>MNRAS Journal Paper</b><br><a href="https://letx.app/templates/journal-articles/mnras-paper">Open in LetX</a> · <a href="./mnras-paper">Source</a></td>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/journal-articles/prisma-systematic-review"><img src="prisma-systematic-review/preview.png" width="240" alt="PRISMA Systematic Review"></a><br><b>PRISMA Systematic Review</b><br><a href="https://letx.app/templates/journal-articles/prisma-systematic-review">Open in LetX</a> · <a href="./prisma-systematic-review">Source</a></td>
 </tr>
 <tr>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/journal-articles/response-to-reviewers"><img src="response-to-reviewers/preview.png" width="240" alt="Response to Reviewers"></a><br><b>Response to Reviewers</b><br><a href="https://letx.app/templates/journal-articles/response-to-reviewers">Open in LetX</a> · <a href="./response-to-reviewers">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/journal-articles/revtex-aps-paper"><img src="revtex-aps-paper/preview.png" width="240" alt="REVTeX 4.2 Physics Paper"></a><br><b>REVTeX 4.2 Physics Paper</b><br><a href="https://letx.app/templates/journal-articles/revtex-aps-paper">Open in LetX</a> · <a href="./revtex-aps-paper">Source</a></td>
 </tr>
 </table>
 
@@ -30,8 +36,12 @@
 
 <table>
 <tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/conferences/aiaa-conference-paper"><img src="aiaa-conference-paper/preview.png" width="240" alt="AIAA Conference Paper"></a><br><b>AIAA Conference Paper</b><br><a href="https://letx.app/templates/conferences/aiaa-conference-paper">Open in LetX</a> · <a href="./aiaa-conference-paper">Source</a></td>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/conferences/conference-abstract"><img src="conference-abstract/preview.png" width="240" alt="Conference Abstract"></a><br><b>Conference Abstract</b><br><a href="https://letx.app/templates/conferences/conference-abstract">Open in LetX</a> · <a href="./conference-abstract">Source</a></td>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/conferences/extended-abstract"><img src="extended-abstract/preview.png" width="240" alt="Extended Abstract"></a><br><b>Extended Abstract</b><br><a href="https://letx.app/templates/conferences/extended-abstract">Open in LetX</a> · <a href="./extended-abstract">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/conferences/physics-colloquium-talk"><img src="physics-colloquium-talk/preview.png" width="240" alt="Astrophysics Beamer Talk"></a><br><b>Astrophysics Beamer Talk</b><br><a href="https://letx.app/templates/conferences/physics-colloquium-talk">Open in LetX</a> · <a href="./physics-colloquium-talk">Source</a></td>
 </tr>
 </table>
 
@@ -59,11 +69,15 @@
 <tr>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/grants/data-management-plan"><img src="data-management-plan/preview.png" width="240" alt="Data Management Plan"></a><br><b>Data Management Plan</b><br><a href="https://letx.app/templates/grants/data-management-plan">Open in LetX</a> · <a href="./data-management-plan">Source</a></td>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/grants/erc-grant-proposal"><img src="erc-grant-proposal/preview.png" width="240" alt="ERC Grant Proposal"></a><br><b>ERC Grant Proposal</b><br><a href="https://letx.app/templates/grants/erc-grant-proposal">Open in LetX</a> · <a href="./erc-grant-proposal">Source</a></td>
-<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/grants/nih-grant-proposal"><img src="nih-grant-proposal/preview.png" width="240" alt="NIH Grant Proposal"></a><br><b>NIH Grant Proposal</b><br><a href="https://letx.app/templates/grants/nih-grant-proposal">Open in LetX</a> · <a href="./nih-grant-proposal">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/grants/nasa-roses-proposal"><img src="nasa-roses-proposal/preview.png" width="240" alt="NASA ROSES Grant Proposal"></a><br><b>NASA ROSES Grant Proposal</b><br><a href="https://letx.app/templates/grants/nasa-roses-proposal">Open in LetX</a> · <a href="./nasa-roses-proposal">Source</a></td>
 </tr>
 <tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/grants/nih-grant-proposal"><img src="nih-grant-proposal/preview.png" width="240" alt="NIH Grant Proposal"></a><br><b>NIH Grant Proposal</b><br><a href="https://letx.app/templates/grants/nih-grant-proposal">Open in LetX</a> · <a href="./nih-grant-proposal">Source</a></td>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/grants/nsf-grant-proposal"><img src="nsf-grant-proposal/preview.png" width="240" alt="NSF Grant Proposal"></a><br><b>NSF Grant Proposal</b><br><a href="https://letx.app/templates/grants/nsf-grant-proposal">Open in LetX</a> · <a href="./nsf-grant-proposal">Source</a></td>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/grants/nsf-grfp-fellowship"><img src="nsf-grfp-fellowship/preview.png" width="240" alt="NSF GRFP Fellowship Statements"></a><br><b>NSF GRFP Fellowship Statements</b><br><a href="https://letx.app/templates/grants/nsf-grfp-fellowship">Open in LetX</a> · <a href="./nsf-grfp-fellowship">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/grants/observing-time-proposal"><img src="observing-time-proposal/preview.png" width="240" alt="Telescope Observing Proposal"></a><br><b>Telescope Observing Proposal</b><br><a href="https://letx.app/templates/grants/observing-time-proposal">Open in LetX</a> · <a href="./observing-time-proposal">Source</a></td>
 </tr>
 </table>
 

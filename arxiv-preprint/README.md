@@ -1,0 +1,35 @@
+# arXiv Preprint — Free LaTeX Template
+
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/journal-articles/arxiv-preprint)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
+
+**Elegant arXiv preprint LaTeX template — refined title block, tinted abstract, clean section styling, a pgfplots figure, a booktabs table, and a bibliography. Modern academic preprint design.**
+
+Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/journal-articles/arxiv-preprint)**, with real-time collaboration and one-second compiles.
+
+![arXiv Preprint preview](preview.png)
+
+## Features
+- Clean, modern **arXiv preprint** aesthetic — tasteful margins and typography
+- Refined title block, author affiliations, and a tinted/ruled abstract box
+- `titlesec` section styling, colored `hyperref` links, running header
+- A self-contained pgfplots figure and a `booktabs` table
+- Realistic machine-learning / time-domain-astronomy sample content
+
+## Use it online (recommended)
+Open **[arXiv Preprint on LetX »](https://letx.app/templates/journal-articles/arxiv-preprint)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+
+## <a name="compile"></a>Compile locally
+```bash
+git clone https://github.com/Shahriar-Labs/arxiv-preprint.git
+cd arxiv-preprint
+latexmk -pdf main.tex
+```
+Compiler: **pdflatex** (see `metadata.json`).
+
+## About
+Part of the free, open-source [LetX template library](https://letx.app/templates) — journal-article templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+
+## License
+MIT — free for personal and commercial use. See [LICENSE](LICENSE).

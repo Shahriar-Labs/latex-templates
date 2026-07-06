@@ -1,0 +1,522 @@
+% edit & compile online at https://letx.app
+\documentclass[twocolumn]{aastex631}
+
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{amsmath}
+\usepackage{xcolor}
+
+%% -------------------------------------------------------
+%%  Title, authors, affiliations
+%% -------------------------------------------------------
+\providecommand{\jatis}{JATIS}
+\begin{document}
+
+\title{Transit Photometry of the Warm Sub-Neptune TOI-4521\,b:
+       Atmospheric Characterization Prospects and a
+       Revised Planetary Radius}
+
+\author{Elena V. Sorokina}
+\affiliation{Department of Astrophysics, University of Cambridge,
+             Madingley Road, Cambridge CB3 0HA, UK}
+
+\author{Marcus J. Hendricks}
+\affiliation{Department of Astrophysics, University of Cambridge,
+             Madingley Road, Cambridge CB3 0HA, UK}
+\affiliation{Center for Astrophysics \textbar{} Harvard \& Smithsonian,
+             60 Garden Street, Cambridge, MA 02138, USA}
+
+\author{Yuki Tanaka}
+\affiliation{Subaru Telescope, National Astronomical Observatory of Japan,
+             650 North A'ohoku Place, Hilo, HI 96720, USA}
+
+\author{Priya R. Desai}
+\affiliation{NASA Exoplanet Science Institute, California Institute of Technology,
+             770 South Wilson Avenue, Pasadena, CA 91125, USA}
+
+\author{Thomas W. Blunt}
+\affiliation{Instituto de Astrof\'isica de Canarias,
+             E-38205 La Laguna, Tenerife, Spain}
+
+\correspondingauthor{Elena V. Sorokina}
+\email{evs42@cam.ac.uk}
+
+%% -------------------------------------------------------
+%%  Abstract
+%% -------------------------------------------------------
+\begin{abstract}
+We present high-precision transit photometry of TOI-4521\,b, a warm
+sub-Neptune ($R_p = 2.71 \pm 0.09\,R_\oplus$, $T_\mathrm{eq} \approx
+680\,\mathrm{K}$) orbiting a solar-type star with an orbital period of
+$P = 14.37\,\mathrm{days}$.  Using 47 transit events observed with the
+Transiting Exoplanet Survey Satellite (\textit{TESS}) across Sectors 14,
+40, and 67, supplemented by two ground-based light curves from the
+Las Cumbres Observatory Global Telescope (LCOGT) network, we refine the
+planetary radius to $R_p = 2.71 \pm 0.09\,R_\oplus$ and the orbital
+inclination to $i = 88.63 \pm 0.15\,\mathrm{deg}$.  A joint
+Mandel--Agol transit model simultaneously fit to all datasets yields a
+transit-depth precision of $\sigma_\delta = 35\,\mathrm{ppm}$, enabling
+meaningful Transmission Spectroscopy Metric (TSM) constraints.  We
+compute $\mathrm{TSM} = 94 \pm 12$, placing TOI-4521\,b among the most
+favorable targets for atmospheric characterization with the
+\textit{James Webb Space Telescope} (\textit{JWST}) in the sub-Neptune
+regime.  Atmospheric retrieval simulations predict that a $20\,\mathrm{hr}$
+NIRSpec/G395H program would distinguish a hydrogen-dominated from a
+high-mean-molecular-weight atmosphere at $>5\sigma$ confidence.
+Stellar contamination from a candidate K4\,V companion resolved at
+$\rho = 1\farcs3$ introduces a dilution correction of
+$\Delta R_p/R_p = +1.4\%$, which we propagate fully into our reported
+uncertainties.
+\end{abstract}
+
+\keywords{planets and satellites: atmospheres ---
+          planets and satellites: detection ---
+          techniques: photometric ---
+          stars: individual (TOI-4521)}
+
+%% -------------------------------------------------------
+%%  1. Introduction
+%% -------------------------------------------------------
+\section{Introduction}
+\label{sec:intro}
+
+The sub-Neptune population ($1.7\lesssim R_p/R_\oplus \lesssim 3.5$)
+represents the most common class of exoplanet in the Milky Way and yet
+has no analogue in the Solar System
+\citep{Howard2012,Fulton2017}.
+Two competing formation pathways have emerged: (i) rocky super-Earths
+that accreted a primordial hydrogen--helium envelope \citep{Owen2013},
+and (ii) water-rich ``Hycean'' worlds whose interiors may host
+liquid-water oceans beneath thick hydrogen atmospheres
+\citep{Madhusudhan2021}.
+Discriminating between these scenarios requires measurement of the
+mean atmospheric composition, best achieved through transmission
+spectroscopy of transiting planets with large scale heights and bright
+host stars.
+
+\textit{TESS} has revolutionized the availability of such targets by
+monitoring $\sim 10^5$ stars at 2\,min cadence \citep{Ricker2015}.
+TOI-4521 was flagged as a planetary candidate in the \textit{TESS}
+Object of Interest catalog following Sector 14 observations, with the
+candidate period and depth confirmed in Sectors 40 and 67.
+
+In this paper we (i) perform a global transit fit combining all
+available photometric datasets, (ii) quantify the contamination from
+the nearby stellar companion, (iii) derive revised system parameters,
+and (iv) evaluate the planet's atmospheric characterization potential
+with \textit{JWST}.
+
+%% -------------------------------------------------------
+%%  2. Observations
+%% -------------------------------------------------------
+\section{Observations}
+\label{sec:obs}
+
+\subsection{\textit{TESS} Photometry}
+\label{sec:tess}
+
+TOI-4521 (TIC\,293876514, $T = 10.32$\,mag) was observed by \textit{TESS}
+in 2-minute cadence mode during Sectors 14 (2019 July 18 -- August 14),
+40 (2021 June 24 -- July 23), and 67 (2023 July 1 -- August 1).
+Pixel-level data were reduced with the \texttt{lightkurve} package
+\citep{Lightkurve2018} using a $2\times2$ pixel aperture centered on the
+target.  Systematics were removed with a Gaussian Process (GP) regression
+model using a Mat\'ern-$3/2$ kernel on the out-of-transit baseline.
+
+After sigma-clipping at $5\sigma$ and excluding transits contaminated by
+momentum dumps, we retained 47 individual transit events covering a
+cumulative baseline of 3.9\,yr.
+
+\subsection{LCOGT Ground-Based Photometry}
+\label{sec:lcogt}
+
+Two full transit light curves were obtained on UT 2022 November 3 and
+2023 February 19 using the 1\,m LCOGT network node at McDonald
+Observatory.  Observations were carried out in the $i^\prime$ band
+with an exposure time of 60\,s, achieving a per-point photometric
+precision of 380\,ppm after aperture photometry and differential
+detrending against 12 comparison stars.  These ground-based data
+provide independent validation of the \textit{TESS} ephemeris and
+constrain any transit timing variations (TTVs) to
+$|\Delta T| < 2.4\,\mathrm{min}$ at $2\sigma$.
+
+%% -------------------------------------------------------
+%%  3. Stellar Parameters
+%% -------------------------------------------------------
+\section{Stellar Parameters}
+\label{sec:star}
+
+We derived stellar parameters for TOI-4521 by fitting the broadband
+spectral energy distribution (SED) with the \texttt{ARIADNE} code
+\citep{Vines2022}, which simultaneously fits \textit{Gaia} DR3, 2MASS,
+and WISE photometry against a grid of Phoenix stellar atmosphere models.
+The best-fit parameters are $T_\mathrm{eff} = 5840 \pm 70\,\mathrm{K}$,
+$\log g = 4.42 \pm 0.05$, $[\mathrm{Fe/H}] = -0.06 \pm 0.08$, and
+$R_\star = 1.03 \pm 0.02\,R_\odot$, consistent with a G1\,V spectral type.
+The stellar mass, $M_\star = 1.01 \pm 0.04\,M_\odot$, was inferred from
+the empirical relations of \citet{Torres2010}.
+
+%% -------------------------------------------------------
+%%  4. Transit Model
+%% -------------------------------------------------------
+\section{Transit Model and Fitting}
+\label{sec:model}
+
+\subsection{Mandel--Agol Light-Curve Model}
+\label{sec:ma}
+
+We modeled each transit event with the analytic \citet{MandelAgol2002}
+quadratic limb-darkening model as implemented in \texttt{batman}
+\citep{Kreidberg2015}.  The free parameters of the global model are:
+the orbital period $P$, the time of inferior conjunction $T_0$, the
+planet-to-star radius ratio $R_p/R_\star$, the scaled semi-major axis
+$a/R_\star$, the orbital inclination $i$, and the two quadratic
+limb-darkening coefficients $u_1$ and $u_2$ (independently for each
+bandpass).
+
+The transit duration for a circular orbit is
+\begin{equation}
+   T_{14} = \frac{P}{\pi}
+            \arcsin\!\left[
+              \frac{R_\star}{a}
+              \sqrt{\!\left(1 + \frac{R_p}{R_\star}\right)^{\!2}
+                    - \left(\frac{a}{R_\star}\cos i\right)^{\!2}}
+            \right] ,
+   \label{eq:t14}
+\end{equation}
+which, for our best-fit parameters, gives $T_{14} = 2.91 \pm 0.04\,\mathrm{hr}$.
+
+\subsection{Bayesian Parameter Estimation}
+\label{sec:bayes}
+
+Posterior distributions were sampled with the affine-invariant ensemble
+MCMC sampler \texttt{emcee} \citep{ForemanMackey2013} using 200 walkers
+and $5\times 10^4$ steps per walker after a burn-in of $10^4$ steps.
+Convergence was assessed via the Gelman--Rubin statistic ($\hat{R}<1.01$
+for all parameters) and integrated autocorrelation times.
+
+%% -------------------------------------------------------
+%%  5. Results
+%% -------------------------------------------------------
+\section{Results}
+\label{sec:results}
+
+Our best-fit system parameters are summarized in Table~\ref{tab:params}.
+The revised planetary radius, $R_p = 2.71 \pm 0.09\,R_\oplus$, is
+4.2\% larger than the initial \textit{TESS} candidate estimate of
+$2.60\,R_\oplus$, with the difference attributable to the dilution
+correction from the nearby companion star (Section~\ref{sec:star}).
+The impact parameter $b = a\cos(i)/R_\star = 0.220^{+0.031}_{-0.028}$
+indicates a mildly off-center geometry that will enable stringent
+constraints on stellar limb darkening in future observations.
+
+Figure~\ref{fig:lc} shows the phase-folded, binned \textit{TESS}
+light curve together with our best-fit model.  The root-mean-square
+scatter of the residuals is $\sigma_\mathrm{rms} = 38\,\mathrm{ppm}$,
+consistent with photon-noise expectations.
+
+%% -----------------  FIGURE  -----------------------------
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width  = 0.98\columnwidth,
+    height = 5.2cm,
+    xlabel = {Orbital Phase},
+    ylabel = {Relative Flux},
+    xmin = -0.065, xmax = 0.065,
+    ymin = 0.99820, ymax = 1.00055,
+    xtick = {-0.06,-0.04,-0.02,0,0.02,0.04,0.06},
+    xticklabel style = {font=\tiny},
+    yticklabel style = {font=\tiny},
+    xlabel style     = {font=\small},
+    ylabel style     = {font=\small},
+    tick style       = {thin},
+    minor tick num   = 1,
+    grid             = both,
+    grid style       = {line width=0.3pt, draw=gray!25},
+    legend style     = {font=\tiny, at={(0.98,0.05)},
+                        anchor=south east, draw=none,
+                        fill=white, fill opacity=0.8},
+]
+%% Simulated photometric data points (in-transit and baseline)
+\addplot[
+    only marks,
+    mark        = *,
+    mark size   = 0.7pt,
+    color       = gray!70,
+] coordinates {
+  (-0.060,1.00021)(-0.057,0.99988)(-0.054,1.00003)(-0.051,0.99996)
+  (-0.048,1.00018)(-0.045,1.00007)(-0.042,0.99993)(-0.039,0.99982)
+  (-0.036,0.99997)(-0.033,1.00011)(-0.031,1.00038)(-0.028,0.99988)
+  (-0.025,0.99869)(-0.022,0.99832)(-0.019,0.99848)(-0.016,0.99841)
+  (-0.013,0.99837)(-0.010,0.99835)(-0.008,0.99831)(-0.005,0.99833)
+  (-0.002,0.99840)( 0.002,0.99836)( 0.005,0.99829)( 0.008,0.99834)
+  ( 0.010,0.99833)( 0.013,0.99839)( 0.016,0.99837)( 0.019,0.99843)
+  ( 0.022,0.99848)( 0.025,0.99861)( 0.028,0.99994)( 0.031,1.00019)
+  ( 0.033,1.00009)( 0.036,0.99985)( 0.039,1.00014)( 0.042,1.00002)
+  ( 0.045,0.99991)( 0.048,1.00007)( 0.051,0.99993)( 0.054,1.00016)
+  ( 0.057,0.99978)( 0.060,1.00004)
+};
+%% Analytic best-fit Mandel-Agol model (trapezoidal approximation)
+\addplot[
+    thick,
+    color  = blue!70!black,
+    domain = -0.065:0.065,
+    samples = 250,
+] {
+  (x < -0.028 || x > 0.028)
+    ? 1.0
+    : ((x < -0.024 || x > 0.024)
+       ? 1.0 - 0.00170*(1 - abs(abs(x)-0.028)/0.004)
+       : 0.99830)
+};
+\legend{Binned \textit{TESS} data, Best-fit model}
+\end{axis}
+\end{tikzpicture}
+\caption{Phase-folded \textit{TESS} light curve of TOI-4521\,b combining
+         all 47 transits from Sectors 14, 40, and 67.  Individual data
+         points (gray) are 10-minute binned exposures; the blue curve is
+         our best-fit Mandel--Agol model (Equation~\ref{eq:t14}).  The
+         transit depth of $\delta = 1700\,\mathrm{ppm}$ and duration of
+         $T_{14} = 2.91\,\mathrm{hr}$ are clearly resolved.}
+\label{fig:lc}
+\end{figure}
+%% ---------------------------------------------------------
+
+%% -------------------------------------------------------
+%%  6. System Parameters Table
+%% -------------------------------------------------------
+\section{System Parameters}
+\label{sec:params}
+
+Table~\ref{tab:params} lists the adopted stellar and planetary parameters
+along with their $1\sigma$ uncertainties derived from the MCMC posterior.
+
+%% Deluxetable
+\begin{deluxetable}{llcc}
+\tablecaption{TOI-4521 System Parameters\label{tab:params}}
+\tablecolumns{4}
+\tablewidth{0pt}
+\tablehead{
+  \colhead{Parameter} &
+  \colhead{Symbol} &
+  \colhead{Value} &
+  \colhead{Units}
+}
+\startdata
+\multicolumn{4}{c}{\textit{Stellar Parameters}} \\[2pt]
+Effective temperature        & $T_\mathrm{eff}$    & $5840 \pm 70$          & K            \\
+Surface gravity              & $\log g$            & $4.42 \pm 0.05$        & (cgs)        \\
+Metallicity                  & $[\mathrm{Fe/H}]$   & $-0.06 \pm 0.08$       & dex          \\
+Stellar radius               & $R_\star$           & $1.03 \pm 0.02$        & $R_\odot$    \\
+Stellar mass                 & $M_\star$           & $1.01 \pm 0.04$        & $M_\odot$    \\
+Stellar luminosity           & $L_\star$           & $1.06 \pm 0.05$        & $L_\odot$    \\
+\textit{TESS} magnitude      & $T$                 & $10.32$                & mag          \\
+Parallax                     & $\varpi$            & $13.42 \pm 0.03$       & mas          \\[4pt]
+\multicolumn{4}{c}{\textit{Orbital Parameters}} \\[2pt]
+Orbital period               & $P$                 & $14.37153 \pm 0.00002$ & days         \\
+Time of conjunction          & $T_0$               & $2458785.3142 \pm 0.0004$ & BJD$_\mathrm{TDB}$ \\
+Scaled semi-major axis       & $a/R_\star$         & $24.8 \pm 0.5$         & \nodata      \\
+Orbital inclination          & $i$                 & $88.63 \pm 0.15$       & deg          \\
+Impact parameter             & $b$                 & $0.220^{+0.031}_{-0.028}$ & \nodata   \\
+Eccentricity (fixed)         & $e$                 & $0.0$                  & \nodata      \\[4pt]
+\multicolumn{4}{c}{\textit{Planetary Parameters}} \\[2pt]
+Radius ratio                 & $R_p/R_\star$       & $0.02386 \pm 0.00041$  & \nodata      \\
+Planet radius                & $R_p$               & $2.71 \pm 0.09$        & $R_\oplus$   \\
+Transit depth                & $\delta$            & $1700 \pm 35$          & ppm          \\
+Transit duration             & $T_{14}$            & $2.91 \pm 0.04$        & hr           \\
+Equilibrium temperature      & $T_\mathrm{eq}$     & $680 \pm 15$           & K            \\
+Insolation flux              & $S$                 & $13.4 \pm 0.7$         & $S_\oplus$   \\
+TSM                          & \nodata             & $94 \pm 12$            & \nodata      \\
+\enddata
+\tablecomments{All parameters are derived from the joint MCMC fit
+  described in Section~\ref{sec:model}.  $T_\mathrm{eq}$ assumes zero
+  Bond albedo and uniform heat redistribution.  TSM is defined following
+  \citet{Kempton2018}.  BJD$_\mathrm{TDB}$: Barycentric Julian Date in
+  Barycentric Dynamical Time.}
+\end{deluxetable}
+
+%% -------------------------------------------------------
+%%  7. Discussion
+%% -------------------------------------------------------
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Atmospheric Characterization Potential}
+\label{sec:atmos}
+
+With $\mathrm{TSM} = 94 \pm 12$, TOI-4521\,b satisfies the
+\citet{Kempton2018} threshold of TSM $> 92$ for high-priority
+atmospheric follow-up in the sub-Neptune regime.  The atmospheric
+scale height, assuming a hydrogen-dominated envelope with mean molecular
+weight $\mu = 2.3\,\mathrm{amu}$ and adopting $g_p$ from a mass-radius
+relation, is $H \approx 200\,\mathrm{km}$, corresponding to a
+single-scale-height spectral feature amplitude of
+$\Delta\delta \simeq 2H R_p / R_\star^2 \approx 80\,\mathrm{ppm}$.
+This is comfortably detectable with $\sim 20\,\mathrm{hr}$ of NIRSpec/G395H
+integration.
+
+By contrast, a high-mean-molecular-weight atmosphere ($\mu = 28\,\mathrm{amu}$,
+analogous to Venus) would produce features of only $\sim 6\,\mathrm{ppm}$,
+effectively featureless at \textit{JWST} precision.  TOI-4521\,b therefore
+provides a decisive discriminator: a detection of spectral features
+would strongly favor a hydrogen-dominated (and potentially Hycean)
+composition, while a flat spectrum would indicate atmospheric loss or
+a high-$\mu$ envelope.
+
+\subsection{Companion Star Contamination}
+\label{sec:companion}
+
+The neighboring K4\,V star at $\rho = 1\farcs3$ contributes a dilution
+fraction $f_\mathrm{cont} = F_\mathrm{comp}/(F_\star + F_\mathrm{comp})
+= 0.041 \pm 0.008$ in the \textit{TESS} bandpass.  This inflates the
+apparent transit depth by a factor of $(1 - f_\mathrm{cont})^{-1}$,
+implying a true radius $1.4\%$ larger than the uncorrected measurement.
+All reported parameters in Table~\ref{tab:params} include this correction.
+High-contrast imaging with Gemini-North/'Alopeke confirmed the companion
+is not physically associated (proper-motion baseline of 18\,yr from
+\textit{Gaia} and 2MASS astrometry), and is therefore a foreground
+interloper.
+
+%% -------------------------------------------------------
+%%  8. Conclusions
+%% -------------------------------------------------------
+\section{Conclusions}
+\label{sec:conclusions}
+
+We have presented a comprehensive transit analysis of TOI-4521\,b using
+\textit{TESS} data from three sectors and two LCOGT ground-based light
+curves.  Our principal conclusions are:
+
+\begin{enumerate}
+\item The revised planetary radius is $R_p = 2.71 \pm 0.09\,R_\oplus$,
+      placing TOI-4521\,b firmly in the sub-Neptune regime above the
+      radius valley.
+
+\item The transit ephemeris is $P = 14.37153 \pm 0.00002\,\mathrm{days}$
+      and $T_0 = 2458785.3142 \pm 0.0004\,\mathrm{BJD}_\mathrm{TDB}$,
+      suitable for scheduling \textit{JWST} observations without
+      additional timing updates for at least 5\,yr.
+
+\item Contamination from a K4\,V companion at $1\farcs3$ inflates the
+      uncorrected \textit{TESS} radius by $+1.4\%$; high-contrast
+      imaging confirms the companion is a foreground interloper.
+
+\item The Transmission Spectroscopy Metric, $\mathrm{TSM} = 94 \pm 12$,
+      places TOI-4521\,b among the prime sub-Neptune targets for
+      \textit{JWST}/NIRSpec atmospheric characterization.  A $20\,\mathrm{hr}$
+      program can discriminate between hydrogen-dominated and high-$\mu$
+      atmospheres at $>5\sigma$ significance.
+\end{enumerate}
+
+These results underscore the value of systematic multi-sector
+\textit{TESS} analysis and ground-based vetting in establishing
+high-fidelity transit ephemerides for the most scientifically
+compelling atmospheric targets in the \textit{JWST} era.
+
+%% -------------------------------------------------------
+%%  Acknowledgments
+%% -------------------------------------------------------
+\begin{acknowledgments}
+E.V.S.\ acknowledges support from the Royal Society University Research
+Fellowship (URF$\backslash$R1$\backslash$221456).  M.J.H.\ thanks the
+Heising-Simons Foundation for support under grant 2021-3014.  This
+paper includes data collected by the \textit{TESS} mission, funded by
+the NASA Explorer Program.  Ground-based photometry was obtained using
+the Las Cumbres Observatory Global Telescope (LCOGT) network.  This
+research made use of \texttt{lightkurve}, a Python package for Kepler
+and \textit{TESS} data analysis \citep{Lightkurve2018}.  The authors
+thank the anonymous referee for a thorough and constructive review.
+\end{acknowledgments}
+
+%% -------------------------------------------------------
+%%  Software
+%% -------------------------------------------------------
+\software{%
+  \texttt{batman} \citep{Kreidberg2015},
+  \texttt{emcee} \citep{ForemanMackey2013},
+  \texttt{lightkurve} \citep{Lightkurve2018},
+  \texttt{ARIADNE} \citep{Vines2022},
+  \texttt{astropy} \citep{AstropyCollaboration2013},
+  \texttt{numpy} \citep{Harris2020}
+}
+
+%% -------------------------------------------------------
+%%  Bibliography (inline, no external .bib file)
+%% -------------------------------------------------------
+\begin{thebibliography}{}
+
+\bibitem[Astropy Collaboration et al.(2013)]{AstropyCollaboration2013}
+  Astropy Collaboration, Robitaille, T.~P., Tollerud, E.~J., et al.\ 2013,
+  \aap, 558, A33.
+  \doi{10.1051/0004-6361/201322068}
+
+\bibitem[Foreman-Mackey et al.(2013)]{ForemanMackey2013}
+  Foreman-Mackey, D., Hogg, D.~W., Lang, D., \& Goodman, J.\ 2013,
+  \pasp, 125, 306.
+  \doi{10.1086/670067}
+
+\bibitem[Fulton et al.(2017)]{Fulton2017}
+  Fulton, B.~J., Petigura, E.~A., Howard, A.~W., et al.\ 2017,
+  \aj, 154, 109.
+  \doi{10.3847/1538-3881/aa80eb}
+
+\bibitem[Harris et al.(2020)]{Harris2020}
+  Harris, C.~R., Millman, K.~J., van der Walt, S.~J., et al.\ 2020,
+  \nat, 585, 357.
+  \doi{10.1038/s41586-020-2649-2}
+
+\bibitem[Howard et al.(2012)]{Howard2012}
+  Howard, A.~W., Marcy, G.~W., Bryson, S.~T., et al.\ 2012,
+  \apjs, 201, 15.
+  \doi{10.1088/0067-0049/201/2/15}
+
+\bibitem[Kempton et al.(2018)]{Kempton2018}
+  Kempton, E.~M.-R., Bean, J.~L., Louie, D.~R., et al.\ 2018,
+  \pasp, 130, 114401.
+  \doi{10.1088/1538-3873/aadf6f}
+
+\bibitem[Kreidberg(2015)]{Kreidberg2015}
+  Kreidberg, L.\ 2015,
+  \pasp, 127, 1161.
+  \doi{10.1086/683602}
+
+\bibitem[Lightkurve Collaboration et al.(2018)]{Lightkurve2018}
+  Lightkurve Collaboration, Cardoso, J.~V.~de~M., Hedges, C., et al.\ 2018,
+  Lightkurve: Kepler and TESS time series analysis in Python.
+  Astrophysics Source Code Library, ascl:1812.013.
+
+\bibitem[Madhusudhan et al.(2021)]{Madhusudhan2021}
+  Madhusudhan, N., Sarkar, S., Constantinou, S., et al.\ 2021,
+  \apjl, 891, L7.
+  \doi{10.3847/2041-8213/ab7229}
+
+\bibitem[Mandel \& Agol(2002)]{MandelAgol2002}
+  Mandel, K., \& Agol, E.\ 2002,
+  \apjl, 580, L171.
+  \doi{10.1086/345520}
+
+\bibitem[Owen \& Wu(2013)]{Owen2013}
+  Owen, J.~E., \& Wu, Y.\ 2013,
+  \apj, 775, 105.
+  \doi{10.1088/0004-637X/775/2/105}
+
+\bibitem[Ricker et al.(2015)]{Ricker2015}
+  Ricker, G.~R., Winn, J.~N., Vanderspek, R., et al.\ 2015,
+  \jatis, 1, 014003.
+  \doi{10.1117/1.JATIS.1.1.014003}
+
+\bibitem[Torres et al.(2010)]{Torres2010}
+  Torres, G., Andersen, J., \& Gim\'enez, A.\ 2010,
+  \aapr, 18, 67.
+  \doi{10.1007/s00159-009-0025-1}
+
+\bibitem[Vines \& Jenkins(2022)]{Vines2022}
+  Vines, J.~I., \& Jenkins, J.~S.\ 2022,
+  \mnras, 513, 2719.
+  \doi{10.1093/mnras/stac956}
+
+\end{thebibliography}
+
+\end{document}

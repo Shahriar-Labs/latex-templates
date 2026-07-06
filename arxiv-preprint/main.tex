@@ -1,0 +1,228 @@
+% edit & compile online at https://letx.app
+\documentclass[11pt]{article}
+
+% Font Configuration
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{microtype}
+
+% Geometry & Spacing
+\usepackage[letterpaper, top=1.1in, bottom=1.1in, left=1.1in, right=1.1in]{geometry}
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+
+% Colors
+\usepackage{xcolor}
+\definecolor{accentcolor}{RGB}{28, 61, 90} % Deep Navy
+\definecolor{mutedgray}{RGB}{100, 116, 139} % Muted Slate
+
+% Header and Footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{mutedgray}\itshape DeepTransient: ML Transient Classification}
+\fancyhead[R]{\small\color{mutedgray}arXiv Preprint}
+\fancyfoot[C]{\small\color{mutedgray}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{accentcolor!20}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\headheight}{22pt}
+
+% Section Styling
+\usepackage{titlesec}
+\titleformat{\section}
+  {\color{accentcolor}\normalfont\large\bfseries}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\color{accentcolor}\normalfont\normalsize\bfseries}
+  {\thesubsection}{1em}{}
+\titlespacing*{\section}{0pt}{2.5ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{2ex plus 1ex minus .2ex}{1.2ex plus .2ex}
+
+% Packages
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{authblk}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+
+% Abstract Box
+\newtcolorbox{abstractbox}{
+  enhanced,
+  boxrule=0.5pt,
+  colframe=accentcolor!20,
+  colback=accentcolor!2,
+  arc=3pt,
+  left=18pt, right=18pt, top=15pt, bottom=15pt,
+  before skip=20pt, after skip=20pt
+}
+
+% PGFPlots Configuration
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% Hyperref
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=accentcolor,
+    citecolor=accentcolor,
+    filecolor=accentcolor,
+    urlcolor=accentcolor,
+    pdfauthor={Sarah Jenkins, David Chen, Elena Rostova},
+    pdftitle={DeepTransient: A Multi-Modal Deep Learning Pipeline for Real-Time Transient Classification},
+}
+
+% Title Block
+\title{\vspace{-1.5cm}\bfseries\color{accentcolor}\Large DeepTransient: A Multi-Modal Deep Learning Pipeline for Real-Time Transient Classification in Next-Generation Time-Domain Surveys}
+
+\author[1,2]{Sarah Jenkins}
+\author[2]{David Chen}
+\author[3]{Elena Rostova}
+\affil[1]{Department of Astrophysics, University of California, Berkeley, CA 94720, USA}
+\affil[2]{Lawrence Berkeley National Laboratory, 1 Cyclotron Rd, Berkeley, CA 94720, USA}
+\affil[3]{Institute of Astronomy, University of Cambridge, Madingley Rd, Cambridge CB3 0HA, UK}
+\date{\small\color{mutedgray}Submitted to arXiv on \today}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{plain} % Ensure first page has page number but no running header
+
+\begin{abstractbox}
+\noindent\textbf{Abstract}
+
+\smallskip
+\noindent With the advent of next-generation time-domain surveys such as the Vera C. Rubin Observatory's Legacy Survey of Space and Time (LSST), the volume of transient alerts is projected to reach millions per night. Prompt classification of these events is critical for scheduling rapid spectroscopic follow-up. In this work, we present \texttt{DeepTransient}, a novel multi-modal deep learning pipeline designed to classify astronomical transients directly from sparse, multi-band photometrical light curves. Our architecture combines a bidirectional recurrent neural network with a convolutional neural network to ingest both metadata and photometric time-series. On a simulated LSST dataset, \texttt{DeepTransient} achieves a classification F1-score of 0.95 for core-collapse supernovae and Type Ia supernovae, outperforming traditional feature-engineered models by 8\%. We discuss the pipeline's latency and its readiness for integration into broker systems.
+
+\medskip
+\noindent\textbf{Keywords:} methods: data analysis --- techniques: image processing --- supernovae: general --- stars: variables: general
+\end{abstractbox}
+
+\section{Introduction}
+Astronomical transient events, such as supernovae, kilonovae, and tidal disruption events, represent some of the most energetic phenomena in the universe. The Vera C. Rubin Observatory's Legacy Survey of Space and Time (LSST) will monitor the Southern sky with unprecedented depth and cadence, generating approximately 10 million alerts per night \cite{rubin2019}. Identifying target transients for rapid spectroscopic follow-up is a critical bottleneck for modern time-domain astrophysics.
+
+Traditional approaches have relied on manual inspection or hand-crafted feature extraction followed by standard machine learning models like Random Forests \cite{narayan2018}. However, these methods scale poorly with the high data rate and sparse, irregular sampling typical of early-stage light curves. Deep learning models, particularly recurrent architectures \cite{charnock2017} and convolutional neural networks \cite{pasquet2019}, offer a promising alternative by learning representation hierarchies directly from the raw flux measurements.
+
+\section{Methodology}
+In this section, we outline the architecture of the \texttt{DeepTransient} pipeline. The system consists of two primary components: a Light Curve Encoder and a Multi-Modal Classification Network.
+
+\subsection{Light Curve Encoding}
+Let a multi-band light curve be defined as a sequence of observations $\mathcal{O} = \{(t_i, m_i, e_i, b_i)\}_{i=1}^T$, where $t_i$ is the observation time, $m_i$ is the measured magnitude, $e_i$ is the measurement error, and $b_i \in \{u, g, r, i, z, y\}$ is the filter band. Since the measurements are irregularly spaced, we first map them to a regular grid using Gaussian Process (GP) regression.
+
+\subsection{Neural Network Architecture}
+The GP-interpolated curves are passed to a bidirectional Long Short-Term Memory (BiLSTM) network to extract temporal features. Simultaneously, host galaxy metadata (e.g., photometric redshift, spatial offset) are processed by a fully-connected multilayer perceptron (MLP). The outputs of the BiLSTM and MLP are concatenated and fed into a final softmax classifier.
+
+To train the pipeline, we optimize the categorical cross-entropy loss function with $L_2$ regularization:
+\begin{equation}
+\mathcal{L} = -\frac{1}{N} \sum_{i=1}^{N} \sum_{c=1}^{C} y_{i,c} \log(p_{i,c}) + \lambda \|\mathbf{W}\|^2_2
+\label{eq:loss}
+\end{equation}
+where $N$ is the batch size, $C$ is the number of transient classes, $y_{i,c}$ is the true binary label indicator, $p_{i,c}$ is the predicted probability for class $c$, and $\lambda \|\mathbf{W}\|^2_2$ is the regularization term to prevent overfitting.
+
+\section{Results}
+We evaluate the performance of \texttt{DeepTransient} on a simulated LSST dataset containing 50,000 light curves across four main classes: Type Ia Supernovae (SN Ia), Core-Collapse Supernovae (SN CC), Tidal Disruption Events (TDE), and Active Galactic Nuclei (AGN).
+
+\subsection{Performance Comparison}
+Table~\ref{tab:metrics} shows the comparison of \texttt{DeepTransient} with baseline models. Our model achieves a micro-averaged F1-score of 0.950, outperforming the classical Random Forest baseline by more than 10\%.
+
+\begin{table}[htbp]
+\centering
+\caption{Classification metrics (Precision, Recall, and F1-score) of different models evaluated on the simulated Rubin LSST transient dataset.}
+\label{tab:metrics}
+\vspace{0.3cm}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Classifier Model} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-score} \\
+\midrule
+Random Forest (Baseline) & 0.852 & 0.841 & 0.846 \\
+Gradient Boosted Trees   & 0.871 & 0.865 & 0.868 \\
+LSTM (Photometry only)   & 0.893 & 0.887 & 0.890 \\
+\textbf{DeepTransient}    & \textbf{0.954} & \textbf{0.946} & \textbf{0.950} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+We also analyze the sensitivity of the model to the training sample size. As shown in Figure~\ref{fig:performance}, our deep learning pipeline scales significantly better with larger datasets compared to the baseline Random Forest model, which exhibits asymptotic performance beyond 30,000 samples.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.75\textwidth,
+    height=6cm,
+    axis lines=left,
+    grid=both,
+    grid style={line width=.1pt, draw=gray!10},
+    major grid style={line width=.2pt, draw=gray!20},
+    xlabel={Training Set Size (thousands)},
+    ylabel={F1-Score},
+    xmin=5, xmax=55,
+    ymin=0.70, ymax=0.98,
+    xtick={10,20,30,40,50},
+    ytick={0.75,0.80,0.85,0.90,0.95},
+    legend pos=south east,
+    legend style={draw=none, fill=none, font=\small},
+    line width=0.8pt,
+    cycle list={
+        {accentcolor, mark=*},
+        {gray, mark=square*}
+    }
+]
+\addplot[accentcolor, mark=*, thick] coordinates {
+    (10, 0.762)
+    (20, 0.845)
+    (30, 0.898)
+    (40, 0.931)
+    (50, 0.950)
+};
+\addlegendentry{DeepTransient}
+
+\addplot[mutedgray, dashed, mark=square*, thick] coordinates {
+    (10, 0.721)
+    (20, 0.784)
+    (30, 0.825)
+    (40, 0.841)
+    (50, 0.846)
+};
+\addlegendentry{Baseline Random Forest}
+
+\end{axis}
+\end{tikzpicture}
+\caption{Classification performance (F1-score) of the \texttt{DeepTransient} pipeline compared to the baseline Random Forest classifier as a function of the training sample size.}
+\label{fig:performance}
+\end{figure}
+
+\section{Discussion and Future Work}
+The performance gains of \texttt{DeepTransient} are primarily driven by the joint learning of temporal features and host galaxy contextual metadata. Incorporating spatial coordinates and host galaxy morphology is expected to further improve classifier confidence, particularly for rare events such as kilonovae \cite{mutschler2021, villar2020}. Future work will focus on deploying the pipeline within an active broker framework to process live alert streams in real time.
+
+\begin{thebibliography}{9}
+\bibitem{rubin2019}
+V.~C. Rubin Observatory LSST Science Collaboration, et al. (2019).
+\newblock \emph{ApJ}, 873, 111.
+
+\bibitem{narayan2018}
+G.~Narayan, et al. (2018).
+\newblock \emph{ApJS}, 236, 9.
+
+\bibitem{charnock2017}
+T.~Charnock and A.~Moss (2017).
+\newblock \emph{ApJ}, 837, L28.
+
+\bibitem{pasquet2019}
+J.~Pasquet, et al. (2019).
+\newblock \emph{A\&A}, 627, A21.
+
+\bibitem{mutschler2021}
+M.~Mutschler, et al. (2021).
+\newblock \emph{MNRAS}, 504, 2535.
+
+\bibitem{villar2020}
+V.~A. Villar, et al. (2020).
+\newblock \emph{ApJ}, 890, 73.
+\end{thebibliography}
+
+\end{document}
