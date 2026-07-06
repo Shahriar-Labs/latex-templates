@@ -1,0 +1,326 @@
+% Compile online at https://letx.app
+\documentclass[10pt, letterpaper]{article}
+
+% --- Essential Math Packages ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{etoolbox}        % Helpful programming utilities
+
+% --- Typography and Font Setup ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype} % Improves spacing and kerning
+
+% Font mix: Serif for body, Sans-serif for headers/labels
+\usepackage{tgpagella}       % Elegant Palatino-like serif font
+\usepackage{newpxmath}       % Matching math font for Palatino (loaded after amssymb)
+\usepackage{lato}            % Modern sans-serif font
+
+% --- Page Geometry and Margins ---
+\usepackage[
+    letterpaper,
+    margin=0.85in,
+    top=0.95in,
+    bottom=0.95in,
+    headheight=22pt
+]{geometry}
+
+% --- Color Palette ---
+\usepackage{xcolor}
+\definecolor{thmcolor}{HTML}{1E3A8A}   % Deep Navy for Theorems
+\definecolor{lemcolor}{HTML}{4F46E5}   % Indigo for Lemmas
+\definecolor{defcolor}{HTML}{0D9488}   % Teal for Definitions
+\definecolor{excolor}{HTML}{B45309}    % Amber/Gold for Examples
+\definecolor{remcolor}{HTML}{4B5563}   % Slate/Gray for Remarks
+\definecolor{proofcolor}{HTML}{374151} % Dark Gray for Proofs
+\definecolor{muted}{HTML}{6B7280}      % Muted Gray for Headers/Footers
+\definecolor{linecolor}{HTML}{E5E7EB}  % Light Gray for divider lines
+
+% --- tcolorbox Setup ---
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{theorems}
+
+\tcbset{
+    commonstyle/.style={
+        enhanced,
+        breakable,
+        arc=0mm,
+        outer arc=0mm,
+        boxrule=0pt,
+        leftrule=3.5pt,
+        top=2.5mm,
+        bottom=2.5mm,
+        left=4mm,
+        right=4mm,
+        fonttitle=\sffamily\bfseries,
+        attach title to upper,
+        after title={\par\smallskip\noindent},
+    }
+}
+
+% Define custom environments using tcolorbox's theorem library
+\newtcbtheorem[number within=section]{theorem}{Theorem}{
+    commonstyle,
+    colback=thmcolor!3!white,
+    colframe=thmcolor,
+    coltitle=thmcolor,
+    fontupper=\itshape,
+}{thm}
+
+\newtcbtheorem[number within=section]{lemma}{Lemma}{
+    commonstyle,
+    colback=lemcolor!3!white,
+    colframe=lemcolor,
+    coltitle=lemcolor,
+    fontupper=\itshape,
+}{lem}
+
+\newtcbtheorem[number within=section]{definition}{Definition}{
+    commonstyle,
+    colback=defcolor!3!white,
+    colframe=defcolor,
+    coltitle=defcolor,
+    fontupper=\normalfont,
+}{def}
+
+\newtcbtheorem[number within=section]{example}{Example}{
+    commonstyle,
+    colback=excolor!3!white,
+    colframe=excolor,
+    coltitle=excolor,
+    fontupper=\normalfont,
+}{ex}
+
+\newtcbtheorem[number within=section]{remark}{Remark}{
+    commonstyle,
+    colback=remcolor!3!white,
+    colframe=remcolor,
+    coltitle=remcolor,
+    fontupper=\normalfont,
+}{rem}
+
+% Custom styled Proof environment using tcolorbox
+\newtcolorbox{proofbox}[1]{
+    enhanced,
+    breakable,
+    colback=proofcolor!2!white,
+    colframe=proofcolor!60!black,
+    arc=0mm,
+    outer arc=0mm,
+    boxrule=0pt,
+    leftrule=2.5pt,
+    top=2mm,
+    bottom=2mm,
+    left=3.5mm,
+    right=3.5mm,
+    title={#1},
+    coltitle=proofcolor!80!black,
+    fonttitle=\sffamily\bfseries\itshape,
+    attach title to upper,
+    after title={\par\smallskip\noindent},
+    fontupper=\normalfont,
+    after upper=\hfill\qedsymbol,
+}
+
+\makeatletter
+\renewenvironment{proof}[1][\proofname]{%
+  \begin{proofbox}{#1}%
+}{%
+  \end{proofbox}%
+}
+\makeatother
+
+% --- Titlesec Setup (Section Headings) ---
+\usepackage{titlesec}
+\titleformat{\section}
+  {\sffamily\Large\bfseries\color{thmcolor}}
+  {\thesection}
+  {1.0em}
+  {}
+  [\vspace{-0.2cm}\rule{\linewidth}{0.5pt}\vspace{0.2cm}]
+
+\titleformat{\subsection}
+  {\sffamily\large\bfseries\color{defcolor}}
+  {\thesubsection}
+  {1.0em}
+  {}
+
+\titlespacing*{\section}{0pt}{10pt plus 2pt minus 2pt}{6pt plus 1pt minus 1pt}
+\titlespacing*{\subsection}{0pt}{8pt plus 2pt minus 2pt}{4pt plus 1pt minus 1pt}
+
+% --- List Customization ---
+\usepackage{enumitem}
+\setlist{nosep, leftmargin=*}
+
+% --- Running Headers and Footers ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\sffamily\small\color{muted}MATH 302: Advanced Linear Algebra}
+\fancyhead[R]{\sffamily\small\color{muted}Lecture 8: Spectral Theory \& Diagonalization}
+\fancyfoot[C]{\sffamily\small\color{muted}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{linecolor}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\footrulewidth}{0pt}
+
+% Redefine plain page style for the first page
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[C]{\sffamily\small\color{muted}\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+% --- Custom Formatting ---
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt plus 1.5pt minus 1pt}
+
+% --- Hyperref Setup ---
+\usepackage[
+    colorlinks=true,
+    linkcolor=thmcolor,
+    citecolor=lemcolor,
+    urlcolor=defcolor
+]{hyperref}
+
+% --- Document Content ---
+\begin{document}
+\thispagestyle{plain}
+
+% Elegant Title Block
+\begin{center}
+    {\sffamily\color{muted}\uppercase{Department of Mathematics --- LetX University}} \\
+    \vspace{0.4cm}
+    {\sffamily\bfseries\Huge\color{thmcolor} Lecture Notes in Linear Algebra} \\
+    \vspace{0.2cm}
+    {\sffamily\Large\color{proofcolor} Lecture 8: Spectral Theory \& Diagonalization} \\
+    \vspace{0.4cm}
+    {\sffamily\large Lecturer: Prof. Alexander Vance \quad | \quad Date: October 24, 2026}
+    \vspace{0.4cm}
+    {\color{linecolor}\rule{\linewidth}{1.2pt}}
+\end{center}
+\vspace{0.5cm}
+
+\section{Introduction}
+In many areas of pure and applied mathematics, representing a linear operator in a simple form is of paramount importance. Diagonalization provides a mechanism to find a basis of a vector space such that the matrix representation of a given linear operator is diagonal. Physically, this corresponds to finding the decoupled modes of vibration, principal axes of inertia, or steady-state behaviors of dynamical systems. In computer science, spectral properties form the core of algorithms like Google's PageRank and principal component analysis (PCA).
+
+In this lecture, we explore the algebraic and geometric foundations of eigenvectors, prove key properties of linear independence, and walk through the computational steps to diagonalize a matrix.
+
+\section{Eigenvalues and Eigenvectors}
+Let $V$ be a vector space over a field $\mathbb{F}$ (typically $\mathbb{R}$ or $\mathbb{C}$) and let $T: V \to V$ be a linear operator.
+
+\begin{definition}{Eigenvalues and Eigenvectors}{eigen_def}
+    A scalar $\lambda \in \mathbb{F}$ is called an \textbf{eigenvalue} of $T$ if there exists a non-zero vector $v \in V$ such that
+    \begin{equation}
+        T(v) = \lambda v.
+    \end{equation}
+    The vector $v$ is called an \textbf{eigenvector} of $T$ corresponding to the eigenvalue $\lambda$. The set of all eigenvectors corresponding to $\lambda$, together with the zero vector, forms a subspace of $V$ called the \textbf{eigenspace} $E_\lambda = \ker(T - \lambda I)$.
+\end{definition}
+
+Before proving our main independence result, we establish a useful criterion for the existence of eigenvalues in terms of the kernel of the shifted operator.
+
+\begin{lemma}{Kernel and Injectivity}{shift_lem}
+    A scalar $\lambda \in \mathbb{F}$ is an eigenvalue of $T$ if and only if the operator $T - \lambda I$ is not injective (i.e., $\ker(T - \lambda I) \neq \{0\}$).
+\end{lemma}
+
+\begin{proof}
+    Suppose $\lambda$ is an eigenvalue of $T$. By Definition~\ref{def:eigen_def}, there exists a non-zero vector $v \in V$ such that $T(v) = \lambda v$. This equation can be rewritten as:
+    \begin{align*}
+        T(v) - \lambda v = 0 &\iff (T - \lambda I)(v) = 0.
+    \end{align*}
+    Since $v \neq 0$, it follows that $v \in \ker(T - \lambda I)$ and thus $\ker(T - \lambda I) \neq \{0\}$, which means $T - \lambda I$ is not injective.
+    
+    Conversely, if $\ker(T - \lambda I) \neq \{0\}$, there exists a non-zero vector $v \in \ker(T - \lambda I)$. Thus, $(T - \lambda I)(v) = 0$, which immediately implies $T(v) = \lambda v$, so $\lambda$ is an eigenvalue of $T$.
+\end{proof}
+
+We now state and prove one of the fundamental theorems of spectral theory.
+
+\begin{theorem}{Linear Independence of Eigenvectors}{lin_indep}
+    Let $T: V \to V$ be a linear operator on a vector space $V$. If $v_1, v_2, \dots, v_k$ are eigenvectors of $T$ corresponding to distinct eigenvalues $\lambda_1, \lambda_2, \dots, \lambda_k$, then the set $\{v_1, v_2, \dots, v_k\}$ is linearly independent.
+\end{theorem}
+
+\begin{proof}
+    We prove the theorem by induction on $k$.
+    
+    \textbf{Base case ($k=1$):} Since $v_1$ is an eigenvector, $v_1 \neq 0$ by definition. A set consisting of a single non-zero vector $\{v_1\}$ is always linearly independent.
+    
+    \textbf{Inductive step:} Assume that the statement holds for $k - 1$ eigenvectors. Let $v_1, v_2, \dots, v_k$ be eigenvectors corresponding to distinct eigenvalues $\lambda_1, \lambda_2, \dots, \lambda_k$, and consider a linear combination:
+    \begin{equation}\label{eq:lc}
+        c_1 v_1 + c_2 v_2 + \dots + c_k v_k = 0,
+    \end{equation}
+    where $c_1, c_2, \dots, c_k \in \mathbb{F}$. Applying the operator $T - \lambda_k I$ to both sides of equation~\eqref{eq:lc} and using $(T - \lambda_k I)v_i = (\lambda_i - \lambda_k)v_i$ yields:
+    \begin{equation}\label{eq:lc_reduced}
+        c_1 (\lambda_1 - \lambda_k) v_1 + c_2 (\lambda_2 - \lambda_k) v_2 + \dots + c_{k-1} (\lambda_{k-1} - \lambda_k) v_{k-1} = 0.
+    \end{equation}
+    By the induction hypothesis, the set $\{v_1, v_2, \dots, v_{k-1}\}$ is linearly independent. Therefore, all coefficients in equation~\eqref{eq:lc_reduced} must be zero:
+    \begin{equation*}
+        c_i (\lambda_i - \lambda_k) = 0 \quad \text{for all } i = 1, 2, \dots, k-1.
+    \end{equation*}
+    Since the eigenvalues are distinct, $\lambda_i \neq \lambda_k$ (meaning $\lambda_i - \lambda_k \neq 0$) for all $i < k$. Consequently, we must have $c_i = 0$ for all $i = 1, 2, \dots, k-1$.
+    
+    Substituting these values back into equation~\eqref{eq:lc} yields $c_k v_k = 0$. Since $v_k \neq 0$ is an eigenvector, we must also have $c_k = 0$. Thus, all coefficients $c_1, c_2, \dots, c_k$ are zero, and the set $\{v_1, v_2, \dots, v_k\}$ is linearly independent.
+\end{proof}
+
+\section{Diagonalization and Computation}
+An $n \times n$ matrix $A$ is diagonalizable if there exists an invertible matrix $P$ and a diagonal matrix $D$ such that $P^{-1} A P = D$. The columns of $P$ are the eigenvectors of $A$, and the diagonal entries of $D$ are the corresponding eigenvalues.
+
+\begin{example}{Diagonalization of a $2 \times 2$ Matrix}{diag_ex}
+    Diagonalize the symmetric matrix:
+    \begin{equation*}
+        A = \begin{pmatrix} 1 & 2 \\ 2 & 1 \end{pmatrix} \in \mathbb{R}^{2 \times 2}.
+    \end{equation*}
+    
+    \textbf{Step 1: Find the eigenvalues.} The characteristic equation is given by $\det(A - \lambda I) = 0$:
+    \begin{align*}
+        \det\begin{pmatrix} 1-\lambda & 2 \\ 2 & 1-\lambda \end{pmatrix} &= 0 \\
+        (1-\lambda)^2 - 4 &= 0 \\
+        \lambda^2 - 2\lambda - 3 &= 0 \\
+        (\lambda - 3)(\lambda + 1) &= 0.
+    \end{align*}
+    Thus, the eigenvalues are $\lambda_1 = 3$ and $\lambda_2 = -1$. Since these are two distinct eigenvalues for a $2 \times 2$ matrix, Theorem~\ref{thm:lin_indep} guarantees that their eigenvectors are linearly independent, and thus $A$ is diagonalizable.
+    
+    \textbf{Step 2: Find the eigenvectors.}
+    
+    \begin{minipage}[t]{0.48\linewidth}
+        \textbf{For $\lambda_1 = 3$:} Solve $(A - 3I)v = 0$:
+        \begin{equation*}
+            \begin{pmatrix} -2 & 2 \\ 2 & -2 \end{pmatrix}\begin{pmatrix} x \\ y \end{pmatrix} = 0 \implies x = y.
+        \end{equation*}
+        Choosing $x = 1$ yields $v_1 = \begin{pmatrix} 1 \\ 1 \end{pmatrix}$.
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\linewidth}
+        \textbf{For $\lambda_2 = -1$:} Solve $(A + I)v = 0$:
+        \begin{equation*}
+            \begin{pmatrix} 2 & 2 \\ 2 & 2 \end{pmatrix}\begin{pmatrix} x \\ y \end{pmatrix} = 0 \implies x = -y.
+        \end{equation*}
+        Choosing $y = -1$ yields $v_2 = \begin{pmatrix} 1 \\ -1 \end{pmatrix}$.
+    \end{minipage}
+    \vspace{0.2cm}
+    
+    \textbf{Step 3: Construct $P$ and $D$.}
+    \begin{equation*}
+        P = \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}, \quad D = \begin{pmatrix} 3 & 0 \\ 0 & -1 \end{pmatrix}.
+    \end{equation*}
+    We verify that $AP = PD$:
+    \begin{align*}
+        AP &= \begin{pmatrix} 1 & 2 \\ 2 & 1 \end{pmatrix}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix} = \begin{pmatrix} 3 & -1 \\ 3 & 1 \end{pmatrix}, \\
+        PD &= \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}\begin{pmatrix} 3 & 0 \\ 0 & -1 \end{pmatrix} = \begin{pmatrix} 3 & -1 \\ 3 & 1 \end{pmatrix}.
+    \end{align*}
+    Since $AP = PD$ and $\det(P) = -2 \neq 0$ (so $P$ is invertible), we have $P^{-1} A P = D$.
+\end{example}
+
+\begin{remark}{Non-diagonalizable Matrices}{non_diag}
+    Not all matrices are diagonalizable. A classical example of a non-diagonalizable matrix is the shear matrix:
+    \begin{equation*}
+        B = \begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix}.
+    \end{equation*}
+    The characteristic equation is $(1-\lambda)^2 = 0$, yielding a single eigenvalue $\lambda = 1$ with algebraic multiplicity 2. However, solving $(B - I)v = 0$ reveals:
+    \begin{equation*}
+        \begin{pmatrix} 0 & 1 \\ 0 & 0 \end{pmatrix}\begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \end{pmatrix} \implies y = 0.
+    \end{equation*}
+    The eigenspace $E_1$ is spanned by $\left\{\begin{pmatrix} 1 \\ 0 \end{pmatrix}\right\}$, which has dimension 1 (geometric multiplicity). Since the geometric multiplicity is strictly less than the algebraic multiplicity, $B$ does not possess a basis of eigenvectors and cannot be diagonalized.
+\end{remark}
+
+\end{document}

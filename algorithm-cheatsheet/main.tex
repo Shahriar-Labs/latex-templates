@@ -1,0 +1,364 @@
+% Compile with: latexmk -pdf main.tex
+% Can be edited/compiled online at https://letx.app
+\documentclass[10pt,landscape,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% Lato font setup (correct way to load Lato)
+\usepackage{lato}
+\renewcommand{\sfdefault}{\latofamily}
+\renewcommand{\familydefault}{\sfdefault}
+
+\usepackage[landscape,margin=0.25in,bottom=0.35in,top=0.25in,footskip=0.15in]{geometry}
+\usepackage{multicol}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,listings}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{amsmath,amssymb}
+\usepackage{listings}
+\usepackage{microtype}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{fontawesome5}
+
+% Strict letx.app spacing rules
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% Color Palette
+\definecolor{primary}{HTML}{0D9488}       % Teal Accent
+\definecolor{secondary}{HTML}{1E293B}     % Slate Dark Neutral
+\definecolor{lightneutral}{HTML}{F8FAFC}  % Page/Box light neutral
+\definecolor{bordercolor}{HTML}{E2E8F0}   % Slate 200
+\definecolor{highlight}{HTML}{E11D48}     % Crimson for worst-case/warnings
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primary,
+    filecolor=primary,      
+    urlcolor=primary,
+}
+
+% Custom Column Types
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+
+% Custom tcolorbox styles
+\newtcolorbox{topicbox}[2][]{
+  enhanced,
+  colback=lightneutral,
+  colframe=bordercolor,
+  coltitle=white,
+  fonttitle=\bfseries\small,
+  colbacktitle=secondary,
+  title={#2},
+  boxrule=0.6pt,
+  titlerule=0pt,
+  arc=3pt,
+  top=4pt,
+  bottom=4pt,
+  left=5pt,
+  right=5pt,
+  boxsep=1pt,
+  toptitle=3pt,
+  bottomtitle=3pt,
+  #1
+}
+
+\newtcolorbox{accentbox}[2][]{
+  enhanced,
+  colback=lightneutral,
+  colframe=primary!30,
+  coltitle=white,
+  fonttitle=\bfseries\small,
+  colbacktitle=primary,
+  title={#2},
+  boxrule=0.6pt,
+  titlerule=0pt,
+  arc=3pt,
+  top=4pt,
+  bottom=4pt,
+  left=5pt,
+  right=5pt,
+  boxsep=1pt,
+  toptitle=3pt,
+  bottomtitle=3pt,
+  #1
+}
+
+% Listings setup
+\lstset{
+  language=Python,
+  basicstyle=\ttfamily\scriptsize,
+  backgroundcolor=\color{lightneutral},
+  keywordstyle=\color{primary}\bfseries,
+  commentstyle=\color{gray},
+  stringstyle=\color{highlight},
+  breaklines=true,
+  frame=none,
+  showstringspaces=false,
+  aboveskip=0pt,
+  belowskip=0pt,
+  xleftmargin=0pt,
+  xrightmargin=0pt
+}
+
+% Page number styling in footer
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyfoot[R]{\color{gray}\scriptsize Page \thepage\ of 2}
+\fancyfoot[L]{\color{gray}\scriptsize LetX Algorithm \& Data Structures Cheatsheet}
+
+\begin{document}
+
+\begin{multicols*}{3}
+
+% --- HEADER BLOCK ---
+\begin{center}
+  \sffamily
+  {\fontsize{18}{22}\bfseries\color{secondary} ALGORITHMS \& DATA STRUCTURES} \\[2pt]
+  {\fontsize{9}{11}\bfseries\color{primary} THE ULTIMATE REFERENCE CHEATSHEET} \\[1pt]
+  \hrule width \linewidth height 0.6pt
+\end{center}
+\vspace{2pt}
+
+% --- DATA STRUCTURE COMPLEXITY ---
+\begin{accentbox}{\faTable~Data Structure Complexity}
+  \scriptsize
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabularx}{\linewidth}{@{} l *{4}{C} @{}}
+    \toprule
+    \textbf{Structure} & \textbf{Access} & \textbf{Search} & \textbf{Insert} & \textbf{Delete} \\
+    \midrule
+    Array / Vector & $\mathcal{O}(1)$ & $\mathcal{O}(n)$ & $\mathcal{O}(n)$ & $\mathcal{O}(n)$ \\
+    Singly-Linked & $\mathcal{O}(n)$ & $\mathcal{O}(n)$ & $\mathcal{O}(1)$ & $\mathcal{O}(1)$ \\
+    Doubly-Linked & $\mathcal{O}(n)$ & $\mathcal{O}(n)$ & $\mathcal{O}(1)$ & $\mathcal{O}(1)$ \\
+    Stack / Queue & $\mathcal{O}(n)$ & $\mathcal{O}(n)$ & $\mathcal{O}(1)$ & $\mathcal{O}(1)$ \\
+    Hash Table & -- & $\mathcal{O}(1)$ & $\mathcal{O}(1)$ & $\mathcal{O}(1)$ \\
+    BST (Avg) & $\mathcal{O}(\log n)$ & $\mathcal{O}(\log n)$ & $\mathcal{O}(\log n)$ & $\mathcal{O}(\log n)$ \\
+    BST (Worst) & $\mathcal{O}(n)$ & $\mathcal{O}(n)$ & $\mathcal{O}(n)$ & $\mathcal{O}(n)$ \\
+    AVL / Red-Black & $\mathcal{O}(\log n)$ & $\mathcal{O}(\log n)$ & $\mathcal{O}(\log n)$ & $\mathcal{O}(\log n)$ \\
+    \bottomrule
+  \end{tabularx}
+  \vspace{3pt}
+  \tiny\color{gray}*Note: Hash Table operations are $\mathcal{O}(n)$ worst-case due to collisions. BST degrades to $\mathcal{O}(n)$ if unbalanced.
+\end{accentbox}
+
+% --- CORE DATA STRUCTURES ---
+\begin{topicbox}{\faCode~Core Data Structures Notes}
+  \scriptsize
+  \begin{description}[leftmargin=3pt,itemsep=2pt,topsep=2pt,parsep=0pt]
+    \item[\color{primary}Singly-Linked List:] Nodes store value and \texttt{next} pointer. Efficient insertion/deletion at head ($\mathcal{O}(1)$), but linear lookup.
+    \item[\color{primary}Doubly-Linked List:] Nodes store \texttt{next} and \texttt{prev} pointers. Allows bidirectional traversal; $\mathcal{O}(1)$ deletion when node reference is given.
+    \item[\color{primary}Hash Table:] Key-value store using a hash function. Collisions resolved via Chaining (linked lists) or Open Addressing (probing).
+    \item[\color{primary}Binary Search Tree (BST):] Left child $<$ parent $\le$ right child. Inorder traversal yields sorted elements.
+    \item[\color{primary}AVL Tree:] Self-balancing BST where heights of two child subtrees differ by at most one. Uses rotations to rebalance.
+  \end{description}
+\end{topicbox}
+
+\columnbreak
+
+% --- SORTING COMPLEXITIES ---
+\begin{accentbox}{\faSortAmountDown~Sorting Algorithms Complexity}
+  \scriptsize
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabularx}{\linewidth}{@{} l *{4}{C} @{}}
+    \toprule
+    \textbf{Algorithm} & \textbf{Best} & \textbf{Average} & \textbf{Worst} & \textbf{Space} \\
+    \midrule
+    Quicksort & $\mathcal{O}(n\log n)$ & $\mathcal{O}(n\log n)$ & $\mathcal{O}(n^2)$ & $\mathcal{O}(\log n)$ \\
+    Mergesort & $\mathcal{O}(n\log n)$ & $\mathcal{O}(n\log n)$ & $\mathcal{O}(n\log n)$ & $\mathcal{O}(n)$ \\
+    Heapsort & $\mathcal{O}(n\log n)$ & $\mathcal{O}(n\log n)$ & $\mathcal{O}(n\log n)$ & $\mathcal{O}(1)$ \\
+    Bubble Sort & $\mathcal{O}(n)$ & $\mathcal{O}(n^2)$ & $\mathcal{O}(n^2)$ & $\mathcal{O}(1)$ \\
+    Insertion Sort & $\mathcal{O}(n)$ & $\mathcal{O}(n^2)$ & $\mathcal{O}(n^2)$ & $\mathcal{O}(1)$ \\
+    Radix Sort & $\mathcal{O}(nk)$ & $\mathcal{O}(nk)$ & $\mathcal{O}(nk)$ & $\mathcal{O}(n+k)$ \\
+    \bottomrule
+  \end{tabularx}
+\end{accentbox}
+
+% --- QUICKSORT IMPLEMENTATION ---
+\begin{topicbox}{\faCode~Quicksort (Lomuto Partition)}
+  \scriptsize Partition-based divide-and-conquer algorithm. Average-case optimal, but degrades to $\mathcal{O}(n^2)$ on sorted arrays with poor pivot choices.
+  \vspace{3pt}
+  \begin{lstlisting}
+def quicksort(arr, low, high):
+    if low < high:
+        p = partition(arr, low, high)
+        quicksort(arr, low, p - 1)
+        quicksort(arr, p + 1, high)
+
+def partition(arr, low, high):
+    pivot = arr[high]
+    i = low - 1
+    for j in range(low, high):
+        if arr[j] <= pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+    arr[i+1], arr[high] = arr[high], arr[i+1]
+    return i + 1
+  \end{lstlisting}
+\end{topicbox}
+
+\columnbreak
+
+% --- SEARCHING ALGORITHMS ---
+\begin{accentbox}{\faSearch~Searching Algorithms}
+  \scriptsize
+  \begin{description}[leftmargin=3pt,itemsep=2pt,topsep=2pt,parsep=0pt]
+    \item[\color{primary}Linear Search:] Check each element. $\mathcal{O}(n)$ time.
+    \item[\color{primary}Binary Search:] Half-interval search on sorted arrays. $\mathcal{O}(\log n)$ time, $\mathcal{O}(1)$ space.
+  \end{description}
+  \vspace{2pt}
+  \begin{lstlisting}
+def binary_search(arr, target):
+    low, high = 0, len(arr) - 1
+    while low <= high:
+        mid = (low + high) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            low = mid + 1
+        else:
+            high = mid - 1
+    return -1
+  \end{lstlisting}
+\end{accentbox}
+
+% --- GRAPH TRAVERSAL: BFS ---
+\begin{topicbox}{\faProjectDiagram~Breadth-First Search (BFS)}
+  \scriptsize Traverses level-by-level using a FIFO queue. Finds shortest path in unweighted graphs. Time: $\mathcal{O}(V + E)$, Space: $\mathcal{O}(V)$.
+  \vspace{3pt}
+  \begin{lstlisting}
+from collections import deque
+
+def bfs(graph, start):
+    visited = {start}
+    queue = deque([start])
+    while queue:
+        node = queue.popleft()
+        for neighbor in graph[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+  \end{lstlisting}
+\end{topicbox}
+
+\newpage
+
+% ==================== PAGE 2 ====================
+
+% --- GRAPH TRAVERSAL: DFS ---
+\begin{topicbox}{\faProjectDiagram~Depth-First Search (DFS)}
+  \scriptsize Traverses deep along paths using a recursion stack. Used for topological sorting and cycle detection. Time: $\mathcal{O}(V + E)$, Space: $\mathcal{O}(V)$.
+  \vspace{3pt}
+  \begin{lstlisting}
+def dfs(graph, node, visited=None):
+    if visited is None:
+        visited = set()
+    visited.add(node)
+    for neighbor in graph[node]:
+        if neighbor not in visited:
+            dfs(graph, neighbor, visited)
+    return visited
+  \end{lstlisting}
+\end{topicbox}
+
+% --- HEAPS & STACKS ---
+\begin{topicbox}{\faLayerGroup~Stack, Queue \& Heaps}
+  \scriptsize
+  \begin{description}[leftmargin=3pt,itemsep=2pt,topsep=2pt,parsep=0pt]
+    \item[\color{primary}Stack:] LIFO (Last-In-First-Out). Operations: Push/Pop are $\mathcal{O}(1)$. Used in function calls, backtracking.
+    \item[\color{primary}Queue:] FIFO (First-In-First-Out). Operations: Enqueue/Dequeue are $\mathcal{O}(1)$. Used in BFS, scheduling.
+    \item[\color{primary}Min-Heap / Max-Heap:] Complete binary tree where parent is always smaller/larger than children. Insertion/Extraction are $\mathcal{O}(\log n)$, Peek is $\mathcal{O}(1)$.
+  \end{description}
+\end{topicbox}
+
+\columnbreak
+
+% --- ADVANCED GRAPH ALGORITHMS ---
+\begin{accentbox}{\faNetworkWired~Advanced Graph Algorithms}
+  \scriptsize
+  \begin{description}[leftmargin=3pt,itemsep=2pt,topsep=2pt,parsep=0pt]
+    \item[\color{primary}Dijkstra's Algorithm:] Finds shortest path from single source in non-negative weighted graph. Uses Min-Priority Queue. Time: $\mathcal{O}((V + E)\log V)$.
+    \item[\color{primary}Bellman-Ford:] Finds shortest path, allows negative edge weights and detects negative cycles. Time: $\mathcal{O}(VE)$.
+    \item[\color{primary}Prim's \& Kruskal's:] Finds Minimum Spanning Tree (MST). Kruskal's uses Union-Find ($\mathcal{O}(E\log V)$); Prim's grows tree from vertex ($\mathcal{O}(E\log V)$).
+  \end{description}
+\end{accentbox}
+
+% --- DYNAMIC PROGRAMMING ---
+\begin{topicbox}{\faBrain~Dynamic Programming Principles}
+  \scriptsize
+  Solves complex problems by breaking them into overlapping subproblems, storing results (memoization/tabulation) to avoid recomputation.
+  \vspace{2pt}
+  
+  \textbf{0/1 Knapsack recurrence relation:}
+  \[ DP[i][w] = \max(DP[i-1][w], DP[i-1][w-w_i] + v_i) \]
+  
+  \begin{lstlisting}
+# 0/1 Knapsack - Space Optimized Tabulation
+def knapsack(W, weights, values, n):
+    dp = [0] * (W + 1)
+    for i in range(n):
+        for w in range(W, weights[i] - 1, -1):
+            dp[w] = max(dp[w], dp[w - weights[i]] + values[i])
+    return dp[W]
+  \end{lstlisting}
+\end{topicbox}
+
+\columnbreak
+
+% --- TREE ROTATIONS (AVL) ---
+\begin{topicbox}{\faTree~AVL Tree Rotations}
+  \scriptsize
+  AVL trees maintain a balance factor $|h_L - h_R| \le 1$. Restores balance using local transformations (rotations) in $\mathcal{O}(1)$ time.
+  \vspace{2pt}
+  \begin{lstlisting}
+def right_rotate(y):
+    x = y.left
+    T2 = x.right
+    # Perform rotation
+    x.right = y
+    y.left = T2
+    # Update heights
+    y.height = 1 + max(height(y.left), height(y.right))
+    x.height = 1 + max(height(x.left), height(x.right))
+    return x
+  \end{lstlisting}
+  \vspace{2pt}
+  \textbf{Four Rotation Cases:}
+  \begin{description}[leftmargin=3pt,itemsep=1pt,topsep=1pt,parsep=0pt]
+    \item[\color{primary}Left-Left (LL):] Single Right Rotation.
+    \item[\color{primary}Right-Right (RR):] Single Left Rotation.
+    \item[\color{primary}Left-Right (LR):] Left Rotate child, then Right Rotate parent.
+    \item[\color{primary}Right-Left (RL):] Right Rotate child, then Left Rotate parent.
+  \end{description}
+\end{topicbox}
+
+% --- BIT MANIPULATION TRICKS ---
+\begin{accentbox}{\faMicrochip~Bit Manipulation Tricks}
+  \scriptsize
+  Highly efficient operations performed directly on integer bits.
+  \vspace{3pt}
+  \renewcommand{\arraystretch}{1.1}
+  \begin{tabularx}{\linewidth}{@{} l@{\hspace{4mm}} X @{}}
+    \toprule
+    \textbf{Operation} & \textbf{Bitwise Expression} \\
+    \midrule
+    Set $i$-th bit & \texttt{x | (1 << i)} \\
+    Clear $i$-th bit & \texttt{x \& \textasciitilde(1 << i)} \\
+    Toggle $i$-th bit & \texttt{x \^{} (1 << i)} \\
+    Check $i$-th bit & \texttt{(x \& (1 << i)) != 0} \\
+    Clear lowest set bit & \texttt{x \& (x - 1)} \\
+    Get lowest set bit & \texttt{x \& (-x)} \\
+    \bottomrule
+  \end{tabularx}
+\end{accentbox}
+
+\end{multicols*}
+
+\end{document}

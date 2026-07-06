@@ -1,0 +1,263 @@
+% Compile online at https://letx.app
+\documentclass[11pt,letterpaper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{tgpagella}      % Elegant serif body font
+\usepackage{sourcesanspro}  % Clean sans-serif heading font
+\usepackage{geometry}
+\geometry{letterpaper, margin=0.9in, footskip=0.3in}
+\usepackage{xcolor}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[most]{tcolorbox}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+
+% --- siunitx Configuration ---
+\sisetup{
+    detect-all,
+    input-symbols = {* \textsuperscript{*} \textsuperscript{**} \textsuperscript{***}},
+}
+
+% --- Colors ---
+\definecolor{accent}{HTML}{1A5F7A}     % Sophisticated Deep Teal Accent
+\definecolor{darkbody}{HTML}{2B2B2B}   % Charcoal body text
+\definecolor{lightgray}{HTML}{F8FAFC}  % Soft grey for panel/background
+\definecolor{bordergray}{HTML}{E2E8F0} % Border gray
+
+% --- Global Text Formatting ---
+\AtBeginDocument{\color{darkbody}}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt plus 1.5pt minus 1pt}
+
+% --- Float Spacing Adjustments (to prevent empty space and keep pages tight) ---
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\textfloatsep}{12pt plus 2pt minus 3pt}
+\setlength{\intextsep}{10pt plus 2pt minus 2pt}
+
+% --- Header/Footer ---
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\addtolength{\headheight}{2pt}
+\fancyhead[L]{\sffamily\small\color{accent}\textbf{Statistical Analysis Report}}
+\fancyhead[R]{\sffamily\small\color{gray}Housing Canopy Study}
+\fancyfoot[C]{\sffamily\small\color{gray}\thepage}
+
+% --- Heading Styles ---
+\titleformat{\section}
+  {\normalfont\sffamily\large\bfseries\color{accent}}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\sffamily\normalsize\bfseries\color{accent}}
+  {\thesubsection}{1em}{}
+\titlespacing*{\section}{0pt}{8pt plus 2.5pt minus 1.5pt}{3pt plus 1pt minus 1pt}
+\titlespacing*{\subsection}{0pt}{6pt plus 2pt minus 1pt}{2pt plus 1pt minus 0.5pt}
+
+% --- Caption Styling ---
+\captionsetup{
+    labelfont={bf,sf,color=accent},
+    labelsep=period,
+    font=small,
+    margin=8pt
+}
+
+% --- Hyperref Setup ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=accent,
+    filecolor=accent,
+    urlcolor=accent,
+    citecolor=accent,
+    pdftitle={Housing Prices and Neighborhood Green Space: A Hedonic Regression Analysis},
+    pdfauthor={Jane Doe, PhD}
+}
+
+% --- Custom Environments ---
+\newtcolorbox{summarybox}{
+    colback=lightgray,
+    colframe=accent,
+    arc=4pt,
+    boxrule=0.5pt,
+    leftrule=3.5pt,
+    boxsep=4pt,
+    left=8pt,
+    right=8pt,
+    top=6pt,
+    bottom=6pt,
+    fonttitle=\sffamily\bfseries\color{accent},
+    title=Executive Summary
+}
+
+\begin{document}
+
+% --- Title Block ---
+\begin{center}
+    {\sffamily\Huge\bfseries\color{accent} Statistical Analysis Report} \\[0.25cm]
+    {\sffamily\large\bfseries The Impact of Neighborhood Canopy Cover on Residential Property Values} \\[0.4cm]
+    {\sffamily\normalsize \textbf{Author:} Jane Doe, PhD \quad \textbf{Date:} July 5, 2026 \quad \textbf{Dataset:} Metro Housing Study (2025)}
+\end{center}
+\vspace{0.05cm}
+\hrule height 1pt
+\vspace{0.25cm}
+
+\begin{summarybox}
+This report investigates the relationship between neighborhood canopy cover and residential property values using a hedonic pricing framework. Analyzing a sample of $N = \num{150}$ single-family homes, we estimate a multivariate linear regression model to isolate the effect of the Green Space Index (GSI) on median sales prices while controlling for property size and age. The OLS results indicate that a $1\%$ increase in canopy cover is associated with a \$\num{2.340} thousand (\$\num{2340}) increase in home value ($p < \num{0.001}$), holding other factors constant. The overall model explains approximately \num{78.4}\% of the variance in property values. These findings suggest that urban green infrastructure provides substantial positive economic externalities, supporting policy initiatives for neighborhood afforestation and park maintenance.
+\end{summarybox}
+
+\section{Introduction \& Research Question}
+Urban green infrastructure, such as tree canopy cover and public parks, is widely recognized for its environmental and psychological benefits. However, its economic valuation is often implicit rather than direct. In urban economics, the hedonic pricing method (Rosen, 1974) posits that the price of a heterogeneous good, such as residential property, is a function of its structural characteristics (e.g., size, age) and neighborhood environmental amenities. 
+
+While public investment in urban forestry is frequently justified by carbon sequestration and stormwater management, quantifying the capitalization of green space into housing prices provides crucial empirical evidence for municipal budgeting and local tax planning. 
+
+This study addresses the following primary research question:
+\begin{quote}
+\textit{To what extent does neighborhood green space cover influence residential property values, holding physical property characteristics constant?}
+\end{quote}
+
+We test the null hypothesis that neighborhood green space has no effect on property value ($H_0: \beta_1 = 0$) against the alternative hypothesis that it has a positive effect ($H_1: \beta_1 > 0$).
+
+\section{Data \& Methods}
+The data used in this analysis are drawn from the Metro Housing Study (2025), a random sample of $N = \num{150}$ single-family home transactions. The dataset includes sales prices and characteristics of properties sold within the metropolitan area.
+
+We specify a classical linear regression model to examine the determinants of house price:
+\begin{equation}
+\text{Price}_i = \beta_0 + \beta_1 \text{GSI}_i + \beta_2 \text{Size}_i + \beta_3 \text{Age}_i + \epsilon_i
+\end{equation}
+where for property $i$:
+\begin{itemize}[leftmargin=1.2cm, noitemsep]
+    \item[\textbf{Price}] is the sales price in thousands of USD (\$\num{1000}s).
+    \item[\textbf{GSI}] is the Green Space Index, measured as the percentage of land area within a \qty{500}{\metre} buffer covered by tree canopy or public parks.
+    \item[\textbf{Size}] is the finished interior area of the home in hundreds of square feet (\num{100}~sq.\,ft.).
+    \item[\textbf{Age}] is the age of the structure at the time of sale, in years.
+    \item[\textbf{$\epsilon$}] is the stochastic error term, assumed to be $\text{i.i.d.} \sim \mathcal{N}(0, \sigma^2)$.
+\end{itemize}
+
+\section{Exploratory Analysis}
+Table~\ref{tab:summary_stats} presents descriptive statistics for the variables used in the regression. The average property sales price in our sample is \$\num{482.35} thousand, with a minimum of \$\num{280.00} thousand and a maximum of \$\num{630.00} thousand. The Green Space Index exhibits significant variation, ranging from highly urbanized areas (\qty{12}{\percent} canopy) to heavily forested suburban neighborhoods (\qty{95}{\percent} canopy).
+
+\begin{table}[htbp]
+\centering
+\caption{Descriptive Summary Statistics ($N = 150$)}
+\label{tab:summary_stats}
+\sffamily\small
+\begin{tabular}{l S[table-format=3.2] S[table-format=2.2] S[table-format=3.2] S[table-format=3.2] l}
+\toprule
+\textbf{Variable} & {\textbf{Mean}} & {\textbf{SD}} & {\textbf{Min}} & {\textbf{Max}} & \textbf{Description} \\
+\midrule
+Price & 482.35 & 84.12 & 280.00 & 630.00 & Median sales price (\$1,000s) \\
+GSI & 54.20 & 24.65 & 12.00 & 95.00 & Green Space Index (\%) within 500m \\
+Size & 22.45 & 5.12 & 11.50 & 36.80 & Finished interior area (100 sq ft) \\
+Age & 28.40 & 14.80 & 1.00 & 65.00 & Age of the structure (years) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:scatter_plot} illustrates the bivariate relationship between the Green Space Index and home price. The scatter plot reveals a strong, positive, linear trend, suggesting that properties in areas with greater canopy cover command higher prices on average.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.85\textwidth,
+    height=5.2cm,
+    axis lines=left,
+    grid=both,
+    grid style={line width=.1pt, draw=bordergray},
+    major grid style={line width=.2pt, draw=bordergray},
+    xlabel={\sffamily Green Space Index (GSI, \%)},
+    ylabel={\sffamily Median House Price (\$1,000s)},
+    xmin=0, xmax=100,
+    ymin=150, ymax=700,
+    xtick={0,20,40,60,80,100},
+    ytick={200,300,400,500,600,700},
+    tick label style={font=\sffamily\small},
+    xlabel style={font=\sffamily\small, yshift=-2pt},
+    ylabel style={font=\sffamily\small, xshift=-4pt},
+    legend style={font=\sffamily\small, at={(0.05,0.95)}, anchor=north west, draw=bordergray, fill=white},
+]
+\addplot [
+    domain=10:95,
+    samples=100,
+    color=accent,
+    thick,
+    no markers,
+] {4.12*x + 234.5};
+\addlegendentry{OLS Bivariate Trend}
+
+\addplot[
+    only marks,
+    mark=*,
+    mark size=1.8pt,
+    color=accent!60,
+] coordinates {
+    (12, 280) (18, 310) (22, 290) (30, 360) (35, 340)
+    (40, 410) (45, 380) (50, 450) (55, 420) (60, 480)
+    (65, 460) (70, 520) (75, 490) (80, 560) (82, 540)
+    (85, 590) (88, 570) (90, 610) (92, 580) (95, 630)
+};
+\addlegendentry{Sample Properties (n = 20)}
+\end{axis}
+\end{tikzpicture}
+\caption{Scatter plot of Median House Price against Green Space Index with a OLS bivariate trend line.}
+\label{fig:scatter_plot}
+\end{figure}
+
+\section{Statistical Modeling}
+We estimate the econometric model using Ordinary Least Squares (OLS). Standard errors are robust to heteroskedasticity. The regression results are reported in Table~\ref{tab:regression_results}.
+
+\begin{table}[htbp]
+\centering
+\caption{OLS Regression Results (Dependent Variable: Price)}
+\label{tab:regression_results}
+\sffamily\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{l S[table-format=-3.3, table-space-text-post=\textsuperscript{***}] S[table-format=2.3] S[table-format=-2.3] S[table-format=1.3] S[table-format=-3.3] S[table-format=3.3]}
+\toprule
+\textbf{Variable} & {\textbf{Coeff. ($\hat{\beta}$)}} & {\textbf{Std. Error}} & {\textbf{$t$-stat}} & {\textbf{$p$-value}} & \multicolumn{2}{c}{\textbf{95\% Conf. Interval}} \\
+\cmidrule(lr){6-7}
+& & & & & {\textbf{Lower}} & {\textbf{Upper}} \\
+\midrule
+Intercept & 124.512\textsuperscript{***} & 18.240 & 6.826 & {< 0.001} & 88.762 & 160.262 \\
+Green Space Index & 2.340\textsuperscript{***} & 0.220 & 10.636 & {< 0.001} & 1.909 & 2.771 \\
+Property Size & 12.185\textsuperscript{***} & 0.850 & 14.335 & {< 0.001} & 10.519 & 13.851 \\
+Property Age & -1.420\textsuperscript{***} & 0.310 & -4.581 & {< 0.001} & -2.028 & -0.812 \\
+\bottomrule
+\addlinespace
+\multicolumn{7}{p{0.98\linewidth}}{\footnotesize \textit{Notes:} \textsuperscript{***} $p < 0.001$. Model $R^2 = 0.784$, Adjusted $R^2 = 0.779$, $N = 150$.}
+\end{tabular}
+\end{table}
+
+The model demonstrates strong explanatory power, with an $R^2$ of \num{0.784}, indicating that approximately \num{78.4}\% of the variance in housing prices is explained by the three predictors. Diagnostic tests indicate that multicollinearity is not a concern, as the Variance Inflation Factors (VIF) for all predictors are below \num{1.5}.
+
+\section{Results \& Interpretation}
+The coefficient estimates in Table~\ref{tab:regression_results} provide support for the hypothesized positive economic value of urban green spaces.
+
+The key coefficient of interest is $\hat{\beta}_1 = \num{2.340}$ (SE = \num{0.220}), which is statistically significant at the $p < 0.001$ level. This indicates that, holding property size and building age constant, a $1\%$ increase in the Green Space Index is associated with an average increase of \$\num{2.340} thousand (\$\num{2340}) in the sales price of a home. For instance, a property located in an area with a high canopy cover (\qty{75}{\percent}) is expected to sell for \$\num{93.60} thousand more than an identical property in a low canopy area (\qty{35}{\percent}).
+
+The control variables behave in accordance with urban economic theory:
+\begin{itemize}[leftmargin=1.0cm, noitemsep]
+    \item \textbf{Property Size:} Each additional \qty{100}{sq.ft.} of finished living space increases the sales price by \$\num{12.185} thousand (\$\num{12185}) on average, holding green space and age constant ($p < 0.001$).
+    \item \textbf{Property Age:} Each year of building age decreases the sales price by \$\num{1.420} thousand (\$\num{1420}) on average, reflecting physical depreciation and obsolescence ($p < 0.001$).
+\end{itemize}
+
+It is worth noting that the bivariate slope in Figure~\ref{fig:scatter_plot} is $\num{4.120}$, which is larger than the multivariate coefficient of $\num{2.340}$. This difference illustrates omitted variable bias: larger properties tend to be situated in leafier, higher-income neighborhoods. Omitting structural attributes causes the simple bivariate model to overestimate the amenity premium. By controlling for size and age, our multivariate model isolates the true partial effect of neighborhood green space.
+
+\section{Conclusion}
+This study has demonstrated a statistically significant and economically substantial capitalization of neighborhood canopy cover into residential property values. Controlling for property size and age, we find that a $10\%$ increase in neighborhood canopy cover yields an average property value appreciation of approximately \$\num{23400}. 
+
+These findings have direct implications for urban planning. The capitalization of environmental amenities into property values provides a clear economic justification for municipal investments in public parks and street trees, as these costs can be offset by increased property tax revenues. 
+
+Future research should incorporate spatial econometrics to control for spatial autocorrelation, and explore geographical variations in the value of green space across different metropolitan sub-markets.
+
+\end{document}

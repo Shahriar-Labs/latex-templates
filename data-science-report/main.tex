@@ -1,0 +1,266 @@
+% ---------------------------------------------------------
+% Data Science / Machine Learning Report Template
+% This template can be edited and compiled online at:
+% https://letx.app
+% ---------------------------------------------------------
+
+\documentclass[11pt, a4paper]{article}
+
+% Base packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+
+% Page layout and margins
+\usepackage[margin=1in, headheight=14pt]{geometry}
+\usepackage{fancyhdr}
+
+% Color definition
+\usepackage{xcolor}
+\definecolor{accent}{HTML}{0D9488}       % Modern teal
+\definecolor{accentdark}{HTML}{0F766E}   % Dark teal for headings
+\definecolor{neutraldark}{HTML}{1E293B}   % Slate 800 for body text
+\definecolor{neutrallight}{HTML}{F8FAFC}  % Slate 50 for code/summary backgrounds
+\definecolor{bordergray}{HTML}{E2E8F0}    % Slate 200 for lines/borders
+
+% Set body text color
+\color{neutraldark}
+
+% Graphics and plots
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+
+% Code snippets formatting
+\usepackage{listings}
+\lstset{
+    backgroundcolor=\color{neutrallight},
+    basicstyle=\ttfamily\small\color{neutraldark},
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    commentstyle=\color{gray},
+    keywordstyle=\color{accentdark}\bfseries,
+    numberstyle=\tiny\color{gray},
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    frame=tb,
+    rulecolor=\color{bordergray},
+    framerule=0.8pt
+}
+
+% Heading styling
+\usepackage{titlesec}
+\titleformat{\section}
+  {\color{accentdark}\normalfont\Large\bfseries}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\color{neutraldark}\normalfont\large\bfseries}
+  {\thesubsection}{1em}{}
+
+% Custom callout boxes
+\usepackage[many]{tcolorbox}
+\newtcolorbox{summarybox}{
+    colback=neutrallight,
+    colframe=accent,
+    arc=4pt,
+    outer arc=4pt,
+    boxrule=1.5pt,
+    left=12pt,
+    right=12pt,
+    top=10pt,
+    bottom=10pt,
+    title=\textbf{\color{accentdark}Executive Summary},
+    coltitle=accentdark,
+    attach title to upper,
+    after title={\par\medskip}
+}
+
+% Paragraph formatting rules from brief
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+% Header/Footer configuration
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\color{neutraldark!70}\sffamily LetX Analytics Lab | Research Report}
+\fancyhead[R]{\color{neutraldark!70}\sffamily July 2026}
+\fancyfoot[C]{\color{neutraldark!70}\sffamily Page \thepage}
+
+% Hyperlink configuration
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=accentdark,
+    filecolor=accentdark,      
+    urlcolor=accent,
+    citecolor=accentdark,
+}
+
+\begin{document}
+\thispagestyle{plain}
+
+% Elegant custom title block
+\begin{center}
+    {\color{accentdark}\Large\bfseries DATA SCIENCE RESEARCH REPORT} \\[0.4em]
+    {\Huge\bfseries Predicting Customer Churn in SaaS Platforms} \\[0.6em]
+    {\large\color{neutraldark!80} A Machine Learning Approach to Subscription Retention} \\[1.5em]
+    
+    \begin{tabular}{c @{\hspace{2cm}} c}
+        \textbf{Author:} Dr. Evelyn Vance & \textbf{Date:} July 5, 2026 \\
+        \textbf{Role:} Lead Data Scientist & \textbf{Organization:} LetX Analytics Lab
+    \end{tabular}
+    
+    \vspace{1em}
+    \color{bordergray}\hrule height 1pt
+\end{center}
+
+\vspace{1.5em}
+
+\begin{summarybox}
+    This report outlines the development of a predictive machine learning pipeline designed to identify at-risk enterprise customers for subscription-based SaaS platforms. By combining historical platform usage patterns with support ticket activity and contract metrics, our model successfully detects customers with high churn risk. We demonstrate that an optimized XGBoost classifier achieves an F1-score of $0.827$ and a recall of $0.804$, enabling customer success teams to initiate proactive retention workflows prior to contract expiration.
+\end{summarybox}
+
+\section{Problem Statement}
+Subscription-based Software-as-a-Service (SaaS) business models rely heavily on customer retention to sustain long-term recurring revenue. Customer churn—the rate at which subscribers cancel their subscriptions—directly impacts profitability. Acquiring a new customer is estimated to be five to twenty-five times more expensive than retaining an existing one. In this work, we address the challenge of predicting customer churn for a business-to-business (B2B) SaaS platform. By building a high-fidelity machine learning pipeline that analyzes historical usage logs, billing patterns, and customer support interactions, we identify at-risk customers before they churn, allowing customer success teams to deploy proactive retention campaigns.
+
+\section{Dataset \& Features}
+The dataset comprises $100,000$ active subscription records from a mid-market SaaS platform. Each record aggregates user activity over a rolling 90-day window, combining behavioral telemetry and transactional events.
+
+\begin{table}[h]
+\centering
+\begingroup
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\caption{Key Features in the Churn Prediction Dataset}
+\label{tab:features}
+\vspace{0.5em}
+\begin{tabularx}{\linewidth}{@{}>{\color{accentdark}\bfseries}l @{\hspace{8mm}} >{\raggedright\arraybackslash}X@{}}
+\toprule
+Feature Name & Description and Representation \\
+\midrule
+Tenure & The total number of months the customer has been active with the platform. \\
+Monthly Charges & The current monthly subscription billing amount in USD. \\
+Support Tickets & Number of customer support interactions opened in the last 30 days. \\
+Usage Intensity & Ratio of active days to total subscription age (calculated). \\
+Contract Type & Categorical field indicating Month-to-Month, 1-Year, or 2-Year commitments. \\
+\bottomrule
+\end{tabularx}
+\endgroup
+\end{table}
+
+\section{Exploratory Data Analysis}
+Exploratory analysis reveals a significant correlation between contract structures and churn rates. Customers on month-to-month contracts exhibit a churn rate of $38.4\%$, compared to only $6.2\%$ for annual contract holders. Furthermore, customer interactions with support function as a strong early indicator: churn rates escalate exponentially once a user files more than three support tickets within a single month.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.9\linewidth,
+    height=6cm,
+    xlabel={Number of Support Tickets (Last 30 Days)},
+    ylabel={Observed Churn Rate (\%)},
+    xmin=0, xmax=5,
+    ymin=0, ymax=100,
+    xtick={0,1,2,3,4,5},
+    ytick={0,20,40,60,80,100},
+    grid=both,
+    grid style={dashed, gray!20},
+    axis line style={gray!50},
+    thick,
+    every tick label/.style={font=\small},
+    label style={font=\small},
+    title={Impact of Support Volume on Customer Attrition},
+    title style={font=\bfseries\color{accentdark}, yshift=0.5em}
+]
+\addplot[
+    color=accent,
+    mark=*,
+    thick,
+    mark options={fill=white, stroke=accent, scale=1.2}
+] coordinates {
+    (0, 4.8)
+    (1, 7.5)
+    (2, 11.8)
+    (3, 24.2)
+    (4, 48.9)
+    (5, 75.1)
+};
+\end{axis}
+\end{tikzpicture}
+\caption{Observed relationship between monthly support tickets and churn probability.}
+\label{fig:churn_vs_tickets}
+\end{figure}
+
+\section{Methodology / Models}
+We developed a complete machine learning pipeline starting with feature extraction and encoding. Standard pre-processing involves scaling continuous features using robust scaling (to mitigate outlier impact) and one-hot encoding for categorical variables.
+
+We evaluated four candidate architectures:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Logistic Regression (L1-regularized)}: Serves as the linear baseline.
+    \item \textbf{Random Forest Classifier}: Non-linear ensemble model to capture interactive feature thresholds.
+    \item \textbf{XGBoost (Extreme Gradient Boosting)}: Gradient boosted trees optimized with early stopping.
+    \item \textbf{Multi-Layer Perceptron (MLP)}: A feed-forward neural network with two hidden layers ($64 \times 32$).
+\end{enumerate}
+
+\begin{lstlisting}[language=Python, caption={Feature engineering step for customer usage intensity.}]
+def compute_usage_intensity(df):
+    # Calculate ratio of active days to total subscription age
+    df['usage_intensity'] = df['active_days'] / (df['tenure_days'] + 1)
+    df['support_to_usage_ratio'] = df['support_tickets'] / (df['usage_intensity'] + 1e-5)
+    return df
+\end{lstlisting}
+
+\section{Results}
+The models were trained using an 80/20 train/test split. Cross-validation was performed on the training set using Stratified 5-Fold validation to account for class imbalance (churn rate is approximately $18.2\%$).
+
+\begin{table}[h]
+\centering
+\begingroup
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\caption{Performance Metrics Across Evaluated Models}
+\label{tab:results}
+\vspace{0.5em}
+\begin{tabular}{l c c c c}
+\toprule
+Model & Accuracy & Precision & Recall & F1-Score \\
+\midrule
+Logistic Regression & 0.812 & 0.745 & 0.612 & 0.672 \\
+Random Forest & 0.865 & 0.810 & 0.734 & 0.770 \\
+\textbf{XGBoost (Optimized)} & \textbf{0.898} & \textbf{0.852} & \textbf{0.804} & \textbf{0.827} \\
+Multi-Layer Perceptron & 0.874 & 0.822 & 0.761 & 0.790 \\
+\bottomrule
+\end{tabular}
+\endgroup
+\end{table}
+
+\section{Discussion}
+XGBoost outperformed the other models, yielding an F1-score of $0.827$. The high recall ($0.804$) indicates that the model successfully captures $80.4\%$ of actual churn events. From a business perspective, recall is critical: missing an at-risk customer (False Negative) has a significantly higher cost (loss of customer value) than reaching out to a customer who would not have churned (False Positive).
+
+Feature importance analysis showed that Contract Type (specifically Month-to-Month) and Tenure were the two most predictive features, followed closely by Support Tickets. This suggests that structural tenure issues and friction during customer onboarding are primary drivers of churn.
+
+\section{Conclusion \& Future Work}
+In this study, we built and validated a machine learning framework capable of predicting customer churn with high precision and recall. Deploying the XGBoost model to production is expected to reduce customer attrition by up to $15\%$ through targeted customer success outreach.
+
+Future work will focus on:
+\begin{itemize}[leftmargin=*]
+    \item Integrating dynamic time-series behavioral patterns (e.g. tracking change in usage frequency over the last 14 days rather than static 90-day averages).
+    \item Implementing natural language processing (NLP) on support ticket descriptions to extract sentiment as a feature.
+    \item Exploring causal inference techniques to determine whether specific interventions causally reduce churn.
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,321 @@
+% PhD Candidacy / Qualifying Exam Study Notes
+% Edit and compile online at https://letx.app
+% Compile: latexmk -pdf main.tex
+
+\documentclass[10pt, letterpaper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────────────
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage[dvipsnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+% ── Colors ────────────────────────────────────────────────────────────────────
+\definecolor{accent}{HTML}{2E5FA3}       % steel blue — one accent
+\definecolor{accentlight}{HTML}{EAF0FB}  % very pale blue tint
+\definecolor{neutral}{HTML}{4A4A4A}      % dark grey body
+\definecolor{rulecolor}{HTML}{BFCFE8}    % soft rule
+\definecolor{tipcolor}{HTML}{1A7A4A}     % green for exam tips
+\definecolor{tipbg}{HTML}{EAF7EF}
+\definecolor{defbg}{HTML}{F5F5F5}
+
+% ── Hyperref setup ────────────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks=true,
+  urlcolor=accent,
+  linkcolor=accent,
+  pdfauthor={PhD Candidate},
+  pdftitle={Candidacy Exam Study Notes}
+}
+
+% ── Section styling ───────────────────────────────────────────────────────────
+\titleformat{\section}
+  {\large\bfseries\color{accent}}
+  {}
+  {0pt}
+  {}
+  [\vspace{1pt}\textcolor{rulecolor}{\rule{\linewidth}{0.8pt}}\vspace{2pt}]
+
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{neutral}}
+  {}
+  {0pt}
+  {}
+
+\titlespacing{\section}{0pt}{10pt}{4pt}
+\titlespacing{\subsection}{0pt}{6pt}{2pt}
+
+% ── tcolorbox styles ──────────────────────────────────────────────────────────
+\tcbuselibrary{skins, breakable}
+
+% Key theorem / result box
+\newtcolorbox{keyresult}[1]{
+  enhanced,
+  breakable,
+  colback=accentlight,
+  colframe=accent,
+  fonttitle=\bfseries\small,
+  title={#1},
+  left=6pt, right=6pt, top=4pt, bottom=4pt,
+  arc=3pt,
+  boxrule=0.7pt,
+  toptitle=2pt, bottomtitle=2pt
+}
+
+% Definition box
+\newtcolorbox{defbox}[1]{
+  enhanced,
+  breakable,
+  colback=defbg,
+  colframe=neutral!40,
+  fonttitle=\bfseries\small\color{neutral},
+  title={#1},
+  left=6pt, right=6pt, top=4pt, bottom=4pt,
+  arc=3pt,
+  boxrule=0.5pt,
+  toptitle=2pt, bottomtitle=2pt
+}
+
+% Exam tip box
+\newtcolorbox{examtip}{
+  enhanced,
+  breakable,
+  colback=tipbg,
+  colframe=tipcolor,
+  fontupper=\small,
+  left=6pt, right=6pt, top=3pt, bottom=3pt,
+  arc=3pt,
+  boxrule=0.5pt,
+  overlay={
+    \node[anchor=west, font=\bfseries\small\color{tipcolor}]
+      at ([xshift=6pt]frame.north west) {\strut Exam Tip};
+  },
+  top=12pt
+}
+
+% ── Convenience macros ────────────────────────────────────────────────────────
+\newcommand{\term}[1]{\textbf{\color{accent}#1}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathcal{N}}
+\newcommand{\Lc}{\mathcal{L}}
+\newcommand{\indicator}[1]{\mathbf{1}[#1]}
+\newcommand{\bigO}[1]{\mathcal{O}\!\left(#1\right)}
+
+% ── List styling ──────────────────────────────────────────────────────────────
+\setlist[itemize]{leftmargin=1.4em, itemsep=1pt, topsep=2pt, parsep=0pt}
+\setlist[enumerate]{leftmargin=1.6em, itemsep=1pt, topsep=2pt, parsep=0pt}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+
+% ── Title block ───────────────────────────────────────────────────────────────
+\begin{tcolorbox}[
+  enhanced,
+  colback=accent,
+  coltext=white,
+  colframe=accent,
+  arc=4pt,
+  boxrule=0pt,
+  left=10pt, right=10pt, top=8pt, bottom=8pt
+]
+  {\large\bfseries PhD Candidacy Exam — Study Notes}\\[3pt]
+  {\normalsize Machine Learning \& Algorithms\ $\cdot$\ Computer Science}\\[2pt]
+  {\small\color{white!80!accent} Candidate: Arjun Mehta\quad
+   Advisor: Prof.\ Chen\quad
+   Exam Date: September 2025}
+\end{tcolorbox}
+
+\vspace{6pt}
+{\small\color{neutral}
+  Focus areas: \textbf{Statistical Learning Theory}\ $\cdot$\
+  \textbf{Optimization}\ $\cdot$\
+  \textbf{Probabilistic Graphical Models}\ $\cdot$\
+  \textbf{Algorithms \& Complexity}
+}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Statistical Learning Theory}
+
+\subsection{Overview}
+The PAC (Probably Approximately Correct) framework formalizes when and why empirical risk
+minimization generalizes. Key objects: hypothesis class $\mathcal{H}$, loss $\ell$,
+true risk $R(h)$, empirical risk $\hat{R}_n(h)$.
+
+\begin{keyresult}{Theorem (Hoeffding / Uniform Convergence)}
+For a finite class $|\mathcal{H}|<\infty$ and bounded loss
+$\ell\in[0,1]$, with probability at least $1-\delta$:
+\[
+  \sup_{h\in\mathcal{H}}\bigl|R(h)-\hat{R}_n(h)\bigr|
+  \;\le\; \sqrt{\frac{\ln|\mathcal{H}|+\ln(2/\delta)}{2n}}.
+\]
+The ERM solution $\hat{h}$ satisfies
+$R(\hat{h}) \le R(h^*) + 2\sqrt{\dfrac{\ln|\mathcal{H}|+\ln(2/\delta)}{2n}}$.
+\end{keyresult}
+
+\begin{defbox}{VC Dimension}
+The \term{VC dimension} $\mathrm{VC}(\mathcal{H})$ is the largest set size that
+$\mathcal{H}$ can \emph{shatter}. For binary classification with loss in $\{0,1\}$:
+\[
+  R(\hat{h})-R(h^*) = \bigO{\sqrt{\frac{d\ln(n/d)+\ln(1/\delta)}{n}}},
+  \quad d = \mathrm{VC}(\mathcal{H}).
+\]
+\end{defbox}
+
+\textbf{Outline:}
+\begin{itemize}
+  \item Bias–variance trade-off: $\E[\hat{R}] = \text{bias}^2 + \text{variance} + \sigma^2$
+  \item Rademacher complexity $\mathfrak{R}_n(\mathcal{H})$: tighter than VC for
+        specific function classes (e.g.\ linear classifiers with margin)
+  \item Structural risk minimization: balance $\hat{R}_n(h)$ with a complexity penalty
+  \item Double-descent phenomenon: overparameterized regime can still generalize
+\end{itemize}
+
+\begin{examtip}
+Committees often ask to \emph{derive} the union-bound generalization bound from scratch.
+Remember: apply Hoeffding per hypothesis, then union bound over $|\mathcal{H}|$, then
+set the RHS equal to $\delta$ and solve. Also know the sample complexity:
+$n \ge \dfrac{\ln|\mathcal{H}|+\ln(1/\delta)}{2\varepsilon^2}$.
+\end{examtip}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Convex Optimization}
+
+\subsection{Overview}
+Gradient-based methods minimize $f:\R^d\to\R$. Key properties: convexity,
+$L$-smoothness ($\|\nabla f(x)-\nabla f(y)\|\le L\|x-y\|$),
+$\mu$-strong convexity ($f(y)\ge f(x)+\nabla f(x)^\top(y-x)+\frac{\mu}{2}\|y-x\|^2$).
+
+\begin{keyresult}{Theorem (GD Convergence Rates)}
+With step size $\eta = 1/L$:
+\begin{align*}
+  \text{Convex, $L$-smooth:}\quad
+    &f(x_T)-f^* \le \frac{L\|x_0-x^*\|^2}{2T} = \bigO{1/T}\\[4pt]
+  \text{$\mu$-strongly convex, $L$-smooth:}\quad
+    &\|x_T-x^*\|^2 \le \left(1-\frac{\mu}{L}\right)^{\!T}\|x_0-x^*\|^2
+    \quad\text{(linear)}
+\end{align*}
+The ratio $\kappa = L/\mu$ is the \term{condition number}; ill-conditioned problems
+($\kappa\gg1$) converge slowly.
+\end{keyresult}
+
+\begin{defbox}{Stochastic Gradient Descent (SGD)}
+Use noisy gradient $g_t = \nabla f_{i_t}(x_t)$ where $i_t \sim \text{Uniform}([n])$.
+Under $\E[g_t\mid x_t]=\nabla f(x_t)$ and $\E[\|g_t\|^2]\le G^2$, with step
+$\eta_t = c/\sqrt{T}$:
+\[
+  \frac{1}{T}\sum_{t=1}^T \E[f(x_t)] - f^* = \bigO{\frac{G\|x_0-x^*\|}{\sqrt{T}}}.
+\]
+\end{defbox}
+
+\textbf{Acceleration \& Variants:}
+\begin{itemize}
+  \item \term{Nesterov momentum}: achieves $\bigO{1/T^2}$ for convex smooth $f$ —
+        optimal for first-order methods
+  \item \term{Adam}: adaptive per-coordinate learning rates; not always convergent
+        for convex $f$ but widely used
+  \item \term{Frank-Wolfe / Conditional Gradient}: projects onto convex set via
+        linear oracle; $\bigO{1/T}$ without matrix inversion
+\end{itemize}
+
+\begin{examtip}
+Know the \emph{lower bounds}: no first-order method can do better than
+$\Omega(1/T^2)$ for convex smooth problems (Nesterov lower bound). Be able to
+state why SGD has an $\bigO{1/\sqrt{T}}$ rate even for smooth strongly-convex
+objectives (variance term dominates).
+\end{examtip}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Probabilistic Graphical Models}
+
+\subsection{Overview}
+PGMs factorize a joint distribution $p(x_1,\ldots,x_n)$ using conditional
+independence encoded by a graph $\mathcal{G}$.
+
+\begin{defbox}{Bayesian Network \& Markov Network}
+\textbf{Bayesian net (DAG):}
+$p(\mathbf{x}) = \prod_{i} p(x_i \mid x_{\mathrm{pa}(i)})$, where pa$(i)$ are
+parents of node $i$. \\[2pt]
+\textbf{Markov network (undirected):}
+$p(\mathbf{x}) = \frac{1}{Z}\prod_{C\in\mathrm{cliques}} \psi_C(\mathbf{x}_C)$,\quad
+$Z = \sum_{\mathbf{x}}\prod_C \psi_C(\mathbf{x}_C)$ (partition function).
+\end{defbox}
+
+\begin{keyresult}{Belief Propagation (Sum-Product)}
+On a tree-structured factor graph, \emph{exact} marginals are computed in
+$\bigO{n \cdot |\mathcal{X}|^2}$ time via message passing:
+\[
+  \mu_{f\to x}(x) = \sum_{\sim x}\Bigl[f(\mathbf{x}_f)\prod_{y\in\mathrm{ne}(f)\setminus x}\mu_{y\to f}(y)\Bigr].
+\]
+On loopy graphs, Loopy BP is approximate but often effective in practice
+(e.g.\ turbo codes, MRFs for image segmentation).
+\end{keyresult}
+
+\textbf{Inference algorithms:}
+\begin{itemize}
+  \item Exact: Variable Elimination, Junction Tree ($\bigO{n\cdot|\mathcal{X}|^{w+1}}$,
+        $w$ = treewidth)
+  \item Approximate: Loopy BP, Mean-Field variational inference (minimize $\mathrm{KL}[q\|p]$),
+        MCMC (Gibbs sampling)
+  \item Latent variable models: EM algorithm maximizes $\Lc(\theta) = \E_q[\log p(\mathbf{x},\mathbf{z};\theta)]$
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\section{Algorithms \& Complexity}
+
+\subsection{Complexity Classes}
+$\mathbf{P}\subseteq\mathbf{NP}\subseteq\mathbf{PSPACE}$; whether $\mathbf{P}=\mathbf{NP}$
+is open. A language $L\in\mathbf{NP}$ iff there is a poly-time verifier. A problem is
+\term{NP-hard} if every NP problem reduces to it in polynomial time.
+
+\begin{keyresult}{Cook–Levin Theorem}
+\textsc{SAT} is NP-complete. By reduction, \textsc{3-SAT}, \textsc{Clique},
+\textsc{Vertex Cover}, \textsc{Independent Set}, \textsc{Hamiltonian Cycle} are
+all NP-complete. Approximability:
+\begin{itemize}[topsep=1pt]
+  \item \textsc{Vertex Cover}: $2$-approximation via maximal matching
+  \item \textsc{Set Cover}: $\ln n$-approximation via greedy (tight assuming $\mathbf{P}\ne\mathbf{NP}$)
+  \item \textsc{Max-Clique}: no poly-time $n^{1-\varepsilon}$-approximation (assuming ETH)
+\end{itemize}
+\end{keyresult}
+
+\begin{defbox}{Randomized Complexity}
+$\mathbf{BPP}$: poly-time randomized, error $\le 1/3$. $\mathbf{RP}$: one-sided error.
+$\mathbf{ZPP} = \mathbf{RP}\cap\mathrm{co\text{-}RP}$ (zero error, expected poly time).
+Inclusions: $\mathbf{P}\subseteq\mathbf{ZPP}\subseteq\mathbf{RP}\subseteq\mathbf{BPP}$;
+conjectured $\mathbf{BPP}=\mathbf{P}$.
+\end{defbox}
+
+\begin{examtip}
+To show NP-hardness: (1) choose a known NP-hard problem, (2) give a poly-time
+\emph{many-one reduction} from it to your problem, (3) show correctness in both
+directions. Common pitfall: reducing the wrong way (from your problem, not \emph{to} it).
+\end{examtip}
+
+% ══════════════════════════════════════════════════════════════════════════════
+\vspace{6pt}
+\noindent\textcolor{rulecolor}{\rule{\linewidth}{0.8pt}}
+{\small\bfseries\color{accent} Key References}\\[3pt]
+{\small
+\begin{enumerate}[leftmargin=1.8em, itemsep=1pt, topsep=0pt]
+  \item Shalev-Shwartz \& Ben-David. \textit{Understanding Machine Learning}. Cambridge, 2014.
+  \item Nesterov, Y. \textit{Introductory Lectures on Stochastic Optimization}. Springer, 2004.
+  \item Koller \& Friedman. \textit{Probabilistic Graphical Models}. MIT Press, 2009.
+  \item Sipser, M. \textit{Introduction to the Theory of Computation}, 3rd ed. Cengage, 2012.
+  \item Bartlett \& Mendelson. ``Rademacher and Gaussian Complexities.'' \textit{JMLR}, 3:463--482, 2002.
+\end{enumerate}
+}
+
+\end{document}

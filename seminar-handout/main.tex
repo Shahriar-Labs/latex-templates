@@ -1,0 +1,290 @@
+% ============================================================
+%  Seminar Handout — elegant 1–2 page template
+%  Edit & compile online at https://letx.app
+%  Engine: pdflatex  |  latexmk -pdf main.tex
+% ============================================================
+
+\documentclass[11pt,a4paper]{article}
+
+% ── Geometry ──────────────────────────────────────────────
+\usepackage[top=22mm,bottom=24mm,left=22mm,right=22mm]{geometry}
+
+% ── Typography ────────────────────────────────────────────
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+
+% ── Colour ────────────────────────────────────────────────
+\usepackage[dvipsnames,svgnames,x11names]{xcolor}
+\definecolor{accent}{HTML}{2D6A9F}   % steel blue — single accent
+\definecolor{accentbg}{HTML}{EBF3FB} % very pale blue — tinted boxes
+\definecolor{neutral}{HTML}{4A4A4A}  % body text
+\definecolor{rulecol}{HTML}{BBCCDD}  % hairlines
+
+% ── Layout helpers ────────────────────────────────────────
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+\usepackage{titlesec}
+\titleformat{\section}
+  {\color{accent}\large\bfseries}{}{0em}{}
+  [\vspace{1pt}\color{rulecol}\titlerule\vspace{2pt}]
+\titlespacing*{\section}{0pt}{10pt}{4pt}
+
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.4em, itemsep=1pt, topsep=3pt, parsep=0pt}
+\setlist[enumerate]{leftmargin=1.6em, itemsep=1pt, topsep=3pt, parsep=0pt}
+
+% ── Tables ────────────────────────────────────────────────
+\usepackage{tabularx}
+\usepackage{booktabs}
+\renewcommand{\arraystretch}{1.15}
+
+% ── Boxes ─────────────────────────────────────────────────
+\usepackage[most]{tcolorbox}
+
+\newtcolorbox{keybox}[1]{
+  colback=accentbg,
+  colframe=accent,
+  colbacktitle=accent,
+  coltitle=white,
+  fonttitle=\bfseries\small,
+  title={#1},
+  boxrule=0.5pt,
+  arc=3pt,
+  left=7pt, right=7pt, top=4pt, bottom=4pt,
+  titlerule=0pt,
+  toptitle=3pt, bottomtitle=3pt,
+  before upper={\setlength{\parskip}{3pt}\setlength{\parindent}{0pt}},
+}
+
+% ── Misc ──────────────────────────────────────────────────
+\usepackage{fontawesome5}
+\usepackage{amsmath}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  urlcolor=accent,
+  linkcolor=accent,
+  pdfauthor={Dr.\ Elena Vasquez},
+  pdftitle={Seminar Handout — The Transformer Architecture},
+}
+
+% ── Header macro ──────────────────────────────────────────
+\newcommand{\handoutheader}[5]{%
+  {\color{accent}\rule{\linewidth}{1.5pt}}\par\vspace{4pt}
+  {\fontsize{16}{19}\selectfont\bfseries\color{neutral}#2}\par\vspace{3pt}
+  \begingroup\small\color{neutral}
+    \faUniversity\enspace\textbf{#1}\quad
+    \faUser\enspace#3\quad
+    \faCalendar\enspace#4\quad
+    \faHashtag\enspace Session~#5
+  \endgroup\par\vspace{4pt}
+  {\color{accent}\rule{\linewidth}{0.6pt}}
+  \vspace{6pt}
+}
+
+% ── Discussion-question counter ───────────────────────────
+\newcounter{dqcount}
+\newcommand{\dq}[1]{%
+  \stepcounter{dqcount}%
+  \noindent
+  \makebox[1.8em][l]{\textbf{\color{accent}Q\thedqcount.}}%
+  #1\par\vspace{2pt}%
+}
+
+% ══════════════════════════════════════════════════════════
+\begin{document}
+\color{neutral}
+\pagestyle{plain}
+
+% ─── Header ───────────────────────────────────────────────
+\handoutheader%
+  {CS 482 — Advanced Machine Learning}%
+  {The Transformer Architecture: Attention Is All You Need}%
+  {Dr.\ Elena Vasquez}%
+  {9 July 2026}%
+  {6}
+
+% ─── Overview ─────────────────────────────────────────────
+\section{Overview}
+
+The \textbf{Transformer} (Vaswani et al., 2017) revolutionised sequence modelling
+by replacing recurrence entirely with \emph{attention mechanisms}, enabling
+massively parallel training and superior long-range dependency capture.
+Every major language model — BERT, GPT-4, T5, and beyond — is built on this backbone.
+
+% ─── Key Concepts ─────────────────────────────────────────
+\section{Key Concepts}
+
+\begin{keybox}{1\enspace Scaled Dot-Product Attention}
+Given queries \(Q\), keys \(K\), and values \(V\) (each a matrix of row-vectors),
+attention is:
+\[
+  \operatorname{Attention}(Q,K,V)
+  = \operatorname{softmax}\!\left(\frac{QK^{\top}}{\sqrt{d_k}}\right)V
+\]
+The \(\sqrt{d_k}\) scaling prevents vanishingly small softmax gradients when the
+embedding dimension is large.
+\end{keybox}
+
+\vspace{5pt}
+
+\begin{keybox}{2\enspace Multi-Head Attention (MHA)}
+Rather than a single attention function, MHA runs \(h\) heads in parallel on
+learned linear projections, then concatenates and re-projects:
+\[
+  \operatorname{MHA}(Q,K,V)
+  = \operatorname{Concat}(\mathrm{head}_1,\ldots,\mathrm{head}_h)\,W^{O}
+\]
+Different heads capture complementary relational patterns: syntactic agreement,
+coreference, positional proximity, etc.
+\end{keybox}
+
+\vspace{5pt}
+
+\begin{keybox}{3\enspace Positional Encoding}
+Attention is permutation-invariant, so position is injected via sinusoidal signals
+added to the input embeddings:
+\[
+  \mathrm{PE}_{(p,2i)}   = \sin\!\bigl(p/10000^{2i/d}\bigr),\qquad
+  \mathrm{PE}_{(p,2i+1)} = \cos\!\bigl(p/10000^{2i/d}\bigr)
+\]
+Modern variants (RoPE, ALiBi) modify attention scores directly for better
+length generalisation.
+\end{keybox}
+
+% ─── Worked Example / Diagram ─────────────────────────────
+\section{Encoder Block — Bird's-Eye View}
+
+\begin{center}
+\begin{tikzpicture}[
+  >=Latex,
+  node distance=5mm,
+  every node/.style={font=\small\color{neutral}},
+  box/.style={
+    draw=accent, fill=accentbg, rounded corners=3pt,
+    minimum width=58mm, minimum height=8.5mm, align=center,
+  },
+  addnode/.style={
+    draw=rulecol, fill=white, circle, inner sep=2pt, font=\footnotesize,
+  },
+]
+  \node[box] (mha)  {Multi-Head Self-Attention};
+  \node[addnode, above=of mha]  (a1) {$+$};
+  \node[box, above=of a1] (ff)  {Position-wise Feed-Forward \\ \footnotesize(Linear $\to$ ReLU $\to$ Linear)};
+  \node[addnode, above=of ff]   (a2) {$+$};
+
+  % vertical spine
+  \draw[->] ([yshift=-11mm]mha.south) -- (mha);
+  \draw[->] (mha) -- (a1);
+  \draw[->] (a1)  -- node[right=2pt]{\footnotesize Layer Norm} (ff);
+  \draw[->] (ff)  -- (a2);
+  \draw[->] (a2)  -- ++(0,9mm) node[above]{output \(z\)\quad\footnotesize Layer Norm};
+
+  % residual for MHA
+  \coordinate (in)  at ([yshift=-11mm]mha.south);
+  \draw[->] (in) -- ++(-28mm,0) |- (a1.west);
+
+  % residual for FF
+  \coordinate (mid) at ([xshift=-28mm]a1.west);
+  \draw[->] (mid) -- ([xshift=-28mm]a2.west) -- (a2.west);
+
+  % label
+  \node[right=3mm of mha, font=\footnotesize\itshape, color=neutral!70] {$\times 6$\,layers};
+\end{tikzpicture}
+\end{center}
+
+\textbf{Trace:} token embeddings enter the MHA sub-layer; a residual connection
+bypasses it; the sum is layer-normalised, fed into the feed-forward sub-layer,
+bypassed again, then layer-normalised to produce contextualised representation \(z\).
+
+\medskip
+\begin{center}\small
+\begin{tabularx}{0.82\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  \toprule
+  Hyperparameter & Transformer-Base value \\
+  \midrule
+  \(d_{\text{model}}\)   & 512 \\
+  \(h\) (heads)           & 8   \\
+  \(d_k = d_v\)           & 64  \\
+  \(d_{ff}\)              & 2048 \\
+  Encoder layers          & 6   \\
+  Total parameters        & 65\,M \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+% ─── Summary / Takeaways ──────────────────────────────────
+\section{Summary \& Takeaways}
+
+\begin{itemize}
+  \item Transformers replace recurrence with \textbf{self-attention},
+        enabling full parallelisation across sequence positions.
+  \item \textbf{Multi-head attention} lets the model jointly attend to
+        information from different representation sub-spaces.
+  \item \textbf{Positional encoding} is the sole source of sequential order
+        in the architecture — removing it makes the model bag-of-words.
+  \item Residual connections and \textbf{layer normalisation} stabilise
+        deep stacks and mitigate vanishing gradients.
+  \item The architecture scales predictably: more parameters + more data
+        + more compute $\Rightarrow$ log-linear performance gains (scaling laws).
+\end{itemize}
+
+% ─── Discussion Questions ─────────────────────────────────
+\section{Discussion Questions}
+
+\dq{Self-attention has \(\mathcal{O}(n^2)\) complexity in sequence length.
+What architectural modifications have been proposed to reduce this cost,
+and what trade-offs do they introduce?}
+
+\dq{BERT uses bidirectional encoder-only Transformers; GPT uses decoder-only
+models with causal masking. How do these choices shape the tasks each family
+excels at?}
+
+\dq{Attention weights are often cited as evidence of what the model ``focuses on.''
+Critically evaluate this claim: when does the interpretation hold, and when does
+it mislead?}
+
+\dq{Positional encodings are needed because attention is permutation-invariant.
+Could permutation invariance itself be \emph{exploited} as a feature in certain
+application domains?}
+
+% ─── Further Reading ──────────────────────────────────────
+\section{Further Reading}
+
+\begin{enumerate}[label=\textcolor{accent}{\arabic*.}]
+  \item Vaswani, A.\ et al.\ (2017). \textit{Attention Is All You Need}.
+        \textit{NeurIPS 30}.
+        \href{https://arxiv.org/abs/1706.03762}{arXiv:1706.03762}
+
+  \item Devlin, J.\ et al.\ (2019). \textit{BERT: Pre-training of Deep Bidirectional
+        Transformers for Language Understanding}. \textit{NAACL-HLT}.
+        \href{https://arxiv.org/abs/1810.04805}{arXiv:1810.04805}
+
+  \item Kaplan, J.\ et al.\ (2020). \textit{Scaling Laws for Neural Language Models}.
+        \href{https://arxiv.org/abs/2001.08361}{arXiv:2001.08361}
+
+  \item Tay, Y.\ et al.\ (2022). \textit{Efficient Transformers: A Survey}.
+        \textit{ACM Computing Surveys} 55(6).
+        \href{https://arxiv.org/abs/2009.06732}{arXiv:2009.06732}
+
+  \item Elhage, N.\ et al.\ (2021). \textit{A Mathematical Framework for
+        Transformer Circuits}. Anthropic.
+        \href{https://transformer-circuits.pub/2021/framework/index.html}{transformer-circuits.pub}
+\end{enumerate}
+
+\vspace{6pt}
+{\color{rulecol}\rule{\linewidth}{0.4pt}}
+{\footnotesize\color{neutral!70}%
+  \faInfoCircle\enspace
+  Prepared for CS\,482 — Advanced Machine Learning,
+  Westbrook University. Corrections: \href{mailto:e.vasquez@westbrook.edu}{e.vasquez@westbrook.edu}.%
+}
+
+\end{document}

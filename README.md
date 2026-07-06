@@ -1,6 +1,6 @@
 # LetX LaTeX Template Library
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Templates](https://img.shields.io/badge/templates-44-success.svg)](https://letx.app/templates)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Templates](https://img.shields.io/badge/templates-54-success.svg)](https://letx.app/templates)
 
 **Free, elegant, open-source LaTeX templates** — research papers, CVs, grants, lab reports, posters, letters and more. Every template is compile-tested and designed to look genuinely good, not plain.
 
@@ -101,6 +101,29 @@
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/academic-career/research-statement"><img src="research-statement/preview.png" width="240" alt="Research Statement"></a><br><b>Research Statement</b><br><a href="https://letx.app/templates/academic-career/research-statement">Open in LetX</a> · <a href="./research-statement">Source</a></td>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/academic-career/teaching-statement"><img src="teaching-statement/preview.png" width="240" alt="Teaching Statement"></a><br><b>Teaching Statement</b><br><a href="https://letx.app/templates/academic-career/teaching-statement">Open in LetX</a> · <a href="./teaching-statement">Source</a></td>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/academic-career/thesis-proposal"><img src="thesis-proposal/preview.png" width="240" alt="Thesis Proposal"></a><br><b>Thesis Proposal</b><br><a href="https://letx.app/templates/academic-career/thesis-proposal">Open in LetX</a> · <a href="./thesis-proposal">Source</a></td>
+</tr>
+</table>
+
+### Assignments & Course Work
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/assignments/algorithm-cheatsheet"><img src="algorithm-cheatsheet/preview.png" width="240" alt="Algorithm Cheatsheet"></a><br><b>Algorithm Cheatsheet</b><br><a href="https://letx.app/templates/assignments/algorithm-cheatsheet">Open in LetX</a> · <a href="./algorithm-cheatsheet">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/assignments/annotated-bibliography"><img src="annotated-bibliography/preview.png" width="240" alt="Annotated Bibliography"></a><br><b>Annotated Bibliography</b><br><a href="https://letx.app/templates/assignments/annotated-bibliography">Open in LetX</a> · <a href="./annotated-bibliography">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/assignments/candidacy-exam-notes"><img src="candidacy-exam-notes/preview.png" width="240" alt="Candidacy Exam Notes"></a><br><b>Candidacy Exam Notes</b><br><a href="https://letx.app/templates/assignments/candidacy-exam-notes">Open in LetX</a> · <a href="./candidacy-exam-notes">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/assignments/data-science-report"><img src="data-science-report/preview.png" width="240" alt="Data Science Report"></a><br><b>Data Science Report</b><br><a href="https://letx.app/templates/assignments/data-science-report">Open in LetX</a> · <a href="./data-science-report">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/assignments/engineering-design-document"><img src="engineering-design-document/preview.png" width="240" alt="Engineering Design Document"></a><br><b>Engineering Design Document</b><br><a href="https://letx.app/templates/assignments/engineering-design-document">Open in LetX</a> · <a href="./engineering-design-document">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/assignments/math-lecture-notes"><img src="math-lecture-notes/preview.png" width="240" alt="Math Lecture Notes"></a><br><b>Math Lecture Notes</b><br><a href="https://letx.app/templates/assignments/math-lecture-notes">Open in LetX</a> · <a href="./math-lecture-notes">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/assignments/math-proof-portfolio"><img src="math-proof-portfolio/preview.png" width="240" alt="Math Proof Portfolio"></a><br><b>Math Proof Portfolio</b><br><a href="https://letx.app/templates/assignments/math-proof-portfolio">Open in LetX</a> · <a href="./math-proof-portfolio">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/assignments/reading-list-syllabus"><img src="reading-list-syllabus/preview.png" width="240" alt="Course Syllabus"></a><br><b>Course Syllabus</b><br><a href="https://letx.app/templates/assignments/reading-list-syllabus">Open in LetX</a> · <a href="./reading-list-syllabus">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/assignments/seminar-handout"><img src="seminar-handout/preview.png" width="240" alt="Seminar Handout"></a><br><b>Seminar Handout</b><br><a href="https://letx.app/templates/assignments/seminar-handout">Open in LetX</a> · <a href="./seminar-handout">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/assignments/statistics-report"><img src="statistics-report/preview.png" width="240" alt="Statistics Report"></a><br><b>Statistics Report</b><br><a href="https://letx.app/templates/assignments/statistics-report">Open in LetX</a> · <a href="./statistics-report">Source</a></td>
 </tr>
 </table>
 

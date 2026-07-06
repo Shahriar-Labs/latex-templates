@@ -1,0 +1,344 @@
+% Engineering Design Document Template
+% Editable and compilable online at https://letx.app
+% Compile with: latexmk -pdf main.tex
+
+\documentclass[11pt, a4paper]{article}
+
+%% ── Packages ────────────────────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[
+  top=22mm, bottom=22mm, left=24mm, right=24mm,
+  headheight=14pt
+]{geometry}
+\usepackage{xcolor}
+\usepackage{amsmath}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, backgrounds}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+\usepackage{hyperref}
+\usepackage{microtype}
+\usepackage{fancyhdr}
+\usepackage{fontawesome5}
+
+%% ── Colours ─────────────────────────────────────────────────────────────────
+\definecolor{accent}{HTML}{2563EB}    % Blue-600
+\definecolor{accentlt}{HTML}{DBEAFE}  % Blue-100
+\definecolor{neutral}{HTML}{374151}   % Gray-700
+\definecolor{muted}{HTML}{6B7280}     % Gray-500
+\definecolor{rule}{HTML}{E5E7EB}      % Gray-200
+
+%% ── Typography / spacing ─────────────────────────────────────────────────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\hypersetup{
+  colorlinks=true, urlcolor=accent, linkcolor=accent,
+  pdftitle={Event Stream Processor --- Engineering Design Document},
+  pdfauthor={Maya Thornton}
+}
+
+%% ── Section headings (titlesec) ─────────────────────────────────────────────
+\titleformat{\section}
+  {\large\bfseries\color{accent}}
+  {\thesection.}{0.6em}{}
+  [\vspace{1pt}{\color{rule}\hrule height 0.6pt}\vspace{4pt}]
+
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{neutral}}
+  {\thesubsection}{0.5em}{}
+
+\titlespacing*{\subsection}{0pt}{10pt}{3pt}
+
+%% ── Header / Footer ──────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\small\color{muted}Event Stream Processor \textendash{} EDD}
+\fancyhead[R]{\small\color{muted}v1.2 \textperiodcentered{} DRAFT}
+\fancyfoot[C]{\small\color{muted}\thepage}
+
+%% ── Helper macros ────────────────────────────────────────────────────────────
+\newcommand{\kvrow}[2]{#1 & #2 \\[2pt]}
+
+\newcommand{\badge}[2]{%
+  \tikz[baseline=(b.base)]\node[
+    fill=#1!15, draw=#1!40, rounded corners=2pt,
+    inner xsep=4pt, inner ysep=1.5pt,
+    font=\footnotesize\bfseries\color{#1}
+  ](b){#2};%
+}
+
+%% ── Title block macro ────────────────────────────────────────────────────────
+\newcommand{\doctitle}[2]{%
+  \begin{tcolorbox}[
+    enhanced, sharp corners,
+    colback=accentlt, colframe=accent,
+    leftrule=4pt, toprule=0pt, bottomrule=0pt, rightrule=0pt,
+    boxsep=0pt, left=10pt, right=10pt, top=10pt, bottom=10pt,
+    before skip=0pt, after skip=14pt
+  ]
+    {\Large\bfseries\color{accent}#1}\\[4pt]
+    {\normalsize\color{neutral}#2}
+  \end{tcolorbox}%
+}
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\begin{document}
+\thispagestyle{fancy}
+
+%% ── Title ────────────────────────────────────────────────────────────────────
+\doctitle{Event Stream Processor}{Engineering Design Document}
+
+%% ── Document control ─────────────────────────────────────────────────────────
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  \kvrow{Author}{Maya Thornton, Staff Engineer \textendash{} Platform Reliability}
+  \kvrow{Reviewers}{Carlos Ib\'{a}\~{n}ez (Architecture), Priya Mehta (Security), Dan Lee (SRE)}
+  \kvrow{Version}{1.2}
+  \kvrow{Status}{\badge{accent}{DRAFT} \quad Pending Architecture Review}
+  \kvrow{Date}{2026-07-05}
+  \kvrow{Confluence}{\href{https://wiki.example.com/edd/esp-1.2}{\texttt{EDD-ESP-1.2}}}
+\end{tabularx}
+
+\vspace{8pt}
+{\color{rule}\hrule height 0.6pt}
+\vspace{8pt}
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\section{Overview \& Goals}
+
+The \textbf{Event Stream Processor (ESP)} is a horizontally scalable microservice
+responsible for ingesting, filtering, transforming, and routing high-throughput
+event streams from internal producers (mobile clients, IoT sensors, backend
+services) to downstream consumers (analytics warehouse, alerting engine,
+third-party webhooks).
+
+\textbf{Goals:}
+\begin{itemize}[leftmargin=1.4em, itemsep=2pt, topsep=3pt]
+  \item Handle $\geq 500{,}000$ events/sec sustained with ${<}\,10\,\mathrm{ms}$ p99 latency.
+  \item Guarantee at-least-once delivery with idempotent consumer support.
+  \item Provide a declarative routing DSL for schema-validated event pipelines.
+  \item Achieve zero-downtime rolling deploys and automated canary promotion.
+\end{itemize}
+
+\textbf{Non-goals:} Stateful aggregations (owned by Analytics Service);
+long-term event storage (owned by the Data Lake).
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\section{Requirements}
+
+\subsection{Functional}
+
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+  \toprule
+  \textbf{ID} & \textbf{Requirement} \\
+  \midrule
+  F-01 & Accept events via REST (\texttt{/v1/ingest}) and gRPC (\texttt{EventIngester.Publish}). \\[2pt]
+  F-02 & Validate event envelopes against a registered Protobuf or JSON Schema. \\[2pt]
+  F-03 & Route events to one or more Kafka topics based on configurable filter expressions. \\[2pt]
+  F-04 & Apply transformation plugins (masking, enrichment, deduplication) in declared order. \\[2pt]
+  F-05 & Expose a web UI for pipeline authoring and live event-trace debugging. \\[2pt]
+  F-06 & Publish routing metrics (throughput, error rate, lag) to Prometheus. \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Non-Functional}
+
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+  \toprule
+  \textbf{ID} & \textbf{Category} & \textbf{Requirement} \\
+  \midrule
+  NF-01 & Performance   & $\leq 10\,\mathrm{ms}$ p99 ingest latency at 500\,k\,ev/s. \\[2pt]
+  NF-02 & Availability  & 99.95\% monthly uptime; graceful degradation under backpressure. \\[2pt]
+  NF-03 & Scalability   & Horizontal autoscale 2--64 pods; stateless design. \\[2pt]
+  NF-04 & Security      & mTLS between all services; PII fields masked before Kafka write. \\[2pt]
+  NF-05 & Observability & Structured JSON logs; distributed traces (OpenTelemetry). \\[2pt]
+  NF-06 & Compliance    & GDPR: event TTL $\leq 90$ days enforced at Kafka topic level. \\
+  \bottomrule
+\end{tabularx}
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\section{System Architecture}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance = 6mm and 10mm,
+  box/.style  = {
+    draw=neutral, fill=white, rounded corners=4pt,
+    minimum width=26mm, minimum height=9mm,
+    font=\small\bfseries, align=center, inner sep=4pt
+  },
+  source/.style = {box, draw=muted, fill=rule, font=\small},
+  proc/.style   = {box, draw=accent, fill=accentlt, text=accent},
+  sink/.style   = {box, draw=neutral, fill=white},
+  arr/.style    = {-Stealth, thick, color=neutral},
+  lbl/.style    = {font=\scriptsize\color{muted}, midway, above=1pt},
+  every node/.append style={text=neutral}
+]
+
+\node[source] (mobile)  {Mobile Clients};
+\node[source, below=of mobile]  (iot)    {IoT Sensors};
+\node[source, below=of iot]     (svc)    {Backend Svcs};
+
+\node[proc, right=16mm of iot] (ingest) {Ingestion\\Gateway};
+
+\node[proc, right=16mm of ingest] (proc) {ESP Core\\Processor};
+
+\node[sink, right=16mm of proc]  (kafka) {Kafka\\Cluster};
+
+\node[sink, right=14mm of kafka, yshift=9mm]  (dw)    {Data\\Warehouse};
+\node[sink, right=14mm of kafka]              (alert) {Alerting\\Engine};
+\node[sink, right=14mm of kafka, yshift=-9mm] (hook)  {Webhooks};
+
+\node[proc, below=10mm of proc]  (schema) {Schema\\Registry};
+
+\draw[arr] (mobile.east) -- (ingest.north west);
+\draw[arr] (iot.east)    -- (ingest.west);
+\draw[arr] (svc.east)    -- (ingest.south west);
+
+\draw[arr] (ingest.east) -- node[lbl]{events} (proc.west);
+
+\draw[arr, <->] (proc.south) -- node[right, font=\scriptsize\color{muted}]{validate} (schema.north);
+
+\draw[arr] (proc.east)  -- node[lbl]{routed} (kafka.west);
+
+\draw[arr] (kafka.east) -- (dw.west);
+\draw[arr] (kafka.east) -- (alert.west);
+\draw[arr] (kafka.east) -- (hook.west);
+
+\begin{scope}[on background layer]
+  \node[draw=rule, dashed, rounded corners=3pt, inner sep=5pt,
+        fit=(mobile)(iot)(svc),
+        label={[font=\scriptsize\color{muted}]above:Producers}] {};
+  \node[draw=rule, dashed, rounded corners=3pt, inner sep=5pt,
+        fit=(dw)(alert)(hook),
+        label={[font=\scriptsize\color{muted}]above:Consumers}] {};
+\end{scope}
+
+\end{tikzpicture}
+\end{center}
+
+The \textbf{Ingestion Gateway} terminates TLS, authenticates producers (API key /
+service account), and forwards validated raw events to the \textbf{ESP Core
+Processor} over an internal gRPC stream. The Core Processor evaluates declarative
+routing rules, applies transformation plugins, and publishes to \textbf{Kafka}. The
+\textbf{Schema Registry} (Confluent-compatible) is consulted on every event type;
+unknown schemas are rejected with \texttt{422 Unprocessable Entity}.
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\section{Detailed Design}
+
+\subsection{Routing DSL}
+
+Pipelines are declared in YAML and compiled to a binary filter tree at startup:
+
+\begin{tcolorbox}[
+  enhanced, sharp corners,
+  colback=gray!5, colframe=rule, boxrule=0.5pt,
+  fontupper=\small\ttfamily,
+  left=6pt, right=6pt, top=4pt, bottom=4pt,
+  before skip=4pt, after skip=4pt
+]
+pipeline: iot-telemetry-v2\\
+\phantom{xx}filters:\\
+\phantom{xxxx}- field: event\_type\\
+\phantom{xxxxxxxx}eq: sensor.reading\\
+\phantom{xxxx}transforms: [mask\_pii, add\_region]\\
+\phantom{xxxx}route\_to: kafka://telemetry.raw
+\end{tcolorbox}
+
+\subsection{Transformation Plugin API}
+
+Plugins implement the \texttt{Transform} interface (Go):
+
+\begin{tcolorbox}[
+  enhanced, sharp corners,
+  colback=gray!5, colframe=rule, boxrule=0.5pt,
+  fontupper=\small\ttfamily,
+  left=6pt, right=6pt, top=4pt, bottom=4pt,
+  before skip=4pt, after skip=4pt
+]
+type Transform interface \{\\
+\phantom{xxxx}Name() string\\
+\phantom{xxxx}Apply(ctx context.Context, e *Event) (*Event, error)\\
+\}
+\end{tcolorbox}
+
+Plugins are loaded as Go plugins at startup; hot-reload requires a rolling
+restart. Execution order follows declaration order in the pipeline YAML.
+A plugin returning an error triggers the dead-letter-queue (DLQ) path.
+
+\subsection{State \& Persistence}
+
+ESP Core is intentionally stateless. Offset management is delegated to Kafka
+consumer groups. Pipeline configuration is stored in etcd with watch-based
+live propagation ($<\!500\,\mathrm{ms}$ propagation SLO).
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\section{Interfaces \& APIs}
+
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+  \toprule
+  \textbf{Endpoint} & \textbf{Method} & \textbf{Description} \\
+  \midrule
+  \texttt{/v1/ingest}             & POST   & Ingest a single event or batch ($\leq 1000$). \\[2pt]
+  \texttt{/v1/pipelines}          & GET    & List all declared pipelines. \\[2pt]
+  \texttt{/v1/pipelines/\{id\}}   & PUT    & Create or update a pipeline definition. \\[2pt]
+  \texttt{/v1/pipelines/\{id\}}   & DELETE & Drain and deactivate a pipeline. \\[2pt]
+  \texttt{/v1/trace/\{event\_id\}} & GET   & Retrieve the routing trace for a past event. \\[2pt]
+  \texttt{/metrics}               & GET    & Prometheus text exposition (internal only). \\[2pt]
+  \texttt{/healthz}               & GET    & Liveness probe; \texttt{/readyz} for readiness. \\
+  \bottomrule
+\end{tabularx}
+
+\vspace{4pt}
+\textbf{gRPC:} \texttt{EventIngester.Publish(stream EventEnvelope) returns (AckResponse)}
+\textendash{} bidirectional streaming; backpressure via flow-control window.
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\section{Testing \& Validation}
+
+\begin{itemize}[leftmargin=1.4em, itemsep=3pt, topsep=3pt]
+  \item \textbf{Unit tests (Go):} $\geq 85\%$ line coverage enforced in CI; table-driven
+        tests for all filter/transform combinations.
+  \item \textbf{Integration tests:} Docker Compose environment with Kafka, etcd, and a
+        mock Schema Registry; contract-tested via Pact.
+  \item \textbf{Load test:} \texttt{k6} scenario at 600\,k\,ev/s for 10\,min;
+        p99 latency assertion ${<}\,10\,\mathrm{ms}$; automated via Argo Workflows post-deploy.
+  \item \textbf{Chaos:} Gremlin fault injection \textendash{} pod kill, 200\,ms network delay,
+        Kafka broker eviction \textendash{} verifying at-least-once delivery is maintained.
+  \item \textbf{Security scan:} \texttt{govulncheck} + Trivy image scan in every PR;
+        high/critical CVEs block merge.
+\end{itemize}
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\section{Risks}
+
+\begin{tabularx}{\linewidth}{@{}llllX@{}}
+  \toprule
+  \textbf{ID} & \textbf{Risk} & \textbf{Likelihood} & \textbf{Impact} & \textbf{Mitigation} \\
+  \midrule
+  R-01 & Plugin ABI instability   & Medium & High     &
+        Pin Go plugin build tags; integration-test every plugin in CI. \\[3pt]
+  R-02 & etcd watch storm         & Low    & Medium   &
+        Jitter propagation; circuit-breaker on watch re-subscribe. \\[3pt]
+  R-03 & Kafka lag spike          & Medium & High     &
+        Auto-scale consumers; DLQ with exponential backoff replay. \\[3pt]
+  R-04 & Schema Registry outage   & Low    & High     &
+        Local LRU cache (5\,min TTL); fail-open configurable per pipeline. \\[3pt]
+  R-05 & PII leakage in traces    & Low    & Critical &
+        Trace data redacted by \texttt{mask\_pii} before storage; field-level ACLs. \\
+  \bottomrule
+\end{tabularx}
+
+\end{document}
