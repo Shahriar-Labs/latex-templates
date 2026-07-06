@@ -1,0 +1,197 @@
+% LetX Grant Proposal Template
+% Can be edited/compiled online at https://letx.app
+
+\documentclass[11pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{charter}
+\usepackage[margin=1in]{geometry}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{amsmath,amssymb}
+\usepackage{microtype}
+\usepackage{colortbl}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+
+% Define Colors
+\definecolor{accent}{HTML}{005A70}       % Restrained Deep Teal accent
+\definecolor{neutral-dark}{HTML}{2D3748}  % Charcoal for readable text
+\definecolor{neutral-light}{HTML}{F8FAFC} % Soft grey background
+\definecolor{border-grey}{HTML}{E2E8F0}
+
+% Typography and Layout
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+
+% Hyperref setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=accent,
+    filecolor=accent,      
+    urlcolor=accent,
+    citecolor=accent,
+}
+
+% Heading formatting using titlesec
+\titleformat{\section}{\color{accent}\normalfont\Large\bfseries}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\color{accent}\normalfont\large\bfseries}{\thesubsection}{0.5em}{}
+\titleformat{\subsubsection}{\color{accent}\normalfont\normalsize\bfseries}{\thesubsubsection}{0.5em}{}
+
+\titlespacing*{\section}{0pt}{12pt plus 4pt minus 2pt}{6pt plus 2pt minus 1pt}
+\titlespacing*{\subsection}{0pt}{10pt plus 3pt minus 2pt}{4pt plus 1pt minus 1pt}
+\titlespacing*{\subsubsection}{0pt}{8pt plus 2pt minus 1pt}{3pt plus 1pt minus 1pt}
+
+% Custom list styling
+\setlist[itemize]{leftmargin=1.5em, topsep=2pt, itemsep=2pt, parsep=2pt}
+\setlist[enumerate]{leftmargin=1.5em, topsep=2pt, itemsep=2pt, parsep=2pt}
+
+% Header and Footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.0pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyfoot[C]{\thepage}
+\fancyfoot[R]{\color{gray}\small Project Description}
+\fancyfoot[L]{\color{gray}\small NSF CNS Proposal}
+
+\begin{document}
+\color{neutral-dark}
+
+% Title Block
+\begin{center}
+    {\color{accent}\LARGE\bfseries Collaborative Research: Robust and Verifiable Reinforcement Learning in Safety-Critical Cyber-Physical Systems} \\[1.2em]
+    {\large\bfseries NSF Directorate for Computer and Information Science and Engineering (CISE)} \\[0.3em]
+    {\large\bfseries Division of Computer and Network Systems (CNS)} \\[1.5em]
+    \textbf{Project Description}
+\end{center}
+\vspace{0.5em}
+{\color{accent}\hrule height 1.5pt}
+\vspace{1.5em}
+
+\section{Overview}
+Modern cyber-physical systems (CPS)---ranging from autonomous vehicles to smart power grids---increasingly rely on deep reinforcement learning (RL) to make decisions in dynamic, high-dimensional environments. Despite their empirical success, deep RL policies lack formal safety guarantees. They are prone to catastrophic failures when encountering out-of-distribution scenarios or adversarial disturbances. This proposal outlines a novel framework to bridge the gap between empirical data-driven learning and formal control theory.
+
+The goal of the proposed research is to develop a unified framework for \textbf{Robust and Verifiable Reinforcement Learning (RV-RL)} that guarantees safety during both the learning phase and the deployment phase. Our approach leverages control barrier functions (CBFs) as a mathematical foundation to constrain the learning agent's search space, ensuring that safety invariants are never violated. 
+
+\section{Intellectual Merit}
+The intellectual merit of the proposed research lies in three key scientific contributions:
+\begin{enumerate}
+    \item \textbf{Synthesizing Neural Control Barrier Certificates:} We will develop a self-supervised method to learn neural barrier certificates directly from system trajectories, circumventing the need for analytical control models.
+    \item \textbf{Safe Exploration via Differentiable Projections:} We will introduce a differentiable projection layer into the policy network, mapping unconstrained actor outputs to safety-preserving control actions.
+    \item \textbf{Verifiable Sim-to-Real Transfer:} We will establish robust generalization bounds that account for model discrepancies between simulation and hardware deployments, guaranteeing safety despite bounded model mismatches.
+\end{enumerate}
+
+By integrating control-theoretic barrier certificates directly into the policy optimization loop, this research addresses a fundamental trade-off between optimization performance and safety constraints.
+
+\section{Broader Impacts}
+The broader impacts of this project cover educational integration, open-source tool development, and industrial technology transfer:
+\begin{itemize}
+    \item \textbf{Educational Outreach:} The Principal Investigator (PI) will design a new graduate curriculum on ``Formal Methods in Autonomous Systems'' and recruit underrepresented undergraduate students through the university's Summer Research Experience program.
+    \item \textbf{Open-Source Software:} We will release \texttt{SafeRL-Suite}, an open-source, PyTorch-based benchmarking environment for evaluating safe RL algorithms on complex physical control tasks.
+    \item \textbf{Industrial Collaboration:} The PI will collaborate with local autonomous driving startups to transfer the developed algorithms to hardware testbeds, accelerating the adoption of safe AI in commercial transportation.
+\end{itemize}
+
+\section{Research Plan}
+The proposed research is organized into three interconnected research thrusts over a three-year period, as detailed below.
+
+\subsection{Learning Safety-Preserving Control Barrier Certificates}
+To establish safety guarantees without relying on accurate analytical system models, we formulate the learning of control barrier certificates as an optimization problem. Let the system dynamics be represented by the discrete-time relation $x_{t+1} = f(x_t, u_t)$. We define a neural barrier candidate $h_\theta(x)$ parameterized by weights $\theta$. The certificate condition is defined as:
+\begin{equation}
+    h_\theta(x_{t+1}) - h_\theta(x_t) \ge -\gamma h_\theta(x_t), \quad \forall x_t \in \mathcal{X}
+\end{equation}
+where $\gamma \in (0, 1]$ represents the recovery rate. We will design loss functions that penalize violations of this inequality over state trajectories, training $h_\theta(x)$ concurrently with the policy network.
+
+\subsection{Robust Policy Optimization with Formal Constraints}
+Using the learned barrier certificates, we formulate a safety filter that wraps around any standard RL agent. The policy output $\pi(x)$ is projected onto the set of safe controls $\mathcal{C}(x)$ defined by the barrier certificate:
+\begin{equation}
+    u^* = \arg\min_u \|u - \pi(x)\|^2_2 \quad \text{s.t.} \quad \nabla h(x)^T f(x, u) \ge -\gamma h(x)
+\end{equation}
+This projection is formulated as a quadratic program (QP) that can be solved differentiably inside the policy network, allowing end-to-end backpropagation of the policy gradient through the safety layer.
+
+\subsection{Hardware-in-the-Loop Validation on Autonomous Ground Vehicles}
+We will validate our framework on a custom fleet of scale-model 1/10th autonomous ground vehicles (AGVs) equipped with LiDAR, depth cameras, and onboard Jetson Orin processing units. The validation scenarios will include obstacle avoidance in dynamic environments and multi-agent intersection coordination.
+
+\subsection{Project Management, Timeline, and Milestones}
+The research activities will proceed according to the schedule in Table~\ref{tab:timeline}.
+
+\begin{table}[h]
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\centering
+\caption{Timeline and Milestones for the proposed project (Y1--Y3).}
+\label{tab:timeline}
+\vspace{0.5em}
+\begin{tabularx}{\textwidth}{p{3.8cm} X X X}
+\toprule
+\rowcolor{neutral-light} \textbf{Research Thrust} & \textbf{Year 1} & \textbf{Year 2} & \textbf{Year 3} \\
+\midrule
+\textbf{Thrust 1: Safe RL} & Formulate differentiable safety projection layers. & Implement scalable QP solvers for real-time control. & Extend formulation to multi-agent environments. \\
+\rowcolor{neutral-light} \textbf{Thrust 2: Certificates} & Train neural barrier candidate networks. & Verify certificate robustness under disturbances. & Derive formal generalizability bounds. \\
+\textbf{Thrust 3: Validation} & Build 1/10th AGV scale testbed. & Validate single-agent obstacle avoidance. & Validate multi-agent intersection scenarios. \\
+\rowcolor{neutral-light} \textbf{Dissemination} & Launch \texttt{SafeRL-Suite} open repository. & Publish intermediate results at conferences. & Host workshop on Safe Autonomy at RSS/ICRA. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Results from Prior NSF Support}
+\textbf{PI Smith: Award IIS-2201948 (Total: \$450,000, Period: 2022--2025).} \\
+\textit{Title: Data-Driven Formal Verification of Cyber-Physical Systems.}
+
+\textbf{Intellectual Merit:} The prior project developed data-driven techniques for learning Lyapunov and barrier functions from noisy execution traces. Key results included the first algorithm to synthesize verified control policies for hybrid dynamical systems using deep learning, leading to a 35\% reduction in verification time compared to traditional semi-definite programming (SDP) methods.
+
+\textbf{Broader Impacts:} The award supported two PhD dissertations and three undergraduate research projects. The PI developed a middle-school robotics module that was integrated into the local school district's STEM curriculum, reaching over 400 students.
+
+\textbf{Publications resulting from this award:}
+\begin{enumerate}[label={[\arabic*]}]
+    \item Smith, J., and Doe, A. ``Synthesis of Neural Barrier Certificates for Nonlinear Control Systems.'' \textit{IEEE Transactions on Automatic Control}, 68(4), 2105--2118, 2023.
+    \item Smith, J., Johnson, K., and Doe, A. ``Safe Exploration in Model-Free Reinforcement Learning via Barrier Envelopes.'' \textit{Proceedings of the International Conference on Robotics and Automation (ICRA)}, 2024.
+\end{enumerate}
+
+\section{Budget Summary}
+A summary of the requested budget is provided in Table~\ref{tab:budget}, supporting one PI (one month of summer salary per year) and two Graduate Research Assistants.
+
+\begin{table}[h]
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\centering
+\caption{Budget Summary (Direct and Indirect Costs).}
+\label{tab:budget}
+\vspace{0.5em}
+\begin{tabularx}{\textwidth}{X r r r r}
+\toprule
+\rowcolor{neutral-light} \textbf{Category} & \textbf{Year 1 (\$)} & \textbf{Year 2 (\$)} & \textbf{Year 3 (\$)} & \textbf{Total (\$)} \\
+\midrule
+Senior Personnel (PI Summer Salary) & 18,500 & 19,055 & 19,627 & 57,182 \\
+Graduate Research Assistants (2 GRA) & 64,000 & 65,920 & 67,898 & 197,818 \\
+Fringe Benefits (PI \& GRAs) & 19,800 & 20,394 & 21,006 & 61,200 \\
+Equipment (Onboard Jetson & 12,000 & 0 & 0 & 12,000 \\
+Travel (Conferences, Workshops) & 5,000 & 5,500 & 6,000 & 16,500 \\
+Other Direct Costs (Publications, Fees) & 4,500 & 4,500 & 4,500 & 13,500 \\
+\midrule
+Total Direct Costs & 123,800 & 115,369 & 119,031 & 358,200 \\
+Indirect Costs (F\&A, 52\% MTDC) & 64,376 & 59,992 & 61,896 & 186,264 \\
+\midrule
+\rowcolor{neutral-light} \textbf{Total Proposal Budget} & \textbf{188,176} & \textbf{175,361} & \textbf{180,927} & \textbf{544,464} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{thebibliography}{9}
+\bibitem{cbf_original}
+A. Ames, X. Xu, J. Grizzle and P. Tabuada, ``Control barrier function based quadratic programs with application to adaptive cruise control,'' \textit{IEEE Transactions on Automatic Control}, vol. 62, no. 8, pp. 3861-3876, 2017.
+
+\bibitem{safe_rl_survey}
+L. Gu, J. Smith and J. Kober, ``A survey of safe reinforcement learning in robotics,'' \textit{Annual Review of Control, Robotics, and Autonomous Systems}, vol. 5, pp. 411-435, 2022.
+
+\bibitem{neural_barrier}
+S. Zhao, X. Zhou, and H. Wang, ``Safe control of unknown systems via neural barrier functions,'' \textit{International Conference on Machine Learning (ICML)}, pp. 1104-1115, 2023.
+
+\bibitem{sim_to_real}
+K. Johnson and J. Smith, ``Sim-to-real transfer of safe neural policies under parameter uncertainty,'' \textit{IEEE Robotics and Automation Letters}, vol. 9, no. 2, pp. 890-897, 2024.
+\end{thebibliography}
+
+\end{document}

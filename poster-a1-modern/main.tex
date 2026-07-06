@@ -1,0 +1,319 @@
+% ============================================================
+%  Modern A1 Academic Conference Poster — letx.app
+%  Edit & compile online at https://letx.app
+%  Engine : pdflatex   Build: latexmk -pdf main.tex
+% ============================================================
+\documentclass[25pt,a1paper,portrait,margin=0mm,innermargin=15mm,blockverticalspace=15mm,colspace=15mm]{tikzposter}
+
+% ── Packages ────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,positioning,calc}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{fontawesome5}
+\usepackage{setspace}
+
+% ── Tasteful Color Palette ──────────────────────────────────
+\definecolor{AccentColor}{HTML}{0F766E}   % Deep Teal (academic, elegant)
+\definecolor{BgPage}{HTML}{F8FAFC}        % Off-white / light slate tint
+\definecolor{BgBlock}{HTML}{FFFFFF}       % Clean white block backgrounds
+\definecolor{TextDark}{HTML}{0F172A}      % Near-black (slate 900) for body text
+\definecolor{TextMuted}{HTML}{475569}     % Slate 600 for minor details
+\definecolor{RuleGray}{HTML}{E2E8F0}      % Slate 200 for rules and borders
+\definecolor{HighlightColor}{HTML}{D97706}% Amber 600 for important callouts
+
+% ── Theme and Overrides ──────────────────────────────────────
+\usetheme{Simple}
+\usecolorstyle{Default}
+
+\colorlet{backgroundcolor}{BgPage}
+\colorlet{framecolor}{AccentColor}
+\colorlet{titlebgcolor}{AccentColor}
+\colorlet{titlefgcolor}{white}
+\colorlet{blocktitlebgcolor}{AccentColor}
+\colorlet{blocktitlefgcolor}{white}
+\colorlet{blockbodybgcolor}{BgBlock}
+\colorlet{blockbodyfgcolor}{TextDark}
+
+% ── Block style ──────────────────────────────────────────────
+\defineblockstyle{PosterBlock}{
+  titlewidthscale=1, bodywidthscale=1,
+  titleleft, titleoffsetx=0pt, titleoffsety=0pt,
+  bodyoffsetx=0pt, bodyoffsety=0pt,
+  bodyverticalshift=0pt, roundedcorners=6pt,
+  linewidth=1pt, titleinnersep=10pt, bodyinnersep=16pt
+}{
+  \draw[color=blocktitlebgcolor, fill=blocktitlebgcolor,
+        rounded corners=6pt, line width=1pt]
+    (blocktitle.south west) rectangle (blocktitle.north east);
+  \draw[color=RuleGray, fill=blockbodybgcolor,
+        rounded corners=6pt, line width=0.8pt]
+    (blockbody.south west) rectangle (blockbody.north east);
+}
+\useblockstyle{PosterBlock}
+
+% ── pgfplots style ───────────────────────────────────────────
+\pgfplotsset{
+  posterstyle/.style={
+    width=\linewidth,
+    height=9.5cm,
+    grid=major,
+    grid style={line width=0.5pt, draw=RuleGray},
+    axis line style={AccentColor, line width=1.2pt},
+    tick style={AccentColor},
+    tick label style={font=\footnotesize\sffamily, color=TextDark},
+    label style={font=\small\sffamily\bfseries, color=TextDark},
+    legend style={
+      font=\footnotesize\sffamily,
+      fill=BgBlock, draw=RuleGray,
+      rounded corners=3pt,
+      line width=0.8pt
+    },
+    every axis plot/.append style={line width=1.2pt},
+  }
+}
+
+% ── Title Customization ──────────────────────────────────────
+\title{Deep Heterogeneous Graph Learning for Scalable Drug--Target Interaction Prediction}
+\author{Elena Marchetti\textsuperscript{1}\quad Kenji Watanabe\textsuperscript{1,2}\quad Fatima Al-Rashidi\textsuperscript{3}\quad Samuel Okonkwo\textsuperscript{1}}
+\institute{\textsuperscript{1}Dept. of Computational Biology, ETH Z\"{u}rich\quad \textsuperscript{2}RIKEN Center for Advanced Intelligence Project\quad \textsuperscript{3}KAUST}
+
+\makeatletter
+\settitle{
+  \centering
+  \color{titlefgcolor}
+  \begin{minipage}{0.95\textwidth}
+    \centering
+    {\fontsize{46}{54}\selectfont\bfseries \@title \par}
+    \vspace{8mm}
+    {\fontsize{22}{28}\selectfont \@author \par}
+    \vspace{4mm}
+    {\fontsize{16}{20}\selectfont \@institute \par}
+  \end{minipage}
+}
+\makeatother
+
+% Logos overlayed onto corners using remember picture, overlay
+\titlegraphic{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \node[draw=white, rounded corners=4pt, minimum width=3.8cm, minimum height=2cm, 
+          line width=1.2pt, fill=white!12!AccentColor, text=white, 
+          font=\footnotesize\sffamily, anchor=north west] 
+          at ($(current page.north west)+(25mm,-22mm)$) {ETH Z\"{u}rich};
+    \node[draw=white, rounded corners=4pt, minimum width=3.8cm, minimum height=2cm, 
+          line width=1.2pt, fill=white!12!AccentColor, text=white, 
+          font=\footnotesize\sffamily, anchor=north east] 
+          at ($(current page.north east)+(-25mm,-22mm)$) {RIKEN};
+  \end{tikzpicture}%
+}
+
+\tikzposterlatexaffectionproofoff
+
+% ── Document ─────────────────────────────────────────────────
+\begin{document}
+
+\maketitle[width=0.95\textwidth, titletotopverticalspace=12mm, titletoblockverticalspace=12mm]
+
+\begin{columns}
+
+  % ═══════════════════════════════════════════════════════════
+  %  COLUMN 1
+  % ═══════════════════════════════════════════════════════════
+  \column{0.33}
+
+  \block{Introduction}{
+    Drug--target interaction (DTI) prediction is a cornerstone of modern computer-aided drug discovery. By identifying potential therapeutic candidates computationally, researchers can prioritize compounds for wet-lab validation, reducing screening costs by over \textcolor{HighlightColor}{\textbf{80\%}}.
+    
+    \vspace{10pt}
+    \textbf{Key Challenges in Existing Approaches:}
+    \begin{itemize}[leftmargin=1.5em, itemsep=4pt, label=\textcolor{AccentColor}{\faAngleRight}]
+      \item \textbf{Data Sparsity:} Known interactions cover only a tiny fraction of the chemical-protein space.
+      \item \textbf{Modality Gaps:} Three-dimensional structures are unavailable for over 60\% of target proteins.
+      \item \textbf{Generalization:} Models struggle with out-of-distribution drug classes and novel proteins.
+    \end{itemize}
+    
+    \vspace{10pt}
+    \textbf{Our Methodology (HeteroGDTI):}
+    \begin{itemize}[leftmargin=1.5em, itemsep=4pt, label=\textcolor{AccentColor}{\faAngleRight}]
+      \item We model DTI as a heterogeneous link prediction task on a multi-relational knowledge graph.
+      \item A multi-layer heterogeneous graph transformer learns node embeddings from biochemical features.
+      \item Cross-modal attention fuses sequence-based SMILES descriptors with protein language model representations.
+    \end{itemize}
+  }
+
+  \block{Methods}{
+    \textbf{Heterogeneous Graph Formulation} \\
+    We construct a multi-relational graph $\mathcal{G} = (\mathcal{V}, \mathcal{E})$ comprising four node types: drugs ($\mathcal{V}_d$), proteins ($\mathcal{V}_p$), diseases ($\mathcal{V}_{ds}$), and pathways ($\mathcal{V}_{pw}$).
+    
+    \vspace{8pt}
+    \textbf{Feature Encoding}
+    \begin{itemize}[leftmargin=1.5em, itemsep=3pt, label=\textcolor{AccentColor}{\faAngleRight}]
+      \item \textbf{Drugs:} 300-dimensional Morgan fingerprints combined with ChemBERTa transformer representations.
+      \item \textbf{Proteins:} Pre-trained ESM-2 (650M parameter) protein language model embeddings (1280-d).
+      \item \textbf{Diseases \& Pathways:} Node2Vec embeddings trained on the Unified Medical Language System (UMLS).
+    \end{itemize}
+    
+    \vspace{8pt}
+    \textbf{Heterogeneous Message Passing} \\
+    The representation $\mathbf{h}_v^{(\ell)}$ of node $v$ at layer $\ell$ is computed by aggregating relation-specific messages:
+    {\footnotesize
+    \[
+      \mathbf{h}_v^{(\ell)} = \sigma \Bigl( \mathbf{W}_{\phi(v)}^{(\ell)} \mathbf{h}_v^{(\ell-1)} + \sum_{r \in \mathcal{R}} \sum_{u \in \mathcal{N}_r(v)} \alpha_{u,v}^r \mathbf{W}_r^{(\ell)} \mathbf{h}_u^{(\ell-1)} \Bigr)
+    \]
+    }
+    where $\mathcal{R}$ denotes relation types, and $\alpha_{u,v}^r$ is the relation-aware attention weight.
+
+    \vspace{12pt}
+    \centering
+    \begin{tikzpicture}[
+        node distance=0.8cm and 1.2cm,
+        every node/.style={font=\footnotesize\sffamily},
+        box/.style={draw=AccentColor, fill=AccentColor!8, rounded corners=4pt,
+                    minimum height=1.2cm, minimum width=2.6cm,
+                    text=TextDark, align=center, line width=1pt},
+        specialbox/.style={draw=AccentColor, fill=AccentColor!15, rounded corners=4pt,
+                    minimum height=1.2cm, minimum width=8cm,
+                    text=TextDark, align=center, line width=1.2pt},
+        predbox/.style={draw=HighlightColor, fill=HighlightColor!15, rounded corners=4pt,
+                    minimum height=1.2cm, minimum width=4.5cm,
+                    text=TextDark, align=center, line width=1.2pt},
+        arr/.style={-stealth, AccentColor, line width=1.2pt}
+      ]
+      \node[box] (drug) {Drug\\Encoder};
+      \node[box, right=of drug] (prot) {Protein\\Encoder};
+      \node[box, right=of prot] (dis) {Disease\\Encoder};
+      \node[specialbox, below=of prot, yshift=-0.2cm] (hetero) {HeteroGDTI Graph Layers ($L=4$)};
+      \node[predbox, below=of hetero] (pred) {Interaction Predictor (MLP)};
+      
+      \draw[arr] (drug.south) -- ++(0,-0.5) -| (hetero.north west);
+      \draw[arr] (prot.south) -- (hetero.north);
+      \draw[arr] (dis.south) -- ++(0,-0.5) -| (hetero.north east);
+      \draw[arr] (hetero.south) -- (pred.north);
+    \end{tikzpicture}
+    \vspace{4pt}
+    \footnotesize\textit{Figure 1: End-to-end information flow in the HeteroGDTI model.}
+  }
+
+  % ═══════════════════════════════════════════════════════════
+  %  COLUMN 2
+  % ═══════════════════════════════════════════════════════════
+  \column{0.34}
+
+  \block{Results}{
+    \textbf{Performance Comparison on Benchmark Datasets} \\
+    We evaluate our model against state-of-the-art DTI methods on BindingDB and Davis datasets.
+    
+    \vspace{8pt}
+    \begin{center}
+      \begin{tikzpicture}
+        \begin{axis}[
+          posterstyle,
+          ybar,
+          bar width=14pt,
+          symbolic x coords={DeepDTI, GraphDTA, MolTrans, AttentionDTA, HeteroGDTI},
+          xtick=data,
+          x tick label style={rotate=25, anchor=east, font=\footnotesize\sffamily},
+          ymin=0.75, ymax=1.02,
+          ytick={0.75, 0.80, 0.85, 0.90, 0.95, 1.00},
+          ylabel={AUC-ROC},
+          enlarge x limits=0.15,
+          legend pos=north west,
+          nodes near coords,
+          nodes near coords style={
+            font=\tiny\sffamily\bfseries,
+            color=TextDark,
+            /pgf/number format/.cd, fixed, precision=3
+          },
+        ]
+          \addplot[fill=AccentColor!70, draw=AccentColor] coordinates {
+            (DeepDTI,0.831) (GraphDTA,0.862) (MolTrans,0.874) (AttentionDTA,0.889) (HeteroGDTI,0.961)
+          };
+          \addplot[fill=AccentColor!30, draw=AccentColor] coordinates {
+            (DeepDTI,0.821) (GraphDTA,0.849) (MolTrans,0.863) (AttentionDTA,0.878) (HeteroGDTI,0.947)
+          };
+          \legend{BindingDB, Davis}
+        \end{axis}
+      \end{tikzpicture}
+      \vspace{2pt}
+      \footnotesize\textit{Figure 2: Test set AUC-ROC scores across different architectural models.}
+    \end{center}
+    
+    \vspace{12pt}
+    \textbf{Ablation Study (BindingDB)} \\
+    To verify the contribution of each design component, we systematically remove key elements.
+    
+    \vspace{6pt}
+    \centering
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{0pt}
+    \begin{tabularx}{\linewidth}{X c c c}
+      \toprule
+      \textbf{Variant} & \textbf{AUC} & \textbf{AUPR} & \textbf{F1} \\
+      \midrule
+      \textbf{HeteroGDTI (Ours)} & \textbf{0.961} & \textbf{0.942} & \textbf{0.891} \\
+      \quad w/o Disease Nodes & 0.944 & 0.921 & 0.867 \\
+      \quad w/o Pathway Nodes & 0.938 & 0.913 & 0.859 \\
+      \quad w/o Cross-Modal Attn. & 0.927 & 0.901 & 0.843 \\
+      \quad GCN Backbone baseline & 0.903 & 0.876 & 0.812 \\
+      \bottomrule
+    \end{tabularx}
+    \vspace{4pt}
+    \footnotesize\textit{Table 1: Quantitative results of ablation experiments.}
+  }
+
+  % ═══════════════════════════════════════════════════════════
+  %  COLUMN 3
+  % ═══════════════════════════════════════════════════════════
+  \column{0.33}
+
+  \block{Conclusion}{
+    \begin{itemize}[leftmargin=1.5em, itemsep=5pt, label=\textcolor{AccentColor}{\faAngleRight}]
+      \item \textbf{HeteroGDTI} achieves state-of-the-art DTI prediction accuracy, outperforming existing models by a margin of up to \textcolor{HighlightColor}{\textbf{7.2\%}} in AUC-ROC.
+      \item Fusing protein language model representations with SMILES embeddings via cross-modal attention is highly effective.
+      \item The graph-based approach scales efficiently to accommodate large-scale genomic virtual screening pipelines.
+    \end{itemize}
+  }
+
+  \block{References}{
+    \footnotesize
+    \begin{enumerate}[leftmargin=1.5em, itemsep=2pt, label={[\arabic*]}]
+      \item K. Huang et al., ``Therapeutics Data Commons: Machine learning datasets and benchmarks for therapeutics,'' \textit{NeurIPS Database and Benchmark Track}, 2021.
+      \item Z. Lin et al., ``Evolutionary-scale prediction of atomic-level protein structure with a language model,'' \textit{Science}, vol. 379, no. 6637, 2023.
+      \item S. Chithrananda et al., ``ChemBERTa: Large-scale self-supervised pretraining for molecular property prediction,'' \textit{arXiv preprint arXiv:2010.09885}, 2020.
+    \end{enumerate}
+  }
+
+\end{columns}
+
+% ── Footer ───────────────────────────────────────────────────
+\block{}{
+  \begin{minipage}[c]{0.72\linewidth}
+    \textbf{\large Contact Information \& Code Repository} \\
+    \faEnvelope~~\texttt{elena.marchetti@ethz.ch} \quad 
+    \faGlobe~~\texttt{marchetti-lab.ethz.ch} \quad 
+    \faGithub~~\texttt{github.com/marchetti-lab/HeteroGDTI}
+    \vspace{4pt} \\
+    {\footnotesize \textbf{Funding:} Swiss National Science Foundation (grant 200020-204956), RIKEN-ETH Joint Program.}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[c]{0.23\linewidth}
+    \centering
+    \begin{tikzpicture}
+      \draw[AccentColor, rounded corners=3pt, line width=1pt] (0,0) rectangle (1.8,1.8);
+      \node[font=\tiny\sffamily, text=AccentColor, align=center] at (0.9,0.9) {QR Code\\Preprint};
+    \end{tikzpicture}
+  \end{minipage}
+}
+
+\end{document}

@@ -1,0 +1,435 @@
+% ============================================================
+%  GEOLOGY FIELD REPORT — main.tex
+%  Edit or compile online at https://letx.app
+%  Compile: latexmk -pdf main.tex   (pdflatex, TeX Live full)
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+
+% ── Encoding & language ──────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+
+% ── Page geometry ────────────────────────────────────────────
+\usepackage[
+  top=22mm, bottom=24mm,
+  left=28mm, right=28mm,
+  headheight=14pt
+]{geometry}
+
+% ── Font: Palatino-style body ─────────────────────────────────
+\usepackage{tgpagella}
+\usepackage{mathpazo}
+
+% ── Colour ───────────────────────────────────────────────────
+\usepackage[dvipsnames]{xcolor}
+\definecolor{terra}{HTML}{7B4F2E}
+\definecolor{stone}{HTML}{4A4A4A}
+\definecolor{sand}{HTML}{F5F0E8}
+
+% ── Page tint ────────────────────────────────────────────────
+\usepackage{pagecolor}
+\pagecolor{sand}
+
+% ── Typography helpers ────────────────────────────────────────
+\usepackage{microtype}
+\usepackage{setspace}
+\setstretch{1.12}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+% ── Headers / footers ────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{stone}\textsc{Geology Field Report}}
+\fancyhead[R]{\small\color{stone}Red Rock Canyon Survey \textperiodcentered\ July 2024}
+\fancyfoot[C]{\small\color{stone}\thepage}
+
+% ── Section headings ─────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\section}
+  {\large\bfseries\color{terra}}
+  {}
+  {0pt}
+  {}[\vspace{-2pt}\color{terra}\rule{\linewidth}{0.8pt}\vspace{2pt}]
+\titlespacing{\section}{0pt}{10pt}{4pt}
+
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{stone}}
+  {}
+  {0pt}
+  {}
+\titlespacing{\subsection}{0pt}{6pt}{2pt}
+
+% ── Tables ───────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\renewcommand{\arraystretch}{1.25}
+
+% ── Lists ────────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=*, itemsep=1pt, parsep=0pt}
+
+% ── Graphics / TikZ ──────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{patterns,calc,decorations.pathmorphing}
+
+% ── Hyperref (last) ──────────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=terra,
+  urlcolor=terra,
+  citecolor=stone,
+  pdftitle={Geology Field Report -- Red Rock Canyon},
+  pdfauthor={Dr. Elena Vasquez},
+  pdfsubject={Geology Field Report}
+]{hyperref}
+
+% ─────────────────────────────────────────────────────────────
+\begin{document}
+\thispagestyle{fancy}
+
+% ════════════════════════════════════════════════════════════
+%  TITLE BLOCK
+% ════════════════════════════════════════════════════════════
+\begin{center}
+  {\LARGE\bfseries\color{terra} Geology Field Report}\\[4pt]
+  {\large\color{stone} Stratigraphic and Structural Survey of the\\[2pt]
+   Red Rock Canyon Escarpment, Mojave Desert, California}\\[10pt]
+  {\color{terra}\rule{0.55\linewidth}{0.8pt}}\\[8pt]
+\end{center}
+
+\begin{tabularx}{\linewidth}{@{}>{\color{terra}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  Site         & Red Rock Canyon State Park, Kern County, CA
+                 (UTM 11S 388\,450\,E, 3\,941\,700\,N) \\
+  Survey Dates & 14--16 July 2024 \\
+  Geologist    & Dr.\ Elena Vasquez, Department of Earth Sciences,
+                 University of Nevada, Las Vegas \\
+  Field Party  & Dr.\ Vasquez (lead), M.\ Chen (MSc candidate), R.\ Okafor (field technician) \\
+  Weather      & Sunny; high 38\,\textdegree{}C; wind calm to light NW \\
+  Permit       & CA State Parks Scientific Collection Permit \#SCP-2024-0412 \\
+\end{tabularx}
+
+\vspace{6pt}
+{\color{terra}\rule{\linewidth}{0.4pt}}
+\vspace{4pt}
+
+% ════════════════════════════════════════════════════════════
+\section{Abstract}
+% ════════════════════════════════════════════════════════════
+
+A three-day stratigraphic and structural reconnaissance was conducted along the western
+escarpment of Red Rock Canyon State Park to characterise Neogene sedimentary sequences
+and document associated normal-fault geometry.
+Seven distinct lithostratigraphic units were identified, ranging from
+Miocene lacustrine diatomite (Unit~I) through fluvial conglomerates (Unit~VII) of probable
+Pleistocene age.
+Net stratigraphic thickness across the measured section is approximately 285\,m.
+Two conjugate normal-fault sets striking N\,10--25\textdegree{}E and
+N\,70--85\textdegree{}W were mapped; maximum measured offset on the primary fault
+is 42\,m (dip-slip).
+Twelve rock samples were collected for thin-section petrography and
+XRF geochemistry. Results are consistent with progressive basin subsidence during the
+opening of the Mojave Extensional Province in the late Miocene.
+
+% ════════════════════════════════════════════════════════════
+\section{Location \& Geologic Setting}
+% ════════════════════════════════════════════════════════════
+
+Red Rock Canyon lies at the southern margin of the El Paso Mountains, where
+Neogene basin-fill sediments of the Mojave Desert are exposed in colourful badland
+escarpments up to 120\,m high.
+The study area occupies a half-graben bounded to the east by the
+\textit{Ricardo Fault Zone}, a series of NNE-trending normal faults with
+cumulative Miocene extension of 8--12\,km [\ref{Loomis1984}].
+The regional stratigraphic framework is dominated by the
+\textit{Ricardo Group} (Miocene) and overlying \textit{Dove Spring Formation}
+(late Miocene--Pliocene), which together constitute the basin-fill sequence examined in
+this study [\ref{Whistler1989}].
+Average dip of preserved strata is 6--14\textdegree\ eastward, reflecting progressive
+half-graben rotation.
+
+% ════════════════════════════════════════════════════════════
+\section{Field Methods}
+% ════════════════════════════════════════════════════════════
+
+\begin{itemize}
+  \item \textbf{Measured section:} A 285\,m composite section was measured
+        along three sub-parallel traverses using a Jacob staff (2\,m) and
+        Brunton compass; beds thinner than 5\,cm were lumped.
+  \item \textbf{Strike \& dip:} Planar attitudes were recorded at $>$120 stations
+        with a Brunton compass (right-hand rule); data georeferenced with a
+        Garmin GPSMAP 66i ($\pm$3\,m horizontal accuracy).
+  \item \textbf{Sampling:} Fresh rock chips ($\sim$300\,g) were collected with
+        a geologic hammer, labelled, and double-bagged in Ziploc pouches.
+        Sample locations were photographed and GPS-logged.
+  \item \textbf{Photography:} A Canon EOS R7 with 24--105\,mm lens was used;
+        a 30\,cm scale bar was placed in all outcrop photographs.
+  \item \textbf{Safety:} Heat-mitigation protocol followed; all personnel
+        carried 4\,L water minimum; no personnel worked alone.
+\end{itemize}
+
+% ════════════════════════════════════════════════════════════
+\section{Stratigraphy \& Observations}
+% ════════════════════════════════════════════════════════════
+
+\subsection{Measured Stratigraphic Section}
+
+The composite measured section runs from the base of the exposed escarpment
+(Unit~I) to the uppermost preserved horizon (Unit~VII).
+Thicknesses are corrected for bedding dip.
+
+\vspace{8pt}
+
+%% ── TikZ Stratigraphic Column ──────────────────────────────
+\begin{center}
+\begin{tikzpicture}[x=1cm, y=0.045cm, font=\small]
+
+  \def\colx{0}
+  \def\colw{1.6}
+
+  %% --- Unit I: Diatomite (0-40) ---
+  \fill[white!95!black,draw=stone!60,line width=0.4pt]
+    (\colx,0) rectangle (\colx+\colw,40);
+  \foreach \y in {5,10,15,20,25,30,35}{
+    \draw[stone!35,line width=0.3pt] (\colx,\y) -- (\colx+\colw,\y);}
+
+  %% --- Unit II: Tuffaceous Siltstone (40-90) ---
+  \fill[yellow!20!white,draw=stone!60,line width=0.4pt]
+    (\colx,40) rectangle (\colx+\colw,90);
+  \foreach \y in {50,60,70,80}{
+    \draw[stone!35,line width=0.3pt] (\colx,\y) -- (\colx+\colw,\y);}
+
+  %% --- Unit III: Volcanic Ash (90-100) ---
+  \fill[gray!18!white,draw=stone!60,line width=0.4pt]
+    (\colx,90) rectangle (\colx+\colw,100);
+  \foreach \xi in {0.0,0.2,0.4,0.6,0.8,1.0,1.2,1.4,1.6}{
+    \draw[stone!50,line width=0.3pt] (\colx+\xi,90) -- (\colx+\xi,100);}
+  \foreach \y in {93,96,99}{
+    \draw[stone!50,line width=0.3pt] (\colx,\y) -- (\colx+\colw,\y);}
+
+  %% --- Unit IV: Red Arkosic Sandstone (100-175) ---
+  \fill[orange!45!red!35!white,draw=stone!60,line width=0.4pt]
+    (\colx,100) rectangle (\colx+\colw,175);
+  \foreach \y in {115,130,145,160}{
+    \draw[stone!45,line width=0.3pt,dashed] (\colx,\y) -- (\colx+\colw,\y);}
+
+  %% --- Unit V: Lacustrine Limestone (175-205) ---
+  \fill[cyan!18!white,draw=stone!60,line width=0.4pt]
+    (\colx,175) rectangle (\colx+\colw,205);
+  \foreach \y in {182,190,198}{
+    \draw[stone!55,line width=0.5pt] (\colx,\y) -- (\colx+\colw,\y);}
+  \foreach \xb in {0.4,1.2}{\draw[stone!55,line width=0.5pt] (\colx+\xb,175)--(\colx+\xb,182);}
+  \foreach \xb in {0.8}{\draw[stone!55,line width=0.5pt] (\colx+\xb,182)--(\colx+\xb,190);}
+  \foreach \xb in {0.4,1.2}{\draw[stone!55,line width=0.5pt] (\colx+\xb,190)--(\colx+\xb,198);}
+  \foreach \xb in {0.8}{\draw[stone!55,line width=0.5pt] (\colx+\xb,198)--(\colx+\xb,205);}
+
+  %% --- Unit VI: Pebbly Sandstone (205-250) ---
+  \fill[yellow!55!orange!35!white,draw=stone!60,line width=0.4pt]
+    (\colx,205) rectangle (\colx+\colw,250);
+  \foreach \y in {218,231,244}{
+    \draw[stone!40,line width=0.3pt] (\colx,\y) -- (\colx+\colw,\y);}
+  \foreach \py/\px in {210/0.4, 215/1.1, 222/0.7, 228/0.3, 235/1.0, 241/0.5, 247/0.9}{
+    \draw[stone!65,fill=stone!28,line width=0.3pt](\colx+\px,\py) ellipse (0.12 and 0.06);}
+
+  %% --- Unit VII: Conglomerate (250-285) ---
+  \fill[brown!50!gray!55!white,draw=stone!60,line width=0.4pt]
+    (\colx,250) rectangle (\colx+\colw,285);
+  \foreach \py/\px/\rx/\ry in {
+    256/0.5/0.18/0.10, 260/1.1/0.14/0.09, 265/0.3/0.16/0.12,
+    268/0.9/0.20/0.11, 273/0.5/0.15/0.09, 278/1.2/0.17/0.10,
+    272/1.3/0.13/0.08, 258/1.35/0.15/0.10}{
+    \draw[white!75!stone,fill=stone!45,line width=0.3pt](\colx+\px,\py) ellipse ({\rx} and {\ry});}
+
+  %% --- Scale ticks ---
+  \foreach \y in {0,50,100,150,200,250}{
+    \draw[stone!70,line width=0.5pt](\colx-0.15,\y)--(\colx,\y);
+    \node[left,color=stone,font=\scriptsize] at (\colx-0.2,\y){\y\,m};}
+  \draw[stone!70,line width=0.5pt](\colx-0.15,285)--(\colx,285);
+  \node[left,color=stone,font=\scriptsize] at (\colx-0.2,285){285\,m};
+
+  %% --- Unit labels ---
+  \def\lx{\colx+\colw+0.25}
+  \node[right,color=terra,font=\scriptsize\bfseries] at (\lx,20) {I\enspace Diatomite (40\,m)};
+  \node[right,color=terra,font=\scriptsize\bfseries] at (\lx,65) {II\enspace Tuffaceous Siltstone (50\,m)};
+  \node[right,color=terra,font=\scriptsize\bfseries] at (\lx,95) {III\enspace Volcanic Ash (10\,m)};
+  \node[right,color=terra,font=\scriptsize\bfseries] at (\lx,137){IV\enspace Red Arkosic Sandstone (75\,m)};
+  \node[right,color=terra,font=\scriptsize\bfseries] at (\lx,190){V\enspace Lacustrine Limestone (30\,m)};
+  \node[right,color=terra,font=\scriptsize\bfseries] at (\lx,228){VI\enspace Pebbly Sandstone (45\,m)};
+  \node[right,color=terra,font=\scriptsize\bfseries] at (\lx,268){VII\enspace Conglomerate (35\,m)};
+
+  \foreach \y in {20,65,95,137,190,228,268}{
+    \draw[stone!28,line width=0.3pt,dashed](\colx+\colw,\y)--(\lx-0.05,\y);}
+
+  %% --- Top / base rules ---
+  \draw[stone!80,line width=0.8pt](\colx,285)--(\colx+\colw,285);
+  \node[above,color=stone,font=\scriptsize\itshape] at (\colx+\colw/2,285){top (present erosion surface)};
+  \draw[stone!80,line width=1.2pt](\colx,0)--(\colx+\colw,0);
+  \node[below,color=stone,font=\scriptsize\itshape] at (\colx+\colw/2,0){base (not exposed)};
+
+\end{tikzpicture}
+\end{center}
+
+\vspace{3pt}
+{\centering\small\itshape\color{stone}
+Figure~1. Composite measured stratigraphic section, Red Rock Canyon escarpment.
+Column width is schematic; thickness to scale on left axis.\par}
+\vspace{8pt}
+
+\subsection{Lithology Description Table}
+
+\begin{tabularx}{\linewidth}{@{} l l >{\raggedright\arraybackslash}X @{}}
+\toprule
+\textbf{Unit} & \textbf{Age (approx.)} & \textbf{Lithology \& Key Features} \\
+\midrule
+I   & Miocene (11--10\,Ma)  & White to cream massive diatomite; chalky texture; rare mollusc fragments indicating fresh-water lacustrine origin; sub-horizontal lamination. \\
+\addlinespace[2pt]
+II  & Miocene (10--9\,Ma)   & Pale yellow tuffaceous siltstone; abundant glass shards (optical microscopy); occasional plant-leaf impressions; even parallel bedding. \\
+\addlinespace[2pt]
+III & Miocene (9.2\,Ma)    & White-grey compact volcanic ash (airfall tuff); sharp basal contact; pumice clasts up to 2\,cm; K-feldspar phenocrysts visible; potential radiometric marker bed. \\
+\addlinespace[2pt]
+IV  & Miocene (9--7.5\,Ma)  & Red to brick-orange arkosic sandstone; medium--coarse grain; sub-angular to sub-rounded; cross-bedding sets 20--40\,cm; K-feldspar and quartz dominant; plagioclase partially altered to sericite. \\
+\addlinespace[2pt]
+V   & Miocene (7.5--7\,Ma)  & Light grey to buff micrite and wackestone; discrete algal laminae; vugs with calcite spar; minor dolomitisation near top; represents return to lacustrine conditions. \\
+\addlinespace[2pt]
+VI  & Pliocene (5--3\,Ma)   & Yellow-brown pebbly sandstone; clasts 0.5--3\,cm subangular quartzite and granite; fining-upward cycles 1--2\,m thick; fluvial channel facies. \\
+\addlinespace[2pt]
+VII & Pleistocene (2--1\,Ma) & Clast-supported polymict conglomerate; cobbles to 20\,cm; poorly sorted; sub-angular clasts of granite, gneiss, quartzite; sandy matrix; alluvial fan interpretation. \\
+\bottomrule
+\end{tabularx}
+\vspace{3pt}
+{\small\itshape\color{stone}Table~1. Lithostratigraphic units, Red Rock Canyon escarpment.}
+
+% ════════════════════════════════════════════════════════════
+\section{Structural Features}
+% ════════════════════════════════════════════════════════════
+
+\textbf{Normal fault (primary):}
+A well-exposed, east-dipping normal fault was traced for 1.4\,km along the
+northern escarpment face.
+Fault plane attitude: 082\textdegree/62\textdegree\ (strike/dip, right-hand rule).
+Slickenlines rake 82\textdegree\ (near down-dip), indicating predominantly dip-slip motion.
+Maximum measured stratigraphic offset: \textbf{42\,m}; gouge zone 15--30\,cm thick;
+breccia zone up to 0.8\,m wide.
+The hanging-wall block is rotated 8--12\textdegree\ relative to the footwall.
+
+\textbf{Conjugate fault set:}
+A secondary NW-trending normal fault set (mean attitude 322\textdegree/45\textdegree) produces
+graben blocks 80--200\,m wide in the central section. Offsets 2--15\,m.
+
+\textbf{Bedding attitudes:}
+Mean attitude of Units I--V: 094\textdegree/08\textdegree\ (shallow eastward dip, consistent with
+half-graben rotation). Units VI--VII: sub-horizontal (002\textdegree/03\textdegree), unconformably
+overlying tilted lower units; angular unconformity well-exposed at Station~6.
+
+\textbf{Joints:}
+Two prominent joint sets: Set~A (N\,10\textdegree{}E, near-vertical); Set~B (N\,75\textdegree{}W, vertical).
+Spacing 0.3--1.5\,m; open fractures filled with calcite veins up to 8\,mm.
+
+% ════════════════════════════════════════════════════════════
+\section{Sample Catalog}
+% ════════════════════════════════════════════════════════════
+
+\begin{tabularx}{\linewidth}{@{} l l l l >{\raggedright\arraybackslash}X @{}}
+\toprule
+\textbf{Sample ID} & \textbf{Unit} & \textbf{Easting} & \textbf{Northing} & \textbf{Requested Analyses} \\
+\midrule
+RRC-24-01 & I   & 388\,412 & 3\,941\,688 & Thin section, XRF \\
+RRC-24-02 & I   & 388\,418 & 3\,941\,694 & SEM-EDS (diatom taxonomy) \\
+RRC-24-03 & II  & 388\,433 & 3\,941\,702 & Thin section, XRF, stable isotopes \\
+RRC-24-04 & III & 388\,440 & 3\,941\,710 & $^{40}$Ar/$^{39}$Ar dating, XRF \\
+RRC-24-05 & III & 388\,445 & 3\,941\,715 & Duplicate for $^{40}$Ar/$^{39}$Ar \\
+RRC-24-06 & IV  & 388\,460 & 3\,941\,728 & Thin section, point count, XRF \\
+RRC-24-07 & IV  & 388\,471 & 3\,941\,735 & Thin section (cross-bedding orientation) \\
+RRC-24-08 & V   & 388\,485 & 3\,941\,748 & Thin section, stable C/O isotopes \\
+RRC-24-09 & V   & 388\,490 & 3\,941\,753 & XRD (mineralogy, dolomite quantification) \\
+RRC-24-10 & VI  & 388\,510 & 3\,941\,770 & Thin section, clast count \\
+RRC-24-11 & VII & 388\,528 & 3\,941\,786 & Clast lithology count, roundness analysis \\
+RRC-24-12 & VII & 388\,535 & 3\,941\,791 & XRF (provenance, major + trace elements) \\
+\bottomrule
+\end{tabularx}
+\vspace{3pt}
+{\small\itshape\color{stone}Table~2. Sample catalog with UTM coordinates (WGS84, Zone~11S) and requested analyses.}
+
+% ════════════════════════════════════════════════════════════
+\section{Interpretation}
+% ════════════════════════════════════════════════════════════
+
+The Red Rock Canyon stratigraphy records a coherent basin-fill history spanning
+approximately 10\,Ma of Mojave extensional tectonism:
+
+\begin{itemize}
+  \item \textbf{Early lacustrine phase (Units I--II, 11--9\,Ma):}
+        Calm, closed-basin conditions produced thick diatomite and tuffaceous siltstone,
+        suggesting a perennial, nutrient-rich freshwater lake analogous to modern
+        Walker Lake, Nevada.
+  \item \textbf{Volcaniclastic influx (Unit~III, $\sim$9.2\,Ma):}
+        The sharp-based volcanic ash likely correlates with the widespread
+        Peach Springs Tuff or a co-magmatic eruption; radiometric dating
+        (samples RRC-24-04/05) will test this. The marker bed provides a critical
+        chronostratigraphic anchor.
+  \item \textbf{Alluvial-fluvial progradation (Unit~IV, 9--7.5\,Ma):}
+        Basin subsidence outpaced sediment supply initially, but footwall
+        erosion of granite and gneiss source terrain delivered coarse arkosic sand
+        via braided-river systems. Cross-bedding paleocurrent data (pending) will
+        constrain transport direction.
+  \item \textbf{Lake renewal and carbonate precipitation (Unit~V, 7.5--7\,Ma):}
+        A second lacustrine pulse precipitated limestone, possibly linked to
+        regional drainage reorganisation and reduced clastic input. Stable isotopes
+        (sample RRC-24-08) will assess salinity and temperature conditions.
+  \item \textbf{Angular unconformity and late-stage alluvial fans (Units VI--VII, 5--1\,Ma):}
+        Post-tectonic erosion created the angular unconformity at Station~6;
+        subsequent fan and fluvial systems prograded over the tilted block,
+        recording exhumation of mixed crystalline basement sources.
+\end{itemize}
+
+The conjugate normal-fault pattern is consistent with NW--SE $\sigma_3$ extension,
+in agreement with regional GPS vectors and Basin-and-Range kinematics.
+Preliminary fault-heave estimates suggest $\sim$6\,km of cumulative extension since 11\,Ma,
+overlapping with Loomis \& Glazner's [\ref{Loomis1984}] estimate of 8--12\,km.
+
+% ════════════════════════════════════════════════════════════
+\section{References}
+% ════════════════════════════════════════════════════════════
+
+{\setlength{\parskip}{4pt}\setlength{\parindent}{-16pt}\leftskip=16pt\raggedright
+
+[\refstepcounter{equation}\theequation\label{Loomis1984}]
+\textbf{Loomis, D.\,P., \& Glazner, A.\,F.} (1984).
+Structural geology and tectonics of the Ricardo Group,
+Red Rock Canyon, Mojave Desert, California.
+\textit{Geological Society of America Abstracts with Programs}, 16(6), 580.
+
+[\refstepcounter{equation}\theequation\label{Whistler1989}]
+\textbf{Whistler, D.\,P.} (1989).
+Biostratigraphy of the Ricardo Group (Miocene), Red Rock Canyon,
+California, and the mammalian fauna from the Cudahy Mine locality.
+\textit{Natural History Museum of Los Angeles County,
+Contributions in Science}, 409, 1--34.
+
+[\refstepcounter{equation}\theequation\label{Dokka1993}]
+\textbf{Dokka, R.\,K., \& Travis, C.\,J.} (1993).
+Late Cenozoic strike-slip faulting in the Mojave Desert, California.
+\textit{Tectonics}, 12(6), 1381--1415.
+\href{https://doi.org/10.1029/92TC02586}{doi:10.1029/92TC02586}
+
+[\refstepcounter{equation}\theequation\label{Spittler1982}]
+\textbf{Spittler, T.\,E., \& Arthur, M.\,A.} (1982).
+The Ricardo Formation and other Cenozoic rocks of the Red Rock Canyon area,
+Kern County, California.
+\textit{California Division of Mines and Geology, Open-File Report} 82-27, 30\,pp.
+
+}
+
+\vspace{8pt}
+{\color{terra}\rule{\linewidth}{0.4pt}}\\[3pt]
+{\centering\small\color{stone}\itshape
+Report compiled: July 2024 \textperiodcentered\
+Red Rock Canyon State Park, CA \textperiodcentered\
+All data subject to revision pending laboratory results.\par}
+
+\end{document}

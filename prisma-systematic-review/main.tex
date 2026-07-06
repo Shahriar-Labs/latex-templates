@@ -1,0 +1,352 @@
+% ============================================================
+%  PRISMA 2020 Systematic Review Template
+%  Edit and compile online at https://letx.app
+%  pdflatex / latexmk -pdf main.tex  (TeX Live full)
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+
+% ---------- geometry & typography ----------
+\usepackage[top=22mm,bottom=22mm,left=26mm,right=26mm]{geometry}
+\usepackage{sourcesanspro}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+
+% ---------- colour ----------
+\usepackage[dvipsnames,table]{xcolor}
+\definecolor{accent}{HTML}{2E6DA4}   % steel blue – single accent
+\definecolor{boxbg}{HTML}{EDF4FB}    % very light blue tint
+\definecolor{neutral}{HTML}{444444}
+\definecolor{lightrule}{HTML}{BBBBBB}
+
+% ---------- section styling ----------
+\usepackage{titlesec}
+\titleformat{\section}{\large\bfseries\color{accent}}{}{0em}{}[{\color{lightrule}\titlerule[0.5pt]}]
+\titlespacing{\section}{0pt}{10pt}{5pt}
+\titleformat{\subsection}{\normalsize\bfseries\color{neutral}}{}{0em}{}
+\titlespacing{\subsection}{0pt}{6pt}{2pt}
+
+% ---------- tables ----------
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\renewcommand{\arraystretch}{1.25}
+
+% ---------- lists ----------
+\usepackage{enumitem}
+\setlist{noitemsep, topsep=3pt, leftmargin=*}
+
+% ---------- TikZ for PRISMA diagram ----------
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+
+% ---------- misc ----------
+\usepackage{hyperref}
+\hypersetup{colorlinks=true,linkcolor=accent,urlcolor=accent,citecolor=accent,
+            pdftitle={PRISMA 2020 Systematic Review},
+            pdfauthor={Research Team}}
+\usepackage{caption}
+\captionsetup{font=small,labelfont={bf,color=accent},skip=6pt}
+
+% ============================================================
+%  PRISMA TikZ styles
+% ============================================================
+\tikzset{
+  stage/.style={
+    rounded corners=6pt,
+    draw=accent, line width=0.8pt,
+    fill=boxbg,
+    text width=62mm, align=center,
+    inner sep=6pt, minimum height=16mm,
+    font=\small
+  },
+  excluded/.style={
+    rounded corners=4pt,
+    draw=neutral!50, line width=0.6pt,
+    fill=white,
+    text width=52mm, align=left,
+    inner sep=5pt, minimum height=12mm,
+    font=\footnotesize, text=neutral
+  },
+  arrow/.style={-Stealth, line width=0.8pt, color=accent!70},
+  darrow/.style={-Stealth, line width=0.6pt, color=neutral!60, dashed}
+}
+
+% ============================================================
+%  Helpers
+% ============================================================
+\newcommand{\stagenum}[1]{\textbf{\color{accent}#1}}
+\newcommand{\hlabel}[1]{\textbf{\color{accent}\small #1}}
+
+% ============================================================
+\begin{document}
+
+% ----------------------------------------------------------------
+%  TITLE BLOCK
+% ----------------------------------------------------------------
+\begin{center}
+  {\Large\bfseries\color{accent}
+    Effectiveness of Deep Learning Models for Early Detection\\
+    of Diabetic Retinopathy: A Systematic Review and Meta-Analysis}\\[4pt]
+  {\small\color{neutral}
+    Meera Krishnamurthy\textsuperscript{1},
+    James O. Whitfield\textsuperscript{2},
+    Ana-Sofia Ferreira\textsuperscript{1},
+    David K. Osei\textsuperscript{3}}\\[2pt]
+  {\footnotesize\color{neutral}
+    \textsuperscript{1}Department of Ophthalmology, University of Edinburgh, UK \quad
+    \textsuperscript{2}School of Computing, MIT, USA \quad
+    \textsuperscript{3}Korle Bu Teaching Hospital, Accra, Ghana}\\[3pt]
+  {\footnotesize\itshape\color{neutral}
+    \textit{Correspondence:} m.krishnamurthy@ed.ac.uk \quad
+    \textit{Submitted:} 12 March 2025 \quad
+    \textit{Accepted:} 28 May 2025}
+\end{center}
+
+{\color{lightrule}\rule{\linewidth}{0.4pt}}
+\vspace{1mm}
+
+\textbf{\small Abstract.}\;{\small
+Diabetic retinopathy (DR) is a leading cause of preventable blindness worldwide.
+Convolutional neural networks (CNNs) and vision transformers (ViTs) have demonstrated
+promising screening performance, yet heterogeneity in model architectures, reference
+standards, and patient populations hampers clinical translation. We systematically
+searched MEDLINE, Embase, and IEEE Xplore for studies evaluating deep learning–based
+DR grading systems (2015–2024), screened 4\,372 records, and included 41 studies
+(\(n = 1{,}247{,}309\) fundus images). Pooled sensitivity was 92.4\% (95\% CI: 89.7–94.6)
+and specificity was 90.1\% (87.3–92.5). Subgroup analyses revealed superior performance
+for referable DR (AUC 0.97 vs.\ 0.91 for any DR). High risk of bias was present in
+31\% of studies, primarily owing to retrospective single-site designs.
+}
+\vspace{2mm}
+{\color{lightrule}\rule{\linewidth}{0.4pt}}
+
+% ----------------------------------------------------------------
+\section{Introduction}
+% ----------------------------------------------------------------
+
+Diabetic retinopathy affects approximately one-third of the global diabetic population
+and is responsible for 4.8\% of all cases of blindness~\cite{Cheung2010}. Grading
+retinal fundus photographs through systematic screening programmes reduces vision loss;
+however, the global shortage of trained ophthalmologists limits coverage in
+low-and-middle-income countries~\cite{WHO2019}.
+
+Deep learning systems, particularly CNNs and attention-based architectures, have matched
+or exceeded specialist-level accuracy in retrospective benchmark studies.
+Despite a growing literature, clinical deployment remains limited due to concerns
+regarding model generalisation, dataset imbalance, and the absence of prospective
+validation. This review synthesises evidence on diagnostic accuracy and identifies
+methodological gaps that must be addressed before widespread adoption.
+
+% ----------------------------------------------------------------
+\section{Methods}
+% ----------------------------------------------------------------
+
+This review was registered on PROSPERO (CRD42024382910) and adheres to the
+Preferred Reporting Items for Systematic Reviews and Meta-Analyses (PRISMA) 2020
+guidelines~\cite{Page2021}. Quantitative synthesis employed a bivariate random-effects
+model; heterogeneity was quantified with \(I^2\) and Cochran's \(Q\) test.
+
+\subsection{Eligibility Criteria}
+
+\begin{itemize}
+  \item \textbf{Population:} Adult patients (\(\geq 18\) yr) with diabetes mellitus (type 1 or 2).
+  \item \textbf{Index test:} Deep learning algorithm (CNN, ViT, or hybrid) classifying colour
+        fundus photographs or OCT images.
+  \item \textbf{Reference standard:} Ophthalmologist grading or validated grading scale
+        (ETDRS, UK NSC, or equivalent), accepted if performed by \(\geq 2\) graders.
+  \item \textbf{Outcomes:} Sensitivity, specificity, and area under the ROC curve (AUC)
+        for referable DR (moderate NPDR or worse) or any DR.
+  \item \textbf{Exclusion:} Conference abstracts without full data, studies with
+        \(<200\) images, non-fundus modalities other than OCT, and non-English reports.
+\end{itemize}
+
+\subsection{Search Strategy}
+
+Searches were executed on 1 November 2024 across MEDLINE (via PubMed),
+Embase, Cochrane CENTRAL, and IEEE Xplore using Boolean combinations of controlled
+vocabulary (MeSH/Emtree) and free-text terms:
+\texttt{("diabetic retinopathy" OR "DR") AND ("deep learning" OR "convolutional neural
+network" OR "vision transformer" OR "artificial intelligence") AND
+("sensitivity" OR "specificity" OR "diagnostic accuracy")}.
+Reference lists of included studies and relevant reviews were hand-searched.
+
+% ----------------------------------------------------------------
+\section{Results}
+% ----------------------------------------------------------------
+
+\subsection{PRISMA 2020 Flow Diagram}
+
+Figure~\ref{fig:prisma} presents the study selection process.
+
+\vspace{4mm}
+\begin{figure}[h!]
+\centering
+% ----- PRISMA TikZ diagram -----
+\begin{tikzpicture}[node distance=8mm and 18mm]
+
+  %--- Stage boxes (left column) ---
+  \node[stage] (id)
+    {\hlabel{IDENTIFICATION}\\[3pt]
+     Records identified via database searching\\
+     \stagenum{4,372} (MEDLINE 1,841 · Embase 1,614 · IEEE 719 · CENTRAL 198)\\[2pt]
+     \textit{Additional records via hand-search:} \stagenum{27}};
+
+  \node[stage, below=of id] (scr)
+    {\hlabel{SCREENING}\\[3pt]
+     Records after duplicate removal\\
+     \stagenum{3,204} screened on title \& abstract};
+
+  \node[stage, below=of scr] (elig)
+    {\hlabel{ELIGIBILITY}\\[3pt]
+     Full-text articles assessed\\
+     \stagenum{218}};
+
+  \node[stage, below=of elig] (inc)
+    {\hlabel{INCLUDED}\\[3pt]
+     Studies included in quantitative synthesis\\
+     \stagenum{41} studies · \stagenum{1,247,309} fundus images};
+
+  %--- Exclusion boxes (right column) ---
+  \node[excluded, right=of scr] (excl1)
+    {\textbf{Excluded after title/abstract:} \stagenum{2,986}\\
+     \textbullet\ Not DR-related: 1,247\\
+     \textbullet\ Not DL algorithm: 894\\
+     \textbullet\ Duplicates: 768\\
+     \textbullet\ Other: 77};
+
+  \node[excluded, right=of elig] (excl2)
+    {\textbf{Excluded after full-text:} \stagenum{177}\\
+     \textbullet\ $<$200 images: 61\\
+     \textbullet\ No usable accuracy data: 54\\
+     \textbullet\ Non-fundus/OCT only: 38\\
+     \textbullet\ Conference abstract: 24};
+
+  %--- Vertical arrows between stages ---
+  \draw[arrow] (id)   -- (scr);
+  \draw[arrow] (scr)  -- (elig);
+  \draw[arrow] (elig) -- (inc);
+
+  %--- Dashed arrows to exclusion boxes ---
+  \draw[darrow] (scr)  -- (excl1);
+  \draw[darrow] (elig) -- (excl2);
+
+  %--- Brace / label on left ---
+  \draw[line width=0.5pt, color=lightrule]
+        ([xshift=-4mm]id.north west) -- ([xshift=-4mm]inc.south west);
+
+\end{tikzpicture}
+\caption{PRISMA 2020 flow diagram of study selection.}
+\label{fig:prisma}
+\end{figure}
+
+\subsection{Characteristics of Included Studies}
+
+Table~\ref{tab:studies} summarises a representative subset of included studies.
+
+\vspace{2mm}
+\begin{table}[h!]
+\centering
+\caption{Characteristics of selected included studies (\(n = 8\) representative).}
+\label{tab:studies}
+\small
+\begin{tabularx}{\linewidth}{@{}
+  >{\bfseries}l
+  l
+  l
+  >{\raggedright\arraybackslash}X
+  r
+  r
+@{}}
+\toprule
+\color{accent}Study & \color{accent}Year & \color{accent}Architecture
+  & \color{accent}Dataset / Setting
+  & \color{accent}AUC & \color{accent}N (images) \\
+\midrule
+Gulshan et al.    & 2016 & Inception-v3   & EyePACS; US multi-site           & 0.991 & 128,175 \\
+Ting et al.       & 2017 & VGGNet-16      & Singapore \& US; 5 clinics       & 0.936 & 494,661 \\
+Gargeya \& Leng   & 2017 & Custom CNN     & Messidor-2; single-centre        & 0.972 &  1,748  \\
+Nagasato et al.   & 2019 & ResNet-50      & Japan tertiary; OCT+fundus       & 0.951 & 12,522  \\
+Quellec et al.    & 2021 & DenseNet-121   & France national screening        & 0.963 & 81,004  \\
+Li et al.         & 2022 & EfficientNet-B4& China multi-province             & 0.978 & 302,788 \\
+Raumviboonsuk et al.& 2022 & ViT-L/16     & Thailand NHSO; RCT               & 0.941 & 14,880  \\
+Beede et al.      & 2023 & EfficientNet-B7& Kenya \& India; low-resource     & 0.908 & 10,952  \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Diagnostic Accuracy}
+
+Pooled sensitivity across 41 studies was \textbf{92.4\%} (95\% CI: 89.7–94.6\%;
+\(I^2 = 78\%\)) and pooled specificity was \textbf{90.1\%} (87.3–92.5\%;
+\(I^2 = 82\%\)). The pooled AUC from 34 studies reporting this metric was \textbf{0.962}
+(0.948–0.974). Studies using vision transformers (\(k = 6\)) achieved significantly
+higher AUC (0.971 vs.\ 0.955; \(p = 0.03\)) compared to CNN-only architectures.
+Prospective studies (\(k = 4\)) showed lower sensitivity (87.9\%) than retrospective
+designs (93.6\%; \(p = 0.01\)), suggesting optimistic bias in offline evaluations.
+
+Risk of bias, assessed with QUADAS-2, was low in 28 studies (68\%), unclear in 9 (22\%),
+and high in 4 (10\%), primarily due to convenience sampling and lack of pre-specified
+thresholds.
+
+% ----------------------------------------------------------------
+\section{Discussion}
+% ----------------------------------------------------------------
+
+This review provides the most comprehensive meta-analysis to date of deep learning for
+DR screening, encompassing over 1.2 million fundus images across six continents.
+The pooled AUC of 0.962 supports the potential of AI-assisted screening, particularly in
+resource-constrained settings where the ophthalmologist-to-patient ratio is critically low.
+
+Several limitations warrant consideration. First, the predominance of retrospective
+single-site studies inflates apparent accuracy; the four prospective trials demonstrate
+a \textasciitilde{}5 percentage-point sensitivity reduction in real-world conditions.
+Second, heterogeneity in camera hardware, image quality thresholds, and grading protocols
+limits direct comparability. Third, only two studies evaluated performance in patients
+with concurrent glaucoma or age-related macular degeneration, conditions that confound
+DR grading.
+
+Future research should prioritise multi-site prospective validation following the
+DECIDE-AI reporting framework~\cite{Vasey2022}, harmonised ground-truth standards, and
+equity analyses across racial and socioeconomic subgroups. Model cards and uncertainty
+quantification should accompany any clinical deployment to support clinician trust
+and safe adoption.
+
+\vspace{3mm}
+{\color{lightrule}\rule{\linewidth}{0.4pt}}
+
+\textbf{Funding.} This work received no external funding.
+\textbf{Conflicts of interest.} None declared.
+\textbf{PROSPERO registration:} CRD42024382910.
+
+% ----------------------------------------------------------------
+%  Bibliography (inline — no .bib needed for latexmk clean compile)
+% ----------------------------------------------------------------
+\begin{thebibliography}{9}
+\setlength{\itemsep}{2pt}
+\bibitem{Cheung2010}
+  Cheung N, Mitchell P, Wong TY.
+  \textit{Diabetic retinopathy.}
+  Lancet. 2010;376(9735):124–136.
+
+\bibitem{WHO2019}
+  World Health Organization.
+  \textit{World Report on Vision.}
+  Geneva: WHO; 2019.
+
+\bibitem{Page2021}
+  Page MJ, McKenzie JE, Bossuyt PM, et al.
+  The PRISMA 2020 statement: an updated guideline for reporting systematic reviews.
+  \textit{BMJ.} 2021;372:n71.
+
+\bibitem{Vasey2022}
+  Vasey B, Nagendran M, Campbell B, et al.
+  Reporting guideline for the early-stage clinical evaluation of decision support
+  systems driven by artificial intelligence: DECIDE-AI.
+  \textit{Nat Med.} 2022;28:924–933.
+\end{thebibliography}
+
+\end{document}

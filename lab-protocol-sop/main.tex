@@ -1,0 +1,238 @@
+% This template can be edited and compiled online at https://letx.app
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{amsmath}
+
+\usepackage[margin=0.55in]{geometry}
+\usepackage{xcolor}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\usepackage{fontawesome5}
+\usepackage{float}
+\usepackage{hyperref}
+
+% Define scientific palette
+\definecolor{primary}{HTML}{0B3C5D}    % Deep Prussian Blue
+\definecolor{secondary}{HTML}{328CC1}  % Clean Medium Blue
+\definecolor{darkgray}{HTML}{1D2731}   % Dark Charcoal
+\definecolor{lightgray}{HTML}{F9F9FB}  % Off-white grey background
+\definecolor{warningred}{HTML}{D9534F} % Warning crimson
+\definecolor{warningbg}{HTML}{FFF5F5}  % Very light red tint
+
+% Setup document geometries and global paragraph spacing rules
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% Table spacing adjustments
+\setlength{\textfloatsep}{6pt}
+\setlength{\floatsep}{4pt}
+\setlength{\intextsep}{6pt}
+
+% Section formatting
+\titleformat{\section}
+  {\color{primary}\sffamily\large\bfseries}
+  {\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{8pt}{3pt}
+
+\titleformat{\subsection}
+  {\color{secondary}\sffamily\normalsize\bfseries}
+  {\thesubsection}{1em}{}
+\titlespacing*{\subsection}{0pt}{5pt}{2pt}
+
+% Header/Footer configuration
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\fancyhead[L]{\color{darkgray}\small SOP-BIO-004: RNA Spin-Column Isolation}
+\fancyhead[R]{\color{darkgray}\small Version 2.1}
+\fancyfoot[L]{\color{darkgray}\small Molecular Biology Department}
+\fancyfoot[C]{\color{darkgray}\small Page \thepage\ of \pageref{LastPage}}
+\fancyfoot[R]{\color{darkgray}\small Effective Date: Oct 12, 2026}
+
+% Hyperref configuration
+\hypersetup{
+    colorlinks=true,
+    linkcolor=secondary,
+    urlcolor=secondary
+}
+
+% List configuration using enumitem to prevent misalignment issues
+\setlist[enumerate]{leftmargin=*,itemsep=1.5pt,parsep=0pt,before=\vspace{1pt},after=\vspace{1pt}}
+\setlist[itemize]{leftmargin=*,itemsep=1.5pt,parsep=0pt,before=\vspace{1pt},after=\vspace{1pt}}
+
+% Header Block Box
+\newtcolorbox{protocolheader}{%
+  colback=lightgray,
+  colframe=primary,
+  arc=3pt,
+  outer arc=3pt,
+  boxrule=1.2pt,
+  left=10pt,
+  right=10pt,
+  top=6pt,
+  bottom=6pt,
+  width=\linewidth
+}
+
+% Safety Warning Box
+\newtcolorbox{safetywarning}{%
+  colback=warningbg,
+  colframe=warningred,
+  arc=3pt,
+  boxrule=1pt,
+  left=8pt,
+  right=8pt,
+  top=6pt,
+  bottom=6pt,
+  title={\faExclamationTriangle\ SAFETY WARNINGS \& PPE REQUIREMENTS},
+  fonttitle=\bfseries\color{warningred},
+  coltitle=warningred,
+  attach title to upper,
+  after title={\par\smallskip\label{warning:safety}}
+}
+
+\begin{document}
+
+\begin{center}
+  {\color{primary}\LARGE\bfseries Standard Operating Procedure}
+  \vspace{2pt}
+\end{center}
+
+\begin{protocolheader}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{@{}>{\color{primary}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+Protocol Title & Spin-Column Isolation of Total RNA from Cultured Mammalian Cells \\
+Protocol ID / Version & SOP-BIO-004 / Version 2.1 \\
+Author / Title & Dr. Sarah Jenkins, Lead Molecular Biologist \\
+Effective Date & October 12, 2026 \\
+Approved By & Dr. Marcus Vance, Director of Quality Assurance \\
+\end{tabularx}
+\end{protocolheader}
+
+\vspace{4pt}
+
+\section{Purpose \& Scope}
+This protocol outlines the standard operating procedure for the spin-column isolation of high-quality total ribonucleic acid (RNA) from cultured mammalian cell lines (including suspension cells and adherent monolayers). It covers the extraction process for up to $10^7$ cells per prep. The primary objective is to yield intact, DNA-free total RNA suitable for sensitive downstream applications such as reverse-transcription quantitative PCR (RT-qPCR), high-throughput RNA sequencing (RNA-seq), and microarray hybridization.
+
+\section{Safety \& PPE Requirements}
+\begin{safetywarning}
+\begin{itemize}
+  \item \textbf{Chemical Hazards:} Lysis buffers contain guanidinium isothiocyanate. Contact with acids or bleach releases toxic hydrogen cyanide gas. Never expose guanidinium waste to bleach.
+  \item \textbf{Toxic Additives:} Perform all handling and addition of $\beta$-mercaptoethanol ($\beta$-ME) to lysis buffers in a certified chemical fume hood due to its high volatility and toxicity.
+  \item \textbf{PPE:} Standard laboratory attire is mandatory. Double-glove with nitrile gloves when handling lysis buffers. Wear ANSI-approved safety glasses and a flame-resistant laboratory coat.
+  \item \textbf{Contamination Control:} Wipe pipettes and benches with RNase-away prior to starting. Use only sterile, certified RNase-free pipette tips and microcentrifuge tubes.
+\end{itemize}
+\end{safetywarning}
+
+\section{Materials \& Equipment}
+\begin{table}[H]
+\small
+\caption{Reagents and laboratory equipment required for spin-column extraction.}
+\label{tab:materials}
+\vspace{2pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l@{\hspace{6mm}}X@{\hspace{6mm}}X@{}}
+\toprule
+\color{primary}Material / Equipment & \color{primary}Vendor \& Catalog Number & \color{primary}Primary Function \\
+\midrule
+Lysis Buffer RLT & Qiagen (Cat \#79216) & Cell lysis and RNA stabilization \\
+Silica Membrane Spin Columns & Qiagen RNeasy Mini (Cat \#74104) & High-efficiency RNA binding \\
+RNase-free DNase I Set & Qiagen (Cat \#79254) & In-column digestion of genomic DNA \\
+Ethanol (96--100\%) & Sigma-Aldrich (Cat \#E7023) & Adjusts binding conditions (70\% v/v) \\
+$\beta$-Mercaptoethanol & Sigma-Aldrich (Cat \#M3148) & Denatures RNases in lysis buffer \\
+Refrigerated Microcentrifuge & Eppendorf 5424 R & Pelleting and spin-wash steps \\
+Nuclease-free Water & Ambion (Cat \#AM9937) & Elution of purified total RNA \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Reagent Preparation}
+Before beginning the extraction procedure, prepare the following reagents:
+\begin{itemize}
+  \item \textbf{Lysis Buffer RLT with $\beta$-ME:} Add 10 $\mu$L of $\beta$-ME per 1 mL of Buffer RLT. This solution is stable for up to 1 month at room temperature ($15{-}25^\circ$C). Prepare under a fume hood.
+  \item \textbf{70\% Ethanol solution:} Prepare fresh 70\% (v/v) ethanol by mixing 35 mL of molecular biology grade 100\% ethanol with 15 mL of sterile nuclease-free water.
+  \item \textbf{DNase I Stock Solution:} Dissolve lyophilized DNase I (1500 KUnits) in 550 $\mu$L of RNase-free water. Gently mix by inverting. Do not vortex. Store aliquots at $-20^\circ$C.
+\end{itemize}
+
+\section{Step-by-Step Procedure}
+
+\subsection{Cell Harvest and Lysis}
+\begin{enumerate}
+  \item \textbf{Adherent Cells:} Wash with cold PBS. Add 350 $\mu$L Buffer RLT directly to the dish, scrape, and transfer lysate to a 1.5 mL tube.
+  \item \textbf{Suspension Cells:} Centrifuge cells at $300 \times g$ for 5 minutes. Resuspend pellet in 350 $\mu$L of Buffer RLT.
+  \item \textbf{Homogenization:} Homogenize the lysate by passing it through a sterile 20-gauge needle attached to a 1 mL syringe 5 times, or by centrifuging through a QIAshredder column ($16,000 \times g$, 2 min).
+\end{enumerate}
+
+\subsection{RNA Binding and On-Column DNase Digestion}
+\begin{enumerate}
+  \item Add 350 $\mu$L 70\% ethanol to the homogenized lysate; mix by pipetting. Transfer 700 $\mu$L to an RNeasy spin column. Centrifuge at $\ge 8000 \times g$ for 15s; discard flow-through.
+  \item Add 350 $\mu$L Buffer RW1; centrifuge at $\ge 8000 \times g$ for 15s; discard flow-through.
+  \item Pipette DNase mix (10 $\mu$L DNase I stock + 70 $\mu$L Buffer RDD, mixed by inversion) directly onto the membrane. Incubate at room temperature for 15 min.
+  \item Add 350 $\mu$L Buffer RW1; centrifuge at $\ge 8000 \times g$ for 15s; discard flow-through.
+\end{enumerate}
+
+\subsection{Column Washing and Elution}
+\begin{enumerate}
+  \item Add 500 $\mu$L Buffer RPE; centrifuge at $\ge 8000 \times g$ for 15s (discard flow-through). Add another 500 $\mu$L Buffer RPE; centrifuge for 2 min.
+  \item Centrifuge empty column at $16,000 \times g$ for 1 minute to dry the membrane.
+  \item Place column in a 1.5 mL tube. Add 30--50 $\mu$L RNase-free water. Incubate for 1 minute. Centrifuge at $\ge 8000 \times g$ for 1 minute to elute. Store at $-80^\circ$C.
+\end{enumerate}
+
+\section{Quality Control / Acceptance Criteria}
+To ensure the isolation is successful, the eluted RNA must meet the criteria in Table~\ref{tab:qc_metrics}.
+
+\begin{table}[H]
+\small
+\caption{Required quality metrics for RNA integrity and purity.}
+\label{tab:qc_metrics}
+\vspace{2pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l@{\hspace{6mm}}l@{\hspace{8mm}}X@{}}
+\toprule
+\color{primary}Quality Metric & \color{primary}Acceptance Range & \color{primary}Method of Assessment \\
+\midrule
+Concentration & $\ge 50\,\text{ng}/\mu\text{L}$ & UV-Vis Spectrophotometry (Nanodrop) \\
+$A_{260}/A_{280}$ Ratio & $1.9 - 2.1$ & UV-Vis Spectrophotometry \\
+$A_{260}/A_{230}$ Ratio & $\ge 2.0$ & UV-Vis Spectrophotometry \\
+RNA Integrity Number (RIN) & $\ge 8.0$ (High Quality) & Bioanalyzer / TapeStation Electrophoresis \\
+Genomic DNA Contamination & Not detectable & Negative control PCR (no RT) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Waste Disposal \& Cleanup}
+\begin{enumerate}
+  \item \textbf{Guanidinium Waste:} Collect flow-through from steps 5.2 and 5.3 in organic waste. Do not mix with bleach.
+  \item \textbf{Solid Waste:} Dispose of pipette tips and tubes in biohazard solid waste for autoclaving.
+  \item \textbf{Spills:} Clean Buffer RLT spills with 10\% laboratory detergent, followed by water. Do not use bleach.
+\end{enumerate}
+
+\section{Revision History}
+\begin{table}[H]
+\small
+\caption{SOP revision history log.}
+\label{tab:revision_history}
+\vspace{2pt}
+\renewcommand{\arraystretch}{1.1}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l@{\hspace{6mm}}l@{\hspace{6mm}}X@{\hspace{6mm}}X@{}}
+\toprule
+\color{primary}Version & \color{primary}Effective Date & \color{primary}Summary of Changes & \color{primary}Author \\
+\midrule
+1.0 & May 15, 2024 & Initial release of standard protocol. & Dr. Sarah Jenkins \\
+2.0 & Aug 20, 2025 & Added on-column DNase I digestion step. & Dr. Sarah Jenkins \\
+2.1 & Oct 12, 2026 & Updated quality control metrics for RNA-seq compatibility. & Dr. Sarah Jenkins \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\end{document}

@@ -1,0 +1,192 @@
+% ============================================================
+%  Conference Abstract Template — talk / poster submission
+%  Edit and compile online at https://letx.app
+%  Local:  latexmk -pdf main.tex
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+
+% ── Encoding & fonts ────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+
+% ── Page geometry ───────────────────────────────────────────
+\usepackage[
+  a4paper,
+  top=18mm, bottom=18mm,
+  left=22mm, right=22mm
+]{geometry}
+
+% ── Colours ─────────────────────────────────────────────────
+\usepackage[dvipsnames]{xcolor}
+\definecolor{accent}{HTML}{1A5276}   % deep navy — single accent
+\definecolor{rulegray}{HTML}{AAAAAA} % thin-rule neutral
+
+% ── Core packages ───────────────────────────────────────────
+\usepackage{microtype}
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+\usepackage{hyperref}
+\usepackage{fontawesome5}
+
+% ── Hyperref setup ──────────────────────────────────────────
+\hypersetup{
+  colorlinks=true,
+  urlcolor=accent,
+  linkcolor=accent,
+  pdfauthor={Elena R. Vasquez et al.},
+  pdftitle={Conference Abstract — Adaptive Neural Architecture for Edge Inference},
+}
+
+% ── Colour rules ────────────────────────────────────────────
+\newcommand{\accentrule}{%
+  {\color{accent}\rule{\linewidth}{1.6pt}}}
+\newcommand{\thinrule}{%
+  {\color{rulegray}\rule{\linewidth}{0.4pt}}}
+
+% ── Author / affiliation helpers ────────────────────────────
+\newcommand{\affsym}[1]{\textsuperscript{\,#1}}
+\newcommand{\affline}[2]{%
+  \textsuperscript{#1}{\small #2}\\[-1pt]}
+
+% ── Structured-abstract run-in heading ──────────────────────
+\newcommand{\ahead}[1]{{\color{accent}\textbf{#1.}}\enspace}
+
+% ── Submission-details tcolorbox ────────────────────────────
+\newtcolorbox{submissionbox}{
+  enhanced,
+  colback=white,
+  colframe=accent,
+  arc=3pt,
+  boxrule=0.8pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt,
+  title={\small\bfseries\color{white}\faClipboardList\enspace Submission Details},
+  fonttitle=\small\bfseries,
+  coltitle=white,
+  attach boxed title to top left={yshift=-2mm, xshift=6pt},
+  boxed title style={colback=accent, arc=2pt, boxrule=0pt},
+}
+
+% ── Suppress page number ────────────────────────────────────
+\pagestyle{empty}
+
+% ============================================================
+\begin{document}
+% ============================================================
+
+% ── Top accent rule + conference label ──────────────────────
+\accentrule
+\vspace{1pt}
+{\hfill\footnotesize\color{accent}\textit{NeurArch 2026 — International Symposium on Neural Computing Architectures}}
+\vspace{3pt}
+\thinrule
+
+% ── Title ───────────────────────────────────────────────────
+\vspace{6pt}
+{\Large\bfseries\color{black}
+Adaptive Quantization-Aware Neural Architectures\\[2pt]
+for Low-Power Edge Inference in Industrial IoT Systems}
+\vspace{5pt}
+
+% ── Authors ─────────────────────────────────────────────────
+{\normalsize
+Elena R. Vasquez\affsym{1,\,*}\quad
+Jonas M. Breitfeld\affsym{1,\,2}\quad
+Priya S. Nambiar\affsym{2}\quad
+Tobias F. Engel\affsym{3}\quad
+Li-Wei Chen\affsym{1}
+}
+\vspace{4pt}
+
+% ── Affiliations ────────────────────────────────────────────
+{\small
+\affline{1}{Institute for Embedded Intelligence, ETH Zurich, Zurich, Switzerland}
+\affline{2}{Siemens AG, Corporate Technology, Munich, Germany}
+\affline{3}{Department of Electrical Engineering, KU Leuven, Leuven, Belgium}
+}
+
+% ── Corresponding email ─────────────────────────────────────
+{\small
+\faEnvelope[regular]\enspace
+\href{mailto:e.vasquez@ei.ethz.ch}{\color{accent}e.vasquez@ei.ethz.ch}
+\quad\textit{(corresponding author)}
+}
+
+\vspace{4pt}
+\thinrule
+\vspace{6pt}
+
+% ── Structured Abstract ─────────────────────────────────────
+\ahead{Background}
+Neural networks deployed on resource-constrained edge devices in industrial environments
+must satisfy strict power budgets ($\leq\!5\,$mW) while sustaining inference latency under
+10\,ms per sample. Conventional post-training quantization degrades accuracy by
+up to 8\% on domain-specific time-series data, motivating architecture-level solutions.
+
+\ahead{Methods}
+We propose \textit{AdaptiQ-Edge}, a hardware-aware neural architecture search (NAS)
+framework that co-optimises bit-width allocation and operator selection for
+mixed-precision inference on ARM Cortex-M55 and RISC-V-based MCUs.
+The search space spans 4-/8-/16-bit integer quantization per layer, depthwise-separable
+convolutions, and lightweight attention blocks.
+Training uses a differentiable proxy loss combining cross-entropy with a
+latency–energy Pareto term calibrated via device profiling.
+Experiments were conducted on three industrial sensor benchmarks: \textit{SmartFactory-TS},
+\textit{PredMaint-12k}, and the public CWRU bearing-fault dataset.
+
+\ahead{Results}
+AdaptiQ-Edge achieves a top-1 accuracy of \textbf{94.7\%} on SmartFactory-TS,
+surpassing full-precision MobileNetV3-Small by $+1.3\,$pp while reducing
+energy per inference by \textbf{68\%} (from 18.4\,$\mu$J to 5.9\,$\mu$J).
+On CWRU, F1-score reaches 0.983 at an average latency of 6.8\,ms—within budget—
+compared to 0.961 for a quantization-unaware baseline.
+Model size is reduced by $4.2\times$ (from 1.8\,MB to 0.43\,MB).
+
+\ahead{Conclusions}
+Joint architecture search and quantization-aware training yields models that are
+simultaneously more accurate, smaller, and faster than post-training quantization
+approaches. AdaptiQ-Edge is publicly available, and our device-profiling API
+generalises to heterogeneous MCU families, enabling reproducible edge-AI deployment
+across industrial IoT sectors.
+
+\vspace{4pt}
+\thinrule
+\vspace{4pt}
+
+% ── Keywords ────────────────────────────────────────────────
+\textbf{Keywords:}\enspace
+neural architecture search;\enspace
+quantization-aware training;\enspace
+edge inference;\enspace
+industrial IoT;\enspace
+mixed-precision;\enspace
+energy efficiency
+
+\vspace{8pt}
+
+% ── Submission Details box ──────────────────────────────────
+\begin{submissionbox}
+\setlength{\parskip}{0pt}%
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries\small}l@{\hspace{8mm}}>{\small\raggedright\arraybackslash}X@{}}
+Track             & Hardware-Efficient AI \& Embedded Systems \\[2pt]
+Presentation Type & Oral (20\,min + 5\,min Q\&A) \\[2pt]
+Topic Area        & Neural Architecture Search / Model Compression \\[2pt]
+Submission ID     & NeurArch2026-0417 \\[2pt]
+Conflict of Interest & The authors declare no competing financial interests.
+\end{tabularx}
+\end{submissionbox}
+
+\vspace{4pt}
+\accentrule
+
+% ============================================================
+\end{document}

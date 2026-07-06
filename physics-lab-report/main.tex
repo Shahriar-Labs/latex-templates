@@ -1,0 +1,313 @@
+% This template can be edited and compiled online at https://letx.app
+\documentclass[10pt, letterpaper]{article}
+
+% --- Core Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{siunitx}
+\usepackage{tabularx}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tcolorbox}
+\usepackage{geometry}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{pgfplots}
+\usepackage{hyperref}
+
+% --- Font Setup ---
+% TeX Gyre Pagella (Palatino clone) provides excellent typography for physics reports.
+\usepackage{tgpagella}
+\usepackage[varg]{newpxmath} % Matching math fonts
+
+% --- Geometry & Spacing ---
+\geometry{
+  letterpaper,
+  margin=0.75in,
+  top=0.9in,
+  bottom=0.9in
+}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt plus 1pt minus 1pt}
+
+% --- Color Palette (One Restrained Accent) ---
+\definecolor{primary}{HTML}{1A365D}    % Elegant Deep Navy Blue
+\definecolor{secondary}{HTML}{4A5568}  % Charcoal Slate (Neutral dark)
+\definecolor{bglight}{HTML}{F8FAFC}    % Very Light Slate (Neutral light)
+
+% --- PGFPlots Configuration ---
+\pgfplotsset{
+  compat=1.18,
+  /pgf/number format/use comma=false
+}
+
+% --- PGFPlots Data Definition ---
+\pgfplotstableread{
+  x     y      err
+  0.200 0.806  0.015
+  0.400 1.610  0.020
+  0.600 2.415  0.025
+  0.800 3.222  0.030
+  1.000 4.028  0.035
+}\pendulumdata
+
+% --- Section Styling ---
+\titleformat{\section}
+  {\color{primary}\normalfont\large\bfseries}
+  {\thesection}{1em}{}
+  [\vspace{-0.5ex}\color{primary!30}\titlerule]
+
+\titleformat{\subsection}
+  {\color{primary}\normalfont\normalsize\bfseries}
+  {\thesubsection}{1em}{}
+
+% --- Custom Lists Configuration ---
+\setlist[itemize]{noitemsep, topsep=1pt, partopsep=0pt, parsep=0pt}
+\setlist[enumerate]{noitemsep, topsep=1pt, partopsep=0pt, parsep=0pt}
+
+% --- Custom Environments ---
+\newtcolorbox{abstractbox}{
+  colback=bglight,
+  colframe=primary,
+  arc=0mm,
+  leftrule=3pt,
+  rightrule=0pt,
+  toprule=0pt,
+  bottomrule=0pt,
+  boxsep=6pt,
+  left=12pt,
+  right=12pt,
+  top=8pt,
+  bottom=8pt
+}
+
+% --- Hyperref Setup ---
+\hypersetup{
+  colorlinks=true,
+  linkcolor=primary,
+  citecolor=primary,
+  urlcolor=primary,
+  pdfauthor={Jane Doe},
+  pdftitle={Physics Lab Report: Determination of the Acceleration of Gravity}
+}
+
+\begin{document}
+
+% --- Title Block ---
+\begingroup
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\begin{center}
+  \vspace*{-0.5in}
+  {\color{secondary}\scshape\bfseries\footnotesize Physics Laboratory Report --- LetX Templates}
+  \vspace{1.5ex}
+  
+  {\color{primary}\bfseries\LARGE Experiment 3: Determination of the Acceleration of Gravity ($g$) using a Simple Pendulum}
+  \vspace{2ex}
+  \hrule height 1pt
+  \vspace{2ex}
+  
+  \begin{tabularx}{\linewidth}{@{}>{\color{primary}\bfseries}l@{\hspace{6mm}}>{\raggedright\arraybackslash}X @{\hspace{12mm}} >{\color{primary}\bfseries}l@{\hspace{6mm}}>{\raggedright\arraybackslash}X@{}}
+    Student: & Jane Doe & Course: & PHYS 101 -- Lab Section 04 \\
+    Partner: & John Smith & Date Conducted: & October 12, 2026 \\
+    Instructor: & Dr. Helen Vance & Date Submitted: & October 19, 2026 \\
+  \end{tabularx}
+  
+  \vspace{1.5ex}
+  \hrule height 0.5pt
+  \vspace{3ex}
+\end{center}
+\endgroup
+
+% --- Abstract Box ---
+\begin{abstractbox}
+  \noindent\textbf{Abstract} --- This experiment determined the local acceleration due to gravity, $g$, by measuring the period of a simple pendulum of varying lengths. The pendulum length $L$ was varied from $\SI{0.200}{\meter}$ to $\SI{1.000}{\meter}$ in increments of $\SI{0.200}{\meter}$. The period $T$ of the oscillations was measured using a photogate timer to minimize human reaction time. By performing a linear least-squares regression on the relationship $T^2$ versus $L$, the experimental value of $g$ was calculated to be $\SI{9.808 \pm 0.088}{\meter\per\second\squared}$. This result is in excellent agreement with the accepted local value of $g_{\text{local}} = \SI{9.803}{\meter\per\second\squared}$, representing a relative error of $0.05\%$. Systematic and random errors, such as small deviations from the small-angle approximation and friction at the pivot, are analyzed.
+\end{abstractbox}
+
+\vspace{1.5ex}
+
+% --- Section: Objective ---
+\section{Objective}
+The objectives of this laboratory experiment are:
+\begin{itemize}
+  \item To measure the period of a simple pendulum for various string lengths.
+  \item To experimentally determine the local acceleration due to gravity, $g$, from a linear relationship between the squared period $T^2$ and the length $L$.
+  \item To perform a detailed error propagation and uncertainty analysis to assess the precision and accuracy of the measurements.
+\end{itemize}
+
+% --- Section: Theory ---
+\section{Theory}
+A simple pendulum consists of a small mass $m$ suspended from a fixed point by a light, inextensible string of length $L$. When displaced by a small angle ($\theta \ll \SI{1}{\radian}$), the restoring force is $F = -mg\sin\theta \approx -mg\theta$, where $g$ is the acceleration due to gravity. Under this small-angle approximation, the system behaves as a simple harmonic oscillator described by:
+\begin{equation}
+  \frac{d^2\theta}{dt^2} + \frac{g}{L}\theta = 0
+  \label{eq:eq_of_motion}
+\end{equation}
+The solution to Equation~\eqref{eq:eq_of_motion} yields the period of oscillation, $T$:
+\begin{equation}
+  T = 2\pi\sqrt{\frac{L}{g}} \quad \implies \quad T^2 = \left( \frac{4\pi^2}{g} \right) L
+  \label{eq:period}
+\end{equation}
+Equation~\eqref{eq:period} describes a linear relationship $y = mx$ with slope $m = 4\pi^2 / g$ and intercept $c = 0$. By plotting $T^2$ versus $L$ and fitting a linear model, the experimental acceleration due to gravity is calculated as:
+\begin{equation}
+  g = \frac{4\pi^2}{m}
+  \label{eq:g_calculation}
+\end{equation}
+
+% --- Section: Apparatus ---
+\section{Apparatus}
+The following equipment was utilized to conduct this experiment:
+\begin{multicols}{2}
+\begin{itemize}
+  \item Spherical brass bob ($m = \SI{50.0 \pm 0.1}{\gram}$)
+  \item Lightweight braided nylon string
+  \item Rigid stand with low-friction clamp
+  \item Digital photogate timer ($\pm\SI{0.001}{\second}$)
+  \item Precision meter stick ($\pm\SI{0.5}{\milli\meter}$)
+  \item Digital vernier caliper ($\pm\SI{0.01}{\milli\meter}$)
+\end{itemize}
+\end{multicols}
+
+% --- Section: Procedure ---
+\section{Procedure}
+\begin{enumerate}
+  \item The diameter of the spherical brass bob was measured in three orthogonal directions using the digital vernier caliper to calculate its average radius, $r$.
+  \item The nylon string was secured to the suspension clamp at the top and attached to the bob at the bottom.
+  \item The distance from the bottom of the clamp to the top of the bob was measured with the meter stick to find the string length, $L_{\text{string}}$. The total pendulum length was calculated as $L = L_{\text{string}} + r$.
+  \item The photogate was aligned at the lowest point of the pendulum swing path (equilibrium position) and configured in pendulum mode, which measures the time elapsed between three consecutive gate blocks (one complete cycle).
+  \item The pendulum bob was displaced from equilibrium by a small angle ($\theta < \SI{10}{\degree}$) and released from rest to ensure stable, planar oscillations.
+  \item The period $T$ of a single full oscillation was recorded. This was repeated three times for each pendulum length to compute a mean period.
+  \item Steps 3–6 were repeated for five different lengths, varying the total pendulum length from $\SI{0.200}{\meter}$ to $\SI{1.000}{\meter}$ in steps of $\SI{0.200}{\meter}$.
+\end{enumerate}
+
+% --- Section: Data & Measurements ---
+\section{Data \& Measurements}
+The average radius of the bob was determined to be $r = \SI{1.25 \pm 0.01}{\centi\meter}$. Table~\ref{tab:measurements} summarizes the experimental measurements obtained for each pendulum configuration.
+
+\begin{table}[h]
+  \centering
+  \caption{Experimental measurements for varying pendulum lengths and measured periods.}
+  \label{tab:measurements}
+  \vspace{1.5ex}
+  \begingroup
+  \setlength{\parindent}{0pt}
+  \setlength{\parskip}{0pt}
+  \small
+  \begin{tabular}{S[table-format=1.3] S[table-format=2.2] S[table-format=2.2] S[table-format=2.2] S[table-format=2.2] S[table-format=1.3] S[table-format=1.3]}
+    \toprule
+    {Length $L$} & \multicolumn{3}{c}{Time for 10 Osc. $t_i$ (\si{\second})} & {Mean Time $\bar{t}$} & {Period $T$} & {Period Squared $T^2$} \\
+    \cmidrule(lr){2-4}
+    {(\si{\meter})} & {$t_1$} & {$t_2$} & {$t_3$} & {(\si{\second})} & {(\si{\second})} & {(\si{\second\squared})} \\
+    \midrule
+    0.200 & 8.95 & 9.02 & 8.98 & 8.98 & 0.898 & 0.806 \\
+    0.400 & 12.65 & 12.72 & 12.69 & 12.69 & 1.269 & 1.610 \\
+    0.600 & 15.58 & 15.49 & 15.54 & 15.54 & 1.554 & 2.415 \\
+    0.800 & 17.98 & 17.92 & 17.95 & 17.95 & 1.795 & 3.222 \\
+    1.000 & 20.09 & 20.05 & 20.07 & 20.07 & 2.007 & 4.028 \\
+    \bottomrule
+  \end{tabular}
+  \endgroup
+\end{table}
+
+% --- Section: Analysis ---
+\section{Analysis}
+A linear regression analysis of $T^2$ as a function of $L$ was performed using the experimental data points. Figure~\ref{fig:plot} shows the plot of $T^2$ versus $L$ along with the best-fit line.
+
+\begin{figure}[h]
+  \centering
+  \begingroup
+  \setlength{\parindent}{0pt}
+  \setlength{\parskip}{0pt}
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=0.85\linewidth,
+      height=4.8cm,
+      xlabel={Pendulum Length $L$ (\si{\meter})},
+      ylabel={Squared Period $T^2$ (\si{\second\squared})},
+      xmin=0.1, xmax=1.1,
+      ymin=0, ymax=4.5,
+      xtick={0.2,0.4,0.6,0.8,1.0},
+      ytick={1.0,2.0,3.0,4.0},
+      grid=both,
+      grid style={line width=.1pt, draw=gray!10},
+      major grid style={line width=.2pt, draw=gray!20},
+      legend pos=north west,
+      axis line style={draw=primary!50},
+      tick label style={font=\small},
+      label style={font=\small\color{primary}},
+      legend style={font=\small, draw=gray!30}
+    ]
+      % Linear Fit Line
+      \addplot[
+        domain=0.2:1.0,
+        samples=2,
+        color=secondary,
+        thick,
+        dashed
+      ] {4.025*x + 0.005};
+      \addlegendentry{Linear Fit ($T^2 = 4.025 L + 0.005$)}
+
+      % Data points with error bars
+      \addplot[
+        only marks,
+        mark=*,
+        mark size=2pt,
+        color=primary,
+        error bars/.cd,
+        y dir=both,
+        y explicit
+      ] table[x=x, y=y, y error=err] {\pendulumdata};
+      \addlegendentry{Experimental Data}
+    \end{axis}
+  \end{tikzpicture}
+  \endgroup
+  \caption{Linear relationship between the squared period $T^2$ and the pendulum length $L$. The dashed line represents the linear least-squares regression model.}
+  \label{fig:plot}
+\end{figure}
+
+The slope of the line of best fit obtained from the regression is:
+\begin{equation*}
+  m = \SI{4.025 \pm 0.036}{\second\squared\per\meter}
+\end{equation*}
+Using Equation~\eqref{eq:g_calculation}, the experimental value for the acceleration due to gravity, $g$, is computed as:
+\begin{equation*}
+  g = \frac{4\pi^2}{4.025\ \si{\second\squared\per\meter}} = \SI{9.808}{\meter\per\second\squared}
+\end{equation*}
+
+% --- Section: Error Analysis ---
+\section{Error Analysis}
+To evaluate the precision and accuracy of the experimental value of $g$, we analyze both random and systematic uncertainties.
+The uncertainty in the total length is $\Delta L = \pm \SI{0.002}{\meter}$ (comprising meter stick resolution and suspension alignment), and the uncertainty in the average period is $\Delta T = \pm \SI{0.001}{\second}$ (photogate resolution limit).
+For a single measurement, the propagated relative uncertainty in $g$ is $\Delta g / g = \sqrt{(\Delta L / L)^2 + (2 \Delta T / T)^2}$.
+
+For the regression analysis, the standard error of the slope is $\Delta m = \pm\SI{0.036}{\second\squared\per\meter}$. Since $g$ is related to $m$ by Equation~\eqref{eq:g_calculation}, the absolute uncertainty $\Delta g$ is calculated as:
+\begin{equation}
+  \Delta g = g \cdot \frac{\Delta m}{m} = \SI{9.808}{\meter\per\second\squared} \times \frac{0.036}{4.025} = \SI{0.088}{\meter\per\second\squared}
+  \label{eq:propagation}
+\end{equation}
+This yields an experimental result of $g_{\text{exp}} = \SI{9.81 \pm 0.09}{\meter\per\second\squared}$.
+Comparing this to the accepted local value $g_{\text{local}} = \SI{9.803}{\meter\per\second\squared}$, the percentage error is:
+\begin{equation}
+  \text{Percentage Error} = \frac{|g_{\text{exp}} - g_{\text{local}}|}{g_{\text{local}}} \times 100\% = 0.05\%
+  \label{eq:percent_error}
+\end{equation}
+The accepted value lies well within the experimental uncertainty interval $[\SI{9.72}{\meter\per\second\squared}, \SI{9.90}{\meter\per\second\squared}]$, demonstrating high measurement precision.
+
+Potential sources of systematic error in this experiment include:
+\begin{itemize}
+  \item \textbf{Air Resistance}: Damping forces dissipate energy and systematically lengthen the measured period.
+  \item \textbf{Finite Angle Deviation}: The small-angle approximation introduces a $+0.04\%$ systematic shift in the period at $\theta = \SI{10}{\degree}$.
+  \item \textbf{String Stretch}: Elastic tension under load slightly increases the effective pendulum length $L$ during oscillation.
+\end{itemize}
+
+% --- Section: Conclusion ---
+\section{Conclusion}
+The acceleration due to gravity was experimentally determined to be $g_{\text{exp}} = \SI{9.81 \pm 0.09}{\meter\per\second\squared}$ using a simple pendulum system and a digital photogate. This value is in excellent agreement with the accepted value of $g_{\text{local}} = \SI{9.803}{\meter\per\second\squared}$, with a minimal relative discrepancy of $0.05\%$. The linear relationship between $T^2$ and $L$ was confirmed by the high coefficient of determination ($R^2 > 0.999$) of the regression fit.
+
+Future improvements to the experiment could include using a sturdier metal rod instead of string to prevent string stretch, and performing the measurements in a vacuum chamber to eliminate air resistance. Overall, the simple pendulum serves as a precise and robust method for measuring $g$ under controlled laboratory conditions.
+
+\end{document}

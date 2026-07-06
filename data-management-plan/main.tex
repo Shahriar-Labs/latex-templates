@@ -1,0 +1,173 @@
+% =========================================================================
+% Data Management Plan (DMP) Template
+% NSF/NIH-style Supplementary Document
+% This template can be edited and compiled online at https://letx.app
+% =========================================================================
+
+\documentclass[10pt,letterpaper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{margin=0.85in}
+
+% Color definitions
+\usepackage[table]{xcolor}
+\definecolor{accent}{HTML}{1A365D}      % Deep Navy Blue
+\definecolor{neutraldark}{HTML}{2D3748}   % Charcoal for body text
+\definecolor{lightgray}{HTML}{F7FAFC}     % Soft background for table headers
+\definecolor{linkcolor}{HTML}{2B6CB0}     % Steel blue for links
+
+% Font configuration
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+
+% Table packages
+\usepackage{tabularx}
+\usepackage{booktabs}
+
+% Headings styling
+\usepackage{titlesec}
+\titleformat{\section}
+  {\color{accent}\normalfont\large\bfseries}
+  {\thesection.}
+  {0.5em}
+  {}
+  [\titlerule]
+\titlespacing*{\section}{0pt}{1.4ex plus 0.4ex minus 0.2ex}{0.8ex plus 0.1ex}
+
+\titleformat{\subsection}
+  {\color{accent}\normalfont\normalsize\bfseries}
+  {\thesubsection.}
+  {0.5em}
+  {}
+\titlespacing*{\subsection}{0pt}{1.0ex plus 0.3ex minus 0.2ex}{0.5ex plus 0.1ex}
+
+% List configuration
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=*,labelsep=0.4em,topsep=4pt,itemsep=3pt,parsep=0pt,partopsep=0pt}
+\setlist[enumerate]{leftmargin=*,labelsep=0.4em,topsep=4pt,itemsep=3pt,parsep=0pt,partopsep=0pt}
+
+% Captions
+\usepackage[labelfont={color=accent,bf},font=small]{caption}
+
+% Header and Footer
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\color{neutraldark}\small Data Management Plan}
+\fancyhead[R]{\color{neutraldark}\small NSF/NIH Supplementary Document}
+\fancyfoot[C]{\color{neutraldark}\small Page \thepage\ of \pageref{LastPage}}
+
+% Hyperlinks
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=linkcolor,
+    filecolor=linkcolor,      
+    urlcolor=linkcolor,
+    citecolor=linkcolor,
+    pdfauthor={Dr. Eleanor Vance},
+    pdftitle={Data Management Plan},
+}
+
+% Hard rules - parskip & parindent
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\begin{document}
+\color{neutraldark}
+
+% Title Block
+\begin{center}
+    {\color{accent}\Large\bfseries DATA MANAGEMENT PLAN} \\[0.5em]
+    {\large\bfseries Project Title: High-Resolution Spatial Genomics of Marine Microorganisms} \\[0.3em]
+    \vspace{0.2em}
+    \begin{tabularx}{\linewidth}{X r}
+        \textbf{Sponsor:} National Science Foundation (NSF) & \textbf{Lead PI:} Dr. Eleanor Vance \\
+        \textbf{Program:} Division of Ocean Sciences (OCE) & \textbf{Institution:} Pacific Oceanographic Institute \\
+        \textbf{Date:} July 5, 2026 & \textbf{Contact:} \href{mailto:evance@poi.edu}{evance@poi.edu}
+    \end{tabularx}
+\end{center}
+\vspace{0.4em}
+\hrule height 0.5pt
+\vspace{0.8em}
+
+\section{Data Types \& Formats}
+This research project will generate high-throughput sequencing data, environmental metadata, and high-resolution microscopy images to profile marine microbial communities in the North Pacific Subtropical Gyre. The data types and their formats include:
+\begin{itemize}
+    \item \textbf{Raw Genomic Reads:} High-throughput metagenomic and metatranscriptomic sequencing data will be generated using Illumina NovaSeq 6000 platforms and stored as compressed FASTQ files (\texttt{.fastq.gz}).
+    \item \textbf{Assembled Contigs \& Metagenome-Assembled Genomes (MAGs):} Bioinformatics processing will produce assembled genomic sequences, stored in standard FASTA format (\texttt{.fasta}), alongside gene annotations in GFF3 format (\texttt{.gff3}).
+    \item \textbf{Spatial and Environmental Metadata:} Contextual environmental data (depth, temperature, salinity, oxygen concentration, nutrient levels) will be recorded at each sampling station and stored in tabular CSV format (\texttt{.csv}).
+    \item \textbf{High-Resolution Microscopy Images:} Confocal laser scanning microscopy will be used to visualize cell morphology. Images will be captured in raw TIFF format (\texttt{.tiff}) with accompanying metadata in OME-XML format (\texttt{.ome.xml}).
+    \item \textbf{Analytical Pipelines and Code:} All statistical models, quality control scripts, and visualization workflows will be written in R (\texttt{.R}) and Python (\texttt{.py}) and managed as Jupyter Notebooks (\texttt{.ipynb}).
+\end{itemize}
+
+\vspace{0.8em}
+\begin{table}[htbp]
+\centering
+\caption{Summary of Data Types, Estimated Volumes, and Repositories}
+\label{tab:dmp-summary}
+\vspace{0.4em}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash\bfseries\color{accent}}l >{\raggedright\arraybackslash}X l l}
+\rowcolor{lightgray}
+\textbf{Data Category} & \textbf{Format \& Description} & \textbf{Est. Volume} & \textbf{Repository} \\
+\midrule
+Raw Sequencing & Compressed FASTQ (\texttt{.fastq.gz}) & 1.2 TB & NCBI Sequence Read Archive (SRA) \\
+Genomic Assemblies & Contigs and scaffolds (FASTA) & 50 GB & NCBI GenBank \\
+Environmental Metadata & Tabular data (CSV) & 10 GB & Dryad Digital Repository \\
+Confocal Imagery & Micrographs and metadata (TIFF/OME-XML) & 2.4 TB & BioImage Archive \\
+Workflow Code & Python/R scripts, Jupyter Notebooks & <50 MB & GitHub / Zenodo (DOI) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+\vspace{0.5em}
+
+\section{Metadata \& Documentation Standards}
+To ensure reproducibility and long-term utility of the data, comprehensive metadata and documentation will be maintained throughout the project lifecycle:
+\begin{itemize}
+    \item \textbf{Genomic Metadata Standards:} All sequencing efforts will be documented in strict compliance with the Minimum Information about any (x) Sequence (MIxS) specifications, specifically the MIMS (Minimum Information about a Metagenome Sequence) and MIMARKS (Minimum Information about a Marker Gene Sequence) packages.
+    \item \textbf{Biodiversity and Spatial Metadata:} Environmental and spatial data will follow the Darwin Core (DwC) metadata schema. Geospatial coordinates will be represented in the WGS84 coordinate reference system, and timestamps will follow the ISO 8601 standard.
+    \item \textbf{Image Metadata:} Confocal microscopy data will be documented using the Bio-Formats and Open Microscopy Environment (OME) standards, embedding microscope hardware settings, excitation wavelengths, exposure times, and voxel sizes directly in the headers or sidecar files.
+    \item \textbf{Project Documentation:} Analysis pipelines will be documented with Markdown \texttt{README} files and dependency configurations (e.g., Anaconda \texttt{environment.yml} files). Version control will be managed using Git.
+\end{itemize}
+
+\section{Storage, Backup \& Security}
+All active research data will be managed using institutional infrastructure and robust security protocols:
+\begin{itemize}
+    \item \textbf{Active Storage Infrastructure:} High-volume primary datasets (raw sequences and images) will be stored on the Pacific Oceanographic Institute's (POI) secure, high-performance computing (HPC) storage cluster, utilizing a RAID 6 hardware configuration to prevent data loss from drive failures.
+    \item \textbf{Automated Backup Procedures:} Incremental backups of all active storage areas will run nightly, and full backups will be executed weekly. One copy of the backups will be retained on local POI servers, while a secondary copy will be encrypted and synced to an off-site cloud storage repository (Amazon S3 Glacier).
+    \item \textbf{Security and Access Controls:} Access to raw and processed data will be restricted to authorized project personnel through secure shell (SSH) keys and two-factor authentication (2FA). Directory-level permissions will restrict edit access for raw data to read-only for all users, including the PIs, to prevent accidental modification or deletion.
+\end{itemize}
+
+\section{Data Sharing \& Access Policy}
+This project is committed to the timely and open sharing of scientific findings, adhering to the NSF Public Access Policy and NIH Data Management and Sharing (DMS) guidelines:
+\begin{itemize}
+    \item \textbf{Release Timeline:} Raw genomic sequences will be uploaded to NCBI SRA within 12 months of collection or immediately upon publication of the primary findings, whichever occurs first. Tabular metadata and processed imagery will be released concurrently with peer-reviewed publications.
+    \item \textbf{Licensing:} All shared datasets will be released under the Creative Commons Attribution 4.0 International (CC BY 4.0) license, allowing for unrestricted reuse and modification provided appropriate attribution is given. Software code will be licensed under the permissive MIT License.
+    \item \textbf{Access Restrictions:} No proprietary, privacy, or ethical restrictions prevent the dissemination of these environmental datasets. There are no human subjects involved, and all field samplings are conducted in public waters.
+\end{itemize}
+
+\section{Preservation \& Long-term Archiving}
+Long-term preservation will be guaranteed by archiving data in established, federally-funded, and community-accepted public repositories:
+\begin{itemize}
+    \item \textbf{Sequence Data Preservation:} NCBI SRA and GenBank will serve as the permanent archive for raw and assembled sequence data, ensuring long-term availability at no cost to the project.
+    \item \textbf{Metadata and Tabular Archiving:} Dryad Digital Repository will archive environmental metadata, processed spatial tables, and final statistical datasets. Dryad assigns permanent Digital Object Identifiers (DOIs) to facilitate citation.
+    \item \textbf{Image Data Preservation:} BioImage Archive will host high-resolution micrographs and OME-XML metadata files, maintaining them in accordance with FAIR (Findable, Accessible, Interoperable, Reusable) data principles.
+    \item \textbf{Code Preservation:} Active codebase repositories on GitHub will be cloned and archived in Zenodo at major project milestones and upon publication, generating static, citable DOIs linked to specific paper releases.
+    \item \textbf{Data Retention Period:} All primary data, physical samples log, and processing history will be preserved for a minimum of 10 years following the official end of the award period.
+\end{itemize}
+
+\section{Roles \& Responsibilities}
+A clear hierarchy of responsibilities is established to guarantee the implementation of the Data Management Plan:
+\begin{itemize}
+    \item \textbf{Dr. Eleanor Vance (Lead PI):} Assumes overall responsibility for compliance with the DMP, coordinating data collection, monitoring laboratory data entry, and budgeting for data storage, curation, and publication fees.
+    \item \textbf{Dr. Liam Chen (Postdoctoral Scholar):} Will manage the daily metadata entry, enforce naming conventions, run the bioinformatic pipelines, and oversee the formatting and upload of datasets to NCBI SRA and Dryad.
+    \item \textbf{Sarah Jenkins (Graduate Research Assistant):} Will maintain the version-controlled GitHub repositories, curate the analysis pipelines, and archive final code releases on Zenodo.
+    \item \textbf{POI HPC Systems Administrator:} Will manage the physical server hardware, monitor automated backup tasks, and ensure the security of the active storage directories.
+\end{itemize}
+
+\end{document}
