@@ -1,0 +1,87 @@
+%% =========================================================================
+%%  Greeting Card — half-fold (landscape, fold along the vertical centre).
+%%  Print single-sided; fold in half so the FRONT cover (right panel) faces
+%%  out and the INSIDE message (left panel) is revealed when opened.
+%%  Edit & compile online at https://letx.app
+%% =========================================================================
+\documentclass[a4paper]{article}
+
+\usepackage[paperwidth=297mm,paperheight=210mm,margin=0mm,
+  headheight=0pt,headsep=0pt,footskip=0pt,nohead,nofoot]{geometry}
+\setlength{\topskip}{0pt}
+\usepackage[T1]{fontenc}
+\usepackage{tgpagella}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{calligra}          % elegant calligraphic display face (\calligra)
+\usetikzlibrary{decorations.pathmorphing}
+
+% ── Palette ─────────────────────────────────────────────────────────────────
+\definecolor{cardbg}{HTML}{FDF6F0}   % warm cream
+\definecolor{accent}{HTML}{8B3A62}   % plum
+\definecolor{gold}{HTML}{B8924A}     % soft gold
+\definecolor{ink}{HTML}{2E1A24}
+\definecolor{fold}{HTML}{D9C7CF}
+
+\pagecolor{cardbg}
+\setlength{\parindent}{0pt}
+\pagestyle{empty}
+
+% ── A small floral / laurel ornament ────────────────────────────────────────
+\newcommand{\ornament}[1][accent]{%
+  \begin{tikzpicture}[scale=0.5]
+    \draw[#1,line width=1pt] (-2,0) .. controls (-1,0.5) and (-0.4,0.2) .. (0,0)
+                             .. controls (0.4,0.2) and (1,0.5) .. (2,0);
+    \foreach \x in {-1.5,-1,-0.5,0.5,1,1.5}{
+      \fill[gold] (\x,0) circle (1.6pt);}
+    \fill[#1] (0,0) circle (2.4pt);
+  \end{tikzpicture}}
+
+% one panel = half the page width, full height
+\newcommand{\panelW}{148.5mm}
+
+\begin{document}
+
+\noindent
+% ── LEFT PANEL — INSIDE MESSAGE ─────────────────────────────────────────────
+\begin{minipage}[t][209mm][c]{\panelW}
+  \centering
+  {\color{gold}\ornament[gold]}\\[10mm]
+  {\color{accent}\Large\itshape Dear Friend,}\\[8mm]
+  \begin{minipage}{110mm}
+    \centering
+    {\color{ink}\large\itshape
+     May this special day bring you as much joy and warmth as you bring to
+     everyone around you.\\[5mm]
+     Wishing you a year filled with laughter, love, and every happiness
+     your heart can hold.}
+  \end{minipage}\\[12mm]
+  {\color{accent}\large\itshape with love,}\\[3mm]
+  {\color{ink}\large\itshape Alex}\\[10mm]
+  {\color{gold}\ornament[gold]}
+\end{minipage}%
+% ── FOLD LINE ───────────────────────────────────────────────────────────────
+\begin{minipage}[t][209mm][c]{0pt}
+  \tikz\draw[fold,dashed,line width=0.5pt] (0,0) -- (0,-210mm);
+\end{minipage}%
+% ── RIGHT PANEL — FRONT COVER ───────────────────────────────────────────────
+\begin{minipage}[t][209mm][c]{\panelW}
+  \centering
+  % decorative frame
+  \begin{tikzpicture}[remember picture]
+    \draw[gold,line width=1.2pt,rounded corners=3mm] (0,0) rectangle (95mm,150mm);
+    \draw[accent!60,line width=0.5pt,rounded corners=2mm]
+      (3mm,3mm) rectangle (92mm,147mm);
+    \node at (47.5mm,120mm) {\color{accent}\ornament};
+    \node at (47.5mm,88mm)
+      {\color{accent}\calligra\fontsize{54}{60}\selectfont Happy};
+    \node at (47.5mm,66mm)
+      {\color{accent}\calligra\fontsize{54}{60}\selectfont Birthday};
+    \draw[gold,line width=1pt] (20mm,50mm) -- (75mm,50mm);
+    \node at (47.5mm,40mm)
+      {\color{ink}\large\itshape wishing you a wonderful day};
+    \node at (47.5mm,25mm) {\color{accent}\ornament};
+  \end{tikzpicture}
+\end{minipage}
+
+\end{document}

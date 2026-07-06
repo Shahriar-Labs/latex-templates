@@ -1,0 +1,184 @@
+% ============================================================
+%  Business Card Sheet — 10-up (2 × 5) on US Letter
+%  Edit & compile online at https://letx.app
+%  Compile: latexmk -pdf main.tex   (pdflatex, zero errors)
+% ============================================================
+\documentclass[12pt]{article}
+
+% ---------- page geometry ----------
+\usepackage[
+  letterpaper,
+  top=0.2in, bottom=0.2in,
+  left=0.625in, right=0.625in,
+  headheight=0pt, headsep=0pt, footskip=0pt
+]{geometry}
+
+% ---------- packages ----------
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{fontawesome5}
+\usepackage{microtype}
+\usepackage{hyperref}
+\hypersetup{hidelinks}
+
+% ---------- global resets ----------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\pagestyle{empty}
+
+% ---------- colour palette ----------
+\definecolor{accent}{HTML}{1A3557}
+\definecolor{accentlt}{HTML}{2A6496}
+\definecolor{softgray}{HTML}{F4F6F9}
+\definecolor{rulecolor}{HTML}{BBBBBB}
+\definecolor{textmain}{HTML}{1C1C2E}
+\definecolor{textsub}{HTML}{445566}
+
+% ============================================================
+%  CARD MACRO — draws one 3.5in x 2in card (252.945pt x 144.54pt)
+% ============================================================
+% Convenience lengths inside card
+\def\CW{252.945}   % card width  in pt
+\def\CH{144.54}    % card height in pt
+
+\newcommand{\BusinessCard}{%
+\begin{tikzpicture}[x=1pt,y=1pt,every node/.style={inner sep=0pt,outer sep=0pt}]
+
+  %% background
+  \fill[softgray] (0,0) rectangle (\CW,\CH);
+
+  %% left accent stripe (width ~59pt = 0.82in)
+  \fill[accent] (0,0) rectangle (59,\CH);
+
+  %% top-right decorative corner block
+  \fill[accentlt!22] (\CW,\CH) rectangle (202,117);
+
+  %% monogram circle on stripe
+  \fill[white] (29.5,104) circle (19.84pt);
+  \node[text=accent,font=\bfseries\normalsize] at (29.5,104) {AK};
+
+  %% thin rule on stripe
+  \draw[white!55!accent,line width=0.4pt] (5,22) -- (54,22);
+
+  %% company name rotated on stripe
+  \node[rotate=90,text=white,font=\tiny\bfseries,anchor=south,opacity=0.75]
+    at (13,7) {\MakeUppercase{Vertex Solutions Inc.}};
+
+  %% tagline in corner
+  \node[text=accentlt,font=\tiny\itshape,anchor=north east]
+    at (\CW-2,\CH-2) {design\,\textbullet\,strategy\,\textbullet\,growth};
+
+  %% NAME
+  \node[text=textmain,font=\large\bfseries,anchor=north west]
+    at (67,\CH-10) {Alexandra Kim};
+
+  %% TITLE
+  \node[text=accent,font=\small\bfseries,anchor=north west]
+    at (67,\CH-26) {Head of Brand Strategy};
+
+  %% separator rule
+  \draw[accent!35,line width=0.45pt] (67,\CH-36) -- (\CW-8,\CH-36);
+
+  %% ---- contact rows ----
+  %% Phone
+  \node[text=accent,font=\scriptsize,anchor=west] at (67,\CH-48) {\faIcon{phone-alt}};
+  \node[text=textsub,font=\scriptsize,anchor=west] at (80,\CH-48) {+1\,(415)\,882-3047};
+
+  %% Email
+  \node[text=accent,font=\scriptsize,anchor=west] at (67,\CH-62) {\faIcon{envelope}};
+  \node[text=textsub,font=\scriptsize,anchor=west] at (80,\CH-62) {a.kim@vertexsolutions.com};
+
+  %% Website
+  \node[text=accent,font=\scriptsize,anchor=west] at (67,\CH-76) {\faIcon{globe}};
+  \node[text=textsub,font=\scriptsize,anchor=west] at (80,\CH-76) {www.vertexsolutions.com};
+
+  %% LinkedIn
+  \node[text=accent,font=\scriptsize,anchor=west] at (67,\CH-90) {\faIcon{linkedin}};
+  \node[text=textsub,font=\scriptsize,anchor=west] at (80,\CH-90) {linkedin.com/in/alexkim};
+
+  %% address tint strip
+  \fill[accent!10] (59,0) rectangle (\CW,44);
+
+  %% address line 1
+  \node[text=textsub,font=\tiny,anchor=west]
+    at (66,32) {\faIcon{map-marker-alt}\enspace 580 Market St, Suite 300, San Francisco, CA\,94104};
+
+  %% address line 2
+  \node[text=textsub,font=\tiny,anchor=west]
+    at (66,18) {Office: +1\,(415)\,882-3000\enspace|\enspace Fax: +1\,(415)\,882-3001};
+
+  %% decorative dots bottom-right
+  \fill[accent!45] (\CW-8,8)  circle (2pt);
+  \fill[accent!45] (\CW-16,8) circle (2pt);
+  \fill[accent!45] (\CW-24,8) circle (2pt);
+
+  %% outer border
+  \draw[accent!20,line width=0.4pt] (0,0) rectangle (\CW,\CH);
+
+\end{tikzpicture}%
+}
+
+% ============================================================
+%  DOCUMENT
+% ============================================================
+\begin{document}
+
+% "print at 100%" note at very top
+\begin{tikzpicture}[remember picture,overlay]
+  \node[font=\tiny\itshape,text=rulecolor,anchor=north] at (current page.north)
+    {Cut along dashed guides after printing};
+\end{tikzpicture}
+
+\vspace*{-\topskip}
+\noindent\hfil\scalebox{0.9}{%
+\begin{tikzpicture}[x=1pt,y=1pt]
+  \pgfmathsetmacro{\cardW}{252.945}
+  \pgfmathsetmacro{\cardH}{144.54}
+  \pgfmathsetmacro{\cardG}{7.227}
+  \pgfmathsetmacro{\totH}{5*\cardH + 4*\cardG}
+
+  % ---- 10 cards ----
+  \foreach \col in {0,1}{
+    \foreach \row in {0,1,2,3,4}{
+      \pgfmathsetmacro{\xp}{\col*(\cardW+\cardG)}
+      \pgfmathsetmacro{\yp}{\totH - \row*(\cardH+\cardG) - \cardH}
+      \begin{scope}[xshift=\xp pt, yshift=\yp pt]
+        \node[anchor=south west] at (0,0) {\BusinessCard};
+      \end{scope}
+    }
+  }
+
+  % ---- cut-guide crosshairs at 3x6 = 18 grid intersections ----
+  \pgfmathsetmacro{\gh}{8}% half tick length pt
+
+  % x-positions of vertical cut lines
+  \pgfmathsetmacro{\gxA}{0}
+  \pgfmathsetmacro{\gxB}{\cardW + \cardG/2}
+  \pgfmathsetmacro{\gxC}{2*\cardW + \cardG}
+
+  % y-positions of horizontal cut lines (top to bottom)
+  \pgfmathsetmacro{\gyI}{\totH}
+  \pgfmathsetmacro{\gyII}{\totH - \cardH - \cardG/2}
+  \pgfmathsetmacro{\gyIII}{\totH - 2*\cardH - 1.5*\cardG}
+  \pgfmathsetmacro{\gyIV}{\totH - 3*\cardH - 2.5*\cardG}
+  \pgfmathsetmacro{\gyV}{\totH - 4*\cardH - 3.5*\cardG}
+  \pgfmathsetmacro{\gyVI}{0}
+
+  \foreach \gx in {\gxA,\gxB,\gxC}{
+    \foreach \gy in {\gyI,\gyII,\gyIII,\gyIV,\gyV,\gyVI}{
+      \draw[rulecolor,line width=0.25pt,dashed]
+        (\gx-\gh,\gy) -- (\gx+\gh,\gy);
+      \draw[rulecolor,line width=0.25pt,dashed]
+        (\gx,\gy-\gh) -- (\gx,\gy+\gh);
+    }
+  }
+
+\end{tikzpicture}%
+}\hfil
+
+\end{document}

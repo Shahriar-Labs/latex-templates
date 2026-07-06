@@ -1,0 +1,370 @@
+% ============================================================
+%  US Utility Patent Application — LetX Template
+%  Editable and compilable online at https://letx.app
+%  Compile: latexmk -pdf main.tex  (pdflatex, zero errors)
+% ============================================================
+\documentclass[12pt,letterpaper]{article}
+
+% ── Packages ────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgtermes}          % TeX Gyre Termes (Times-like, elegant serif)
+\usepackage[scaled=0.92]{helvet}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{array}
+\usepackage{parskip}
+\usepackage{hyperref}
+
+% ── Lengths & indentation ───────────────────────────────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% ── Page geometry ───────────────────────────────────────────
+\geometry{
+  top=1.1in, bottom=1.1in,
+  left=1.25in, right=1.25in,
+  headheight=26pt
+}
+
+% ── Colour palette (restrained) ─────────────────────────────
+\definecolor{accent}{HTML}{1A3A5C}      % deep navy
+\definecolor{neutral}{HTML}{4A4A4A}     % charcoal body
+\definecolor{colrule}{HTML}{B0B8C4}     % light steel rule
+\definecolor{muted}{HTML}{6B7280}       % muted label
+
+% ── Typography helpers ──────────────────────────────────────
+\color{neutral}
+\setstretch{1.15}
+
+% ── Header / Footer ─────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\newcommand{\myheadrule}{\textcolor{colrule}{\hrule width\headwidth height 0.4pt}}
+\renewcommand{\headrule}{\myheadrule}
+\fancyhead[L]{\small\color{muted}\textit{U.S. Patent Application}}
+\fancyhead[R]{\small\color{muted}App. No.~18/472,{\relax}309}
+\fancyfoot[C]{\small\color{muted}\thepage\ of \pageref{LastPage}}
+
+% ── Section styling ─────────────────────────────────────────
+\titleformat{\section}
+  {\normalfont\bfseries\large\color{accent}}
+  {}
+  {0pt}
+  {\MakeUppercase}
+  [\vspace{2pt}{\color{colrule}\titlerule[0.5pt]}\vspace{4pt}]
+
+\titlespacing{\section}{0pt}{14pt}{6pt}
+
+\titleformat{\subsection}
+  {\normalfont\bfseries\normalsize\color{neutral}}
+  {}
+  {0pt}
+  {}
+
+\titlespacing{\subsection}{0pt}{8pt}{3pt}
+
+% ── Claim macro ─────────────────────────────────────────────
+\newcounter{claimcnt}
+\setcounter{claimcnt}{0}
+\newcommand{\claim}[1]{%
+  \stepcounter{claimcnt}%
+  \noindent\hangindent=1.8em\hangafter=1%
+  \textbf{\theclaimcnt.}\enspace#1\par\vspace{5pt}%
+}
+
+% ── Title block macro ───────────────────────────────────────
+\newcommand{\titlerow}[2]{%
+  \noindent\begin{tabularx}{\linewidth}{%
+    @{}>{{\color{muted}\small\bfseries}}l@{\hspace{7mm}}>{\raggedright\arraybackslash}X@{}%
+  }%
+    #1 & #2 \\
+  \end{tabularx}%
+  \vspace{2pt}%
+}
+
+% ─────────────────────────────────────────────────────────────
+\begin{document}
+
+% ══════════════════════════════════════════════════════════════
+%  TITLE BLOCK
+% ══════════════════════════════════════════════════════════════
+\vspace*{4pt}
+{\centering
+  {\color{accent}\rule{\linewidth}{1.2pt}}\par\vspace{8pt}%
+  {\Large\bfseries\color{accent} UNITED STATES PATENT APPLICATION}\par\vspace{6pt}
+  {\color{accent}\rule{\linewidth}{0.5pt}}\par
+}
+\vspace{16pt}
+
+\titlerow{TITLE OF INVENTION:}{Adaptive Thermal-Management System for High-Density
+  Solid-State Battery Modules Employing Phase-Change Microchannels}
+\vspace{4pt}
+\titlerow{INVENTORS:}{Dr.~Elena R.~Vasquez (San Jose, CA, US);
+  Marcus T.~Okafor (Austin, TX, US);
+  Priya N.~Mehta (Cambridge, MA, US)}
+\titlerow{APPLICANT:}{NovaCELL Technologies, Inc., 4850 Innovation Drive, Suite 200,
+  San Jose, CA 95134 (US)}
+\titlerow{APPLICATION NO.:}{18/472,309}
+\titlerow{FILING DATE:}{March 14, 2025}
+\titlerow{RELATED APPLICATIONS:}{This application claims priority to U.S.\ Provisional
+  Application No.~63/521,847, filed June 19, 2024, the entire disclosure of
+  which is incorporated herein by reference.}
+
+\vspace{14pt}
+{\color{colrule}\hrule height 0.5pt}
+\vspace{14pt}
+
+% ══════════════════════════════════════════════════════════════
+\section{Field of the Invention}
+% ══════════════════════════════════════════════════════════════
+
+The present invention relates generally to thermal management of electrochemical energy
+storage devices, and more particularly to microchannel-based heat-exchange systems
+incorporating phase-change materials (PCMs) for regulating operating temperatures of
+high-density solid-state battery modules used in electric vehicles and grid-storage
+applications.
+
+% ══════════════════════════════════════════════════════════════
+\section{Background of the Invention}
+% ══════════════════════════════════════════════════════════════
+
+High-density solid-state battery modules generate substantial heat during rapid charge and
+discharge cycles. Conventional thermal-management approaches relying on liquid cooling
+plates or air-cooled fins have proven inadequate as cell-level power densities exceed
+\mbox{500\,W/kg}. Excessive thermal gradients across a module degrade ionic conductivity in
+solid electrolyte layers, accelerate lithium dendrite nucleation at grain boundaries, and
+reduce cycle life by as much as 40\% (see, e.g., Smith et al., \textit{J.~Power Sources},
+vol.~511, 2024, pp.~1--18).
+
+Prior art phase-change systems (U.S.~Pat.\ No.~10,847,223 to Chen; U.S.~Pat.\ No.
+11,201,366 to Nakamura et al.) disclose encapsulated PCM slurries in macro-scale channels.
+These designs suffer from non-uniform PCM distribution, high pumping parasitic losses, and
+inability to dynamically redirect coolant flow in response to localised hot spots.
+
+There remains a need for a thermally adaptive system that (a)~achieves uniform temperature
+distribution within $\pm 1\,^{\circ}\mathrm{C}$ across a 48-cell module, (b)~operates without
+external pumping power during Phase~I of the thermal cycle, and (c)~supports in-situ PCM
+re-solidification without module disassembly.
+
+% ══════════════════════════════════════════════════════════════
+\section{Summary of the Invention}
+% ══════════════════════════════════════════════════════════════
+
+In one aspect, the invention provides an adaptive thermal-management assembly comprising: a
+plurality of microchannel plates (\textbf{100}) interleaved between solid-state battery
+cells (\textbf{102}); a network of microchannels (\textbf{104}) formed within each plate,
+each microchannel having a hydraulic diameter in the range of 200--800\,\textmu m; a
+phase-change material (\textbf{106}) disposed within a sealed reservoir (\textbf{108})
+fluidly coupled to the microchannel network; and an adaptive valve array (\textbf{110})
+operable by shape-memory alloy actuators (\textbf{112}) to selectively direct PCM flow
+toward regions of elevated thermal load.
+
+In another aspect, the invention provides a method of thermally managing a solid-state
+battery module, comprising: sensing a temperature differential exceeding a threshold of
+$2\,^{\circ}\mathrm{C}$ between any two battery cells (\textbf{102}); actuating at least one
+shape-memory alloy valve (\textbf{112}) to redirect molten PCM (\textbf{106}) from a cooler
+microchannel region to the hotter region; and passively re-solidifying the PCM upon
+cessation of the thermal load without external actuation.
+
+These and other features of the invention are set forth more particularly in the Detailed
+Description that follows.
+
+% ══════════════════════════════════════════════════════════════
+\section{Brief Description of the Drawings}
+% ══════════════════════════════════════════════════════════════
+
+\begin{description}[leftmargin=2.2em, labelindent=0pt, itemsep=2pt]
+  \item[FIG.~1] is a perspective, partially exploded view of a solid-state battery module
+    incorporating the adaptive thermal-management assembly (\textbf{100}) of the invention.
+  \item[FIG.~2] is a cross-sectional view taken along line 2--2 of FIG.~1, showing the
+    microchannel plate (\textbf{100}) in relation to adjacent battery cells (\textbf{102})
+    and the sealed PCM reservoir (\textbf{108}).
+  \item[FIG.~3] is an enlarged schematic of the adaptive valve array (\textbf{110}) in the
+    closed configuration (FIG.~3A) and the open configuration (FIG.~3B).
+  \item[FIG.~4] is a graph illustrating module temperature uniformity ($\pm\,^{\circ}\mathrm{C}$)
+    versus cycle number for the invention compared with a prior-art cooling plate.
+  \item[FIG.~5] is a flow diagram of the thermal-management method according to an
+    embodiment of the invention.
+\end{description}
+
+% ══════════════════════════════════════════════════════════════
+\section{Detailed Description of the Preferred Embodiments}
+% ══════════════════════════════════════════════════════════════
+
+Reference is now made to the drawings in which like reference numerals designate like or
+corresponding parts throughout the several views.
+
+\subsection*{I.\quad Microchannel Plate Assembly (100)}
+
+As shown in FIG.~1 and FIG.~2, the microchannel plate (\textbf{100}) is fabricated from
+thermally conductive aluminium alloy 6061-T6 having a bulk thermal conductivity of
+167\,W/m\,K. The plate (\textbf{100}) is 1.5\,mm thick and is dimensioned to match the
+footprint of each prismatic battery cell (\textbf{102}), nominally 148\,mm $\times$ 98\,mm.
+A serpentine array of microchannels (\textbf{104}) is formed by photochemical etching to a
+depth of 400\,\textmu m and a width of 300\,\textmu m, yielding a hydraulic diameter
+$D_h = 343$\,\textmu m. The channel walls (\textbf{114}) are coated with a
+30\,nm-thick layer of titanium nitride (TiN) by physical vapour deposition to prevent
+corrosion from the PCM (\textbf{106}).
+
+\subsection*{II.\quad Phase-Change Material (106) and Reservoir (108)}
+
+The PCM (\textbf{106}) in the preferred embodiment is a binary paraffin eutectic
+(n-eicosane/n-octadecane, 60:40 wt.\%) exhibiting a melting onset temperature of
+$33.5\,^{\circ}\mathrm{C}$ and a latent heat of 218\,kJ/kg. The sealed reservoir (\textbf{108}) is
+housed within an anodised aluminium enclosure (\textbf{116}) mounted to one lateral edge of
+the module, providing a PCM charge of 85\,g per 12-cell tier. A flexible graphite membrane
+(\textbf{118}) at the reservoir outlet accommodates volumetric expansion of up to 12\% upon
+PCM melting without mechanical stress on seals.
+
+\subsection*{III.\quad Adaptive Valve Array (110) and SMA Actuators (112)}
+
+The adaptive valve array (\textbf{110}), detailed in FIG.~3, comprises a set of
+binary-position microvalves (\textbf{120}) disposed at each microchannel branch junction.
+Each microvalve (\textbf{120}) is actuated by a shape-memory alloy (Nitinol, 50.8 at.\%~Ni)
+wire actuator (\textbf{112}) of diameter 100\,\textmu m. The Nitinol actuator (\textbf{112})
+has a transformation temperature of $35\,^{\circ}\mathrm{C}$; when the local cell surface temperature
+exceeds this threshold, the actuator (\textbf{112}) contracts by 4\% of its 20\,mm free
+length, rotating the valve disc (\textbf{122}) by $90^{\circ}$ to the open position and
+admitting molten PCM (\textbf{106}) flow through the adjacent microchannel (\textbf{104}).
+
+Temperature sensors (\textbf{124}) -- NTC thermistors with sensitivity of
+$-4.4\,\%\,^{\circ}\mathrm{C}^{-1}$ -- are embedded in each cell-facing surface of the plate
+(\textbf{100}) and connected to a battery management controller (\textbf{126}) via a
+flexible printed circuit (\textbf{128}). The controller (\textbf{126}) executes a
+proportional-integral control law with a 50\,ms sampling interval, commanding individual
+SMA actuators (\textbf{112}) through pulse-width-modulated drive signals.
+
+\subsection*{IV.\quad Performance and Re-Solidification}
+
+During a 3C discharge cycle at an ambient temperature of $25\,^{\circ}$C, prototype testing
+demonstrated that the assembly maintained cell temperatures within
+$\pm 0.8\,^{\circ}$C across all 48 cells for 95\% of the discharge duration (FIG.~4),
+compared with $\pm 4.3\,^{\circ}$C for a conventional aluminium cooling plate of equivalent
+mass. Upon completion of the discharge cycle, the PCM (\textbf{106}) re-solidifies
+passively within 12 minutes, driven by conduction to ambient through the module housing,
+without any external pumping power or heater intervention.
+
+\subsection*{V.\quad Alternative Embodiments}
+
+In an alternative embodiment, the PCM (\textbf{106}) may be replaced by a microencapsulated
+PCM slurry (\textbf{130}) dispersed in a dielectric carrier fluid (perfluorocarbon, 3M
+Novec\texttrademark~7500), enabling active pumped-loop operation at power densities
+exceeding 800\,W/kg while retaining the latent-heat buffering benefit. In yet another
+embodiment, the microchannel plate (\textbf{100}) may be formed from a carbon-fibre-reinforced
+polymer composite (\textbf{132}) for weight-critical aerospace applications.
+
+The foregoing description of the preferred embodiments is presented for purposes of
+illustration and description. It is not intended to be exhaustive or to limit the invention to
+the precise forms disclosed. Modifications and variations are possible in light of the above
+teachings.
+
+% ══════════════════════════════════════════════════════════════
+\section{Claims}
+% ══════════════════════════════════════════════════════════════
+
+\setcounter{claimcnt}{0}
+\begin{spacing}{1.2}
+
+\claim{An adaptive thermal-management assembly for a solid-state battery module,
+  comprising:\newline
+  a plurality of microchannel plates interleaved between a corresponding plurality of
+  solid-state battery cells, each microchannel plate comprising a network of microchannels
+  having a hydraulic diameter in the range of 200\,\textmu m to 800\,\textmu m;\newline
+  a phase-change material disposed within a sealed reservoir fluidly coupled to the
+  microchannel network, the phase-change material having a melting onset temperature
+  between 30\,\textdegree C and 45\,\textdegree C; and\newline
+  an adaptive valve array comprising a plurality of microvalves, each microvalve being
+  operable to selectively direct flow of the phase-change material within the microchannel
+  network in response to a local temperature signal.}
+
+\claim{The assembly of claim~1, wherein each microvalve of the adaptive valve array is
+  actuated by a shape-memory alloy wire having a transformation temperature that
+  corresponds to the melting onset temperature of the phase-change material.}
+
+\claim{The assembly of claim~2, wherein the shape-memory alloy wire comprises
+  Nitinol having a nickel content of 50.8 atomic percent and a free length of between
+  10\,mm and 40\,mm.}
+
+\claim{The assembly of claim~1, wherein the phase-change material comprises a binary
+  paraffin eutectic of n-eicosane and n-octadecane in a weight ratio of between 55:45
+  and 65:35.}
+
+\claim{The assembly of claim~1, wherein each microchannel plate is fabricated from an
+  aluminium alloy having a bulk thermal conductivity of at least 150\,W/m\,K, and wherein
+  the microchannel walls are coated with a corrosion-resistant layer comprising titanium
+  nitride having a thickness of between 20\,nm and 50\,nm.}
+
+\claim{The assembly of claim~1, further comprising a battery management controller
+  operatively connected to a plurality of temperature sensors embedded in respective
+  microchannel plates, the controller being configured to execute a proportional-integral
+  control law to command individual microvalves of the adaptive valve array.}
+
+\claim{The assembly of claim~6, wherein the temperature sensors comprise
+  negative-temperature-coefficient thermistors having a sensitivity of at least
+  $-3\,\%\,^{\circ}\mathrm{C}^{-1}$, and wherein the controller samples the temperature
+  sensors at an interval of 100\,ms or less.}
+
+\claim{The assembly of claim~1, wherein the sealed reservoir further comprises a
+  flexible membrane configured to accommodate volumetric expansion of the phase-change
+  material upon melting of at least 10\% without mechanical stress on seals of the
+  reservoir.}
+
+\claim{A method of thermally managing a solid-state battery module, comprising:\newline
+  sensing, by a plurality of temperature sensors, a temperature differential between at
+  least two solid-state battery cells exceeding a predetermined threshold;\newline
+  actuating, in response to the sensed temperature differential, at least one microvalve of
+  an adaptive valve array to redirect flow of a phase-change material within a microchannel
+  network toward a battery cell exhibiting the higher temperature; and\newline
+  passively re-solidifying the phase-change material within the microchannel network upon
+  reduction of the thermal load below the predetermined threshold.}
+
+\claim{The method of claim~9, wherein the predetermined threshold is 2\,\textdegree C, and
+  wherein the passively re-solidifying step occurs without application of external pumping
+  power or external heaters.}
+
+\claim{The method of claim~9, further comprising embedding a flexible printed circuit
+  within each microchannel plate, the flexible printed circuit electrically connecting the
+  temperature sensors to a battery management controller that commands the microvalves
+  via pulse-width-modulated drive signals.}
+
+\end{spacing}
+
+% ══════════════════════════════════════════════════════════════
+\section{Abstract}
+% ══════════════════════════════════════════════════════════════
+
+An adaptive thermal-management assembly for high-density solid-state battery modules
+comprises aluminium microchannel plates (\textbf{100}) interleaved between prismatic
+battery cells (\textbf{102}), a sealed reservoir (\textbf{108}) containing a binary paraffin
+eutectic phase-change material (PCM) (\textbf{106}) with a melting point near
+33.5\,\textdegree C, and an adaptive valve array (\textbf{110}) actuated by Nitinol
+shape-memory alloy wires (\textbf{112}). Temperature sensors (\textbf{124}) embedded in each
+plate report to a battery management controller (\textbf{126}), which executes a
+proportional-integral control law to direct molten PCM selectively toward regions of
+elevated thermal load. The assembly maintains temperature uniformity within
+$\pm 1\,^{\circ}$C across a 48-cell module during 3C discharge cycles without external
+pumping power. A flexible graphite membrane (\textbf{118}) accommodates PCM volumetric
+expansion, and the PCM re-solidifies passively upon cooling. The invention extends
+solid-state battery cycle life by reducing thermally induced electrolyte degradation and
+dendrite formation.
+
+\vspace{20pt}
+{\color{colrule}\hrule height 0.5pt}
+\vspace{6pt}
+{\centering\small\color{muted}
+  \textit{End of Patent Application --- Application No.~18/472,309}\\[2pt]
+  \textit{Page \thepage\ of \pageref{LastPage}}
+\par}
+
+\end{document}

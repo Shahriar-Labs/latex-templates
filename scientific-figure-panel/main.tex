@@ -1,0 +1,374 @@
+% ============================================================
+%  Multi-Panel Scientific Figure Template
+%  Editable and compilable online at https://letx.app
+%  Four panels (A–D) in a 2x2 grid, Nature/Science style.
+%  Compile: latexmk -pdf main.tex  (pdflatex, TeX Live full)
+% ============================================================
+\documentclass[10pt]{article}
+
+% ---- geometry & colour ----
+\usepackage[a4paper,
+            top=18mm, bottom=16mm,
+            left=18mm, right=18mm]{geometry}
+\usepackage[dvipsnames,table]{xcolor}
+
+% Single accent colour (deep cerulean) + two neutrals
+\definecolor{accent}{HTML}{1B6CA8}
+\definecolor{panelbg}{HTML}{F5F7FA}
+\definecolor{ruleclr}{HTML}{C8D4E3}
+
+% ---- fonts ----
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+
+% ---- layout helpers ----
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\usepackage{setspace}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{subcaption}
+
+% ---- graphics & tikz ----
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,backgrounds}
+
+% ---- pgfplots ----
+\usepackage{pgfplots}
+\pgfplotsset{
+  compat=1.18,
+  every axis/.style={
+    font=\small,
+    axis line style={line width=0.6pt, color=black!70},
+    tick style={color=black!60, line width=0.5pt},
+    ticklabel style={font=\footnotesize, color=black!75},
+    label style={font=\small\bfseries},
+    title style={font=\small\bfseries, yshift=2pt},
+    grid=both,
+    grid style={line width=0.3pt, color=black!10},
+    minor tick num=1,
+    legend style={
+      font=\scriptsize,
+      draw=ruleclr,
+      fill=white,
+      inner sep=3pt,
+      rounded corners=2pt,
+    },
+  },
+}
+\usepgfplotslibrary{fillbetween,statistics}
+
+% ---- hyperref ----
+\usepackage{hyperref}
+\hypersetup{hidelinks, colorlinks=false}
+
+% ====================================================
+%  Bold panel label, overlaid top-left of axes
+% ====================================================
+\newcommand{\panellabel}[1]{%
+  \node[anchor=north west,
+        font=\normalsize\bfseries,
+        text=black,
+        inner sep=0pt,
+        xshift=-4pt, yshift=4pt] at (current axis.north west) {#1};%
+}
+
+% ====================================================
+%  Caption customisation
+% ====================================================
+\captionsetup{
+  font=small,
+  labelfont={bf,color=accent},
+  labelsep=period,
+  skip=4pt,
+  justification=justified,
+  singlelinecheck=false,
+}
+\captionsetup[subfigure]{
+  font=small,
+  labelfont=bf,
+  labelformat=simple,
+  labelsep=none,
+  skip=3pt,
+}
+\renewcommand\thesubfigure{}
+
+\pagestyle{empty}
+
+% ============================================================
+\begin{document}
+% ============================================================
+
+% ---- Title banner ----
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[accent] (current page.north west)
+      rectangle ([yshift=-9mm]current page.north east);
+\end{tikzpicture}
+\vspace*{5mm}
+
+{\fontsize{12.5}{15}\bfseries\selectfont\color{accent!85!black}%
+  Neuronal Activity Dynamics and Connectivity in Prefrontal Cortex%
+}
+
+\vspace{5pt}
+{\small\color{black!60}
+  Alicia J.\ Thornton$^{1,*}$,\enspace
+  Marcus R.\ Okonkwo$^{2}$,\enspace
+  Selin Yildiz$^{1}$,\enspace
+  David P.\ Hearn$^{3}$\\[2pt]
+  $^1$Department of Neuroscience, Stanford University;\enspace
+  $^2$Institute of Brain Sciences, UCL;\enspace
+  $^3$Allen Institute for Brain Science\\
+  $^*$Correspondence: \texttt{a.thornton@stanford.edu}
+}
+
+\vspace{5pt}
+{\color{ruleclr}\rule{\linewidth}{0.7pt}}
+\vspace{3pt}
+
+% ============================================================
+%  2x2 panel figure
+% ============================================================
+\begin{figure}[h!]
+\centering
+
+% ===== ROW 1 =====
+\begin{subfigure}[t]{0.47\linewidth}
+\centering
+%------ PANEL A: line + error bands ------
+\begin{tikzpicture}
+\begin{axis}[
+  width=\linewidth, height=5.0cm,
+  xlabel={Time (ms)},
+  ylabel={Firing Rate (Hz)},
+  xmin=0, xmax=500,
+  ymin=0, ymax=55,
+  xtick={0,100,200,300,400,500},
+  ytick={0,10,20,30,40,50},
+  title={Population Firing Rate},
+  legend pos=north west,
+]
+  \addplot[name path=TU, draw=none, forget plot]
+    coordinates {(0,8)(50,14)(100,28)(150,42)(200,48)(250,44)(300,36)(350,28)(400,20)(450,14)(500,10)};
+  \addplot[name path=TL, draw=none, forget plot]
+    coordinates {(0,4)(50,9)(100,21)(150,34)(200,40)(250,37)(300,29)(350,22)(400,15)(450,9)(500,6)};
+  \addplot[accent!30, fill opacity=0.45]
+    fill between[of=TU and TL];
+
+  \addplot[accent, thick, mark=*, mark size=1.5pt, mark options={fill=accent}]
+    coordinates {(0,6)(50,11.5)(100,24.5)(150,38)(200,44)(250,40.5)(300,32.5)(350,25)(400,17.5)(450,11.5)(500,8)};
+  \addlegendentry{Treated ($n{=}12$)}
+
+  \addplot[name path=CU, draw=none, forget plot]
+    coordinates {(0,7)(50,10)(100,15)(150,19)(200,22)(250,21)(300,18)(350,15)(400,12)(450,10)(500,8)};
+  \addplot[name path=CL, draw=none, forget plot]
+    coordinates {(0,3)(50,6)(100,10)(150,13)(200,15)(250,14)(300,11)(350,8)(400,6)(450,5)(500,4)};
+  \addplot[black!25, fill opacity=0.40]
+    fill between[of=CU and CL];
+
+  \addplot[black!55, thick, dashed, mark=square*, mark size=1.3pt, mark options={fill=black!50}]
+    coordinates {(0,5)(50,8)(100,12.5)(150,16)(200,18.5)(250,17.5)(300,14.5)(350,11.5)(400,9)(450,7.5)(500,6)};
+  \addlegendentry{Control ($n{=}11$)}
+
+  \addplot[accent, thick, dashed, opacity=0.55]
+    coordinates {(100,0)(100,55)};
+  \addplot[accent, thick, dashed, opacity=0.55]
+    coordinates {(300,0)(300,55)};
+  \node[font=\scriptsize, color=accent!80!black, anchor=north] at (axis cs:200,54) {Stimulus};
+
+  \panellabel{(A)}
+\end{axis}
+\end{tikzpicture}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.47\linewidth}
+\centering
+%------ PANEL B: grouped bar chart ------
+\begin{tikzpicture}
+\begin{axis}[
+  width=\linewidth, height=5.0cm,
+  ybar,
+  bar width=5.5pt,
+  xlabel={Brain Region},
+  ylabel={Mean Spike Count},
+  symbolic x coords={PFC,ACC,M1,S1,HPC},
+  xtick=data,
+  ymin=0, ymax=50,
+  enlarge x limits=0.18,
+  title={Region-Specific Responses},
+  legend pos=north east,
+  error bars/y dir=both,
+  error bars/y explicit,
+  error bars/error bar style={line width=0.7pt, black!60},
+  error bars/error mark options={rotate=90, black!60, mark size=2.3pt},
+]
+  \addplot[fill=accent, draw=accent!70!black, fill opacity=0.85]
+    plot[error bars/.cd, y dir=both, y explicit]
+    coordinates {
+      (PFC, 38) +=(0,2.8) -=(0,2.8)
+      (ACC, 31) +=(0,2.1) -=(0,2.1)
+      (M1,  24) +=(0,1.9) -=(0,1.9)
+      (S1,  19) +=(0,1.5) -=(0,1.5)
+      (HPC, 29) +=(0,2.4) -=(0,2.4)
+    };
+  \addlegendentry{Treated}
+
+  \addplot[fill=black!20, draw=black!50, fill opacity=0.85]
+    plot[error bars/.cd, y dir=both, y explicit]
+    coordinates {
+      (PFC, 22) +=(0,1.8) -=(0,1.8)
+      (ACC, 18) +=(0,1.4) -=(0,1.4)
+      (M1,  15) +=(0,1.2) -=(0,1.2)
+      (S1,  13) +=(0,1.0) -=(0,1.0)
+      (HPC, 20) +=(0,1.6) -=(0,1.6)
+    };
+  \addlegendentry{Control}
+
+  \node[font=\scriptsize\bfseries, color=accent] at (axis cs:PFC,43) {***};
+  \node[font=\scriptsize\bfseries, color=accent] at (axis cs:ACC,36) {**};
+  \node[font=\scriptsize\bfseries, color=accent] at (axis cs:HPC,34) {**};
+
+  \panellabel{(B)}
+\end{axis}
+\end{tikzpicture}
+\end{subfigure}
+
+\vspace{4pt}
+
+% ===== ROW 2 =====
+\begin{subfigure}[t]{0.47\linewidth}
+\centering
+%------ PANEL C: scatter + linear fit ------
+\begin{tikzpicture}
+\begin{axis}[
+  width=\linewidth, height=5.0cm,
+  xlabel={Theta Power (dB)},
+  ylabel={Memory Score (\%)},
+  xmin=2, xmax=16,
+  ymin=30, ymax=95,
+  title={Theta--Memory Correlation},
+  legend pos=south east,
+]
+  \addplot[name path=FU, draw=none, forget plot]
+    coordinates {(2,37)(4,46)(6,55)(8,63)(10,71)(12,79)(14,85)(16,90)};
+  \addplot[name path=FL, draw=none, forget plot]
+    coordinates {(2,33)(4,41)(6,49)(8,56)(10,63)(12,70)(14,75)(16,80)};
+  \addplot[accent!25, fill opacity=0.40]
+    fill between[of=FU and FL];
+  \addlegendentry{95\% CI}
+
+  \addplot[accent, thick, domain=2:16, samples=2]
+    {3.8*x + 30.2};
+  \addlegendentry{$r{=}0.81$, $p{<}0.001$}
+
+  \addplot[only marks, mark=*, mark size=1.7pt,
+           mark options={fill=accent!70, draw=accent!90, fill opacity=0.75}]
+    coordinates {
+      (3.1,43)(3.8,46)(4.5,50)(4.9,52)(5.3,49)(5.8,53)
+      (6.2,57)(6.7,55)(7.1,60)(7.4,62)(7.8,58)(8.0,64)
+      (8.5,65)(9.0,68)(9.4,67)(9.9,72)(10.2,74)(10.6,70)
+      (11.1,76)(11.5,78)(12.0,80)(12.4,82)(13.0,84)(13.6,87)
+      (14.1,85)(14.8,88)(15.2,86)(15.7,90)
+    };
+  \addlegendentry{Subjects ($n{=}28$)}
+
+  \panellabel{(C)}
+\end{axis}
+\end{tikzpicture}
+\end{subfigure}
+\hfill
+\begin{subfigure}[t]{0.47\linewidth}
+\centering
+%------ PANEL D: heatmap (connectivity matrix) ------
+\begin{tikzpicture}
+\begin{axis}[
+  width=\linewidth, height=5.0cm,
+  title={Functional Connectivity ($\Delta$FC)},
+  xlabel={Target Region},
+  ylabel={Source Region},
+  xtick={1,2,3,4,5},
+  ytick={1,2,3,4,5},
+  xticklabels={PFC,ACC,M1,S1,HPC},
+  yticklabels={PFC,ACC,M1,S1,HPC},
+  xticklabel style={font=\scriptsize},
+  yticklabel style={font=\scriptsize},
+  grid=none,
+  colorbar,
+  colorbar style={
+    font=\scriptsize,
+    ylabel={$z$-score},
+    ylabel style={font=\scriptsize},
+    width=6pt,
+    xshift=-2pt,
+  },
+  colormap={accentmap}{
+    color(0)=(white)
+    color(0.5)=(accent!40)
+    color(1)=(accent)
+  },
+  point meta min=0,
+  point meta max=1.0,
+]
+  \addplot[matrix plot*, mesh/cols=5, point meta=explicit]
+    coordinates {
+      (1,1) [0.00]  (2,1) [0.72]  (3,1) [0.41]  (4,1) [0.28]  (5,1) [0.65]
+      (1,2) [0.72]  (2,2) [0.00]  (3,2) [0.38]  (4,2) [0.22]  (5,2) [0.58]
+      (1,3) [0.41]  (2,3) [0.38]  (3,3) [0.00]  (4,3) [0.80]  (5,3) [0.31]
+      (1,4) [0.28]  (2,4) [0.22]  (3,4) [0.80]  (4,4) [0.00]  (5,4) [0.19]
+      (1,5) [0.65]  (2,5) [0.58]  (3,5) [0.31]  (4,5) [0.19]  (5,5) [0.00]
+    };
+
+  \node[font=\tiny,text=black!80] at (axis cs:2,1) {0.72};
+  \node[font=\tiny,text=black!80] at (axis cs:3,1) {0.41};
+  \node[font=\tiny,text=black!80] at (axis cs:4,1) {0.28};
+  \node[font=\tiny,text=black!80] at (axis cs:5,1) {0.65};
+  \node[font=\tiny,text=black!80] at (axis cs:1,2) {0.72};
+  \node[font=\tiny,text=black!80] at (axis cs:3,2) {0.38};
+  \node[font=\tiny,text=black!80] at (axis cs:4,2) {0.22};
+  \node[font=\tiny,text=black!80] at (axis cs:5,2) {0.58};
+  \node[font=\tiny,text=black!80] at (axis cs:1,3) {0.41};
+  \node[font=\tiny,text=black!80] at (axis cs:2,3) {0.38};
+  \node[font=\tiny,text=black!80] at (axis cs:4,3) {0.80};
+  \node[font=\tiny,text=black!80] at (axis cs:5,3) {0.31};
+  \node[font=\tiny,text=black!80] at (axis cs:1,4) {0.28};
+  \node[font=\tiny,text=black!80] at (axis cs:2,4) {0.22};
+  \node[font=\tiny,text=black!80] at (axis cs:3,4) {0.80};
+  \node[font=\tiny,text=black!80] at (axis cs:5,4) {0.19};
+  \node[font=\tiny,text=black!80] at (axis cs:1,5) {0.65};
+  \node[font=\tiny,text=black!80] at (axis cs:2,5) {0.58};
+  \node[font=\tiny,text=black!80] at (axis cs:3,5) {0.31};
+  \node[font=\tiny,text=black!80] at (axis cs:4,5) {0.19};
+
+  \panellabel{(D)}
+\end{axis}
+\end{tikzpicture}
+\end{subfigure}
+
+% ---- shared multi-part caption ----
+\vspace{3pt}
+{\color{ruleclr}\rule{\linewidth}{0.5pt}}
+\vspace{1pt}
+
+\caption*{%
+  \textbf{Figure 1 $|$ Neuronal dynamics and connectivity in prefrontal and associated
+  cortices following acute neuromodulation.}
+  \textbf{(A)}~Population-averaged firing rate (mean $\pm$ SD) for treated (blue) and
+  control (grey) cohorts across a 500-ms trial window. Dashed vertical lines denote
+  stimulus onset (100~ms) and offset (300~ms).
+  \textbf{(B)}~Mean spike counts per brain region ($\pm$ SEM). Asterisks indicate
+  Bonferroni-corrected significance: $^{**}p{<}0.01$, $^{***}p{<}0.001$.
+  \textbf{(C)}~Scatter plot of individual subjects' theta-band power versus delayed
+  memory score ($n{=}28$); regression line and 95\% CI shown; $r{=}0.81$,
+  $p{<}0.001$.
+  \textbf{(D)}~Symmetric functional connectivity change matrix ($\Delta$FC, $z$-score)
+  in the treated group relative to baseline. Diagonal entries are zero (self-connectivity
+  undefined). PFC, prefrontal cortex; ACC, anterior cingulate cortex;
+  M1, primary motor cortex; S1, primary somatosensory cortex; HPC, hippocampus.
+}
+\end{figure}
+
+\end{document}

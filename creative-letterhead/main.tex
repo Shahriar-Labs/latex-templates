@@ -1,0 +1,238 @@
+% ============================================================
+%  PRISM STUDIO — Creative Agency Letterhead
+%  Edit & compile online: https://letx.app
+%  Local: latexmk -pdf main.tex
+% ============================================================
+\documentclass[11pt, a4paper]{letter}
+
+% ── Geometry ────────────────────────────────────────────────
+\usepackage[
+  top=0mm, bottom=18mm,
+  left=0mm, right=0mm,
+  includeheadfoot
+]{geometry}
+
+% ── Packages ────────────────────────────────────────────────
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, calc}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{fontawesome5}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{hyperref}
+\hypersetup{colorlinks=false, hidelinks}
+\usepackage{graphicx}
+\usepackage{eso-pic}
+
+% ── Lengths & resets ────────────────────────────────────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% ── Colour palette ──────────────────────────────────────────
+\definecolor{prismviolet}{HTML}{5B2D8E}   % deep violet – brand accent
+\definecolor{prismpink}{HTML}{E8356D}     % hot pink – secondary accent
+\definecolor{prismgold}{HTML}{F5A623}     % warm gold – tertiary
+\definecolor{pagebg}{HTML}{FAFAF8}        % near-white page tint
+\definecolor{darkink}{HTML}{1A1A2E}       % near-black body text
+\definecolor{midgrey}{HTML}{6B6B7B}       % muted grey for secondary info
+
+% ── Page background tint ────────────────────────────────────
+\pagecolor{pagebg}
+
+% ── Override letter class internals ─────────────────────────
+\setlength{\longindentation}{0pt}
+\setlength{\indentedwidth}{\textwidth}
+
+% ── Handy macros ────────────────────────────────────────────
+\newcommand{\contactitem}[2]{%
+  {\color{prismpink}#1}\enspace{\color{midgrey}\small #2}%
+}
+
+\newcommand{\sectionrule}{%
+  \vspace{4pt}%
+  {\color{prismviolet}\rule{18mm}{1.4pt}}\par%
+  \vspace{6pt}%
+}
+
+% ============================================================
+%  HEADER – full-bleed TikZ band
+% ============================================================
+\newcommand{\letterhead}{%
+\begin{tikzpicture}[remember picture, overlay]
+  %% Deep violet main band
+  \fill[prismviolet]
+    (current page.north west)
+    rectangle
+    ([yshift=-54mm]current page.north east);
+
+  %% Hot-pink diagonal accent slab
+  \fill[prismpink]
+    ([yshift=-54mm, xshift=108mm]current page.north west)
+    -- ([yshift=-54mm]current page.north east)
+    -- ([yshift=-38mm]current page.north east)
+    -- ([yshift=-38mm, xshift=140mm]current page.north west)
+    -- cycle;
+
+  %% Gold thin rule below band
+  \fill[prismgold]
+    ([yshift=-54mm]current page.north west)
+    rectangle
+    ([yshift=-57mm]current page.north east);
+
+  %% Decorative triangle motif (top-right)
+  \fill[white, opacity=0.07]
+    ([yshift=-2mm, xshift=-2mm]current page.north east)
+    -- ([yshift=-54mm]current page.north east)
+    -- ([yshift=-2mm, xshift=-72mm]current page.north east)
+    -- cycle;
+
+  %% Second smaller triangle
+  \fill[prismgold, opacity=0.25]
+    ([yshift=-8mm, xshift=-8mm]current page.north east)
+    -- ([yshift=-48mm]current page.north east)
+    -- ([yshift=-8mm, xshift=-48mm]current page.north east)
+    -- cycle;
+
+  %% Studio name
+  \node[
+    anchor=west,
+    text=white,
+    font=\fontsize{28}{28}\selectfont\bfseries\lsstyle,
+    inner sep=0pt
+  ] at ([yshift=-20mm, xshift=22mm]current page.north west)
+  {PRISM STUDIO};
+
+  %% Dot separator
+  \node[
+    anchor=west,
+    text=prismgold,
+    font=\fontsize{28}{28}\selectfont\bfseries,
+    inner sep=0pt
+  ] at ([yshift=-20mm, xshift=118mm]current page.north west)
+  {{\large\textbullet}};
+
+  %% Tagline
+  \node[
+    anchor=west,
+    text=white,
+    opacity=0.85,
+    font=\fontsize{9}{9}\selectfont\itshape,
+    inner sep=0pt
+  ] at ([yshift=-31mm, xshift=22mm]current page.north west)
+  {Design that moves people.};
+
+  %% Contact strip (inside band, right-aligned block)
+  \node[
+    anchor=east,
+    text=white,
+    font=\fontsize{7.5}{11}\selectfont,
+    align=left,
+    inner sep=0pt
+  ] at ([yshift=-27mm, xshift=-22mm]current page.north east)
+  {%
+    {\color{prismgold}\faGlobe}\enspace prismstudio.co\quad
+    {\color{prismgold}\faPhone}\enspace +1 (415) 882-0049\\[2pt]
+    {\color{prismgold}\faEnvelope}\enspace hello@prismstudio.co\quad
+    {\color{prismgold}\faMapMarker*}\enspace 310 Market St, San Francisco CA 94103%
+  };
+\end{tikzpicture}%
+\vspace{57mm}%  push body below band
+}
+
+% ============================================================
+%  FOOTER
+% ============================================================
+\newcommand{\letterfooter}{%
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[darkink]
+    (current page.south west)
+    rectangle ([yshift=9mm]current page.south east);
+  \node[
+    anchor=west,
+    text=white,
+    opacity=0.55,
+    font=\fontsize{6.5}{6.5}\selectfont,
+    inner sep=0pt
+  ] at ([yshift=4.5mm, xshift=22mm]current page.south west)
+  {Prism Studio LLC\enspace\textperiodcentered\enspace 310 Market Street, Suite 4B,
+   San Francisco, CA 94103\enspace\textperiodcentered\enspace EIN 47-3821056};
+  \node[
+    anchor=east,
+    text=prismgold,
+    font=\fontsize{6.5}{6.5}\selectfont,
+    inner sep=0pt
+  ] at ([yshift=4.5mm, xshift=-22mm]current page.south east)
+  {prismstudio.co};
+\end{tikzpicture}%
+}
+
+% ============================================================
+%  DOCUMENT
+% ============================================================
+\begin{document}
+\thispagestyle{empty}
+
+\letterhead
+
+% ── Left-margin indent for body ──────────────────────────────
+\hspace{22mm}%
+\begin{minipage}[t]{\dimexpr\textwidth-44mm\relax}
+\color{darkink}
+
+% ── Date ────────────────────────────────────────────────────
+{\small\color{midgrey}July 5, 2026}
+
+\vspace{9mm}
+
+% ── Recipient block ─────────────────────────────────────────
+{\bfseries Ms.\ Valentina Cruz}\\
+{\color{midgrey}Creative Director}\\
+{\color{midgrey}Luma Collective}\\
+{\color{midgrey}88 Wythe Avenue, Brooklyn, NY 11249}
+
+\vspace{7mm}
+\sectionrule
+
+% ── Salutation ──────────────────────────────────────────────
+{\bfseries Dear Valentina,}
+
+\vspace{5mm}
+
+% ── Body ────────────────────────────────────────────────────
+\setlength{\parskip}{6pt}
+
+It was a genuine pleasure meeting you at \textit{Brand Forward} last month. The work Luma Collective is doing in immersive brand storytelling is exactly the kind of thinking the industry needs more of right now.
+
+I wanted to follow up on our conversation about the \textbf{Horizon} campaign. At Prism Studio, we believe a brand's visual language should feel inevitable — as if it could never have looked any other way. Our process blends strategic research with hands-on craft: we spend the first two weeks deep inside your customer data, then spend the next four translating those insights into motion, type, and colour systems that hold together across every touchpoint.
+
+For Horizon specifically, we see three distinct creative territories worth exploring. We'd love to bring these to life as a set of mood films and type experiments at our proposed scope of engagement. I've attached a brief project outline and our 2026 studio rate card for your reference.
+
+Would you be open to a working session — maybe thirty minutes on video — during the week of July 14? We can walk through the territories together and decide which direction deserves a full concept development sprint.
+
+\vspace{2mm}
+
+Looking forward to the conversation.
+
+\vspace{10mm}
+
+% ── Signature ───────────────────────────────────────────────
+\setlength{\parskip}{0pt}
+{\color{prismviolet}\bfseries\large Marco Reyes}\\
+{\color{midgrey}Founder \& Executive Creative Director}\\
+{\color{prismgold}\faInstagram}\enspace{\small\color{midgrey}@prismstudio}\quad
+{\color{prismgold}\faLinkedin}\enspace{\small\color{midgrey}linkedin.com/company/prismstudio}
+
+\end{minipage}
+
+\letterfooter
+
+\end{document}

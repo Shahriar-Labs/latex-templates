@@ -1,6 +1,6 @@
 # LetX LaTeX Template Library
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Templates](https://img.shields.io/badge/templates-54-success.svg)](https://letx.app/templates)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Templates](https://img.shields.io/badge/templates-86-success.svg)](https://letx.app/templates)
 
 **Free, elegant, open-source LaTeX templates** — research papers, CVs, grants, lab reports, posters, letters and more. Every template is compile-tested and designed to look genuinely good, not plain.
 
@@ -86,6 +86,7 @@
 <table>
 <tr>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/posters/poster-a1-modern"><img src="poster-a1-modern/preview.png" width="240" alt="Modern Conference Poster (A1)"></a><br><b>Modern Conference Poster (A1)</b><br><a href="https://letx.app/templates/posters/poster-a1-modern">Open in LetX</a> · <a href="./poster-a1-modern">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/posters/real-estate-flyer"><img src="real-estate-flyer/preview.png" width="240" alt="Real Estate Flyer"></a><br><b>Real Estate Flyer</b><br><a href="https://letx.app/templates/posters/real-estate-flyer">Open in LetX</a> · <a href="./real-estate-flyer">Source</a></td>
 </tr>
 </table>
 
@@ -155,11 +156,74 @@
 </tr>
 </table>
 
+### Formal Letters & Letterheads
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/formal-letters/academic-letterhead"><img src="academic-letterhead/preview.png" width="240" alt="Academic Letterhead"></a><br><b>Academic Letterhead</b><br><a href="https://letx.app/templates/formal-letters/academic-letterhead">Open in LetX</a> · <a href="./academic-letterhead">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/formal-letters/creative-letterhead"><img src="creative-letterhead/preview.png" width="240" alt="Creative Studio Letterhead"></a><br><b>Creative Studio Letterhead</b><br><a href="https://letx.app/templates/formal-letters/creative-letterhead">Open in LetX</a> · <a href="./creative-letterhead">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/formal-letters/law-firm-letterhead"><img src="law-firm-letterhead/preview.png" width="240" alt="Law Firm Letterhead"></a><br><b>Law Firm Letterhead</b><br><a href="https://letx.app/templates/formal-letters/law-firm-letterhead">Open in LetX</a> · <a href="./law-firm-letterhead">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/formal-letters/letter-of-intent"><img src="letter-of-intent/preview.png" width="240" alt="Letter of Intent"></a><br><b>Letter of Intent</b><br><a href="https://letx.app/templates/formal-letters/letter-of-intent">Open in LetX</a> · <a href="./letter-of-intent">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/formal-letters/modern-business-letterhead"><img src="modern-business-letterhead/preview.png" width="240" alt="Modern Business Letterhead"></a><br><b>Modern Business Letterhead</b><br><a href="https://letx.app/templates/formal-letters/modern-business-letterhead">Open in LetX</a> · <a href="./modern-business-letterhead">Source</a></td>
+</tr>
+</table>
+
 ### Calendars & Planners
 
 <table>
 <tr>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/calendars/monthly-calendar"><img src="monthly-calendar/preview.png" width="240" alt="Monthly Calendar"></a><br><b>Monthly Calendar</b><br><a href="https://letx.app/templates/calendars/monthly-calendar">Open in LetX</a> · <a href="./monthly-calendar">Source</a></td>
+</tr>
+</table>
+
+### Everything Else
+
+<table>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/business-card"><img src="business-card/preview.png" width="240" alt="Business Card Sheet"></a><br><b>Business Card Sheet</b><br><a href="https://letx.app/templates/miscellaneous/business-card">Open in LetX</a> · <a href="./business-card">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/certificate-of-achievement"><img src="certificate-of-achievement/preview.png" width="240" alt="Certificate of Achievement"></a><br><b>Certificate of Achievement</b><br><a href="https://letx.app/templates/miscellaneous/certificate-of-achievement">Open in LetX</a> · <a href="./certificate-of-achievement">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/chemistry-reaction-scheme"><img src="chemistry-reaction-scheme/preview.png" width="240" alt="Chemistry Reaction Scheme"></a><br><b>Chemistry Reaction Scheme</b><br><a href="https://letx.app/templates/miscellaneous/chemistry-reaction-scheme">Open in LetX</a> · <a href="./chemistry-reaction-scheme">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/christian-marriage-biodata"><img src="christian-marriage-biodata/preview.png" width="240" alt="Christian Marriage Biodata"></a><br><b>Christian Marriage Biodata</b><br><a href="https://letx.app/templates/miscellaneous/christian-marriage-biodata">Open in LetX</a> · <a href="./christian-marriage-biodata">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/event-program-brochure"><img src="event-program-brochure/preview.png" width="240" alt="Event Program Brochure"></a><br><b>Event Program Brochure</b><br><a href="https://letx.app/templates/miscellaneous/event-program-brochure">Open in LetX</a> · <a href="./event-program-brochure">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/foldable-card"><img src="foldable-card/preview.png" width="240" alt="Tri-Fold Brochure"></a><br><b>Tri-Fold Brochure</b><br><a href="https://letx.app/templates/miscellaneous/foldable-card">Open in LetX</a> · <a href="./foldable-card">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/freelance-invoice"><img src="freelance-invoice/preview.png" width="240" alt="Freelance Invoice"></a><br><b>Freelance Invoice</b><br><a href="https://letx.app/templates/miscellaneous/freelance-invoice">Open in LetX</a> · <a href="./freelance-invoice">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/freelance-project-proposal"><img src="freelance-project-proposal/preview.png" width="240" alt="Freelance Project Proposal"></a><br><b>Freelance Project Proposal</b><br><a href="https://letx.app/templates/miscellaneous/freelance-project-proposal">Open in LetX</a> · <a href="./freelance-project-proposal">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/gantt-project-plan"><img src="gantt-project-plan/preview.png" width="240" alt="Gantt Project Plan"></a><br><b>Gantt Project Plan</b><br><a href="https://letx.app/templates/miscellaneous/gantt-project-plan">Open in LetX</a> · <a href="./gantt-project-plan">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/greeting-card"><img src="greeting-card/preview.png" width="240" alt="Greeting Card"></a><br><b>Greeting Card</b><br><a href="https://letx.app/templates/miscellaneous/greeting-card">Open in LetX</a> · <a href="./greeting-card">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/hindu-marriage-biodata"><img src="hindu-marriage-biodata/preview.png" width="240" alt="Hindu Marriage Biodata"></a><br><b>Hindu Marriage Biodata</b><br><a href="https://letx.app/templates/miscellaneous/hindu-marriage-biodata">Open in LetX</a> · <a href="./hindu-marriage-biodata">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/meal-planner"><img src="meal-planner/preview.png" width="240" alt="Weekly Meal Planner"></a><br><b>Weekly Meal Planner</b><br><a href="https://letx.app/templates/miscellaneous/meal-planner">Open in LetX</a> · <a href="./meal-planner">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/modern-marriage-biodata"><img src="modern-marriage-biodata/preview.png" width="240" alt="Modern Marriage Biodata"></a><br><b>Modern Marriage Biodata</b><br><a href="https://letx.app/templates/miscellaneous/modern-marriage-biodata">Open in LetX</a> · <a href="./modern-marriage-biodata">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/muslim-marriage-biodata"><img src="muslim-marriage-biodata/preview.png" width="240" alt="Muslim Marriage Biodata"></a><br><b>Muslim Marriage Biodata</b><br><a href="https://letx.app/templates/miscellaneous/muslim-marriage-biodata">Open in LetX</a> · <a href="./muslim-marriage-biodata">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/nda-template"><img src="nda-template/preview.png" width="240" alt="Non-Disclosure Agreement"></a><br><b>Non-Disclosure Agreement</b><br><a href="https://letx.app/templates/miscellaneous/nda-template">Open in LetX</a> · <a href="./nda-template">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/patent-application"><img src="patent-application/preview.png" width="240" alt="Patent Application"></a><br><b>Patent Application</b><br><a href="https://letx.app/templates/miscellaneous/patent-application">Open in LetX</a> · <a href="./patent-application">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/personal-budget-planner"><img src="personal-budget-planner/preview.png" width="240" alt="Personal Budget Planner"></a><br><b>Personal Budget Planner</b><br><a href="https://letx.app/templates/miscellaneous/personal-budget-planner">Open in LetX</a> · <a href="./personal-budget-planner">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/press-release"><img src="press-release/preview.png" width="240" alt="Press Release"></a><br><b>Press Release</b><br><a href="https://letx.app/templates/miscellaneous/press-release">Open in LetX</a> · <a href="./press-release">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/restaurant-menu"><img src="restaurant-menu/preview.png" width="240" alt="Restaurant Menu"></a><br><b>Restaurant Menu</b><br><a href="https://letx.app/templates/miscellaneous/restaurant-menu">Open in LetX</a> · <a href="./restaurant-menu">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/scientific-figure-panel"><img src="scientific-figure-panel/preview.png" width="240" alt="Scientific Figure Panel"></a><br><b>Scientific Figure Panel</b><br><a href="https://letx.app/templates/miscellaneous/scientific-figure-panel">Open in LetX</a> · <a href="./scientific-figure-panel">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/south-indian-marriage-biodata"><img src="south-indian-marriage-biodata/preview.png" width="240" alt="South Indian Marriage Biodata"></a><br><b>South Indian Marriage Biodata</b><br><a href="https://letx.app/templates/miscellaneous/south-indian-marriage-biodata">Open in LetX</a> · <a href="./south-indian-marriage-biodata">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/traditional-marriage-biodata"><img src="traditional-marriage-biodata/preview.png" width="240" alt="Traditional Marriage Biodata"></a><br><b>Traditional Marriage Biodata</b><br><a href="https://letx.app/templates/miscellaneous/traditional-marriage-biodata">Open in LetX</a> · <a href="./traditional-marriage-biodata">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/travel-itinerary"><img src="travel-itinerary/preview.png" width="240" alt="Travel Itinerary"></a><br><b>Travel Itinerary</b><br><a href="https://letx.app/templates/miscellaneous/travel-itinerary">Open in LetX</a> · <a href="./travel-itinerary">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/wedding-invitation"><img src="wedding-invitation/preview.png" width="240" alt="Wedding Invitation"></a><br><b>Wedding Invitation</b><br><a href="https://letx.app/templates/miscellaneous/wedding-invitation">Open in LetX</a> · <a href="./wedding-invitation">Source</a></td>
+</tr>
+<tr>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/wedding-program"><img src="wedding-program/preview.png" width="240" alt="Wedding Program"></a><br><b>Wedding Program</b><br><a href="https://letx.app/templates/miscellaneous/wedding-program">Open in LetX</a> · <a href="./wedding-program">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/miscellaneous/workout-log"><img src="workout-log/preview.png" width="240" alt="Workout Log"></a><br><b>Workout Log</b><br><a href="https://letx.app/templates/miscellaneous/workout-log">Open in LetX</a> · <a href="./workout-log">Source</a></td>
 </tr>
 </table>
 

@@ -1,0 +1,109 @@
+%% =========================================================================
+%%  Chemistry Reaction Scheme — compiled and verified locally.
+%%  Edit online, collaborate in real time, and compile in one click at:
+%%  https://letx.app
+%% =========================================================================
+\documentclass[11pt,a4paper]{article}
+
+% ── Core packages ───────────────────────────────────────────────────────────
+\usepackage[top=20mm,bottom=20mm,left=22mm,right=22mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{sourcesanspro}
+\usepackage{chemfig}
+\usepackage{mhchem}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{amsmath}
+
+% ── Palette ─────────────────────────────────────────────────────────────────
+\definecolor{ink}{HTML}{1A2E28}
+\definecolor{accent}{HTML}{0E7C61}   % chemistry green
+\definecolor{muted}{HTML}{5B6B66}
+\color{ink}
+\setlength{\parindent}{0pt}
+
+\titleformat{\section}{\large\bfseries\color{accent}}{\thesection.}{0.5em}{}
+\titlespacing*{\section}{0pt}{16pt}{6pt}
+
+% chemfig defaults — a touch more spacing, thinner bonds
+\setchemfig{atom sep=2em, bond style={line width=0.8pt}}
+
+% scheme caption helper
+\newcommand{\scheme}[2]{%
+  \par\vspace{4pt}{\color{accent}\bfseries Scheme #1.} #2\par\vspace{2pt}}
+
+% ═══════════════════════════════════════════════════════════════════════════
+\begin{document}
+
+% ── HEADER ──────────────────────────────────────────────────────────────────
+{\color{accent}\Huge\bfseries Reaction Schemes}\\[3pt]
+{\color{muted}\large Drawing organic structures, syntheses \& mechanisms with \texttt{chemfig}}\\[6pt]
+{\color{accent}\rule{\linewidth}{1.2pt}}
+\vspace{4pt}
+
+This template shows three common patterns: a single-step reaction with a reagent
+arrow, a multi-step synthesis, and a reaction mechanism with curved electron-pushing
+arrows. Replace the molecules and labels with your own.
+
+% ── SCHEME 1 — esterification ───────────────────────────────────────────────
+\section{Single-step reaction}
+\scheme{1}{Fischer esterification of acetic acid with ethanol to give ethyl acetate.}
+
+\vspace{4pt}
+\begin{center}
+\schemestart
+  \chemfig{CH_3-C(=[2]O)-OH}
+  \+
+  \chemfig{CH_3-CH_2-OH}
+  \arrow{->[\small $\ce{H+}$][\small $\Delta$]}
+  \chemfig{CH_3-C(=[2]O)-O-CH_2-CH_3}
+  \+
+  \chemname{\chemfig{H_2O}}{}
+\schemestop
+\end{center}
+
+% ── SCHEME 2 — multi-step synthesis ─────────────────────────────────────────
+\section{Multi-step synthesis}
+\scheme{2}{Nitration of benzene followed by reduction to aniline.}
+
+\vspace{4pt}
+\begin{center}
+\schemestart
+  \chemname{\chemfig{*6(-=-=-=)}}{benzene}
+  \arrow{->[\small $\ce{HNO3}$][\small $\ce{H2SO4}$]}
+  \chemname{\chemfig{*6(-=-(-NO_2)=-=)}}{nitrobenzene}
+  \arrow{->[\small $\ce{H2}$, Pd][]}
+  \chemname{\chemfig{*6(-=-(-NH_2)=-=)}}{aniline}
+\schemestop
+\end{center}
+
+% ── SCHEME 3 — mechanism with curved arrows ─────────────────────────────────
+\section{Reaction mechanism}
+\scheme{3}{Bimolecular nucleophilic substitution (\ce{S_N2}): hydroxide attacks
+the carbon of bromomethane, displacing bromide via a backside attack.}
+
+\vspace{6pt}
+\begin{center}
+\schemestart
+  \chemfig{@{nu}\chemabove{O}{\scriptstyle\ominus}H}
+  \+
+  \chemfig{H_3C-@{c}C(-[6]H)(-[2]H)-@{lg}Br}
+  \arrow{->}
+  \chemfig{H_3C-OH}
+  \+
+  \chemfig{\chembelow{Br}{\scriptstyle\ominus}}
+\schemestop
+\chemmove{
+  \draw[->,shorten <=2pt,shorten >=2pt,accent,line width=0.7pt]
+    (nu) .. controls +(20:6mm) and +(160:6mm) .. (c);
+  \draw[->,shorten <=2pt,shorten >=2pt,accent,line width=0.7pt]
+    (c) .. controls +(-20:6mm) and +(200:6mm) .. (lg);
+}
+\end{center}
+
+\vspace{2pt}
+{\color{muted}\small The hydroxide lone pair forms the new \ce{C-O} bond as the
+\ce{C-Br} bond breaks heterolytically, giving methanol and bromide in a single
+concerted step with inversion of configuration.}
+
+\end{document}
