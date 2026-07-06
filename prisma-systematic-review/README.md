@@ -22,8 +22,8 @@ Open **[PRISMA Systematic Review on LetX »](https://letx.app/templates/journal-
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/prisma-systematic-review.git
-cd prisma-systematic-review
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/prisma-systematic-review
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

@@ -22,8 +22,8 @@ Open **[Chemistry Reaction Scheme on LetX »](https://letx.app/templates/miscell
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/chemistry-reaction-scheme.git
-cd chemistry-reaction-scheme
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/chemistry-reaction-scheme
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

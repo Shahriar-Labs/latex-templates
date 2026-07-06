@@ -22,8 +22,8 @@ Open **[Freelance Invoice on LetX »](https://letx.app/templates/miscellaneous/f
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/freelance-invoice.git
-cd freelance-invoice
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/freelance-invoice
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

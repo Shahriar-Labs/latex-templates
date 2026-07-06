@@ -22,8 +22,8 @@ Open **[Data Science Report on LetX »](https://letx.app/templates/assignments/d
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/data-science-report.git
-cd data-science-report
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/data-science-report
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

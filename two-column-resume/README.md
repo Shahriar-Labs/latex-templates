@@ -22,8 +22,8 @@ Open **[Two-Column Resume on LetX »](https://letx.app/templates/cvs-resumes/two
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/two-column-resume.git
-cd two-column-resume
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/two-column-resume
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

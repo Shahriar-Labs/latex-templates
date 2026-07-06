@@ -22,8 +22,8 @@ Open **[Press Release on LetX »](https://letx.app/templates/miscellaneous/press
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/press-release.git
-cd press-release
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/press-release
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

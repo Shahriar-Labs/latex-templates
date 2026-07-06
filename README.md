@@ -18,8 +18,8 @@
 <table>
 <tr>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/journal-articles/aastex-apj-paper"><img src="aastex-apj-paper/preview.png" width="240" alt="AASTeX Astronomy Paper"></a><br><b>AASTeX Astronomy Paper</b><br><a href="https://letx.app/templates/journal-articles/aastex-apj-paper">Open in LetX</a> · <a href="./aastex-apj-paper">Source</a></td>
-<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/journal-articles/arxiv-preprint"><img src="arxiv-preprint/preview.png" width="240" alt="arXiv Preprint"></a><br><b>arXiv Preprint</b><br><a href="https://letx.app/templates/journal-articles/arxiv-preprint">Open in LetX</a> · <a href="./arxiv-preprint">Source</a></td>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/journal-articles/clinical-case-report"><img src="clinical-case-report/preview.png" width="240" alt="Clinical Case Report"></a><br><b>Clinical Case Report</b><br><a href="https://letx.app/templates/journal-articles/clinical-case-report">Open in LetX</a> · <a href="./clinical-case-report">Source</a></td>
+<td width="33%" valign="top" align="center"><a href="https://letx.app/templates/journal-articles/elegant-arxiv-preprint"><img src="elegant-arxiv-preprint/preview.png" width="240" alt="Elegant arXiv Preprint"></a><br><b>Elegant arXiv Preprint</b><br><a href="https://letx.app/templates/journal-articles/elegant-arxiv-preprint">Open in LetX</a> · <a href="./elegant-arxiv-preprint">Source</a></td>
 </tr>
 <tr>
 <td width="33%" valign="top" align="center"><a href="https://letx.app/templates/journal-articles/journal-cover-letter"><img src="journal-cover-letter/preview.png" width="240" alt="Journal Cover Letter"></a><br><b>Journal Cover Letter</b><br><a href="https://letx.app/templates/journal-articles/journal-cover-letter">Open in LetX</a> · <a href="./journal-cover-letter">Source</a></td>

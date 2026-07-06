@@ -22,8 +22,8 @@ Open **[Restaurant Menu on LetX »](https://letx.app/templates/miscellaneous/res
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/restaurant-menu.git
-cd restaurant-menu
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/restaurant-menu
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

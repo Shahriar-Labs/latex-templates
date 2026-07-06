@@ -22,8 +22,8 @@ Open **[REVTeX 4.2 Physics Paper on LetX »](https://letx.app/templates/journal-
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/revtex-aps-paper.git
-cd revtex-aps-paper
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/revtex-aps-paper
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

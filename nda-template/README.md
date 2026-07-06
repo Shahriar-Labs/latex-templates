@@ -22,8 +22,8 @@ Open **[Non-Disclosure Agreement on LetX »](https://letx.app/templates/miscella
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/nda-template.git
-cd nda-template
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/nda-template
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

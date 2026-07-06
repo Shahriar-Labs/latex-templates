@@ -22,8 +22,8 @@ Open **[AASTeX Astronomy Paper on LetX »](https://letx.app/templates/journal-ar
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/aastex-apj-paper.git
-cd aastex-apj-paper
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/aastex-apj-paper
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

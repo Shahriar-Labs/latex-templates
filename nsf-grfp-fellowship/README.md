@@ -22,8 +22,8 @@ Open **[NSF GRFP Fellowship Statements on LetX »](https://letx.app/templates/gr
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/nsf-grfp-fellowship.git
-cd nsf-grfp-fellowship
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/nsf-grfp-fellowship
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

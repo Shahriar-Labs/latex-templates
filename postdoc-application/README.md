@@ -22,8 +22,8 @@ Open **[Postdoc Application on LetX »](https://letx.app/templates/academic-care
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/postdoc-application.git
-cd postdoc-application
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/postdoc-application
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

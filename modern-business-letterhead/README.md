@@ -22,8 +22,8 @@ Open **[Modern Business Letterhead on LetX »](https://letx.app/templates/formal
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/modern-business-letterhead.git
-cd modern-business-letterhead
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/modern-business-letterhead
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

@@ -22,8 +22,8 @@ Open **[Management Consultant Resume on LetX »](https://letx.app/templates/cvs-
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/consultant-resume.git
-cd consultant-resume
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/consultant-resume
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

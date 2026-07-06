@@ -22,8 +22,8 @@ Open **[Creative Designer Resume on LetX »](https://letx.app/templates/cvs-resu
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/creative-designer-resume.git
-cd creative-designer-resume
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/creative-designer-resume
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

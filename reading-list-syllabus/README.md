@@ -22,8 +22,8 @@ Open **[Course Syllabus on LetX »](https://letx.app/templates/assignments/readi
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/reading-list-syllabus.git
-cd reading-list-syllabus
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/reading-list-syllabus
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

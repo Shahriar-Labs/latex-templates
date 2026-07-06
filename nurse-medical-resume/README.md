@@ -22,8 +22,8 @@ Open **[Nurse / Medical Resume on LetX »](https://letx.app/templates/cvs-resume
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/nurse-medical-resume.git
-cd nurse-medical-resume
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/nurse-medical-resume
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

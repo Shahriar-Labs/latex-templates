@@ -22,8 +22,8 @@ Open **[Certificate of Achievement on LetX »](https://letx.app/templates/miscel
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/certificate-of-achievement.git
-cd certificate-of-achievement
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/certificate-of-achievement
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

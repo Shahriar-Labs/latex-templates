@@ -22,8 +22,8 @@ Open **[Journal Cover Letter on LetX »](https://letx.app/templates/journal-arti
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/journal-cover-letter.git
-cd journal-cover-letter
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/journal-cover-letter
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

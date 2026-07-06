@@ -22,8 +22,8 @@ Open **[Statistics Report on LetX »](https://letx.app/templates/assignments/sta
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/statistics-report.git
-cd statistics-report
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/statistics-report
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

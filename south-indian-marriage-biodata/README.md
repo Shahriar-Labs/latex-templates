@@ -22,8 +22,8 @@ Open **[South Indian Marriage Biodata on LetX »](https://letx.app/templates/mis
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/south-indian-marriage-biodata.git
-cd south-indian-marriage-biodata
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/south-indian-marriage-biodata
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

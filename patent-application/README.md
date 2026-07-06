@@ -22,8 +22,8 @@ Open **[Patent Application on LetX »](https://letx.app/templates/miscellaneous/
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/patent-application.git
-cd patent-application
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/patent-application
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

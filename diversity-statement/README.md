@@ -22,8 +22,8 @@ Open **[Diversity Statement on LetX »](https://letx.app/templates/academic-care
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/diversity-statement.git
-cd diversity-statement
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/diversity-statement
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

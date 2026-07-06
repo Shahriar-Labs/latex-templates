@@ -22,8 +22,8 @@ Open **[Chemistry Lab Report on LetX »](https://letx.app/templates/lab-document
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/chemistry-lab-report.git
-cd chemistry-lab-report
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/chemistry-lab-report
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

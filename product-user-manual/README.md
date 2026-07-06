@@ -22,8 +22,8 @@ Open **[Product User Manual on LetX »](https://letx.app/templates/books/product
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/product-user-manual.git
-cd product-user-manual
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/product-user-manual
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

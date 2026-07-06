@@ -22,8 +22,8 @@ Open **[Clinical Case Report on LetX »](https://letx.app/templates/journal-arti
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/clinical-case-report.git
-cd clinical-case-report
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/clinical-case-report
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

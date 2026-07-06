@@ -22,8 +22,8 @@ Open **[Letter of Intent on LetX »](https://letx.app/templates/formal-letters/l
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/letter-of-intent.git
-cd letter-of-intent
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/letter-of-intent
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

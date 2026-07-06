@@ -22,8 +22,8 @@ Open **[Algorithm Cheatsheet on LetX »](https://letx.app/templates/assignments/
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/algorithm-cheatsheet.git
-cd algorithm-cheatsheet
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/algorithm-cheatsheet
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

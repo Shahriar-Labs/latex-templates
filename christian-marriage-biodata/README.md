@@ -22,8 +22,8 @@ Open **[Christian Marriage Biodata on LetX »](https://letx.app/templates/miscel
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/christian-marriage-biodata.git
-cd christian-marriage-biodata
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/christian-marriage-biodata
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

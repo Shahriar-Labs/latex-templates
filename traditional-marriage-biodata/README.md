@@ -22,8 +22,8 @@ Open **[Traditional Marriage Biodata on LetX »](https://letx.app/templates/misc
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/traditional-marriage-biodata.git
-cd traditional-marriage-biodata
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/traditional-marriage-biodata
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

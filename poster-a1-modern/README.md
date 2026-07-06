@@ -22,8 +22,8 @@ Open **[Modern Conference Poster (A1) on LetX »](https://letx.app/templates/pos
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/poster-a1-modern.git
-cd poster-a1-modern
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/poster-a1-modern
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

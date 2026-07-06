@@ -22,8 +22,8 @@ Open **[Bioinformatics Report on LetX »](https://letx.app/templates/lab-documen
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/bioinformatics-report.git
-cd bioinformatics-report
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/bioinformatics-report
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

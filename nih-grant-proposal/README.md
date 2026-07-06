@@ -22,8 +22,8 @@ Open **[NIH Grant Proposal on LetX »](https://letx.app/templates/grants/nih-gra
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/nih-grant-proposal.git
-cd nih-grant-proposal
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/nih-grant-proposal
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

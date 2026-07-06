@@ -22,8 +22,8 @@ Open **[Gantt Project Plan on LetX »](https://letx.app/templates/miscellaneous/
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/gantt-project-plan.git
-cd gantt-project-plan
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/gantt-project-plan
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

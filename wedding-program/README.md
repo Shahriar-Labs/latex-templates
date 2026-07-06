@@ -22,8 +22,8 @@ Open **[Wedding Program on LetX »](https://letx.app/templates/miscellaneous/wed
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/wedding-program.git
-cd wedding-program
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/wedding-program
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

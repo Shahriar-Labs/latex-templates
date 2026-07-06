@@ -22,8 +22,8 @@ Open **[Extended Abstract on LetX »](https://letx.app/templates/conferences/ext
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/extended-abstract.git
-cd extended-abstract
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/extended-abstract
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

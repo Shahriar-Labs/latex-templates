@@ -22,8 +22,8 @@ Open **[Academic Letterhead on LetX »](https://letx.app/templates/formal-letter
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/academic-letterhead.git
-cd academic-letterhead
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/academic-letterhead
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

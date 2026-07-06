@@ -22,8 +22,8 @@ Open **[Lab Safety Manual on LetX »](https://letx.app/templates/lab-documents/l
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/lab-safety-manual.git
-cd lab-safety-manual
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/lab-safety-manual
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

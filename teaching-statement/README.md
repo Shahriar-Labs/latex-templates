@@ -22,8 +22,8 @@ Open **[Teaching Statement on LetX »](https://letx.app/templates/academic-caree
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/teaching-statement.git
-cd teaching-statement
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/teaching-statement
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

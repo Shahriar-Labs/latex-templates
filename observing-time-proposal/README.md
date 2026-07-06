@@ -22,8 +22,8 @@ Open **[Telescope Observing Proposal on LetX »](https://letx.app/templates/gran
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/observing-time-proposal.git
-cd observing-time-proposal
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/observing-time-proposal
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

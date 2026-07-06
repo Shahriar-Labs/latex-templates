@@ -22,8 +22,8 @@ Open **[Workout Log on LetX »](https://letx.app/templates/miscellaneous/workout
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/workout-log.git
-cd workout-log
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/workout-log
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

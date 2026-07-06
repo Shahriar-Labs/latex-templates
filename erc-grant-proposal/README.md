@@ -22,8 +22,8 @@ Open **[ERC Grant Proposal on LetX »](https://letx.app/templates/grants/erc-gra
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/erc-grant-proposal.git
-cd erc-grant-proposal
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/erc-grant-proposal
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

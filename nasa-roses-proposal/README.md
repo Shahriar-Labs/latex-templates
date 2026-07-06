@@ -22,8 +22,8 @@ Open **[NASA ROSES Grant Proposal on LetX »](https://letx.app/templates/grants/
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/nasa-roses-proposal.git
-cd nasa-roses-proposal
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/nasa-roses-proposal
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

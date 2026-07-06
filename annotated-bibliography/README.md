@@ -22,8 +22,8 @@ Open **[Annotated Bibliography on LetX »](https://letx.app/templates/assignment
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/annotated-bibliography.git
-cd annotated-bibliography
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/annotated-bibliography
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

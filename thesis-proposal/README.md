@@ -22,8 +22,8 @@ Open **[Thesis Proposal on LetX »](https://letx.app/templates/academic-career/t
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/thesis-proposal.git
-cd thesis-proposal
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/thesis-proposal
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

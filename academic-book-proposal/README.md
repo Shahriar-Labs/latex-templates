@@ -22,8 +22,8 @@ Open **[Academic Book Proposal on LetX »](https://letx.app/templates/books/acad
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/academic-book-proposal.git
-cd academic-book-proposal
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/academic-book-proposal
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

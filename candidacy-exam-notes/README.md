@@ -22,8 +22,8 @@ Open **[Candidacy Exam Notes on LetX »](https://letx.app/templates/assignments/
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/candidacy-exam-notes.git
-cd candidacy-exam-notes
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/candidacy-exam-notes
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

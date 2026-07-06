@@ -22,8 +22,8 @@ Open **[Business Card Sheet on LetX »](https://letx.app/templates/miscellaneous
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/business-card.git
-cd business-card
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/business-card
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

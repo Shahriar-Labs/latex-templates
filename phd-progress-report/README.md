@@ -22,8 +22,8 @@ Open **[PhD Progress Report on LetX »](https://letx.app/templates/academic-care
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/phd-progress-report.git
-cd phd-progress-report
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/phd-progress-report
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

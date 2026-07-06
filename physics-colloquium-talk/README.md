@@ -22,8 +22,8 @@ Open **[Astrophysics Beamer Talk on LetX »](https://letx.app/templates/conferen
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/physics-colloquium-talk.git
-cd physics-colloquium-talk
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/physics-colloquium-talk
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

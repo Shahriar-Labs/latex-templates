@@ -22,8 +22,8 @@ Open **[Tri-Fold Brochure on LetX »](https://letx.app/templates/miscellaneous/f
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/foldable-card.git
-cd foldable-card
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/foldable-card
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

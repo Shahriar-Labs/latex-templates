@@ -22,8 +22,8 @@ Open **[Personal Budget Planner on LetX »](https://letx.app/templates/miscellan
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/personal-budget-planner.git
-cd personal-budget-planner
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/personal-budget-planner
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

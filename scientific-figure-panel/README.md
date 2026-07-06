@@ -22,8 +22,8 @@ Open **[Scientific Figure Panel on LetX »](https://letx.app/templates/miscellan
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/scientific-figure-panel.git
-cd scientific-figure-panel
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/scientific-figure-panel
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

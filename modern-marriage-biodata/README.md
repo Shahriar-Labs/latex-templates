@@ -22,8 +22,8 @@ Open **[Modern Marriage Biodata on LetX »](https://letx.app/templates/miscellan
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/modern-marriage-biodata.git
-cd modern-marriage-biodata
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/modern-marriage-biodata
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

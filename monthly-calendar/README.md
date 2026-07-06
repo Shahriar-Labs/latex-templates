@@ -22,8 +22,8 @@ Open **[Monthly Calendar on LetX »](https://letx.app/templates/calendars/monthl
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/monthly-calendar.git
-cd monthly-calendar
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/monthly-calendar
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

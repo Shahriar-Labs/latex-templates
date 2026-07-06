@@ -22,8 +22,8 @@ Open **[Data Management Plan on LetX »](https://letx.app/templates/grants/data-
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/data-management-plan.git
-cd data-management-plan
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/data-management-plan
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

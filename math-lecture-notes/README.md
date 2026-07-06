@@ -22,8 +22,8 @@ Open **[Math Lecture Notes on LetX »](https://letx.app/templates/assignments/ma
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/math-lecture-notes.git
-cd math-lecture-notes
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/math-lecture-notes
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

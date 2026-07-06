@@ -22,8 +22,8 @@ Open **[Geology Field Report on LetX »](https://letx.app/templates/lab-document
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/geology-field-report.git
-cd geology-field-report
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/geology-field-report
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

@@ -22,8 +22,8 @@ Open **[Engineering Design Document on LetX »](https://letx.app/templates/assig
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/engineering-design-document.git
-cd engineering-design-document
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/engineering-design-document
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

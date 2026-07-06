@@ -22,8 +22,8 @@ Open **[Response to Reviewers on LetX »](https://letx.app/templates/journal-art
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/response-to-reviewers.git
-cd response-to-reviewers
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/response-to-reviewers
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

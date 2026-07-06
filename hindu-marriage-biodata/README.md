@@ -22,8 +22,8 @@ Open **[Hindu Marriage Biodata on LetX »](https://letx.app/templates/miscellane
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/hindu-marriage-biodata.git
-cd hindu-marriage-biodata
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/hindu-marriage-biodata
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

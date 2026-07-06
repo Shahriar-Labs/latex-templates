@@ -22,8 +22,8 @@ Open **[MNRAS Journal Paper on LetX »](https://letx.app/templates/journal-artic
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/mnras-paper.git
-cd mnras-paper
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/mnras-paper
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

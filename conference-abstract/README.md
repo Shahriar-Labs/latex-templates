@@ -22,8 +22,8 @@ Open **[Conference Abstract on LetX »](https://letx.app/templates/conferences/c
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/conference-abstract.git
-cd conference-abstract
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/conference-abstract
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

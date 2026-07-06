@@ -22,8 +22,8 @@ Open **[AIAA Conference Paper on LetX »](https://letx.app/templates/conferences
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/aiaa-conference-paper.git
-cd aiaa-conference-paper
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/aiaa-conference-paper
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

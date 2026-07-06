@@ -22,8 +22,8 @@ Open **[Seminar Handout on LetX »](https://letx.app/templates/assignments/semin
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/seminar-handout.git
-cd seminar-handout
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/seminar-handout
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

@@ -22,8 +22,8 @@ Open **[Executive Director CV on LetX »](https://letx.app/templates/cvs-resumes
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/executive-director-cv.git
-cd executive-director-cv
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/executive-director-cv
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

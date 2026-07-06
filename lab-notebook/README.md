@@ -22,8 +22,8 @@ Open **[Lab Notebook on LetX »](https://letx.app/templates/lab-documents/lab-no
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/lab-notebook.git
-cd lab-notebook
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/lab-notebook
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

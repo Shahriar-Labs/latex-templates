@@ -22,8 +22,8 @@ Open **[NSF Grant Proposal on LetX »](https://letx.app/templates/grants/nsf-gra
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/nsf-grant-proposal.git
-cd nsf-grant-proposal
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/nsf-grant-proposal
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

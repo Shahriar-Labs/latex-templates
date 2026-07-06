@@ -22,8 +22,8 @@ Open **[Creative Studio Letterhead on LetX »](https://letx.app/templates/formal
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/creative-letterhead.git
-cd creative-letterhead
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/creative-letterhead
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).
