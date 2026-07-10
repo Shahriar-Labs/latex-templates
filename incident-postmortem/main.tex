@@ -1,0 +1,793 @@
+% ============================================================
+%  Incident Postmortem Template — elegant, modern, SRE/FinOps
+%  Edit and compile online at https://letx.app
+%  Engine: pdflatex  |  Build: latexmk -pdf main.tex
+% ============================================================
+
+\documentclass[11pt,a4paper]{article}
+
+% ── Core layout ─────────────────────────────────────────────
+\usepackage[
+  top=18mm, bottom=20mm,
+  left=18mm, right=18mm,
+  includeheadfoot
+]{geometry}
+
+% ── Font & encoding ─────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{inconsolata}   % monospace for code blocks
+
+% ── Colour palette ──────────────────────────────────────────
+\usepackage[dvipsnames,table]{xcolor}
+\definecolor{accent}{HTML}{C0392B}        % deep crimson
+\definecolor{accentlt}{HTML}{F5B7B1}      % light crimson tint
+\definecolor{ink}{HTML}{1A1A2E}           % near-black
+\definecolor{muted}{HTML}{6C757D}         % medium grey
+\definecolor{rule}{HTML}{DEE2E6}          % hairline grey
+\definecolor{codebg}{HTML}{F4F4F5}        % code background
+\definecolor{pagebg}{HTML}{FAFAFA}        % slight off-white page
+\definecolor{sev1}{HTML}{C0392B}          % severity 1 red
+\definecolor{sev2}{HTML}{E67E22}          % severity 2 orange
+\definecolor{sev3}{HTML}{F1C40F}          % severity 3 yellow
+\definecolor{statusopen}{HTML}{E74C3C}
+\definecolor{statusinprog}{HTML}{E67E22}
+\definecolor{statusdone}{HTML}{27AE60}
+\definecolor{tabhead}{HTML}{2C3E50}
+
+% ── Packages ────────────────────────────────────────────────
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{tabularx,booktabs,array,multirow,longtable}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{fontawesome5}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit,calc}
+\usepackage{pgffor}
+
+% ── Disable parskip vertical spacing inside tables ──────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt plus 1pt}
+
+% ── Page colour ─────────────────────────────────────────────
+\pagecolor{pagebg}
+
+% ── Hyperref setup ──────────────────────────────────────────
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent,
+  pdfauthor={Platform Engineering — Reliability Team},
+  pdftitle={Incident Postmortem: SEV-1 US-EAST-1 Database Failover},
+}
+
+% ── Section styling ─────────────────────────────────────────
+\titleformat{\section}
+  {\color{ink}\large\bfseries}
+  {}
+  {0pt}
+  {\colorbox{ink}{\color{white}\hspace{4pt}%
+    \thesection\hspace{6pt}}%
+  \hspace{6pt}}
+  [\vspace{-2pt}\textcolor{rule}{\rule{\linewidth}{0.4pt}}]
+
+\titlespacing{\section}{0pt}{12pt}{6pt}
+
+\titleformat{\subsection}
+  {\color{ink}\normalsize\bfseries}
+  {\color{accent}\thesubsection.}
+  {5pt}
+  {}
+  []
+\titlespacing{\subsection}{0pt}{8pt}{3pt}
+
+% ── tcolorbox environments ──────────────────────────────────
+
+% Callout box (severity / status banners)
+\newtcolorbox{callout}[2][]{
+  enhanced,
+  colback=#2!8!white,
+  colframe=#2,
+  boxrule=0.6pt,
+  arc=3pt,
+  left=6pt, right=6pt, top=4pt, bottom=4pt,
+  fonttitle=\bfseries\small,
+  coltitle=#2!60!black,
+  #1
+}
+
+% Summary banner at top
+\newtcolorbox{summarybanner}{
+  enhanced,
+  colback=ink,
+  colframe=ink,
+  arc=4pt,
+  left=10pt, right=10pt, top=7pt, bottom=7pt,
+  fontupper=\color{white}\small,
+}
+
+% Code listing box
+\newtcolorbox{codeblock}[1][]{
+  enhanced,
+  colback=codebg,
+  colframe=rule,
+  boxrule=0.5pt,
+  arc=3pt,
+  left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fontupper=\ttfamily\small,
+  #1
+}
+
+% Infobox (blue-ish)
+\newtcolorbox{infobox}{
+  enhanced,
+  colback=accentlt!30!white,
+  colframe=accent,
+  boxrule=0.5pt,
+  arc=3pt,
+  left=8pt, right=8pt, top=5pt, bottom=5pt,
+}
+
+% ── listings config ─────────────────────────────────────────
+\lstset{
+  basicstyle=\ttfamily\footnotesize\color{ink},
+  backgroundcolor=\color{codebg},
+  frame=none,
+  breaklines=true,
+  breakatwhitespace=true,
+  showstringspaces=false,
+  keywordstyle=\color{accent}\bfseries,
+  commentstyle=\color{muted}\itshape,
+  stringstyle=\color{statusinprog},
+  numbers=left,
+  numberstyle=\tiny\color{muted},
+  numbersep=8pt,
+  xleftmargin=14pt,
+  tabsize=2,
+}
+
+% ── Header / Footer ─────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{%
+  \small\color{muted}%
+  \faIcon{shield-alt}\hspace{4pt}%
+  \textbf{\color{ink}Incident Postmortem}%
+  \hspace{6pt}|\hspace{6pt}%
+  SEV-1 \texttt{INC-2024-0847}%
+}
+\fancyhead[R]{\small\color{muted}Platform Engineering \textbullet{} Reliability Team}
+\fancyfoot[C]{\small\color{muted}\thepage}
+\fancyfoot[R]{\small\color{muted}\textit{CONFIDENTIAL — Internal Use Only}}
+
+% ── Helper macros ───────────────────────────────────────────
+\newcommand{\pill}[2]{%
+  \tikz[baseline=(n.base)]\node[rounded corners=2pt,
+    fill=#1!15!white, draw=#1, inner xsep=3pt, inner ysep=2pt,
+    font=\bfseries\tiny, text=#1!70!black](n){#2};%
+}
+
+\newcommand{\badge}[2]{%
+  \tikz[baseline=(n.base)]\node[rounded corners=2pt,
+    fill=#1, inner xsep=5pt, inner ysep=2pt,
+    font=\bfseries\tiny, text=white](n){#2};%
+}
+
+\newcommand{\kv}[2]{%
+  \noindent
+  \begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries\small}l@{\hspace{8mm}}>{\raggedright\arraybackslash\small}X@{}}
+    #1 & #2
+  \end{tabularx}%
+}
+
+\newcommand{\sectionrule}{%
+  \vspace{2pt}\textcolor{rule}{\rule{\linewidth}{0.4pt}}\vspace{4pt}%
+}
+
+% ── Action item row macro ───────────────────────────────────
+\newcommand{\actionrow}[5]{%
+  % #1=ID #2=action #3=owner #4=deadline #5=status-colour+label
+  \texttt{\small #1} &
+  \small #2 &
+  \small\textbf{#3} &
+  \small\texttt{#4} &
+  \badge{#5}{\phantom{x}}\hspace{-8pt}\badge{#5}{}%
+}
+
+% ================================================================
+%  DOCUMENT
+% ================================================================
+\begin{document}
+
+% ── Cover Banner ─────────────────────────────────────────────
+\begin{summarybanner}
+\begin{tabularx}{\linewidth}{@{}Xr@{}}
+  {\Large\bfseries\faIcon{fire-alt}\hspace{6pt}Incident Postmortem Report} &
+  \badge{sev1}{SEV-1}\\[4pt]
+  {\normalsize\color{white!70!ink} US-EAST-1 RDS Aurora Cluster Failover \&
+    API Gateway Cascade Failure} &
+  \\[2pt]
+  \multicolumn{2}{@{}l@{}}{%
+    \small
+    \faIcon{calendar-alt}\hspace{4pt}2024-11-14 03:17 UTC\hspace{10pt}%
+    \faIcon{clock}\hspace{4pt}Duration: \textbf{2h 43m}\hspace{10pt}%
+    \faIcon{users}\hspace{4pt}Affected: \textbf{\textasciitilde{}47\,000 users}\hspace{10pt}%
+    \faIcon{dollar-sign}\hspace{4pt}Est.\ Cost: \textbf{\$183\,000}%
+  }\\
+\end{tabularx}
+\end{summarybanner}
+
+\vspace{6pt}
+
+% ── Synapsedata grid ────────────────────────────────────────────
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\small\color{accent}}l@{\hspace{8mm}}>{\small\raggedright\arraybackslash}X@{\hspace{14mm}}>{\bfseries\small\color{accent}}l@{\hspace{8mm}}>{\small\raggedright\arraybackslash}X@{}}
+  Incident ID     & \texttt{INC-2024-0847}        & Severity      & \badge{sev1}{SEV-1 Critical}\\[3pt]
+  Service         & Payment Processing API         & Status        & \badge{statusdone}{RESOLVED}\\[3pt]
+  Incident Cmdr.  & Elena Vasquez                  & Document Rev. & v2.1 (2024-11-21)\\[3pt]
+  Scribe          & Marcus Okonkwo                 & Reviewed By   & Priya Nair, James Trevino\\[3pt]
+  Detection       & 2024-11-14 03:17 UTC           & Resolution    & 2024-11-14 06:00 UTC\\[3pt]
+\end{tabularx}
+
+\vspace{4pt}\textcolor{rule}{\rule{\linewidth}{0.5pt}}\vspace{2pt}
+
+% ── Executive Summary ────────────────────────────────────────
+\section{Executive Summary}
+
+On \textbf{2024-11-14} at 03:17 UTC, a misconfigured automated maintenance window
+triggered an unplanned failover of the primary Vertex Aurora PostgreSQL cluster
+(\texttt{payments-db-us-east-1}) serving the Payment Processing API. The failover
+propagated a cascade failure into the API Gateway layer due to hardcoded connection
+pool exhaustion logic. Approximately \textbf{47\,000 end users} were unable to
+complete checkout flows for \textbf{2 hours 43 minutes}. Total estimated revenue
+impact is \textbf{\$183\,000} with an additional \$24\,000 in cloud cost overrun
+from emergency scaling actions. This document captures the full timeline, root
+cause analysis, blast radius, and the set of action items committed to by the
+team to prevent recurrence.
+
+\begin{callout}[title={\faIcon{lightbulb}\hspace{4pt}Key Finding}]{accent}
+The failure was \emph{not} caused by the database failover itself (which completed
+successfully in 32\,s) but by the API service's connection pool refusing to
+re-establish connections after the new primary endpoint's DNS propagated, due to a
+missing \texttt{read\_after\_write} retry wrapper introduced in \texttt{v4.7.2}.
+\end{callout}
+
+% ── Incident Timeline (Gantt-style) ──────────────────────────
+\section{Incident Timeline}
+
+\subsection{Chronological Events}
+
+\setlength{\parskip}{0pt}
+\begin{tabularx}{\linewidth}{@{}
+  >{\ttfamily\small\color{muted}}l
+  @{\hspace{6mm}}
+  >{\small\bfseries}l
+  @{\hspace{4mm}}
+  >{\small\raggedright\arraybackslash}X
+  @{}}
+\toprule
+\normalfont\small\bfseries\color{ink}Timestamp (UTC) &
+\normalfont\small\bfseries\color{ink}Actor &
+\normalfont\small\bfseries\color{ink}Event \\
+\midrule
+03:00 & Automation     & Scheduled maintenance window opens (misconfigured: Prod instead of Staging)\\
+03:12 & Aurora         & Parameter group push triggers instance reboot sequence on primary\\
+03:17 & PagerDuty      & \textbf{\color{accent}ALERT}: P99 latency on \texttt{/api/v2/payments} exceeds 8\,s\\
+03:19 & Aurora         & Primary failover initiates; replica \texttt{payments-db-r2} promoted\\
+03:21 & On-call (Elena)& Acknowledged alert; begins triage on API Gateway metrics\\
+03:25 & Aurora         & New primary endpoint DNS propagated; failover complete (32\,s)\\
+03:27 & API Layer      & Connection pool exhausted; \texttt{HTTP 503} rate reaches 94\%\\
+03:31 & Elena          & War room bridge opened; Marcus, Priya, James join\\
+03:40 & James          & Identifies connection pool config bug in \texttt{app-config-v4.7.2}\\
+03:55 & Priya          & Rolls back connection pool config via feature flag\\
+04:10 & SRE Team       & Error rate drops to 28\%; partial recovery; caches warming\\
+04:40 & SRE Team       & Emergency pod scaling applied (32 $\to$ 96 replicas)\\
+05:15 & Payment API    & Error rate below 1\%; user-facing impact effectively resolved\\
+05:45 & Marcus         & Full traffic restored; rollback tagged \texttt{hotfix/pool-v4.7.3}\\
+06:00 & Elena          & Incident declared resolved; all-clear notification sent\\
+\bottomrule
+\end{tabularx}
+\setlength{\parskip}{4pt plus 1pt}
+
+\subsection{Gantt-Style Timeline Visualization}
+
+\vspace{4pt}
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[x=0.135cm, y=0.72cm]
+
+  % Time axis labels (minutes from 03:00)
+  \def\tstart{0}
+  \def\tend{180}
+
+  % Background grid
+  \foreach \t in {0,30,60,90,120,150,180}{
+    \draw[color=rule, line width=0.4pt] (\t, 0.3) -- (\t, -5.5);
+  }
+
+  % Axis
+  \draw[color=ink, line width=0.8pt] (0,0.3) -- (180,0.3);
+  \foreach \t/\lbl in {0/03:00, 30/03:30, 60/04:00, 90/04:30, 120/05:00, 150/05:30, 180/06:00}{
+    \draw[color=ink] (\t,0.3) -- (\t,0.5);
+    \node[above, font=\tiny\ttfamily, color=muted] at (\t, 0.5) {\lbl};
+  }
+
+  % Rows: label + bar
+  % Row 1: Maint Window
+  \node[right, font=\tiny\bfseries, color=ink, anchor=east] at (-1, 0) {Maint Window};
+  \fill[color=sev2!60!white, draw=sev2, line width=0.5pt, rounded corners=2pt]
+    (0,-0.15) rectangle (17,0.15);
+
+  % Row 2: DB Failover
+  \node[right, font=\tiny\bfseries, color=ink, anchor=east] at (-1,-1) {DB Failover};
+  \fill[color=sev1!60!white, draw=sev1, line width=0.5pt, rounded corners=2pt]
+    (17,-1.15) rectangle (25,-0.85);
+  \node[font=\tiny\color{sev1}] at (21,-1) {32s};
+
+  % Row 3: API Degraded
+  \node[right, font=\tiny\bfseries, color=ink, anchor=east] at (-1,-2) {API Degraded};
+  \fill[color=sev1!40!white, draw=sev1, line width=0.5pt, rounded corners=2pt]
+    (27,-2.15) rectangle (135,-1.85);
+  \node[font=\tiny\color{sev1}] at (81,-2) {94\% error rate};
+
+  % Row 4: Triage / War Room
+  \node[right, font=\tiny\bfseries, color=ink, anchor=east] at (-1,-3) {Triage};
+  \fill[color=statusinprog!50!white, draw=statusinprog, line width=0.5pt, rounded corners=2pt]
+    (21,-3.15) rectangle (55,-2.85);
+  \node[font=\tiny\color{statusinprog}] at (38,-3) {Root Cause ID};
+
+  % Row 5: Remediation
+  \node[right, font=\tiny\bfseries, color=ink, anchor=east] at (-1,-4) {Remediation};
+  \fill[color=statusdone!40!white, draw=statusdone, line width=0.5pt, rounded corners=2pt]
+    (55,-4.15) rectangle (165,-3.85);
+  \node[font=\tiny\color{statusdone}] at (110,-4) {Rollback + Scale-out};
+
+  % Row 6: Recovery
+  \node[right, font=\tiny\bfseries, color=ink, anchor=east] at (-1,-5) {Recovery};
+  \fill[color=statusdone!60!white, draw=statusdone, line width=0.5pt, rounded corners=2pt]
+    (135,-5.15) rectangle (180,-4.85);
+  \node[font=\tiny\color{statusdone}] at (157,-5) {Full restore};
+
+  % Detection marker
+  \draw[color=accent, line width=1pt, dashed] (17, 0.3) -- (17,-5.5);
+  \node[below, font=\tiny\bfseries\color{accent}] at (17,-5.5) {Detection};
+
+  % Resolution marker
+  \draw[color=statusdone, line width=1pt, dashed] (180, 0.3) -- (180,-5.5);
+  \node[below, font=\tiny\bfseries\color{statusdone}] at (180,-5.5) {Resolved};
+
+\end{tikzpicture}}
+\end{center}
+
+% ── Impact Assessment ────────────────────────────────────────
+\section{Impact Assessment}
+
+\subsection{Blast Radius}
+
+\setlength{\parskip}{0pt}
+\begin{tabularx}{\linewidth}{@{}
+  >{\bfseries\small}l
+  @{\hspace{6mm}}
+  >{\small\centering\arraybackslash}p{24mm}
+  @{\hspace{4mm}}
+  >{\small\raggedright\arraybackslash}X
+  @{}}
+\toprule
+\small\bfseries\color{ink}Component &
+\small\bfseries\color{ink}Severity &
+\small\bfseries\color{ink}Details \\
+\midrule
+Payment Processing API  & \badge{sev1}{Critical}  & 94\% of requests returning HTTP 503; \$183k revenue loss\\[3pt]
+Checkout Service        & \badge{sev1}{Critical}  & Unable to initiate or complete transactions; cart abandonment spike\\[3pt]
+Order Management Svc    & \badge{sev2}{High}      & Write operations queued; 12-minute backlog at peak\\[3pt]
+Fraud Detection Engine  & \badge{sev2}{High}      & Fallback mode activated; 340 transactions processed without scoring\\[3pt]
+Notification Service    & \badge{sev3}{Medium}    & Email/SMS delays up to 18 min; no data loss\\[3pt]
+Analytics Pipeline      & \badge{sev3}{Medium}    & 47-minute data gap in Redshift; backfill completed post-incident\\[3pt]
+Read Replica Queries    & \pill{statusdone}{None} & Unaffected; read traffic shifted automatically\\[3pt]
+Static Assets / CDN     & \pill{statusdone}{None} & Fully available throughout the incident\\
+\bottomrule
+\end{tabularx}
+\setlength{\parskip}{4pt plus 1pt}
+
+\vspace{4pt}
+
+\subsection{Quantified Impact}
+
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\small\color{accent}}l@{\hspace{8mm}}>{\small\raggedright\arraybackslash}X@{}}
+Users Affected    & $\approx$47\,000 unique sessions unable to complete payment\\
+Duration          & 2 hours 43 minutes (03:17 -- 06:00 UTC)\\
+Revenue Impact    & \$183\,000 estimated (based on avg.\ transaction value \$38.70)\\
+Cloud Cost Overrun& \$24\,000 (emergency Lambda concurrency + RDS multi-AZ resync)\\
+SLA Breach        & Yes --- 99.95\% monthly SLA violated (actual: 99.62\%)\\
+Customer Tickets  & 1\,247 tickets filed; 94 escalated to Tier-2\\
+\end{tabularx}
+
+% ── Blast-Radius Diagram ─────────────────────────────────────
+\subsection{Service Dependency Blast-Radius Diagram}
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=8mm and 14mm,
+    svc/.style={rounded corners=4pt, minimum width=26mm, minimum height=8mm,
+                font=\tiny\bfseries, align=center, draw, line width=0.8pt},
+    arr/.style={-{Stealth[length=4pt]}, line width=0.8pt},
+]
+
+  % DB (epicentre)
+  \node[svc, fill=sev1!20!white, draw=sev1, text=sev1!60!black]
+    (db) {Aurora Primary\\\tiny(EPICENTRE)};
+
+  % API layer
+  \node[svc, fill=sev1!10!white, draw=sev1, right=22mm of db]
+    (api) {Payment API\\\tiny 94\% error};
+
+  % Downstream
+  \node[svc, fill=sev1!10!white, draw=sev1, above right=6mm and 18mm of api]
+    (checkout) {Checkout Svc\\\tiny Critical};
+
+  \node[svc, fill=sev2!15!white, draw=sev2, right=18mm of api]
+    (order) {Order Mgmt\\\tiny High};
+
+  \node[svc, fill=sev2!15!white, draw=sev2, below right=6mm and 18mm of api]
+    (fraud) {Fraud Engine\\\tiny High / Fallback};
+
+  % Unaffected
+  \node[svc, fill=statusdone!15!white, draw=statusdone, below=10mm of db]
+    (replica) {Read Replica\\\tiny Unaffected};
+
+  \node[svc, fill=sev3!20!white, draw=sev3, above=10mm of db]
+    (notif) {Notification\\\tiny Medium};
+
+  % Arrows
+  \draw[arr, color=sev1]   (db) -- (api);
+  \draw[arr, color=sev1]   (api) -- (checkout);
+  \draw[arr, color=sev2]   (api) -- (order);
+  \draw[arr, color=sev2]   (api) -- (fraud);
+  \draw[arr, color=sev3]   (api) -- (notif);
+  \draw[arr, color=statusdone, dashed] (db) -- (replica)
+    node[midway, font=\tiny, right, color=muted]{auto-failover};
+
+\end{tikzpicture}
+\end{center}
+
+% ── Root Cause Analysis ──────────────────────────────────────
+\section{Root Cause Analysis}
+
+\subsection{Five Whys Analysis}
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=6mm,
+    why/.style={rounded corners=3pt, text width=92mm, minimum height=8mm,
+                font=\small, align=left, draw, line width=0.6pt,
+                inner xsep=3pt, inner ysep=4pt},
+    arr/.style={-{Stealth[length=5pt]}, line width=0.8pt, color=muted},
+]
+
+\node[why, fill=sev1!15!white, draw=sev1]
+  (w1) {\textbf{Symptom:} 47\,000 users unable to complete payment for 2h 43m};
+
+\node[why, fill=sev2!10!white, draw=sev2, below=5mm of w1]
+  (w2) {\textbf{Why 1:} Payment API returned HTTP 503 at 94\% rate};
+
+\node[why, fill=sev2!8!white, draw=sev2!70!white, below=5mm of w2]
+  (w3) {\textbf{Why 2:} API connection pool fully exhausted after DB failover};
+
+\node[why, fill=sev3!15!white, draw=sev3, below=5mm of w3]
+  (w4) {\textbf{Why 3:} Connection pool lacked retry/reconnect on new primary DNS};
+
+\node[why, fill=ink!6!white, draw=ink!30!white, below=5mm of w4]
+  (w5) {\textbf{Why 4:} \texttt{read\_after\_write} retry wrapper removed in \texttt{v4.7.2} refactor};
+
+\node[why, fill=accent!8!white, draw=accent, below=5mm of w5]
+  (w6) {\textbf{Why 5 (Root):} No integration test covering Aurora failover reconnection path;
+         regression not caught pre-deploy};
+
+\draw[arr] (w1) -- (w2);
+\draw[arr] (w2) -- (w3);
+\draw[arr] (w3) -- (w4);
+\draw[arr] (w4) -- (w5);
+\draw[arr] (w5) -- (w6);
+
+\end{tikzpicture}
+\end{center}
+
+\subsection{Contributing Factors}
+
+\begin{enumerate}[leftmargin=*, itemsep=2pt, label=\textcolor{accent}{\bfseries\arabic*.}]
+  \item \textbf{Misconfigured Maintenance Window}: The automation runbook targeted
+    \texttt{env=production} instead of \texttt{env=staging} due to a copy-paste error
+    in the Terraform variable file committed 3 days prior.
+
+  \item \textbf{Missing Canary Test}: Deployment pipeline for \texttt{v4.7.2} had canary
+    gates disabled for ``hotfix track'' releases, bypassing the integration suite that
+    would have caught the missing retry wrapper.
+
+  \item \textbf{Insufficient Observability}: No dedicated metric for ``connection pool
+    exhaustion'' existed; the signal appeared only as generic latency, delaying diagnosis
+    by $\approx$14 minutes.
+
+  \item \textbf{On-call Runbook Gap}: The DB failover runbook did not include a step to
+    verify API-layer reconnection behaviour post-failover, leaving the on-call engineer
+    without a clear path to diagnosis.
+\end{enumerate}
+
+\subsection{What Went Well}
+
+\begin{enumerate}[leftmargin=*, itemsep=2pt, label=\textcolor{statusdone}{\bfseries\arabic*.}]
+  \item PagerDuty alert fired within \textbf{8 minutes} of first errors, meeting the
+    \textless{}10-minute SLO for P99 threshold breach.
+  \item War room assembled and effective within 10 minutes of acknowledgement.
+  \item Aurora failover itself completed in \textbf{32 seconds} --- well within the
+    60-second RTO target for the database tier.
+  \item Feature-flag rollback of the pool config was executed in under 3 minutes once
+    the root cause was identified.
+  \item Read replica traffic remained fully available; browse and search features were
+    unaffected throughout the incident.
+\end{enumerate}
+
+% ── Code Evidence ────────────────────────────────────────────
+\subsection{Code Evidence --- Missing Retry Wrapper}
+
+The following diff shows the \texttt{v4.7.2} change that inadvertently removed
+the Aurora reconnection wrapper:
+
+\begin{lstlisting}[language=Python, caption={\texttt{src/db/pool.py} --- diff v4.7.1 to v4.7.2}]
+- async def get_connection(self) -> Connection:
+-     for attempt in range(self.max_retries):
+-         try:
+-             conn = await self._pool.acquire(timeout=2.0)
+-             await conn.execute("SELECT 1")  # probe after failover
+-             return conn
+-         except (PoolExhaustedError, ConnectionRefusedError):
+-             await asyncio.sleep(0.5 * (2 ** attempt))
+-     raise DatabaseUnavailableError("Pool exhausted after retries")
++
++ async def get_connection(self) -> Connection:
++     return await self._pool.acquire()  # no retry, no probe
+\end{lstlisting}
+
+The Aurora cluster endpoint (\texttt{cluster.proxy-xxx.rds.amazonaws.com})
+updated DNS within 32 seconds of failover, but in-flight pool connections
+cached the old primary IP. Without the probe, callers received stale
+connections that immediately failed, flooding the pool.
+
+\begin{lstlisting}[caption={CloudWatch --- connection pool metric (03:17--03:55 UTC)}]
+03:17:08  payments-api  pool.active=250  pool.idle=0  pool.waiting=847
+03:19:22  payments-api  pool.active=250  pool.idle=0  pool.waiting=2341
+03:25:44  payments-api  pool.active=250  pool.idle=0  pool.waiting=6109
+03:31:00  payments-api  pool.active=250  pool.idle=0  pool.waiting=8820
+03:55:12  payments-api  pool.active=182  pool.idle=68 pool.waiting=0  [ROLLBACK]
+\end{lstlisting}
+
+% ── Detection / Resolution Metrics ───────────────────────────
+\section{Detection and Resolution Metrics}
+
+\subsection{Key Time Metrics}
+
+\setlength{\parskip}{0pt}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\small\color{accent}}l@{\hspace{8mm}}>{\small}l@{\hspace{8mm}}>{\small\color{muted}\raggedright\arraybackslash}X@{}}
+\toprule
+\small\bfseries\color{ink}Metric & \small\bfseries\color{ink}Value & \small\bfseries\color{ink}Target / SLO\\
+\midrule
+Time to Detect (TTD)   & 8 min  & $<$ 10 min \textcolor{statusdone}{\faIcon{check-circle}}\\
+Time to Acknowledge (TTA) & 4 min & $<$ 5 min \textcolor{statusdone}{\faIcon{check-circle}}\\
+Time to Mitigate (TTM) & 38 min & $<$ 30 min \textcolor{sev1}{\faIcon{times-circle}}\\
+Time to Resolve (TTR)  & 2h 43m & $<$ 1h \textcolor{sev1}{\faIcon{times-circle}}\\
+Time to Root Cause     & 23 min & $<$ 20 min \textcolor{sev2}{\faIcon{exclamation-circle}}\\
+\bottomrule
+\end{tabularx}
+\setlength{\parskip}{4pt plus 1pt}
+
+\subsection{Error Rate Recovery Visualization}
+
+\vspace{4pt}
+\begin{center}
+\begin{tikzpicture}[x=0.9mm, y=0.032mm]
+
+  % Y axis (error rate %)
+  \foreach \y/\lbl in {0/0\%,2500/25\%,5000/50\%,7500/75\%,10000/100\%}{
+    \draw[color=rule, line width=0.4pt] (0,\y) -- (163,\y);
+    \node[left, font=\tiny\color{muted}] at (-2,\y) {\lbl};
+  }
+
+  % X axis
+  \draw[color=ink, line width=0.8pt] (0,0) -- (163,0);
+  \foreach \x/\lbl in {0/03:00,27/03:27,55/03:55,75/04:15,115/05:15,163/06:03}{
+    \draw[color=ink] (\x,0) -- (\x,-200);
+    \node[below, font=\tiny\ttfamily, color=muted] at (\x,-300) {\lbl};
+  }
+
+  % Y axis line
+  \draw[color=ink, line width=0.8pt] (0,0) -- (0,10000);
+
+  % Error rate polyline (approximate values)
+  \draw[color=sev1, line width=1.2pt]
+    (0,0) -- (17,200) -- (27,9400) -- (35,9600) -- (55,9000)
+    -- (75,2800) -- (95,1800) -- (115,800) -- (135,200) -- (163,50);
+
+  % Shade under curve
+  \fill[color=sev1!15!white, opacity=0.7]
+    (0,0) -- (17,200) -- (27,9400) -- (35,9600) -- (55,9000)
+    -- (75,2800) -- (95,1800) -- (115,800) -- (135,200) -- (163,50) -- (163,0) -- cycle;
+
+  % Annotations
+  \draw[color=accent, dashed, line width=0.7pt] (27,0) -- (27,9400);
+  \node[above, font=\tiny\bfseries\color{accent}, align=center] at (27,9500) {Pool\\exhausted};
+
+  \draw[color=statusdone, dashed, line width=0.7pt] (55,0) -- (55,9000);
+  \node[above, font=\tiny\bfseries\color{statusdone}, align=center] at (55,9200) {Rollback\\applied};
+
+  \node[right, font=\tiny\bfseries\color{sev1}] at (36,9700) {94\% peak};
+
+  % Y axis label
+  \node[rotate=90, font=\small\color{muted}] at (-12,5000) {API Error Rate};
+
+\end{tikzpicture}
+\end{center}
+
+% ── Action Items ─────────────────────────────────────────────
+\section{Action Items \& Remediation Tracker}
+
+\begin{callout}[title={\faIcon{info-circle}\hspace{4pt}Tracking}]{ink}
+All action items are tracked in Jira project \texttt{RELY}. Status reviewed weekly
+in the SRE reliability sync. DRI = Directly Responsible Individual.
+\end{callout}
+
+\vspace{4pt}
+\setlength{\parskip}{0pt}
+\begin{tabularx}{\linewidth}{@{}
+  >{\ttfamily\small}l
+  @{\hspace{3mm}}
+  >{\small\raggedright\arraybackslash}X
+  @{\hspace{3mm}}
+  >{\small\bfseries}l
+  @{\hspace{3mm}}
+  >{\small\ttfamily}l
+  @{\hspace{3mm}}
+  >{\centering\arraybackslash}p{18mm}
+  @{}}
+\toprule
+\small\bfseries\color{ink}ID &
+\small\bfseries\color{ink}Action Item &
+\small\bfseries\color{ink}DRI &
+\small\bfseries\color{ink}Deadline &
+\small\bfseries\color{ink}Status\\
+\midrule
+RELY-441 & Restore \texttt{read\_after\_write} retry wrapper; add Aurora failover integration test to CI pipeline & James T. & 2024-11-21 & \badge{statusdone}{DONE}\\[4pt]
+RELY-442 & Add connection pool exhaustion CloudWatch alarm (threshold: idle $<$ 10) with PagerDuty routing & Marcus O. & 2024-11-21 & \badge{statusdone}{DONE}\\[4pt]
+RELY-443 & Fix Terraform variable isolation: separate \texttt{env} maps for prod/staging maintenance windows & Priya N. & 2024-11-28 & \badge{statusinprog}{IN PROG}\\[4pt]
+RELY-444 & Re-enable canary integration gates for hotfix track releases; update SDLC policy doc & Elena V. & 2024-11-28 & \badge{statusinprog}{IN PROG}\\[4pt]
+RELY-445 & Update DB failover runbook: add step to validate API connection pool health post-failover & Marcus O. & 2024-12-05 & \badge{statusinprog}{IN PROG}\\[4pt]
+RELY-446 & Implement RDS Proxy for Payment API to absorb future failovers transparently & Infra Team & 2024-12-19 & \badge{statusopen}{OPEN}\\[4pt]
+RELY-447 & Conduct chaos engineering exercise: simulate Aurora failover in staging with full load & SRE Team & 2025-01-10 & \badge{statusopen}{OPEN}\\[4pt]
+RELY-448 & FinOps review: auto-scaling cost guardrails to cap emergency Lambda concurrency spend & FinOps / Priya & 2025-01-10 & \badge{statusopen}{OPEN}\\
+\bottomrule
+\end{tabularx}
+\setlength{\parskip}{4pt plus 1pt}
+
+% ── Preventive Measures ──────────────────────────────────────
+\section{Preventive Measures \& Long-Term Improvements}
+
+\subsection{Immediate (Complete $\leq$ 30 days)}
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item[\textcolor{accent}{\faIcon{check-square}}]
+    \textbf{Aurora failover integration test} added to \texttt{pytest-asyncio} suite;
+    CI pipeline blocks merge on failure (\texttt{RELY-441} --- \textit{complete}).
+
+  \item[\textcolor{accent}{\faIcon{check-square}}]
+    \textbf{CloudWatch composite alarm} created: \texttt{PoolExhaustion $+$ HighLatency}
+    triggers a dedicated PagerDuty policy with the correct runbook URL attached
+    (\texttt{RELY-442} --- \textit{complete}).
+
+  \item[\textcolor{sev2}{\faIcon{hourglass-half}}]
+    \textbf{Terraform environment isolation}: introduce per-environment Terraform
+    workspaces and a \texttt{prevent\_destroy} lifecycle rule on production RDS
+    maintenance resources (\texttt{RELY-443}).
+
+  \item[\textcolor{sev2}{\faIcon{hourglass-half}}]
+    \textbf{Hotfix track canary re-enabled}: gating removed from hotfix track was a
+    deliberate speed tradeoff; policy updated to require at least a smoke-test pass
+    and explicit SRE sign-off (\texttt{RELY-444}).
+\end{itemize}
+
+\subsection{Medium-Term (30--90 days)}
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item[\textcolor{statusopen}{\faIcon{circle}}]
+    \textbf{RDS Proxy adoption} (\texttt{RELY-446}): RDS Proxy will absorb connection
+    churn during failover at the network layer, making the application-level retry
+    wrapper a belt-and-suspenders safety net rather than the sole recovery mechanism.
+
+  \item[\textcolor{statusopen}{\faIcon{circle}}]
+    \textbf{Chaos Engineering Programme} (\texttt{RELY-447}): Quarterly Aurora
+    failover drills in staging with production-level traffic simulation using AWS
+    Fault Injection Simulator (FIS). Results published to SRE reliability dashboard.
+\end{itemize}
+
+\subsection{FinOps / Cost Controls}
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item[\textcolor{statusopen}{\faIcon{circle}}]
+    \textbf{Emergency scaling guardrails} (\texttt{RELY-448}): Set AWS Budgets action
+    to notify and optionally block Lambda concurrency above 1500 units during
+    an incident. Review IAM break-glass permissions for emergency overrides.
+
+  \item[\textcolor{statusdone}{\faIcon{check-circle}}]
+    \textbf{Cost attribution tagging}: all emergency resources deployed during the
+    incident tagged \texttt{incident=INC-2024-0847} for FinOps chargeback reporting.
+\end{itemize}
+
+% ── Lessons Learned ──────────────────────────────────────────
+\section{Lessons Learned}
+
+\begin{infobox}
+\setlength{\parskip}{0pt}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\small\color{accent}}l@{\hspace{6mm}}>{\small\raggedright\arraybackslash}X@{}}
+Lesson 1 & \textbf{Failover $\neq$ Transparent}: A database failover completing in 32\,s
+            does not guarantee application-tier transparency. Each service must be tested
+            independently against failover events.\\[4pt]
+Lesson 2 & \textbf{Hotfix Shortcuts Backfire}: Disabling canary gates for speed during
+            hotfix releases introduces exactly the kind of regression that requires a longer
+            incident response. The tradeoff is almost never worth it.\\[4pt]
+Lesson 3 & \textbf{Observability Gaps Kill Diagnosis Speed}: 14 minutes were lost because
+            there was no metric distinguishing ``connection pool exhaustion'' from generic
+            latency. Instrument what you need to triage, not just what you think will
+            fail.\\[4pt]
+Lesson 4 & \textbf{Runbooks Age Poorly}: The DB failover runbook was 18 months old and
+            did not reflect the current API architecture. All Tier-1 runbooks should be
+            reviewed quarterly and tested against actual chaos drills.\\
+\end{tabularx}
+\setlength{\parskip}{4pt plus 1pt}
+\end{infobox}
+
+% ── Sign-off ─────────────────────────────────────────────────
+\section{Sign-off \& Review Record}
+
+\setlength{\parskip}{0pt}
+\begin{tabularx}{\linewidth}{@{}
+  >{\bfseries\small}l
+  @{\hspace{6mm}}
+  >{\small}l
+  @{\hspace{6mm}}
+  >{\small}l
+  @{\hspace{6mm}}
+  >{\small\raggedright\arraybackslash}X
+  @{}}
+\toprule
+\small\bfseries\color{ink}Name &
+\small\bfseries\color{ink}Role &
+\small\bfseries\color{ink}Date &
+\small\bfseries\color{ink}Outcome\\
+\midrule
+Elena Vasquez  & Incident Commander    & 2024-11-20 & \badge{statusdone}{APPROVED}\\[3pt]
+Priya Nair     & Staff SRE             & 2024-11-20 & \badge{statusdone}{APPROVED}\\[3pt]
+James Trevino  & Senior Engineer       & 2024-11-21 & \badge{statusdone}{APPROVED}\\[3pt]
+Marcus Okonkwo & Reliability Scribe    & 2024-11-21 & \badge{statusdone}{APPROVED}\\[3pt]
+Anita Desai    & Engineering Director  & 2024-11-22 & \badge{statusdone}{APPROVED}\\
+\bottomrule
+\end{tabularx}
+\setlength{\parskip}{4pt plus 1pt}
+
+\vspace{8pt}
+
+\begin{center}
+\small\color{muted}
+Document revision history tracked in Git:
+\texttt{git log docs/postmortems/INC-2024-0847.tex}\\
+\faIcon{lock}\hspace{4pt}This document is classified \textbf{CONFIDENTIAL} and subject to
+the Platform Engineering Information Security Policy v3.2.
+\end{center}
+
+\end{document}

@@ -1,0 +1,633 @@
+% ============================================================
+%  eCTD Module 2.5 – Clinical Overview  |  LaTeX Template
+%  Edit and compile online at https://letx.app
+%  Engine : pdflatex (latexmk -pdf main.tex)
+%  Author : LetX Template Library  |  License : CC BY 4.0
+% ============================================================
+
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath}
+
+% ------------------------------------------------------------------
+%  GEOMETRY
+% ------------------------------------------------------------------
+\usepackage[
+  top=22mm, bottom=24mm,
+  left=22mm, right=22mm,
+  headheight=14pt
+]{geometry}
+
+% ------------------------------------------------------------------
+%  TYPOGRAPHY
+% ------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{microtype}
+
+% ------------------------------------------------------------------
+%  COLOUR PALETTE
+% ------------------------------------------------------------------
+\usepackage{xcolor}
+\definecolor{accent}{HTML}{1A5276}
+\definecolor{accentlt}{HTML}{D6EAF8}
+\definecolor{accentmed}{HTML}{5B97C4}
+\definecolor{neutral}{HTML}{4A4A4A}
+\definecolor{neutrallt}{HTML}{F0F4F8}
+\definecolor{warn}{HTML}{784212}
+\definecolor{warnbg}{HTML}{FDF2E9}
+\definecolor{notebg}{HTML}{E8F5E9}
+\definecolor{notefg}{HTML}{1E5631}
+\definecolor{rowA}{HTML}{FFFFFF}
+\definecolor{rowB}{HTML}{EBF5FB}
+
+\color{neutral}
+
+% ------------------------------------------------------------------
+%  PACKAGES
+% ------------------------------------------------------------------
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{setspace}
+
+% ------------------------------------------------------------------
+%  TCOLORBOX
+% ------------------------------------------------------------------
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable, most}
+
+% ------------------------------------------------------------------
+%  SECTION STYLING
+% ------------------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}
+  {\large\bfseries\color{accent}}
+  {\thesection.}{6pt}{}
+  [\vspace{-2pt}\color{accentmed}\rule{\linewidth}{0.6pt}\vspace{2pt}]
+
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{accent}}
+  {\thesubsection}{6pt}{}
+
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{neutral}}
+  {\thesubsubsection}{6pt}{}
+
+\titlespacing*{\section}{0pt}{10pt}{4pt}
+\titlespacing*{\subsection}{0pt}{7pt}{2pt}
+\titlespacing*{\subsubsection}{0pt}{5pt}{1pt}
+
+% ------------------------------------------------------------------
+%  HEADER / FOOTER
+% ------------------------------------------------------------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{accent}\textbf{CONFIDENTIAL --- eCTD Module 2.5}}
+\fancyhead[R]{\small\color{neutral}Venlafaxine ER 150\,mg --- NDA 22-614-S001}
+\fancyfoot[L]{\small\color{neutral}\copyright{} 2025 Helix Biopharma, Inc.\ \textit{Proprietary \& Confidential}}
+\fancyfoot[R]{\small\color{neutral}Page \thepage}
+
+% ------------------------------------------------------------------
+%  HYPERREF
+% ------------------------------------------------------------------
+\usepackage[
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accentmed,
+  citecolor=accentmed,
+  pdftitle={eCTD Module 2.5 --- Clinical Overview --- Venlafaxine ER 150 mg},
+  pdfauthor={Helix Biopharma, Inc.},
+  pdfsubject={NDA 22-614-S001 --- Regulatory Submission},
+  pdfkeywords={eCTD, Module 2.5, Clinical Overview, Venlafaxine, FDA, NDA},
+  bookmarksopen=true,
+  bookmarksnumbered=true
+]{hyperref}
+
+% ------------------------------------------------------------------
+%  FONTAWESOME5
+% ------------------------------------------------------------------
+\usepackage{fontawesome5}
+
+% ------------------------------------------------------------------
+%  PARAGRAPH & SPACING
+% ------------------------------------------------------------------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setstretch{1.08}
+
+% ------------------------------------------------------------------
+%  UTILITY MACROS
+% ------------------------------------------------------------------
+\newcommand{\modref}[2]{%
+  \href{#1}{\textcolor{accentmed}{\faLink\;\texttt{#2}}}%
+}
+
+% Regulatory note box (green)
+\newtcolorbox{regnote}[1][]{%
+  enhanced, breakable,
+  colback=notebg, colframe=notefg!60,
+  fonttitle=\small\bfseries\color{notefg},
+  title={\faCheckCircle[regular]\; Regulatory Note},
+  left=6pt, right=6pt, top=4pt, bottom=4pt,
+  boxrule=0.6pt,
+  #1
+}
+
+% Warning / caution box (amber)
+\newtcolorbox{regwarn}[1][]{%
+  enhanced, breakable,
+  colback=warnbg, colframe=warn!70,
+  fonttitle=\small\bfseries\color{warn},
+  title={\faExclamationTriangle\; Important Safety Information},
+  left=6pt, right=6pt, top=4pt, bottom=4pt,
+  boxrule=0.6pt,
+  #1
+}
+
+% Blue info box
+\newtcolorbox{reginfo}[1][]{%
+  enhanced, breakable,
+  colback=accentlt, colframe=accent!60,
+  fonttitle=\small\bfseries\color{accent},
+  title={\faInfoCircle\; Note to Reviewer},
+  left=6pt, right=6pt, top=4pt, bottom=4pt,
+  boxrule=0.6pt,
+  #1
+}
+
+% TFL reference header
+\newcommand{\tflref}[2]{%
+  \begin{tcolorbox}[
+    enhanced, sharp corners,
+    colback=neutrallt, colframe=accentmed!50,
+    left=5pt, right=5pt, top=2pt, bottom=2pt,
+    boxrule=0.5pt,
+    fontupper=\small\color{accent}
+  ]
+  \faTable\; \textbf{#1}\hfill\textit{#2}
+  \end{tcolorbox}%
+}
+
+% Alternating row colours (explicit; no \noalign inside macro)
+\newcommand{\RA}{\rowcolor{rowA}}
+\newcommand{\RB}{\rowcolor{rowB}}
+
+% Table header row shorthand
+\newcommand{\THDR}{\rowcolor{accent}}
+
+% ------------------------------------------------------------------
+%  BEGIN DOCUMENT
+% ------------------------------------------------------------------
+\begin{document}
+
+% ==================== TITLE BLOCK ==========================
+\begin{tcolorbox}[
+  enhanced,
+  colback=accent, colframe=accent,
+  arc=3pt, boxrule=0pt,
+  left=14pt, right=14pt, top=12pt, bottom=12pt
+]
+  {\color{white}\small\textbf{ELECTRONIC COMMON TECHNICAL DOCUMENT (eCTD)}}\\[4pt]
+  {\color{white}\LARGE\textbf{Module 2.5 --- Clinical Overview}}\\[6pt]
+  \color{white}\rule{\linewidth}{0.4pt}\\[6pt]
+  \renewcommand{\arraystretch}{1.4}
+  \begin{tabularx}{\linewidth}{@{}>{\color{accentlt}\bfseries\small}l@{\hspace{8mm}}>{\raggedright\arraybackslash\small\color{white}}X@{}}
+    Drug        & Venlafaxine Hydrochloride Extended-Release Capsules 150\,mg \\
+    Indication  & Major Depressive Disorder (MDD) in Adults \\
+    Sponsor     & Helix Biopharma, Inc.,\ 1 Innovation Drive, Cambridge, MA\,02139 \\
+    Application & NDA 22-614-S001 (Supplemental --- New Dosage Strength) \\
+    Date        & 15 July 2025 \\
+    Version     & 1.0 (Original Submission) \\
+  \end{tabularx}
+\end{tcolorbox}
+
+\vspace{3mm}
+
+\begin{reginfo}
+This Clinical Overview (Module 2.5) is prepared in accordance with ICH E3, ICH M4E(R2), and FDA
+guidance \textit{Clinical Pharmacology Considerations for New Drug Applications} (March 2023).
+All referenced Tables, Figures, and Listings (TFLs) are located in Module\,5
+(\modref{m5/5-3-5/csr-hlx-mdd-301.pdf}{m5/5.3.5/HLX-MDD-301-CSR}) and Module\,2.7
+(\modref{m2/2-7-3/summclineff.pdf}{m2/2.7.3/SummClinEff}).
+\end{reginfo}
+
+\vspace{2mm}
+
+% ==================== TABLE OF CONTENTS =========================
+\renewcommand{\contentsname}{\color{accent}Table of Contents}
+{\small\tableofcontents}
+
+\vspace{4mm}
+\noindent\color{accentmed}\rule{\linewidth}{0.8pt}
+\vspace{2mm}
+
+% ================================================================
+\section{Background and Overview of Clinical Development Program}
+\label{sec:background}
+% ================================================================
+
+Venlafaxine hydrochloride extended-release (VEN-ER) is a serotonin-norepinephrine reuptake
+inhibitor (SNRI) approved in the United States (Effexor\textsuperscript{\textregistered} XR;
+NDA\,20-699) for Major Depressive Disorder (MDD), generalized anxiety disorder (GAD), social
+anxiety disorder (SAD), and panic disorder. This supplemental NDA (sNDA 22-614-S001) seeks
+approval of a 150\,mg capsule strength manufactured at the sponsor's Cambridge, MA facility
+(HLX-SITE-01), complementing the existing approved 37.5, 75, and 225\,mg strengths.
+
+The clinical development program for the 150\,mg strength comprises:
+
+\begin{itemize}[leftmargin=18pt, itemsep=2pt]
+  \item \textbf{HLX-BA-101} --- Bioavailability/bioequivalence (BE) study, fasting conditions
+        ($n=48$, crossover; \modref{m5/5-1/hlx-ba-101.pdf}{m5/5.1/HLX-BA-101})
+  \item \textbf{HLX-BA-102} --- BE study, fed conditions ($n=48$, crossover;
+        \modref{m5/5-1/hlx-ba-102.pdf}{m5/5.1/HLX-BA-102})
+  \item \textbf{HLX-MDD-301} --- Phase 3, randomised, double-blind, placebo-controlled efficacy
+        and safety study ($n=486$;
+        \modref{m5/5-3-5/csr-hlx-mdd-301.pdf}{m5/5.3.5/HLX-MDD-301-CSR})
+  \item \textbf{HLX-MDD-302} --- 52-week open-label safety extension ($n=412$;
+        \modref{m5/5-3-5/csr-hlx-mdd-302.pdf}{m5/5.3.5/HLX-MDD-302-CSR})
+\end{itemize}
+
+The clinical program is supported by population pharmacokinetic (PopPK) modelling
+(\modref{m2/2-7-2/pkwr.pdf}{m2/2.7.2/PopPK}) and a literature-based exposure--response
+analysis (\modref{m2/2-7-2/erwr.pdf}{m2/2.7.2/ExposureResponse}).
+
+% ================================================================
+\section{Overview of Biopharmaceutics and Clinical Pharmacology}
+\label{sec:pk}
+% ================================================================
+
+\subsection{Bioequivalence --- Studies HLX-BA-101 and HLX-BA-102}
+\label{sec:be}
+
+Both pivotal BE studies employed a single-dose, two-period, two-sequence crossover design
+in healthy adult subjects (18--55 years). The reference product was
+Effexor\textsuperscript{\textregistered} XR 150\,mg (Wyeth LLC; US commercial stock).
+Plasma concentrations of venlafaxine and its active metabolite O-desmethylvenlafaxine (ODV)
+were measured by a validated LC-MS/MS assay
+(\modref{m2/2-7-1/bioanreport.pdf}{m2/2.7.1/BioanalyticalReport}).
+
+\vspace{2mm}
+\tflref{Table 1 --- Bioequivalence Summary: Venlafaxine and ODV}{Source: HLX-BA-101/102;\
+m2/2.7.1/Table 1.1}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{@{}
+  >{\bfseries\small\raggedright\arraybackslash}X
+  >{\centering\arraybackslash\small}p{24mm}
+  >{\centering\arraybackslash\small}p{24mm}
+  >{\centering\arraybackslash\small}p{24mm}
+  >{\centering\arraybackslash\small}p{22mm}
+@{}}
+\toprule
+\TH
+\color{white}\textbf{Parameter} &
+\color{white}\textbf{Test GMR (\%)} &
+\color{white}\textbf{90\% CI Lower} &
+\color{white}\textbf{90\% CI Upper} &
+\color{white}\textbf{BE Criterion} \\
+\midrule
+\RA Venlafaxine $C_{\max}$         & 98.4  & 93.2 & 103.9 & 80.00--125.00 \\
+\RB Venlafaxine AUC$_{0\text{-}t}$ & 101.2 & 96.5 & 106.1 & 80.00--125.00 \\
+\RA Venlafaxine AUC$_{0\text{-}\infty}$ & 100.7 & 96.1 & 105.5 & 80.00--125.00 \\
+\RB ODV $C_{\max}$                 & 99.1  & 95.3 & 103.1 & 80.00--125.00 \\
+\RA ODV AUC$_{0\text{-}t}$         & 100.5 & 97.2 & 103.9 & 80.00--125.00 \\
+\RB ODV AUC$_{0\text{-}\infty}$    & 100.3 & 97.0 & 103.7 & 80.00--125.00 \\
+\bottomrule
+\end{tabularx}
+
+{\small\vspace{1mm}GMR = geometric mean ratio (Test/Reference); CI = confidence interval; BE =
+bioequivalence. All parameters met the acceptance criteria of 80.00--125.00\%.}
+
+\vspace{3mm}
+\begin{regnote}
+Bioequivalence is established for both venlafaxine and ODV under fasting and fed conditions.
+The 90\% confidence intervals for all six primary PK parameters lie entirely within the
+FDA-required 80--125\% acceptance range, confirming pharmaceutical and biopharmaceutical
+equivalence of the 150\,mg strength.
+\end{regnote}
+
+\subsection{Population Pharmacokinetics}
+\label{sec:poppk}
+
+A two-compartment PopPK model with first-order absorption and linear elimination was developed
+using NONMEM\textsuperscript{\textregistered} v7.5 (\modref{m2/2-7-2/pkwr.pdf}{m2/2.7.2/PopPK}).
+Key covariate effects: body weight on clearance (CL/F) and renal function (eGFR) on ODV
+elimination. No dose adjustment is required for the 150\,mg strength based on exposure-matched
+simulations across the approved adult population.
+
+% ================================================================
+\section{Overview of Efficacy}
+\label{sec:efficacy}
+% ================================================================
+
+\subsection{Pivotal Study HLX-MDD-301}
+\label{sec:mdd301}
+
+\subsubsection{Study Design}
+
+HLX-MDD-301 was a 12-week, randomised (1:1), double-blind, placebo-controlled, parallel-group
+study in adult outpatients (18--65 years) meeting DSM-5 criteria for MDD with baseline MADRS
+total score $\geq$\,28. Subjects were randomised to VEN-ER 150\,mg once daily (QD) or matching
+placebo. The primary endpoint was change from baseline (CFB) in MADRS total score at Week\,8.
+
+\subsubsection{Primary and Key Secondary Endpoints}
+
+\vspace{2mm}
+\tflref{Table 2 --- Efficacy Endpoints: HLX-MDD-301 (ITT; MMRM)}{Source: HLX-MDD-301-CSR Table 14.2.1}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{@{}
+  >{\small\raggedright\arraybackslash}X
+  >{\centering\arraybackslash\small}p{28mm}
+  >{\centering\arraybackslash\small}p{28mm}
+  >{\centering\arraybackslash\small}p{30mm}
+  >{\centering\arraybackslash\small}p{14mm}
+@{}}
+\toprule
+\TH
+\color{white}\textbf{Endpoint} &
+\color{white}\textbf{VEN-ER 150\,mg} \color{white}($n=243$) &
+\color{white}\textbf{Placebo} \color{white}($n=243$) &
+\color{white}\textbf{Difference (95\% CI)} &
+\color{white}\textbf{$p$-value} \\
+\midrule
+\RA \textbf{PRIMARY:} MADRS CFB at Wk\,8 & $-19.4\ (1.2)$ & $-12.8\ (1.1)$ & $-6.6\ (-8.8,\ {-4.4})$ & $<0.0001$ \\
+\RB MADRS CFB at Wk\,12 & $-21.1\ (1.3)$ & $-13.5\ (1.2)$ & $-7.6\ (-9.9,\ {-5.3})$ & $<0.0001$ \\
+\RA MADRS Response ($\geq$50\%) at Wk\,8 & 62.1\% & 38.3\% & OR 2.63 (1.84,\,3.76) & $<0.0001$ \\
+\RB MADRS Remission ($\leq$10) at Wk\,8 & 41.6\% & 22.2\% & OR 2.49 (1.67,\,3.70) & $<0.0001$ \\
+\RA CGI-I Score $\leq$2 at Wk\,8 & 58.4\% & 36.2\% & OR 2.48 (1.73,\,3.55) & $<0.0001$ \\
+\RB HAM-D\textsubscript{17} CFB at Wk\,8 & $-11.8\ (0.9)$ & $-7.6\ (0.8)$ & $-4.2\ (-5.8,\ {-2.6})$ & $<0.0001$ \\
+\RA SDS Total CFB at Wk\,8 & $-7.3\ (0.7)$ & $-4.1\ (0.6)$ & $-3.2\ (-4.5,\ {-1.9})$ & $<0.0001$ \\
+\bottomrule
+\end{tabularx}
+
+{\small\vspace{1mm}Values are LS mean (SE) for continuous endpoints; CFB = change from baseline;
+OR = odds ratio (logistic regression); MMRM = mixed-model repeated measures; ITT = intent-to-treat;
+MADRS = Montgomery-\AA{}sberg Depression Rating Scale; CGI-I = Clinical Global Impression ---
+Improvement; SDS = Sheehan Disability Scale. All $p$-values nominal (hierarchical testing).}
+
+\vspace{3mm}
+\subsubsection{Subgroup Analyses}
+
+Consistent treatment effects were observed across pre-specified subgroups including age
+($<$45 vs.\ $\geq$45 years), sex, race, baseline MADRS severity (severe: $\geq$34), and comorbid
+anxiety (\modref{m5/5-3-5/csr-hlx-mdd-301.pdf}{m5/5.3.5/HLX-MDD-301 Figure\,14.2.5}). No
+qualitative interactions were identified (all subgroup $p$-interaction\,$>$\,0.10).
+
+% ================================================================
+\section{Overview of Safety}
+\label{sec:safety}
+% ================================================================
+
+\subsection{Integrated Safety Population}
+
+The integrated safety database comprises all subjects who received $\geq$1 dose of VEN-ER
+150\,mg across HLX-MDD-301 and HLX-MDD-302 ($N$\,=\,655; total exposure 477 patient-years).
+
+\begin{regwarn}
+\textbf{Known Class Effects of SNRIs} (consistent with Effexor XR Reference Label, Section\,5):\\[3pt]
+\begin{itemize}[leftmargin=14pt, itemsep=1pt, topsep=0pt]
+  \item Suicidality in young adults --- monitor closely during early treatment (\textit{Black Box Warning})
+  \item Serotonin syndrome --- risk increased with concomitant serotonergic agents
+  \item Elevated blood pressure --- dose-dependent; monitor BP before and during treatment
+  \item Hyponatremia --- primarily in elderly; monitor serum sodium in at-risk patients
+  \item Seizures, abnormal bleeding, activation of mania/hypomania
+\end{itemize}
+\end{regwarn}
+
+\vspace{2mm}
+\subsection{Treatment-Emergent Adverse Events ($\geq$5\% Any Group)}
+
+\tflref{Table 3 --- TEAEs $\geq$5\% Incidence: HLX-MDD-301 Safety Population}{Source: HLX-MDD-301-CSR Table 14.3.1}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{@{}
+  >{\small\raggedright\arraybackslash}X
+  >{\centering\arraybackslash\small}p{38mm}
+  >{\centering\arraybackslash\small}p{38mm}
+@{}}
+\toprule
+\TH
+\color{white}\textbf{Preferred Term (MedDRA 26.1)} &
+\color{white}\textbf{VEN-ER 150\,mg}\newline\color{white}$n/N$ (\%) ($N=243$) &
+\color{white}\textbf{Placebo}\newline\color{white}$n/N$ (\%) ($N=243$) \\
+\midrule
+\RA Nausea             & 78/243 (32.1\%) & 31/243 (12.8\%) \\
+\RB Headache           & 62/243 (25.5\%) & 58/243 (23.9\%) \\
+\RA Dry mouth          & 54/243 (22.2\%) & 18/243 (\phantom{0}7.4\%) \\
+\RB Dizziness          & 48/243 (19.8\%) & 22/243 (\phantom{0}9.1\%) \\
+\RA Insomnia           & 45/243 (18.5\%) & 29/243 (11.9\%) \\
+\RB Hyperhidrosis      & 38/243 (15.6\%) & 11/243 (\phantom{0}4.5\%) \\
+\RA Constipation       & 35/243 (14.4\%) & 14/243 (\phantom{0}5.8\%) \\
+\RB Somnolence         & 29/243 (11.9\%) & 15/243 (\phantom{0}6.2\%) \\
+\RA Decreased appetite & 27/243 (11.1\%) & 12/243 (\phantom{0}4.9\%) \\
+\RB Erectile dysfunction$^{a}$ & 21/121 (17.4\%) & 9/122 (\phantom{0}7.4\%) \\
+\RA Increased blood pressure & 18/243 (\phantom{0}7.4\%) & 6/243 (\phantom{0}2.5\%) \\
+\RB Tremor             & 14/243 (\phantom{0}5.8\%) & 5/243 (\phantom{0}2.1\%) \\
+\bottomrule
+\end{tabularx}
+{\small\vspace{1mm}$^{a}$Males only; denominator = male subjects (VEN-ER: $n=121$;
+placebo: $n=122$). MedDRA = Medical Dictionary for Regulatory Activities; TEAE =
+treatment-emergent adverse event.}
+
+\vspace{3mm}
+\subsection{Serious Adverse Events and Deaths}
+
+No deaths occurred during HLX-MDD-301 or HLX-MDD-302. Serious adverse events (SAEs) were
+reported in 3\,(1.2\%) subjects in the VEN-ER group: 1 hospitalisation for hypertensive crisis
+(resolved; assessed as not study-drug related), 1 appendectomy (unrelated), and 1 suicide
+attempt (SUSAR reported per protocol;
+\modref{m5/5-3-5/csr-hlx-mdd-301.pdf}{m5/5.3.5/SAE Narrative\,003}).
+SAEs in placebo: 2\,(0.8\%).
+
+\subsection{Discontinuations Due to Adverse Events}
+
+Discontinuation due to AEs: VEN-ER 12.3\%; Placebo 5.3\% ($p=0.006$). Most common reasons
+for VEN-ER discontinuation: nausea (3.7\%), dizziness (2.1\%), insomnia (1.6\%).
+
+\subsection{Vital Signs and Laboratory Findings}
+
+\tflref{Table 4 --- Mean Change from Baseline: Vital Signs and Selected Labs}{Source: HLX-MDD-301-CSR Tables 14.3.7--14.3.9}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{@{}
+  >{\small\raggedright\arraybackslash}X
+  >{\centering\arraybackslash\small}p{42mm}
+  >{\centering\arraybackslash\small}p{42mm}
+@{}}
+\toprule
+\TH
+\color{white}\textbf{Measure} &
+\color{white}\textbf{VEN-ER 150\,mg}\newline\color{white}Mean CFB (SD) &
+\color{white}\textbf{Placebo}\newline\color{white}Mean CFB (SD) \\
+\midrule
+\RA Systolic blood pressure (mmHg) & $+3.1\ (7.4)$ & $-0.4\ (6.9)$ \\
+\RB Diastolic blood pressure (mmHg) & $+1.8\ (5.2)$ & $-0.3\ (5.0)$ \\
+\RA Heart rate (bpm)                & $+2.9\ (5.8)$ & $+0.6\ (5.1)$ \\
+\RB Body weight (kg)                & $-0.9\ (2.4)$ & $+0.3\ (2.1)$ \\
+\RA Serum sodium (mEq/L)            & $-1.1\ (3.2)$ & $-0.4\ (2.9)$ \\
+\RB ALT ($\times$ULN)               & $+0.08\ (0.21)$ & $+0.02\ (0.18)$ \\
+\RA QTcF interval (ms)              & $+1.6\ (7.2)$ & $+0.9\ (6.8)$ \\
+\bottomrule
+\end{tabularx}
+{\small\vspace{1mm}CFB = change from baseline; BP = blood pressure; bpm = beats per minute;
+ALT = alanine aminotransferase; ULN = upper limit of normal; QTcF = Fridericia-corrected QT
+interval. No subject had QTcF\,$>$\,500\,ms or $\Delta$QTcF\,$>$\,60\,ms.}
+
+% ================================================================
+\section{Benefit-Risk Assessment}
+\label{sec:benefitrisk}
+% ================================================================
+
+The structured benefit-risk assessment below follows the FDA Benefit-Risk Framework
+(PDUFA\,VI; \href{https://www.fda.gov/media/144657/download}{FDA Guidance, 2021}).
+
+\vspace{3mm}
+
+\begin{tcolorbox}[
+  enhanced, breakable,
+  colback=neutrallt, colframe=accent,
+  title={\faBalanceScale\; Structured Benefit-Risk Summary --- VEN-ER 150\,mg},
+  fonttitle=\bfseries\small\color{white},
+  colbacktitle=accent,
+  boxrule=0.7pt,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+  attach boxed title to top left={yshift=-2mm, xshift=6mm}
+]
+\renewcommand{\arraystretch}{1.45}
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries\small}l@{\hspace{8mm}}>{\raggedright\arraybackslash\small}X@{}}
+\toprule
+Dimension & Evidence \& Conclusion \\
+\midrule
+Analysis of Condition &
+  MDD --- a severe, recurrent, disabling disorder with substantial unmet need for a
+  flexible intermediate dosage strength to support titration. \\
+Current Alternatives &
+  Existing VEN-ER strengths (37.5, 75, 225\,mg); SSRIs; other SNRIs (duloxetine,
+  desvenlafaxine). The 150\,mg addresses a clinically meaningful titration gap. \\
+Benefits &
+  Statistically significant and clinically meaningful MADRS CFB ($-$6.6 points vs.\ placebo,
+  95\% CI $-$8.8 to $-$4.4; $p<0.0001$); response 62.1\% vs.\ 38.3\%; remission 41.6\%
+  vs.\ 22.2\%; functional improvement (SDS $-$3.2; $p<0.0001$). \\
+Risks &
+  Nausea, dry mouth, dizziness --- class effects, predominantly mild--moderate, transient,
+  manageable without dose reduction in most cases. Modest BP elevation
+  ($+$3.1\,mmHg SBP). SAE rate comparable to reference product historical data. \\
+Risk Management &
+  Consistent with Effexor XR label (Black Box, Sections 5.1--5.11); no new safety signals;
+  post-marketing cardiac monitoring commitment per RMP v2.1
+  (\modref{m1/1-12-3/rmp.pdf}{m1/1.12.3/RMP-v2.1}). \\
+Conclusion &
+  \textbf{Favourable.} The benefit-risk profile of VEN-ER 150\,mg is positive. Clinical
+  benefit in MDD is robust and consistent. Risks are known, manageable, and commensurate
+  with the established SNRI class labelling. \\
+\bottomrule
+\end{tabularx}
+\end{tcolorbox}
+
+% ================================================================
+\section{Literature References and Cross-Module Index}
+\label{sec:crossref}
+% ================================================================
+
+\subsection{Key Regulatory Guidances Applied}
+
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{@{}
+  >{\color{accent}\bfseries\small}l
+  @{\hspace{6mm}}
+  >{\raggedright\arraybackslash\small}X
+@{}}
+\toprule
+\TH\color{white}\textbf{Guidance} & \color{white}\textbf{Title / Applicability} \\
+\midrule
+\RA ICH E3     & Structure and Content of Clinical Study Reports \\
+\RB ICH M4E(R2) & Common Technical Document --- Efficacy (Clinical Overview) \\
+\RA ICH E6(R3) & Good Clinical Practice --- HLX-MDD-301/302 conducted in full compliance \\
+\RB ICH E9(R1) & Statistical Principles for Clinical Trials --- MMRM primary analysis \\
+\RA FDA PDUFA\,VI & Benefit-Risk Framework for Human Drug Products \\
+\RB EMA/CHMP   & Guideline on Clinical Investigation of Medicinal Products in MDD (2013) \\
+\bottomrule
+\end{tabularx}
+
+\vspace{3mm}
+\subsection{eCTD Cross-Module Hyperlink Index}
+
+\begin{regnote}
+All hyperlinks below point to documents within the eCTD submission spine. Reviewers using an
+eCTD-compliant viewer (FDA ESG, EMA eSubmission Gateway) will navigate directly to the
+referenced document or section.
+\end{regnote}
+
+\vspace{2mm}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{@{}
+  >{\centering\small\bfseries}p{16mm}
+  >{\centering\small}p{16mm}
+  >{\raggedright\arraybackslash\small}X
+@{}}
+\toprule
+\TH\color{white}\textbf{Module} & \color{white}\textbf{Section} & \color{white}\textbf{Document / Content} \\
+\midrule
+\RA m1 & 1.12.3 & \modref{m1/1-12-3/rmp.pdf}{Risk Management Plan v2.1} \\
+\RB m2 & 2.7.1  & \modref{m2/2-7-1/bioanreport.pdf}{Bioanalytical Method Validation Report} \\
+\RA m2 & 2.7.2  & \modref{m2/2-7-2/pkwr.pdf}{Summary of Clinical Pharmacology (PopPK, E-R)} \\
+\RB m2 & 2.7.3  & \modref{m2/2-7-3/summclineff.pdf}{Summary of Clinical Efficacy} \\
+\RA m2 & 2.7.4  & \modref{m2/2-7-4/summclinsaf.pdf}{Summary of Clinical Safety} \\
+\RB m5 & 5.1    & \modref{m5/5-1/hlx-ba-101.pdf}{HLX-BA-101 BE Study Report (Fasting)} \\
+\RA m5 & 5.1    & \modref{m5/5-1/hlx-ba-102.pdf}{HLX-BA-102 BE Study Report (Fed)} \\
+\RB m5 & 5.3.5  & \modref{m5/5-3-5/csr-hlx-mdd-301.pdf}{HLX-MDD-301 Clinical Study Report} \\
+\RA m5 & 5.3.5  & \modref{m5/5-3-5/csr-hlx-mdd-302.pdf}{HLX-MDD-302 Open-Label Extension CSR} \\
+\bottomrule
+\end{tabularx}
+
+% ================================================================
+\section{Conclusions}
+\label{sec:conclusions}
+% ================================================================
+
+The totality of data from the clinical development program supports approval of Venlafaxine
+Hydrochloride Extended-Release Capsules 150\,mg for treatment of MDD in adults. The 150\,mg
+strength is bioequivalent to Effexor\textsuperscript{\textregistered}\,XR, is effective
+(primary and all key secondary endpoints met; $p<0.0001$), and is safe and well tolerated
+consistent with the established class profile. No new or unexpected safety signals were
+identified. The benefit-risk profile is favourable and the 150\,mg strength addresses a
+clinically significant titration gap in the approved dosage regimen.
+
+\vspace{4mm}
+
+\begin{tcolorbox}[
+  enhanced, sharp corners,
+  colback=accentlt, colframe=accent,
+  left=10pt, right=10pt, top=8pt, bottom=8pt,
+  boxrule=0.8pt
+]
+  \small
+  \textbf{\color{accent}Sponsor Statement of Completeness}\\[5pt]
+  Helix Biopharma, Inc.\ confirms that this Clinical Overview (Module 2.5) accurately and
+  completely represents the clinical data contained in NDA 22-614-S001 and that all
+  referenced documents are included in the submission.\\[7pt]
+  \renewcommand{\arraystretch}{1.4}
+  \begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries\small}l@{\hspace{8mm}}>{\raggedright\arraybackslash\small}X@{}}
+    Prepared by & Dr.\ Elena M.\ Vasquez, MD, PhD --- VP Clinical Development \\
+    Reviewed by & Dr.\ James T.\ Harrington, MD --- Chief Medical Officer \\
+    Approved by & Dr.\ Priya S.\ Mehta, PhD --- Head Regulatory Affairs \\
+    Date        & 15 July 2025 \\
+  \end{tabularx}
+\end{tcolorbox}
+
+\vspace{4mm}
+\noindent\color{accentmed}\rule{\linewidth}{0.8pt}
+{\small\color{neutral}\textit{End of Module 2.5 --- Clinical Overview.
+Continued in Module 2.7.3 --- Summary of Clinical Efficacy
+(\modref{m2/2-7-3/summclineff.pdf}{m2/2.7.3}).}}
+
+\end{document}

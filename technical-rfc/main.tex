@@ -1,0 +1,144 @@
+% Technical RFC — editable & compilable online at https://letx.app
+% Compiles with pdflatex. A clean IETF-style RFC / technical specification with
+% a header block, status, requirements language, numbered sections, a field
+% table, and references. Content is a fictional sample protocol.
+\documentclass[11pt]{article}
+\usepackage[letterpaper,margin=2.3cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{inconsolata}
+\usepackage{amsmath}
+\usepackage[table]{xcolor}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage[hidelinks]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+
+\definecolor{ink}{HTML}{16324F}
+\definecolor{accent}{HTML}{2980B9}
+\definecolor{light}{HTML}{EAF1F7}
+\definecolor{mist}{HTML}{5C6B7A}
+\definecolor{code}{HTML}{F4F6F8}
+
+\titleformat{\section}{\large\bfseries\color{ink}}{\thesection.}{0.6em}{}
+\titleformat{\subsection}{\bfseries\color{accent}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{12pt}{4pt}
+\newcommand{\bcp}[1]{\textbf{\textcolor{accent}{#1}}}   % requirement keyword
+
+\lstset{basicstyle=\ttfamily\footnotesize,backgroundcolor=\color{code},
+  frame=single,rulecolor=\color{light},breaklines=true,
+  xleftmargin=6pt,framexleftmargin=6pt,columns=fullflexible}
+
+\pagestyle{fancy}\fancyhf{}
+\lhead{\footnotesize\color{mist}RFC 9142 --- BAFP/2}
+\rhead{\footnotesize\color{mist}Standards Track}
+\cfoot{\footnotesize\color{mist}Page \thepage\ \textbullet\ \href{https://letx.app}{letx.app}}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\begin{document}
+% ---- RFC header block ----
+\begin{tabularx}{\linewidth}{@{}p{7.5cm} X@{}}
+{\ttfamily\small Network Working Group} & \hfill{\ttfamily\small R.\ Vance}\\
+{\ttfamily\small Request for Comments: 9142} & \hfill{\ttfamily\small Northbridge Labs}\\
+{\ttfamily\small Category: Standards Track} & \hfill{\ttfamily\small June 2026}\\
+{\ttfamily\small ISSN: 2070-1721} & \hfill{\ttfamily\small}\\
+\end{tabularx}
+
+\vspace{6pt}
+\begin{center}
+{\Large\bfseries\color{ink} Bidirectional Adaptive Frame Protocol,\\ Version 2 (BAFP/2)}
+\end{center}
+
+% ---- status ----
+\section*{Status of This Memo}
+\vspace{-4pt}
+{\small This document specifies an Internet standards-track protocol for the Internet
+community, and requests discussion and suggestions for improvement. Distribution of this
+memo is unlimited. It is subject to the terms of BCP 78 and the Trust Legal Provisions.}
+
+\begin{lstlisting}
+Abstract
+   BAFP/2 is a low-latency, bidirectional framing protocol for
+   multiplexed streams over a single transport connection. It adds
+   adaptive flow control and per-stream prioritization to BAFP/1
+   while preserving wire compatibility for the base header.
+\end{lstlisting}
+
+\section{Introduction}
+This document defines version 2 of the Bidirectional Adaptive Frame Protocol (BAFP/2).
+BAFP/2 multiplexes independent streams over one transport connection, providing per-stream
+flow control and prioritization with minimal head-of-line blocking.
+
+\subsection{Requirements Language}
+The key words \bcp{MUST}, \bcp{MUST NOT}, \bcp{REQUIRED}, \bcp{SHALL}, \bcp{SHOULD}, and
+\bcp{MAY} in this document are to be interpreted as described in BCP\,14 [RFC2119] [RFC8174]
+when, and only when, they appear in all capitals.
+
+\section{Frame Format}
+Every BAFP/2 frame consists of a 12-byte base header, zero or more variable-length
+extension entries, and a payload. All multi-byte integers are in network byte order.
+
+\begin{table}[ht]\centering
+\rowcolors{2}{light}{white}
+\begin{tabularx}{\linewidth}{@{}l c X@{}}
+\rowcolor{ink}
+{\color{white}\textbf{Field}} & {\color{white}\textbf{Bits}} & {\color{white}\textbf{Description}}\\
+Version   & 4  & Protocol version; \bcp{MUST} be set to \texttt{0x2}.\\
+Type      & 4  & Frame type (DATA, HEADERS, SETTINGS, PING, GOAWAY).\\
+Flags     & 8  & Type-specific boolean flags.\\
+Stream ID & 32 & Unsigned stream identifier; 0 is reserved for connection control.\\
+Sequence  & 16 & Monotonic per-stream sequence number.\\
+Length    & 32 & Length of the payload in octets.\\
+\end{tabularx}
+\caption{BAFP/2 base header fields (12 octets total).}
+\end{table}
+
+\section{Flow Control}
+BAFP/2 uses a credit-based scheme. A receiver advertises an initial window via the
+\texttt{SETTINGS} frame. A sender \bcp{MUST NOT} send more payload octets on a stream than
+the receiver has granted. Credits are replenished with \texttt{WINDOW\_UPDATE} frames.
+
+\subsection{Prioritization}
+Each stream carries an 8-bit weight. Endpoints \bcp{SHOULD} allocate bandwidth in
+proportion to weight among streams that are ready to send.
+
+\section{Error Handling}
+An endpoint that detects a protocol violation \bcp{MUST} terminate the connection with a
+\texttt{GOAWAY} frame carrying the last processed stream ID and an error code.
+
+\begin{table}[ht]\centering
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\textbf{Code} & \textbf{Name} & \textbf{Meaning}\\
+\midrule
+0x0 & NO\_ERROR        & Graceful shutdown.\\
+0x1 & PROTOCOL\_ERROR  & Malformed frame or state violation.\\
+0x3 & FLOW\_CONTROL    & Peer exceeded advertised window.\\
+0x7 & REFUSED\_STREAM  & Stream refused before processing.\\
+\bottomrule
+\end{tabularx}
+\caption{Selected BAFP/2 error codes.}
+\end{table}
+
+\section{Security Considerations}
+BAFP/2 \bcp{MUST} be run over a transport providing confidentiality and integrity (e.g.\
+TLS 1.3). Implementations \bcp{SHOULD} bound the number of concurrent streams to mitigate
+resource-exhaustion attacks.
+
+\section{IANA Considerations}
+IANA is requested to create a ``BAFP/2 Frame Types'' registry and a ``BAFP/2 Error Codes''
+registry, both with a Specification Required policy.
+
+\section*{References}
+\vspace{-4pt}
+{\small\ttfamily
+[RFC2119]\ Bradner, S., ``Key words for use in RFCs'', BCP 14, RFC 2119, March 1997.\\
+\relax[RFC8174]\ Leiba, B., ``Ambiguity of Uppercase vs Lowercase'', BCP 14, RFC 8174, May 2017.\\
+\relax[RFC7540]\ Belshe, M.\ et al., ``HTTP/2'', RFC 7540, May 2015.}
+\end{document}

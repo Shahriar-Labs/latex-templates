@@ -1,0 +1,298 @@
+% This template can be edited and compiled online at https://letx.app
+\documentclass[10pt]{article}
+
+% --- Geometry & Page Setup ---
+\usepackage[margin=0.35in, top=0.35in, bottom=0.35in, footskip=0pt]{geometry}
+\pagestyle{empty}
+
+% --- Fonts & Typography ---
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Color Palette ---
+\usepackage[table]{xcolor}
+\definecolor{accent}{HTML}{8B0000}       % Crimson Accent
+\definecolor{charcoal}{HTML}{2B2B2B}     % Dark Charcoal Neutral
+\definecolor{parchment}{HTML}{FAF6EE}    % Warm Light Neutral
+
+% --- Core Packages ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, calc}
+\usepackage{hyperref}
+
+% --- Layout Settings ---
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+% --- Custom Command: Checkboxes ---
+\newcommand{\dndcircle}{\tikz[baseline=-2.5pt]{\draw[charcoal, line width=0.7pt] (0,0) circle (2.8pt);}}
+\newcommand{\dndbullet}{\tikz[baseline=-2.5pt]{\fill[accent] (0,0) circle (2.8pt);}}
+
+% --- Custom Command: Hexagonal Ability Score Box ---
+\newcommand{\abilityhex}[3]{%
+  \begin{tikzpicture}[baseline={(0,-0.1)}]
+    % Hexagon shape
+    \node (hex) [draw, regular polygon, regular polygon sides=6, 
+      minimum width=1.65cm, minimum height=1.65cm,
+      line width=1.2pt, charcoal, fill=parchment,
+      rotate=0, inner sep=0pt] at (0,0) {};
+    % Label
+    \node[anchor=center, font=\bfseries\tiny\color{charcoal!80}] at (0, 0.45) {\MakeUppercase{#1}};
+    % Score
+    \node[anchor=center, font=\LARGE\bfseries\color{charcoal}] at (0, 0.0) {#2};
+    % Modifier pill
+    \node[draw=accent, fill=white, rounded corners=2pt, line width=0.8pt, 
+      inner sep=1.8pt, font=\bfseries\scriptsize\color{accent}, anchor=center] at (0, -0.5) {#3};
+  \end{tikzpicture}%
+}
+
+% --- Custom Commands: Combat Stat Boxes ---
+\newcommand{\acbox}[1]{%
+  \begin{tikzpicture}[baseline={(0,0)}]
+    \draw[charcoal, line width=1.2pt, rounded corners=3pt, fill=parchment] (0,0) rectangle (1.8, 1.5);
+    \node[anchor=center, font=\bfseries\tiny\color{charcoal!70}] at (0.9, 1.3) {ARMOR CLASS};
+    \node[anchor=center, font=\LARGE\bfseries\color{charcoal}] at (0.9, 0.75) {#1};
+    \node[anchor=center, font=\tiny\color{charcoal!50}] at (0.9, 0.2) {Dex + Leather};
+  \end{tikzpicture}%
+}
+\newcommand{\initbox}[1]{%
+  \begin{tikzpicture}[baseline={(0,0)}]
+    \draw[charcoal, line width=1.2pt, rounded corners=3pt, fill=parchment] (0,0) rectangle (1.8, 1.5);
+    \node[anchor=center, font=\bfseries\tiny\color{charcoal!70}] at (0.9, 1.3) {INITIATIVE};
+    \node[anchor=center, font=\LARGE\bfseries\color{charcoal}] at (0.9, 0.75) {#1};
+    \node[anchor=center, font=\tiny\color{charcoal!50}] at (0.9, 0.2) {Dexterity};
+  \end{tikzpicture}%
+}
+\newcommand{\speedbox}[1]{%
+  \begin{tikzpicture}[baseline={(0,0)}]
+    \draw[charcoal, line width=1.2pt, rounded corners=3pt, fill=parchment] (0,0) rectangle (1.8, 1.5);
+    \node[anchor=center, font=\bfseries\tiny\color{charcoal!70}] at (0.9, 1.3) {SPEED};
+    \node[anchor=center, font=\LARGE\bfseries\color{charcoal}] at (0.9, 0.75) {#1};
+    \node[anchor=center, font=\tiny\color{charcoal!50}] at (0.9, 0.2) {Wood Elf};
+  \end{tikzpicture}%
+}
+
+% --- Custom Environment: Panels ---
+\newtcolorbox{dndpanel}[2][]{%
+  colback=white,
+  colframe=charcoal,
+  coltitle=charcoal,
+  colbacktitle=charcoal!12,
+  fonttitle=\bfseries\sffamily\scriptsize,
+  sharp corners,
+  boxrule=1.0pt,
+  titlerule=0.5pt,
+  left=5pt, right=5pt, top=5pt, bottom=5pt,
+  title={#2},
+  #1
+}
+
+\begin{document}
+
+% === HEADER ===
+\begin{center}
+  \begin{tabularx}{\linewidth}{@{} X r @{}}
+    {\Huge\bfseries\color{accent} DUNGEONS \& DRAGONS} & {\Large\bfseries\color{charcoal} 5e Character Sheet} \\
+  \end{tabularx}
+  \vspace{-2pt}
+  {\color{accent}\hrule height 2pt}
+\end{center}
+\vspace{6pt}
+
+\begin{tcolorbox}[
+  colback=parchment,
+  colframe=charcoal,
+  sharp corners,
+  boxrule=1.2pt,
+  left=8pt, right=8pt, top=6pt, bottom=6pt
+]
+  \scriptsize
+  \renewcommand{\arraystretch}{1.1}
+  \begin{tabularx}{\linewidth}{@{} X X X @{}}
+    {\color{accent}\bfseries CHARACTER NAME} & {\color{accent}\bfseries CLASS \& LEVEL} & {\color{accent}\bfseries BACKGROUND} \\
+    {\large\bfseries Valerius Theron} & {\large\bfseries Rogue (Thief) 4} & {\large\bfseries Criminal} \\[8pt]
+    {\color{accent}\bfseries RACE} & {\color{accent}\bfseries ALIGNMENT} & {\color{accent}\bfseries EXPERIENCE POINTS} \\
+    {\large\bfseries Wood Elf} & {\large\bfseries Chaotic Good} & {\large\bfseries 3,200 XP}
+  \end{tabularx}
+\end{tcolorbox}
+\vspace{8pt}
+
+% === MAIN THREE COLUMNS ===
+\begin{minipage}[t]{6.2cm}
+  % COLUMN 1: ABILITIES, SAVES, SKILLS
+  \begin{minipage}[t]{2.0cm}
+    \abilityhex{Strength}{14}{+2}\\[6pt]
+    \abilityhex{Dexterity}{18}{+4}\\[6pt]
+    \abilityhex{Constitution}{14}{+2}\\[6pt]
+    \abilityhex{Intelligence}{10}{+0}\\[6pt]
+    \abilityhex{Wisdom}{15}{+2}\\[6pt]
+    \abilityhex{Charisma}{8}{-1}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[t]{4.0cm}
+    \begin{dndpanel}{SAVING THROWS}
+      \scriptsize
+      \renewcommand{\arraystretch}{1.1}
+      \begin{tabularx}{\linewidth}{@{} c c >{\raggedright\arraybackslash}X @{}}
+        \dndcircle & \textbf{+2} & Strength \\
+        \dndbullet & \textbf{+6} & Dexterity \\
+        \dndcircle & \textbf{+2} & Constitution \\
+        \dndbullet & \textbf{+2} & Intelligence \\
+        \dndcircle & \textbf{+2} & Wisdom \\
+        \dndcircle & \textbf{-1} & Charisma \\
+      \end{tabularx}
+    \end{dndpanel}
+    \vspace{4pt}
+    \begin{dndpanel}{SKILLS}
+      \scriptsize
+      \renewcommand{\arraystretch}{1.08}
+      \begin{tabularx}{\linewidth}{@{} c c >{\raggedright\arraybackslash}X @{}}
+        \dndbullet & \textbf{+6} & Acrobatics \hfill \textcolor{charcoal!60}{(Dex)} \\
+        \dndcircle & \textbf{+2} & Animal Handling \hfill \textcolor{charcoal!60}{(Wis)} \\
+        \dndcircle & \textbf{+0} & Arcana \hfill \textcolor{charcoal!60}{(Int)} \\
+        \dndcircle & \textbf{+2} & Athletics \hfill \textcolor{charcoal!60}{(Str)} \\
+        \dndcircle & \textbf{-1} & Deception \hfill \textcolor{charcoal!60}{(Cha)} \\
+        \dndcircle & \textbf{+0} & History \hfill \textcolor{charcoal!60}{(Int)} \\
+        \dndcircle & \textbf{+2} & Insight \hfill \textcolor{charcoal!60}{(Wis)} \\
+        \dndcircle & \textbf{-1} & Intimidation \hfill \textcolor{charcoal!60}{(Cha)} \\
+        \dndcircle & \textbf{+0} & Investigation \hfill \textcolor{charcoal!60}{(Int)} \\
+        \dndcircle & \textbf{+2} & Medicine \hfill \textcolor{charcoal!60}{(Wis)} \\
+        \dndcircle & \textbf{+0} & Nature \hfill \textcolor{charcoal!60}{(Int)} \\
+        \dndbullet & \textbf{+4} & Perception \hfill \textcolor{charcoal!60}{(Wis)} \\
+        \dndcircle & \textbf{-1} & Performance \hfill \textcolor{charcoal!60}{(Cha)} \\
+        \dndcircle & \textbf{-1} & Persuasion \hfill \textcolor{charcoal!60}{(Cha)} \\
+        \dndcircle & \textbf{+0} & Religion \hfill \textcolor{charcoal!60}{(Int)} \\
+        \dndbullet & \textbf{+6} & Sleight of Hand \hfill \textcolor{charcoal!60}{(Dex)} \\
+        \dndbullet & \textbf{+8} & Stealth \hfill \textcolor{charcoal!60}{(Dex)} \\
+        \dndcircle & \textbf{+2} & Survival \hfill \textcolor{charcoal!60}{(Wis)} \\
+      \end{tabularx}
+    \end{dndpanel}
+  \end{minipage}
+  \vspace{4pt}
+  \begin{dndpanel}{PASSIVE WISDOM (PERCEPTION)}
+    \centering{\large\bfseries 14}
+  \end{dndpanel}
+  \vspace{4pt}
+  \begin{dndpanel}{OTHER PROFICIENCIES \& LANGUAGES}
+    \scriptsize
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{4mm}}>{\raggedright\arraybackslash}X@{}}
+      Languages & Common, Elvish, Thieves' Cant \\
+      Weapons   & Simple weapons, Hand crossbows, Longswords, Rapiers, Shortswords \\
+      Armor     & Light armor \\
+      Tools     & Thieves' tools, Playing card set \\
+    \end{tabularx}
+  \end{dndpanel}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{6.8cm}
+  % COLUMN 2: COMBAT, HP, HIT DICE, ATTACKS, EQUIPMENT
+  \acbox{16}\hfill\initbox{+4}\hfill\speedbox{35 ft.}
+  \vspace{6pt}
+  
+  \begin{dndpanel}{HIT POINTS}
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabularx}{\linewidth}{@{} C | C | C @{}}
+      \textbf{\color{accent}\scriptsize MAX HP} & \textbf{\color{accent}\scriptsize CURRENT} & \textbf{\color{accent}\scriptsize TEMPORARY} \\
+      {\large\bfseries 31} & {\large\bfseries 31} & {\large\bfseries --}
+    \end{tabularx}
+  \end{dndpanel}
+  \vspace{4pt}
+  
+  \begin{dndpanel}{HIT DICE \& DEATH SAVES}
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabularx}{\linewidth}{@{} C | C @{}}
+      \textbf{\color{accent}\scriptsize HIT DICE} & \textbf{\color{accent}\scriptsize DEATH SAVES} \\
+      {\large\bfseries 4d8} & 
+      \renewcommand{\arraystretch}{1.0}
+      \begin{tabular}{@{} l @{}}
+        \scriptsize Success: \dndcircle\ \dndcircle\ \dndcircle \\
+        \scriptsize Failure: \dndcircle\ \dndcircle\ \dndcircle
+      \end{tabular}
+    \end{tabularx}
+  \end{dndpanel}
+  \vspace{4pt}
+  
+  \begin{dndpanel}{ATTACKS \& SPELLCASTING}
+    \scriptsize
+    \renewcommand{\arraystretch}{1.25}
+    \begin{tabularx}{\linewidth}{@{} >{\raggedright\arraybackslash}X c c @{}}
+      \textbf{Weapon / Attack} & \textbf{Atk Bonus} & \textbf{Damage / Type} \\
+      \hline
+      Rapier (Melee) & +6 & 1d8+4 piercing \\
+      Shortbow (Ranged) & +6 & 1d6+4 piercing \\
+      Dagger (Thrown) & +6 & 1d4+4 piercing \\
+    \end{tabularx}
+    \vspace{6pt}
+    \centering\textbf{\scriptsize Spellcasting Ability:} \textcolor{accent}{\textbf{Charisma}} \hfill \textbf{\scriptsize Save DC:} \textcolor{accent}{\textbf{11}} \hfill \textbf{\scriptsize Spell Attack:} \textcolor{accent}{\textbf{+3}}
+  \end{dndpanel}
+  \vspace{4pt}
+  
+  \begin{dndpanel}{EQUIPMENT \& INVENTORY}
+    \scriptsize
+    \renewcommand{\arraystretch}{1.12}
+    \begin{tabularx}{\linewidth}{@{} >{\raggedright\arraybackslash}X r @{}}
+      \textbf{Item} & \textbf{Qty / Wt} \\
+      \hline
+      Studded Leather Armor & 1 / 13 lbs \\
+      Rapier \& Dagger & 1/1 / 3 lbs \\
+      Shortbow \& 20 Arrows & 1 / 3 lbs \\
+      Thieves' Tools & 1 / 1 lb \\
+      Explorer's Pack (backpack, bedroll, waterskin) & 1 / 59 lbs \\
+      Silk Rope (50 ft.) \& Grappling Hook & 1 / 9 lbs \\
+      Burglar's Pack & 1 / 45 lbs \\
+      Pouch with Gold Coinage & 15 gp \\
+    \end{tabularx}
+  \end{dndpanel}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{6.2cm}
+  % COLUMN 3: PERSONALITY, FEATURES, SPELL SLOTS
+  \begin{dndpanel}{PERSONALITY, IDEALS, BONDS, FLAWS}
+    \scriptsize
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{4mm}}>{\raggedright\arraybackslash}X@{}}
+      Personality & I am always calm, no matter the situation. I never raise my voice or let emotions rule me. \\
+      Ideals      & Freedom: Chains are meant to be broken, both literal and metaphorical. \\
+      Bonds       & I owe my life to the thieves' guild that took me in as an orphan. \\
+      Flaws       & A pretty face or a clever trick easily distracts me from my goals. \\
+    \end{tabularx}
+  \end{dndpanel}
+  \vspace{4pt}
+  
+  \begin{dndpanel}{FEATURES \& CLASS TRAITS}
+    \scriptsize
+    \begin{itemize}[leftmargin=10pt, noitemsep, topsep=0pt, parsep=2pt]
+      \item \textbf{Expertise:} Stealth, Thieves' Tools (double proficiency bonus).
+      \item \textbf{Sneak Attack (2d6):} Deal extra damage to one creature you hit with an attack if you have advantage or an ally is nearby.
+      \item \textbf{Cunning Action:} Bonus action to Dash, Disengage, or Hide.
+      \item \textbf{Thieves' Cant:} Secret language of codes and signs.
+      \item \textbf{Roguish Archetype (Thief):} Fast Hands (bonus action Sleight of Hand, thieves' tools, Use an Object), Second-Story Work (climbing is faster, jump distance increases).
+      \item \textbf{Fey Ancestry:} Advantage on saving throws against being charmed, magic can't put you to sleep.
+      \item \textbf{Mask of the Wild:} Can attempt to hide even when only lightly obscured by foliage, heavy rain, falling snow, mist, etc.
+    \end{itemize}
+  \end{dndpanel}
+  \vspace{4pt}
+  
+  \begin{dndpanel}{SPELL-SLOT TRACKER}
+    \scriptsize
+    \renewcommand{\arraystretch}{1.2}
+    \setlength{\tabcolsep}{1.5pt}
+    \begin{tabularx}{\linewidth}{@{} l *{4}{C} @{}}
+      \textbf{Level} & \textbf{1st} & \textbf{2nd} & \textbf{3rd} & \textbf{4th} \\
+      \hline
+      \textbf{Max}   & 4 & 3 & 2 & -- \\
+      \textbf{Slots} & \dndcircle\,\dndcircle\,\dndcircle\,\dndcircle & \dndcircle\,\dndcircle\,\dndcircle & \dndcircle\,\dndcircle & \\
+    \end{tabularx}
+  \end{dndpanel}
+\end{minipage}
+
+\end{document}

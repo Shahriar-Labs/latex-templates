@@ -1,0 +1,984 @@
+% ===========================================================================
+% Scientific Horizons — Quarterly Review of Discovery & Innovation
+% Elegant multi-column scientific magazine template for AAAS / IEEE Spectrum /
+% Nature Reviews style publications. Features cover page, masthead, table of
+% contents, multi-column feature articles with drop caps and pull quotes,
+% infographic callout boxes, department sections, and contributor bios.
+%
+% Compile with:  latexmk -pdf main.tex
+% Edit online at: https://letx.app
+% ===========================================================================
+
+\documentclass[a4paper,11pt]{article}
+
+% === FONT & ENCODING ========================================================
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{tgpagella}
+\usepackage{FiraSans}
+\usepackage{fontawesome5}
+
+% === GEOMETRY ===============================================================
+\usepackage[margin=20mm, top=18mm, bottom=22mm, headheight=14pt, includeheadfoot]{geometry}
+
+% === COLOR ==================================================================
+\usepackage[table]{xcolor}
+\definecolor{accent}{HTML}{1B3A5C}       % deep navy
+\definecolor{accent2}{HTML}{2E86AB}      % teal highlight
+\definecolor{graytext}{HTML}{5A5A5A}     % secondary text
+\definecolor{lightrule}{HTML}{C5CDD4}    % subtle rules
+\definecolor{boxbg}{HTML}{EDF2F6}        % callout box fill
+\definecolor{pagebg}{HTML}{FCFCFA}       % subtle page tint
+\definecolor{coveraccent}{HTML}{152C47}  % darker navy for cover
+\definecolor{bioline}{HTML}{D6DDE4}      % contributor bio rules
+\pagecolor{pagebg}
+
+% === PARAGRAPH SETUP (must be 0pt for table alignment) ======================
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% === GRAPHICS & DRAWING =====================================================
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{calc, positioning, shadows, shapes.geometric, backgrounds}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usetikzlibrary{shadows}
+\usepackage{multicol}
+\usepackage{lettrine}
+
+% === TABLES & LISTS =========================================================
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\setlist{nosep, leftmargin=*, itemsep=0pt, topsep=0pt}
+
+% === HEADINGS ===============================================================
+\usepackage{titlesec}
+
+% Department heading (e.g. RESEARCH HIGHLIGHTS)
+\titleformat{\section}
+  {\sffamily\bfseries\Large\color{accent}}
+  {}
+  {0pt}
+  {}
+  [\vspace{-4pt}{\color{lightrule}\hrule height 1pt}\vspace{8pt}]
+\titlespacing{\section}{0pt}{18pt}{6pt}
+
+% Article title
+\titleformat{\subsection}
+  {\sffamily\bfseries\LARGE\color{accent}}
+  {}
+  {0pt}
+  {}
+\titlespacing{\subsection}{0pt}{14pt}{8pt}
+
+% Subhead within article
+\titleformat{\subsubsection}
+  {\sffamily\bfseries\large\color{accent2}}
+  {}
+  {0pt}
+  {}
+\titlespacing{\subsubsection}{0pt}{12pt}{4pt}
+
+% === HEADERS & FOOTERS ======================================================
+\usepackage{fancyhdr}
+\fancyhf{}
+\fancyhead[LE,RO]{\sffamily\footnotesize\color{graytext}Scientific Horizons}
+\fancyhead[LO,RE]{\sffamily\footnotesize\color{graytext}Vol.\ 12, No.\ 3\quad·\quad Autumn 2024}
+\fancyfoot[C]{\sffamily\footnotesize\color{graytext}\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0pt}
+\pagestyle{fancy}
+
+% === MATH ===================================================================
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% === CAPTIONS ===============================================================
+\usepackage{caption}
+\captionsetup{font={sf,footnotesize,color=graytext}, labelfont={bf,color=accent}, labelsep=period}
+
+% === HYPERLINKS (load near end) =============================================
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accent2,
+  urlcolor=accent2,
+  citecolor=accent,
+  pdfauthor={Scientific Horizons Editorial Board},
+  pdftitle={Scientific Horizons --- Vol. 12, No. 3, Autumn 2024},
+  pdfsubject={Scientific Magazine Quarterly},
+  pdfkeywords={science, magazine, quarterly, research, materials science, genetics}
+}
+
+% ===========================================================================
+% CUSTOM COMMANDS
+% ===========================================================================
+
+% Department heading on cover / TOC
+\newcommand{\coverfeature}[2]{%
+  {\sffamily\bfseries\color{accent2}\footnotesize\MakeUppercase{#1}}\\[2pt]
+  {\sffamily\large\color{accent}#2\par}%
+}
+
+% Article byline
+\newcommand{\byline}[1]{%
+  \vspace{4pt}
+  {\sffamily\itshape\color{graytext}#1\par}
+  \vspace{2pt}
+  {\color{lightrule}\hrule height 0.5pt}
+  \vspace{10pt}
+}
+
+% Pull quote --- breaks out of multicol for full-width impact
+\newcommand{\pullquote}[2][2]{%
+  \end{multicols}
+  \vspace{8pt}
+  \begin{tcolorbox}[
+    enhanced,
+    colback=boxbg,
+    colframe=accent,
+    arc=0mm,
+    boxrule=0pt,
+    leftrule=4pt,
+    top=10pt,
+    bottom=10pt,
+    left=14pt,
+    right=14pt,
+    before skip=0pt,
+    after skip=0pt,
+  ]
+  {\large\itshape\color{accent}``#2''}
+  \end{tcolorbox}
+  \vspace{8pt}
+  \begin{multicols}{#1}
+  \noindent\ignorespaces
+}
+
+% Infographic / callout box within column flow
+\newtcolorbox{infobox}[1][]{
+  enhanced,
+  colback=boxbg,
+  colframe=accent2!30,
+  arc=3mm,
+  boxrule=0.5pt,
+  top=8pt,
+  bottom=8pt,
+  left=12pt,
+  right=12pt,
+  before skip=10pt,
+  after skip=10pt,
+  fontupper=\sffamily,
+  #1
+}
+
+% Contributor bio
+\newcommand{\contributor}[3]{%
+  \begin{minipage}[t]{\linewidth}
+    \vspace{6pt}
+    {\sffamily\bfseries\color{accent}#1}\par
+    {\sffamily\footnotesize\color{graytext}#2}\par
+    \vspace{3pt}
+    {\small#3\par}
+    \vspace{2pt}
+    {\color{bioline}\hrule height 0.5pt}
+  \end{minipage}
+  \medskip
+}
+
+% Drop cap paragraph start
+\newcommand{\dropcap}[2]{%
+  \lettrine[lines=3, lhang=0.25, loversize=0.08, findent=3pt, nindent=0pt]{#1}{#2}%
+}
+
+% Small decorative diamond
+\newcommand{\diamondrule}{%
+  \vspace{4pt}
+  {\color{lightrule}\hrule height 0.5pt}
+  \vspace{-2pt}
+  \begin{center}
+  \color{accent2}\faDiamond
+  \end{center}
+  \vspace{-6pt}
+  {\color{lightrule}\hrule height 0.5pt}
+  \vspace{6pt}
+}
+
+% ===========================================================================
+% DOCUMENT
+% ===========================================================================
+
+\emergencystretch=3em\relax
+\begin{document}
+
+% ====== PAGE 1 : COVER ======================================================
+\thispagestyle{empty}
+\newgeometry{margin=0pt}
+\pagecolor{coveraccent}
+
+\begin{tikzpicture}[remember picture, overlay]
+  % Subtle dot grid pattern in header
+  \foreach \x in {0,...,10} {
+    \foreach \y in {0,...,6} {
+      \fill[white, opacity=0.06]
+        ([xshift=\x*21mm+5mm, yshift=-\y*14mm-8mm]current page.north west) circle (2.2pt);
+    }
+  }
+
+  % Right-side decorative geometric element
+  \foreach \r in {1,...,6} {
+    \draw[white, opacity=0.08, line width=0.6pt]
+      ([xshift=-18mm, yshift=-45mm]current page.north east)
+      circle (\r*6mm);
+  }
+
+  % Journal title
+  \node[white, align=center, inner sep=0] at ([yshift=-38mm]current page.north) {
+    {\fontfamily{ppl}\fontsize{48}{54}\selectfont\bfseries SCIENTIFIC}\\[2pt]
+    {\fontfamily{ppl}\fontsize{48}{54}\selectfont\bfseries HORIZONS}
+  };
+
+  % Thin decorative line
+  \draw[white, opacity=0.5, line width=1pt]
+    ([yshift=-62mm]current page.north west) --
+    ([yshift=-62mm]current page.north east);
+
+  % Subtitle
+  \node[white, opacity=0.85, font=\sffamily\large\itshape] at ([yshift=-72mm]current page.north) {
+    A Quarterly Review of Discovery \& Innovation
+  };
+
+  % Issue info
+  \node[white, opacity=0.7, font=\sffamily\footnotesize] at ([yshift=-84mm]current page.north) {
+    Vol.\ 12 \quad·\quad No.\ 3 \quad·\quad Autumn 2024
+  };
+
+  % ====== White content area ======
+  \fill[pagebg] (current page.south west) rectangle ([yshift=120mm]current page.south east);
+
+  % Decorative accent stripe
+  \fill[accent2]
+    ([yshift=120mm]current page.south west) --
+    ([yshift=120mm]current page.south east) --
+    ([yshift=118mm]current page.south east) --
+    ([yshift=118mm]current page.south west) -- cycle;
+
+  % Featured articles heading
+  \node[accent, font=\sffamily\bfseries\footnotesize\scshape] at ([yshift=-100mm]current page.north) {
+    In This Issue
+  };
+
+  % Featured article 1
+  \node[align=left, text width=130mm, inner sep=0] at ([yshift=-112mm]current page.north) {
+    {\sffamily\bfseries\color{accent2}\footnotesize\MakeUppercase{Feature}}\\[1pt]
+    {\sffamily\fontsize{16}{20}\selectfont\bfseries\color{accent}
+     The Computational Frontier: Machine Learning Meets}\\[0pt]
+    {\sffamily\fontsize{16}{20}\selectfont\bfseries\color{accent}
+     Quantum Materials Discovery}\\[3pt]
+    {\sffamily\footnotesize\color{graytext}\itshape
+     Elena Vasquez \& James Chen\ \textbar\ page 4}
+  };
+
+  % Rule
+  \draw[lightrule, line width=0.4pt]
+    ([yshift=-125mm]current page.north) ++(-65mm, 0) --
+    ++(130mm, 0);
+
+  % Featured article 2
+  \node[align=left, text width=130mm, inner sep=0] at ([yshift=-134mm]current page.north) {
+    {\sffamily\bfseries\color{accent2}\footnotesize\MakeUppercase{Perspective}}\\[1pt]
+    {\sffamily\fontsize{16}{20}\selectfont\bfseries\color{accent}
+     CRISPR 2.0: Precision Gene Editing Enters the Clinic}\\[3pt]
+    {\sffamily\footnotesize\color{graytext}\itshape
+     Sarah Nakamura\ \textbar\ page 9}
+  };
+
+  % Rule
+  \draw[lightrule, line width=0.4pt]
+    ([yshift=-147mm]current page.north) ++(-65mm, 0) --
+    ++(130mm, 0);
+
+  % Featured article 3
+  \node[align=left, text width=130mm, inner sep=0] at ([yshift=-156mm]current page.north) {
+    {\sffamily\bfseries\color{accent2}\footnotesize\MakeUppercase{Review}}\\[1pt]
+    {\sffamily\fontsize{16}{20}\selectfont\bfseries\color{accent}
+     Climate Models at the Exascale: Simulating Earth's Future}\\[3pt]
+    {\sffamily\footnotesize\color{graytext}\itshape
+     Marcus Okafor, Priya Sharma \& The CMIP7 Consortium\ \textbar\ page 15}
+  };
+
+  % Bottom publisher info
+  \node[graytext, font=\sffamily\footnotesize, align=center] at ([yshift=14mm]current page.south) {
+    Published by the Scientific Horizons Press \textbar\ Established 2012\\
+    ISSN 2754-0182 \textbar\ www.scientifichorizons.quarterly
+  };
+
+\end{tikzpicture}
+
+\restoregeometry
+\pagecolor{pagebg}
+
+% ====== PAGE 2 : MASTHEAD + EDITORIAL =======================================
+\newpage
+\thispagestyle{empty}
+
+\begin{center}
+{\sffamily\bfseries\fontsize{20}{24}\selectfont\color{accent}Scientific Horizons}
+
+\vspace{6pt}
+{\sffamily\color{graytext}\footnotesize
+A Quarterly Review of Discovery \& Innovation \quad·\quad
+Vol.\ 12, No.\ 3, Autumn 2024}
+
+\vspace{4pt}
+{\color{lightrule}\hrule height 0.5pt}
+\end{center}
+
+\vspace{10pt}
+
+% Masthead using tabularx with l-column keys (NOT p{})
+{\sffamily\footnotesize
+\setlength{\tabcolsep}{0pt}
+\begin{tabularx}{\linewidth}{
+  @{}>{\color{accent}\bfseries}l@{\hspace{6mm}}X@{\hspace{10mm}}
+  >{\color{accent}\bfseries}l@{\hspace{6mm}}X@{}
+}
+Editor-in-Chief     & Prof.\ Margaret Okonkwo, FRS
+                     & Managing Editor    & Dr.\ Robert Lindqvist \\
+Senior Editors      & Dr.\ Amara Singh,
+                       Prof.\ Kenji Tanaka
+                     & Reviews Editor     & Dr.\ Lucia Fernandez \\
+Production          & Elena Petrova,
+                       James Whelan
+                     & Online Editor      & Dr.\ Samuel Greene \\
+\end{tabularx}
+}
+
+\vspace{8pt}
+{\color{lightrule}\hrule height 0.3pt}
+\vspace{8pt}
+
+{\sffamily\footnotesize\color{graytext}
+\textbf{Editorial Board:} Prof.\ Alicia Montoya (Columbia),
+Prof.\ David Okonkwo (Cambridge), Prof.\ Ravi Chandrasekhar (IISc),
+Prof.\ Li Wei (Tsinghua), Prof.\ Elena Sokolova (Moscow State),
+Prof.\ Carlos Ruiz (UNAM), Prof.\ Fatima Al-Rashid (KAUST),
+Prof.\ Henrik Johansson (Karolinska), Prof.\ Yuki Nakamura (Tokyo),
+Prof.\ Sarah Mitchell (Melbourne), Prof.\ Jean-Pierre Dubois (Sorbonne),
+Prof.\ Kwame Asante (Cape Town).\par
+}
+
+\vspace{6pt}
+{\sffamily\footnotesize\color{graytext}
+\textbf{Contact:} Scientific Horizons Press, 42 Cavendish Square,
+London W1G 0AN, United Kingdom. {\footnotesize\texttt{editorial.\allowbreak quarterly}}
+\par}
+
+\vspace{12pt}
+{\color{lightrule}\hrule height 0.5pt}
+\vspace{14pt}
+
+% Editorial
+{\sffamily\bfseries\Large\color{accent}From the Editor}
+
+\vspace{8pt}
+
+\dropcap{T}{he} practice of science has always been shaped by its tools. The
+telescope, the microscope, the particle accelerator --- each opened a new window
+onto nature and, in doing so, transformed not only what we know but how we
+think. Today, we stand at the threshold of another such transformation, driven
+not by a single instrument but by a confluence of computational power,
+algorithmic ingenuity, and data abundance.
+
+\medskip
+In this issue of \textit{Scientific Horizons}, our feature article by Vasquez
+and Chen examines one of the most exciting frontiers in this new landscape: the
+application of machine learning to the discovery of quantum materials. The
+promise is extraordinary --- algorithms that can predict stable crystal
+structures, identify candidates for superconductivity, and even suggest
+synthetic pathways, all before a single experiment is performed. But as our
+authors remind us, the algorithmic tail must not wag the scientific dog. Close
+collaboration between computational and experimental researchers remains
+essential.
+
+\medskip
+Equally compelling is Nakamura's perspective on the clinical translation of
+CRISPR-based therapies. A decade after the first demonstrations of programmable
+gene editing in human cells, we are now seeing treatments move from bench to
+bedside. The challenges --- delivery, specificity, and equitable access --- are
+daunting, but the trajectory is unmistakable.
+
+\medskip
+Finally, our review by Okafor, Sharma, and the CMIP7 Consortium surveys the
+state of climate modelling at the exascale. As computing power grows, so too
+does our ability to resolve the fine-scale processes that govern cloud
+formation, ocean mixing, and ice-sheet dynamics. The picture that emerges is
+sobering but actionable --- a call to both scientific and policy communities.
+
+\medskip
+We hope this issue informs, challenges, and inspires. Science is a collective
+endeavour, and every reader of these pages is part of the conversation.
+
+\vspace{10pt}
+{\sffamily\itshape\color{graytext}--- Margaret Okonkwo, Editor-in-Chief}
+
+\vspace{8pt}
+{\sffamily\footnotesize\color{graytext}London, September 2024}
+
+% ====== PAGE 3 : TABLE OF CONTENTS ==========================================
+\newpage
+\thispagestyle{empty}
+
+{\sffamily\bfseries\fontsize{22}{26}\selectfont\color{accent}Contents}
+
+\vspace{6pt}
+{\color{accent2}\hrule height 1.5pt}
+\vspace{14pt}
+
+% --- DEPARTMENTS ---
+{\sffamily\bfseries\footnotesize\color{accent2}\MakeUppercase{Departments}}
+
+\vspace{8pt}
+
+{\sffamily
+\setlength{\tabcolsep}{0pt}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{accent}}l@{\hspace{6mm}}X@{\hspace{8mm}}r@{}}
+2  & From the Editor \dotfill & 2 \\
+4  & Research Highlights \dotfill & 4 \\
+22 & Books \& Reviews \dotfill & 22 \\
+24 & Calendar \& Announcements \dotfill & 24 \\
+\end{tabularx}
+}
+
+\vspace{16pt}
+
+% --- FEATURES ---
+{\sffamily\bfseries\footnotesize\color{accent2}\MakeUppercase{Feature Articles}}
+
+\vspace{8pt}
+
+{\sffamily
+\setlength{\tabcolsep}{0pt}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{accent}}l@{\hspace{6mm}}X@{\hspace{8mm}}r@{}}
+4  & The Computational Frontier: Machine Learning Meets Quantum
+     Materials Discovery \dotfill & 4 \\
+   & \hspace{2mm}\itshape\color{graytext}\footnotesize Elena Vasquez \& James Chen & \\
+\end{tabularx}
+}
+
+\vspace{10pt}
+
+{\sffamily
+\setlength{\tabcolsep}{0pt}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{accent}}l@{\hspace{6mm}}X@{\hspace{8mm}}r@{}}
+9  & CRISPR 2.0: Precision Gene Editing Enters the Clinic \dotfill & 9 \\
+   & \hspace{2mm}\itshape\color{graytext}\footnotesize Sarah Nakamura & \\
+\end{tabularx}
+}
+
+\vspace{10pt}
+
+{\sffamily
+\setlength{\tabcolsep}{0pt}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{accent}}l@{\hspace{6mm}}X@{\hspace{8mm}}r@{}}
+15 & Climate Models at the Exascale: Simulating Earth's Future \dotfill & 15 \\
+   & \hspace{2mm}\itshape\color{graytext}\footnotesize Marcus Okafor, Priya Sharma
+      \& The CMIP7 Consortium & \\
+\end{tabularx}
+}
+
+\vspace{20pt}
+{\color{lightrule}\hrule height 0.5pt}
+\vspace{10pt}
+
+% Cover image credit
+{\sffamily\footnotesize\color{graytext}
+\textbf{Cover:} Crystallographic structure of the perovskite
+CaTiO\textsubscript{3}, rendered from neutron diffraction data. Image courtesy
+of the Materials Project (Lawrence Berkeley National Laboratory).\\
+\textbf{Design:} Elena Petrova. Typeset in \TeX\ Gyre Pagella and Fira Sans.
+}
+
+% ====== PAGE 4-8 : FEATURE ARTICLE 1 ========================================
+\newpage
+
+% Article header (full width before columns)
+{\sffamily\bfseries\color{accent2}\footnotesize\MakeUppercase{Feature Article}}
+
+\vspace{4pt}
+{\sffamily\bfseries\fontsize{24}{30}\selectfont\color{accent}
+The Computational Frontier: Machine Learning Meets Quantum Materials Discovery}
+
+\byline{Elena Vasquez\thanks{Department of Materials Science, Stanford University,
+Stanford, CA 94305, USA.} \hspace{4pt}$\cdot$\hspace{4pt}
+James Chen\thanks{Theory of Condensed Matter Group, Cavendish Laboratory,
+University of Cambridge, Cambridge CB3 0HE, UK.}}
+
+\begin{multicols}{2}
+
+\dropcap{I}{n} the summer of 2023, a research group at Nexa DeepMind published
+a landmark study in \textit{Nature} reporting the computational prediction of
+over 380,000 stable crystalline materials --- a number that nearly doubled the
+cumulative output of a century of experimental crystallography. The tool they
+used, Graph Networks for Materials Exploration (GNoME), relied on deep
+graph-neural networks trained on data from the Materials Project, a
+US Department of Energy initiative that has systematically catalogued the
+properties of known inorganic compounds since 2011.
+
+\medskip
+This was not an isolated breakthrough. Across condensed-matter physics and
+materials science, machine-learning (ML) techniques are rapidly reshaping the
+discovery pipeline. From predicting superconducting transition temperatures to
+identifying optimal dopants for battery cathodes, data-driven approaches are
+increasingly complementing --- and in some cases supplanting --- traditional
+methods rooted in density functional theory (DFT) and empirical intuition.
+
+\medskip
+Yet the convergence of ML and materials science raises fundamental questions
+that extend beyond raw predictive power. How do we validate
+computationally-predicted materials when the volume of predictions outstrips the
+capacity of experimental verification by orders of magnitude? What does it mean
+for a crystal structure to be ``stable'' when the definition depends on the
+choice of reference chemical potentials? And critically, can ML models ever
+generate genuine physical insight, or are they merely sophisticated
+interpolators operating within the boundaries of their training data?
+
+\medskip
+The present article surveys the state of this rapidly evolving field and
+identifies three grand challenges that will determine whether the marriage of
+ML and materials science fulfills its considerable promise.
+
+\subsubsection{From DFT to Deep Learning}
+
+The computational study of materials has, for four decades, been dominated by
+DFT and the family of methods built upon it. DFT-based high-throughput
+screening --- in which thousands of candidate structures are evaluated against
+thermodynamic stability criteria --- has become a standard workflow, exemplified
+by the Materials Project, AFLOW, and the Open Quantum Materials Database
+(OQMD). These databases now contain over two million entries and have enabled
+the discovery of numerous functional materials, including new
+thermoelectrics, transparent conductors, and Li-ion conductors.
+
+\medskip
+However, DFT-based screening faces inherent limitations. First-principles
+calculations are computationally expensive, scaling as $O(N^3)$ with system
+size, making exhaustive exploration of compositional and configurational space
+infeasible. Moreover, standard exchange-correlation functionals (e.g., PBE)
+introduce systematic errors in band gaps, formation energies, and
+reaction barriers --- quantities central to materials design. Hybrid
+functionals and many-body methods (GW, RPA) improve accuracy but at prohibitive
+computational cost.
+
+\medskip
+ML models offer a compelling alternative by learning the mapping from structure
+to property directly from data. Rather than solving the Kohn--Sham equations
+for each candidate, a trained model can evaluate stability, band structure, or
+mechanical properties in milliseconds. Early work focused on kernel-based
+methods (Gaussian processes, support vector regression) trained on
+hand-crafted descriptors. The field has since shifted decisively toward
+deep-learning architectures, which can learn representations directly from
+atomic coordinates and species.
+
+\subsubsection{Representation and Architecture}
+
+Three classes of neural-network architecture now dominate the materials
+informatics landscape. Crystal graph convolutional networks (CGCNs) represent
+a crystal as a graph in which nodes correspond to atoms and edges encode
+interatomic distances. Message-passing layers aggregate information from
+neighbouring atoms, recursively building a representation of the local chemical
+environment. The MatErials Graph Network (MEGNet) and Crystal Graph
+Convolutional Neural Network (CGCNN) frameworks, both introduced in
+2018--2019, remain among the most widely used.
+
+\medskip
+Equivariant neural networks, which explicitly respect the symmetry group of
+three-dimensional space (E(3)), represent a more recent advance. By
+constraining their internal representations to transform correctly under
+rotations and translations, these models achieve state-of-the-art accuracy with
+fewer training examples. The NequIP and MACE architectures, built on
+higher-order tensor products of spherical harmonics, have demonstrated
+remarkable performance on the prediction of interatomic forces and phonon
+spectra.
+
+\medskip
+Finally, diffusion models and flow-matching approaches, originally developed
+for image and video generation, are now being adapted to generate crystal
+structures \textit{de novo}. These generative models learn to reverse a
+noise-adding process, producing candidate structures that satisfy specified
+property constraints. GNoME combined a graph-network stability predictor with an
+active-learning loop, iteratively proposing candidates, evaluating them with
+DFT, and retraining on the expanded dataset.
+
+\medskip
+The practical impact of these methods is already evident. A 2024 study by
+Merchant \textit{et al.} used GNoME to identify 52 previously unknown layered
+materials with potential as solid electrolytes. Independent DFT validation
+confirmed the stability of 48 of these candidates, and experimental synthesis
+has been initiated at three laboratories. Similarly, Chen \textit{et al.}
+reported a graph-network-driven search for high-entropy alloy catalysts that
+yielded two compositions outperforming commercial Pt/C in oxygen reduction
+reaction activity.
+
+\pullquote{The algorithmic tail must not wag the scientific dog. Close
+collaboration between computational and experimental researchers remains
+essential for realizing the promise of ML-driven discovery.}
+
+\subsubsection{Three Grand Challenges}
+
+Despite these successes, the field confronts obstacles that will require
+concerted effort across the computational and experimental communities to
+overcome.
+
+\textbf{Challenge 1: Validation at scale.} When a single ML study can predict
+hundreds of thousands of stable compounds, the bottleneck shifts decisively to
+experiment. Automated synthesis platforms --- including robotic solid-state
+synthesis and high-throughput thin-film deposition --- are beginning to address
+this gap, but throughput remains orders of magnitude below what computational
+prediction can produce. The community must develop tiered validation
+protocols that prioritise candidates with the highest probability of successful
+synthesis and the greatest potential impact.
+
+\textbf{Challenge 2: Uncertainty quantification.} Most ML models for materials
+prediction provide point estimates without meaningful confidence intervals.
+When a model predicts a formation energy of $-1.2$\,eV/atom, how certain are we
+that the compound is stable? Bayesian neural networks and ensemble methods
+offer partial solutions, but rigorous uncertainty quantification (UQ) tailored
+to materials-specific error modes --- configurational entropy, metastable
+polymorphs, anharmonic effects --- remains underdeveloped.
+
+\textbf{Challenge 3: From prediction to understanding.} The most profound
+critique of ML in the physical sciences is that it trades understanding for
+prediction. A model that accurately forecasts superconducting $T_c$ without
+revealing the underlying pairing mechanism may be useful for engineering but
+contributes little to fundamental physics. Emerging interpretability techniques
+--- including layer-wise relevance propagation, concept activation vectors, and
+symbolic regression on learned representations --- aim to extract
+human-comprehensible insights from trained networks, but the gap between these
+tools and the depth of understanding afforded by traditional theory remains
+wide.
+
+% Infographic callout box
+\begin{infobox}
+{\sffamily\bfseries\color{accent}\small\MakeUppercase{By the Numbers}}
+
+\vspace{4pt}
+{\sffamily\footnotesize
+\setlength{\tabcolsep}{0pt}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{accent2}}lX@{}}
+380K  & Stable materials predicted by GNoME (2023) \\
+200K  & Known inorganic compounds in ICSD (2024) \\
+2.2M  & Total entries across Materials Project, AFLOW, OQMD \\
+10\textsuperscript{4} & Speedup of ML inference vs.\ hybrid DFT \\
+48/52 & GNoME-predicted Li conductors validated by DFT \\
+\end{tabularx}
+}
+\end{infobox}
+
+\subsubsection{The Road Ahead}
+
+The convergence of ML and materials science is not merely a technological trend
+but a fundamental shift in how we explore chemical and structural space. The
+field is evolving from a paradigm of \textit{predict-then-validate} toward one
+of \textit{co-design}, in which computational prediction, automated synthesis,
+and characterisation are integrated into closed-loop workflows. Early
+demonstrations of autonomous laboratories --- such as the A-Lab at Lawrence
+Berkeley National Laboratory, which combines ML-driven experiment planning with
+robotic synthesis and X-ray diffraction characterisation --- point toward a
+future in which the discovery cycle is compressed from years to days.
+
+\medskip
+Realising this vision will require not only algorithmic advances but also
+cultural change. Materials scientists and condensed-matter physicists must
+become fluent in the language of machine learning, while computer scientists
+must engage seriously with the physics that makes materials prediction a
+uniquely challenging domain. The journals, funding agencies, and academic
+departments that structure scientific careers must adapt to reward
+interdisciplinary work that bridges these historically separate communities.
+
+\medskip
+The stakes are high. From better batteries and more efficient solar cells to
+room-temperature superconductors and quantum information platforms, the
+materials we need to address the twenty-first century's most pressing challenges
+are waiting to be discovered. Machine learning, deployed thoughtfully and in
+partnership with experiment and theory, may be the tool that helps us find them.
+
+\vspace{8pt}
+{\sffamily\footnotesize\color{graytext}
+\textbf{Acknowledgements.} E.V.\ acknowledges support from the US Department of
+Energy, Office of Basic Energy Sciences (DE-SC0022417). J.C.\ acknowledges
+support from the European Research Council (Grant No.\ 101054458) and the
+Leverhulme Trust. The authors thank A.\ Merchant, R.\ Gomez-Bombarelli, and
+K.\ Persson for illuminating discussions.
+}
+
+\vspace{4pt}
+{\sffamily\footnotesize\color{graytext}
+\textbf{Competing interests.} The authors declare no competing interests.
+}
+
+\vspace{6pt}
+{\sffamily\footnotesize\color{graytext}
+\textbf{Data availability.} All datasets referenced in this article are publicly
+available through the Materials Project (materialsproject.org), ICSD, and
+associated repositories.
+}
+
+\end{multicols}
+
+% ====== PAGE 9 : FEATURE ARTICLE 2 ==========================================
+\newpage
+
+{\sffamily\bfseries\color{accent2}\footnotesize\MakeUppercase{Perspective}}
+
+\vspace{4pt}
+{\sffamily\bfseries\fontsize{24}{30}\selectfont\color{accent}
+CRISPR 2.0: Precision Gene Editing Enters the Clinic}
+
+\byline{Sarah Nakamura\thanks{Division of Genetics, Brigham and Women's Hospital,
+Harvard Medical School, Boston, MA 02115, USA.}}
+
+\begin{multicols}{2}
+
+\dropcap{W}{hen} Victoria Gray became the first person to receive an
+investigational CRISPR-based therapy for sickle-cell disease in 2019, the
+procedure was rightly hailed as a landmark. Four years later, in December 2023,
+the US Food and Drug Administration approved Casgevy (exagamglogene autotemcel),
+the first CRISPR/Cas9-based therapeutic, for both sickle-cell disease and
+transfusion-dependent beta-thalassemia. The approval, which followed similar
+authorisation by the UK Medicines and Healthcare products Regulatory Agency,
+marked the culmination of a journey that began with the discovery of CRISPR
+adaptive immunity in bacteria and the demonstration, by Doudna and Charpentier
+in 2012, that the Cas9 nuclease could be programmed for sequence-specific DNA
+cleavage.
+
+\medskip
+Yet the approval of Casgevy, momentous as it is, represents only the first
+chapter in the clinical translation of genome editing. A second generation of
+technologies --- base editing, prime editing, and epigenetic editing --- is
+already entering human trials, promising greater precision, broader
+applicability, and fewer off-target effects than first-generation CRISPR-Cas9.
+
+\subsubsection{Beyond Double-Strand Breaks}
+
+First-generation CRISPR-Cas9 therapy relies on the introduction of a
+double-strand break (DSB) at a targeted genomic locus, followed by repair
+through either non-homologous end joining (NHEJ) or homology-directed repair
+(HDR). While effective --- Casgevy works by disrupting the BCL11A erythroid
+enhancer to reactivate fetal haemoglobin production --- DSB-based editing
+carries inherent risks, including large deletions, complex rearrangements, and
+activation of the p53 DNA-damage response.
+
+\medskip
+Base editing, pioneered by David Liu's laboratory at the Broad Institute,
+sidesteps DSBs entirely. Cytosine base editors (CBEs) and adenine base editors
+(ABEs) fuse a catalytically-impaired Cas9 nickase to a deaminase enzyme,
+enabling the direct conversion of C·G to T·A or A·T to G·C base pairs without
+cleaving the DNA backbone. The first clinical trial of a base editor,
+BEAM-101 for sickle-cell disease, dosed its first patient in 2023. Early
+results, presented at the 2024 American Society of Hematology meeting, showed
+robust HbF induction and no evidence of off-target mutations by whole-genome
+sequencing.
+
+\medskip
+Prime editing, also developed in Liu's laboratory, extends the editing
+repertoire further. By fusing a Cas9 nickase to an engineered reverse
+transcriptase and providing a prime editing guide RNA (pegRNA) that both
+specifies the target and encodes the desired edit, prime editors can perform all
+twelve possible base-to-base conversions, as well as small insertions (up to
+\~{}44\,bp) and deletions (up to \~{}80\,bp), without requiring DSBs or donor
+templates. The first IND application for a prime-editing therapy --- targeting
+chronic granulomatous disease --- is anticipated in 2025.
+
+\pullquote{The approval of Casgevy represents only the first chapter in the
+clinical translation of genome editing. A second generation of technologies
+is already entering human trials.}
+
+\subsubsection{Delivery Remains the Bottleneck}
+
+For all the sophistication of editing modalities, delivery remains the central
+challenge in translating genome-editing therapies to the clinic. The \textit{ex
+vivo} approach used by Casgevy --- harvesting haematopoietic stem cells,
+editing them in culture, and reinfusing after myeloablative conditioning --- is
+effective but expensive (Casgevy is priced at \$2.2 million per patient in the
+US) and logistically demanding, requiring specialised manufacturing facilities
+and extended hospitalisation.
+
+\medskip
+\textit{In vivo} delivery, in which the editing machinery is administered
+directly to the patient, would dramatically expand the addressable patient
+population. Lipid nanoparticles (LNPs), the delivery vehicles that enabled the
+success of mRNA COVID-19 vaccines, have shown promise for hepatic delivery of
+CRISPR components. Intellia Therapeutics' NTLA-2001, an LNP-formulated
+Cas9 mRNA and guide RNA targeting the \textit{TTR} gene for transthyretin
+amyloidosis, demonstrated durable (\textgreater 90\%) TTR knockdown in Phase
+I/II trials, representing the first clinical proof-of-concept for systemic
+\textit{in vivo} CRISPR editing.
+
+\medskip
+For tissues beyond the liver, virus-like particles (VLPs) and engineered
+adeno-associated viruses (AAVs) are under active investigation, though
+immunogenicity and payload-size constraints remain significant hurdles.
+
+\subsubsection{The Ethical Horizon}
+
+As genome-editing technologies become more precise and more accessible, the
+ethical questions they raise grow sharper. Somatic editing for severe genetic
+diseases commands broad consensus; germline editing, which would introduce
+heritable changes, does not. The 2018 announcement by He Jiankui of the birth of
+genome-edited twins, universally condemned by the scientific community, served
+as a stark reminder that technological capability can outpace ethical consensus.
+
+\medskip
+The World Health Organization's 2021 governance framework for human genome
+editing, the International Commission on the Clinical Use of Human Germline
+Genome Editing's 2020 report, and the 2023 Third International Summit on Human
+Genome Editing in London have each contributed to a gradually coalescing global
+framework. Whether that framework can accommodate the accelerating pace of
+technological development --- and whether it can ensure equitable access to
+therapies that could otherwise deepen health disparities --- remains to be seen.
+
+\vspace{8pt}
+{\sffamily\footnotesize\color{graytext}
+\textbf{Acknowledgements.} S.N.\ is supported by NIH grant R01-HG012034 and the
+Harvard Stem Cell Institute. She serves on the scientific advisory board of
+Verve Therapeutics (uncompensated).
+}
+
+\vspace{4pt}
+{\sffamily\footnotesize\color{graytext}
+\textbf{Competing interests.} S.N.\ holds equity in Beam Therapeutics and is a
+named inventor on patents related to base-editing technologies licensed to Beam
+Therapeutics through the Broad Institute.
+}
+
+\end{multicols}
+
+% ====== PAGE 11 : RESEARCH HIGHLIGHTS =======================================
+\newpage
+
+\section{Research Highlights}
+
+\subsection*{Astrophysics}
+
+{\sffamily\bfseries\color{accent}JWST Reveals Carbonaceous Dust in the Early
+Universe.} Observations from the James Webb Space Telescope have detected the
+spectral signature of polycyclic aromatic hydrocarbons (PAHs) in a galaxy at
+$z = 8.3$, corresponding to an epoch just 600 million years after the Big Bang.
+The finding, reported by Witstok \textit{et al.} in \textit{Nature Astronomy}
+(2024), challenges existing models of dust production, which require
+intermediate-mass AGB stars that would not have had time to evolve by $z > 8$.
+The authors propose that carbonaceous dust may form in the ejecta of
+core-collapse supernovae on shorter timescales than previously recognised, a
+hypothesis consistent with recent nucleosynthetic models. \textit{--- Nature
+Astronomy} {\bf 8}, 1124--1131 (2024)
+
+\subsection*{Neuroscience}
+
+{\sffamily\bfseries\color{accent}A Molecular Atlas of the Human Blood--Brain
+Barrier.} A multi-institutional consortium led by the Allen Institute for Brain
+Science has published a comprehensive single-cell transcriptomic atlas of the
+human blood--brain barrier (BBB), profiling over 140,000 cells from 17 brain
+regions across 8 donors. The atlas, described in \textit{Cell} (2024), reveals
+previously unrecognised heterogeneity in endothelial transport machinery,
+identifies region-specific vulnerabilities relevant to neurodegenerative
+disease, and provides a reference dataset for efforts to engineer the BBB for
+therapeutic delivery. \textit{--- Cell} {\bf 187}, 3487--3504 (2024)
+
+\subsection*{Climate Science}
+
+{\sffamily\bfseries\color{accent}Accelerating Ice Loss from the Amundsen Sea
+Sector.} A new analysis combining satellite altimetry, ice-penetrating radar,
+and oceanographic mooring data indicates that ice loss from West Antarctica's
+Amundsen Sea sector has accelerated by 35\% over the past decade. The study,
+published in \textit{Science Advances} by Davison \textit{et al.} (2024),
+attributes the acceleration to increased intrusions of warm Circumpolar Deep
+Water onto the continental shelf, driven by shifts in the Amundsen Sea Low
+associated with anthropogenic forcing. The findings raise the estimated
+contribution of the Amundsen sector to global sea-level rise to
+0.6\,mm\,yr$^{-1}$. \textit{--- Sci.\ Adv.} {\bf 10}, eadk7890 (2024)
+
+\subsection*{Synthetic Biology}
+
+{\sffamily\bfseries\color{accent}De Novo Design of Allosteric Protein Switches.}
+Researchers at the University of Washington's Institute for Protein Design have
+used deep-learning-based protein design (RFdiffusion and ProteinMPNN) to create
+synthetic allosteric switches --- proteins that change conformation and activity
+in response to binding a small-molecule ligand --- entirely from first
+principles. The designed switches, reported in \textit{Science} by Anishchenko
+\textit{et al.} (2024), achieve switching ratios exceeding 50-fold and
+demonstrate the feasibility of computational design of conditional protein
+function. \textit{--- Science} {\bf 385}, 178--185 (2024)
+
+\vspace{10pt}
+{\color{lightrule}\hrule height 0.3pt}
+
+% ====== CONTRIBUTOR BIOS ====================================================
+\vspace{14pt}
+\section{Contributors}
+
+\begin{multicols}{2}
+
+\contributor{Elena Vasquez}
+{Assistant Professor, Department of Materials Science, Stanford University}
+{Elena Vasquez leads the Computational Materials Design group at Stanford. Her
+research combines first-principles electronic-structure calculations with
+machine-learning methods to accelerate the discovery of functional materials for
+energy applications. She received her PhD from MIT in 2018 and was a Miller
+Research Fellow at UC Berkeley before joining the Stanford faculty in 2021.}
+
+\contributor{James Chen}
+{Professor of Theoretical Physics, Cavendish Laboratory, University of
+Cambridge}
+{James Chen holds the Cavendish Chair in Condensed Matter Theory. His group
+develops and applies machine-learning interatomic potentials and equivariant
+neural networks to problems in materials physics, with a particular focus on
+ferroelectrics, multiferroics, and quantum materials. He is a Fellow of the
+Royal Society and a recipient of the Dirac Medal.}
+
+\contributor{Sarah Nakamura}
+{Assistant Professor, Division of Genetics, Brigham and Women's Hospital,
+Harvard Medical School}
+{Sarah Nakamura is a physician-scientist whose research spans the development of
+novel genome-editing tools and their translation to clinical application. Her
+laboratory pioneered several base-editing strategies for haematological
+disorders. She trained in David Liu's laboratory at the Broad Institute and
+completed her clinical fellowship in medical genetics at Boston Children's
+Hospital.}
+
+\contributor{Marcus Okafor}
+{Senior Research Scientist, Met Office Hadley Centre, Exeter}
+{Marcus Okafor leads the High-Resolution Climate Modelling group at the Met
+Office. His research focuses on the representation of cloud and convective
+processes in global climate models, with an emphasis on leveraging exascale
+computing to resolve kilometre-scale atmospheric dynamics. He serves on the
+CMIP7 Panel and the WCRP Grand Challenge on Clouds and Circulation.}
+
+\contributor{Priya Sharma}
+{Associate Professor, Department of Earth System Science, University of
+California, Irvine}
+{Priya Sharma's group develops and applies coupled Earth-system models,
+integrating atmospheric, oceanic, land-surface, and ice-sheet components. Her
+current research focuses on ice-sheet--ocean interactions in Antarctica and
+their implications for sea-level projections under high-emission scenarios. She
+is a lead author on the IPCC Seventh Assessment Report.}
+
+\end{multicols}
+
+\vspace{10pt}
+{\color{lightrule}\hrule height 0.5pt}
+\vspace{10pt}
+
+\begin{center}
+{\sffamily\footnotesize\color{graytext}
+\textit{Scientific Horizons} is published quarterly by Scientific Horizons Press,\\
+42 Cavendish Square, London W1G 0AN, United Kingdom.\\
+ISSN\ 2754-0182 (Print) \quad·\quad ISSN\ 2754-0190 (Online)\\[4pt]
+\textcopyright\ 2024 Scientific Horizons Press. All rights reserved.\\
+No part of this publication may be reproduced without prior written permission.\\[4pt]
+Typeset in \LaTeX\ using \TeX\ Gyre Pagella and Fira Sans.\\
+Printed on FSC-certified paper by Clays Ltd, Suffolk.
+}
+\end{center}
+
+\end{document}

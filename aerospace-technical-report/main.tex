@@ -1,0 +1,790 @@
+% Aerospace Technical Report — MIL-STD compliant engineering document template
+% Edit and compile online at https://letx.app
+% Compiles with: latexmk -pdf main.tex (pdflatex, TeX Live full)
+
+\documentclass[12pt,a4paper]{report}
+
+% ── Encoding and fonts ──────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{tgpagella}
+\usepackage{textcomp}
+
+% ── Page geometry ───────────────────────────────────────────────────────
+\usepackage{geometry}
+\geometry{a4paper, left=25mm, right=25mm, top=28mm, bottom=32mm, headheight=15pt, footskip=18pt}
+
+% ── Colors ──────────────────────────────────────────────────────────────
+\usepackage[table]{xcolor}
+\definecolor{accent}{HTML}{1A3C5E}
+\definecolor{accentlight}{HTML}{3A6B9E}
+\definecolor{bggray}{HTML}{F2F4F6}
+\definecolor{bggraydark}{HTML}{E4E7EB}
+\definecolor{rulegray}{HTML}{9BA5B0}
+\definecolor{classred}{HTML}{8B1A1A}
+\definecolor{darktext}{HTML}{1E1E1E}
+
+% ── Graphics and diagrams ───────────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{circuitikz}
+\usetikzlibrary{arrows.meta, positioning, calc, fit, backgrounds, shadows, shapes.geometric}
+
+% ── Tables ──────────────────────────────────────────────────────────────
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+
+% ── Headers and footers ─────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+% ── Section formatting ──────────────────────────────────────────────────
+\usepackage{titlesec}
+
+% ── Lists ────────────────────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist{nosep, leftmargin=*, itemsep=2pt, topsep=4pt}
+
+% ── Math and symbols ────────────────────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ── Misc ────────────────────────────────────────────────────────────────
+\usepackage{hyperref}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\usepackage{etoolbox}
+\usepackage{float}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accentlight,
+  urlcolor=accentlight,
+  citecolor=accentlight,
+  pdfauthor={Northrop Grumman Systems Corporation},
+  pdftitle={Advanced Flight Control System Upgrade — Technical Report},
+}
+
+% ── Spacing ─────────────────────────────────────────────────────────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% ── Title format ────────────────────────────────────────────────────────
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{accent}}
+  {\filleft\footnotesize\color{accentlight}\MakeUppercase{\chaptertitlename}\ \thechapter}
+  {16pt}
+  {\Huge}
+\titlespacing*{\chapter}{0pt}{24pt}{18pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{accent}}
+  {\thesection}
+  {1em}
+  {}
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{accent!85!black}}
+  {\thesubsection}
+  {1em}
+  {}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries}
+  {\thesubsubsection}
+  {1em}
+  {}
+\titlespacing*{\subsubsection}{0pt}{8pt}{3pt}
+
+% ── Header/footer style ─────────────────────────────────────────────────
+\fancypagestyle{mainpage}{
+  \fancyhf{}
+  \fancyhead[L]{\small\color{rulegray}\docnum}
+  \fancyhead[C]{\small\color{rulegray}\MakeUppercase{\docclass}}
+  \fancyhead[R]{\small\color{rulegray}Page \thepage\ of \pageref{LastPage}}
+  \fancyfoot[L]{\textcolor{classred}{\rule{\textwidth}{0.4pt}}\\[1pt]
+    \scriptsize\bfseries\color{classred}\MakeUppercase{\docclass}}
+  \renewcommand{\headrulewidth}{0.4pt}
+  \renewcommand{\headrule}{\vskip 2pt\color{accent}\hrule width\headwidth height 0.4pt\vskip-2pt}
+}
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[L]{\textcolor{classred}{\rule{\textwidth}{0.4pt}}\\[1pt]
+    \scriptsize\bfseries\color{classred}\MakeUppercase{\docclass}}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+% ── Document metadata macros ────────────────────────────────────────────
+\newcommand{\docnum}{DOC-2024-AERO-0042}
+\newcommand{\docrev}{Revision~C}
+\newcommand{\docdate}{15 March 2024}
+\newcommand{\docclass}{UNCLASSIFIED}
+\newcommand{\contractor}{Northrop Grumman Systems Corporation}
+\newcommand{\contractnum}{FA8615-24-C-6042}
+\newcommand{\programname}{Advanced Flight Control System (AFCS) Upgrade}
+\newcommand{\aircraft}{F-15E Strike Eagle}
+\newcommand{\cdrl}{CDRL A001--A012}
+
+% ── Helper: classification banner ───────────────────────────────────────
+\newcommand{\classbanner}{%
+  \noindent\textcolor{classred}{\rule{\textwidth}{1.2pt}}\\[1pt]
+  \noindent{\small\bfseries\color{classred}\MakeUppercase{\docclass}}\\[1pt]
+  \noindent\textcolor{classred}{\rule{\textwidth}{1.2pt}}\medskip
+}
+
+% ── Helper: requirement citation ────────────────────────────────────────
+\newcommand{\req}[1]{\textbf{AFCS-#1}}
+
+% ── Helper: document reference ──────────────────────────────────────────
+\newcommand{\docref}[1]{\textbf{[#1]}}
+
+% ── Helper 1-row sub-table for key/value display ────────────────────────
+\newenvironment{kvrow}[1]{%
+  \par\medskip\noindent
+  \begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{10mm}}>{\raggedright\arraybackslash}X@{}}
+    #1
+}{%
+  \end{tabularx}\par\smallskip
+}
+
+% ── Allow display-style fractions inline ────────────────────────────────
+\everymath{\displaystyle}
+
+\begin{document}
+
+% ══════════════════════════════════════════════════════════════════════════
+% COVER PAGE
+% ══════════════════════════════════════════════════════════════════════════
+\thispagestyle{empty}
+\vspace*{-18pt}
+
+\classbanner
+
+\vfill
+
+\begin{center}
+  \colorbox{accent}{%
+    \parbox{0.68\textwidth}{%
+      \vspace{10pt}
+      \centering
+      {\color{white}\footnotesize\bfseries\MakeUppercase{Technical Report}}\\[8pt]
+      {\color{white}\LARGE\bfseries\programname}\\[8pt]
+      \textcolor{white}{\rule{0.58\textwidth}{0.3pt}}\\[8pt]
+      {\color{white}\normalsize For the \aircraft}\\[10pt]
+    }
+  }
+
+  \vspace{28pt}
+
+  \begin{tabular}{rl}
+    \textcolor{rulegray}{Document Number:} & \docnum \\
+    \textcolor{rulegray}{Revision:}        & \docrev \\
+    \textcolor{rulegray}{Date:}            & \docdate \\
+    \textcolor{rulegray}{Contract:}        & \contractnum \\
+    \textcolor{rulegray}{CDRL:}            & \cdrl \\
+  \end{tabular}
+
+  \vspace{20pt}
+
+  \textcolor{rulegray}{\rule{0.55\textwidth}{0.3pt}}
+
+  \vspace{16pt}
+
+  {\large\bfseries Prepared by}\\[6pt]
+  {\normalsize\contractor}\\[3pt]
+  {\small Avionics Integration Division}\\[3pt]
+  {\small Rolling Meadows, IL 60008}
+
+  \vspace{20pt}
+
+  \begin{tabular}{c}
+    \textcolor{rulegray}{\rule{0.45\textwidth}{0.3pt}}\\[6pt]
+    {\scriptsize Distribution Statement A: Approved for public release. Distribution is unlimited.}
+  \end{tabular}
+\end{center}
+
+\vfill
+
+\classbanner
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════
+% REVISION HISTORY
+% ══════════════════════════════════════════════════════════════════════════
+\pagestyle{mainpage}
+\pagenumbering{roman}
+
+\chapter*{Revision History}
+\addcontentsline{toc}{chapter}{Revision History}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{@{}>{\centering\arraybackslash}p{8mm}
+                               >{\centering\arraybackslash}p{18mm}
+                               >{\raggedright\arraybackslash}X
+                               >{\centering\arraybackslash}p{22mm}
+                               >{\centering\arraybackslash}p{22mm}@{}}
+\toprule
+\rowcolor{accent}
+\multicolumn{1}{c}{\color{white}\bfseries Rev} &
+\multicolumn{1}{c}{\color{white}\bfseries Date} &
+\multicolumn{1}{c}{\color{white}\bfseries Description} &
+\multicolumn{1}{c}{\color{white}\bfseries Author} &
+\multicolumn{1}{c}{\color{white}\bfseries Approval} \\
+\midrule
+-- & 12 Jan 2024 & Initial draft release for internal review. & J. Mitchell & M. Thornton \\
+\midrule
+A  & 02 Feb 2024 & Incorporated PDR comments. Added Section~3 traceability matrix.
+                    Revised actuator rate limits per SRR action item AI-014. &
+                    J. Mitchell & M. Thornton \\
+\midrule
+B  & 22 Feb 2024 & Updated CDRL compliance table. Added MIL-STD-1553B bus
+                    loading analysis (Appendix pending). Corrected IMU alignment
+                    error budget (\S2.3). &
+                    R. Chen & M. Thornton \\
+\midrule
+C  & 15 Mar 2024 & Final release for CDR. All PDR/SRR actions closed.
+                    Verification matrix finalized. Prepared for USAF review. &
+                    R. Chen & M. Thornton \\
+\bottomrule
+\end{tabularx}
+\renewcommand{\arraystretch}{1.0}
+\vspace{8pt}
+\noindent{\footnotesize\color{rulegray}Approval signature on file at Northrop Grumman Document Control.}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════
+% TABLE OF CONTENTS
+% ══════════════════════════════════════════════════════════════════════════
+{
+  \hypersetup{linkcolor=accent}
+  \tableofcontents
+}
+\addcontentsline{toc}{chapter}{Contents}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════
+% SYMBOLS AND ABBREVIATIONS
+% ══════════════════════════════════════════════════════════════════════════
+\chapter*{Symbols and Abbreviations}
+\addcontentsline{toc}{chapter}{Symbols and Abbreviations}
+
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{@{}>{\color{accent}\bfseries}l@{\hspace{10mm}}>{\raggedright\arraybackslash}p{0.78\textwidth}@{}}
+\toprule
+\rowcolor{accent}
+\multicolumn{1}{l}{\color{white}\bfseries Term} &
+\multicolumn{1}{l}{\color{white}\bfseries Definition} \\
+\midrule
+\endfirsthead
+\toprule
+\rowcolor{accent}
+\multicolumn{1}{l}{\color{white}\bfseries Term} &
+\multicolumn{1}{l}{\color{white}\bfseries Definition} \\
+\midrule
+\endhead
+AFCS      & Advanced Flight Control System \\
+CDR       & Critical Design Review \\
+CDRL      & Contract Data Requirements List \\
+DOF       & Degrees of Freedom \\
+ECS       & Environmental Control System \\
+FCC       & Flight Control Computer \\
+FCS       & Flight Control System \\
+FMEA      & Failure Mode and Effects Analysis \\
+IMU       & Inertial Measurement Unit \\
+INS       & Inertial Navigation System \\
+LRU       & Line-Replaceable Unit \\
+MIL-STD-1553B & Military Standard digital data bus (1~Mbit/s) \\
+MTBF      & Mean Time Between Failures \\
+PDR       & Preliminary Design Review \\
+RVDT      & Rotary Variable Differential Transformer \\
+SRR       & System Requirements Review \\
+TRL       & Technology Readiness Level \\
+$\alpha$  & Angle of attack \\
+$\beta$   & Sideslip angle \\
+$\delta_e$ & Elevator deflection \\
+$\delta_a$ & Aileron deflection \\
+$\delta_r$ & Rudder deflection \\
+$p,q,r$   & Roll, pitch, yaw body rates \\
+$u,v,w$   & Body-axis velocity components \\
+$\phi,\theta,\psi$ & Euler angles (roll, pitch, yaw) \\
+\bottomrule
+\end{longtable}
+\renewcommand{\arraystretch}{1.0}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════
+% 1.0  INTRODUCTION
+% ══════════════════════════════════════════════════════════════════════════
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\chapter{Introduction}
+
+\section{Scope}
+This technical report documents the engineering development of the Advanced Flight
+Control System (AFCS) Upgrade for the \aircraft\ aircraft. The AFCS replaces the
+legacy analog flight control computer (FCC) with a modern digital triplex-redundant
+architecture, providing enhanced stability augmentation, improved fault tolerance, and
+full-authority fly-by-wire capability for selected flight regimes.
+
+The scope encompasses:
+\begin{itemize}
+  \item System architecture definition and hardware/software partitioning.
+  \item Functional requirements traceability from system-level specifications to
+        hardware and software components.
+  \item Verification planning aligned with MIL-STD-882E System Safety requirements.
+  \item CDRL compliance mapping for all deliverable data items.
+\end{itemize}
+
+\section{System Overview}
+The AFCS upgrade consists of three primary subsystems:
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=*]
+  \item \textbf{Flight Control Computer (FCC).} Triplex digital processor with
+        dissimilar-channel voting logic. Each channel is a PowerPC~8640D running
+        a DO-178C Level~A certified real-time executive.
+  \item \textbf{Sensor Suite.} Dual-redundant GNSS-aided INS (LN-260), air-data
+        computer (ADC-3000), and rate-gyro assembly providing $p,q,r$ body rates.
+  \item \textbf{Actuation System.} Electro-hydrostatic actuators (EHAs) on elevator,
+        aileron, and rudder surfaces, each with local loop-closure at 800~Hz.
+\end{enumerate}
+
+Redundancy management uses a median-select voting scheme with channel health
+monitoring. Any single channel failure is transparent to the pilot; a second
+failure degrades gracefully to direct-mode control.
+
+\section{Applicable Documents}
+\begin{itemize}
+  \item \docref{MIL-STD-882E} — Department of Defense Standard Practice: System Safety.
+  \item \docref{MIL-STD-1553B} — Digital Time Division Command/Response Multiplex Data Bus.
+  \item \docref{DO-178C} — Software Considerations in Airborne Systems and Equipment Certification.
+  \item \docref{DO-254} — Design Assurance Guidance for Airborne Electronic Hardware.
+  \item \docref{MIL-HDBK-516C} — Airworthiness Certification Criteria.
+  \item \docref{SAE-AS94900} — Flight Control Systems — Design, Installation, and Test of Piloted Aircraft.
+\end{itemize}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════
+% 2.0  SYSTEM ARCHITECTURE
+% ══════════════════════════════════════════════════════════════════════════
+\chapter{System Architecture}
+
+\section{Functional Architecture}
+The AFCS functional architecture is organized into six processing layers,
+as illustrated in Figure~\ref{fig:arch}. Sensor fusion occurs in the
+\textit{Estimation} layer via a 15-state extended Kalman filter (EKF) outputting
+aircraft state estimates at 200~Hz. The \textit{Guidance} layer computes
+commanded trajectories from the flight management system. The
+\textit{Control Allocation} layer maps generalized force/moment commands
+to individual surface deflections using a real-time quadratic-programming solver.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=6mm and 10mm,
+  block/.style={rectangle, draw=accent, fill=bggray, rounded corners=2pt,
+    text width=38mm, align=center, minimum height=11mm, font=\small\bfseries,
+    drop shadow={shadow xshift=0.5pt, shadow yshift=-0.5pt, opacity=0.25}},
+  arrow/.style={-{Stealth[scale=0.9]}, accent, thick},
+]
+
+  \node[block] (pilots)  {Pilot Inceptors\\(Stick \& Rudder)};
+  \node[block, right=of pilots] (sensors) {Sensor Suite\\IMU, INS, ADC};
+  \node[block, below=of sensors] (estim)  {State Estimation\\15-State EKF};
+  \node[block, left=of estim] (guid)     {Guidance\\Trajectory Cmd};
+  \node[block, below=of guid] (control)  {Control Law\\$H_\infty$ Robust};
+  \node[block, right=of control] (alloc) {Control Allocation\\QP Solver};
+  \node[block, below=of control] (act)   {Actuators\\EHA Surfaces};
+
+  \draw[arrow] (pilots)  -- (guid);
+  \draw[arrow] (sensors) -- (estim);
+  \draw[arrow] (estim)   -- (control);
+  \draw[arrow] (guid)    -- (control);
+  \draw[arrow] (control) -- (alloc);
+  \draw[arrow] (alloc)   -- (act);
+  \draw[arrow, dashed] (alloc.south) -- ++(0,-4mm) -| (estim.east)
+    node[pos=0.6, above, font=\footnotesize\color{rulegray}]{State feedback};
+
+  \node[fit=(pilots)(guid)(estim)(sensors), draw=accent!25, inner sep=12pt,
+    rounded corners=4pt, label={[accentlight,font=\footnotesize\bfseries]north west:Airframe Interface}] {};
+  \node[fit=(control)(alloc)(act), draw=accent!50, inner sep=10pt,
+    rounded corners=4pt, label={[accent,font=\footnotesize\bfseries]north west:FCC Processing}] {};
+
+\end{tikzpicture}
+\caption{AFCS functional architecture — data flow and processing layers.}
+\label{fig:arch}
+\end{figure}
+
+\section{Avionics Bus Interface}
+All inter-LRU communication uses dual-redundant MIL-STD-1553B buses
+operating at 1~Mbit/s. Bus~A and Bus~B provide hot-standby redundancy;
+the bus controller (BC) resides on FCC Channel~A with automatic failover
+to Channel~B on loss of BC heartbeat. Each remote terminal (RT) responds
+within the mandated 12~$\mu$s inter-message gap.
+
+Figure~\ref{fig:milspec} shows the bus topology with the FCC as BC and
+sensor/actuator units as RTs.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=12mm and 18mm,
+  bc/.style={rectangle, draw=accent, fill=accent!8, rounded corners=3pt,
+    minimum width=28mm, minimum height=8mm, font=\footnotesize\bfseries, align=center},
+  rt/.style={rectangle, draw=rulegray, fill=bggray, rounded corners=2pt,
+    minimum width=22mm, minimum height=8mm, font=\footnotesize, align=center},
+  conn/.style={accent, thick},
+]
+
+  \node[bc] (fcc) {FCC\\Bus Controller};
+
+  \node[rt, above right=8mm and 24mm of fcc] (ins)  {INS (RT-01)};
+  \node[rt, right=of fcc] (adc)                      {ADC (RT-02)};
+  \node[rt, below right=8mm and 24mm of fcc] (rg)   {Rate Gyro (RT-03)};
+  \node[rt, below left=8mm and 24mm of fcc] (actl)  {Left EHA (RT-04)};
+  \node[rt, left=of fcc] (actr)                      {Right EHA (RT-05)};
+  \node[rt, above left=8mm and 24mm of fcc] (disp)  {Display (RT-06)};
+
+  \draw[conn] (fcc) -- (ins)  node[midway, above left, font=\tiny\color{rulegray}] {Bus A};
+  \draw[conn] (fcc) -- (adc)  node[midway, above, font=\tiny\color{rulegray}] {Bus A};
+  \draw[conn] (fcc) -- (rg)   node[midway, below left, font=\tiny\color{rulegray}] {Bus A};
+  \draw[conn, dashed, color=accent!60] (fcc) -- (actl) node[midway, below left, font=\tiny\color{rulegray}] {Bus B};
+  \draw[conn, dashed, color=accent!60] (fcc) -- (actr) node[midway, below, font=\tiny\color{rulegray}] {Bus B};
+  \draw[conn, dashed, color=accent!60] (fcc) -- (disp) node[midway, above left, font=\tiny\color{rulegray}] {Bus B};
+
+\end{tikzpicture}
+\caption{Dual-redundant MIL-STD-1553B bus topology. Solid lines = Bus~A;
+         dashed lines = Bus~B.}
+\label{fig:milspec}
+\end{figure}
+
+\section{Actuator Drive Electronics}
+Each electro-hydrostatic actuator incorporates a local servo-loop closed
+at 800~Hz with a proportional-integral (PI) current regulator. The command
+signal from the FCC is a $\pm 10$~V analog reference representing desired
+surface position. Figure~\ref{fig:eha} shows the drive-electronics interface.
+
+\begin{figure}[H]
+\centering
+\begin{circuitikz}[american, scale=0.95]
+  \draw (0,0) node[op amp, noinv input up] (opamp) {};
+  \draw (opamp.+) to[short, -o] ++(-1.8,0) node[left] {$V_{\text{cmd}}$};
+  \draw (opamp.-) to[short] ++(0,-1.2) coordinate (fb) to[short] (fb -| opamp.out)
+        to[short] (opamp.out);
+  \draw (fb) to[R=$R_f$, *-] ++(0,-1.4) node[ground] {};
+  \draw (opamp.out) to[short, -o] ++(0.8,0) node[right] {$V_{\text{out}}$};
+  \draw (opamp.up) node[above=3pt] {$+15\,\text{V}$};
+  \draw (opamp.down) node[below=3pt] {$-15\,\text{V}$};
+  \node[draw=accent, fill=accent!5, rounded corners=2pt, fit=(opamp),
+    inner sep=18pt, label={[font=\footnotesize\bfseries]north west:EHA Servo Amp}] {};
+\end{circuitikz}
+\caption{EHA servo-amplifier interface — PI current regulator, $f_s=800$~Hz.}
+\label{fig:eha}
+\end{figure}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════
+% 3.0  REQUIREMENTS AND TRACEABILITY
+% ══════════════════════════════════════════════════════════════════════════
+\chapter{Requirements and Traceability}
+
+\section{System-Level Requirements}
+The following system-level functional requirements are derived from the
+Performance Specification~\docref{AFCS-PS-001} and the System Specification~\docref{AFCS-SS-001}.
+
+\begin{enumerate}[label=\req{\arabic*}, leftmargin=*, itemsep=6pt]
+  \item \label{req:1}
+    The AFCS shall provide three-axis stability augmentation with
+    $\pm 0.05^\circ$ attitude hold accuracy in steady level flight.
+
+  \item \label{req:2}
+    The system shall detect and isolate any single-point failure within
+    50~ms and reconfigure to an operable state without pilot intervention.
+
+  \item \label{req:3}
+    Control surface deflection bandwidth shall exceed 12~Hz at
+    $-3$~dB for all primary surfaces (elevator, aileron, rudder).
+
+  \item \label{req:4}
+    The FCC shall execute one complete control-law cycle
+    (sensor read $\rightarrow$ estimation $\rightarrow$ control
+    $\rightarrow$ command output) within 5~ms (200~Hz update rate).
+
+  \item \label{req:5}
+    The AFCS shall maintain controlled flight through any single
+    hydraulic or electrical power failure without exceeding
+    $\pm 2\,g$ transient load factor.
+
+  \item \label{req:6}
+    Bus loading on each MIL-STD-1553B channel shall not exceed
+    55\% of available bandwidth under worst-case traffic conditions.
+
+  \item \label{req:7}
+    The system MTBF shall exceed 5,000 flight hours as computed
+    per MIL-HDBK-217F, Notice~2, Ground Benign environment.
+
+  \item \label{req:8}
+    Software shall be developed to DO-178C Design Assurance Level~A
+    with full MC/DC coverage.
+\end{enumerate}
+
+\section{Requirements Traceability Matrix}
+Table~\ref{tab:rtm} maps each system requirement to the
+verification method and the implementing subsystem.
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}>{\color{accent}\bfseries}l
+                               >{\centering\arraybackslash}p{26mm}
+                               X
+                               >{\centering\arraybackslash}p{26mm}@{}}
+\toprule
+\rowcolor{accent}
+\multicolumn{1}{l}{\color{white}\bfseries Req ID} &
+\multicolumn{1}{c}{\color{white}\bfseries Verification} &
+\multicolumn{1}{l}{\color{white}\bfseries Allocated To} &
+\multicolumn{1}{c}{\color{white}\bfseries Status} \\
+\midrule
+\req{1} & Flight Test      & FCC Channel A/B/C, Estimator       & Verified \\
+\req{2} & HIL Simulation   & FCC Redundancy Manager             & Verified \\
+\req{3} & Ground Test      & EHA Actuators, Control Allocator   & Verified \\
+\req{4} & Bench Test       & FCC Processor, RTOS Scheduler      & Verified \\
+\req{5} & FMEA + Analysis  & Hydraulic System, Electrical Bus   & Verified \\
+\req{6} & Bus Analysis     & MIL-STD-1553B BC/RT Interface      & Verified \\
+\req{7} & Reliability Analysis & All LRUs, Wiring Harness       & In Work \\
+\req{8} & IV\&V Audit      & FCC Software (all CSCIs)           & In Work \\
+\bottomrule
+\end{tabularx}
+\caption{Requirements traceability and verification status.}
+\label{tab:rtm}
+\end{table}
+\renewcommand{\arraystretch}{1.0}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════
+% 4.0  CDRL COMPLIANCE
+% ══════════════════════════════════════════════════════════════════════════
+\chapter{CDRL Compliance}
+
+\section{Data Item Deliverables}
+Table~\ref{tab:cdrl} enumerates the Contract Data Requirements List items
+applicable to this report. Each CDRL item references the governing
+Data Item Description (DID) and its submission status.
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}>{\color{accent}\bfseries}c
+                               >{\centering\arraybackslash}p{26mm}
+                               X
+                               >{\centering\arraybackslash}p{22mm}@{}}
+\toprule
+\rowcolor{accent}
+\multicolumn{1}{c}{\color{white}\bfseries Item} &
+\multicolumn{1}{c}{\color{white}\bfseries DID} &
+\multicolumn{1}{l}{\color{white}\bfseries Title} &
+\multicolumn{1}{c}{\color{white}\bfseries Status} \\
+\midrule
+A001 & DI-SESS-81785 & System/Segment Specification (SSS)          & Submitted \\
+A002 & DI-SESS-81786 & System Design Document (SDD)               & Submitted \\
+A003 & DI-SESS-81876 & Software Development Plan (SDP)            & Submitted \\
+A004 & DI-IPSC-81431 & Interface Requirements Specification (IRS) & Submitted \\
+A005 & DI-SESS-81962 & System Safety Hazard Analysis (SSHA)       & In Review \\
+A006 & DI-IPSC-81440 & Software Test Plan (STP)                   & Draft \\
+A007 & DI-IPSC-81441 & Software Test Report (STR)                 & Pending \\
+A008 & DI-RELI-80255 & Reliability Prediction Report              & In Work \\
+A009 & DI-SESS-81787 & Traceability Matrix (RTM)                  & Submitted \\
+A010 & DI-MGMT-80004 & Technical Progress Report                  & Monthly \\
+A011 & DI-SESS-81669 & Interface Control Document (ICD)           & Submitted \\
+A012 & DI-MISC-80508 & Technical Report — Study Results           & This Doc \\
+\bottomrule
+\end{tabularx}
+\caption{CDRL compliance status as of \docdate.}
+\label{tab:cdrl}
+\end{table}
+\renewcommand{\arraystretch}{1.0}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════
+% 5.0  VERIFICATION AND VALIDATION
+% ══════════════════════════════════════════════════════════════════════════
+\chapter{Verification and Validation}
+
+\section{Verification Approach}
+The AFCS verification program employs a four-tier strategy aligned with the
+systems engineering V-model:
+
+\begin{enumerate}[label=\textbf{Tier \arabic*:}, leftmargin=*]
+  \item \textbf{Component-Level Bench Testing.} Each LRU is acceptance-tested
+    against its procurement specification. The FCC undergoes burn-in at
+    $+71^\circ$C for 168~hours per MIL-STD-810H Method~501.7.
+  \item \textbf{Hardware-in-the-Loop (HIL) Simulation.} The integrated AFCS
+    is exercised against a 6-DOF nonlinear airframe model in real time.
+    A total of 427 test cases cover normal, degraded, and emergency operating
+    modes.
+  \item \textbf{Iron Bird Ground Testing.} A full-scale actuation test rig
+    validates hinge-moment loading and flutter margins up to 1.2~$V_D$ (design
+    dive speed).
+  \item \textbf{Flight Test.} The upgraded AFCS will be flown on a dedicated
+    F-15E test aircraft (S/N~86-0183) over 42 sorties totaling approximately
+    65 flight hours. Test points are structured per
+    MIL-HDBK-516C Paragraph~4.2.3.
+\end{enumerate}
+
+\section{Control Law Stability Margins}
+The $H_\infty$ robust controller is designed to guarantee the following
+stability margins across the full flight envelope ($M~0.3$--$2.5$,
+altitude~SL--50,000~ft):
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}ccc@{}}
+\toprule
+\rowcolor{accent}
+\multicolumn{1}{l}{\color{white}\bfseries Axis} &
+\multicolumn{1}{c}{\color{white}\bfseries Gain Margin} &
+\multicolumn{1}{c}{\color{white}\bfseries Phase Margin} &
+\multicolumn{1}{c}{\color{white}\bfseries Delay Margin} \\
+\midrule
+Pitch  & $8.2$~dB & $52^\circ$ & $48$~ms \\
+Roll   & $9.1$~dB & $58^\circ$ & $52$~ms \\
+Yaw    & $7.8$~dB & $47^\circ$ & $44$~ms \\
+\bottomrule
+\end{tabular}
+\caption{Minimum guaranteed stability margins across the flight envelope.}
+\label{tab:margins}
+\end{table}
+
+\section{Key Performance Parameters}
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}p{42mm}cc@{}}
+\toprule
+\rowcolor{accent}
+\multicolumn{1}{l}{\color{white}\bfseries KPP} &
+\multicolumn{1}{l}{\color{white}\bfseries Description} &
+\multicolumn{1}{c}{\color{white}\bfseries Threshold} &
+\multicolumn{1}{c}{\color{white}\bfseries Objective} \\
+\midrule
+KPP-1 & Attitude hold accuracy (1-$\sigma$)                                  & $\pm0.10^\circ$  & $\pm0.05^\circ$ \\
+KPP-2 & Failure reconfiguration time                                         & 100~ms           & 50~ms \\
+KPP-3 & Surface deflection bandwidth ($-3$~dB)                               & 10~Hz            & 12~Hz \\
+KPP-4 & FCC frame rate                                                       & 100~Hz           & 200~Hz \\
+KPP-5 & MTBF (all LRUs, MIL-HDBK-217F)                                      & 3,000~hrs        & 5,000~hrs \\
+\bottomrule
+\end{tabular}
+\caption{Key Performance Parameters — threshold vs.\ objective values.}
+\label{tab:kpp}
+\end{table}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════
+% 6.0  SAFETY ANALYSIS
+% ══════════════════════════════════════════════════════════════════════════
+\chapter{Safety Analysis}
+
+\section{Failure Mode and Effects Analysis Summary}
+A preliminary FMEA was conducted per MIL-STD-882E Task~203.
+Table~\ref{tab:fmea} summarizes the top five hazards identified.
+
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}>{\color{accent}\bfseries}c
+                               >{\centering\arraybackslash}p{18mm}
+                               X
+                               >{\centering\arraybackslash}p{14mm}
+                               >{\centering\arraybackslash}p{12mm}@{}}
+\toprule
+\rowcolor{accent}
+\multicolumn{1}{c}{\color{white}\bfseries ID} &
+\multicolumn{1}{c}{\color{white}\bfseries Hazard} &
+\multicolumn{1}{l}{\color{white}\bfseries Cause / Mitigation} &
+\multicolumn{1}{c}{\color{white}\bfseries Severity} &
+\multicolumn{1}{c}{\color{white}\bfseries Risk} \\
+\midrule
+HZ-01 & Uncommanded pitch-down & Triple-channel voting; median select rejects
+                                 runaway channel within 50~ms. &
+                                 Catastrophic & Low \\
+HZ-02 & Total loss of control   & Dual-redundant hydraulic + electrical;
+                                 direct-mode reversion as fallback. &
+                                 Catastrophic & Extremely Low \\
+HZ-03 & Hardover surface        & Actuator RAM monitor; automatic bypass
+                                 on force-fight detection $>500$~lbf. &
+                                 Hazardous & Low \\
+HZ-04 & Bus controller failure  & Automatic BC handoff Ch~A $ \to $ Ch~B;
+                                 bus silence detection $<$ 5~ms. &
+                                 Major & Low \\
+HZ-05 & IMU drift (un-annunciated) & Dual-IMU cross-compare with
+                                 $\pm 0.3^\circ$/hr threshold; INS coasting
+                                 with GPS aiding. &
+                                 Hazardous & Low \\
+\bottomrule
+\end{tabularx}
+\caption{Preliminary hazard analysis — top five identified failure modes.}
+\label{tab:fmea}
+\end{table}
+
+\section{Development Assurance}
+All FCC software (approximately 84,000~SLOC of C and Ada~2012) is developed
+to DO-178C Level~A objectives. The software life-cycle data includes:
+
+\begin{itemize}
+  \item Plan for Software Aspects of Certification (PSAC).
+  \item Software Requirements Data (SRD) with full bidirectional traceability.
+  \item Software Design Description (SDD) at the CSCI and CSC levels.
+  \item Source code with MC/DC coverage analysis via LDRA Testbed.
+  \item Software Verification Cases and Procedures (SVCP).
+\end{itemize}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════
+% 7.0  CONCLUSIONS
+% ══════════════════════════════════════════════════════════════════════════
+\chapter{Conclusions and Forward Plan}
+
+The AFCS Upgrade CDR package demonstrates that the design meets or exceeds all
+threshold Key Performance Parameters with acceptable risk. The verification
+program is on schedule to support first flight in Q3~2024.
+
+Pending actions before the Production Readiness Review (PRR):
+
+\begin{enumerate}[label=\textbf{AI-\arabic*:}, leftmargin=*]
+  \item Complete MTBF prediction for wiring harnesses (AI-027, due 30~April~2024).
+  \item Finalize software MC/DC coverage report for CSC Module~4
+        (AI-028, due 15~May~2024).
+  \item Conduct iron-bird flutter test at $1.2\,V_D$ (AI-029, Q2~2024).
+  \item Submit updated SSHA incorporating ECS bleed-air failure scenario
+        (AI-030, due 01~May~2024).
+\end{enumerate}
+
+\vspace{14pt}
+\noindent{\small\color{rulegray}Submitted for USAF review per CDRL A012.\\
+Point of contact: Dr.\ Rebecca Chen, AFCS Chief Engineer,\\
+\contractor, \href{mailto:rchen@ngc.example.com}{rchen@ngc.example.com}.}
+
+\vfill
+
+\begin{center}
+  \textcolor{rulegray}{\rule{0.5\textwidth}{0.3pt}}\\[6pt]
+  {\footnotesize\bfseries\color{accent}--- End of Document ---}
+\end{center}
+
+\end{document}

@@ -1,0 +1,197 @@
+% Compile at https://letx.app
+\documentclass[letterpaper,10pt]{article}
+\usepackage{amsmath}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[margin=1.5cm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usetikzlibrary{shadows}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{fontawesome5}
+\usepackage{microtype}
+
+\pagestyle{empty}
+
+% Prevent misalignment in boxes
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% Design Colors
+\definecolor{accent}{HTML}{1A365D}      % Deep Navy
+\definecolor{accentlight}{HTML}{2B6CB0} % Slate Blue
+\definecolor{darktext}{HTML}{2D3748}    % Charcoal
+\definecolor{cutline}{HTML}{CBD5E0}     % Light Grey
+
+% Card Styling - Front
+\newcommand{\cardfront}[6]{%
+  % #1 = Category, #2 = Icon, #3 = Word, #4 = Pronunciation, #5 = Type, #6 = Card Number
+  \begin{tcolorbox}[
+    enhanced,
+    width=8.8cm,
+    height=5.6cm,
+    arc=3mm,
+    colframe=accent,
+    colbacktitle=accent,
+    coltitle=white,
+    colback=white,
+    boxrule=0.8pt,
+    boxsep=0pt,
+    top=3mm, bottom=3mm, left=4mm, right=4mm,
+    toptitle=3mm, bottomtitle=3mm,
+    fonttitle=\sffamily\bfseries\small,
+    title={#1 \hfill #2},
+    valign=center,
+    halign=center
+  ]
+    \vfill
+    {\Large\bfseries\color{accent} #3}
+    \\[2.5mm]
+    {\small\color{darktext} #4}
+    \vfill
+    \noindent{\color{accentlight!30}\rule{\linewidth}{0.5pt}}
+    \vspace{1.5mm}
+    \begin{minipage}{\linewidth}
+      \sffamily\scriptsize\color{gray}
+      #5 \hfill Card #6/08
+    \end{minipage}
+  \end{tcolorbox}%
+}
+
+% Card Styling - Back
+\newcommand{\cardback}[6]{%
+  % #1 = Original Word, #2 = Translation, #3 = Example, #4 = Example Translation, #5 = Tip, #6 = Card Number
+  \begin{tcolorbox}[
+    enhanced,
+    width=8.8cm,
+    height=5.6cm,
+    arc=3mm,
+    colframe=accentlight,
+    colbacktitle=accentlight,
+    coltitle=white,
+    colback=white,
+    boxrule=0.8pt,
+    boxsep=0pt,
+    top=3mm, bottom=3mm, left=4mm, right=4mm,
+    toptitle=3mm, bottomtitle=3mm,
+    fonttitle=\sffamily\bfseries\small,
+    title={ORIGINAL: #1 \hfill \faArrowRight},
+    valign=center,
+    halign=center
+  ]
+    \vfill
+    {\large\bfseries\color{accent} #2}
+    \vfill
+    \begin{minipage}{\linewidth}
+      \centering
+      {\small\itshape\color{darktext} ``#3''} \\
+      \vspace{0.8mm}
+      {\scriptsize\color{gray} ``#4''}
+    \end{minipage}
+    \vfill
+    \noindent{\color{accentlight!30}\rule{\linewidth}{0.5pt}}
+    \vspace{1.5mm}
+    \begin{minipage}{\linewidth}
+      \sffamily\scriptsize\color{darktext}
+      \textcolor{accentlight}{\faLightbulb}~#5 \hfill \textcolor{gray}{Card #6/08}
+    \end{minipage}
+  \end{tcolorbox}%
+}
+
+\begin{document}
+
+\mbox{}
+\begin{tikzpicture}[remember picture, overlay]
+  \coordinate (Center) at (current page.center);
+  
+  % Cut-line grid lines
+  \draw[dashed, cutline, line width=0.5pt] ($(Center) + (-9.2,-12.0)$) rectangle ($(Center) + (9.2,12.0)$);
+  \draw[dashed, cutline, line width=0.5pt] ($(Center) + (0,-12.0)$) -- ($(Center) + (0,12.0)$);
+  \draw[dashed, cutline, line width=0.5pt] ($(Center) + (-9.2,-6.0)$) -- ($(Center) + (9.2,-6.0)$);
+  \draw[dashed, cutline, line width=0.5pt] ($(Center) + (-9.2,0.0)$) -- ($(Center) + (9.2,0.0)$);
+  \draw[dashed, cutline, line width=0.5pt] ($(Center) + (-9.2,6.0)$) -- ($(Center) + (9.2,6.0)$);
+
+  % Scissor guides
+  \node[text=cutline, rotate=-90] at ($(Center) + (0,12.3)$) {\small\faCut};
+  \node[text=cutline] at ($(Center) + (-9.5,6.0)$) {\small\faCut};
+  \node[text=cutline] at ($(Center) + (-9.5,0.0)$) {\small\faCut};
+  \node[text=cutline] at ($(Center) + (-9.5,-6.0)$) {\small\faCut};
+  
+  % Header
+  \node[anchor=north, text width=18.4cm] at ([yshift=-1.2cm]current page.north) {
+    \begin{minipage}[t]{0.5\linewidth}
+      {\color{accent}\Large\bfseries\sffamily Study Flashcard Template} \\
+      {\color{gray}\small\sffamily Topic: Spanish Vocabulary -- Intermediate Level}
+    \end{minipage}%
+    \begin{minipage}[t]{0.5\linewidth}
+      \raggedleft
+      \sffamily\small
+      \textbf{Name:} \rule{4cm}{0.4pt} \\
+      \vspace{1.5mm}
+      \textbf{Date:} \rule{2.5cm}{0.4pt} \quad \textbf{Class:} \rule{2cm}{0.4pt}
+    \end{minipage}
+  };
+
+  % Front Cards Placement
+  \node at ($(Center) + (-4.6, 9.0)$) {\cardfront{SPANISH VOCABULARY}{\faLanguage}{El ferrocarril}{/fe-rro-ka-rril/}{Noun, m.}{01}};
+  \node at ($(Center) + (4.6, 9.0)$) {\cardfront{SPANISH VOCABULARY}{\faLanguage}{Desafiar}{/de-sa-fjar/}{Verb}{02}};
+  
+  \node at ($(Center) + (-4.6, 3.0)$) {\cardfront{SPANISH VOCABULARY}{\faLanguage}{Agradecido}{/a-gra-de-thi-do/}{Adjective}{03}};
+  \node at ($(Center) + (4.6, 3.0)$) {\cardfront{SPANISH VOCABULARY}{\faLanguage}{De repente}{/de re-pen-te/}{Adverbial Phrase}{04}};
+  
+  \node at ($(Center) + (-4.6, -3.0)$) {\cardfront{SPANISH VOCABULARY}{\faLanguage}{El atardecer}{/el a-tar-de-ther/}{Noun, m.}{05}};
+  \node at ($(Center) + (4.6, -3.0)$) {\cardfront{SPANISH VOCABULARY}{\faLanguage}{Desarrollar}{/de-sa-rro-ljar/}{Verb}{06}};
+  
+  \node at ($(Center) + (-4.6, -9.0)$) {\cardfront{SPANISH VOCABULARY}{\faLanguage}{A menos que}{/a me-nos ke/}{Conjunction}{07}};
+  \node at ($(Center) + (4.6, -9.0)$) {\cardfront{SPANISH VOCABULARY}{\faLanguage}{Pernoctar}{/per-nok-tar/}{Verb}{08}};
+\end{tikzpicture}
+
+\newpage
+\mbox{}
+\begin{tikzpicture}[remember picture, overlay]
+  \coordinate (Center) at (current page.center);
+  
+  % Cut-line grid lines
+  \draw[dashed, cutline, line width=0.5pt] ($(Center) + (-9.2,-12.0)$) rectangle ($(Center) + (9.2,12.0)$);
+  \draw[dashed, cutline, line width=0.5pt] ($(Center) + (0,-12.0)$) -- ($(Center) + (0,12.0)$);
+  \draw[dashed, cutline, line width=0.5pt] ($(Center) + (-9.2,-6.0)$) -- ($(Center) + (9.2,-6.0)$);
+  \draw[dashed, cutline, line width=0.5pt] ($(Center) + (-9.2,0.0)$) -- ($(Center) + (9.2,0.0)$);
+  \draw[dashed, cutline, line width=0.5pt] ($(Center) + (-9.2,6.0)$) -- ($(Center) + (9.2,6.0)$);
+
+  % Scissor guides
+  \node[text=cutline, rotate=-90] at ($(Center) + (0,12.3)$) {\small\faCut};
+  \node[text=cutline] at ($(Center) + (-9.5,6.0)$) {\small\faCut};
+  \node[text=cutline] at ($(Center) + (-9.5,0.0)$) {\small\faCut};
+  \node[text=cutline] at ($(Center) + (-9.5,-6.0)$) {\small\faCut};
+  
+  % Back Page Header
+  \node[anchor=north, text width=18.4cm] at ([yshift=-1.2cm]current page.north) {
+    \begin{minipage}{\linewidth}
+      \centering
+      \sffamily
+      {\color{accentlight}\bfseries\small [ Back Page -- Flashcard Answers ]} \\
+      \vspace{0.8mm}
+      {\color{gray}\scriptsize Cut along the dashed lines. Cards will align perfectly when printed double-sided.}
+    \end{minipage}
+  };
+
+  % Back Cards Placement (Columns Mirrored)
+  \node at ($(Center) + (-4.6, 9.0)$) {\cardback{Desafiar}{To challenge / defy}{Ella decidi\'o desafiar las expectativas.}{She decided to challenge expectations.}{Cognate with ``defy'' (des- + -fiar).}{02}};
+  \node at ($(Center) + (4.6, 9.0)$) {\cardback{El ferrocarril}{The railway / train track}{El ferrocarril cruza todo el pa\'is.}{The railway crosses the entire country.}{Roll the double 'r' clearly!}{01}};
+  
+  \node at ($(Center) + (-4.6, 3.0)$) {\cardback{De repente}{Suddenly}{De repente, empez\'o a llover fuertemente.}{Suddenly, it started to rain heavily.}{Synonym of ``s\'ubitamente''.}{04}};
+  \node at ($(Center) + (4.6, 3.0)$) {\cardback{Agradecido}{Grateful / thankful}{Estoy muy agradecido por tu ayuda.}{I am very grateful for your help.}{From the verb ``agradecer'' (to thank).}{03}};
+  
+  \node at ($(Center) + (-4.6, -3.0)$) {\cardback{Desarrollar}{To develop}{Queremos desarrollar nuevas tecnolog\'ias.}{We want to develop new technologies.}{Noun form: ``el desarrollo'' (development).}{06}};
+  \node at ($(Center) + (4.6, -3.0)$) {\cardback{El atardecer}{The sunset}{Vimos el atardecer desde la playa.}{We saw the sunset from the beach.}{Related to ``la tarde'' (afternoon/evening).}{05}};
+  
+  \node at ($(Center) + (-4.6, -9.0)$) {\cardback{Pernoctar}{To spend the night / stay overnight}{Tuvimos que pernoctar en un albergue.}{We had to stay overnight in a hostel.}{From Latin ``pernoctare'' (through the night).}{08}};
+  \node at ($(Center) + (4.6, -9.0)$) {\cardback{A menos que}{Unless}{No ir\'e a menos que t\'u vengas conmigo.}{I won't go unless you come with me.}{Always triggers the subjunctive mood!}{07}};
+\end{tikzpicture}
+
+\end{document}

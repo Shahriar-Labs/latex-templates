@@ -1,0 +1,108 @@
+% ============================================================
+%  LetX.app — Name Tag Badge Template
+%  Edit & compile online at https://letx.app
+%  Compiles with: latexmk -pdf main.tex
+% ============================================================
+
+\documentclass[a4paper]{article}
+\usepackage{amsmath}
+\usepackage[margin=0pt]{geometry}
+\usepackage{lato}\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+
+\usepackage[table]{xcolor}
+\definecolor{primary}{HTML}{1A2744}
+\definecolor{accent}{HTML}{C4A23A}
+\definecolor{bglight}{HTML}{F5F2EC}
+\definecolor{graytext}{HTML}{666666}
+\definecolor{grayline}{HTML}{CDCDCD}
+
+\usepackage{tikz}
+\usetikzlibrary{shadows,shadings,positioning,calc,shapes.geometric}
+
+\usepackage{qrcode}
+\usepackage{fontawesome5}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\hypersetup{colorlinks=false,pdfborder={0 0 0}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\pagestyle{empty}
+
+\begin{document}
+
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[bglight] (current page.south west) rectangle (current page.north east);
+\end{tikzpicture}
+
+\begin{tikzpicture}[remember picture,overlay]
+  \def\badgew{105mm}
+  \def\badgeh{70mm}
+  \def\headerh{16mm}
+  \def\bradius{2.5mm}
+
+  \coordinate (bl) at ($(current page.center)+(-0.5*\badgew,-0.5*\badgeh)$);
+  \coordinate (tr) at ($(current page.center)+(0.5*\badgew,0.5*\badgeh)$);
+
+  % Badge body with subtle shadow
+  \fill[white,drop shadow={opacity=0.10,shadow xshift=0.3mm,shadow yshift=-0.5mm},rounded corners=\bradius]
+    (bl) rectangle (tr);
+  \draw[primary!25,line width=0.4mm,rounded corners=\bradius]
+    (bl) rectangle (tr);
+
+  % Header band (clipped to badge rounded corners)
+  \begin{scope}
+    \clip[rounded corners=\bradius] (bl) rectangle (tr);
+    \fill[primary] (bl|-tr) ++(0,-\headerh) rectangle (tr);
+  \end{scope}
+
+  % Bottom accent bar (clipped)
+  \begin{scope}
+    \clip[rounded corners=\bradius] (bl) rectangle (tr);
+    \fill[accent] (bl) rectangle ($(bl-|tr)+(0,1.8mm)$);
+  \end{scope}
+
+  % Lanyard slot
+  \coordinate (hole) at ($(tr)!0.5!(bl|-tr)+(0,-5.5mm)$);
+  \fill[bglight,draw=primary,line width=0.6mm] (hole) circle (2.5mm);
+  \draw[primary!35,line width=0.2mm] (hole) circle (2.0mm);
+
+  % Logo placeholder box in header
+  \coordinate (logoc) at ($(bl|-tr)+(18mm,-0.5*\headerh)$);
+  \fill[white,rounded corners=1mm,draw=accent,line width=0.35mm]
+    ($(logoc)+(-7mm,-4.2mm)$) rectangle ($(logoc)+(7mm,4.2mm)$);
+  \node[primary,font=\bfseries\footnotesize] at (logoc) {ACME};
+
+  % Organization name in header
+  \node[white,font=\bfseries\small,anchor=west] at ($(logoc)+(9mm,0)$) {Acme Corporation};
+
+  % Name
+  \node[primary,font=\bfseries\LARGE,align=center] at ($(bl)!0.60!(tr)$) {JENNIFER CHEN};
+
+  % Role / title
+  \node[accent,font=\normalsize,align=center] at ($(bl)!0.46!(tr)$) {Senior Product Engineer};
+
+  % Subtle divider
+  \draw[grayline,line width=0.3mm] ($(bl)!0.38!(tr)+(-38mm,0)$) -- ($(bl)!0.38!(tr)+(38mm,0)$);
+
+  % QR code
+  \coordinate (qrcenter) at ($(bl)!0.18!(tr)+(16mm,0)$);
+  \node[inner sep=0] at (qrcenter) {\qrcode[height=14mm,level=H]{https://letx.app}};
+
+  % Event info beside QR
+  \node[anchor=west,align=left,font=\footnotesize,text=graytext]
+    at ($(qrcenter)+(11mm,2.2mm)$) {
+    \textbf{\textcolor{primary}{LetXCon 2026}} \\[1.5pt]
+    {\footnotesize\faCalendarCheck}\ \ July 9--11, 2026 \\[1.5pt]
+    {\footnotesize\faMapMarker*}\ \ San Francisco, CA
+  };
+
+  % Inner hairline frame
+  \draw[primary!12,line width=0.2mm,rounded corners=1.8mm]
+    ($(bl)+(2.8mm,2.8mm)$) rectangle ($(tr)-(2.8mm,2.8mm)$);
+
+\end{tikzpicture}
+
+\end{document}

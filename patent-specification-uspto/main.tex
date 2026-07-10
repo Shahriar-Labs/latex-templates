@@ -1,0 +1,682 @@
+% ============================================================
+%  USPTO Patent Specification — LaTeX Template
+%  Editable and compilable online at https://letx.app
+%  Engine : pdflatex  |  Build : latexmk -pdf main.tex
+% ============================================================
+
+\documentclass[12pt,letterpaper]{article}
+
+% ── Geometry ────────────────────────────────────────────────
+\usepackage[
+  top=1in, bottom=1in,
+  left=1in, right=1in,
+  headheight=14pt
+]{geometry}
+
+% ── Core Packages ───────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% ── Serif Body Font (Palatino style) ────────────────────────
+\usepackage{mathpazo}
+
+% ── Colour ──────────────────────────────────────────────────
+\usepackage[table]{xcolor}
+\definecolor{accent}{HTML}{1A3A5C}      % deep navy
+\definecolor{rulecolor}{HTML}{2B5F8A}   % medium blue
+\definecolor{lightgray}{HTML}{F5F5F5}   % table row tint
+\definecolor{midgray}{HTML}{6C6C6C}     % secondary text
+\definecolor{pagetint}{HTML}{FAFAF8}    % subtle warm page
+
+% ── Page background tint ────────────────────────────────────
+\usepackage{pagecolor}
+\pagecolor{pagetint}
+
+% ── Typography & Layout ─────────────────────────────────────
+\usepackage{setspace}
+\setstretch{1.15}
+\usepackage{ragged2e}
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{multirow}
+
+% ── Rules & Decorations ─────────────────────────────────────
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+% ── Hyperref ────────────────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=rulecolor,
+  pdftitle={Patent Application: Adaptive Neural Compression Engine},
+  pdfauthor={Meridian IP Group LLP},
+  pdfsubject={USPTO Utility Patent Application},
+  pdfkeywords={patent application, neural compression, USPTO, AI}
+]{hyperref}
+
+% ── Drawing-sheet TikZ support ──────────────────────────────
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, calc, fit, backgrounds}
+
+% ── tcolorbox for callout blocks ────────────────────────────
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable, fitting}
+
+% ── FontAwesome5 for icons ──────────────────────────────────
+\usepackage{fontawesome5}
+
+% ── amsmath (for \text, align etc.) ─────────────────────────
+\usepackage{amsmath}
+
+% ============================================================
+%  SECTION FORMATTING
+% ============================================================
+\newcommand{\sectionrule}{\noindent{\color{rulecolor}\rule{\linewidth}{0.6pt}}}
+
+\titleformat{\section}
+  {\color{accent}\large\bfseries\scshape}
+  {}
+  {0pt}
+  {}
+  [\sectionrule]
+
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+
+\titleformat{\subsection}
+  {\color{accent}\normalsize\bfseries}
+  {}
+  {0pt}
+  {}
+
+\titlespacing*{\subsection}{0pt}{10pt}{3pt}
+
+% ============================================================
+%  HEADER / FOOTER
+% ============================================================
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{rulecolor}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[L]{\small\color{midgray}\textsc{US Patent Application}}
+\fancyhead[C]{\small\color{accent}\textbf{Adaptive Neural Compression Engine}}
+\fancyhead[R]{\small\color{midgray}App.\ No.\ 18/\textbf{472,\!839}}
+\fancyfoot[L]{\small\color{midgray}\textit{Confidential — Attorney Work Product}}
+\fancyfoot[C]{\small\color{midgray}Page \thepage\ of \pageref{LastPage}}
+\fancyfoot[R]{\small\color{midgray}\textit{Meridian IP Group LLP}}
+
+\fancypagestyle{firstpage}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \fancyfoot[C]{\small\color{midgray}Page \thepage\ of \pageref{LastPage}}
+  \fancyfoot[R]{\small\color{midgray}\textit{Meridian IP Group LLP}}
+}
+
+% ============================================================
+%  CUSTOM MACROS
+% ============================================================
+
+% --- Bold reference numeral for drawings --------------------
+\newcommand{\refnum}[1]{\textbf{(#1)}}
+
+% --- Claim counter ------------------------------------------
+\newcounter{claimcnt}
+\newcommand{\claim}[1]{%
+  \stepcounter{claimcnt}%
+  \vspace{4pt}%
+  \noindent\textbf{\theclaimcnt.}\enspace #1\par%
+}
+
+% --- Defined term -------------------------------------------
+\newcommand{\defterm}[1]{\textit{#1}}
+
+% --- Section label used in cross-references -----------------
+\newcommand{\secref}[1]{\S\,\ref{#1}}
+
+% --- Key–value metadata row (safe tabularx layout) ----------
+\newcommand{\metarow}[2]{%
+  {\color{accent}\bfseries #1} & #2 \\[2pt]%
+}
+
+% --- Clause box (tcolorbox) for claim highlights ------------
+\tcbset{
+  claimbox/.style={
+    enhanced,
+    breakable,
+    colback=lightgray,
+    colframe=accent,
+    boxrule=0.5pt,
+    arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    fonttitle=\bfseries\small\color{white},
+    attach boxed title to top left={yshift=-2mm,xshift=6pt},
+    boxed title style={colback=accent, arc=2pt, boxrule=0pt},
+  }
+}
+
+% ============================================================
+%  DOCUMENT BEGIN
+% ============================================================
+\begin{document}
+\thispagestyle{firstpage}
+
+% ============================================================
+%  TITLE BLOCK
+% ============================================================
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[accent] (current page.north west)
+    rectangle ([yshift=-3.2cm]current page.north east);
+  \node[anchor=west, text=white, font=\small]
+    at ([xshift=1in, yshift=-0.55cm]current page.north west)
+    {UNITED STATES PATENT APPLICATION \quad\textbullet\quad Form PTO-SB/16 (Utility)};
+  \node[anchor=west, text=white, font=\Large\bfseries, align=left]
+    at ([xshift=1in, yshift=-1.25cm]current page.north west)
+    {Adaptive Neural Compression Engine};
+  \node[anchor=west, text=white!80!accent, font=\normalsize, align=left]
+    at ([xshift=1in, yshift=-1.85cm]current page.north west)
+    {for Real-Time Streaming Video on Bandwidth-Constrained Networks};
+  \node[anchor=east, text=white!70!accent, font=\small, align=right]
+    at ([xshift=-1in, yshift=-1.45cm]current page.north east)
+    {App.\ No.\ 18/472,839\\Filed: March 14, 2024\\Conf.\ No.\ 7821};
+\end{tikzpicture}
+
+\vspace{3.4cm}
+
+% ── Bibliographic Data Table ─────────────────────────────────
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  \metarow{Inventors}{Dr.\ Elena V. Sorokina (San Jose, CA); James A. Whitfield (Austin, TX); Priya Nair-Menon (Seattle, WA)}
+  \metarow{Assignee}{NeuroStream Technologies, Inc., 1250 Halcyon Drive, San Jose, CA 95134}
+  \metarow{Attorney/Agent}{Michael T. Hargreaves, Reg.\ No.\ 62,\!441; Meridian IP Group LLP}
+  \metarow{U.S.\ Class}{H04N 19/42; G06N 3/08; G06T 9/00}
+  \metarow{Filed}{March 14, 2024 \quad (Priority: PCT/US2023/074481, Oct.\ 19, 2023)}
+  \metarow{Drawings}{11 sheets, 14 figures}
+\end{tabularx}
+
+\vspace{8pt}
+\color{rulecolor}\rule{\linewidth}{0.6pt}
+\vspace{4pt}
+
+% ============================================================
+%  CROSS-REFERENCE TO RELATED APPLICATIONS
+% ============================================================
+\section{Cross-Reference to Related Applications}\label{sec:crossref}
+
+This application claims priority to U.S.\ Provisional Application No.\ 63/\!524,\!017,
+filed June 28, 2023, and is a continuation-in-part of U.S.\ Application No.\
+17/\!901,\!554, filed September 1, 2022, the entirety of each of which is incorporated
+herein by reference.
+
+% ============================================================
+%  BACKGROUND OF THE INVENTION
+% ============================================================
+\section{Background of the Invention}\label{sec:background}
+
+\subsection{Field of the Invention}
+
+The present invention relates to video compression systems and, more particularly, to
+neural-network-driven adaptive bitrate encoding systems that dynamically reconfigure
+codec parameters in response to real-time network telemetry.
+
+\subsection{Description of the Related Art}
+
+Conventional adaptive bitrate (ABR) streaming systems, such as those conforming to
+\defterm{Dynamic Adaptive Streaming over HTTP} (DASH) and Apex HLS, partition encoded
+video into fixed-duration segments and select the next segment's quality level based on
+measured download throughput \refnum{200}. While effective under stable network
+conditions, such heuristic-ladder approaches exhibit two principal shortcomings:
+
+\begin{enumerate}[label=(\roman*), leftmargin=2em, itemsep=2pt]
+  \item \textbf{Lag in quality switching:} Rule-based bitrate ladders require multiple
+    bandwidth samples before upshifting quality, introducing perceptible quality
+    oscillations that degrade the \defterm{Mean Opinion Score} (MOS) by up to 1.8 points
+    on ITU-T P.910 five-point scales.
+  \item \textbf{Scene-agnostic encoding:} Fixed quantization parameter (QP) schedules
+    are blind to scene complexity and motion vectors, over-allocating bits to
+    low-complexity scenes while under-serving fast-motion sequences.
+\end{enumerate}
+
+Prior art disclosures, including U.S.\ Patent No.\ 10,\!484,\!727 (Zhao et al.) and
+U.S.\ Patent Application Publication No.\ US 2021/0160527 A1 (Gupta et al.), describe
+reinforcement-learning agents for bitrate selection but do not address real-time
+in-encoder parameter reconfiguration at frame granularity, nor do they provide a
+hardware-agnostic deployment substrate compatible with mobile system-on-chip (SoC)
+architectures.
+
+There exists, therefore, a need in the art for an adaptive compression engine that (a)
+operates at intra-frame temporal resolution, (b) infers scene complexity jointly with
+network state, and (c) deploys on heterogeneous hardware without modification.
+
+% ============================================================
+%  SUMMARY OF THE INVENTION
+% ============================================================
+\section{Summary of the Invention}\label{sec:summary}
+
+The present invention provides an \defterm{Adaptive Neural Compression Engine} (ANCE)
+comprising a lightweight convolutional inference module, a predictive network telemetry
+interface, and a hardware abstraction layer enabling deterministic real-time operation
+on general-purpose processors, graphics processing units, and dedicated neural
+processing units.
+
+In one aspect, the invention provides a computer-implemented method comprising:
+receiving, by a frame analysis module, a raw video frame and associated motion vectors
+from an upstream video capture pipeline; generating, by a convolutional neural network
+having fewer than 2.5 million parameters, a complexity score vector for each
+macroblock partition of said frame; receiving network bandwidth estimates and round-trip
+latency measurements from a telemetry aggregator; and outputting, by a decision engine,
+per-macroblock quantization parameters and an updated encoding profile within a latency
+budget not exceeding 4 milliseconds on a 1\,GHz single-core processor.
+
+In a further aspect, the invention provides a non-transitory computer-readable medium
+storing instructions that, when executed, perform the method described herein, as well
+as a hardware apparatus incorporating the foregoing method as a dedicated integrated
+circuit module.
+
+% ============================================================
+%  BRIEF DESCRIPTION OF THE DRAWINGS
+% ============================================================
+\section{Brief Description of the Drawings}\label{sec:drawings}
+
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  \metarow{FIG.\ 1}{is a high-level block diagram of the Adaptive Neural Compression Engine (ANCE) system architecture \refnum{100}.}
+  \metarow{FIG.\ 2}{is a data-flow diagram illustrating the frame-analysis pipeline \refnum{110}.}
+  \metarow{FIG.\ 3}{is a schematic of the lightweight convolutional inference module (LCIM) \refnum{120}, showing input tensor dimensions and kernel sizes.}
+  \metarow{FIG.\ 4A}{is a graph depicting per-frame quantization parameter assignments under low-bandwidth network conditions (BW~$<$~1.5\,Mbps).}
+  \metarow{FIG.\ 4B}{is a graph depicting per-frame quantization parameter assignments under high-bandwidth network conditions (BW~$>$~8\,Mbps).}
+  \metarow{FIG.\ 5}{is a flowchart of the decision engine inference loop \refnum{130}.}
+  \metarow{FIG.\ 6}{is a block diagram of the hardware abstraction layer (HAL) \refnum{140} and its interfaces to heterogeneous processing units.}
+  \metarow{FIG.\ 7}{is a sequence diagram showing interaction between the ANCE and a DASH manifest server during a live streaming session.}
+  \metarow{FIG.\ 8}{is a graph comparing Mean Opinion Score (MOS) over time for the inventive ANCE versus three prior-art baseline systems.}
+  \metarow{FIG.\ 9}{is a diagram of the telemetry aggregator data structures \refnum{150} and a corresponding ring-buffer memory layout.}
+  \metarow{FIG.\ 10}{is a block diagram illustrating deployment of ANCE on a mobile SoC incorporating an ARM Cortex-A78 core and a dedicated NPU.}
+  \metarow{FIG.\ 11}{is a diagram of the training pipeline for the convolutional inference module, including dataset provenance.}
+\end{tabularx}
+
+% ============================================================
+%  DETAILED DESCRIPTION OF THE PREFERRED EMBODIMENTS
+% ============================================================
+\section{Detailed Description of the Preferred Embodiments}\label{sec:detailed}
+
+The following description is presented to enable any person skilled in the art to make
+and use the invention. Details are set forth for the purpose of explanation and are not
+to be construed as limiting. The scope of the invention is defined solely by the appended
+claims.
+
+\subsection{1.~System Overview}
+
+Referring to FIG.~1 \refnum{100}, the Adaptive Neural Compression Engine (ANCE)
+comprises five principal subsystems arranged in a real-time processing pipeline:
+
+\begin{enumerate}[label=\arabic*., leftmargin=2em, itemsep=3pt]
+  \item \defterm{Frame Analysis Module (FAM)} \refnum{110} — accepts raw YCbCr 4:2:0
+    frames at up to 120\,fps and computes block-level motion vector fields using a
+    hierarchical block-matching algorithm.
+  \item \defterm{Lightweight Convolutional Inference Module (LCIM)} \refnum{120} —
+    a depthwise-separable convolutional network with six convolutional layers, two
+    squeeze-and-excitation blocks, and a final regression head outputting a
+    32-dimensional complexity score vector per macroblock.
+  \item \defterm{Telemetry Aggregator (TA)} \refnum{150} — collects RTCP receiver
+    reports and custom bandwidth probes via a ring buffer of 512 timestamped
+    measurements, maintaining a Kalman-filtered estimate of available bandwidth.
+  \item \defterm{Decision Engine (DE)} \refnum{130} — a multi-layer perceptron
+    (3 layers, 64 hidden units each) that jointly processes LCIM complexity vectors
+    and TA bandwidth estimates to emit per-macroblock QP values and encoding profiles.
+  \item \defterm{Hardware Abstraction Layer (HAL)} \refnum{140} — provides a
+    unified application programming interface (API) to dispatch inference workloads
+    to a CPU, GPU (via OpenCL 3.0), or NPU (via NNAPI / CoreML delegate), selecting
+    the fastest available execution context at runtime.
+\end{enumerate}
+
+\subsection{2.~Frame Analysis Module}
+
+The FAM accepts frames via a shared-memory zero-copy interface. Luma (Y) and chroma
+(Cb, Cr) planes are processed separately. For each 16$\times$16-pixel macroblock
+partition, the FAM computes a motion vector using a three-step hierarchical search with
+a maximum search range of $\pm$32 pixels. Resulting motion magnitude $m_i$ for
+macroblock $i$ is defined by Equation~\eqref{eq:motion}:
+
+\begin{equation}\label{eq:motion}
+  m_i = \sqrt{\Delta x_i^{2} + \Delta y_i^{2}}
+\end{equation}
+
+where $(\Delta x_i,\, \Delta y_i)$ are the horizontal and vertical displacement
+components of the dominant motion vector for macroblock $i$. Motion magnitudes and
+raw luma values are concatenated into a $C \times H \times W$ input tensor delivered
+to the LCIM.
+
+\subsection{3.~Lightweight Convolutional Inference Module (LCIM)}
+
+The LCIM is illustrated in FIG.~3 \refnum{120}. The network architecture is designed
+to fit within a 2.5-million-parameter budget, enabling real-time operation on
+low-power embedded processors. Layer specifications are as follows:
+
+\vspace{4pt}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{accent}}l@{\hspace{6mm}}>{\raggedright\arraybackslash}X@{}}
+  \toprule
+  \rowcolor{lightgray}
+  \textbf{\color{black}Layer} & \textbf{\color{black}Configuration} \\
+  \midrule
+  Conv-1 & $3\!\times\!3$ depthwise, 32 channels, stride 1, ReLU6 \\[2pt]
+  Conv-2 & $1\!\times\!1$ pointwise, 64 channels, BN, ReLU6 \\[2pt]
+  SE-Block-1 & Squeeze ratio $r=4$; channel attention over 64-dim feature map \\[2pt]
+  Conv-3 & $3\!\times\!3$ depthwise, 64 channels, stride 2, ReLU6 \\[2pt]
+  Conv-4 & $1\!\times\!1$ pointwise, 128 channels, BN, ReLU6 \\[2pt]
+  SE-Block-2 & Squeeze ratio $r=4$; 128-dim channel attention \\[2pt]
+  Conv-5--6 & $1\!\times\!1$ pointwise, 64 then 32 channels, ReLU6 \\[2pt]
+  Regression Head & Global average pool $\to$ FC(32), linear activation \\[2pt]
+  \bottomrule
+\end{tabularx}
+\vspace{4pt}
+
+Model weights are stored in IEEE 754 half-precision (FP16) format; quantization to
+INT8 is optionally applied via post-training quantization (PTQ) with a representative
+calibration dataset of 5,000 frames drawn from the \textit{UVG-HD} video benchmark.
+
+\subsection{4.~Telemetry Aggregator and Kalman Filter}
+
+The TA maintains a circular buffer $\mathcal{B}$ of 512 bandwidth samples
+$\{b_t\}$ timestamped at millisecond resolution. A scalar Kalman filter
+estimates true available bandwidth $\hat{b}_t$ according to:
+
+\begin{align}
+  \hat{b}_{t|t-1} &= \hat{b}_{t-1} \\[2pt]
+  K_t             &= \frac{P_{t|t-1}}{P_{t|t-1} + R} \\[2pt]
+  \hat{b}_t       &= \hat{b}_{t|t-1} + K_t\!\left(b_t - \hat{b}_{t|t-1}\right)
+\end{align}
+
+where $R$ is the measurement noise variance, set by default to
+$R = 0.04\,\text{Mbps}^2$, and $P_{t|t-1}$ is the prior error covariance.
+Round-trip latency $\ell_t$ is estimated via exponentially weighted moving average
+with decay constant $\alpha = 0.1$.
+
+\subsection{5.~Decision Engine}
+
+The DE receives a concatenated input vector
+$\mathbf{v} = [\mathbf{c}_i;\, \hat{b}_t;\, \ell_t;\, q_{t-1}]$
+where $\mathbf{c}_i$ is the 32-dimensional LCIM complexity output for macroblock $i$,
+and $q_{t-1}$ is the previously applied QP. The DE outputs a QP value
+$q_i \in [1, 51]$ and an encoding profile index $p \in \{0, 1, 2, 3\}$
+corresponding to \{baseline, main, high, high-10\} H.264/AVC profiles.
+The DE is implemented as a 3-layer fully connected network with 64 hidden units,
+sigmoid-linear activation, and a 35-parameter output head.
+
+\subsection{6.~Hardware Abstraction Layer}
+
+The HAL exposes three dispatch targets through a single \texttt{ance\_infer()}
+function call. At initialization, the HAL benchmarks available backends using
+a 50-frame warm-up sequence and selects the backend whose mean latency per frame
+satisfies the 4\,ms budget. If no backend meets the budget, the HAL falls back to
+a lightweight rule-based QP-selection algorithm described in \secref{sec:fallback}.
+
+\subsection{7.~Fallback Rule-Based QP Selection}\label{sec:fallback}
+
+In the event that no backend meets the 4\,ms latency budget, the ANCE activates a
+deterministic fallback: QP is set to $q_{\text{fb}} = \text{clamp}(51 -
+\lfloor 43 \cdot \hat{b}_t / b_{\max} \rfloor,\, 18,\, 42)$, where
+$b_{\max}$ is the peak bandwidth observed during the current session.
+
+\subsection{8.~Training Methodology}
+
+The LCIM was trained on a corpus of 240,000 video clips (totalling 1.8 billion frames)
+drawn from the following sources: (i) YouTube-UGC dataset (ugc-dataset.github.io);
+(ii) BVI-Texture benchmark; and (iii) proprietary HDR mobile capture data licensed
+from ContentShield Inc.\ under a research agreement. Training employed the Adam
+optimizer ($\eta = 10^{-3}$, $\beta_1 = 0.9$, $\beta_2 = 0.999$) with a cosine
+annealing schedule over 120 epochs on 8$\times$ Quanta A100 GPUs.
+
+% ============================================================
+%  DRAWING SHEET (FIG. 1 — TikZ inline)
+% ============================================================
+\newpage
+\section*{\centering Drawing Sheet — FIG.\ 1: System Architecture \refnum{100}}
+\addcontentsline{toc}{section}{Drawing Sheet — FIG.\ 1}
+
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=1.1cm and 1.8cm,
+  box/.style={
+    draw=accent, fill=lightgray, thick, rounded corners=4pt,
+    minimum width=2.6cm, minimum height=0.9cm,
+    font=\small\bfseries\color{accent}, align=center
+  },
+  arrow/.style={-{Stealth[length=5pt]}, thick, color=rulecolor},
+  label/.style={font=\scriptsize\color{midgray}}
+]
+  % Input
+  \node[box] (input) {Video\\Capture \refnum{105}};
+
+  % FAM
+  \node[box, right=of input] (fam) {Frame Analysis\\Module \refnum{110}};
+
+  % LCIM
+  \node[box, right=of fam] (lcim) {Convolutional\\Inference \refnum{120}};
+
+  % TA (below LCIM)
+  \node[box, below=of lcim] (ta) {Telemetry\\Aggregator \refnum{150}};
+
+  % Network (feeds TA)
+  \node[box, left=of ta] (net) {Network\\Stack \refnum{155}};
+
+  % DE
+  \node[box, right=of lcim] (de) {Decision\\Engine \refnum{130}};
+
+  % HAL
+  \node[box, right=of de] (hal) {Hardware\\Abstraction \refnum{140}};
+
+  % Encoder
+  \node[box, right=of hal] (enc) {Video\\Encoder \refnum{160}};
+
+  % Output
+  \node[box, right=of enc] (out) {Streaming\\Output \refnum{165}};
+
+  % Arrows
+  \draw[arrow] (input) -- (fam);
+  \draw[arrow] (fam)   -- (lcim) node[midway,above,label]{frames};
+  \draw[arrow] (lcim)  -- (de)   node[midway,above,label]{complexity};
+  \draw[arrow] (ta)    -- (de)   node[midway,right,label]{BW / RTT};
+  \draw[arrow] (net)   -- (ta);
+  \draw[arrow] (de)    -- (hal)  node[midway,above,label]{QP / profile};
+  \draw[arrow] (hal)   -- (enc);
+  \draw[arrow] (enc)   -- (out);
+
+  % Reference box around ANCE core
+  \begin{scope}[on background layer]
+    \node[
+      draw=rulecolor, dashed, thick, rounded corners=6pt,
+      fit=(fam)(lcim)(ta)(de)(hal),
+      inner sep=6pt,
+      label={[font=\footnotesize\color{rulecolor},anchor=north west]north west:ANCE Core \refnum{100}}
+    ] (anceBox) {};
+  \end{scope}
+\end{tikzpicture}}
+\end{center}
+
+\vspace{6pt}
+{\small\color{midgray}
+\textit{FIG.\ 1.} Block diagram of the Adaptive Neural Compression Engine (ANCE) system.
+Reference numerals identify subsystems as defined in the Detailed Description.
+Dashed boundary delineates the inventive ANCE Core \refnum{100}.
+Arrows indicate primary data-flow direction.}
+
+% ============================================================
+%  CLAIMS
+% ============================================================
+\newpage
+\section{Claims}\label{sec:claims}
+
+What is claimed is:
+
+\setcounter{claimcnt}{0}
+
+\claim{A computer-implemented method for adaptive video compression, the method
+comprising:
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt, topsep=4pt]
+  \item receiving, by a frame analysis module executing on at least one processor, a
+    sequence of video frames and associated motion vector data from a video capture
+    pipeline;
+  \item generating, by a convolutional neural network having a parameter count not
+    exceeding 2.5 million, a complexity score vector for each macroblock partition of
+    each said video frame, wherein said complexity score vector has a dimensionality of
+    at least 32 floating-point values;
+  \item receiving, by a telemetry aggregator, a plurality of network bandwidth
+    measurements and round-trip latency measurements;
+  \item computing, by the telemetry aggregator, a filtered bandwidth estimate using a
+    Kalman filter applied to said network bandwidth measurements;
+  \item determining, by a decision engine, a per-macroblock quantization parameter and
+    an encoding profile index based on said complexity score vector and said filtered
+    bandwidth estimate; and
+  \item encoding, by a video encoder, said video frames using said per-macroblock
+    quantization parameters and said encoding profile index within a maximum
+    end-to-end latency of 4 milliseconds per frame on a 1-gigahertz single-core
+    processor.
+\end{itemize}}
+
+\claim{The method of claim~1, wherein the convolutional neural network comprises
+depthwise-separable convolutional layers and at least one squeeze-and-excitation
+attention block.}
+
+\claim{The method of claim~1, wherein computing the filtered bandwidth estimate
+further comprises maintaining a circular buffer of at least 512 timestamped bandwidth
+samples and updating a Kalman filter state at each new measurement.}
+
+\claim{The method of claim~1, wherein the decision engine comprises a multi-layer
+perceptron having at least three fully connected layers with sigmoid-linear activation
+functions.}
+
+\claim{The method of claim~1, wherein the encoding profile index is selected from a
+set comprising at least a baseline profile, a main profile, and a high profile of the
+H.264/AVC video coding standard.}
+
+\claim{The method of claim~1, further comprising:
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt, topsep=4pt]
+  \item benchmarking, at initialization, at least two hardware execution backends
+    comprising a central processing unit backend, a graphics processing unit backend,
+    and a neural processing unit backend; and
+  \item selecting, for subsequent frame processing, the hardware execution backend
+    whose mean per-frame inference latency satisfies the 4-millisecond latency budget.
+\end{itemize}}
+
+\claim{The method of claim~6, further comprising, upon determining that no hardware
+execution backend satisfies the 4-millisecond latency budget, computing a fallback
+quantization parameter according to the formula:
+\[q_{\text{fb}} = \operatorname{clamp}\!\left(51 - \left\lfloor
+  43 \cdot \hat{b}_t / b_{\max}\right\rfloor,\; 18,\; 42\right)\]}
+
+\claim{A system for adaptive video compression, the system comprising:
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt, topsep=4pt]
+  \item at least one processor;
+  \item a memory storing instructions that, when executed by the at least one
+    processor, implement:
+    \begin{itemize}[leftmargin=1.5em, itemsep=1pt]
+      \item a frame analysis module configured to receive video frames and compute
+        per-macroblock motion vectors;
+      \item a convolutional inference module configured to generate complexity score
+        vectors for each macroblock;
+      \item a telemetry aggregator configured to maintain Kalman-filtered bandwidth
+        and latency estimates; and
+      \item a decision engine configured to jointly process said complexity score
+        vectors and said estimates to produce per-macroblock encoding parameters.
+    \end{itemize}
+\end{itemize}}
+
+\claim{The system of claim~8, further comprising a hardware abstraction layer
+configured to dispatch inference workloads to a selected one of a central processing
+unit, a graphics processing unit, and a neural processing unit based on runtime
+latency benchmarks.}
+
+\claim{The system of claim~8, wherein the convolutional inference module stores model
+weights in IEEE 754 half-precision floating-point format.}
+
+\claim{The system of claim~8, wherein the system is embodied as a dedicated integrated
+circuit module.}
+
+\claim{A non-transitory computer-readable medium storing instructions that, when
+executed by at least one processor, cause the processor to perform:
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt, topsep=4pt]
+  \item analyzing a video frame using a depthwise-separable convolutional neural
+    network to produce per-macroblock complexity scores;
+  \item estimating available network bandwidth via a Kalman filter applied to a
+    plurality of network telemetry measurements;
+  \item selecting per-macroblock quantization parameters and an encoding profile using
+    a trained multi-layer perceptron that jointly processes said complexity scores and
+    said estimated bandwidth; and
+  \item dispatching encoding parameters to a video codec within 4 milliseconds of
+    receiving the corresponding video frame.
+\end{itemize}}
+
+\claim{The computer-readable medium of claim~12, wherein analyzing the video frame
+further comprises extracting motion vectors from a hierarchical block-matching search
+having a maximum search range of $\pm$32 pixels.}
+
+\claim{The computer-readable medium of claim~12, wherein the convolutional neural
+network is quantized to 8-bit integer precision via post-training quantization using a
+representative calibration dataset of at least 5,000 video frames.}
+
+% ============================================================
+%  ABSTRACT
+% ============================================================
+\newpage
+\section{Abstract}\label{sec:abstract}
+
+\begin{tcolorbox}[claimbox, title={Abstract of the Disclosure}]
+An Adaptive Neural Compression Engine (ANCE) is disclosed for real-time adaptive
+bitrate video encoding over bandwidth-constrained networks. The system integrates
+(1) a lightweight depthwise-separable convolutional neural network (fewer than 2.5
+million parameters) that produces per-macroblock scene-complexity scores at frame
+rate; (2) a Kalman-filtered telemetry aggregator that maintains continuous estimates
+of network bandwidth and round-trip latency; and (3) a multi-layer-perceptron
+decision engine that jointly processes complexity and telemetry inputs to emit
+per-macroblock H.264/AVC quantization parameters and encoding profiles within a
+4-millisecond latency budget on commodity hardware. A hardware abstraction layer
+provides transparent dispatch to CPU, GPU, or NPU backends. Experimental evaluation
+on the UVG-HD benchmark demonstrates a 1.4-point improvement in Mean Opinion Score
+(ITU-T P.910) versus rule-based adaptive bitrate baselines at equivalent mean
+throughput. The invention is applicable to live video streaming, video conferencing,
+and real-time surveillance transcoding on devices ranging from mobile handsets to
+cloud-deployed encoding clusters.
+\end{tcolorbox}
+
+% ============================================================
+%  CERTIFICATE OF SERVICE / SIGNATURE BLOCK
+% ============================================================
+\vspace{16pt}
+\color{rulecolor}\rule{\linewidth}{0.6pt}
+\vspace{8pt}
+
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  \metarow{Attorney of Record}{Michael T.\ Hargreaves, Reg.\ No.\ 62,441}
+  \metarow{Firm}{Meridian IP Group LLP, 800 Capitol Mall, Suite 2400, Sacramento, CA 95814}
+  \metarow{Date of Signing}{March 14, 2024}
+\end{tabularx}
+
+\vspace{24pt}
+
+\begin{tabularx}{\linewidth}{@{}X@{\hspace{12mm}}X@{}}
+  \rule{6cm}{0.4pt} & \rule{6cm}{0.4pt} \\[2pt]
+  {\small\color{midgray}Signature of Attorney/Agent} &
+  {\small\color{midgray}Date (MM/DD/YYYY)} \\[14pt]
+  \rule{6cm}{0.4pt} & \rule{6cm}{0.4pt} \\[2pt]
+  {\small\color{midgray}Printed Name} &
+  {\small\color{midgray}USPTO Registration Number} \\
+\end{tabularx}
+
+\vspace{16pt}
+\color{rulecolor}\rule{\linewidth}{0.6pt}
+
+\begin{center}
+  {\footnotesize\color{midgray}
+  \textit{This document was prepared with} \textbf{LetX} ---
+  \href{https://letx.app}{\texttt{letx.app}} ---
+  \textit{the modern LaTeX editor for legal and technical professionals.}
+  }
+\end{center}
+
+\end{document}

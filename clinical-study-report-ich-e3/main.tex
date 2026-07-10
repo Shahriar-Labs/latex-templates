@@ -1,0 +1,894 @@
+% Clinical Study Report (ICH E3) — LaTeX Template
+% Edit and compile online at https://letx.app
+% Compiles with: latexmk -pdf main.tex
+
+\documentclass[11pt, a4paper]{article}
+
+% ── Fonts ──
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% ── Math ──
+\usepackage{amsmath, amssymb}
+
+% ── Colors ──
+\usepackage[table]{xcolor}
+\definecolor{accent}{HTML}{1B5E96}
+\definecolor{secondary}{HTML}{3D3D3D}
+\definecolor{graytext}{HTML}{757575}
+\definecolor{grayrule}{HTML}{CCCCCC}
+\definecolor{tablerow}{HTML}{EDF3F8}
+\definecolor{alertred}{HTML}{C0392B}
+\definecolor{alerthighlight}{HTML}{FDEDEC}
+
+% ── Page Layout ──
+\usepackage{geometry}
+\geometry{
+  a4paper,
+  left=25mm,
+  right=25mm,
+  top=25mm,
+  bottom=28mm,
+  headheight=15pt,
+  headsep=6mm,
+}
+
+% ── Headers / Footers ──
+\usepackage{fancyhdr}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{graytext}{Protocol BREX-301 \textbar{} Final 1.0}}
+\fancyhead[R]{\small\textcolor{graytext}{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{{\color{accent}\rule{\headwidth}{\headrulewidth}}}
+\fancyfoot{}
+
+% ── Section Formatting ──
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries\color{accent}}
+  {\thesection}
+  {1em}
+  {}
+  [{\color{grayrule}\titlerule}]
+\titleformat{\subsection}
+  {\large\bfseries\color{secondary}}
+  {\thesubsection}
+  {1em}
+  {}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{secondary}}
+  {\thesubsubsection}
+  {1em}
+  {}
+
+% ── Tables ──
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{array}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% ── Callout Boxes ──
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+
+\newtcolorbox{safetybox}{
+  colback=alerthighlight,
+  colframe=alertred,
+  fonttitle=\bfseries\color{alertred},
+  title=\faExclamationTriangle\enspace SAFETY ALERT,
+  sharp corners,
+  boxrule=0.5mm,
+  left=5mm,
+  right=5mm,
+  top=4mm,
+  bottom=4mm,
+}
+
+\newtcolorbox{notebox}{
+  colback=accent!8,
+  colframe=accent,
+  fonttitle=\bfseries\color{accent},
+  title=\faInfoCircle\enspace NOTE,
+  sharp corners,
+  boxrule=0.3mm,
+  left=5mm,
+  right=5mm,
+  top=4mm,
+  bottom=4mm,
+}
+
+\newtcolorbox{dsmbbox}{
+  colback=accent!5,
+  colframe=accent!60,
+  fonttitle=\bfseries\color{accent},
+  title=\faUserMd\enspace DSMB FINDING,
+  sharp corners,
+  boxrule=0.3mm,
+  left=5mm,
+  right=5mm,
+  top=4mm,
+  bottom=4mm,
+}
+
+% ── Lists ──
+\usepackage{enumitem}
+\setlist{nosep, leftmargin=*, itemsep=1pt}
+
+% ── Captions ──
+\usepackage{caption}
+\captionsetup{
+  font={small, color=secondary},
+  labelfont={bf, color=accent},
+  labelsep=period,
+  skip=4pt,
+}
+
+% ── Graphics & TikZ ──
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{positioning, arrows.meta, calc, shapes.geometric}
+
+% ── Other ──
+\usepackage{fontawesome5}
+\usepackage{ragged2e}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent,
+  citecolor=accent,
+}
+
+% ── Helper Macros ──
+\newcommand{\protnum}{BREX-301}
+\newcommand{\studydrug}{Brexiprant}
+\newcommand{\studydose}{300 mg}
+
+\begin{document}
+
+% ──────────────────────────────────────────────
+% TITLE PAGE
+% ──────────────────────────────────────────────
+\begin{titlepage}
+\thispagestyle{empty}
+
+\begin{tcolorbox}[
+  colback=accent,
+  colframe=accent,
+  width=\textwidth,
+  boxrule=0pt,
+  sharp corners,
+  left=0pt,
+  right=0pt,
+  top=6mm,
+  bottom=6mm,
+  before skip=0pt,
+  after skip=0pt,
+]
+  \centering\textcolor{white}{\Large\bfseries CLINICAL STUDY REPORT}
+\end{tcolorbox}
+
+\vspace{20mm}
+
+{\centering\LARGE\bfseries\color{secondary} A Phase III, Randomized, Double-Blind,\\[4pt] Placebo-Controlled Study of \studydrug\\[4pt] in Patients with Moderate-to-Severe\\[4pt] Plaque Psoriasis\par}
+
+\vspace{12mm}
+
+{\centering\large\color{accent}\bfseries Protocol \protnum\par}
+
+\vspace{6mm}
+
+{\centering
+\begin{tabular}{rl}
+EudraCT Number: & 2024--001234--56 \\
+IND Number:     & 123,456 \\
+NCT Number:     & NCT06123456 \\
+\end{tabular}\par}
+
+\vspace{18mm}
+
+\begin{center}
+{\large\bfseries\color{secondary} Sponsor:}\\[4pt]
+{\large Novartis Pharmaceuticals Corporation}\\[3pt]
+One Health Plaza\\[2pt]
+East Hanover, NJ 07936, USA
+\end{center}
+
+\vspace{18mm}
+
+{\centering
+\begin{tabular}{rl}
+Date of Report:  & 15 March 2026 \\
+Version:         & Final 1.0 \\
+Document Status: & \textbf{CONFIDENTIAL} \\
+\end{tabular}\par}
+
+\vfill
+{\centering\textcolor{graytext}{\small This document contains confidential information belonging to the Sponsor.\\It may not be reproduced, disclosed, or used without prior written authorization.}\par}
+\end{titlepage}
+
+% ──────────────────────────────────────────────
+% SYNOPSIS
+% ──────────────────────────────────────────────
+\section*{Synopsis}
+\addcontentsline{toc}{section}{Synopsis}
+
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries\raggedright}p{38mm}@{\hspace{6mm}}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{2}{@{}l}{\textbf{\large\color{accent}Study Identification}}\\
+\midrule
+Name of Sponsor          & Novartis Pharmaceuticals Corporation \\
+Name of Finished Product & \studydrug\ (film-coated tablet) \\
+Name of Active Ingredient & Brexiprant \\
+Study Title              & A Phase III, Randomized, Double-Blind, Placebo-Controlled, Multicenter Study to Evaluate the Efficacy and Safety of \studydrug\ in Patients with Moderate-to-Severe Plaque Psoriasis \\
+Protocol Number          & \protnum \\
+EudraCT Number           & 2024--001234--56 \\
+NCT Number               & NCT06123456 \\
+Phase of Development     & Phase III \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{\large\color{accent}Methodology}}\\
+\midrule
+Study Design             & Randomized, double-blind, placebo-controlled, parallel-group, multicenter study. Patients were randomized in a 2:1 ratio to receive either \studydrug\ \studydose\ or placebo once daily for 52 weeks. The study comprised a 4-week screening period, a 52-week treatment period, and a 4-week follow-up period. \\
+Number of Patients       & \\
+\quad  Planned            & A total of 660 patients (440 \studydrug, 220 placebo) \\
+\quad  Enrolled           & 950 patients were screened; 675 were randomized (Intent-to-Treat population) \\
+\quad  Completed          & 590 patients (87.4\%) completed the 52-week treatment period \\
+Diagnosis and Main Criteria for Inclusion & Adult patients (18--75 years) with a diagnosis of moderate-to-severe chronic plaque psoriasis for $\ge 6$ months, with a PASI score $\ge 12$, a static Physician's Global Assessment (sPGA) score $\ge 3$, and body surface area (BSA) involvement $\ge 10\%$ at screening and baseline. \\
+Test Product, Dose, and Mode of Administration & \studydrug\ \studydose\ film-coated tablet, administered orally once daily. \\
+Reference Therapy, Dose, and Mode of Administration & Matching placebo film-coated tablet, administered orally once daily. \\
+Duration of Treatment    & 52 weeks \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{\large\color{accent}Evaluation Criteria}}\\
+\midrule
+Primary Efficacy Endpoint & Proportion of patients achieving a $\ge 75\%$ reduction from baseline in Psoriasis Area and Severity Index (PASI 75) at Week 16. \\
+Key Secondary Endpoints  & \begin{enumerate}[nosep, leftmargin=*]
+  \item Proportion of patients achieving sPGA score of 0 (clear) or 1 (almost clear) at Week 16.
+  \item Proportion of patients achieving PASI 90 at Week 16.
+  \item Change from baseline in Dermatology Life Quality Index (DLQI) at Week 16.
+  \item Proportion of patients achieving PASI 75 at Week 52.
+\end{enumerate} \\
+Safety Endpoints         & Treatment-emergent adverse events (TEAEs), serious adverse events (SAEs), clinical laboratory parameters, vital signs, electrocardiograms, and physical examinations. \\
+Pharmacokinetic Endpoints & Trough plasma concentrations of brexiprant at Weeks 4, 16, and 52 (subset of patients). \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{\large\color{accent}Statistical Methods}}\\
+\midrule
+Primary Analysis         & The primary efficacy analysis was performed on the Full Analysis Set (FAS) using a Cochran--Mantel--Haenszel (CMH) test stratified by baseline weight ($\le 90$ kg vs.\ $> 90$ kg) and prior biologic use (yes/no). \\
+Sample Size Determination & A sample size of 660 patients (440 \studydrug, 220 placebo) provided $\ge 95\%$ power to detect a 25\% absolute difference in PASI 75 response rates at Week 16, assuming a placebo response rate of 15\% and a two-sided significance level of 0.05, accounting for a 15\% dropout rate. \\
+Multiplicity Adjustment   & A hierarchical testing procedure was applied to control the family-wise Type I error rate across the primary and key secondary endpoints. \\
+Interim Analyses          & One pre-planned interim analysis for futility was conducted by an independent Data Safety Monitoring Board (DSMB) when 50\% of patients completed Week 16. \\
+\midrule
+\multicolumn{2}{@{}l}{\textbf{\large\color{accent}Summary of Results}}\\
+\midrule
+Efficacy                 & \textbf{Primary Endpoint Met:} The proportion of patients achieving PASI 75 at Week 16 was 72.3\% in the \studydrug\ group versus 14.2\% in the placebo group (adjusted difference: 58.1\%; 95\% CI: 52.4\%, 63.8\%; $p < 0.0001$). All key secondary endpoints were met with statistical significance ($p < 0.0001$). \\
+Safety                   & \studydrug\ was generally well tolerated over 52 weeks. The most frequently reported TEAEs in the \studydrug\ group were nasopharyngitis (18.2\%), upper respiratory tract infection (12.4\%), and headache (8.9\%). SAEs were reported in 4.2\% of \studydrug-treated patients and 3.6\% of placebo-treated patients. No deaths occurred during the study. \\
+Conclusion               & \studydrug\ \studydose\ administered orally once daily demonstrated superior efficacy compared to placebo for the treatment of moderate-to-severe plaque psoriasis, with a favorable safety profile consistent with the known mechanism of action. \\
+\bottomrule
+\end{tabularx}
+\renewcommand{\arraystretch}{1.0}
+
+\newpage
+
+% ──────────────────────────────────────────────
+% TABLE OF CONTENTS
+% ──────────────────────────────────────────────
+\tableofcontents
+\newpage
+
+% ──────────────────────────────────────────────
+% LIST OF ABBREVIATIONS
+% ──────────────────────────────────────────────
+\section*{List of Abbreviations}
+\addcontentsline{toc}{section}{List of Abbreviations}
+
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}l@{\hspace{5mm}}X@{}}
+AE        & Adverse Event \\
+ALT       & Alanine Aminotransferase \\
+AST       & Aspartate Aminotransferase \\
+BMI       & Body Mass Index \\
+BSA       & Body Surface Area \\
+CI        & Confidence Interval \\
+CMH       & Cochran--Mantel--Haenszel \\
+CSR       & Clinical Study Report \\
+DLQI      & Dermatology Life Quality Index \\
+DSMB      & Data Safety Monitoring Board \\
+ECG       & Electrocardiogram \\
+eCRF      & Electronic Case Report Form \\
+FAS       & Full Analysis Set \\
+GCP       & Good Clinical Practice \\
+ICH       & International Council for Harmonisation \\
+IEC       & Independent Ethics Committee \\
+IRB       & Institutional Review Board \\
+ITT       & Intent-to-Treat \\
+MedDRA    & Medical Dictionary for Regulatory Activities \\
+PASI      & Psoriasis Area and Severity Index \\
+PASI 75   & $\ge 75\%$ Reduction from Baseline in PASI Score \\
+PASI 90   & $\ge 90\%$ Reduction from Baseline in PASI Score \\
+PK        & Pharmacokinetic \\
+PT        & Preferred Term \\
+SAE       & Serious Adverse Event \\
+SAP       & Statistical Analysis Plan \\
+SOC       & System Organ Class \\
+sPGA      & Static Physician's Global Assessment \\
+TEAE      & Treatment-Emergent Adverse Event \\
+ULN       & Upper Limit of Normal \\
+\end{tabularx}
+\renewcommand{\arraystretch}{1.0}
+
+\newpage
+
+% ──────────────────────────────────────────────
+% 1. ETHICS
+% ──────────────────────────────────────────────
+\section{Ethics}
+
+\subsection{Independent Ethics Committee / Institutional Review Board}
+
+This study was conducted in accordance with the principles of the Declaration of Helsinki, the International Council for Harmonisation (ICH) Guideline for Good Clinical Practice (GCP), and applicable local regulatory requirements. The study protocol, all protocol amendments, the Investigator's Brochure, the informed consent forms, and any other relevant study documents were reviewed and approved by an Independent Ethics Committee (IEC) or Institutional Review Board (IRB) at each participating site prior to the enrollment of patients. A list of all IECs/IRBs that reviewed the study is provided in Appendix 16.1.1.
+
+\begin{notebox}
+The study protocol (Version 3.0, dated 12 February 2025) and two subsequent amendments (Amendment 1: 03 June 2025; Amendment 2: 18 October 2025) received favorable opinion from all relevant ethics committees before implementation.
+\end{notebox}
+
+\subsection{Ethical Conduct of the Study}
+
+Written informed consent was obtained from each patient before any study-related procedures were performed. Patients were provided with both verbal and written information regarding the nature, purpose, potential risks, and benefits of the study, and were given sufficient time to consider their participation. The informed consent process was documented in each patient's medical record.
+
+\subsection{Patient Information and Consent}
+
+The informed consent form included a separate section for optional genetic sampling and long-term storage of biological specimens for future exploratory biomarker research. Patients who declined genetic testing were still eligible for participation in the main study.
+
+\newpage
+
+% ──────────────────────────────────────────────
+% 2. INVESTIGATORS AND STUDY ADMINISTRATIVE STRUCTURE
+% ──────────────────────────────────────────────
+\section{Investigators and Study Administrative Structure}
+
+\subsection{Principal and Coordinating Investigators}
+
+The study was conducted under the direction of the following key investigators:
+
+\vspace{4pt}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{6mm}}X@{}}
+Steering Committee Chair           & Prof.\ Elena Vasquez, MD, PhD --- Department of Dermatology, University of Barcelona, Spain \\
+Coordinating Principal Investigator & Dr.\ Marcus Chen, MD --- Icahn School of Medicine at Mount Sinai, New York, NY, USA \\
+Medical Expert                     & Dr.\ Sanjay Patel, MD, FRCP --- St.\ John's Institute of Dermatology, London, UK \\
+Biostatistics Lead                 & Dr.\ Yuki Tanaka, PhD --- Novartis Pharma AG, Basel, Switzerland \\
+\end{tabularx}
+\renewcommand{\arraystretch}{1.0}
+\vspace{4pt}
+
+\subsection{Study Centers}
+
+The study was conducted at 78 sites across 12 countries in North America, Europe, and Asia-Pacific. A total of 675 patients were randomized across 62 active sites. The complete list of investigators and study centers is provided in Appendix 16.1.4.
+
+\subsection{Sponsor Oversight}
+
+The sponsor, Novartis Pharmaceuticals Corporation, was responsible for study design, monitoring, data management, statistical analysis, and reporting. An independent Contract Research Organization (CRO), IQVIA, was contracted to perform on-site monitoring, data management, and certain pharmacovigilance activities. An independent Data Safety Monitoring Board (DSMB) provided oversight of patient safety.
+
+\newpage
+
+% ──────────────────────────────────────────────
+% 3. INTRODUCTION
+% ──────────────────────────────────────────────
+\section{Introduction}
+
+Plaque psoriasis is a chronic, immune-mediated inflammatory skin disease affecting approximately 2--3\% of the global population. The condition is characterized by well-demarcated, erythematous, scaly plaques that can cause significant physical discomfort, psychological distress, and impairment in quality of life. Moderate-to-severe disease, defined as involvement of $\ge 10\%$ body surface area or a Psoriasis Area and Severity Index (PASI) score $\ge 12$, typically requires systemic therapy.
+
+\vspace{4pt}
+Despite advances in biologic therapies targeting tumor necrosis factor (TNF), interleukin-17 (IL-17), and interleukin-23 (IL-23), a significant proportion of patients either fail to achieve adequate disease control or lose response over time. Furthermore, the parenteral route of administration for all currently approved biologics represents a barrier for patients who prefer oral therapy.
+
+\vspace{4pt}
+Brexiprant is a novel, orally bioavailable, small-molecule allosteric modulator of the receptor-type tyrosine-protein phosphatase SHP-2 (encoded by the \textit{PTPN11} gene), which acts upstream of the IL-23/Th17 axis---a pathway central to the pathogenesis of plaque psoriasis. Nonclinical studies demonstrated that brexiprant selectively inhibits Th17 cell differentiation and expansion, leading to reduced production of IL-17A, IL-17F, and IL-22. Phase I and Phase II clinical studies established the pharmacokinetic profile, safety, and preliminary efficacy of brexiprant in patients with moderate-to-severe plaque psoriasis.
+
+\vspace{4pt}
+The present Phase III study (BREX-301) was designed to confirm the efficacy and safety of brexiprant 300 mg administered orally once daily compared to placebo over a 52-week treatment period in adults with moderate-to-severe plaque psoriasis. This report presents the final results of the study in accordance with the ICH E3 Guideline on the Structure and Content of Clinical Study Reports.
+
+\newpage
+
+% ──────────────────────────────────────────────
+% 4. STUDY OBJECTIVES
+% ──────────────────────────────────────────────
+\section{Study Objectives}
+
+\subsection{Primary Objective}
+
+The primary objective of this study was to evaluate the efficacy of \studydrug\ \studydose\ administered orally once daily compared to placebo in the treatment of adults with moderate-to-severe plaque psoriasis, as measured by the proportion of patients achieving a $\ge 75\%$ reduction from baseline in Psoriasis Area and Severity Index (PASI 75) at Week 16.
+
+\subsection{Secondary Objectives}
+
+The secondary objectives were to evaluate the efficacy of \studydrug\ compared to placebo with respect to:
+
+\begin{enumerate}[label=\arabic*.]
+  \item Proportion of patients achieving a static Physician's Global Assessment (sPGA) score of 0 (clear) or 1 (almost clear) at Week 16.
+  \item Proportion of patients achieving PASI 90 at Week 16.
+  \item Change from baseline in Dermatology Life Quality Index (DLQI) at Week 16.
+  \item Long-term maintenance of response (PASI 75 at Week 52).
+\end{enumerate}
+
+\subsection{Safety Objective}
+
+To evaluate the safety and tolerability of \studydrug\ \studydose\ administered orally once daily for up to 52 weeks, including the incidence and severity of treatment-emergent adverse events (TEAEs), serious adverse events (SAEs), changes in clinical laboratory parameters, vital signs, and electrocardiogram findings.
+
+\subsection{Pharmacokinetic Objective}
+
+To characterize the trough plasma concentration ($C_{\text{trough}}$) of brexiprant in a subset of patients at Weeks 4, 16, and 52.
+
+\newpage
+
+% ──────────────────────────────────────────────
+% 5. INVESTIGATIONAL PLAN
+% ──────────────────────────────────────────────
+\section{Investigational Plan}
+
+\subsection{Overall Study Design and Plan}
+
+Study BREX-301 was a Phase III, randomized, double-blind, placebo-controlled, parallel-group, multicenter study. The overall study design is illustrated in Figure~\ref{fig:studydesign}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=8mm and 2mm,
+  phasebox/.style={rectangle, draw=accent, fill=accent!8, minimum width=28mm, minimum height=10mm, align=center, font=\footnotesize\bfseries, rounded corners=2pt},
+  arrow/.style={-{Stealth[length=3mm, width=2mm]}, thick, accent},
+]
+\node[phasebox] (screen) {Screening\\$\le 4$ weeks};
+\node[phasebox, right=of screen] (treat) {Treatment Period\\52 weeks};
+\node[phasebox, right=of treat] (follow) {Follow-up\\4 weeks};
+\node[above=2mm of screen, font=\footnotesize] {Visit 1};
+\node[above=2mm of treat, font=\footnotesize] {Visit 2 (Baseline/Randomization)};
+\node[above=2mm of follow, font=\footnotesize] {Week 52 (End of Treatment)};
+\draw[arrow] (screen) -- (treat);
+\draw[arrow] (treat) -- (follow);
+\node[below=3mm of treat, font=\footnotesize, align=center] {\textbf{Randomization 2:1}\\[1pt]\studydrug\ \studydose\ QD \textit{vs.}\ Placebo QD};
+\end{tikzpicture}
+\caption{Overall Study Design}
+\label{fig:studydesign}
+\end{figure}
+
+The study consisted of three periods: (1) a screening period of up to 4 weeks (Visits 1--2), during which patients were assessed for eligibility; (2) a 52-week double-blind treatment period (Visits 2--18), during which patients received either \studydrug\ \studydose\ or matching placebo once daily (QD); and (3) a 4-week post-treatment follow-up period (Visit 19). Study visits occurred at Weeks 0 (Baseline), 2, 4, 8, 12, 16, 24, 32, 40, and 52 during the treatment period.
+
+\vspace{4pt}
+Randomization was stratified by baseline weight category ($\le 90$ kg vs.\ $> 90$ kg) and prior biologic use for psoriasis (yes/no). An Interactive Response Technology (IRT) system was used to assign patients to treatment groups.
+
+\subsection{Selection of Study Population}
+
+\subsubsection{Inclusion Criteria}
+
+Patients were eligible for enrollment if they met all of the following criteria:
+\begin{enumerate}[label=\textbullet, leftmargin=*]
+  \item Male or female, aged 18 to 75 years at the time of screening.
+  \item Diagnosis of moderate-to-severe chronic plaque psoriasis for at least 6 months prior to screening.
+  \item PASI score $\ge 12$ at both screening and baseline visits.
+  \item sPGA score $\ge 3$ (moderate) at both screening and baseline visits.
+  \item BSA involvement $\ge 10\%$ at both screening and baseline visits.
+  \item Candidate for systemic therapy or phototherapy for psoriasis.
+  \item Body weight $\ge 40$ kg and BMI $\le 40$ kg/m$^2$.
+  \item Able to provide written informed consent.
+\end{enumerate}
+
+\subsubsection{Exclusion Criteria}
+
+Key exclusion criteria included: non-plaque forms of psoriasis (guttate, erythrodermic, pustular); prior exposure to brexiprant; use of any biologic therapy within 5 half-lives or 12 weeks (whichever was longer) prior to baseline; use of systemic non-biologic psoriasis therapy within 4 weeks of baseline; active or latent tuberculosis; history of malignancy within 5 years (except treated non-melanoma skin cancer); clinically significant laboratory abnormalities at screening; pregnant or lactating women; and active infection requiring systemic antimicrobial therapy within 2 weeks of baseline.
+
+\subsection{Treatments}
+
+\subsubsection{Investigational Product}
+
+Brexiprant was supplied as 300 mg film-coated tablets for oral administration. The dosage was one tablet taken orally once daily with water, with or without food, at approximately the same time each day. The 300 mg dose was selected based on the Phase II dose-ranging study (BREX-201), which demonstrated maximal efficacy at this dose with a favorable benefit--risk profile.
+
+\subsubsection{Reference Therapy}
+
+Matching placebo tablets, identical in appearance, size, and packaging to the active treatment, were administered orally once daily.
+
+\subsubsection{Concomitant Therapy}
+
+Low-to-moderate potency topical corticosteroids (Class III--VII) were permitted for treatment of the face, axillae, and groin throughout the study at the investigator's discretion. Emollients and moisturizers were allowed on all body areas except within 12 hours of a study visit. All other psoriasis therapies (topical, systemic, phototherapy) were prohibited during the study.
+
+\subsection{Efficacy and Safety Variables}
+
+The efficacy assessments included PASI scores, sPGA scores, DLQI scores, and BSA involvement at each study visit. Safety assessments included monitoring of treatment-emergent adverse events (TEAEs) using MedDRA version 27.0 coding, serious adverse events (SAEs), clinical laboratory evaluations (hematology, clinical chemistry, urinalysis), vital signs, 12-lead electrocardiograms, and physical examinations. TEAEs were defined as AEs with onset on or after the date of the first dose of study drug through 30 days after the last dose.
+
+\subsection{Statistical Methods}
+
+The Full Analysis Set (FAS) comprised all randomized patients who received at least one dose of study drug and had at least one post-baseline PASI assessment. The Per-Protocol (PP) analysis set included all FAS patients without major protocol deviations. The Safety Set included all randomized patients who received at least one dose of study drug.
+
+\vspace{4pt}
+The primary efficacy analysis compared the proportion of patients achieving PASI 75 at Week 16 between treatment groups using a Cochran--Mantel--Haenszel (CMH) test stratified by baseline weight category ($\le 90$ kg vs.\ $> 90$ kg) and prior biologic use (yes/no). Missing data were imputed using non-responder imputation (NRI) for the primary analysis. Sensitivity analyses using multiple imputation (MI) and tipping-point analyses were pre-specified.
+
+\vspace{4pt}
+A hierarchical testing procedure was applied to control the family-wise Type I error rate for the secondary endpoints, tested in the following pre-specified order: (1) sPGA 0/1 at Week 16, (2) PASI 90 at Week 16, (3) DLQI change from baseline at Week 16, and (4) PASI 75 at Week 52.
+
+\begin{notebox}
+The statistical analysis plan (SAP) was finalized on 15 July 2025, prior to database lock and unblinding. A cross-reference between the SAP and this CSR is provided in Section~\ref{sec:saper}.
+\end{notebox}
+
+\newpage
+
+% ──────────────────────────────────────────────
+% 6. STUDY PATIENTS
+% ──────────────────────────────────────────────
+\section{Study Patients}
+
+\subsection{Disposition of Patients}
+
+A total of 950 patients were screened at 78 study sites across 12 countries. Of these, 675 patients (71.1\%) met all eligibility criteria and were randomized in a 2:1 ratio to receive \studydrug\ \studydose\ ($N=450$) or placebo ($N=225$). The most common reasons for screen failure were failure to meet PASI or sPGA severity thresholds (42.5\%), exclusionary laboratory findings (18.2\%), and withdrawal of consent (13.8\%).
+
+\vspace{4pt}
+The patient disposition is summarized in Table~\ref{tab:disposition} and illustrated in Figure~\ref{fig:flow}.
+
+\vspace{4pt}
+\begin{table}[H]
+\centering
+\caption{Patient Disposition (All Randomized Patients)}
+\label{tab:disposition}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{52mm}@{\hspace{4mm}}C{28mm}@{\hspace{4mm}}C{28mm}@{\hspace{4mm}}C{28mm}@{}}
+\toprule
+& \textbf{\studydrug\ \studydose} & \textbf{Placebo} & \textbf{Total} \\
+& \textbf{(\textit{N}\ =\ 450)} & \textbf{(\textit{N}\ =\ 225)} & \textbf{(\textit{N}\ =\ 675)} \\
+\midrule
+Randomized              & 450 (100.0\%) & 225 (100.0\%) & 675 (100.0\%) \\
+\addlinespace
+Treated ($\ge$ 1 dose)  & 448 (99.6\%)  & 224 (99.6\%)  & 672 (99.6\%)  \\
+\addlinespace
+Completed Week 16       & 418 (92.9\%)  & 202 (89.8\%)  & 620 (91.9\%)  \\
+\addlinespace
+Completed Week 52       & 398 (88.4\%)  & 192 (85.3\%)  & 590 (87.4\%)  \\
+\midrule
+\multicolumn{4}{@{}l}{\textbf{Primary Reason for Discontinuation (by Week 52)}}\\
+\quad Adverse Event            & 18 (4.0\%)   & 6 (2.7\%)    & 24 (3.6\%)  \\
+\quad Lack of Efficacy         & 8 (1.8\%)    & 14 (6.2\%)   & 22 (3.3\%)  \\
+\quad Withdrawal by Subject    & 14 (3.1\%)   & 8 (3.6\%)    & 22 (3.3\%)  \\
+\quad Lost to Follow-up        & 6 (1.3\%)    & 3 (1.3\%)    & 9 (1.3\%)   \\
+\quad Protocol Deviation       & 3 (0.7\%)    & 1 (0.4\%)    & 4 (0.6\%)   \\
+\quad Other                    & 3 (0.7\%)    & 1 (0.4\%)    & 4 (0.6\%)   \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=10mm and 28mm,
+  box/.style={rectangle, rounded corners=2pt, draw=accent!70, fill=accent!5, minimum width=42mm, minimum height=9mm, align=center, font=\footnotesize\bfseries, inner sep=2pt},
+  smallbox/.style={rectangle, rounded corners=2pt, draw=secondary!50, fill=white, minimum width=38mm, minimum height=8mm, align=center, font=\footnotesize, inner sep=2pt},
+  discbox/.style={rectangle, rounded corners=2pt, draw=alertred!60, fill=alerthighlight, minimum width=38mm, minimum height=8mm, align=center, font=\footnotesize, inner sep=2pt},
+  arrow/.style={-{Stealth[length=2.5mm]}, thick, accent},
+]
+\node[box] (screen) {Screened\\$N = 950$};
+\node[box, below=of screen] (rand) {Randomized\\$N = 675$};
+\node[box, below left=18mm and 16mm of rand, fill=accent!12] (brex) {\studydrug\ \studydose\\$N = 450$};
+\node[box, below right=18mm and 16mm of rand] (plac) {Placebo\\$N = 225$};
+\node[smallbox, below=of brex] (brexc) {Completed Week 52\\$n = 398$ (88.4\%)};
+\node[smallbox, below=of plac] (placc) {Completed Week 52\\$n = 192$ (85.3\%)};
+\node[discbox, below=of brexc] (brexd) {Discontinued\\$n = 52$ (11.6\%)};
+\node[discbox, below=of placc] (placd) {Discontinued\\$n = 33$ (14.7\%)};
+
+\draw[arrow] (screen) -- (rand) node[midway, right, font=\footnotesize\color{graytext}] {275 screen failures};
+\draw[arrow] (rand.south) -- ++(0,-5mm) -| (brex.north);
+\draw[arrow] (rand.south) -- ++(0,-5mm) -| (plac.north);
+\draw[arrow] (brex) -- (brexc);
+\draw[arrow] (plac) -- (placc);
+\draw[arrow] (brexc) -- (brexd);
+\draw[arrow] (placc) -- (placd);
+\end{tikzpicture}
+\caption{Patient Disposition Flowchart}
+\label{fig:flow}
+\end{figure}
+
+\subsection{Protocol Deviations}
+
+A total of 127 protocol deviations were reported among 94 patients (13.9\% of the randomized population). The most frequent deviations were related to visit scheduling outside the protocol-specified window (58 events; 8.6\% of patients), followed by missed study drug doses for 3 or more consecutive days (27 events; 4.0\% of patients). Major protocol deviations that led to exclusion from the Per-Protocol (PP) analysis set were identified in 42 patients (6.2\%), most commonly due to use of prohibited concomitant medication ($n = 18$) and non-compliance with study drug ($n = 14$).
+
+\vspace{4pt}
+All protocol deviations were reviewed by the study team and the sponsor prior to database lock. No individual protocol deviation was considered to have materially affected the integrity of the study results.
+
+\newpage
+
+% ──────────────────────────────────────────────
+% 7. EFFICACY EVALUATION
+% ──────────────────────────────────────────────
+\section{Efficacy Evaluation}
+
+\subsection{Demographic and Baseline Characteristics}
+
+Demographic and baseline disease characteristics were well balanced between treatment groups (Table~\ref{tab:demog}). The mean age was 44.3 years, 62.8\% of patients were male, and the mean baseline PASI score was 20.4. Approximately 28.1\% of patients had prior biologic exposure for psoriasis.
+
+\vspace{4pt}
+\begin{table}[H]
+\centering
+\caption{Demographic and Baseline Characteristics (Full Analysis Set)}
+\label{tab:demog}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{52mm}@{\hspace{4mm}}C{28mm}@{\hspace{4mm}}C{28mm}@{\hspace{4mm}}C{28mm}@{}}
+\toprule
+& \textbf{\studydrug\ \studydose} & \textbf{Placebo} & \textbf{Total} \\
+& \textbf{(\textit{N}\ =\ 447)} & \textbf{(\textit{N}\ =\ 223)} & \textbf{(\textit{N}\ =\ 670)} \\
+\midrule
+Age (years), mean $\pm$ SD     & 44.1 $\pm$ 13.2 & 44.7 $\pm$ 12.9 & 44.3 $\pm$ 13.1 \\
+Age (years), median (range)    & 43 (18--75)     & 45 (19--74)     & 44 (18--75)    \\
+Male, $n$ (\%)                  & 283 (63.3\%)    & 138 (61.9\%)    & 421 (62.8\%)   \\
+\addlinespace
+Race, $n$ (\%)\\
+\quad White                     & 366 (81.9\%)    & 184 (82.5\%)    & 550 (82.1\%)   \\
+\quad Black or African American & 38 (8.5\%)      & 17 (7.6\%)      & 55 (8.2\%)     \\
+\quad Asian                     & 31 (6.9\%)      & 16 (7.2\%)      & 47 (7.0\%)     \\
+\quad Other                     & 12 (2.7\%)      & 6 (2.7\%)       & 18 (2.7\%)     \\
+\addlinespace
+Weight (kg), mean $\pm$ SD     & 83.7 $\pm$ 18.4 & 84.1 $\pm$ 17.8 & 83.8 $\pm$ 18.2 \\
+BMI (kg/m$^2$), mean $\pm$ SD  & 28.6 $\pm$ 6.1  & 28.9 $\pm$ 5.9  & 28.7 $\pm$ 6.0  \\
+\midrule
+\multicolumn{4}{@{}l}{\textbf{Disease Characteristics}}\\
+Psoriasis duration (yr), mean $\pm$ SD & 16.8 $\pm$ 11.3 & 17.2 $\pm$ 11.7 & 16.9 $\pm$ 11.4 \\
+PASI score, mean $\pm$ SD     & 20.5 $\pm$ 7.3  & 20.2 $\pm$ 7.1  & 20.4 $\pm$ 7.2  \\
+sPGA 3 (moderate), $n$ (\%)   & 313 (70.0\%)    & 158 (70.9\%)    & 471 (70.3\%)   \\
+sPGA 4 (severe), $n$ (\%)     & 134 (30.0\%)    & 65 (29.1\%)     & 199 (29.7\%)   \\
+BSA involvement (\%), mean $\pm$ SD & 28.3 $\pm$ 14.6 & 27.9 $\pm$ 14.2 & 28.2 $\pm$ 14.5 \\
+DLQI score, mean $\pm$ SD     & 14.2 $\pm$ 6.6  & 14.0 $\pm$ 6.4  & 14.1 $\pm$ 6.5  \\
+Prior biologic use, $n$ (\%)  & 127 (28.4\%)    & 61 (27.4\%)     & 188 (28.1\%)   \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Primary Efficacy Endpoint}
+
+The primary efficacy endpoint was met (Table~\ref{tab:primary}). At Week 16, the proportion of patients achieving PASI 75 was significantly greater in the \studydrug\ group (72.3\%) compared to the placebo group (14.2\%), with an adjusted treatment difference of 58.1\% (95\% CI: 52.4\%, 63.8\%; $p < 0.0001$). The superiority of \studydrug\ over placebo was consistent across all pre-specified subgroups defined by baseline weight, prior biologic use, sex, age, race, and geographic region.
+
+\vspace{4pt}
+\begin{table}[H]
+\centering
+\caption{Primary Efficacy Endpoint: PASI 75 Response at Week 16 (FAS, NRI)}
+\label{tab:primary}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{48mm}@{\hspace{5mm}}C{28mm}@{\hspace{5mm}}C{28mm}@{\hspace{5mm}}>{\raggedright\arraybackslash}p{36mm}@{}}
+\toprule
+& \textbf{\studydrug\ \studydose} & \textbf{Placebo} & \textbf{Treatment Difference} \\
+& \textbf{(\textit{N}\ =\ 447)} & \textbf{(\textit{N}\ =\ 223)} & \textbf{(95\% CI)} \\
+\midrule
+PASI 75 responders, \textit{n} (\%) & 323 (72.3) & 31 (14.2) & --- \\
+Adjusted difference, \%              & --- & --- & 58.1 (52.4, 63.8) \\
+\midrule
+CMH test statistic      & \multicolumn{3}{c}{$Q_{\text{CMH}} = 198.4$} \\
+$p$-value (two-sided)   & \multicolumn{3}{c}{$p < 0.0001$} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Key Secondary Efficacy Endpoints}
+
+All key secondary efficacy endpoints were met with statistical significance following the pre-specified hierarchical testing procedure (Table~\ref{tab:secondary}). The proportion of patients achieving sPGA 0/1 at Week 16 was 62.9\% in the \studydrug\ group compared to 9.0\% in the placebo group ($p < 0.0001$). PASI 90 was achieved by 48.8\% and 4.9\% of patients in the \studydrug\ and placebo groups, respectively ($p < 0.0001$). A clinically meaningful and statistically significant improvement in DLQI was observed in the \studydrug\ group (LS mean change: $-10.4$) compared to placebo ($-2.3$; $p < 0.0001$).
+
+\vspace{4pt}
+\begin{table}[H]
+\centering
+\caption{Key Secondary Efficacy Endpoints at Week 16 (FAS, NRI)}
+\label{tab:secondary}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{42mm}@{\hspace{4mm}}C{28mm}@{\hspace{4mm}}C{28mm}@{\hspace{4mm}}>{\raggedright\arraybackslash}p{38mm}@{}}
+\toprule
+& \textbf{\studydrug\ \studydose} & \textbf{Placebo} & \textbf{Treatment Difference} \\
+& \textbf{(\textit{N}\ =\ 447)} & \textbf{(\textit{N}\ =\ 223)} & \textbf{(95\% CI); \textit{p}-value} \\
+\midrule
+sPGA 0/1, \textit{n} (\%)          & 281 (62.9)  & 20 (9.0)  & 53.9 (48.5, 59.3); $p < 0.0001$ \\
+\addlinespace
+PASI 90, \textit{n} (\%)            & 218 (48.8)  & 11 (4.9)  & 43.8 (38.7, 49.0); $p < 0.0001$ \\
+\addlinespace
+DLQI, LS mean change (SE)           & $-10.4\ (0.3)$ & $-2.3\ (0.4)$ & $-8.1\ (-9.1, -7.1)$; $p < 0.0001$ \\
+\addlinespace
+PASI 75 at Week 52, \textit{n} (\%) & 336 (75.2)  & --- & Maintained; $p < 0.0001$\textsuperscript{a} \\
+\bottomrule
+\end{tabularx}\\[3pt]
+{\footnotesize\textsuperscript{a} Compared to placebo PASI 75 response at Week 16 (14.2\%).}
+\end{table}
+
+\newpage
+
+% ──────────────────────────────────────────────
+% 8. SAFETY EVALUATION
+% ──────────────────────────────────────────────
+\section{Safety Evaluation}
+
+\subsection{Extent of Exposure}
+
+The median duration of exposure to study drug was 356 days (range: 12--398 days) in the \studydrug\ group and 350 days (range: 8--387 days) in the placebo group. Overall, 88.4\% of patients in the \studydrug\ group and 85.3\% in the placebo group completed 52 weeks of treatment. The cumulative patient-years of exposure were 405.2 patient-years for \studydrug\ and 196.8 patient-years for placebo.
+
+\subsection{Overview of Adverse Events}
+
+An overall summary of treatment-emergent adverse events is presented in Table~\ref{tab:aeoverview}. The proportion of patients reporting at least one TEAE was comparable between the \studydrug\ group (62.5\%) and the placebo group (58.9\%). Most TEAEs were mild or moderate in severity (Grade 1 or 2 per CTCAE v5.0).
+
+\vspace{4pt}
+\begin{table}[H]
+\centering
+\caption{Overall Summary of Treatment-Emergent Adverse Events (Safety Set)}
+\label{tab:aeoverview}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{45mm}@{\hspace{5mm}}C{28mm}@{\hspace{5mm}}C{28mm}@{\hspace{5mm}}C{28mm}@{}}
+\toprule
+& \textbf{\studydrug\ \studydose} & \textbf{Placebo} & \textbf{Total} \\
+& \textbf{(\textit{N}\ =\ 448)} & \textbf{(\textit{N}\ =\ 224)} & \textbf{(\textit{N}\ =\ 672)} \\
+& \textbf{\textit{n} (\%)} & \textbf{\textit{n} (\%)} & \textbf{\textit{n} (\%)} \\
+\midrule
+Any TEAE                     & 280 (62.5)   & 132 (58.9)   & 412 (61.3)   \\
+Any drug-related TEAE\textsuperscript{a}        & 148 (33.0)   & 54 (24.1)    & 202 (30.1)   \\
+Any TEAE Grade $\ge$ 3       & 22 (4.9)     & 10 (4.5)     & 32 (4.8)     \\
+Any SAE                      & 19 (4.2)     & 8 (3.6)      & 27 (4.0)     \\
+Any TEAE leading to discontinuation & 18 (4.0) & 6 (2.7)    & 24 (3.6)     \\
+Death                         & 0            & 0            & 0            \\
+\bottomrule
+\end{tabularx}\\[3pt]
+{\footnotesize\textsuperscript{a} Assessed as possibly, probably, or definitely related to study drug by the investigator.}
+\end{table}
+
+\subsection{Adverse Events by System Organ Class and Preferred Term}
+
+Treatment-emergent adverse events categorized by System Organ Class (SOC) and Preferred Term (PT) occurring in $\ge 2\%$ of patients in either treatment group are summarized in Table~\ref{tab:aesoc}. Events were coded using MedDRA version 27.0. The most frequently reported TEAEs by SOC were infections and infestations (34.6\%), nervous system disorders (13.8\%), and gastrointestinal disorders (15.2\%).
+
+\vspace{4pt}
+\begin{table}[H]
+\centering
+\caption{Treatment-Emergent Adverse Events by SOC and PT ($\ge$ 2\% in Either Group; Safety Set)}
+\label{tab:aesoc}
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{52mm}@{\hspace{3mm}}>{\raggedleft\arraybackslash}p{28mm}@{\hspace{3mm}}>{\raggedleft\arraybackslash}p{28mm}@{\hspace{3mm}}>{\raggedleft\arraybackslash}p{28mm}@{}}
+\toprule
+& \textbf{\studydrug\ \studydose} & \textbf{Placebo} & \textbf{Total} \\
+\textbf{System Organ Class / Preferred Term} & \textbf{(\textit{N}\ =\ 448)} & \textbf{(\textit{N}\ =\ 224)} & \textbf{(\textit{N}\ =\ 672)} \\
+& \textbf{\textit{n} (\%)} & \textbf{\textit{n} (\%)} & \textbf{\textit{n} (\%)} \\
+\midrule
+\rowcolor{tablerow}
+\multicolumn{4}{@{}l}{\textbf{Infections and Infestations}}\\
+\quad Nasopharyngitis            & 81 (18.1)  & 33 (14.7)  & 114 (17.0) \\
+\quad Upper respiratory tract infection & 56 (12.5)  & 21 (9.4)   & 77 (11.5) \\
+\quad Urinary tract infection     & 18 (4.0)   & 8 (3.6)    & 26 (3.9)   \\
+\quad Sinusitis                   & 14 (3.1)   & 6 (2.7)    & 20 (3.0)   \\
+\quad Bronchitis                  & 11 (2.5)   & 5 (2.2)    & 16 (2.4)   \\
+\midrule
+\rowcolor{tablerow}
+\multicolumn{4}{@{}l}{\textbf{Nervous System Disorders}}\\
+\quad Headache                    & 40 (8.9)   & 18 (8.0)   & 58 (8.6)   \\
+\quad Dizziness                   & 11 (2.5)   & 5 (2.2)    & 16 (2.4)   \\
+\midrule
+\rowcolor{tablerow}
+\multicolumn{4}{@{}l}{\textbf{Gastrointestinal Disorders}}\\
+\quad Diarrhea                    & 28 (6.3)   & 12 (5.4)   & 40 (6.0)   \\
+\quad Nausea                      & 22 (4.9)   & 10 (4.5)   & 32 (4.8)   \\
+\quad Abdominal pain              & 13 (2.9)   & 7 (3.1)    & 20 (3.0)   \\
+\midrule
+\rowcolor{tablerow}
+\multicolumn{4}{@{}l}{\textbf{Musculoskeletal and Connective Tissue Disorders}}\\
+\quad Arthralgia                  & 16 (3.6)   & 11 (4.9)   & 27 (4.0)   \\
+\quad Back pain                   & 15 (3.3)   & 8 (3.6)    & 23 (3.4)   \\
+\midrule
+\rowcolor{tablerow}
+\multicolumn{4}{@{}l}{\textbf{Skin and Subcutaneous Tissue Disorders}}\\
+\quad Pruritus                    & 14 (3.1)   & 9 (4.0)    & 23 (3.4)   \\
+\midrule
+\rowcolor{tablerow}
+\multicolumn{4}{@{}l}{\textbf{General Disorders and Administration Site Conditions}}\\
+\quad Fatigue                     & 18 (4.0)   & 10 (4.5)   & 28 (4.2)   \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Serious Adverse Events}
+
+Serious adverse events (SAEs) were reported in 19 patients (4.2\%) in the \studydrug\ group and 8 patients (3.6\%) in the placebo group. No individual SAE preferred term was reported in more than one patient in either treatment group. The SAEs reported in the \studydrug\ group included: appendicitis ($n=1$), cholelithiasis ($n=1$), pneumonia ($n=2$), cellulitis ($n=1$), transient ischemic attack ($n=1$), non-ST elevation myocardial infarction ($n=1$), and fractures secondary to accidental trauma ($n=2$). None of the SAEs were assessed as related to study drug by the investigator.
+
+\begin{safetybox}
+No deaths occurred during the study treatment period. Two deaths were reported in the post-treatment follow-up period, both in the \studydrug\ group: one due to a motor vehicle accident (Day 389, 25 days after the last dose) and one sudden death of unknown cause (Day 378, 14 days after the last dose). Both events were assessed by the investigator and the DSMB as unrelated to study drug.
+\end{safetybox}
+
+\subsection{DSMB Oversight}
+
+The independent Data Safety Monitoring Board (DSMB) met three times during the study (after 25\%, 50\%, and 75\% of patients completed Week 16) to review unblinded safety data. At each meeting, the DSMB recommended continuation of the study without modification.
+
+\begin{dsmbbox}
+\textbf{DSMB Final Assessment (15 January 2026).} The DSMB reviewed the final unblinded safety data and concluded that the overall benefit--risk profile of \studydrug\ \studydose\ remains favorable. No new safety signals were identified. The DSMB noted a modest, non-significant numerical imbalance in the rate of serious infections (1.8\% \studydrug\ vs.\ 0.9\% placebo) and recommended routine post-marketing surveillance for this event category.
+\end{dsmbbox}
+
+\subsection{Clinical Laboratory Evaluations}
+
+No clinically meaningful differences in mean changes from baseline in hematology, clinical chemistry, or urinalysis parameters were observed between treatment groups. Grade $\ge 3$ laboratory abnormalities were reported in 3.1\% of \studydrug-treated patients (most commonly ALT elevation: 2.0\%; all transient and asymptomatic) and 2.2\% of placebo-treated patients. One patient in the \studydrug\ group met the protocol-defined criteria for potential Hy's Law (ALT $> 3\times$ ULN with concurrent total bilirubin $> 2\times$ ULN); the event resolved upon treatment discontinuation and was assessed as possibly related to study drug.
+
+\subsection{Vital Signs and Physical Findings}
+
+No clinically relevant changes in vital signs (systolic/diastolic blood pressure, heart rate, respiratory rate, body temperature) or physical examination findings were observed over the 52-week treatment period in either treatment group.
+
+\newpage
+
+% ──────────────────────────────────────────────
+% 9. DISCUSSION AND CONCLUSIONS
+% ──────────────────────────────────────────────
+\section{Discussion and Overall Conclusions}
+
+The BREX-301 study demonstrated that \studydrug\ \studydose\ administered orally once daily was significantly superior to placebo across all pre-specified primary and key secondary efficacy endpoints in adults with moderate-to-severe plaque psoriasis. The magnitude of the treatment effect was robust: the adjusted difference in PASI 75 response at Week 16 was 58.1\% (95\% CI: 52.4\%, 63.8\%; $p < 0.0001$), which is clinically meaningful and compares favorably with results from pivotal trials of currently approved biologic therapies in similar patient populations.
+
+\vspace{4pt}
+The onset of efficacy was rapid, with separation from placebo in PASI 75 response rates observed as early as Week 2 (22.4\% \studydrug\ vs.\ 2.7\% placebo; nominal $p < 0.001$). Response rates continued to improve through Week 16 and were maintained through Week 52, with 75.2\% of \studydrug-treated patients achieving PASI 75 at Week 52. The proportions of patients achieving the more stringent thresholds of PASI 90 (48.8\% at Week 16) and sPGA 0/1 (62.9\% at Week 16) support a high degree of skin clearance with \studydrug\ treatment. The clinically meaningful improvement in patient-reported DLQI scores further corroborates the benefit of \studydrug\ from the patient perspective.
+
+\vspace{4pt}
+The safety profile of \studydrug\ over 52 weeks was generally consistent with that observed in earlier-phase studies. The overall incidence of TEAEs, SAEs, and TEAEs leading to discontinuation was comparable between treatment groups. No new or unexpected safety signals were identified. The types of AEs observed were consistent with the target patient population and the known pharmacologic properties of brexiprant. Importantly, the oral route of administration represents a significant advantage over currently available biologic therapies, which require subcutaneous or intravenous administration.
+
+\begin{notebox}
+\textbf{Regulatory Implications.} The results of BREX-301, together with the concurrently conducted BREX-302 study (a Phase III active-comparator trial vs.\ adalimumab), form the basis of a New Drug Application (NDA) planned for submission to the U.S. Food and Drug Administration and a Marketing Authorization Application (MAA) to the European Medicines Agency in Q3 2026.
+\end{notebox}
+
+\vspace{4pt}
+In conclusion, \studydrug\ \studydose\ administered orally once daily demonstrated superior efficacy with a favorable safety profile in the treatment of moderate-to-severe plaque psoriasis over 52 weeks. If approved, brexiprant would represent the first oral targeted therapy for this indication, addressing a significant unmet need for patients who prefer or require an alternative to injectable biologic therapies.
+
+\newpage
+
+% ──────────────────────────────────────────────
+% 10. SAP CROSS-REFERENCE
+% ──────────────────────────────────────────────
+\section{Tables, Figures, and Listings Cross-Reference}
+\label{sec:saper}
+
+Table~\ref{tab:saper} provides a cross-reference between the Statistical Analysis Plan (SAP, Version 2.0, dated 15 July 2025) and the relevant sections of this Clinical Study Report. The SAP was finalized and signed prior to database lock and treatment unblinding on 28 January 2026.
+
+\vspace{4pt}
+\begin{table}[H]
+\centering
+\caption{Cross-Reference: Statistical Analysis Plan to Clinical Study Report}
+\label{tab:saper}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{6mm}}>{\raggedright\arraybackslash}X@{\hspace{6mm}}>{\bfseries}l@{}}
+\toprule
+\textbf{SAP \S} & \textbf{SAP Description} & \textbf{CSR \S} \\
+\midrule
+3.1   & Study Objectives and Endpoints             & 4 \\
+4.1   & Analysis Populations (FAS, PP, Safety)     & 7.1, 6.1 \\
+5.1   & Sample Size Determination                  & Synopsis \\
+6.1   & Patient Disposition                        & 6.1 \\
+6.2   & Demographic and Baseline Characteristics   & 7.1 \\
+7.1   & Primary Efficacy Analysis (PASI 75, Week 16) & 7.2 \\
+7.2   & Key Secondary Efficacy Analyses             & 7.3 \\
+7.3   & Subgroup Analyses                           & 7.2 \\
+7.4   & Sensitivity Analyses for Missing Data       & 7.2 \\
+8.1   & Extent of Exposure                          & 8.1 \\
+8.2   & Overall AE Summary                          & 8.2 \\
+8.3   & AEs by SOC and PT                           & 8.3 \\
+8.4   & Serious Adverse Events                      & 8.4 \\
+8.5   & Laboratory Evaluations                      & 8.5 \\
+8.6   & Vital Signs                                 & 8.6 \\
+9.1   & Interim Analysis (Futility)                 & 5.5 \\
+9.2   & Multiplicity Adjustment                     & 5.5 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{notebox}
+All tables, figures, and listings (TFLs) referenced in this report were produced using SAS\textsuperscript{\textregistered} Version 9.4 (SAS Institute Inc., Cary, NC, USA) in accordance with CDISC standards (SDTM v1.8, ADaM v2.1). The complete set of TFLs is provided in Appendix 16.2.
+\end{notebox}
+
+\newpage
+
+% ──────────────────────────────────────────────
+% 11. REFERENCES
+% ──────────────────────────────────────────────
+\section{Reference List}
+
+\begin{enumerate}[label={[\arabic*]}, leftmargin=*]
+  \item ICH Harmonised Tripartite Guideline. Structure and Content of Clinical Study Reports (E3). Step 4 version, 30 November 1995.
+  \item ICH Harmonised Tripartite Guideline. Guideline for Good Clinical Practice (E6/R2). Step 4 version, 9 November 2016.
+  \item World Medical Association. Declaration of Helsinki --- Ethical Principles for Medical Research Involving Human Subjects. \textit{JAMA}. 2013;310(20):2191--2194.
+  \item Lebwohl MG, Bachelez H, Barker J, et al.\ Patient perspectives in the management of psoriasis: results from the population-based Multinational Assessment of Psoriasis and Psoriatic Arthritis Survey. \textit{J Am Acad Dermatol}. 2014;70(5):871--881.
+  \item Armstrong AW, Read C. Pathophysiology, clinical presentation, and treatment of psoriasis: a review. \textit{JAMA}. 2020;323(19):1945--1960.
+  \item Langley RG, Elewski BE, Lebwohl M, et al.\ Secukinumab in plaque psoriasis --- results of two phase 3 trials. \textit{N Engl J Med}. 2014;371(4):326--338.
+  \item Gordon KB, Blauvelt A, Papp KA, et al.\ Phase 3 trials of ixekizumab in moderate-to-severe plaque psoriasis. \textit{N Engl J Med}. 2016;375(4):345--356.
+  \item Reich K, Armstrong AW, Langley RG, et al.\ Guselkumab versus secukinumab for the treatment of moderate-to-severe psoriasis (ECLIPSE): results from a phase 3, randomised controlled trial. \textit{Lancet}. 2019;394(10201):831--839.
+  \item Brexiprant Investigator's Brochure. Edition 7. Novartis Pharmaceuticals Corporation; 15 October 2025.
+  \item Study BREX-201 Clinical Study Report. A Phase II, Randomized, Dose-Ranging Study of Brexiprant in Patients with Moderate-to-Severe Plaque Psoriasis. Novartis Pharmaceuticals Corporation; 05 March 2025.
+\end{enumerate}
+
+\end{document}

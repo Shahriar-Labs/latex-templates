@@ -1,0 +1,600 @@
+%% ============================================================
+%% Legal Brief (Litigation) Template — elegant, modern design
+%% Editable and compilable online at https://letx.app
+%% Compile: latexmk -pdf main.tex  (pdflatex)
+%% ============================================================
+
+\documentclass[12pt,letterpaper]{article}
+\usepackage{amsmath}
+
+%% ── Core geometry & encoding ─────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[
+  top=1in, bottom=1in,
+  left=1.25in, right=1.25in,
+  headheight=15pt
+]{geometry}
+
+%% ── Typography: Palatino serif (classic legal) ───────────────
+\usepackage{mathpazo}
+\usepackage{microtype}
+
+%% ── Colour palette ───────────────────────────────────────────
+\usepackage[dvipsnames,svgnames]{xcolor}
+\definecolor{accent}{HTML}{1A3A5C}    % deep navy
+\definecolor{ruled}{HTML}{2C5F8A}    % mid-blue for rules
+\definecolor{midgray}{HTML}{555555}
+\definecolor{lightgray}{HTML}{EEEEEE}
+\definecolor{pagetint}{HTML}{FAFAF8} % warm white page
+
+%% ── Core layout packages ─────────────────────────────────────
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\usepackage{setspace}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{multicol}
+\usepackage{calc}
+\usepackage{ifthen}
+\usepackage{etoolbox}
+
+%% ── Headers / footers ────────────────────────────────────────
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+%% ── Rules & decoration ───────────────────────────────────────
+\usepackage{tikz}
+\usetikzlibrary{calc,positioning,backgrounds}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usetikzlibrary{shadows}
+
+%% ── Icons ────────────────────────────────────────────────────
+\usepackage{fontawesome5}
+
+%% ── Titlesec for section styling ─────────────────────────────
+\usepackage{titlesec}
+\usepackage{titletoc}
+
+%% ── PDF / hyperlinks ─────────────────────────────────────────
+\usepackage[
+  pdftitle={Brief of Appellant -- Harrington v. Meridian Capital Group},
+  pdfauthor={Eleanor M. Ashworth, Esq.},
+  pdfsubject={Civil Litigation -- Securities Fraud},
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent,
+  citecolor=accent
+]{hyperref}
+
+%% ── Line spacing (legal standard: double-spaced body) ─────────
+\setstretch{2.0}
+
+%% ══════════════════════════════════════════════════════════════
+%% PAGE STYLE
+%% ══════════════════════════════════════════════════════════════
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+
+\fancyhead[L]{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \draw[accent, line width=1pt]
+      (current page.north west) ++(1.25in,-0.6in) --
+      ($(current page.north east) + (-1.25in,-0.6in)$);
+  \end{tikzpicture}%
+  \color{midgray}\small\textit{Harrington v.\ Meridian Capital Group, LLC}%
+}
+\fancyhead[R]{\color{midgray}\small No.\ 24-cv-08812 (S.D.N.Y.)}
+\fancyfoot[C]{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \draw[accent!30, line width=0.6pt]
+      (current page.south west) ++(1.25in, 0.75in) --
+      ($(current page.south east) + (-1.25in, 0.75in)$);
+  \end{tikzpicture}%
+  \color{midgray}\small\thepage\ of \pageref{LastPage}%
+}
+
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \fancyfoot[C]{\color{midgray}\small\thepage\ of \pageref{LastPage}}
+}
+
+%% ══════════════════════════════════════════════════════════════
+%% SECTION STYLING
+%% ══════════════════════════════════════════════════════════════
+%% Part-level (Roman numeral argument headings)
+\titleformat{\section}[block]
+  {\normalfont\large\bfseries\color{accent}\MakeUppercase}
+  {\thesection.}{0.5em}{}[{\color{ruled}\titlerule[0.8pt]}]
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+
+%% Sub-section (A., B., …)
+\titleformat{\subsection}[block]
+  {\normalfont\normalsize\bfseries\color{accent!85!black}}
+  {\thesubsection.}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{14pt}{4pt}
+
+%% Sub-sub-section (1., 2., …)
+\titleformat{\subsubsection}[runin]
+  {\normalfont\normalsize\itshape\color{midgray}}
+  {\thesubsubsection.}{0.4em}{}[.]
+\titlespacing*{\subsubsection}{0pt}{10pt}{6pt}
+
+%% Section numbering style
+\renewcommand{\thesection}{\Roman{section}}
+\renewcommand{\thesubsection}{\Alph{subsection}}
+\renewcommand{\thesubsubsection}{\arabic{subsubsection}}
+
+%% ══════════════════════════════════════════════════════════════
+%% BLUEBOOK CITATION MACROS
+%% ══════════════════════════════════════════════════════════════
+%% \caseref{Name}{Reporter Volume}{Reporter}{First Page}{Year}
+\newcommand{\caseref}[5]{%
+  \textit{#1}, #2 #3 #4 (#5)%
+}
+%% \caseshort{Name}{Page}{Pinpoint}
+\newcommand{\caseshort}[3]{%
+  \textit{#1}, #2, at #3%
+}
+%% \statref{Title}{U.S.C. or CFR ref}
+\newcommand{\statref}[2]{%
+  #1, #2%
+}
+%% \cfr{Title}{Part}
+\newcommand{\cfr}[2]{%
+  #1 C.F.R.\ \S\,#2%
+}
+%% inline emphasis for defined terms
+\newcommand{\dterm}[1]{\textbf{``#1''}}
+
+%% ══════════════════════════════════════════════════════════════
+%% ENVIRONMENTS
+%% ══════════════════════════════════════════════════════════════
+
+%% Shaded IRAC-block tcolorbox
+\tcbset{iracsty/.style={
+  enhanced,
+  breakable,
+  colback=lightgray!60,
+  colframe=accent,
+  boxrule=0.6pt,
+  arc=2pt,
+  left=6pt, right=6pt, top=4pt, bottom=4pt,
+  fonttitle=\normalfont\small\bfseries\color{accent},
+  attach boxed title to top left={yshift=-2mm,xshift=4mm},
+  boxed title style={colback=white, colframe=accent, boxrule=0.6pt, arc=2pt},
+  before upper={\setstretch{1.4}}
+}}
+
+\newtcolorbox{iracblock}[1]{iracsty, title={#1}}
+
+%% Numbered facts environment
+\newlist{factlist}{enumerate}{1}
+\setlist[factlist]{
+  label=\textbf{\arabic*.},
+  leftmargin=2em,
+  itemsep=2pt,
+  parsep=0pt,
+  topsep=4pt
+}
+
+%% Numbered argument list
+\newlist{arglist}{enumerate}{2}
+\setlist[arglist,1]{
+  label=\textbf{\Roman*.},
+  leftmargin=2.2em,
+  itemsep=6pt,
+  parsep=0pt,
+  topsep=6pt
+}
+\setlist[arglist,2]{
+  label=\textbf{\Alph*.},
+  leftmargin=2.4em,
+  itemsep=4pt,
+  parsep=0pt,
+  topsep=2pt
+}
+
+%% Authorities list (Table of Authorities entries)
+\newcommand{\toaentry}[2]{%
+  \noindent
+  {\setstretch{1.2}%
+  \hangindent=1.5em\hangafter=1%
+  \hspace{0pt}#1\dotfill\textbf{#2}\par}%
+}
+
+%% Signature line
+\newcommand{\sigline}[1]{%
+  \vspace{8pt}%
+  \noindent\rule{2.8in}{0.4pt}\\[-2pt]
+  {\small\color{midgray}#1}%
+}
+
+%% Certificate block (tcolorbox)
+\newtcolorbox{certblock}{
+  enhanced,
+  breakable,
+  colback=accent!5,
+  colframe=accent!40,
+  boxrule=0.5pt,
+  arc=3pt,
+  left=10pt, right=10pt, top=6pt, bottom=6pt,
+  before upper={\setstretch{1.4}}
+}
+
+%% ══════════════════════════════════════════════════════════════
+%% KEY–VALUE TABLE MACRO
+%%   #1 = left column header, #2 = right column content pairs
+%% Usage: \kvrow{Key}{Value}
+%% ══════════════════════════════════════════════════════════════
+\newcommand{\kvrow}[2]{%
+  {\color{accent}\bfseries #1} & #2 \\[2pt]%
+}
+
+%% ══════════════════════════════════════════════════════════════
+%% DOCUMENT
+%% ══════════════════════════════════════════════════════════════
+\begin{document}
+\thispagestyle{plain}
+
+%% ── Cover Block ──────────────────────────────────────────────
+\begin{center}
+  {\color{accent}\rule{\linewidth}{1.8pt}}\\[6pt]
+  {\setstretch{1.2}%
+  \large\bfseries\color{accent}
+  UNITED STATES DISTRICT COURT\\[3pt]
+  SOUTHERN DISTRICT OF NEW YORK\\[10pt]
+  }%
+  {\color{ruled}\rule{\linewidth}{0.6pt}}\\[14pt]
+
+  \begin{tabularx}{\linewidth}{@{} X @{\quad} l @{}}
+    \textbf{JAMES R. HARRINGTON,} Individually and\newline
+    on Behalf of All Others Similarly Situated, &
+    \\[2pt]
+    \hspace{2em}\textit{Plaintiff-Appellant,} &
+    Civil Action No.\\[4pt]
+    \multicolumn{1}{c}{\textit{v.}} &
+    \textbf{24-cv-08812 (AJN)}\\[4pt]
+    \textbf{MERIDIAN CAPITAL GROUP, LLC;}
+    \textbf{THEODORE V. CASTELLAN,}
+    Chief Executive Officer; and
+    \textbf{VICTORIA CHEN,}
+    Chief Financial Officer, &
+    \\[2pt]
+    \hspace{2em}\textit{Defendants-Appellees.} &
+    \\
+  \end{tabularx}
+
+  \vspace{10pt}
+  {\color{ruled}\rule{\linewidth}{0.6pt}}\\[12pt]
+
+  {\setstretch{1.2}%
+  \LARGE\bfseries\color{accent}
+  BRIEF OF PLAINTIFF-APPELLANT\\[6pt]
+  }%
+  {\large\color{midgray}
+  IN SUPPORT OF MOTION FOR\\
+  PARTIAL SUMMARY JUDGMENT\\[6pt]
+  }%
+
+  {\color{accent}\rule{\linewidth}{1.8pt}}\\[14pt]
+
+  {\setstretch{1.3}%
+  \normalsize
+  \textbf{Eleanor M. Ashworth, Esq.}\\
+  \textit{Lead Counsel for Plaintiff-Appellant}\\[4pt]
+  \textbf{Ashworth \& Kellerman LLP}\\
+  One Bryant Park, 47th Floor\\
+  New York, New York 10036\\
+  Tel.: (212) 555-0147 \quad Fax: (212) 555-0199\\
+  \texttt{eashworth@akllp.com}\\[6pt]
+  \textit{Of Counsel:}\\
+  Marcus D. Ferreira, Esq.\\
+  Claudia N. Obi, Esq.\\[10pt]
+  Dated: July 8, 2026
+  }%
+\end{center}
+
+\newpage
+
+%% ══════════════════════════════════════════════════════════════
+%% CORPORATE DISCLOSURE
+%% ══════════════════════════════════════════════════════════════
+\begin{center}
+  {\large\bfseries\color{accent}CORPORATE DISCLOSURE STATEMENT}
+\end{center}
+
+\vspace{4pt}
+
+Pursuant to Federal Rule of Civil Procedure 7.1, Plaintiff-Appellant James R. Harrington states that he is an individual and has no parent corporation or publicly held corporation owning 10\% or more of his stock.
+
+\vspace{10pt}
+
+%% ══════════════════════════════════════════════════════════════
+%% TABLE OF CONTENTS
+%% ══════════════════════════════════════════════════════════════
+\setstretch{1.4}
+\tableofcontents
+\setstretch{2.0}
+
+\newpage
+
+%% ══════════════════════════════════════════════════════════════
+%% TABLE OF AUTHORITIES
+%% ══════════════════════════════════════════════════════════════
+\phantomsection
+\addcontentsline{toc}{section}{TABLE OF AUTHORITIES}
+\begin{center}
+  {\large\bfseries\color{accent}TABLE OF AUTHORITIES}
+\end{center}
+
+\setstretch{1.3}
+
+\noindent{\bfseries\color{accent}CASES}\vspace{4pt}\\[2pt]
+{\color{accent!40}\rule{\linewidth}{0.4pt}}\\[6pt]
+
+\toaentry{\caseref{Basic Inc.}{485}{U.S.}{224}{1988}}{3, 7, 11}
+\toaentry{\caseref{Dura Pharmaceuticals, Inc.\ v.\ Broudo}{544}{U.S.}{336}{2005}}{7, 12}
+\toaentry{\caseref{Ernst \& Ernst v.\ Hochfelder}{425}{U.S.}{185}{1976}}{8}
+\toaentry{\caseref{Halliburton Co.\ v.\ Erica P.\ John Fund, Inc.}{573}{U.S.}{258}{2014}}{9, 11}
+\toaentry{\caseref{In re WorldCom, Inc.\ Sec.\ Litig.}{346}{F. Supp. 2d}{628}{S.D.N.Y. 2004}}{10}
+\toaentry{\caseref{Matrixx Initiatives, Inc.\ v.\ Siracusano}{563}{U.S.}{27}{2011}}{8, 9}
+\toaentry{\caseref{Novak v.\ Kasaks}{216}{F.3d}{300}{2d Cir. 2000}}{10}
+\toaentry{\caseref{Stoneridge Inv.\ Partners, LLC v.\ Scientific-Atlanta, Inc.}{552}{U.S.}{148}{2008}}{13}
+\toaentry{\caseref{Tellabs, Inc.\ v.\ Makor Issues \& Rights, Ltd.}{551}{U.S.}{308}{2007}}{9}
+
+\vspace{10pt}
+\noindent{\bfseries\color{accent}STATUTES}\vspace{4pt}\\[2pt]
+{\color{accent!40}\rule{\linewidth}{0.4pt}}\\[6pt]
+
+\toaentry{Securities Exchange Act of 1934, 15 U.S.C.\ \S\,78j(b)}{3, 6}
+\toaentry{Securities Exchange Act of 1934, 15 U.S.C.\ \S\,78t(a)}{6}
+\toaentry{Private Securities Litigation Reform Act of 1995, Pub.\ L.\ 104-67, 109 Stat.\ 737}{5}
+\toaentry{Sarbanes-Oxley Act of 2002, 15 U.S.C.\ \S\,7241}{6}
+
+\vspace{10pt}
+\noindent{\bfseries\color{accent}REGULATIONS}\vspace{4pt}\\[2pt]
+{\color{accent!40}\rule{\linewidth}{0.4pt}}\\[6pt]
+
+\toaentry{\cfr{17}{240.10b-5}}{3, 6, 8}
+\toaentry{\cfr{17}{240.10b5-1}}{8}
+
+\vspace{10pt}
+\noindent{\bfseries\color{accent}SECONDARY AUTHORITIES}\vspace{4pt}\\[2pt]
+{\color{accent!40}\rule{\linewidth}{0.4pt}}\\[6pt]
+
+\toaentry{Louis Loss \& Joel Seligman, \textit{Fundamentals of Securities Regulation} (6th ed.\ 2011)}{9}
+\toaentry{7A Charles A.\ Wright \& Arthur R.\ Miller, \textit{Federal Practice and Procedure} \S\,1735 (4th ed.\ 2022)}{11}
+
+\setstretch{2.0}
+
+\newpage
+
+%% ══════════════════════════════════════════════════════════════
+%% JURISDICTIONAL STATEMENT
+%% ══════════════════════════════════════════════════════════════
+\phantomsection
+\addcontentsline{toc}{section}{JURISDICTIONAL STATEMENT}
+\begin{center}
+  {\large\bfseries\color{accent}JURISDICTIONAL STATEMENT}
+\end{center}
+
+This Court has subject-matter jurisdiction pursuant to 28 U.S.C.\ \S\,1331 (federal question) and Section 27 of the Securities Exchange Act of 1934, 15 U.S.C.\ \S\,78aa. Venue is proper in this District under Section 27 of the Exchange Act because the acts and transactions giving rise to this action occurred in substantial part in this District, and Defendant Meridian Capital Group, LLC maintains its principal offices at 383 Madison Avenue, New York, New York 10179.
+
+%% ══════════════════════════════════════════════════════════════
+%% QUESTIONS PRESENTED
+%% ══════════════════════════════════════════════════════════════
+\phantomsection
+\addcontentsline{toc}{section}{QUESTIONS PRESENTED}
+\begin{center}
+  {\large\bfseries\color{accent}QUESTIONS PRESENTED}
+\end{center}
+
+\begin{enumerate}[label=\textbf{\arabic*.},leftmargin=2em,itemsep=6pt,parsep=0pt]
+
+\item Whether Defendants made materially false and misleading statements about
+  Meridian Capital Group's loan-default rates and reserve adequacy in public
+  filings during the class period of January 14, 2022 through November 30, 2023,
+  in violation of Section 10(b) of the Securities Exchange Act and Rule 10b-5.
+
+\item Whether Plaintiff has established loss causation by demonstrating that the
+  corrective disclosures of December 1, 2023, caused a statistically significant
+  decline in Meridian's share price and resulted in cognizable economic harm to
+  class members.
+
+\item Whether Defendants Theodore V. Castellan and Victoria Chen, as control
+  persons within the meaning of Section 20(a) of the Exchange Act, are jointly
+  and severally liable for the primary violations of Section 10(b).
+
+\end{enumerate}
+
+%% ══════════════════════════════════════════════════════════════
+%% STATEMENT OF THE CASE
+%% ══════════════════════════════════════════════════════════════
+\phantomsection
+\addcontentsline{toc}{section}{STATEMENT OF THE CASE}
+\begin{center}
+  {\large\bfseries\color{accent}STATEMENT OF THE CASE}
+\end{center}
+
+\subsection*{A. Nature of the Action}
+
+This is a federal securities class action arising out of a scheme by Defendants to deceive the investing public about the financial health of Meridian Capital Group, LLC (\dterm{Meridian}), a specialty commercial lender headquartered in New York. Over a twenty-three-month class period, Defendants concealed mounting losses in Meridian's commercial real estate loan portfolio by systematically understating loan-default rates and maintaining inadequate loan-loss reserves in violation of Generally Accepted Accounting Principles (\dterm{GAAP}).
+
+\subsection*{B. Statement of Facts}
+
+\begin{factlist}
+
+\item Meridian is a Delaware limited liability company that operates as a specialty commercial real estate lender. During the Class Period---January 14, 2022 through November 30, 2023---Meridian's publicly traded Series A Notes were listed on the New York Stock Exchange under the ticker symbol \texttt{MRDX}.
+
+\item Defendant Theodore V. Castellan (\dterm{Castellan}) served as Chief Executive Officer throughout the Class Period and signed each quarterly and annual report filed with the Securities and Exchange Commission (\dterm{SEC}). Defendant Victoria Chen (\dterm{Chen}) served as Chief Financial Officer and directly supervised the loan-classification and reserve-calculation process.
+
+\item Beginning in the fourth quarter of 2021, Meridian's loan portfolio suffered significant deterioration as rising interest rates caused a wave of defaults among its borrowers in the hospitality and mixed-use development sectors. By December 31, 2021, internal credit-committee memoranda (the \dterm{December 2021 Memos}) identified \$412 million in loans carrying a ``high-risk'' classification---approximately 18.4\% of the total portfolio.
+
+\item Notwithstanding this internal assessment, Meridian's Form 10-K for fiscal year 2021, filed February 28, 2022, disclosed only \$87 million in high-risk loans (3.9\% of the portfolio) and reported a loan-loss reserve of \$43.6 million. The December 2021 Memos were not disclosed.
+
+\item On each of eight quarterly earnings calls conducted between March 2022 and September 2023, Castellan and Chen made oral representations to investors and securities analysts that Meridian's credit quality was ``stable,'' its reserves were ``robust,'' and that management ``proactively identif[ied] and remediate[d] credit weaknesses.'' These statements were materially false when made.
+
+\item On December 1, 2023, the Wall Street Journal published an investigative report revealing that the SEC had subpoenaed Meridian's internal credit-committee records. That same day, Meridian issued a press release acknowledging that it was ``reviewing certain historical classifications of commercial loans.'' Meridian's Series A Notes declined 34.7\% in intraday trading on December 1, 2023 (from \$18.42 to \$12.02 per note), on trading volume 14.3 times the 30-day average.
+
+\item On February 14, 2024, Meridian filed restated financial statements for fiscal years 2021--2023, increasing reported high-risk loans to \$419 million and boosting the loan-loss reserve to \$231.4 million---an increase of more than \$187 million above what had been publicly reported during the Class Period.
+
+\item Plaintiff James R. Harrington purchased Meridian Series A Notes at prices ranging from \$16.75 to \$19.10 per note during the Class Period and suffered losses of approximately \$182,400 upon corrective disclosure.
+
+\end{factlist}
+
+%% ══════════════════════════════════════════════════════════════
+%% ARGUMENT
+%% ══════════════════════════════════════════════════════════════
+
+\section{PLAINTIFF HAS ESTABLISHED ALL ELEMENTS OF A SECTION 10(B) CLAIM}
+
+\subsection{The Applicable Legal Standard}
+
+To prevail on a claim under Section 10(b) of the Securities Exchange Act of 1934 and Rule 10b-5 promulgated thereunder, a plaintiff must prove: (1) a material misrepresentation or omission; (2) scienter; (3) a connection to the purchase or sale of a security; (4) reliance; (5) economic loss; and (6) loss causation. \caseref{Dura Pharmaceuticals, Inc.\ v.\ Broudo}{544}{U.S.}{336, 341--42}{2005}. On a motion for partial summary judgment, Plaintiff need only demonstrate that no genuine dispute of material fact exists as to the elements addressed herein. Fed.\ R.\ Civ.\ P.\ 56(a).
+
+\begin{iracblock}{IRAC: Material Misrepresentation}
+\textbf{Issue:} Whether Defendants' statements regarding loan-default rates were materially false.\\[4pt]
+\textbf{Rule:} A statement is material if there is a substantial likelihood that a reasonable investor would consider it important. \caseref{Basic Inc.}{485}{U.S.}{224, 231--32}{1988}.\\[4pt]
+\textbf{Application:} The December 2021 Memos reveal that Defendants classified \$412 million in loans as high-risk while publicly reporting only \$87 million---a discrepancy of \$325 million or 373\%. No reasonable finder of fact could conclude that such a discrepancy was immaterial.\\[4pt]
+\textbf{Conclusion:} Defendants' loan-quality representations were materially false as a matter of law.
+\end{iracblock}
+
+\subsection{Defendants Acted with Scienter}
+
+Scienter may be established by showing either actual knowledge of the falsity of the statements or reckless disregard for their truth. \caseref{Ernst \& Ernst v.\ Hochfelder}{425}{U.S.}{185, 193}{1976}. Under \caseref{Tellabs, Inc.\ v.\ Makor Issues \& Rights, Ltd.}{551}{U.S.}{308, 324}{2007}, a court must consider all allegations holistically to determine whether the inference of scienter is at least as strong as any competing inference.
+
+Here, Castellan and Chen are demonstrated to have received---and indeed signed---the December 2021 Memos. Their signatures appear on the committee approval page, dated January 6, 2022, forty days before the materially misleading 10-K was filed. \caseshort{Novak v.\ Kasaks}{216 F.3d 300}{308} (``[W]here plaintiffs allege that defendants had access to contrary facts, they adequately plead[] scienter.'').
+
+\begin{iracblock}{IRAC: Scienter}
+\textbf{Issue:} Whether Defendants had actual knowledge that their public disclosures were materially false.\\[4pt]
+\textbf{Rule:} Scienter is established by proof of ``conscious misbehavior or recklessness.'' \caseshort{Novak v.\ Kasaks}{216 F.3d 300}{307}.\\[4pt]
+\textbf{Application:} Documentary evidence---the December 2021 Memos bearing both Defendants' signatures---conclusively establishes actual knowledge of the true loan-risk profile. No inference is required.\\[4pt]
+\textbf{Conclusion:} Plaintiff is entitled to summary judgment on the element of scienter.
+\end{iracblock}
+
+\section{PLAINTIFF HAS ESTABLISHED LOSS CAUSATION}
+
+\subsection{The Corrective Disclosure Framework}
+
+Loss causation requires a plaintiff to show that the defendant's misrepresentation was the proximate cause of the plaintiff's economic loss. \caseshort{Dura Pharmaceuticals}{544 U.S. 336}{342}. A corrective disclosure is sufficient to demonstrate loss causation where it reveals the ``relevant truth'' previously concealed by the defendant's misrepresentations. \caseref{Halliburton Co.\ v.\ Erica P.\ John Fund, Inc.}{573}{U.S.}{258, 268}{2014}.
+
+\subsection{The December 1, 2023 Disclosure Was Corrective}
+
+The December 1, 2023 Wall Street Journal report and same-day Meridian press release collectively revealed for the first time that: (a) the SEC had subpoenaed Meridian's loan-classification records; and (b) Meridian itself was undertaking an internal review. These disclosures are facially corrective of the false statements identified in Section I above.
+
+Expert analysis submitted herewith as \textbf{Exhibit G} demonstrates, through an event study employing standard regression methodology, that the 34.7\% price decline on December 1, 2023 was statistically significant at the 99\% confidence level and cannot be explained by market-wide or industry-wide factors. The Meridian-specific residual return of $-$32.9\% is attributable solely to the corrective disclosures.
+
+\begin{iracblock}{IRAC: Loss Causation}
+\textbf{Issue:} Whether the December 1, 2023 disclosures caused the economic loss suffered by class members.\\[4pt]
+\textbf{Rule:} Loss causation is established when a corrective disclosure reveals the truth concealed by misrepresentations and causes a statistically significant, issuer-specific price decline. \caseshort{Halliburton Co.\ v.\ Erica P.\ John Fund, Inc.}{573 U.S. 258}{271}.\\[4pt]
+\textbf{Application:} The 34.7\% same-day decline on abnormally high volume (14.3x average), confirmed by expert event study at the 99\% confidence level, is directly traceable to the December 1, 2023 corrective disclosures.\\[4pt]
+\textbf{Conclusion:} Loss causation is established as a matter of law.
+\end{iracblock}
+
+\section{DEFENDANTS CASTELLAN AND CHEN ARE LIABLE AS CONTROL PERSONS}
+
+Section 20(a) of the Exchange Act imposes joint and several liability on any person who \textit{controls} a primary violator, unless the control person acted in good faith and did not directly or indirectly induce the violation. 15 U.S.C.\ \S\,78t(a). As CEO and CFO respectively, Castellan and Chen each possessed the power to direct and supervise Meridian's public disclosures. \caseref{In re WorldCom, Inc.\ Sec.\ Litig.}{346}{F. Supp. 2d}{628, 663}{S.D.N.Y. 2004}. Because neither Defendant has articulated any good-faith basis for the misstatements---and because the documentary record establishes their direct involvement---the good-faith defense is unavailable as a matter of law.
+
+%% ══════════════════════════════════════════════════════════════
+%% CONCLUSION
+%% ══════════════════════════════════════════════════════════════
+\phantomsection
+\addcontentsline{toc}{section}{CONCLUSION}
+\begin{center}
+  {\large\bfseries\color{accent}CONCLUSION}
+\end{center}
+
+For the foregoing reasons, Plaintiff-Appellant James R. Harrington respectfully requests that this Court:
+
+\begin{enumerate}[label=(\arabic*),leftmargin=2.5em,itemsep=6pt,parsep=0pt]
+  \item Grant partial summary judgment in Plaintiff's favor on the elements of material misrepresentation, scienter, and loss causation under Section 10(b) of the Securities Exchange Act of 1934 and Rule 10b-5;
+  \item Find Defendants Theodore V. Castellan and Victoria Chen jointly and severally liable as control persons under Section 20(a) of the Exchange Act; and
+  \item Grant such other and further relief as this Court deems just and proper.
+\end{enumerate}
+
+\vspace{18pt}
+
+\noindent Respectfully submitted,
+
+\vspace{14pt}
+
+\sigline{Eleanor M. Ashworth, Esq. (Bar No. NY-2847631)}
+
+\vspace{14pt}
+
+\sigline{Marcus D. Ferreira, Esq. (Bar No. NY-3019402)}
+
+\vspace{8pt}
+
+\noindent\textbf{Ashworth \& Kellerman LLP}\\
+One Bryant Park, 47th Floor\\
+New York, New York 10036\\
+(212) 555-0147
+
+\vspace{4pt}
+\noindent\textit{Attorneys for Plaintiff-Appellant James R. Harrington}
+
+\vspace{4pt}
+\noindent Dated: July 8, 2026
+
+\newpage
+
+%% ══════════════════════════════════════════════════════════════
+%% CERTIFICATE OF SERVICE
+%% ══════════════════════════════════════════════════════════════
+\phantomsection
+\addcontentsline{toc}{section}{CERTIFICATE OF SERVICE}
+\begin{center}
+  {\large\bfseries\color{accent}CERTIFICATE OF SERVICE}
+\end{center}
+
+\begin{certblock}
+
+\noindent I, \textbf{Eleanor M. Ashworth}, hereby certify that on \textbf{July 8, 2026}, I caused a true and correct copy of the foregoing \textit{Brief of Plaintiff-Appellant in Support of Motion for Partial Summary Judgment} to be served upon the following counsel of record via the Court's Electronic Case Filing (ECF) system, which constitutes service under Local Civil Rule 5.2:
+
+\vspace{10pt}
+
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  \kvrow{Defendants' Counsel:}{
+    Richard A. Hawthorne, Esq.\\
+    Pemberton, Hawthorne \& Sloane LLP\\
+    200 Vesey Street, 31st Floor\\
+    New York, New York 10281\\
+    \texttt{rhawthorne@phslaw.com}
+  }
+  \kvrow{Co-Defendants' Counsel:}{
+    Sandra L. Okonkwo, Esq.\\
+    Okonkwo \& Marsh PLLC\\
+    1290 Avenue of the Americas, 19th Floor\\
+    New York, New York 10104\\
+    \texttt{sokonkwo@okonkwomarsh.com}
+  }
+  \kvrow{Method:}{Electronic Case Filing (ECF), S.D.N.Y.\ CM/ECF System}
+  \kvrow{Date of Service:}{July 8, 2026}
+\end{tabularx}
+
+\end{certblock}
+
+\vspace{20pt}
+
+\sigline{Eleanor M. Ashworth, Esq.}
+
+\vspace{6pt}
+
+\noindent\textbf{Ashworth \& Kellerman LLP}\\
+New York, New York 10036
+
+\vspace{4pt}
+\noindent Dated: July 8, 2026
+
+\end{document}

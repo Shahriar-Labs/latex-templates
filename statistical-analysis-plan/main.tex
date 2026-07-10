@@ -1,0 +1,998 @@
+% ============================================================
+%  Statistical Analysis Plan (SAP) — LaTeX Template
+%  Edit and compile online at https://letx.app
+%  Engine: pdflatex   Build: latexmk -pdf main.tex
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath,colortbl}
+
+% ── Encoding & fonts ────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{microtype}
+
+% ── Page geometry ───────────────────────────────────────────
+\usepackage[
+  top=24mm, bottom=28mm,
+  left=22mm, right=22mm,
+  headheight=15pt
+]{geometry}
+
+% ── Colour palette ──────────────────────────────────────────
+\usepackage[table,xcdraw]{xcolor}
+\definecolor{sapblue}{HTML}{1A4E8C}   % deep pharma blue – accent
+\definecolor{sapsteel}{HTML}{5A7FA8}  % mid-tone steel – sub-accent
+\definecolor{sapfog}{HTML}{EFF3F8}    % very light blue tint – bg
+\definecolor{sapgrey}{HTML}{4A4A4A}   % body text near-black
+\definecolor{saprule}{HTML}{B8CAE0}   % thin table rules
+\definecolor{sapwarn}{HTML}{7B3F00}   % amber callout text
+\definecolor{sapwarnbg}{HTML}{FFF5E6} % amber callout bg
+\definecolor{sapnotebg}{HTML}{EBF4FF} % note callout bg
+
+% ── Core packages ───────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{parskip}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\usepackage{ragged2e}
+\usepackage{setspace}
+\usepackage{etoolbox}
+\usepackage{calc}
+
+% ── Headers / footers ───────────────────────────────────────
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{saprule}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\footrulewidth}{0.3pt}
+\renewcommand{\footrule}{\hbox to\headwidth{\color{saprule}\leaders\hrule height \footrulewidth\hfill}}
+\fancyhead[L]{\small\color{sapsteel}\textbf{CONFIDENTIAL}\ \ |\ \ Protocol ARI-COPD-301}
+\fancyhead[R]{\small\color{sapsteel}Statistical Analysis Plan v2.1}
+\fancyfoot[L]{\small\color{sapgrey}Arion Therapeutics, Inc.\ \ |\ \ SAP-ARI-301-v2.1}
+\fancyfoot[C]{\small\color{sapgrey}\thepage\ of \pageref{LastPage}}
+\fancyfoot[R]{\small\color{sapgrey}CONFIDENTIAL — Do Not Distribute}
+
+% ── Section styling ─────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\section}
+  {\color{sapblue}\large\bfseries}
+  {\thesection}{0.8em}{}
+  [\vspace{-2pt}{\color{saprule}\titlerule[0.5pt]}\vspace{2pt}]
+\titleformat{\subsection}
+  {\color{sapblue}\normalsize\bfseries}
+  {\thesubsection}{0.7em}{}
+\titleformat{\subsubsection}
+  {\color{sapsteel}\normalsize\bfseries\itshape}
+  {\thesubsubsection}{0.6em}{}
+\titlespacing{\section}{0pt}{12pt}{4pt}
+\titlespacing{\subsection}{0pt}{8pt}{2pt}
+\titlespacing{\subsubsection}{0pt}{6pt}{2pt}
+
+% ── tcolorbox callouts ──────────────────────────────────────
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usetikzlibrary{shadows}
+
+\tcbset{
+  sapnote/.style={
+    enhanced, breakable,
+    colback=sapnotebg, colframe=sapblue,
+    fonttitle=\bfseries\small\color{sapblue},
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    arc=2pt, boxrule=0.6pt,
+    before upper={\setlength{\parskip}{3pt}}
+  },
+  sapwarn/.style={
+    enhanced, breakable,
+    colback=sapwarnbg, colframe=sapwarn,
+    fonttitle=\bfseries\small\color{sapwarn},
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    arc=2pt, boxrule=0.6pt,
+    before upper={\setlength{\parskip}{3pt}}
+  }
+}
+
+% ── FontAwesome icons ───────────────────────────────────────
+\usepackage{fontawesome5}
+
+% ── TikZ (flowchart) ────────────────────────────────────────
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning, fit, calc}
+
+% ── Hyperref ────────────────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=sapblue,
+  urlcolor=sapblue,
+  citecolor=sapblue,
+  pdfauthor={Arion Therapeutics Biostatistics},
+  pdftitle={Statistical Analysis Plan -- ARI-COPD-301},
+  pdfsubject={SAP v2.1},
+  pdfkeywords={SAP, clinical trial, COPD, biostatistics}
+]{hyperref}
+
+% ────────────────────────────────────────────────────────────
+%  HELPER MACROS
+% ────────────────────────────────────────────────────────────
+% Coloured inline term
+\newcommand{\term}[1]{{\color{sapblue}\bfseries #1}}
+
+% TFL reference tag
+\newcommand{\tflref}[1]{\texttt{\small[#1]}}
+
+% Endpoint item
+\newcommand{\sapendpoint}[3]{%
+  \item \textbf{#1}\quad {\color{sapsteel}(#2)}\par
+  \small #3
+}
+
+% ADaM dataset row command (used inside tabular)
+% #1=Dataset #2=Label #3=Structure #4=Key vars
+\newcommand{\adamrow}[4]{#1 & #2 & #3 & #4 \\}
+
+% Thin coloured rule
+\newcommand{\saprule}{\noindent{\color{saprule}\rule{\linewidth}{0.4pt}}}
+
+% ────────────────────────────────────────────────────────────
+%  DOCUMENT BEGIN
+% ────────────────────────────────────────────────────────────
+\begin{document}
+
+\color{sapgrey}
+
+% ============================================================
+%  TITLE PAGE
+% ============================================================
+\thispagestyle{empty}
+\pagecolor{sapfog}
+
+\begin{tikzpicture}[remember picture, overlay]
+  % Top accent bar
+  \fill[sapblue]
+    (current page.north west) rectangle
+    ([yshift=-14mm]current page.north east);
+  % Bottom thin bar
+  \fill[sapsteel]
+    ([yshift=10mm]current page.south west) rectangle
+    ([yshift=12mm]current page.south east);
+\end{tikzpicture}
+
+\vspace*{14mm}
+
+\begin{center}
+  {\color{sapblue}\rule{\linewidth}{1.2pt}}\\[6pt]
+  {\color{sapblue}\fontsize{22}{26}\bfseries\selectfont
+    Statistical Analysis Plan}\\[4pt]
+  {\color{sapsteel}\fontsize{13}{16}\selectfont
+    A Phase III, Randomised, Double-Blind, Placebo-Controlled Trial\\[2pt]
+    Evaluating Arinestat\textsuperscript{\textregistered} in Adults with\\[2pt]
+    Moderate-to-Severe Chronic Obstructive Pulmonary Disease}\\[6pt]
+  {\color{sapblue}\rule{\linewidth}{1.2pt}}
+\end{center}
+
+\vspace{10mm}
+
+\begin{center}
+\begin{tabularx}{0.88\linewidth}{@{}>{\color{sapblue}\bfseries}l@{\hspace{10mm}}>{\raggedright\arraybackslash}X@{}}
+  Protocol Number  & ARI-COPD-301 \\[3pt]
+  IND Number       & 123456 \\[3pt]
+  EudraCT Number   & 2024-001234-56 \\[3pt]
+  SAP Version      & 2.1 \\[3pt]
+  Effective Date   & 14 March 2025 \\[3pt]
+  Replaces Version & 2.0 (08 November 2024) \\[3pt]
+  Document Status  & \textbf{FINAL — LOCKED PRIOR TO UNBLINDING} \\[3pt]
+  Sponsor          & Arion Therapeutics, Inc., 100 Biopark Drive, Cambridge, MA 02139 \\[3pt]
+  CRO              & Cytel Statistical Services, 675 Massachusetts Ave, Cambridge, MA 02139 \\[3pt]
+\end{tabularx}
+\end{center}
+
+\vspace{12mm}
+
+\begin{center}
+{\color{sapsteel}\bfseries\small Prepared by Biostatistics Department}\\[4pt]
+{\small\color{sapgrey}
+\faIcon{user-tie}\ Lead Statistician:\quad Dr.\ Meera Krishnaswamy, PhD\\[2pt]
+\faIcon{user-tie}\ Statistical Programmer:\quad James O'Brien, MSc\\[2pt]
+\faIcon{user-tie}\ Medical Monitor:\quad Prof.\ Alejandro Garza-López, MD, PhD
+}
+\end{center}
+
+\vspace{14mm}
+
+\begin{tcolorbox}[sapwarn, title={\faIcon{lock}\ CONFIDENTIALITY NOTICE}]
+  This document contains confidential and proprietary information belonging to
+  Arion Therapeutics, Inc. It is intended solely for the use of authorised personnel
+  involved in the conduct of Protocol ARI-COPD-301. Unauthorised disclosure,
+  reproduction, or distribution is strictly prohibited and may be unlawful.
+\end{tcolorbox}
+
+\clearpage
+\nopagecolor
+\setcounter{page}{1}
+
+% ============================================================
+%  TABLE OF CONTENTS
+% ============================================================
+\tableofcontents
+\clearpage
+
+% ============================================================
+%  SECTION 1 — INTRODUCTION
+% ============================================================
+\section{Introduction}
+
+\subsection{Purpose of This Document}
+
+This Statistical Analysis Plan (SAP) describes in detail the pre-specified statistical
+methodology, analysis populations, estimands, and output specifications for the
+primary, secondary, and exploratory analyses of Protocol \textbf{ARI-COPD-301}.
+This document was finalised and locked \textit{prior to database lock and unblinding}
+in accordance with ICH E9(R1) and the trial's pre-registration commitments.
+
+\subsection{Protocol Synopsis}
+
+\begin{tcolorbox}[sapnote, title={\faIcon{info-circle}\ Study at a Glance}]
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{sapblue}}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  Study Title       & CLARITY: A Phase III Trial of Arinestat vs.\ Placebo in COPD \\[2pt]
+  Design            & Randomised, double-blind, parallel-group, placebo-controlled \\[2pt]
+  Indication        & Moderate-to-severe COPD (GOLD Stage II–III) \\[2pt]
+  Investigational Product & Arinestat 250\,\textmu g inhaled twice daily \\[2pt]
+  Comparator        & Matching placebo inhaler twice daily \\[2pt]
+  Randomisation     & 1:1, stratified by GOLD stage (II vs.\ III) and smoking status \\[2pt]
+  Sample Size       & 620 participants (310 per arm) \\[2pt]
+  Treatment Duration & 52 weeks (plus 4-week safety follow-up) \\[2pt]
+  Primary Endpoint  & Change from baseline in trough FEV\textsubscript{1} at Week 52 \\[2pt]
+  Key Sites         & 48 sites across USA, EU, Canada \\[2pt]
+\end{tabularx}
+\end{tcolorbox}
+
+\subsection{Regulatory Context}
+
+Analyses will be conducted in accordance with:
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item ICH E9 \textit{Statistical Principles for Clinical Trials} (1998) and
+        ICH E9(R1) Addendum on \textit{Estimands and Sensitivity Analysis} (2019)
+  \item ICH E3 \textit{Structure and Content of Clinical Study Reports} (1995)
+  \item FDA Guidance: \textit{Adjusting for Covariates in Randomised Clinical Trials}
+        (2023)
+  \item CHMP Guideline on \textit{Missing Data in Confirmatory Clinical Trials}
+        (EMA/CPMP/EWP/1776/99 Rev.1, 2010)
+  \item CDISC ADaM Implementation Guide v1.3 (ADSL, ADLB, ADEFF, ADAE)
+\end{itemize}
+
+\clearpage
+
+% ============================================================
+%  SECTION 2 — STUDY OBJECTIVES AND ESTIMANDS
+% ============================================================
+\section{Study Objectives and Estimands}
+
+\subsection{Primary Objective}
+
+To evaluate the efficacy of Arinestat 250\,\textmu g BID versus placebo in improving
+pulmonary function in adults with moderate-to-severe COPD as measured by trough
+forced expiratory volume in one second (FEV\textsubscript{1}) at Week 52.
+
+\subsection{Secondary Objectives}
+
+\begin{enumerate}[leftmargin=1.8em, itemsep=3pt]
+  \item To assess the effect of Arinestat on health-related quality of life (SGRQ Total Score).
+  \item To evaluate the rate of moderate-to-severe COPD exacerbations over 52 weeks.
+  \item To examine the effect on peak FEV\textsubscript{1} (2\,h post-dose) at Week 52.
+  \item To determine the proportion of responders achieving $\geq$100\,mL improvement in
+        trough FEV\textsubscript{1} at Week 52.
+  \item To characterise the pharmacodynamic biomarker profile (serum fibronectin-1 levels).
+\end{enumerate}
+
+\subsection{Estimand Framework (ICH E9R1)}
+
+\begin{tcolorbox}[sapnote, title={\faIcon{flask}\ Estimand Definition — Primary Endpoint}]
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{sapblue}}l@{\hspace{6mm}}>{\raggedright\arraybackslash}X@{}}
+  Population          & Adults with GOLD Stage II–III COPD meeting all eligibility criteria (ITT population) \\[2pt]
+  Variable            & Change from baseline in trough FEV\textsubscript{1} (litres) at Week 52 \\[2pt]
+  Intervention        & Arinestat 250\,\textmu g BID vs.\ matching placebo BID \\[2pt]
+  Intercurrent events & \textbf{Treatment policy} for discontinuation due to any reason (all post-IC data included);
+                        \textbf{Hypothetical} strategy for initiation of rescue LABA/ICS (data censored) \\[2pt]
+  Summary measure     & Difference in adjusted means (Arinestat minus Placebo) \\[2pt]
+\end{tabularx}
+\end{tcolorbox}
+
+\clearpage
+
+% ============================================================
+%  SECTION 3 — ANALYSIS POPULATIONS
+% ============================================================
+\section{Analysis Populations}
+
+\begin{tabularx}{\linewidth}{@{}
+  >{\bfseries\color{sapblue}}p{32mm}
+  >{\raggedright\arraybackslash}X
+  >{\centering\arraybackslash}p{22mm}@{}}
+\toprule
+\rowcolor{sapfog}
+\textbf{Population} & \textbf{Definition} & \textbf{Primary Use} \\
+\midrule
+ITT & All randomised participants, regardless of treatment received or protocol deviations.
+      Participants analysed in the arm to which they were randomised. & Primary efficacy \\[4pt]
+\addlinespace[2pt]
+PP  & Subset of ITT excluding participants with major protocol deviations (MPDs) as
+      pre-defined in the MPD charter. Includes participants with $\geq$80\% treatment
+      compliance over 52 weeks. & Sensitivity \\[4pt]
+\addlinespace[2pt]
+Safety & All randomised participants who received at least one dose of study treatment.
+         Participants analysed in the arm in which treatment was actually received. & Safety \\[4pt]
+\addlinespace[2pt]
+PK/PD & Participants in the Safety population with at least one evaluable PK sample
+        and baseline biomarker value. & Exploratory \\[4pt]
+\bottomrule
+\end{tabularx}
+
+\vspace{4pt}
+{\small\color{sapgrey}\faIcon{info-circle}\ Population assignments are determined prior to
+database lock by an independent Data Review Committee based on blinded data only.}
+
+\clearpage
+
+% ============================================================
+%  SECTION 4 — PRIMARY ENDPOINT ANALYSIS
+% ============================================================
+\section{Primary Endpoint Analysis}
+
+\subsection{Model Specification}
+
+The primary analysis will use a Mixed Model for Repeated Measures (MMRM) fitted to
+change from baseline in trough FEV\textsubscript{1} (L) at scheduled post-baseline visits
+(Weeks 4, 12, 24, 40, 52).
+
+\textbf{Model equation:}
+\[
+  Y_{ijk} = \mu + \alpha_i + \beta_j + (\alpha\beta)_{ij}
+            + \gamma_1 \cdot \text{BL}_k + \gamma_2 \cdot \text{BL}_k \cdot V_j
+            + \delta_1 \cdot \text{GOLD}_k + \delta_2 \cdot \text{SMOKE}_k + \varepsilon_{ijk}
+\]
+
+where $Y_{ijk}$ is the change from baseline for participant $k$ in treatment group $i$ at
+visit $j$; $\alpha_i$ is the treatment effect; $\beta_j$ is the visit effect;
+$(\alpha\beta)_{ij}$ is the treatment-by-visit interaction (the primary contrast at Week 52);
+$\text{BL}_k$ is the baseline trough FEV\textsubscript{1}; $\text{GOLD}_k$ and
+$\text{SMOKE}_k$ are stratification factors.
+
+\subsection{Model Fitting Details}
+
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item Covariance structure: unstructured (UN); if convergence fails, fall back to
+        Toeplitz then compound symmetry, in that order.
+  \item Degrees of freedom: Kenward--Roger approximation.
+  \item Software: SAS\textsuperscript{\textregistered}\ PROC MIXED (v9.4).
+  \item All post-baseline assessments included, regardless of adherence status
+        (treatment-policy intercurrent event strategy).
+\end{itemize}
+
+\subsection{Hypothesis and Decision Rule}
+
+\[
+  H_0{:}\ \mu_{\text{Arinestat}} - \mu_{\text{Placebo}} \leq 0
+  \qquad\text{vs.}\qquad
+  H_1{:}\ \mu_{\text{Arinestat}} - \mu_{\text{Placebo}} > 0
+\]
+
+A one-sided $\alpha = 0.025$ will be used (equivalent to two-sided $\alpha = 0.05$).
+The primary endpoint will be declared statistically significant if the upper bound of
+the two-sided 95\% CI for the treatment difference excludes zero and the one-sided
+$p$-value $< 0.025$.
+
+\subsection{Sensitivity Analyses}
+
+\begin{enumerate}[leftmargin=1.8em, label=\textbf{S\arabic*.}, itemsep=4pt]
+  \item \textbf{Per-Protocol MMRM}: Repeat primary model in PP population.
+  \item \textbf{ANCOVA at Week 52}: Single-visit ANCOVA using LOCF-imputed values as a
+        pre-specified comparison; no alpha used.
+  \item \textbf{Multiple Imputation (MI)}: Reference-based MI under missing-at-random (MAR)
+        and missing-not-at-random (MNAR, jump-to-reference) assumptions; 1000 imputed
+        datasets, Rubin's rules.
+  \item \textbf{Tipping Point}: Compute the degree of MNAR departure needed to reverse
+        significance.
+\end{enumerate}
+
+\clearpage
+
+% ============================================================
+%  SECTION 5 — SECONDARY ENDPOINTS AND MULTIPLICITY
+% ============================================================
+\section{Secondary Endpoints and Multiplicity Adjustment}
+
+\subsection{Hierarchical Testing Procedure}
+
+All confirmatory secondary endpoints will be tested using the fixed-sequence (hierarchical)
+procedure outlined below. Testing proceeds to the next endpoint only if the preceding
+test is significant at $\alpha = 0.025$ (one-sided).
+
+\subsubsection{Multiplicity Adjustment Flowchart}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=7mm and 4mm,
+  box/.style={
+    rectangle, rounded corners=3pt,
+    draw=sapblue, fill=sapfog, thick,
+    text width=72mm, align=center,
+    inner sep=5pt, font=\small
+  },
+  decision/.style={
+    diamond, draw=sapsteel, fill=white, thick,
+    aspect=2.8, align=center, font=\footnotesize,
+    inner sep=2pt
+  },
+  stop/.style={
+    rectangle, rounded corners=3pt,
+    draw=sapwarn, fill=sapwarnbg, thick,
+    text width=52mm, align=center,
+    inner sep=4pt, font=\small\bfseries\color{sapwarn}
+  },
+  arr/.style={-Stealth, thick, color=sapblue},
+  nos/.style={-Stealth, thick, color=sapwarn}
+]
+
+\node[box] (ep1) {\textbf{H1:} Primary — Trough FEV\textsubscript{1} at Wk 52\\\small(MMRM, one-sided $\alpha=0.025$)};
+
+\node[decision, below=of ep1] (d1) {Sig?};
+
+\node[box, below=of d1] (ep2) {\textbf{H2:} SGRQ Total Score at Wk 52\\\small(MMRM)};
+
+\node[decision, below=of ep2] (d2) {Sig?};
+
+\node[box, below=of d2] (ep3) {\textbf{H3:} Exacerbation Rate over 52 Wks\\\small(Negative Binomial)};
+
+\node[decision, below=of ep3] (d3) {Sig?};
+
+\node[box, below=of d3] (ep4) {\textbf{H4:} Peak FEV\textsubscript{1} at Wk 52\\\small(MMRM)};
+
+\node[stop, right=24mm of d1] (stop1) {Stop confirmatory testing};
+\node[stop, right=24mm of d2] (stop2) {Stop confirmatory testing};
+\node[stop, right=24mm of d3] (stop3) {Stop confirmatory testing};
+
+\draw[arr] (ep1) -- (d1);
+\draw[arr] (d1) -- node[left,font=\footnotesize]{Yes} (ep2);
+\draw[arr] (ep2) -- (d2);
+\draw[arr] (d2) -- node[left,font=\footnotesize]{Yes} (ep3);
+\draw[arr] (ep3) -- (d3);
+\draw[arr] (d3) -- node[left,font=\footnotesize]{Yes} (ep4);
+
+\draw[nos] (d1) -- node[above,font=\footnotesize]{No} (stop1);
+\draw[nos] (d2) -- node[above,font=\footnotesize]{No} (stop2);
+\draw[nos] (d3) -- node[above,font=\footnotesize]{No} (stop3);
+
+\end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[sapnote, title={\faIcon{shield-alt}\ Family-Wise Error Rate Control}]
+  The fixed-sequence procedure controls the family-wise error rate (FWER) at one-sided
+  $\alpha = 0.025$ under arbitrary correlation among test statistics. No Bonferroni,
+  Holm, or Hochberg adjustments are applied within the sequence.
+  Exploratory endpoints (H5 onward) are not multiplicity-adjusted; $p$-values are nominal.
+\end{tcolorbox}
+
+\subsection{Secondary Analysis Methods}
+
+\begin{tabularx}{\linewidth}{@{}
+  >{\centering\arraybackslash}p{8mm}
+  >{\raggedright\arraybackslash}X
+  >{\raggedright\arraybackslash}p{38mm}
+  >{\centering\arraybackslash}p{16mm}@{}}
+\toprule
+\rowcolor{sapfog}
+\textbf{H\#} & \textbf{Endpoint} & \textbf{Method} & \textbf{TFL Ref} \\
+\midrule
+H2 & SGRQ Total Score change from baseline at Wk 52 & MMRM (same model) & ET-EFF-002 \\
+\addlinespace[2pt]
+H3 & Annualised rate of moderate/severe COPD exacerbations & Negative Binomial GLM, log(time on study) offset & ET-EFF-003 \\
+\addlinespace[2pt]
+H4 & Peak FEV\textsubscript{1} (2h post-dose) change from BL at Wk 52 & MMRM & ET-EFF-004 \\
+\addlinespace[2pt]
+H5 & Proportion of FEV\textsubscript{1} responders ($\geq$100 mL) at Wk 52 & Logistic regression; OR + 95\% CI & ET-EFF-005 \\
+\addlinespace[2pt]
+H6 & Time to first moderate/severe exacerbation & Kaplan--Meier; log-rank; Cox PH & ET-EFF-006 \\
+\bottomrule
+\end{tabularx}
+
+\clearpage
+
+% ============================================================
+%  SECTION 6 — SAFETY ANALYSES
+% ============================================================
+\section{Safety Analyses}
+
+Safety analyses will be performed in the Safety population using descriptive statistics
+only; no formal hypothesis testing is pre-specified for safety endpoints.
+
+\subsection{Adverse Events}
+
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item Adverse events (AEs) are coded using MedDRA v27.0.
+  \item Incidence of Treatment-Emergent AEs (TEAEs) summarised by System Organ Class
+        (SOC) and Preferred Term (PT).
+  \item Participants counted once per PT at the maximum severity and strongest relationship
+        to study drug.
+  \item Separate summaries for: all TEAEs, Grade $\geq$3 TEAEs, SAEs, TEAEs leading to
+        discontinuation, AEs of Special Interest (AESI: cardiovascular, hepatic).
+\end{itemize}
+
+\subsection{Clinical Laboratory Parameters}
+
+Continuous lab parameters (haematology, biochemistry, urinalysis): descriptive statistics
+(n, mean, SD, median, Q1/Q3, min, max) at each visit. Shift tables (normal/abnormal at
+baseline vs.\ post-baseline) for key parameters. Notable abnormalities flagged using
+CTCAE v5.0 grading and sponsor-defined reference ranges.
+
+\subsection{Vital Signs and ECG}
+
+Vital signs (blood pressure, heart rate, respiratory rate, SpO\textsubscript{2}) and
+12-lead ECG parameters summarised descriptively. QTcF prolongation: proportion of
+participants with QTcF $>$450, $>$480, $>$500\,ms and change from baseline $>$30, $>$60\,ms.
+
+\begin{tcolorbox}[sapwarn, title={\faIcon{exclamation-triangle}\ Safety Review Committee Note}]
+  An independent Safety Review Committee (SRC) will review unblinded safety data at
+  Weeks 12 and 26. SRC findings may trigger an ad hoc safety analysis per the SRC
+  Charter (Doc.\ ARI-301-SRC-001). Such analyses are not pre-specified in this SAP
+  and will be reported separately.
+\end{tcolorbox}
+
+\clearpage
+
+% ============================================================
+%  SECTION 7 — MISSING DATA HANDLING
+% ============================================================
+\section{Missing Data Handling}
+
+\subsection{Assumed Missing Data Mechanism}
+
+For the primary analysis, missing post-baseline FEV\textsubscript{1} values are assumed
+to be Missing At Random (MAR) conditional on observed history, stratification factors,
+and baseline covariates. This assumption is untestable but is clinically plausible given
+the COPD context and observed withdrawal patterns.
+
+\subsection{Primary Analysis}
+
+The MMRM utilises all available observations; monotone and intermittent missingness are
+both accommodated by the likelihood-based approach under MAR. No imputation is performed
+in the primary analysis.
+
+\subsection{Sensitivity and Supplemental Analyses}
+
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{sapblue}}p{42mm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{sapfog}
+\textbf{Analysis} & \textbf{Description} \\
+\midrule
+Jump-to-Reference (J2R) & Post-withdrawal outcomes for Arinestat participants imputed from the placebo arm conditional mean trajectory. Conservative MNAR assumption. \\
+\addlinespace[2pt]
+Copy-Reference (CR) & Post-withdrawal outcomes for all participants imputed from the placebo arm. \\
+\addlinespace[2pt]
+LOCF & Last-observation-carried-forward for supplemental ANCOVA; no inferential alpha. \\
+\addlinespace[2pt]
+Tipping Point & Vary the degree of MNAR departure (delta) from the MAR estimate; identify the delta value that reverses the primary conclusion. \\
+\bottomrule
+\end{tabularx}
+
+\clearpage
+
+% ============================================================
+%  SECTION 8 — ADaM DATASET SPECIFICATIONS
+% ============================================================
+\section{ADaM Dataset Specifications}
+
+All analysis datasets will be constructed in accordance with CDISC ADaM v1.3.
+Source SDTM datasets: DM, AE, LB, EG, VS, CM, EX, QS (SGRQ), CE (exacerbations).
+
+\subsection{Dataset Overview}
+
+\begin{tabularx}{\linewidth}{@{}
+  >{\bfseries\color{sapblue}}p{18mm}
+  >{\raggedright\arraybackslash}p{36mm}
+  >{\raggedright\arraybackslash}p{22mm}
+  >{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{sapfog}
+\textbf{Dataset} & \textbf{Label} & \textbf{Structure} & \textbf{Key Variables} \\
+\midrule
+ADSL & Subject-Level Analysis & One record/subject & USUBJID, TRT01P, SAFFL, ITTFL, PPFL, RANDDT, GOLD, SMOKSTRS \\
+\addlinespace[2pt]
+ADEFF & Primary Efficacy & One record/subject/visit & USUBJID, PARAMCD, AVISIT, AVISITN, AVAL, BASE, CHG, ANL01FL \\
+\addlinespace[2pt]
+ADEXAC & Exacerbation Events & One record/event & USUBJID, STARTDT, ENDDT, SEVER, EXACFL, EXACRATE \\
+\addlinespace[2pt]
+ADAE & Adverse Events & One record/event & USUBJID, AEDECOD, AESOC, AESEV, AESER, AEREL, TEAEFL \\
+\addlinespace[2pt]
+ADLB & Laboratory & One record/subject/param/visit & USUBJID, PARAMCD, AVISIT, AVAL, BASE, CHG, ANRIND \\
+\addlinespace[2pt]
+ADEG & ECG & One record/subject/param/visit & USUBJID, PARAMCD, AVAL, BASE, CHG, QTCFFL \\
+\addlinespace[2pt]
+ADQS & Questionnaire (SGRQ) & One record/subject/param/visit & USUBJID, PARAMCD, AVAL, BASE, CHG, AVALC \\
+\addlinespace[2pt]
+ADPK & Pharmacokinetics & One record/subject/sample & USUBJID, PCTPT, PCORRES, AVAL, DTYPE \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Key ADEFF Derivations}
+
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item \texttt{BASE}: Trough FEV\textsubscript{1} measured at Day 1 (Visit 2) pre-dose.
+        If Day 1 value is missing, use Screening value.
+  \item \texttt{CHG}: \texttt{AVAL} $-$ \texttt{BASE}.
+  \item \texttt{ANL01FL}: \textquoteleft{}Y\textquoteright{} for records included in the
+        primary MMRM (post-baseline scheduled visits, ITT population, no rescue medication
+        within 48\,h of assessment).
+  \item \texttt{AVISIT} mapping: Visits within a protocol-defined window are assigned to
+        the nominal visit label (e.g., any assessment at Day 337$\pm$14 days $\rightarrow$
+        ``Week 48''; Day 365$\pm$14 days $\rightarrow$ ``Week 52'').
+\end{itemize}
+
+\begin{tcolorbox}[sapnote, title={\faIcon{database}\ Data Validation}]
+  All ADaM datasets will be subjected to independent programmer QC (double programming).
+  Validation reports will be filed in the Trial Master File. Discrepancies will be resolved
+  prior to database lock following the Data Management Plan (DMP-ARI-301-v1.4).
+\end{tcolorbox}
+
+\clearpage
+
+% ============================================================
+%  SECTION 9 — TFL SHELLS
+% ============================================================
+\section{Tables, Figures, and Listings (TFL) Shells}
+
+\subsection{TFL Naming Convention}
+
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{sapblue}}p{28mm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{sapfog}
+\textbf{Prefix} & \textbf{Content Type} \\
+\midrule
+\texttt{DT-DM-} & Demographic and baseline tables \\
+\texttt{ET-EFF-} & Efficacy tables \\
+\texttt{ET-SAF-} & Safety tables (AE, lab, ECG, vital signs) \\
+\texttt{EF-} & Efficacy figures \\
+\texttt{EL-} & Listings \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Selected TFL Shells}
+
+\subsubsection{Table DT-DM-001: Demographic and Baseline Characteristics}
+
+\tflref{DT-DM-001}
+
+\begin{center}
+{\small
+\begin{tabularx}{0.95\linewidth}{@{}
+  >{\raggedright\arraybackslash}X
+  >{\centering\arraybackslash}p{30mm}
+  >{\centering\arraybackslash}p{30mm}
+  >{\centering\arraybackslash}p{28mm}@{}}
+\toprule
+\rowcolor{sapfog}
+\textbf{Characteristic} &
+\textbf{Arinestat 250\,\textmu g}\par\textbf{(N=310)} &
+\textbf{Placebo}\par\textbf{(N=310)} &
+\textbf{Total}\par\textbf{(N=620)} \\
+\midrule
+\multicolumn{4}{@{}l}{\bfseries\color{sapblue}Age (years)} \\
+\quad Mean (SD)    & 64.2 (8.7) & 63.9 (9.1) & 64.1 (8.9) \\
+\quad Median [Q1, Q3] & 65.0 [58, 70] & 64.0 [57, 71] & 64.5 [57, 70] \\
+\addlinespace[2pt]
+\multicolumn{4}{@{}l}{\bfseries\color{sapblue}Sex, n (\%)} \\
+\quad Male         & 178 (57.4) & 181 (58.4) & 359 (57.9) \\
+\quad Female       & 132 (42.6) & 129 (41.6) & 261 (42.1) \\
+\addlinespace[2pt]
+\multicolumn{4}{@{}l}{\bfseries\color{sapblue}GOLD Stage, n (\%)} \\
+\quad Stage II     & 155 (50.0) & 155 (50.0) & 310 (50.0) \\
+\quad Stage III    & 155 (50.0) & 155 (50.0) & 310 (50.0) \\
+\addlinespace[2pt]
+\multicolumn{4}{@{}l}{\bfseries\color{sapblue}Baseline Trough FEV\textsubscript{1} (L)} \\
+\quad Mean (SD)    & 1.43 (0.31) & 1.41 (0.33) & 1.42 (0.32) \\
+\quad Median [Q1, Q3] & 1.42 [1.21, 1.64] & 1.40 [1.18, 1.62] & 1.41 [1.20, 1.63] \\
+\addlinespace[2pt]
+\multicolumn{4}{@{}l}{\bfseries\color{sapblue}Current Smoker, n (\%)} \\
+\quad Yes          & 93 (30.0) & 96 (31.0) & 189 (30.5) \\
+\quad No (Ex-smoker) & 217 (70.0) & 214 (69.0) & 431 (69.5) \\
+\bottomrule
+\multicolumn{4}{@{}l}{\footnotesize SHELL ONLY — values are illustrative of expected format.
+  Final values from ADSL.}
+\end{tabularx}
+}
+\end{center}
+
+\subsubsection{Table ET-EFF-001: Primary Efficacy — Trough FEV\textsubscript{1} at Week 52}
+
+\tflref{ET-EFF-001}
+
+\begin{center}
+{\small
+\begin{tabularx}{0.95\linewidth}{@{}
+  >{\raggedright\arraybackslash}X
+  >{\centering\arraybackslash}p{28mm}
+  >{\centering\arraybackslash}p{28mm}
+  >{\centering\arraybackslash}p{36mm}@{}}
+\toprule
+\rowcolor{sapfog}
+\textbf{Parameter} &
+\textbf{Arinestat}\par\textbf{(N=310)} &
+\textbf{Placebo}\par\textbf{(N=310)} &
+\textbf{Difference}\par\textbf{(95\% CI)} \\
+\midrule
+Baseline mean (SD) & 1.43 (0.31) L & 1.41 (0.33) L & — \\
+\addlinespace[2pt]
+LS Mean change at Wk 52 (SE) & $+$0.112 (0.018) & $-$0.007 (0.018) & — \\
+\addlinespace[2pt]
+Treatment difference (LS Mean) & \multicolumn{2}{c}{—} & $+$0.119 L \\
+95\% Confidence Interval & \multicolumn{2}{c}{—} & (0.074, 0.164) \\
+One-sided $p$-value & \multicolumn{2}{c}{—} & $< 0.001$ \\
+\bottomrule
+\multicolumn{4}{@{}l}{\footnotesize MMRM with UN covariance, Kenward--Roger df. ITT population.
+  SHELL ONLY — illustrative.}
+\end{tabularx}
+}
+\end{center}
+
+\subsubsection{Table ET-SAF-001: Overview of Adverse Events}
+
+\tflref{ET-SAF-001}
+
+\begin{center}
+{\small
+\begin{tabularx}{0.95\linewidth}{@{}
+  >{\raggedright\arraybackslash}X
+  >{\centering\arraybackslash}p{32mm}
+  >{\centering\arraybackslash}p{32mm}@{}}
+\toprule
+\rowcolor{sapfog}
+\textbf{Category} &
+\textbf{Arinestat 250\,\textmu g}\par\textbf{n (\%) [N=310]} &
+\textbf{Placebo}\par\textbf{n (\%) [N=310]} \\
+\midrule
+Any TEAE                             & xxx (xx.x) & xxx (xx.x) \\
+Any TEAE Grade $\geq$3              & xxx (xx.x) & xxx (xx.x) \\
+Any Serious AE (SAE)                & xxx (xx.x) & xxx (xx.x) \\
+Any TEAE leading to discontinuation & xxx (xx.x) & xxx (xx.x) \\
+AESI: Cardiovascular                & xxx (xx.x) & xxx (xx.x) \\
+AESI: Hepatic                       & xxx (xx.x) & xxx (xx.x) \\
+Deaths                              & xxx (xx.x) & xxx (xx.x) \\
+\bottomrule
+\multicolumn{3}{@{}l}{\footnotesize Safety population. MedDRA v27.0. SHELL ONLY — xxx = actual data.}
+\end{tabularx}
+}
+\end{center}
+
+\clearpage
+
+% ============================================================
+%  SECTION 10 — SAMPLE SIZE AND POWER
+% ============================================================
+\section{Sample Size and Power}
+
+\subsection{Primary Endpoint Power Calculation}
+
+Sample size was computed to detect a treatment difference of \textbf{80\,mL}
+(0.080\,L) in change from baseline trough FEV\textsubscript{1} at Week 52, assuming:
+
+\begin{tabularx}{\linewidth}{@{}>{\color{sapblue}\bfseries}l@{\hspace{10mm}}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{sapfog}
+\textbf{Parameter} & \textbf{Assumption} \\
+\midrule
+Clinically meaningful difference & 80\,mL (0.080\,L) \\
+SD (within-group)                & 0.290\,L \\
+Correlation (baseline, endpoint) & 0.55 \\
+Type I error ($\alpha$, one-sided) & 0.025 \\
+Power (1$-\beta$)                & 90\% \\
+Dropout rate (Week 52)           & 20\% \\
+Required per arm (completers)    & 248 \\
+Required per arm (randomised)    & 310 \\
+Total sample size                & 620 \\
+\bottomrule
+\multicolumn{2}{@{}l}{\footnotesize Computed using nQuery Advisor v8.5 (MMRM module, ANCOVA proxy).}
+\end{tabularx}
+
+\subsection{Interim Analyses}
+
+No formal efficacy interim analyses are planned. One pre-specified futility-only interim
+analysis will occur at approximately 50\% of events (approximately Week 52 of enrolment).
+Futility boundary: conditional power $<15\%$ under the assumed effect size. The interim
+is conducted by the independent Data Safety Monitoring Board (DSMB) under the DSMB
+Charter (Doc.\ ARI-301-DSMB-001). The sponsor remains blinded.
+
+\clearpage
+
+% ============================================================
+%  SECTION 11 — SUBGROUP ANALYSES
+% ============================================================
+\section{Subgroup Analyses}
+
+Subgroup analyses of the primary endpoint (trough FEV\textsubscript{1} at Week 52)
+are \textbf{exploratory}; no multiplicity adjustment is applied.
+Treatment-by-subgroup interaction $p$-values are presented for hypothesis generation only.
+
+\begin{tabularx}{\linewidth}{@{}
+  >{\raggedright\arraybackslash}X
+  >{\centering\arraybackslash}p{30mm}
+  >{\centering\arraybackslash}p{30mm}@{}}
+\toprule
+\rowcolor{sapfog}
+\textbf{Subgroup} & \textbf{Levels} & \textbf{Interaction Test} \\
+\midrule
+GOLD Stage              & II vs.\ III                  & LRT $p$-value \\
+Sex                     & Male vs.\ Female             & LRT $p$-value \\
+Age                     & $<65$ vs.\ $\geq65$ years    & LRT $p$-value \\
+Smoking Status          & Current vs.\ Ex-smoker       & LRT $p$-value \\
+Baseline FEV\textsubscript{1} & $\leq$ vs.\ $>$ median & LRT $p$-value \\
+Geographic Region       & North America vs.\ Europe    & LRT $p$-value \\
+Prior ICS use           & Yes vs.\ No                  & LRT $p$-value \\
+\bottomrule
+\end{tabularx}
+
+\begin{tcolorbox}[sapnote, title={\faIcon{chart-bar}\ Forest Plot}]
+  A forest plot of subgroup-specific LS Mean differences with 95\% CIs will be
+  produced \tflref{EF-EFF-010}. The overall treatment effect estimate is shown at
+  the bottom for reference. Point estimates and CIs are from the primary MMRM
+  with a treatment-by-subgroup interaction term added.
+\end{tcolorbox}
+
+\clearpage
+
+% ============================================================
+%  SECTION 12 — AMENDMENT LOG
+% ============================================================
+\section{SAP Amendment Log}
+
+\begin{tabularx}{\linewidth}{@{}
+  >{\centering\arraybackslash}p{12mm}
+  >{\centering\arraybackslash}p{22mm}
+  >{\raggedright\arraybackslash}X
+  >{\raggedright\arraybackslash}p{32mm}@{}}
+\toprule
+\rowcolor{sapfog}
+\textbf{Ver.} & \textbf{Date} & \textbf{Summary of Changes} & \textbf{Author / Approver} \\
+\midrule
+1.0 & 15 Apr 2024 &
+  Initial SAP issued for regulatory submission. Defines primary estimand, MMRM specification,
+  ADaM structures, and TFL shells. &
+  M.\ Krishnaswamy /\par A.\ Garza-López \\
+\addlinespace[3pt]
+2.0 & 08 Nov 2024 &
+  \textbf{Amendment 1:} Added tipping-point sensitivity analysis (Section~7); refined
+  ADEFF ANL01FL flag definition to exclude assessments within 48\,h of rescue
+  bronchodilator; clarified Kenward--Roger df method for MMRM. No change to primary
+  analysis model, endpoint, or decision rule. &
+  M.\ Krishnaswamy /\par A.\ Garza-López \\
+\addlinespace[3pt]
+2.1 & 14 Mar 2025 &
+  \textbf{Amendment 2:} Updated MedDRA coding dictionary from v26.1 to v27.0
+  (Section~6); corrected minor typographical errors in Table ET-SAF-001 shell
+  column header. No change to analysis methodology. Locked prior to database lock. &
+  M.\ Krishnaswamy /\par A.\ Garza-López \\
+\bottomrule
+\end{tabularx}
+
+\vspace{8pt}
+
+\begin{tcolorbox}[sapwarn, title={\faIcon{lock}\ Lock Certification}]
+  This SAP (Version 2.1) was finalised and electronically locked on \textbf{14 March 2025},
+  prior to database lock (planned 28 March 2025) and prior to unblinding of any
+  participant-level data. Any post-lock modifications require a protocol deviation
+  notification and written justification filed in the Trial Master File.
+
+  \vspace{4pt}
+  \begin{tabularx}{\linewidth}{@{}>{\bfseries\color{sapblue}}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+    Lead Statistician & Dr.\ Meera Krishnaswamy, PhD \hfill \underline{\hspace{38mm}} \\[4pt]
+    Medical Monitor   & Prof.\ Alejandro Garza-López, MD, PhD \hfill \underline{\hspace{38mm}} \\[4pt]
+    Clinical Lead     & Dr.\ Priya Ramachandran, MD \hfill \underline{\hspace{38mm}} \\
+  \end{tabularx}
+\end{tcolorbox}
+
+\clearpage
+
+% ============================================================
+%  SECTION 13 — PROGRAMMING AND QC
+% ============================================================
+\section{Programming and Quality Control}
+
+\begin{tabularx}{\linewidth}{@{}>{\color{sapblue}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{sapfog}
+\textbf{Aspect} & \textbf{Specification} \\
+\midrule
+Statistical software & SAS\textsuperscript{\textregistered} 9.4 (TS1M7) — primary analysis.
+                       R 4.4.1 (sensitivity analyses, forest plots). \\
+\addlinespace[2pt]
+ADaM programming     & All datasets double-programmed by independent programmers.
+                       Comparison using PROC COMPARE (SAS) and \texttt{diffdf} (R). \\
+\addlinespace[2pt]
+TFL QC               & All tables, figures, and listings quality-controlled by an
+                       independent statistician against the SAP specifications. \\
+\addlinespace[2pt]
+Randomisation code   & Provided by IXRS vendor (Medidata Rave) and stored in sealed
+                       envelope; not accessible to sponsor biostatistics team. \\
+\addlinespace[2pt]
+Operating system     & Red Hat Enterprise Linux 8.6 (64-bit). \\
+\addlinespace[2pt]
+Code archival        & All programs and logs archived in the sponsor DMS
+                       (Veeva Vault) under study folder ARI-COPD-301/Biostatistics. \\
+\bottomrule
+\end{tabularx}
+
+\clearpage
+
+% ============================================================
+%  SECTION 14 — ABBREVIATIONS
+% ============================================================
+\section{Abbreviations}
+
+\begin{tabularx}{\linewidth}{@{}>{\color{sapblue}\bfseries}p{22mm}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Term} & \textbf{Definition} \\
+\midrule
+ADaM   & Analysis Data Model (CDISC) \\
+AE     & Adverse Event \\
+AESI   & Adverse Event of Special Interest \\
+ANCOVA & Analysis of Covariance \\
+BID    & Twice Daily \\
+CI     & Confidence Interval \\
+COPD   & Chronic Obstructive Pulmonary Disease \\
+CR     & Copy-Reference \\
+CRO    & Contract Research Organisation \\
+CTCAE  & Common Terminology Criteria for Adverse Events \\
+DSMB   & Data Safety Monitoring Board \\
+FEV\textsubscript{1} & Forced Expiratory Volume in 1 Second \\
+FWER   & Family-Wise Error Rate \\
+GOLD   & Global Initiative for Chronic Obstructive Lung Disease \\
+ICS    & Inhaled Corticosteroid \\
+ICH    & International Council for Harmonisation \\
+IND    & Investigational New Drug \\
+ITT    & Intent-to-Treat \\
+IXRS   & Interactive X-act Randomisation System \\
+J2R    & Jump-to-Reference \\
+LABA   & Long-Acting Beta-Agonist \\
+LOCF   & Last Observation Carried Forward \\
+LRT    & Likelihood Ratio Test \\
+MAR    & Missing At Random \\
+MedDRA & Medical Dictionary for Regulatory Activities \\
+MI     & Multiple Imputation \\
+MMRM   & Mixed Model for Repeated Measures \\
+MNAR   & Missing Not At Random \\
+MPD    & Major Protocol Deviation \\
+PP     & Per-Protocol \\
+PT     & Preferred Term \\
+QC     & Quality Control \\
+QTcF   & QT Interval Corrected (Fridericia) \\
+SAE    & Serious Adverse Event \\
+SAP    & Statistical Analysis Plan \\
+SDTM   & Study Data Tabulation Model (CDISC) \\
+SGRQ   & St George's Respiratory Questionnaire \\
+SOC    & System Organ Class \\
+SRC    & Safety Review Committee \\
+TEAE   & Treatment-Emergent Adverse Event \\
+TFL    & Tables, Figures, and Listings \\
+UN     & Unstructured (covariance matrix) \\
+\bottomrule
+\end{tabularx}
+
+\vspace{10pt}
+\saprule
+\begin{center}
+{\small\color{sapsteel}
+\faIcon{globe}\ Compiled with \textbf{pdflatex}\ $\cdot$
+Edit and compile online at \href{https://letx.app}{\textbf{letx.app}}\ $\cdot$
+{\footnotesize \textcopyright~2025 Arion Therapeutics, Inc.\ All rights reserved.}
+}
+\end{center}
+
+\end{document}

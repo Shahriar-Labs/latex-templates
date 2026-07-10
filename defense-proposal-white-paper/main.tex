@@ -1,0 +1,561 @@
+% Defense Proposal White Paper -- LaTeX Template
+% Can be edited and compiled online at https://letx.app
+% Compile with: latexmk -pdf main.tex
+
+\documentclass[11pt,letterpaper]{article}
+
+% ---------- Core packages ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in,headheight=30pt,footskip=32pt]{geometry}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc,fit,backgrounds}
+\usepackage[skins]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usetikzlibrary{shadows}
+\usepackage{fontawesome5}
+\usepackage{lastpage}
+\usepackage{hyperref}
+
+% ---------- Colors ----------
+\definecolor{accent}{HTML}{1B3A5C}      % navy
+\definecolor{accent2}{HTML}{C8102E}     % classification red
+\definecolor{midgray}{HTML}{5A5A5A}
+\definecolor{panelbg}{HTML}{F4F6F8}
+\definecolor{accentlight}{HTML}{E3EAF2}
+
+% ---------- Spacing ----------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% ---------- Hyperref ----------
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent,
+  citecolor=accent,
+  pdftitle={Layered C-UAS Architecture White Paper},
+  pdfauthor={Meridian Defense Technologies, Inc.}
+}
+
+% ---------- Section styling ----------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{accent}}
+  {\thesection}{0.6em}{}[{\color{accent}\titlerule[0.8pt]}]
+\titlespacing*{\section}{0pt}{16pt}{8pt}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{accent}}
+  {\thesubsection}{0.6em}{}
+\titlespacing*{\subsection}{0pt}{12pt}{6pt}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\color{midgray}}
+  {\thesubsubsection}{0.6em}{}
+\titlespacing*{\subsubsection}{0pt}{10pt}{4pt}
+
+% ---------- Header / Footer (classification banners) ----------
+\newcommand{\classmark}{\footnotesize\bfseries\color{accent2}UNCLASSIFIED // FOR OFFICIAL USE ONLY (FOUO)}
+\newcommand{\doccontrolnum}{MDT-CUAS-WP-2026-014, Rev.\ B}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.7pt}
+\renewcommand{\footrulewidth}{0.7pt}
+\fancyheadoffset{0pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{accent2}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\footrule}{\hbox to\headwidth{\color{accent2}\leaders\hrule height \footrulewidth\hfill}}
+\fancyhead[C]{\classmark}
+\fancyfoot[C]{\classmark}
+\fancyfoot[L]{\footnotesize\color{midgray}\doccontrolnum}
+\fancyfoot[R]{\footnotesize\color{midgray}Page \thepage\ of \pageref{LastPage}}
+
+% ---------- Helper: key/value info table ----------
+\newcommand{\kvtable}[1]{%
+  \begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  #1
+  \end{tabularx}
+}
+
+% ---------- Helper: tcolorbox for callouts ----------
+\newtcolorbox{noticebox}{
+  colback=accentlight, colframe=accent, boxrule=0.6pt, arc=1.5pt,
+  left=6pt, right=6pt, top=5pt, bottom=5pt
+}
+
+\newlist{reqlist}{itemize}{2}
+\setlist[reqlist]{label=\textbullet, leftmargin=1.4em, itemsep=2pt, topsep=2pt}
+
+\begin{document}
+\thispagestyle{fancy}
+
+% =====================================================================
+% COVER PAGE
+% =====================================================================
+\begin{center}
+{\color{accent2}\rule{\linewidth}{1.4pt}}\\[2pt]
+{\footnotesize\bfseries\color{accent2}UNCLASSIFIED // FOR OFFICIAL USE ONLY (FOUO)}\\[1pt]
+{\tiny\color{midgray}This document contains notional, non-proprietary sample data prepared solely to demonstrate document formatting.}\\[2pt]
+{\color{accent2}\rule{\linewidth}{1.4pt}}
+\end{center}
+
+\vspace{18pt}
+\begin{center}
+{\Large\bfseries\color{accent} MERIDIAN DEFENSE TECHNOLOGIES, INC.}\\[4pt]
+{\footnotesize\color{midgray} CAGE Code 3XKT9 \quad|\quad Huntsville, Alabama}
+\end{center}
+
+\vspace{22pt}
+\begin{center}
+{\footnotesize\bfseries\color{midgray} TECHNICAL WHITE PAPER}\\[10pt]
+{\huge\bfseries\color{accent} Layered Counter-Unmanned Aircraft\\ System (C-UAS) Architecture for\\ Forward-Deployed Base Defense}\\[14pt]
+{\normalsize\itshape\color{midgray} Response to Department of Defense Rapid Capabilities Office\\ Request for Information No.\ RCO-2026-0142}
+\end{center}
+
+\vspace{20pt}
+\begin{center}
+\begin{tikzpicture}
+\draw[accent, line width=0.8pt] (0,0) -- (5,0);
+\node[accent] at (2.5,0.18) {\small\faLock};
+\end{tikzpicture}
+\end{center}
+
+\vspace{6pt}
+\begin{center}
+\begin{minipage}{0.86\linewidth}
+\kvtable{
+Document No.        & \doccontrolnum \\[3pt]
+Classification       & UNCLASSIFIED // FOUO \\[3pt]
+Issue Date            & 10 July 2026 \\[3pt]
+Prepared By           & Systems Engineering Directorate, Meridian Defense Technologies, Inc. \\[3pt]
+Approved By           & J.\ Alderman, Chief Engineer, C-UAS Programs \\[3pt]
+Distribution Statement & Statement C: Distribution authorized to U.S.\ Government agencies and their contractors for administrative and operational use (10 July 2026). Other requests shall be referred to the Program Office identified in Appendix A. \\
+}
+\end{minipage}
+\end{center}
+
+\vfill
+
+\begin{center}
+\begin{minipage}{0.97\linewidth}
+{\small\bfseries\color{accent} Revision History}\\[4pt]
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}l l >{\raggedright\arraybackslash}X l@{}}
+\toprule
+\rowcolor{accentlight}
+\textbf{Rev} & \textbf{Date} & \textbf{Description} & \textbf{Author} \\
+\midrule
+A & 2026-05-04 & Initial draft for internal technical review. & R.\ Okafor \\
+A1 & 2026-06-02 & Incorporated systems engineering and cost estimating inputs. & L.\ Chen \\
+B & 2026-07-10 & Updated CONOPS diagram, ROM cost table, and risk register for RFI submission. & R.\ Okafor \\
+\bottomrule
+\end{tabularx}
+\end{minipage}
+\end{center}
+
+\clearpage
+
+% =====================================================================
+% TABLE OF CONTENTS
+% =====================================================================
+\tableofcontents
+\clearpage
+
+% =====================================================================
+% EXECUTIVE SUMMARY
+% =====================================================================
+\section*{Executive Summary}
+\addcontentsline{toc}{section}{Executive Summary}
+
+Meridian Defense Technologies, Inc.\ (MDT) submits this white paper in response to Rapid Capabilities Office RFI No.\ RCO-2026-0142, addressing the requirement for a layered, base-defense-capable Counter-Unmanned Aircraft System (C-UAS) architecture against Group 1--3 unmanned aircraft system (UAS) threats at forward-deployed installations.
+
+The proposed architecture integrates existing government furnished sensor assets with a modular, open-architecture Command and Control / Sensor Fusion (C2SF) node and a layered effector suite (radio-frequency defeat, electronic warfare jamming, and kinetic intercept) to close the detect-track-identify-engage-assess kill chain within the RFI-specified 5\,km detection range and sub-15-second engagement timeline.
+
+MDT's approach emphasizes a Modular Open Systems Approach (MOSA) to minimize integration risk with existing base-defense infrastructure, including legacy Counter-Rocket, Artillery, Mortar (C-RAM) fire control. The Rough Order of Magnitude (ROM) cost for the 21-month development, integration, and test program is \textbf{\$9,905K}, structured across eight Work Breakdown Structure (WBS) elements summarized in Section~6.
+
+This white paper presents the operational concept, functional and performance requirements, technical architecture, program schedule, cost basis, and risk posture supporting a Preliminary Design Review (PDR) decision within four months of contract award.
+
+\clearpage
+
+% =====================================================================
+% 1. INTRODUCTION
+% =====================================================================
+\section{Introduction}
+
+\subsection{Purpose and Scope}
+This white paper describes MDT's proposed technical approach for a layered C-UAS capability responsive to RCO-2026-0142. It documents the concept of operations, system-level requirements, technical architecture, work breakdown structure, ROM cost estimate, program schedule, and risk assessment necessary to support a government down-select decision. The scope is limited to the base-defense C-UAS mission set and excludes airborne intercept of Group 4/5 systems.
+
+\subsection{Background}
+Forward-deployed installations face an increasing operational threat from low-cost, commercially available Group 1--3 UAS employed for intelligence, surveillance, and reconnaissance (ISR), as well as improvised weaponization. Existing point-defense systems, including legacy C-RAM, were not designed against low radar cross-section, low-altitude UAS tracks and require sensor and effector augmentation to close current capability gaps identified in the FY26 Joint Counter-UAS Capability Gap Assessment.
+
+\subsection{Applicable Documents}
+\begin{tabularx}{\linewidth}{@{}l >{\raggedright\arraybackslash}X l@{}}
+\toprule
+\rowcolor{accentlight}
+\textbf{Document No.} & \textbf{Title} & \textbf{Date} \\
+\midrule
+MIL-STD-461G & Control of Electromagnetic Interference Characteristics of Subsystems and Equipment & 2015-12-11 \\
+MIL-STD-810H & Environmental Engineering Considerations and Laboratory Tests & 2019-01-31 \\
+DoDI 5000.87 & Operation of the Software Acquisition Pathway & 2020-10-02 \\
+JCIDS Manual & Joint Capabilities Integration and Development System & 2021-08-31 \\
+FAAD C2 ICD-14 & Forward Area Air Defense C2 Interface Control Document & 2024-03-15 \\
+RCO-2026-0142 & Rapid Capabilities Office RFI: Layered Base-Defense C-UAS & 2026-04-18 \\
+\bottomrule
+\end{tabularx}
+
+\clearpage
+
+% =====================================================================
+% 2. CONCEPT OF OPERATIONS
+% =====================================================================
+\section{Concept of Operations (CONOPS)}
+
+\subsection{Operational Scenario}
+A forward operating base (FOB) perimeter is protected by a layered detection ring comprising ground-based radar, electro-optical/infrared (EO/IR) cueing sensors, and passive RF direction-finding (RF-DF) arrays. Upon detection of an inbound Group 1--3 UAS track, sensor data is fused at the C2SF node, correlated against a known-friendly track database, and presented to the engagement authority. Upon authorization, the system cues the appropriate non-kinetic (RF/EW) or kinetic effector based on range, threat classification, and collateral-effect constraints, then performs battle-damage assessment via continued sensor tracking.
+
+\subsection{CONOPS Diagram}
+Figure~\ref{fig:conops} depicts the notional detect-track-identify-engage-assess kill chain protecting the FOB perimeter.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=8mm and 10mm,
+  box/.style={draw=accent, fill=accentlight, rounded corners=2pt, align=center,
+              minimum height=1.05cm, text width=2.35cm, font=\small, thick},
+  asset/.style={draw=accent2, fill=white, rounded corners=2pt, align=center,
+              minimum height=1.0cm, text width=2.6cm, font=\small, thick},
+  arr/.style={-{Latex[length=2.2mm]}, thick, color=accent}
+]
+\node[box] (detect) {Detect\\Radar / EO-IR / RF-DF};
+\node[box, right=of detect] (track) {Track\\Multi-Sensor Fusion};
+\node[box, right=of track] (id) {Identify\\Friend/Foe Correlation};
+\node[box, right=of id] (engage) {Engage\\RF / EW / Kinetic};
+\node[box, right=of engage] (assess) {Assess\\Battle Damage};
+
+\draw[arr] (detect) -- (track);
+\draw[arr] (track) -- (id);
+\draw[arr] (id) -- (engage);
+\draw[arr] (engage) -- (assess);
+
+\node[asset, below=14mm of id] (base) {Protected Asset:\\Forward Operating Base};
+\node[box, below=14mm of detect] (threat) {Threat Track:\\Group 1--3 UAS};
+
+\draw[arr, color=accent2] (threat) -- (detect);
+\draw[arr, dashed] (base.north) -- (id.south);
+\draw[arr, dashed] (assess) -- ++(0,-14mm) -| (base.east);
+\end{tikzpicture}%
+}
+\caption{Layered C-UAS engagement kill chain and CONOPS overview.}
+\label{fig:conops}
+\end{figure}
+
+\begin{noticebox}
+\small\textbf{Engagement authority remains with a human operator at all points in the kill chain}; no fully autonomous lethal engagement is proposed under this architecture, consistent with DoD Directive 3000.09.
+\end{noticebox}
+
+\clearpage
+
+% =====================================================================
+% 3. SYSTEM REQUIREMENTS
+% =====================================================================
+\section{System Requirements}
+
+\subsection{Functional and Performance Requirements}
+Table~\ref{tab:reqs} summarizes the top-level functional and performance requirements traced from RCO-2026-0142 Section 4.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}l >{\raggedright\arraybackslash}X l l@{}}
+\toprule
+\rowcolor{accentlight}
+\textbf{ID} & \textbf{Requirement} & \textbf{Priority} & \textbf{Verification} \\
+\midrule
+REQ-3.1-001 & The system shall detect Group 1--3 UAS targets at a minimum slant range of 5\,km under clear-weather daytime conditions. & Threshold & Test \\
+REQ-3.1-002 & The system shall classify detected tracks by UAS group within 3 seconds of initial detection. & Threshold & Test \\
+REQ-3.2-001 & The system shall achieve a probability of detection (P\textsubscript{d}) $\geq$ 0.90 for Group 2 targets at 3\,km. & Threshold & Test \\
+REQ-3.2-002 & The system shall achieve a false-alarm rate $\leq$ 1 per 4 hours of continuous operation. & Threshold & Analysis \\
+REQ-3.3-001 & The system shall complete the detect-to-engage sequence within 15 seconds for authorized tracks. & Objective & Test \\
+REQ-3.3-002 & The system shall provide non-kinetic (RF/EW) defeat capability as the primary engagement method. & Threshold & Demonstration \\
+REQ-3.4-001 & The system shall interface with legacy FAAD C2 via ICD-14 without modification to fielded C-RAM hardware. & Threshold & Inspection \\
+REQ-3.4-002 & The system architecture shall conform to a Modular Open Systems Approach (MOSA) to enable third-party sensor integration. & Objective & Analysis \\
+REQ-3.5-001 & The system shall sustain continuous operation for 72 hours without scheduled maintenance. & Threshold & Test \\
+\bottomrule
+\end{tabularx}
+\caption{Top-level functional and performance requirements.}
+\label{tab:reqs}
+\end{table}
+
+\clearpage
+
+% =====================================================================
+% 4. TECHNICAL APPROACH
+% =====================================================================
+\section{Technical Approach}
+
+\subsection{System Architecture}
+The proposed architecture (Figure~\ref{fig:arch}) consists of three layers: a Sensor Layer providing multi-modal detection and tracking, a Command and Control / Sensor Fusion (C2SF) Layer performing track correlation and engagement management, and an Effector Layer providing tiered non-kinetic and kinetic defeat options. The C2SF node interfaces upward to the base Common Operating Picture (COP) and to higher-echelon air defense C2 via the existing FAAD C2 interface.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=6mm and 6mm,
+  layer/.style={draw=accent, fill=accentlight, rounded corners=2pt, align=center,
+                minimum height=1.0cm, text width=2.9cm, font=\small, thick},
+  hub/.style={draw=accent, fill=accent, text=white, rounded corners=2pt, align=center,
+              minimum height=1.1cm, text width=6.4cm, font=\small\bfseries, thick},
+  ext/.style={draw=midgray, fill=white, rounded corners=2pt, align=center,
+              minimum height=1.0cm, text width=2.9cm, font=\small, thick, dashed},
+  arr/.style={-{Latex[length=2.2mm]}, thick, color=accent}
+]
+\node[layer] (radar) {Radar};
+\node[layer, right=of radar] (eoir) {EO/IR};
+\node[layer, right=of eoir] (rfdf) {RF-DF};
+\node[layer, right=of rfdf] (acou) {Acoustic};
+
+\node[hub, below=10mm of eoir, xshift=13mm] (c2sf) {Command \& Control / Sensor Fusion (C2SF)};
+
+\node[layer, below=10mm of radar, xshift=0mm] (rfdefeat) {RF Defeat};
+\node[layer, right=of rfdefeat] (ew) {EW Jammer};
+\node[layer, right=of ew] (kinetic) {Kinetic Interceptor};
+
+\node[ext, right=14mm of c2sf] (cop) {Base Common\\Operating Picture};
+\node[ext, above=8mm of cop] (higher) {Higher Echelon C2\\(FAAD C2)};
+
+\draw[arr] (radar.south) |- (c2sf.north west);
+\draw[arr] (eoir.south) -- (c2sf.north);
+\draw[arr] (rfdf.south) |- (c2sf.north east);
+\draw[arr] (acou.south) |- (c2sf.north east);
+
+\draw[arr] (c2sf.south) |- (rfdefeat.north);
+\draw[arr] (c2sf.south) -- (ew.north);
+\draw[arr] (c2sf.south) |- (kinetic.north);
+
+\draw[arr] (c2sf.east) -- (cop.west);
+\draw[arr] (cop.north) -- (higher.south);
+\end{tikzpicture}%
+}
+\caption{Three-layer C-UAS system architecture with external interfaces.}
+\label{fig:arch}
+\end{figure}
+
+\subsection{Key Subsystems}
+\begin{reqlist}
+\item \textbf{Sensor Layer:} Government furnished 3D air-surveillance radar augmented by MDT-integrated EO/IR cueing cameras and a passive RF-DF array for early warning against RF-controlled UAS.
+\item \textbf{C2SF Node:} MOSA-compliant fusion engine performing track correlation, IFF cross-check, and operator decision support via a common tactical display.
+\item \textbf{Effector Suite:} Tiered response comprising an RF defeat system (link/GPS disruption), a directional EW jammer, and a kinetic interceptor for high-confidence, high-priority tracks.
+\end{reqlist}
+
+\clearpage
+
+% =====================================================================
+% 5. WORK BREAKDOWN STRUCTURE
+% =====================================================================
+\section{Work Breakdown Structure (WBS)}
+
+Table~\ref{tab:wbs} presents the program WBS to the second level, aligned to the ROM cost estimate in Section~6.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}l >{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{accentlight}
+\textbf{WBS ID} & \textbf{Element} \\
+\midrule
+1.0 & \textbf{Program Management} \\
+1.1 & \hspace{4mm}Integrated Master Schedule \& Reporting \\
+1.2 & \hspace{4mm}Risk Management \\
+2.0 & \textbf{Systems Engineering} \\
+2.1 & \hspace{4mm}Requirements Management \& Traceability \\
+2.2 & \hspace{4mm}System Architecture \& Interface Control \\
+3.0 & \textbf{Sensor Subsystem} \\
+3.1 & \hspace{4mm}Radar Integration \\
+3.2 & \hspace{4mm}EO/IR and RF-DF Integration \\
+4.0 & \textbf{Command \& Control Subsystem} \\
+4.1 & \hspace{4mm}C2SF Software Development \\
+4.2 & \hspace{4mm}Operator HMI Development \\
+5.0 & \textbf{Effector Subsystem} \\
+5.1 & \hspace{4mm}RF Defeat \& EW Jammer Integration \\
+5.2 & \hspace{4mm}Kinetic Interceptor Integration \\
+6.0 & \textbf{Integration, Test \& Evaluation} \\
+6.1 & \hspace{4mm}Developmental Test \\
+6.2 & \hspace{4mm}Operational Assessment \\
+7.0 & \textbf{Training \& Logistics} \\
+8.0 & \textbf{Program Documentation \& Data} \\
+\bottomrule
+\end{tabularx}
+\caption{Work breakdown structure to WBS level 2.}
+\label{tab:wbs}
+\end{table}
+
+\clearpage
+
+% =====================================================================
+% 6. ROM COST ESTIMATE
+% =====================================================================
+\section{Rough Order of Magnitude (ROM) Cost Estimate}
+
+\subsection{Cost Summary}
+Table~\ref{tab:cost} presents the ROM cost estimate by Contract Line Item Number (CLIN), mapped to the WBS elements of Section~5. Estimates are expressed in FY26 constant-year dollars (\$K) and are based on a parametric/analogy estimate using MDT's C-RAM integration cost history, adjusted for the sensor and effector scope defined in Section~4.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}l >{\raggedright\arraybackslash}X l r@{}}
+\toprule
+\rowcolor{accentlight}
+\textbf{CLIN} & \textbf{Description} & \textbf{Basis of Estimate} & \textbf{ROM (\$K)} \\
+\midrule
+0001 & Program Management (WBS 1.0) & Analogy & 420 \\
+0002 & Systems Engineering (WBS 2.0) & Analogy & 610 \\
+0003 & Sensor Subsystem Integration (WBS 3.0) & Parametric & 2{,}150 \\
+0004 & C2 Subsystem Development (WBS 4.0) & Parametric & 1{,}840 \\
+0005 & Effector Subsystem Integration (WBS 5.0) & Vendor Quote & 2{,}975 \\
+0006 & Integration, Test \& Evaluation (WBS 6.0) & Analogy & 1{,}320 \\
+0007 & Training \& Logistics (WBS 7.0) & Engineering Estimate & 380 \\
+0008 & Program Documentation \& Data (WBS 8.0) & Engineering Estimate & 210 \\
+\midrule
+\rowcolor{panelbg}
+ & \textbf{Total ROM Cost} & & \textbf{9{,}905} \\
+\bottomrule
+\end{tabularx}
+\caption{ROM cost estimate by CLIN, FY26 constant-year \$K.}
+\label{tab:cost}
+\end{table}
+
+\subsection{Cost Assumptions}
+\begin{reqlist}
+\item Estimate assumes Government Furnished Equipment (GFE) radar and FAAD C2 test-bed access provided at contract start.
+\item Excludes production-representative unit costs beyond the single integration/test article assumed for CDR.
+\item Excludes escalation beyond FY26; estimate to be refined at PDR with a Class III estimate.
+\end{reqlist}
+
+\clearpage
+
+% =====================================================================
+% 7. PROGRAM SCHEDULE
+% =====================================================================
+\section{Program Schedule}
+
+Table~\ref{tab:sched} summarizes the notional 21-month schedule from Authority to Proceed (ATP) to Operational Assessment complete.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}l >{\raggedright\arraybackslash}X l l@{}}
+\toprule
+\rowcolor{accentlight}
+\textbf{Phase} & \textbf{Milestone} & \textbf{Duration} & \textbf{Target} \\
+\midrule
+1 & Concept Refinement \& Requirements Baseline & 3 months & ATP + 3 mo \\
+2 & Preliminary Design Review (PDR) & 4 months & ATP + 7 mo \\
+3 & Critical Design Review (CDR) & 5 months & ATP + 12 mo \\
+4 & Integration \& Developmental Test & 6 months & ATP + 18 mo \\
+5 & Operational Assessment & 3 months & ATP + 21 mo \\
+\bottomrule
+\end{tabularx}
+\caption{Notional program schedule by phase.}
+\label{tab:sched}
+\end{table}
+
+\clearpage
+
+% =====================================================================
+% 8. RISK ASSESSMENT
+% =====================================================================
+\section{Risk Assessment}
+
+Table~\ref{tab:risk} identifies the top program risks and associated mitigation strategies, assessed per MDT's standard 5x5 likelihood/impact risk matrix (L/M/H scale shown).
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}l >{\raggedright\arraybackslash}X l l >{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{accentlight}
+\textbf{ID} & \textbf{Risk Description} & \textbf{Like.} & \textbf{Impact} & \textbf{Mitigation} \\
+\midrule
+R-01 & Supply-chain delay for qualified RF front-end components. & Medium & High & Dual-source qualified vendors; initiate long-lead procurement at ATP. \\
+R-02 & Integration complexity with legacy C-RAM fire-control interfaces. & Medium & Medium & Early ICD development with government stakeholders; access to FAAD C2 test bed. \\
+R-03 & EMI/EMC interference between co-located RF effectors and host base sensors. & Medium & High & EMI/EMC characterization at CDR; frequency deconfliction plan per MIL-STD-461G. \\
+R-04 & Late delivery of Government Furnished radar sensor data. & Low & Medium & Negotiated GFE delivery schedule with buffer; contingency simulated data sources. \\
+\bottomrule
+\end{tabularx}
+\caption{Top program risks and mitigation strategies.}
+\label{tab:risk}
+\end{table}
+
+\clearpage
+
+% =====================================================================
+% 9. GLOSSARY
+% =====================================================================
+\section{Glossary of Symbols and Abbreviations}
+
+\begin{tabularx}{\linewidth}{@{}l >{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{accentlight}
+\textbf{Abbreviation} & \textbf{Definition} \\
+\midrule
+ATP & Authority to Proceed \\
+C2 & Command and Control \\
+C2SF & Command and Control / Sensor Fusion \\
+C-RAM & Counter-Rocket, Artillery, Mortar \\
+CDR & Critical Design Review \\
+CLIN & Contract Line Item Number \\
+CONOPS & Concept of Operations \\
+COP & Common Operating Picture \\
+C-UAS & Counter-Unmanned Aircraft System \\
+EMC & Electromagnetic Compatibility \\
+EMI & Electromagnetic Interference \\
+EO/IR & Electro-Optical / Infrared \\
+EW & Electronic Warfare \\
+FOB & Forward Operating Base \\
+GFE & Government Furnished Equipment \\
+ICD & Interface Control Document \\
+MOSA & Modular Open Systems Approach \\
+P\textsubscript{d} & Probability of Detection \\
+PDR & Preliminary Design Review \\
+RF-DF & Radio Frequency Direction Finding \\
+ROM & Rough Order of Magnitude \\
+UAS & Unmanned Aircraft System \\
+WBS & Work Breakdown Structure \\
+\bottomrule
+\end{tabularx}
+
+\clearpage
+
+% =====================================================================
+% APPENDIX A
+% =====================================================================
+\section*{Appendix A: Point of Contact}
+\addcontentsline{toc}{section}{Appendix A: Point of Contact}
+
+\kvtable{
+Program Manager   & J.\ Alderman, Chief Engineer, C-UAS Programs \\[3pt]
+Email             & j.alderman@meridiandefense.example \\[3pt]
+Phone             & (256) 555-0142 \\[3pt]
+Mailing Address   & Meridian Defense Technologies, Inc., 4100 Explorer Way, Huntsville, AL 35806 \\[3pt]
+CAGE Code         & 3XKT9 \\
+}
+
+\vspace{10pt}
+\begin{noticebox}
+\small All technical data contained herein is notional and provided for template demonstration purposes only. No actual proprietary, export-controlled, or classified information is included in this document.
+\end{noticebox}
+
+\end{document}

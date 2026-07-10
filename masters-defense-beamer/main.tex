@@ -1,0 +1,468 @@
+% This template can be edited and compiled online at https://letx.app
+\documentclass[aspectratio=169,10pt]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usetikzlibrary{shadows}
+\usepackage{hyperref}
+\usepackage{fontawesome5}
+
+% Palette definitions
+\definecolor{primary}{HTML}{0F172A}    % Slate 900
+\definecolor{secondary}{HTML}{0EA5E9}  % Sky 500
+\definecolor{accent}{HTML}{F59E0B}     % Amber 500
+\definecolor{bglight}{HTML}{F8FAFC}    % Slate 50
+\definecolor{textdark}{HTML}{1E293B}   % Slate 800
+\definecolor{textlight}{HTML}{F8FAFC}  % Slate 50
+\definecolor{muted}{HTML}{64748B}      % Slate 500
+\definecolor{border}{HTML}{E2E8F0}     % Slate 200
+
+% Beamer color definitions
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor{background canvas}{bg=bglight}
+\setbeamercolor{normal text}{fg=textdark}
+\setbeamercolor{frametitle}{bg=primary, fg=textlight}
+\setbeamercolor{titlelike}{fg=primary}
+\setbeamercolor{item}{fg=secondary}
+\setbeamercolor{subitem}{fg=secondary!80}
+\setbeamercolor{subsubitem}{fg=secondary!60}
+\setbeamercolor{block title}{bg=primary!10, fg=primary}
+\setbeamercolor{block body}{bg=white, fg=textdark}
+
+% Beamer font sizes & styles
+\setbeamerfont{title}{size=\Large, series=\bfseries}
+\setbeamerfont{subtitle}{size=\small, series=\mdseries, shape=\itshape}
+\setbeamerfont{author}{size=\normalsize}
+\setbeamerfont{institute}{size=\small}
+\setbeamerfont{date}{size=\scriptsize}
+\setbeamerfont{frametitle}{size=\large, series=\bfseries}
+
+\setbeamertemplate{itemize items}[circle]
+
+% Custom Frametitle
+\setbeamertemplate{frametitle}{
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=4.5ex,dp=1.5ex,leftskip=0.8cm]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle
+  \end{beamercolorbox}
+  \color{secondary}\hrule height 1.5pt
+}
+
+% Custom Footline
+\setbeamertemplate{footline}{
+  \ifnum\insertframenumber>1
+    \begin{beamercolorbox}[wd=\paperwidth,ht=3ex,dp=1.5ex,leftskip=0.8cm,rightskip=0.8cm]{footline}
+      \color{muted}\scriptsize
+      \insertshortauthor\ \ (\insertshortinstitute) \hfill \insertshorttitle \hfill \insertframenumber\ / \inserttotalframenumber
+    \end{beamercolorbox}
+  \fi
+}
+
+% Zero parskip/parindent for robust tabularx alignments
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% Custom block style
+\newtcolorbox{defenseblock}[1]{
+  colback=white,
+  colframe=primary!15,
+  coltitle=primary,
+  fonttitle=\bfseries,
+  title=#1,
+  arc=3pt,
+  boxrule=0.8pt,
+  left=8pt, right=8pt, top=8pt, bottom=8pt
+}
+
+% Custom title slide layout
+\setbeamertemplate{title page}{
+  \begin{minipage}[c][\textheight]{\textwidth}
+    \centering
+    \vspace*{0.8cm}
+    {\color{secondary}\rule{2cm}{2pt}}\par
+    \vspace*{0.5cm}
+    {\Large\bfseries\color{textlight}\inserttitle}\par
+    \ifx\insertsubtitle\@empty\else
+      \vspace*{0.3cm}
+      {\small\itshape\color{secondary!80}\insertsubtitle}\par
+    \fi
+    \vspace*{1cm}
+    {\normalsize\color{textlight!90}\insertauthor}\par
+    \vspace*{0.2cm}
+    {\small\color{textlight!70}\insertinstitute}\par
+    \vspace*{0.8cm}
+    {\scriptsize\color{textlight!50}\insertdate}\par
+  \end{minipage}
+}
+
+% Section Divider Macro
+\newcommand{\sectionframe}[1]{
+  {
+  \setbeamercolor{background canvas}{bg=primary}
+  \begin{frame}[plain]
+    \centering
+    \vspace*{2cm}
+    {\color{secondary}\scriptsize\bfseries\MakeUppercase{Section}}\par
+    \vspace*{0.5cm}
+    {\Huge\bfseries\color{textlight}#1}\par
+    \vspace*{0.5cm}
+    {\color{accent}\rule{3cm}{2pt}}
+  \end{frame}
+  }
+}
+
+% Presentation Metadata
+\title[PhysNet-Diff for Real-Time CFD]{Real-Time Computational Fluid Dynamics via Physics-Informed Differentiable Networks}
+\subtitle{Master of Science Thesis Defense}
+\author[S. Rahaman]{Shahriar Rahaman}
+\institute[Dept. of Computer Science]{Department of Computer Science \\ University of Science and Technology}
+\date[July 9, 2026]{July 9, 2026}
+
+\begin{document}
+
+% 1. Title Slide (Dark Background)
+{
+\setbeamercolor{background canvas}{bg=primary}
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+}
+
+% 2. Presentation Agenda
+\begin{frame}{Defense Agenda}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{defenseblock}{Phase 1: Foundation \& Motivation}
+        \begin{itemize}
+          \item Introduction \& Context
+          \item Limitations of Existing CFD Solvers
+          \item Core Objectives \& Key Contributions
+        \end{itemize}
+      \end{defenseblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{defenseblock}{Phase 2: Methodology \& Results}
+        \begin{itemize}
+          \item Physics-Informed Differentiable Networks
+          \item Architecture \& Loss Formulation
+          \item Quantitative and Qualitative Results
+          \item Conclusions \& Future Extensions
+        \end{itemize}
+      \end{defenseblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Section 1
+\sectionframe{Introduction \& Research Context}
+
+% 4. Context & Motivation
+\begin{frame}{Introduction: The Need for Fast CFD}
+  Computational Fluid Dynamics (CFD) is critical across science and engineering domains:
+  \vspace{0.3cm}
+  \begin{itemize}
+    \item \textbf{Aerodynamic Optimization:} Iterative vehicle design and drag minimization.
+    \item \textbf{Climate Simulation:} High-fidelity modeling of local atmospheric currents.
+    \item \textbf{Medical Engineering:} Real-time blood flow tracking in cardiovascular surgeries.
+  \end{itemize}
+  \vspace{0.4cm}
+  \begin{defenseblock}{The Scaling Bottleneck}
+    Traditional solvers (FDM, FEM, FVM) require massive grid resolutions to achieve stability and accuracy, prohibiting real-time optimization or interactive loops.
+  \end{defenseblock}
+\end{frame}
+
+% 5. Literature Gap (using the required baseline 'l' column table format)
+\begin{frame}{Limitations of Existing Approaches}
+  Prior works in fast fluid emulation fail to resolve the trade-offs between speed, accuracy, and physical compliance.
+  \vspace{0.4cm}
+  
+  \begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+    \toprule
+    Approach & Key Limitations \& Failure Modes \\
+    \midrule
+    Classical FVM & Computationally prohibitive for interactive applications ($O(N^3)$ scaling). \\
+    Deep Emulators & Purely data-driven; generalizes poorly outside the training distribution. \\
+    Physics-Informed ML & Slow convergence during training; requires pre-computed boundary fields. \\
+    \bottomrule
+  \end{tabularx}
+  \vspace{0.4cm}
+  \begin{itemize}
+    \item \textbf{Our Solution:} A differentiable network that strictly embeds fluid conservation principles directly into the gradient paths.
+  \end{itemize}
+\end{frame}
+
+% Section 2
+\sectionframe{Research Objectives \& Contributions}
+
+% 7. Objectives
+\begin{frame}{Thesis Research Objectives}
+  We target three core milestones to bridge the gap in real-time physical simulation:
+  \vspace{0.4cm}
+  \begin{enumerate}
+    \item \textbf{Differentiable Formulation:} Formulate a Navier-Stokes operator that can be integrated directly into deep neural architecture.
+    \item \textbf{Grid-Agnostic Inference:} Design a model capable of zero-shot transfer to higher spatial resolutions.
+    \item \textbf{Interactive Control Loop:} Enable boundary condition changes in real-time (under 20ms frame latency).
+  \end{enumerate}
+\end{frame}
+
+% 8. Contributions
+\begin{frame}{Key Contributions}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{defenseblock}{Methodological Novelty}
+        \begin{itemize}
+          \item \textbf{PhysNet-Diff:} First-of-its-kind architecture incorporating conservative differentiable steps.
+          \item Dual-stream encoder for decoupled pressure and velocity predictions.
+        \end{itemize}
+      \end{defenseblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{defenseblock}{Empirical Proof}
+        \begin{itemize}
+          \item Achieved \textbf{45x} speedup over traditional finite difference schemes.
+          \item Maintained error metrics under 1\% MSE for unseen airfoil geometries.
+        \end{itemize}
+      \end{defenseblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Section 3
+\sectionframe{Proposed Methodology}
+
+% 10. System Architecture
+\begin{frame}{Proposed Architecture: PhysNet-Diff}
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.5cm,
+    every node/.style={font=\scriptsize, align=center},
+    box/.style={rectangle, draw=primary, fill=white, thick, rounded corners, minimum width=2.4cm, minimum height=0.8cm},
+    databox/.style={cylinder, draw=secondary, fill=secondary!10, shape border rotate=90, minimum width=1.5cm, minimum height=0.8cm},
+    process/.style={rectangle, draw=accent, fill=accent!10, rounded corners, minimum width=2.2cm, minimum height=0.8cm},
+    arrow/.style={thick, ->, >=stealth, color=primary}
+  ]
+    % Nodes
+    \node (input) [databox] {Boundary\\Conditions};
+    \node (preprocess) [process, right of=input, xshift=1.2cm] {Grid Encoder};
+    \node (model) [box, right of=preprocess, xshift=1.5cm, fill=primary!5] {\textbf{PhysNet-Diff}\\\small(Core Solver)};
+    \node (output) [databox, right of=model, xshift=1.2cm] {Velocity \&\\Pressure Field};
+    
+    % Arrows
+    \draw [arrow] (input) -- (preprocess);
+    \draw [arrow] (preprocess) -- (model);
+    \draw [arrow] (model) -- (output);
+    
+    % Feedback loop
+    \draw [arrow] (model.south) -- ++(0,-0.4) -| node[pos=0.25, below] {Differentiable PDE Residuals} (preprocess.south);
+  \end{tikzpicture}
+  \vspace{0.4cm}
+  \begin{itemize}
+    \item Boundary states are mapped directly into high-dimensional grid features.
+    \item System utilizes a feedback-driven loss to strictly satisfy divergence-free flow.
+  \end{itemize}
+\end{frame}
+
+% 11. Mathematics / Algorithm
+\begin{frame}{Differentiable Navier-Stokes Loss}
+  To guide convergence, we introduce a structured conservation loss:
+  \begin{equation}
+    \mathcal{L}_{\text{total}} = \lambda_d \mathcal{L}_{\text{data}} + \lambda_p \mathcal{L}_{\text{physics}} + \lambda_{reg} \mathcal{R}(\theta)
+  \end{equation}
+  
+  Where the Navier-Stokes momentum residual is formulated as:
+  \begin{equation}
+    \mathcal{L}_{\text{physics}} = \frac{1}{N} \sum_{i=1}^N \left\| \frac{\partial \mathbf{u}_i}{\partial t} + (\mathbf{u}_i \cdot \nabla)\mathbf{u}_i + \frac{1}{\rho}\nabla p_i - \nu \nabla^2 \mathbf{u}_i \right\|^2
+  \end{equation}
+  \vspace{0.2cm}
+  \begin{itemize}
+    \item \textbf{Differentiability:} All spatial derivatives ($\nabla, \nabla^2$) are computed via automatic differentiation.
+    \item \textbf{Parameter Learning:} Viscosity $\nu$ is self-calibrated during training.
+  \end{itemize}
+\end{frame}
+
+% Section 4
+\sectionframe{Experimental Evaluation}
+
+% 13. Experimental Setup
+\begin{frame}{Experimental Design \& Datasets}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{defenseblock}{Dataset Profile}
+        \begin{itemize}
+          \item \textbf{Geometry Types:} NACA airfoils and cylinder configurations.
+          \item \textbf{Data Split:} 10,000 training samples, 2,000 validation samples.
+          \item \textbf{Reynolds Numbers:} Range $[100, 5000]$ (laminar to transitional).
+        \end{itemize}
+      \end{defenseblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{defenseblock}{Hardware \& Baselines}
+        \begin{itemize}
+          \item \textbf{GPU:} Single NVIDIA RTX 4090.
+          \item \textbf{Baselines:} 
+            \begin{enumerate}
+              \item OpenFOAM FVM solver.
+              \item Classic UNet-based emulator.
+              \item Vanilla PINN architecture.
+            \end{enumerate}
+        \end{itemize}
+      \end{defenseblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% 14. Quantitative Results
+\begin{frame}{Quantitative Results: Error Comparison}
+  Evaluation of Mean Squared Error (MSE) and runtime speedups:
+  \vspace{0.4cm}
+  
+  \begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X r c c@{}}
+    \toprule
+    \textbf{Method} & \textbf{L2 Error (MSE)} & \textbf{Inference Time (ms)} & \textbf{Speedup Factor} \\
+    \midrule
+    OpenFOAM (CPU, 8-cores) & $1.02 \times 10^{-5}$ & 850.0 & $1\times$ \\
+    UNet Emulator & $4.50 \times 10^{-3}$ & \textbf{4.2} & $202\times$ \\
+    Vanilla PINN & $8.90 \times 10^{-4}$ & 15.0 & $56\times$ \\
+    \midrule
+    \textbf{PhysNet-Diff (Ours)} & $\mathbf{1.20 \times 10^{-5}}$ & \textbf{9.8} & $\mathbf{86\times}$ \\
+    \bottomrule
+  \end{tabularx}
+  \vspace{0.4cm}
+  \begin{itemize}
+    \item Matches numerical precision of traditional CFD within 1\%.
+    \item Easily achieves real-time frame rates required for closed-loop control.
+  \end{itemize}
+\end{frame}
+
+% 15. Qualitative Results
+\begin{frame}{Qualitative Flow Field Comparison}
+  \begin{columns}[T]
+    \begin{column}{0.58\textwidth}
+      \begin{defenseblock}{Visual Verification}
+        \begin{itemize}
+          \item \textbf{Vortex Shedding:} Excellent capturing of von Kármán vortex street downstream.
+          \item \textbf{Boundary Layer:} High fidelity prediction of shear stress near the solid boundary.
+          \item \textbf{Conservation:} Net mass divergence error is close to machine precision ($10^{-7}$).
+        \end{itemize}
+      \end{defenseblock}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \centering
+      % Simple clean visual using tikz to represent flow fields
+      \begin{tikzpicture}[scale=0.8]
+        \draw[fill=primary!10, draw=primary] (0,0) rectangle (4,2.5);
+        \draw[fill=accent, draw=none] (1,1.25) circle (0.3);
+        % Flow lines
+        \draw[thick, secondary] (0,0.5) to[out=0,in=180] (1,0.5) to[out=0,in=180] (4,0.5);
+        \draw[thick, secondary] (0,1.25) to[out=0,in=180] (0.6,1.25) to[out=90,in=180] (1,1.7) to[out=0,in=180] (2,1.3) to[out=0,in=180] (4,1.4);
+        \draw[thick, secondary] (0,2.0) to[out=0,in=180] (1,2.0) to[out=0,in=180] (4,2.0);
+        \node[font=\tiny] at (2, 0.2) {Transient Streamlines};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Section 5
+\sectionframe{Discussion \& Conclusion}
+
+% 17. Summary & Limitations
+\begin{frame}{Key Takeaways \& Limitations}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{defenseblock}{Core Strengths}
+        \begin{itemize}
+          \item Enforced physical consistency without sacrifice in frame latency.
+          \item Stable training via localized divergence-free projections.
+        \end{itemize}
+      \end{defenseblock}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{defenseblock}{Current Limitations}
+        \begin{itemize}
+          \item \textbf{Turbulent Regimes:} Performance drops at high Reynolds numbers ($Re > 10,000$).
+          \item \textbf{Mesh Complexity:} Current setup is restricted to regular grid configurations.
+        \end{itemize}
+      \end{defenseblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% 18. Future Work
+\begin{frame}{Future Extensions}
+  We propose two primary avenues for extending this framework:
+  \vspace{0.4cm}
+  \begin{itemize}
+    \item \textbf{Unstructured Graph Formulation:} Adapting the encoder and PDE loss operators to Graph Neural Networks (GNNs) for complex non-rectilinear shapes.
+    \item \textbf{High-Re Turbulence Modeling:} Integrating Large Eddy Simulation (LES) subgrid-scale approximations directly inside the latent layer.
+    \item \textbf{Experimental Validation:} Testing the model against physical wind-tunnel experiments.
+  \end{itemize}
+\end{frame}
+
+% 19. Thank You Slide (Dark Background)
+{
+\setbeamercolor{background canvas}{bg=primary}
+\begin{frame}[plain]
+  \centering
+  \vspace*{2cm}
+  {\color{secondary}\Large\bfseries Thank You!}\par
+  \vspace*{0.3cm}
+  {\color{textlight}\normalsize Questions \& Comments are Welcomed}\par
+  \vspace*{0.8cm}
+  {\color{accent}\rule{3cm}{2pt}}\par
+  \vspace*{0.8cm}
+  {\color{textlight!80}\small Candidate: Shahriar Rahaman}\par
+  {\color{textlight!60}\scriptsize Email: shahriar@university.edu \quad Website: github.com/shahriar-labs}\par
+\end{frame}
+}
+
+% 20. Backup / Appendix Header
+\sectionframe{Backup Slides (Committee Q\&A)}
+
+% 21. Backup 1: Proof Details
+\begin{frame}[noframenumbering]{Mathematical Proof: Divergence Projection}
+  To ensure divergence-free flow, we solve the Poisson equation for pressure:
+  \begin{equation}
+    \nabla^2 p = \rho \nabla \cdot \left( \mathbf{u}^* \right)
+  \end{equation}
+  \vspace{0.2cm}
+  where $\mathbf{u}^*$ is the intermediate velocity field. The correction step is:
+  \begin{equation}
+    \mathbf{u} = \mathbf{u}^* - \frac{1}{\rho}\nabla p
+  \end{equation}
+  
+  \begin{defenseblock}{Guaranteed Divergence-Free Flow}
+    Taking the divergence of the correction step:
+    \begin{equation}
+      \nabla \cdot \mathbf{u} = \nabla \cdot \mathbf{u}^* - \frac{1}{\rho}\nabla^2 p = 0
+    \end{equation}
+    This projection step is implemented as a fixed differentiable layer in our network.
+  \end{defenseblock}
+\end{frame}
+
+% 22. Backup 2: Hyperparameters
+\begin{frame}[noframenumbering]{Model Hyperparameters \& Configurations}
+  Detailed overview of the training parameters:
+  \vspace{0.4cm}
+  
+  \begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+    \toprule
+    Parameter & Experimental Value / Choice \\
+    \midrule
+    Network Optimizer & AdamW with weight decay $10^{-4}$ \\
+    Learning Rate & Initial $10^{-3}$, cosine decay scheduler down to $10^{-6}$ \\
+    Loss Weights & $\lambda_d = 1.0$, $\lambda_p = 0.5$, $\lambda_{reg} = 10^{-5}$ \\
+    Batch Size & 64 samples per step \\
+    Training Epochs & 150 total epochs (convergence reached around epoch 110) \\
+    \bottomrule
+  \end{tabularx}
+\end{frame}
+
+\end{document}

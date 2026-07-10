@@ -1,0 +1,430 @@
+% Q-Sys Technical Memorandum Template --- Elegant Engineering Document
+% Edit and compile online at https://letx.app
+% Compiles with: latexmk -pdf main.tex (pdflatex, two passes for ToC/page-refs)
+
+\documentclass[11pt,letterpaper]{article}
+
+% === PACKAGES ===
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tgpagella}
+\usepackage[sfdefault]{sourcesanspro}
+\usepackage{fontawesome5}
+\usepackage[table]{xcolor}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tikz}
+\usepackage{circuitikz}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{lastpage}
+\usepackage{hyperref}
+
+\usetikzlibrary{arrows.meta, positioning, calc, fit, backgrounds}
+
+% === COLORS ===
+\definecolor{accent}{HTML}{1B3A5C}
+\definecolor{graytext}{HTML}{4A5568}
+\definecolor{lightrule}{HTML}{CBD5E0}
+\definecolor{palebg}{HTML}{F7F8FA}
+\definecolor{rowstripe}{HTML}{EDF0F4}
+
+% === PAGE GEOMETRY ===
+\geometry{left=1in, right=1in, top=1.15in, bottom=0.85in, headheight=28pt, headsep=16pt}
+\raggedbottom
+
+% === PARAGRAPH SETTINGS ===
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% === SECTION FORMATTING (decimal numbering: 1.0, 2.0, etc.) ===
+\renewcommand{\thesection}{\arabic{section}.0}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{accent}}
+  {\thesection}
+  {1em}
+  {}
+  [{\color{accent}\titlerule[0.8pt]}]
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{accent}}
+  {\thesubsection}
+  {1em}
+  {}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\color{graytext}}
+  {\thesubsubsection}
+  {1em}
+  {}
+
+\titlespacing*{\section}{0pt}{16pt plus 3pt}{6pt plus 2pt}
+\titlespacing*{\subsection}{0pt}{12pt plus 2pt}{4pt plus 1pt}
+\titlespacing*{\subsubsection}{0pt}{8pt plus 2pt}{2pt plus 1pt}
+
+% === RUNNING HEADER / FOOTER ===
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\sffamily\color{graytext}QSYS-2026-047\ |\ Rev.\ A}
+\fancyhead[C]{\footnotesize\sffamily\color{accent}\bfseries TECHNICAL MEMORANDUM}
+\fancyhead[R]{\footnotesize\sffamily\color{graytext}Page \thepage\ of \pageref{LastPage}}
+\fancyfoot[L]{\footnotesize\sffamily\color{graytext}CONFIDENTIAL\ --- For Internal Use Only}
+\fancyfoot[R]{\footnotesize\sffamily\color{graytext}\today}
+\renewcommand{\headrule}{{\color{accent}\hrule width\headwidth height 0.6pt}}
+\renewcommand{\footrulewidth}{0.3pt}
+
+% === CAPTION STYLE ===
+\captionsetup{font={small,sf,color=graytext}, labelfont={bf,color=accent}, skip=6pt}
+
+% === HYPERREF STYLE ===
+\hypersetup{colorlinks=true, linkcolor=accent, urlcolor=accent, citecolor=accent}
+
+% ============================================================
+\begin{document}
+
+% --- Top accent bar ---
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[accent] (current page.north west) rectangle ([yshift=-3.5pt]current page.north east);
+\end{tikzpicture}
+
+% ============================================================
+%  MEMO HEADER BLOCK
+% ============================================================
+\vspace*{6pt}
+
+\begin{center}
+  {\sffamily\LARGE\bfseries\color{accent}TECHNICAL MEMORANDUM}
+\end{center}
+
+\vspace{2pt}
+
+\begin{tabularx}{\linewidth}{@{}>{\sffamily\footnotesize\color{graytext}\bfseries}l@{\hspace{7mm}}X@{}}
+  Project No. & QSYS-2026-047 \\[2pt]
+  DWG Ref.    & E-47-001, E-47-002, E-47-003 \\[2pt]
+  Date        & 09 July 2026 \\[2pt]
+  Revision    & A --- Initial Release \\
+\end{tabularx}
+
+\vspace{8pt}
+{\color{accent}\hrule height 0.8pt}
+\vspace{8pt}
+
+% --- TO / FROM / DATE / SUBJECT block ---
+\begin{tabularx}{\linewidth}{@{}>{\sffamily\footnotesize\color{graytext}\bfseries}l@{\hspace{10mm}}X@{}}
+  TO:      & Dr.\ Sarah Chen, Ph.D., P.Eng. \\
+           & Project Director, Advanced Systems Division \\[4pt]
+  FROM:    & James M.\ Rodriguez, P.E. \\
+           & Lead Engineer, Signal Processing Group \\[4pt]
+  DATE:    & 09 July 2026 \\[4pt]
+  SUBJECT: & Q-Sys Core 610 --- Signal Path Integrity and Noise Floor Analysis \\
+\end{tabularx}
+
+\vspace{8pt}
+
+% --- DISTRIBUTION block ---
+{\sffamily\small\color{accent}\bfseries DISTRIBUTION}
+
+\vspace{3pt}
+
+\begin{tabularx}{\linewidth}{@{}>{\color{graytext}\faEnvelope[regular]\hspace{6pt}}X@{}}
+  M.\ Thompson --- Electrical Engineering Lead \\[1pt]
+  K.\ Patel --- Systems Integration \\[1pt]
+  A.\ Nakamura --- Quality Assurance \\[1pt]
+  T.\ O'Brien --- Client Liaison (Acme Defense Systems) \\[1pt]
+  Project File \\
+\end{tabularx}
+
+\vspace{6pt}
+{\color{lightrule}\hrule height 0.4pt}
+\vspace{10pt}
+
+% ============================================================
+%  1.0  PURPOSE
+% ============================================================
+\section{Purpose}
+
+This memorandum documents the signal-path integrity assessment and noise-floor
+characterization of the Q-Sys Core~610 digital signal processor (DSP) as deployed
+in the Acme Defense Systems (ADS) Command-and-Control Suite, Building~4. The
+analysis supports the Factory Acceptance Test (FAT) milestone scheduled for
+15~August~2026 and provides the engineering basis for disposition of Deviation
+Request DR-047-012.
+
+Specific objectives of this memo are:
+\begin{enumerate}[leftmargin=*, label=\textcolor{accent}{\textbf{(\arabic*)}}, nosep, before=\vspace{2pt}, after=\vspace{0pt}]
+  \item Quantify the noise-floor elevation observed on Output Channels~13--16.
+  \item Identify the root cause and confirm correlation with QSC Technical
+        Bulletin TB-2026-06-14.
+  \item Recommend corrective action and regression-test protocol.
+\end{enumerate}
+
+% ============================================================
+%  2.0  BACKGROUND
+% ============================================================
+\section{Background}
+
+The Q-Sys Core~610 was installed in Rack~R4-C of the ADS C2 Suite on
+02~June~2026 as part of the Phase-III audio distribution upgrade. The system
+provides 16 channels of analog I/O with Dante and Q-LAN network redundancy.
+Channels~13--16 are dedicated to the secure-conferencing monitor path.
+
+During commissioning, the integration team observed elevated noise-floor
+readings on Channels~13--16, measuring approximately $-58$~dBFS A-weighted at
+unity gain with no source material present. The system specification (ADS
+Tech-Spec~AUD-047, \S~4.2.1) requires a quiescent noise floor no higher than
+$-72$~dBFS A-weighted on all analog output paths.
+
+Preliminary troubleshooting ruled out the following:
+\begin{itemize}[leftmargin=*, nosep, before=\vspace{2pt}, after=\vspace{0pt}]
+  \item Amplifier chain (Lab.gruppen D~80:4, S/N LG-2025-1182 through -1185).
+  \item Loudspeaker load (JBL Control~328CT).
+  \item Cabling between Core~610 analog output card and amplifier inputs
+        (Belden 9451, 22~AWG, shielded twisted-pair, verified with
+        Fluke DTX-1800).
+\end{itemize}
+
+\medskip
+
+The Core~610 firmware was at version 9.8.1-2645 at the time of measurement. On
+14~June~2026, QSC published Technical Bulletin TB-2026-06-14 documenting a known
+issue in firmware releases 9.8.0 through 9.8.2 that affects the output-DSP
+chain on Channels~13--16 when the Acoustic Echo Cancellation (AEC) block is
+loaded into the design but not assigned to an active conference zone.
+
+% ============================================================
+%  3.0  FINDINGS
+% ============================================================
+\section{Findings}
+
+\subsection{Measurement Setup}
+
+All measurements were taken with an Audio Precision APx555 analyzer
+(S/N~APX-2024-039, calibration due 12~Dec~2026) connected to the Core~610
+analog output card (Q-Sys COL4, slot~2, Channels~13--16). The Core~610 was
+isolated on a dedicated VLAN (VLAN~42) with no other Q-LAN traffic during the
+measurement window. Dante channels were muted at the transmitter. All
+measurements used A-weighting per IEC~61672-1, 20~Hz--20~kHz bandwidth,
+30-second averaging window.
+
+\begin{table}[H]
+\centering
+\caption{Noise-floor measurements --- Core~610 Output Channels~13--16}
+\medskip
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+& \multicolumn{4}{c}{\textbf{Measured Noise Floor (dBFS, A-weighted)}} \\
+\cmidrule(lr){2-5}
+\textbf{Condition} & \textbf{Ch.\ 13} & \textbf{Ch.\ 14} & \textbf{Ch.\ 15} & \textbf{Ch.\ 16} \\
+\midrule
+FW 9.8.1, AEC loaded, unassigned                          & $-57.8$ & $-58.1$ & $-57.4$ & $-58.6$ \\
+FW 9.8.1, AEC block removed                               & $-74.2$ & $-73.8$ & $-74.1$ & $-73.5$ \\
+\rowcolor{rowstripe}FW 9.8.3 (TB fix applied)             & $-74.5$ & $-74.1$ & $-74.3$ & $-74.0$ \\
+FW 9.8.3, full signal path at nominal gain                & $-75.1$ & $-74.8$ & $-74.9$ & $-74.7$ \\
+\midrule
+\rowcolor{palebg}\textbf{Specification (ADS AUD-047)}   & $\leq -72.0$ & $\leq -72.0$ & $\leq -72.0$ & $\leq -72.0$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Root Cause Confirmation}
+
+The elevated noise floor is caused by an unterminated processing path within the
+AEC block. When the AEC module is loaded into the Q-Sys design but no conference
+zone is bound to it, the internal adaptive-filter taps float to an
+indeterminate state. The resulting residual samples, which would normally be
+subtracted in a converged echo-cancellation path, are injected directly into the
+output-DSP chain as broadband quantization noise. This behavior is consistent
+with QSC TB-2026-06-14 and was independently verified on a second Core~610 unit
+(S/N~C610-2025-0847) in the laboratory.
+
+\subsection{Impact Assessment}
+
+\begin{itemize}[leftmargin=*, nosep, before=\vspace{4pt}, after=\vspace{0pt}]
+  \item The elevated noise floor is audible as a low-level broadband hiss on the
+        secure-conferencing monitor loudspeakers. It does not affect the primary
+        public-address or emergency-announcement paths (Channels~1--12), which
+        remain within specification.
+  \item The noise does \textbf{not} propagate through the Dante or Q-LAN
+        network; it is confined to the analog output stage of the affected
+        channels.
+  \item For classified briefings (the primary use case for the secure-conferencing
+        path), the noise level, while above specification, does not compromise
+        speech intelligibility. STI measurements on the affected channels returned
+        $0.82$ (\textit{Good} to \textit{Excellent} per IEC~60268-16).
+\end{itemize}
+
+% ============================================================
+%  4.0  SYMBOLS \& ABBREVIATIONS
+% ============================================================
+\section{Symbols \& Abbreviations}
+
+\vspace{2pt}
+{\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+ADS       & Acme Defense Systems \\
+AEC       & Acoustic Echo Cancellation \\
+A-wtd     & A-Weighted (IEC 61672-1 frequency weighting) \\
+COL4      & Four-Channel Analog Output Card (Q-Sys I/O family) \\
+dBFS      & Decibels relative to Full Scale \\
+DSP       & Digital Signal Processor / Processing \\
+FAT       & Factory Acceptance Test \\
+IEC       & International Electrotechnical Commission \\
+PA        & Public Address (system) \\
+Q-LAN     & QSC Layer-3 audio networking protocol \\
+S/N       & Serial Number \\
+SNR       & Signal-to-Noise Ratio \\
+STI       & Speech Transmission Index (IEC 60268-16) \\
+TB        & Technical Bulletin (QSC publication) \\
+VLAN      & Virtual Local Area Network \\
+\end{tabularx}
+}
+
+% ============================================================
+%  5.0  RECOMMENDATIONS
+% ============================================================
+\section{Recommendations}
+
+\begin{enumerate}[leftmargin=*, label=\textbf{R-\arabic*:}, ref=R-\arabic*, itemsep=6pt]
+
+  \item \textbf{Immediate --- Apply Firmware Update.} Upgrade the Core~610
+        firmware from version 9.8.1 to version 9.8.3 (or later) per QSC
+        TB-2026-06-14. This update resolves the AEC floating-tap issue and
+        restores the noise floor to within specification on all output
+        channels. Estimated downtime per Core~610 unit: 45~minutes (including
+        reboot and verification).
+
+  \item \textbf{Short-Term --- Regression Test.} Following the firmware update,
+        repeat the full noise-floor measurement suite on all 16 output channels
+        using the APx555 analyzer. Document results on Test Data Sheet
+        TDS-047-001 and verify compliance against acceptance criteria in
+        Section~8.3 of the FAT procedure (ADS-PROC-FAT-047).
+
+  \item \textbf{Medium-Term --- AEC Design Audit.} Review all Q-Sys design files
+        in the ADS deployment for unintended use of unbound AEC blocks. Remove
+        or bind any orphaned AEC instances. This is a proactive measure to
+        prevent recurrence in future deployments and Build~2 sites.
+
+  \item \textbf{Process --- Update Commissioning Checklist.} Add a mandatory
+        verification step to the standard commissioning procedure
+        (ADS-PROC-COM-004) requiring confirmation that all loaded AEC blocks
+        have a bound conference zone before noise-floor measurements are
+        recorded.
+
+\end{enumerate}
+
+% ============================================================
+%  6.0  SYSTEM BLOCK DIAGRAM
+% ============================================================
+\section{System Block Diagram}
+
+Figure~1 depicts the simplified signal path from the Core~610 analog input
+through the DSP engine to the monitor loudspeakers. The dashed outline
+identifies the affected output stage (Channels~13--16).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=8mm and 10mm,
+  block/.style={
+    rectangle, draw=accent, fill=palebg,
+    text width=22mm, minimum height=11mm,
+    align=center, font=\footnotesize\sffamily,
+    rounded corners=2pt, line width=0.5pt,
+  },
+  arrow/.style={-{Stealth[scale=0.85]}, thick, color=accent},
+  netarrow/.style={-{Stealth[scale=0.85]}, thick, densely dashed, color=graytext},
+  label/.style={font=\footnotesize\sffamily\color{graytext}},
+]
+
+  \node[block] (in)    {Analog Input\\COL4 (slot 1)};
+  \node[block, right=of in]  (dsp)   {Core DSP Engine\\AEC/Gain/Router};
+  \node[block, right=of dsp] (out)   {Analog Output\\COL4 (slot 2)};
+  \node[block, right=of out] (amp)   {Lab.gruppen\\D~80:4 Amplifier};
+  \node[block, right=of amp] (spk)   {JBL Control\\328CT Speaker};
+
+  \draw[arrow] (in)  -- (dsp) node[midway, above, label] {I$^2$S bus};
+  \draw[arrow] (dsp) -- (out) node[midway, above, label] {I$^2$S bus};
+  \draw[arrow] (out) -- (amp) node[midway, above, label] {Bal.\ line-level};
+  \draw[arrow] (amp) -- (spk) node[midway, above, label] {Spkr-level};
+
+  \node[block, above=of dsp, fill=accent!8, minimum height=10mm]
+    (net) {Q-LAN / Dante\\Network Switch};
+  \draw[netarrow] (net) -- (dsp) node[midway, right, label] {VLAN 42};
+
+  \begin{scope}[on background layer]
+    \node[fit=(out)(amp), draw=red!55!accent, fill=red!8!accent,
+          rounded corners=4pt, inner sep=7pt, dashed, line width=0.6pt] (pb) {};
+  \end{scope}
+  \node[font=\footnotesize\sffamily\color{accent}, below=4pt of pb.south]
+    {Channels 13--16: noise-floor issue localized here};
+
+\end{tikzpicture}
+\caption{Simplified signal path --- Q-Sys Core~610 to secure-conferencing monitor loudspeakers.\\
+         The dashed box highlights the output stage affected by the AEC floating-tap issue.}
+\end{figure}
+
+% ============================================================
+%  APPENDIX A: REVISION HISTORY
+% ============================================================
+\newpage
+\section*{Appendix A: Revision History}
+\addcontentsline{toc}{section}{Appendix A: Revision History}
+
+\vspace{4pt}
+
+\begin{center}
+\begin{tabular}{@{}cllp{58mm}l@{}}
+\toprule
+\textbf{Rev.} & \textbf{Date}       & \textbf{Author}      & \textbf{Description}                                                & \textbf{Approval} \\
+\midrule
+--            & 02 Jun 2026         & J.\ Rodriguez        & Initial draft --- pre-commissioning baseline measurements           & --- \\
+A             & 09 Jul 2026         & J.\ Rodriguez        & Added noise-floor analysis, root-cause determination,               & S.\ Chen \\
+              &                     &                      & firmware-update recommendation, and regression-test protocol        & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% ============================================================
+%  APPENDIX B: ATTACHMENT LIST
+% ============================================================
+\section*{Appendix B: Attachment List}
+\addcontentsline{toc}{section}{Appendix B: Attachment List}
+
+\vspace{4pt}
+
+\begin{enumerate}[leftmargin=*, label=\textbf{ATT-\arabic*:}, itemsep=4pt]
+  \item \textbf{Test Data Sheet TDS-047-001} --- Noise-floor measurement raw
+        data (APx555 export, 12~pages). Includes per-channel FFT plots and
+        THD+N vs.\ frequency sweeps.
+
+  \item \textbf{QSC Technical Bulletin TB-2026-06-14} --- AEC Block
+        Floating-Tap Noise Artifact, Firmware Releases 9.8.0 through 9.8.2.
+        Published 14~June~2026, Revision~1.0.
+
+  \item \textbf{Drawing E-47-001} --- Rack R4-C Signal-Flow Diagram
+        (Rev.\ C, dated 18~May~2026). 11$\times$17~in., scale~1:4.
+
+  \item \textbf{Drawing E-47-002} --- ADS C2 Suite Audio Floor Plan
+        (Rev.\ B, dated 22~April~2026). 24$\times$36~in., scale~1:50.
+
+  \item \textbf{Drawing E-47-003} --- Core~610 I/O Card Slot Assignment
+        and VLAN Topology (Rev.\ A, dated 02~June~2026).
+
+  \item \textbf{Firmware Release Notes} --- Q-Sys Core~610 Firmware
+        v9.8.3 (QSC document QSYS-RN-9.8.3, June~2026).
+
+  \item \textbf{Device Calibration Certificate} --- Audio Precision APx555,
+        S/N~APX-2024-039, calibration valid through 12~December~2026.
+
+\end{enumerate}
+
+\end{document}

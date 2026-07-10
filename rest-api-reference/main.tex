@@ -1,0 +1,159 @@
+% REST API Reference — editable & compilable online at https://letx.app
+% Compiles with pdflatex. A clean REST API reference: endpoint cards with method
+% badges, parameter tables, and JSON response samples. Fictional sample API.
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{inconsolata}
+\usepackage{amsmath}
+\usepackage[table]{xcolor}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{titlesec}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+\definecolor{ink}{HTML}{1E2A38}
+\definecolor{accent}{HTML}{3B82F6}
+\definecolor{getc}{HTML}{16A34A}   % GET green
+\definecolor{postc}{HTML}{2563EB}  % POST blue
+\definecolor{delc}{HTML}{DC2626}   % DELETE red
+\definecolor{light}{HTML}{EEF2F7}
+\definecolor{code}{HTML}{F5F7FA}
+\definecolor{mist}{HTML}{64748B}
+
+\titleformat{\section}{\Large\bfseries\color{ink}}{}{0em}{}
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+
+% method badge: \method{GET}{getc}
+\newcommand{\method}[2]{\colorbox{#2}{\color{white}\ttfamily\bfseries\small\,#1\,}}
+% endpoint path
+\newcommand{\route}[1]{{\ttfamily\normalsize\color{ink} #1}}
+
+\lstset{basicstyle=\ttfamily\footnotesize,backgroundcolor=\color{code},
+  frame=single,rulecolor=\color{light},breaklines=true,
+  xleftmargin=6pt,framexleftmargin=6pt,columns=fullflexible,
+  keywordstyle=\color{accent},showstringspaces=false}
+
+% one endpoint card
+\newtcolorbox{apicard}[1]{enhanced,colback=white,colframe=light,
+  boxrule=0.8pt,arc=3pt,left=8pt,right=8pt,top=6pt,bottom=6pt,
+  title=#1,coltitle=ink,fonttitle=\bfseries,colbacktitle=light}
+
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small\color{mist}Orbit API Reference}
+\rhead{\small\color{mist}v3.2}
+\cfoot{\small\color{mist}Page \thepage\ \textbullet\ \href{https://letx.app}{letx.app}}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\emergencystretch=3em\relax
+\begin{document}
+% ---- header ----
+\begin{tcolorbox}[colback=ink,colframe=ink,arc=4pt,left=14pt,top=10pt,bottom=10pt]
+{\color{white}\fontsize{20}{22}\selectfont\bfseries Orbit API Reference}\\[3pt]
+{\color{accent!60}\small Base URL: \ttfamily https://api.orbit.dev/v3 \quad\textbullet\quad
+ Auth: Bearer token \quad\textbullet\quad Format: JSON}
+\end{tcolorbox}
+
+\vspace{4pt}
+Orbit is a fictional project-management API. All requests require an
+\texttt{Authorization: Bearer <token>} header. Responses are JSON; timestamps are ISO-8601.
+
+% ================= ENDPOINT 1 =================
+\section{Projects}
+
+\begin{apicard}{\method{GET}{getc}\quad\route{/projects}}
+List all projects visible to the authenticated user, with pagination.
+
+\vspace{3pt}\textbf{Query parameters}
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\textbf{Name} & \textbf{Type} & \textbf{Description}\\
+\midrule
+\ttfamily limit  & integer & Max items per page (1--100, default 20).\\
+\ttfamily cursor & string  & Opaque pagination cursor from a previous response.\\
+\ttfamily status & string  & Filter by \texttt{active}, \texttt{archived}, or \texttt{all}.\\
+\bottomrule
+\end{tabularx}
+
+\vspace{4pt}\textbf{Response 200}
+\begin{lstlisting}
+{
+  "data": [
+    { "id": "prj_8a2f", "name": "Website Redesign",
+      "status": "active", "created_at": "2026-06-01T09:12:00Z" }
+  ],
+  "next_cursor": "eyJvIjoyMH0"
+}
+\end{lstlisting}
+\end{apicard}
+
+\vspace{6pt}
+\begin{apicard}{\method{POST}{postc}\quad\route{/projects}}
+Create a new project.
+
+\vspace{3pt}\textbf{Body parameters}
+\begin{tabularx}{\linewidth}{@{}l l c X@{}}
+\toprule
+\textbf{Name} & \textbf{Type} & \textbf{Req.} & \textbf{Description}\\
+\midrule
+\ttfamily name        & string & yes & Human-readable project name.\\
+\ttfamily description & string & no  & Optional summary.\\
+\ttfamily template\_id & string & no  & Clone from an existing template.\\
+\bottomrule
+\end{tabularx}
+
+\vspace{4pt}\textbf{Response 201}
+\begin{lstlisting}
+{ "id": "prj_9c7d", "name": "Mobile App",
+  "status": "active", "created_at": "2026-06-28T14:03:00Z" }
+\end{lstlisting}
+\end{apicard}
+
+% ================= ENDPOINT 2 =================
+\section{Tasks}
+
+\begin{apicard}{\method{GET}{getc}\quad\route{/projects/\{id\}/tasks}}
+Retrieve tasks for a project.
+
+\vspace{3pt}\textbf{Path parameters}
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\textbf{Name} & \textbf{Type} & \textbf{Description}\\
+\midrule
+\ttfamily id & string & The project identifier (e.g.\ \texttt{prj\_8a2f}).\\
+\bottomrule
+\end{tabularx}
+\end{apicard}
+
+\vspace{6pt}
+\begin{apicard}{\method{DELETE}{delc}\quad\route{/tasks/\{id\}}}
+Permanently delete a task. This action cannot be undone.
+
+\vspace{4pt}\textbf{Response 204} --- No Content.
+\end{apicard}
+
+% ---- status codes ----
+\section{Status Codes}
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+\textbf{Code} & \textbf{Meaning}\\
+\midrule
+\texttt{200 OK}          & Request succeeded.\\
+\texttt{201 Created}     & Resource created.\\
+\texttt{400 Bad Request} & Invalid parameters.\\
+\texttt{401 Unauthorized}& Missing or invalid token.\\
+\texttt{404 Not Found}   & Resource does not exist.\\
+\texttt{429 Too Many Requests} & Rate limit exceeded; retry after the reset window.\\
+\bottomrule
+\end{tabularx}
+\end{document}

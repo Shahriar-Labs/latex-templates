@@ -1,0 +1,191 @@
+% -*- coding: utf-8 -*-
+% This LaTeX template can be edited and compiled online at https://letx.app
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+
+% --- Language & Font Setup ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Page Geometry ---
+\usepackage[letterpaper, margin=0.5in]{geometry}
+
+% --- Color Palette ---
+\usepackage{xcolor}
+\definecolor{accent}{HTML}{0F172A}    % Slate 900 (Deep Slate)
+\definecolor{accentlight}{HTML}{3B82F6} % Blue 500 (For subtle highlights/dots)
+\definecolor{dark}{HTML}{1E293B}      % Slate 800
+\definecolor{light}{HTML}{F8FAFC}     % Slate 50
+\definecolor{muted}{HTML}{64748B}     % Slate 500
+\definecolor{grid}{HTML}{E2E8F0}      % Slate 200
+\definecolor{pagebg}{HTML}{FCFDFE}    % Extremely soft cool white background
+\pagecolor{pagebg}
+
+% --- Additional Packages ---
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{ifthen}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usetikzlibrary{shadows}
+\usepackage{enumitem}
+\usepackage[colorlinks=true, linkcolor=accentlight, urlcolor=accentlight]{hyperref}
+
+% --- Paragraph Styling ---
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% --- Custom Section Header ---
+\newcommand{\sectionheader}[1]{%
+  \vspace{2mm}
+  {\large\bfseries\color{accent}\MakeUppercase{#1}}\par\vspace{1mm}
+  {\color{grid}\hrule height 1pt}\par\vspace{2.5mm}
+}
+
+% --- Custom Chord Diagram Macro ---
+% #1: Chord Name (e.g. C)
+% #2: Start Fret (e.g. 1)
+% #3: Top markers list (6 elements: x, o, or e)
+% #4: Dots list (comma-separated string/fret/finger, e.g. 2/3/3)
+% #5: Barre list (comma-separated fret/string-start/string-end, e.g. 1/1/6)
+\newcommand{\chord}[5]{%
+  \begin{minipage}[t]{2.7cm}%
+    \centering%
+    \vspace{1mm}%
+    {\large\bfseries\color{accent}#1}\par\vspace{2mm}%
+    \begin{tikzpicture}[x=4.2mm, y=5.5mm, line width=0.6pt, color=dark]%
+      \useasboundingbox (1,0.5) rectangle (6,-5.2);
+      % Draw the fret grid
+      \foreach \y in {0,...,-5} {
+        \draw[grid, line width=0.6pt] (1,\y) -- (6,\y);
+      }
+      \foreach \x in {1,...,6} {
+        \draw[grid, line width=0.6pt] (\x,0) -- (\x,-5);
+      }
+      
+      % Draw thick nut if start fret is 1
+      \ifthenelse{\equal{#2}{1}}{
+        \draw[accent, line width=2.2pt] (1,0) -- (6,0);
+      }{
+        % Otherwise draw start fret label on the left
+        \node[left, font=\scriptsize\sffamily\bfseries\color{muted}] at (0.8,-0.5) {#2 fr};
+      }
+      
+      % Draw top markers (x, o)
+      \foreach \m [count=\i] in {#3} {
+        \ifthenelse{\equal{\m}{x}}{
+          \node[font=\scriptsize\sffamily\bfseries\color{muted}] at (\i,0.3) {$\times$};
+        }{}
+        \ifthenelse{\equal{\m}{o}}{
+          \node[font=\scriptsize\sffamily\bfseries\color{muted}] at (\i,0.3) {$\circ$};
+        }{}
+      }
+      
+      % Draw Barre(s) if provided
+      \ifthenelse{\equal{#5}{}}{}{
+        \foreach \f/\s/\e in {#5} {
+          \pgfmathsetmacro{\ypos}{-(\f - #2 + 0.5)}
+          \fill[accentlight!85, rounded corners=1.8pt] (\s-0.16,\ypos-0.16) rectangle (\e+0.16,\ypos+0.16);
+        }
+      }
+      
+      % Draw Dots with fingerings
+      \ifthenelse{\equal{#4}{}}{}{
+        \foreach \s/\f/\fing in {#4} {
+          \pgfmathsetmacro{\ypos}{-(\f - #2 + 0.5)}
+          \fill[accentlight] (\s,\ypos) circle (2.1mm);
+          \node[white, font=\scriptsize\bfseries\sffamily] at (\s,\ypos) {\fing};
+        }
+      }
+    \end{tikzpicture}%
+  \end{minipage}%
+}
+
+% --- Custom Tips Box ---
+\newtcolorbox{tipsbox}[1]{
+  colback=light,
+  colframe=grid,
+  coltext=dark,
+  fonttitle=\bfseries\color{accent},
+  title=#1,
+  arc=4pt,
+  boxrule=0.8pt,
+  left=12pt,
+  right=12pt,
+  top=8pt,
+  bottom=8pt
+}
+
+\begin{document}
+
+% --- Header Block ---
+\begin{minipage}[c]{0.55\textwidth}
+  {\Huge\bfseries\color{accent} GUITAR CHORDS}\par\vspace{1.5mm}
+  {\large\color{muted} Essential Shapes for Beginners \& Teachers}\par\vspace{2mm}
+  {\scriptsize\color{muted!80} A beautiful, printable chord reference sheet. Edit online at \href{https://letx.app}{letx.app}}
+\end{minipage}%
+\hfill
+\begin{minipage}[c]{0.42\textwidth}
+  \begin{tcolorbox}[
+    colback=accent!5,
+    colframe=accent!15,
+    arc=4pt,
+    boxrule=0.8pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt
+  ]
+    \scriptsize\sffamily\color{dark}
+    \textbf{\color{accent}QUICK GUIDE}\par\vspace{1.5mm}
+    \textbf{Strings (L to R):} E -- A -- D -- G -- B -- E\par\vspace{1.2mm}
+    \textbf{Fingers:} 1: Index, 2: Middle, 3: Ring, 4: Pinky\par\vspace{1.2mm}
+    \textbf{Symbols:} $\times$ Mute / Don't Play, $\circ$ Open String
+  \end{tcolorbox}
+\end{minipage}
+
+\vfill
+
+% --- Major Chords Section ---
+\sectionheader{Major Chords}
+\chord{C}{1}{x,e,e,o,e,o}{2/3/3, 3/2/2, 5/1/1}{}\hfill%
+\chord{A}{1}{x,o,e,e,e,o}{3/2/1, 4/2/2, 5/2/3}{}\hfill%
+\chord{G}{1}{e,e,o,o,o,e}{1/3/2, 2/2/1, 6/3/3}{}\hfill%
+\chord{E}{1}{o,e,e,e,o,o}{2/2/2, 3/2/3, 4/1/1}{}\hfill%
+\chord{D}{1}{x,x,o,e,e,e}{4/2/1, 5/3/3, 6/2/2}{}\hfill%
+\chord{F}{1}{e,e,e,e,e,e}{1/1/1, 6/1/1, 2/3/3, 3/3/4, 4/2/2}{1/1/6}%
+
+\vfill
+
+% --- Minor Chords Section ---
+\sectionheader{Minor Chords}
+\chord{Am}{1}{x,o,e,e,e,o}{3/2/2, 4/2/3, 5/1/1}{}\hfill%
+\chord{Em}{1}{o,e,e,o,o,o}{2/2/2, 3/2/3}{}\hfill%
+\chord{Dm}{1}{x,x,o,e,e,e}{4/2/2, 5/3/3, 6/1/1}{}\hfill%
+\chord{Bm}{2}{x,e,e,e,e,e}{2/2/1, 6/2/1, 3/4/3, 4/4/4, 5/3/2}{2/2/6}\hfill%
+\chord{F\#m}{2}{e,e,e,e,e,e}{1/2/1, 6/2/1, 2/4/3, 3/4/4}{2/1/6}\hfill%
+\chord{Cm}{3}{x,e,e,e,e,e}{2/3/1, 6/3/1, 3/5/3, 4/5/4, 5/4/2}{3/2/6}%
+
+\vfill
+
+% --- Seventh Chords Section ---
+\sectionheader{Seventh Chords}
+\chord{C7}{1}{x,e,e,e,e,o}{2/3/3, 3/2/2, 4/3/4, 5/1/1}{}\hfill%
+\chord{A7}{1}{x,o,e,o,e,o}{3/2/1, 5/2/2}{}\hfill%
+\chord{G7}{1}{e,e,o,o,o,e}{1/3/3, 2/2/2, 6/1/1}{}\hfill%
+\chord{E7}{1}{o,e,o,e,o,o}{2/2/2, 4/1/1}{}\hfill%
+\chord{D7}{1}{x,x,o,e,e,e}{4/2/2, 5/1/1, 6/2/3}{}\hfill%
+\chord{B7}{1}{x,e,e,e,o,e}{2/2/2, 3/1/1, 4/2/3, 6/2/4}{}%
+
+\vfill
+
+% --- Practice Tips Section ---
+\begin{tipsbox}{Practice Tips for Clean Chords}
+  \begin{itemize}[leftmargin=*, noitemsep, topsep=1pt, partopsep=0pt, parsep=2pt]
+    \item \textbf{Clean Execution:} Use the tips of your fingers to press the strings. Position them as close to the fret wire as possible without touching it to prevent buzzing.
+    \item \textbf{Precise Muting:} Ensure strings marked with a $\times$ at the top are muted by lightly touching them with a finger or thumb, or avoid strumming them entirely.
+    \item \textbf{Mastering Barres:} For barre chords (like F, Bm, and Cm), roll your index finger slightly to the side to use the harder bony edge for a clearer tone.
+    \item \textbf{Daily Progression:} Practice switching between common transitions like \textbf{C -- G -- Am -- F} to build muscle memory and speed.
+  \end{itemize}
+\end{tipsbox}
+
+\end{document}

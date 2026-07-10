@@ -1,0 +1,432 @@
+% Model Card Template — elegant, modern, compile-clean
+% Edit and compile online at https://letx.app
+% Compiles with: latexmk -pdf main.tex
+
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath,colortbl}
+
+% ── Encoding & Fonts ──
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{microtype}
+
+% ── Page Layout ──
+\usepackage[margin=1.8cm,top=1.5cm,bottom=1.5cm,headheight=14pt,a4paper]{geometry}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\raggedbottom
+
+% ── Colors ──
+\usepackage[table,svgnames]{xcolor}
+\definecolor{accent}{HTML}{2563EB}
+\definecolor{accentdark}{HTML}{1D4ED8}
+\definecolor{accentlight}{HTML}{DBEAFE}
+\definecolor{dark}{HTML}{111827}
+\definecolor{medium}{HTML}{6B7280}
+\definecolor{lightbg}{HTML}{F9FAFB}
+\definecolor{border}{HTML}{E5E7EB}
+\definecolor{warn}{HTML}{D97706}
+\definecolor{warnlight}{HTML}{FEF3C7}
+\definecolor{success}{HTML}{059669}
+\definecolor{successlight}{HTML}{D1FAE5}
+\definecolor{danger}{HTML}{DC2626}
+\definecolor{dangerlight}{HTML}{FEE2E2}
+
+% ── Graphics & Boxes ──
+\usepackage{tikz}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+% ── Tables ──
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multicol}
+
+% ── Lists ──
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=*,itemsep=2pt,topsep=4pt}
+
+% ── Section Titles ──
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries\color{accent}}
+  {}
+  {0pt}
+  {}[\vspace{-2pt}{\color{accent!25}\rule{\linewidth}{0.6pt}}\vspace{6pt}]
+\titlespacing{\section}{0pt}{14pt}{6pt}
+
+\titleformat{\subsection}
+  {\large\bfseries\color{dark}}
+  {}
+  {0pt}
+  {}
+\titlespacing{\subsection}{0pt}{10pt}{4pt}
+
+% ── Code Listings ──
+\usepackage{listings}
+\lstset{
+  basicstyle=\small\ttfamily,
+  breaklines=true,
+  frame=single,
+  framerule=0.5pt,
+  rulecolor=\color{border},
+  backgroundcolor=\color{lightbg},
+  xleftmargin=6pt,
+  xrightmargin=6pt,
+  aboveskip=8pt,
+  belowskip=8pt,
+  showstringspaces=false,
+  columns=flexible,
+  numbers=none,
+  keywordstyle=\color{accent}\bfseries,
+  commentstyle=\color{medium}\itshape,
+  stringstyle=\color{success},
+}
+
+% ── Icons ──
+\usepackage{fontawesome5}
+
+% ── Links ──
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accentdark,
+  citecolor=accentdark,
+  pdfborder={0 0 0},
+}
+
+% ══════════════════════════════════════
+% Custom Commands
+% ══════════════════════════════════════
+
+% -- Evaluation heatmap cell macros (5-level) --
+\newcommand{\heathi}[1]{\cellcolor{success!30}\textbf{#1}}
+\newcommand{\heatmh}[1]{\cellcolor{success!15}\textbf{#1}}
+\newcommand{\heatmed}[1]{\cellcolor{warn!20}\textbf{#1}}
+\newcommand{\heatml}[1]{\cellcolor{warn!35}\textbf{#1}}
+\newcommand{\heatlo}[1]{\cellcolor{danger!20}\textbf{#1}}
+
+% -- Detail-row macro for model info grid --
+\newcommand{\detailrow}[2]{%
+  \textcolor{accent}{\bfseries\small #1} & {\small #2} \\[3pt]}
+
+% -- Horizontal bar for fairness charts --
+\newcommand{\fairbar}[1]{%
+  \begin{tikzpicture}[baseline=-2.5pt]
+    \fill[accent] (0,0) rectangle (#1*0.036, 0.22);
+    \draw[accent!12,thin] (0,0) rectangle (3.6, 0.22);
+  \end{tikzpicture}%
+}
+
+% -- tcolorbox: caveats callout --
+\newtcolorbox{caveatbox}{
+  colback=warnlight!60,
+  colframe=warn!40,
+  arc=3mm,
+  boxrule=0.8pt,
+  left=5mm,
+  right=5mm,
+  top=4mm,
+  bottom=4mm,
+  fontupper=\small,
+  before skip=10pt,
+  after skip=8pt,
+}
+
+% -- tcolorbox: info callout --
+\newtcolorbox{infobox}{
+  colback=accentlight!50,
+  colframe=accent!30,
+  arc=3mm,
+  boxrule=0.8pt,
+  left=5mm,
+  right=5mm,
+  top=4mm,
+  bottom=4mm,
+  fontupper=\small,
+  before skip=10pt,
+  after skip=8pt,
+}
+
+% -- Inline suitability badges --
+\newcommand{\suithigh}{\textcolor{success}{\faCheckCircle}~~High}
+\newcommand{\suitmed}{\textcolor{warn}{\faExclamationTriangle}~~Medium}
+\newcommand{\suitlimited}{\textcolor{warn!80}{\faMinusCircle}~~Limited}
+\newcommand{\suitnot}{\textcolor{danger}{\faTimesCircle}~~Not Recommended}
+
+% -- Bullet label --
+\newcommand{\bulletlabel}[1]{\textcolor{accent}{\textbf{#1}}}
+
+% ══════════════════════════════════════
+% Document
+% ══════════════════════════════════════
+
+\begin{document}
+
+% ── Top Banner ──
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[accent] (current page.north west) rectangle ([yshift=-2.4cm]current page.north east);
+  \node[white,font=\small\sffamily,anchor=west]
+    at ([yshift=-0.7cm,xshift=1.8cm]current page.north west)
+    {\textcolor{accentlight}{MODEL CARD}~~~\textcolor{white!70}{\faCalendar}~~June 2026~~~\textcolor{white!70}{\faCodeBranch}~~v2.1.0};
+  \node[white,font=\LARGE\bfseries,anchor=west]
+    at ([yshift=-1.6cm,xshift=1.8cm]current page.north west)
+    {Lumina-7B-Instruct};
+\end{tikzpicture}
+\vspace*{2.8cm}
+
+% ── Organisation Tagline ──
+{\small\color{medium}TensorForge AI~~~\textbullet~~~Causal Language Model~~~\textbullet~~~7.3B Parameters~~~\textbullet~~~32K Context}
+\vspace{10pt}
+
+% ═══════════════════════════════════
+% SECTION 1 — Model Details
+% ═══════════════════════════════════
+\section{Model Details}
+
+\begin{infobox}
+  \textbf{Summary.} Lumina-7B-Instruct is a 7.3-billion-parameter decoder-only
+  Transformer language model, fine-tuned via supervised instruction tuning and
+  RLHF for general-purpose conversational and coding tasks. It supports a context
+  window of 32,768 tokens and is released under the TensorForge Community License.
+\end{infobox}
+
+\vspace{6pt}
+
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries\small}l@{\hspace{7mm}}>{\raggedright\arraybackslash\small}X@{}}
+  \detailrow{Organization}{TensorForge AI (tensorforge.ai)}
+  \detailrow{Model Type}{Causal Language Model — decoder-only Transformer}
+  \detailrow{Version}{2.1.0 (3 July 2026)}
+  \detailrow{License}{TensorForge Community License v1.0}
+  \detailrow{Parameters}{$7.3\times 10^{9}$ (7.3B)}
+  \detailrow{Architecture}{32 layers, 4096 hidden size, 32 attention heads, Grouped-Query Attention (4 KV heads), RoPE embeddings, SwiGLU activations}
+  \detailrow{Tokenizer}{SentencePiece BPE, vocabulary size 128\,000}
+  \detailrow{Context Length}{32\,768 tokens (input + output)}
+  \detailrow{Training Data}{Mix of filtered web text (CommonCrawl), books, Wikipedia, GitHub code, and curated instruction datasets. Knowledge cutoff: December 2025.}
+  \detailrow{Input / Output}{Text in, text out. Supports system prompts and multi-turn conversation.}
+  \detailrow{Languages}{English (primary); 30+ languages at varying proficiency}
+  \detailrow{Hardware}{256 $\times$ NVIDIA H100-80GB GPUs; 18 days training}
+  \detailrow{Precision}{BF16 training; FP16 inference}
+  \detailrow{Fine-Tuning}{Supervised fine-tuning + RLHF (PPO) on 180K human preference pairs}
+  \detailrow{Contact}{\href{mailto:safety@tensorforge.ai}{safety@tensorforge.ai}~~~\textbullet~~~\href{https://tensorforge.ai/models/lumina}{tensorforge.ai/models/lumina}}
+\end{tabularx}
+
+% ═══════════════════════════════════
+% SECTION 2 — Intended Use
+% ═══════════════════════════════════
+\section{Intended Use}
+
+Lumina-7B-Instruct is designed as a general-purpose assistant for
+\textbf{non-high-stakes} applications. Below is the intended-use matrix
+evaluated against our internal safety and quality rubrics.
+
+\vspace{6pt}
+
+{\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{3.8cm}@{\hspace{4mm}}l@{\hspace{4mm}}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textcolor{accent}{\bfseries Use Case}} &
+\multicolumn{1}{l}{\textcolor{accent}{\bfseries Suitability}} &
+\multicolumn{1}{X}{\textcolor{accent}{\bfseries Notes}} \\
+\midrule
+General Q\&A             & \suithigh    & Core strength. Factual accuracy varies by domain. \\
+Code Generation          & \suithigh    & Strong on Python, JavaScript, TypeScript, Go. Weaker on niche DSLs. \\
+Creative Writing         & \suitmed     & Good fluency; occasional repetitiveness in long-form. \\
+Summarisation            & \suithigh    & Reliable for documents up to 20K tokens. \\
+Mathematics              & \suitlimited & Struggles with multi-step reasoning. Verify outputs. \\
+Multilingual             & \suitmed     & Best for high-resource languages (Spanish, French, German, Japanese). \\
+Medical Advice           & \suitnot     & Not validated for clinical use. High hallucination risk. \\
+Legal Analysis           & \suitnot     & Not trained on jurisdiction-specific case law. \\
+Content Moderation       & \suitlimited & Requires external guardrails for production filtering. \\
+Customer Support         & \suitmed     & Suitable with human-in-the-loop oversight. \\
+\midrule
+\multicolumn{3}{@{}l}{\small\textcolor{medium}{\faInfoCircle~~See Section~\ref{sec:caveats} for detailed limitations and safety guidance.}}\\
+\end{tabularx}}
+
+% ═══════════════════════════════════
+% SECTION 3 — Evaluation Results
+% ═══════════════════════════════════
+\section{Evaluation Results}
+
+We evaluate Lumina-7B-Instruct on standard academic benchmarks.
+Scores are colour-coded by performance tier:\,
+{\small\textcolor{success!40}{\rule{6pt}{6pt}}\;$\geq\!80$\quad
+ \textcolor{success!15}{\rule{6pt}{6pt}}\;70--79\quad
+ \textcolor{warn!20}{\rule{6pt}{6pt}}\;60--69\quad
+ \textcolor{warn!35}{\rule{6pt}{6pt}}\;50--59\quad
+ \textcolor{danger!20}{\rule{6pt}{6pt}}\;${<}\,50$}.
+
+\vspace{4pt}
+
+{\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X@{\hspace{3mm}}c@{\hspace{3mm}}c@{\hspace{3mm}}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textcolor{accent}{\bfseries Benchmark}} &
+\multicolumn{1}{c}{\textcolor{accent}{\bfseries Score}} &
+\multicolumn{1}{c}{\textcolor{accent}{\bfseries Tier}} &
+\multicolumn{1}{X}{\textcolor{accent}{\bfseries Category}} \\
+\midrule
+
+MMLU (5-shot)                & \heatmh{74.2} & 70--79 & World Knowledge \\
+HellaSwag (10-shot)          & \heathi{84.6} & $\geq$80 & Commonsense Reasoning \\
+ARC-Challenge (25-shot)      & \heatmh{72.1} & 70--79 & Science Reasoning \\
+WinoGrande (5-shot)          & \heatmh{78.9} & 70--79 & Coreference Resolution \\
+TruthfulQA (0-shot)          & \heatmed{65.3} & 60--69 & Factuality \& Safety \\
+GSM8K (8-shot, CoT)          & \heatml{58.7} & 50--59 & Mathematical Reasoning \\
+MATH (4-shot)                & \heatlo{38.4} & $<$50 & Advanced Mathematics \\
+HumanEval (0-shot)           & \heatmh{73.8} & 70--79 & Code Generation (Python) \\
+MBPP (3-shot)                & \heatmed{68.1} & 60--69 & Code Generation (Python) \\
+MultiPL-E (JS, 0-shot)       & \heatmh{71.5} & 70--79 & Multilingual Code \\
+BBH (3-shot, CoT)            & \heatmed{66.2} & 60--69 & Challenging Reasoning \\
+AGIEval (English, 0-shot)    & \heatmed{63.9} & 60--69 & Standardised Exams \\
+
+\bottomrule
+\end{tabularx}}
+
+\vspace{6pt}
+
+\begin{infobox}
+  \textbf{Note.} Few-shot settings follow EleutherAI LM Harness conventions.
+  Chain-of-thought (CoT) prompting is denoted where used. Scores are the mean
+  over 3 random seeds ($\sigma < 0.8$ across all benchmarks).
+\end{infobox}
+
+% ═══════════════════════════════════
+% SECTION 4 — Fairness Analysis
+% ═══════════════════════════════════
+\section{Fairness Analysis}
+
+We assess performance parity across demographic axes using the
+\textbf{BBQ} (Bias Benchmark for QA) and \textbf{WinoBias} datasets.
+The charts below report accuracy disaggregated by subgroup.
+
+\vspace{4pt}
+
+{\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{2.8cm}@{\hspace{3mm}}c@{\hspace{4mm}}>{\raggedright\arraybackslash}p{3cm}@{\hspace{3mm}}c@{}}
+\toprule
+\multicolumn{1}{@{}l}{\textcolor{accent}{\bfseries BBQ Subgroup}} &
+\multicolumn{1}{c}{\textcolor{accent}{\bfseries Acc.}} &
+\multicolumn{1}{p{3cm}}{\textcolor{accent}{\bfseries BBQ Subgroup}} &
+\multicolumn{1}{c}{\textcolor{accent}{\bfseries Acc.}} \\
+\midrule
+Gender -- Female     & \fairbar{74.1}~~{\small 74.1}  & Gender -- Male       & \fairbar{78.3}~~{\small 78.3}  \\[4pt]
+Gender -- Non-binary & \fairbar{71.6}~~{\small 71.6}  & Race -- White        & \fairbar{80.2}~~{\small 80.2}  \\[4pt]
+Race -- Black        & \fairbar{69.8}~~{\small 69.8}  & Race -- Asian        & \fairbar{77.5}~~{\small 77.5}  \\[4pt]
+Race -- Hispanic     & \fairbar{72.3}~~{\small 72.3}  & Age -- 18--30        & \fairbar{76.4}~~{\small 76.4}  \\[4pt]
+Age -- 31--50        & \fairbar{79.1}~~{\small 79.1}  & Age -- 51+           & \fairbar{73.9}~~{\small 73.9}  \\[4pt]
+Religion -- Christian& \fairbar{78.6}~~{\small 78.6}  & Religion -- Muslim   & \fairbar{67.2}~~{\small 67.2}  \\[4pt]
+SES -- High          & \fairbar{81.0}~~{\small 81.0}  & SES -- Low           & \fairbar{70.5}~~{\small 70.5}  \\
+\bottomrule
+\end{tabularx}}
+
+\vspace{6pt}
+
+\textbf{Key observations.}
+Performance gaps are most pronounced along the Religion ($\Delta = 11.4$\,pp,
+Muslim vs.\ Christian) and Socio-economic ($\Delta = 10.5$\,pp, Low vs.\ High)
+axes. We recommend additional de-biasing fine-tuning and targeted evaluation
+before deploying in contexts where these disparities could cause harm.
+
+% ═══════════════════════════════════
+% SECTION 5 — Example Usage (Code)
+% ═══════════════════════════════════
+\section{Example Usage}
+
+\begin{lstlisting}[language=Python, caption={Inference with the Transformers library.}]
+from transformers import AutoModelForCausalLM, AutoTokenizer
+
+model_id = "tensorforge/Lumina-7B-Instruct"
+tokenizer = AutoTokenizer.from_pretrained(model_id)
+model = AutoModelForCausalLM.from_pretrained(
+    model_id,
+    torch_dtype="auto",
+    device_map="auto",
+)
+
+messages = [
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user",   "content": "Explain backpropagation in 3 sentences."},
+]
+inputs = tokenizer.apply_chat_template(
+    messages, tokenize=True, return_tensors="pt"
+).to(model.device)
+
+outputs = model.generate(inputs, max_new_tokens=256, temperature=0.7)
+print(tokenizer.decode(outputs[0], skip_special_tokens=True))
+\end{lstlisting}
+
+% ═══════════════════════════════════
+% SECTION 6 — Caveats & Limitations
+% ═══════════════════════════════════
+\section{Caveats \& Limitations}
+\label{sec:caveats}
+
+\begin{caveatbox}
+  \textbf{\textcolor{warn}{\faExclamationTriangle~~Critical Caveats}}
+
+  \vspace{2pt}
+  \begin{itemize}
+    \item \textbf{Hallucination.} Like all LLMs, Lumina-7B-Instruct may
+    generate plausible-sounding but factually incorrect content. Always verify
+    outputs in high-stakes settings.
+    \item \textbf{Bias \& Stereotypes.} Training data reflects web-scale biases.
+    The model may reproduce stereotypes, particularly for under-represented
+    groups (see Fairness Analysis, Section~4).
+    \item \textbf{Out-of-Scope Use.} This model has \emph{not} been validated
+    for medical diagnosis, legal advice, safety-critical systems, or decisions
+    with material impact on individuals' rights.
+    \item \textbf{Adversarial Robustness.} The model is vulnerable to prompt
+    injection, jailbreaking, and extraction attacks. Deploy with input/output
+    filtering in production.
+    \item \textbf{Privacy.} Training data was filtered for PII, but residual
+    memorisation of rare sequences is possible. Do not expose the model to
+    sensitive user data unless additional privacy-preserving measures are in
+    place.
+    \item \textbf{Multilingual Fairness.} Performance degrades significantly for
+    low-resource languages. Users should evaluate independently for their target
+    languages.
+  \end{itemize}
+\end{caveatbox}
+
+% ── Recommendations ──
+\subsection*{Recommendations for Downstream Use}
+
+\begin{itemize}
+  \item Perform \textbf{domain-specific evaluation} on your target task and
+  demographic distribution before deployment.
+  \item Apply \textbf{output guardrails} (toxicity classifiers, factuality
+  checkers) in user-facing applications.
+  \item Monitor \textbf{drift and feedback loops} in production—model behaviour
+  can shift with changing usage patterns.
+  \item Where feasible, provide users with \textbf{transparency mechanisms}:
+  confidence scores, source attribution, or an opt-out for AI-generated content.
+\end{itemize}
+
+\vspace{2pt}
+
+% ── Citation ──
+\subsection*{How to Cite}
+
+\begin{lstlisting}[caption={BibTeX citation.}]
+@misc{tensorforge2026lumina,
+  title     = {Lumina-7B-Instruct: A 7.3B Instruction-Tuned Language Model},
+  author    = {TensorForge AI},
+  year      = {2026},
+  month     = jul,
+  version   = {2.1.0},
+  url       = {https://tensorforge.ai/models/lumina},
+  note      = {Model Card},
+}
+\end{lstlisting}
+
+\vspace{4pt}
+{\small\color{medium}\faGlobe~~tensorforge.ai/models/lumina\qquad
+\faGithub~~github.com/tensorforge/lumina\qquad
+\faEnvelope~~safety@tensorforge.ai}
+
+\end{document}

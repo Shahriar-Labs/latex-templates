@@ -1,0 +1,300 @@
+% Investment Tearsheet — edit & compile online at https://letx.app
+\documentclass[10pt,a4paper]{article}
+
+% === Packages ===
+\usepackage[margin=10mm, top=10mm, bottom=8mm]{geometry}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{shadows, positioning, calc, backgrounds, arrows.meta}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{fontawesome5}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% === Colors ===
+\definecolor{navy}{HTML}{0B1E33}
+\definecolor{accent}{HTML}{1A6B8A}
+\definecolor{accentlight}{HTML}{3498B1}
+\definecolor{slate}{HTML}{5B6E82}
+\definecolor{ltslate}{HTML}{8FA0B0}
+\definecolor{ltgray}{HTML}{F2F5F7}
+\definecolor{mdgray}{HTML}{D6DEE4}
+\definecolor{pagebg}{HTML}{FAFBFC}
+\definecolor{textdark}{HTML}{1A1D21}
+\definecolor{posgreen}{HTML}{0D7A3E}
+\definecolor{posbg}{HTML}{E7F4EC}
+\definecolor{warning}{HTML}{9E6B0C}
+\definecolor{warnbg}{HTML}{FEF9EF}
+\definecolor{neggred}{HTML}{B5333F}
+\definecolor{negredbg}{HTML}{FCEAEC}
+
+% Sector pie colors
+\definecolor{stech}{HTML}{0B1E33}
+\definecolor{sfin}{HTML}{1A6B8A}
+\definecolor{shealth}{HTML}{2E8FB5}
+\definecolor{scons}{HTML}{58A5C5}
+\definecolor{sind}{HTML}{8DC3D8}
+\definecolor{scomm}{HTML}{B2D4E4}
+\definecolor{sother}{HTML}{D6DEE4}
+
+% === Spacing ===
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.12}
+
+% === Section formatting ===
+\titleformat{\section}
+  {\color{navy}\normalsize\bfseries}
+  {}
+  {0pt}
+  {}
+  [\vspace{-3pt}{\color{accent}\hrule height 0.6pt}\vspace{3pt}]
+\titlespacing{\section}{0pt}{8pt}{2pt}
+
+% === Hyperlinks ===
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent,
+  pdfborder={0 0 0}
+}
+
+% === Custom commands ===
+\newcommand{\metriclabel}[2]{%
+  {\footnotesize\color{slate}#1}\\[1pt]
+  {\normalsize\color{navy}\bfseries#2}%
+}
+
+\newcommand{\risktile}[2]{%
+  \fcolorbox{mdgray}{ltgray}{%
+    \begin{minipage}{0.148\textwidth}
+      \centering\vspace{3pt}
+      {\footnotesize\color{slate}#1\vspace{2pt}\par}
+      {\normalsize\color{navy}\bfseries#2\vspace{3pt}\par}
+    \end{minipage}%
+  }%
+}
+
+\newcommand{\quartile}[1]{%
+  \ifnum#1=1
+    \textcolor{posgreen}{\bfseries Q1}%
+  \else\ifnum#1=2
+    \textcolor{warning}{\bfseries Q2}%
+  \else\ifnum#1=3
+    \textcolor{accent}{\bfseries Q3}%
+  \else
+    \textcolor{neggred}{\bfseries Q4}%
+  \fi\fi\fi
+}
+
+\begin{document}
+\thispagestyle{empty}
+\pagecolor{pagebg}
+
+% ===== HEADER BAR =====
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[navy] (current page.north west) rectangle ([yshift=-33mm]current page.north east);
+  \fill[accent] ([yshift=-33mm]current page.north west) rectangle ([yshift=-34.5mm]current page.north east);
+\end{tikzpicture}
+
+\vspace*{8mm}
+{\LARGE\color{white}\bfseries Meridian Global Equity Fund}\\[2mm]
+{\large\color{white!85}Class A: MGEQX\hspace{14mm}\faCalendar\ \color{white!75}As of 30 June 2026}\\[3mm]
+\vspace{1mm}
+
+% ===== KEY METRICS ROW =====
+\begin{tcolorbox}[
+  colback=ltgray, colframe=mdgray, boxrule=0.4pt, arc=4pt,
+  left=8pt, right=8pt, top=5pt, bottom=5pt, boxsep=0pt
+]
+  \begin{tabularx}{\textwidth}{@{}XcXcXcXcXcXcX@{}}
+    \metriclabel{Net Assets}{\$4.82\,Bn} & &
+    \metriclabel{NAV (30 Jun)}{\$48.72} & &
+    \metriclabel{Expense Ratio}{0.68\%} & &
+    \metriclabel{Turnover}{32\%} & &
+    \metriclabel{12-Mo Yield}{1.24\%} & &
+    \metriclabel{Inception}{12 Mar 2004} & &
+    \metriclabel{Overall Rating}{\textcolor{accent}{\faStar\faStar\faStar\faStar\faStar}} \\
+  \end{tabularx}
+\end{tcolorbox}
+\vspace{6pt}
+
+% ===== NAV PERFORMANCE CHART =====
+\section{NAV Performance \& Benchmark Comparison}
+\vspace{-2pt}
+\begin{tikzpicture}
+\begin{axis}[
+  width=\textwidth,
+  height=58mm,
+  xlabel={},
+  ylabel={Net Asset Value (\$)},
+  xmin=2016, xmax=2026,
+  ymin=18, ymax=58,
+  xtick={2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,2026},
+  xticklabels={2016,2017,2018,2019,2020,2021,2022,2023,2024,2025,\textbf{2026}},
+  ytick={20,28,36,44,52},
+  yticklabels={\$20,\$28,\$36,\$44,\$52},
+  grid=major,
+  grid style={mdgray, ultra thin, dashed},
+  axis line style={ltslate},
+  tick style={ltslate, thin},
+  tick label style={font=\footnotesize, color=slate},
+  ylabel style={font=\footnotesize, color=slate, yshift=-4pt},
+  legend style={
+    font=\footnotesize,
+    fill=white,
+    draw=mdgray,
+    line width=0.3pt,
+    legend cell align=left,
+    at={(0.02,0.98)},
+    anchor=north west
+  },
+  every axis plot/.append style={thick},
+  enlarge x limits=0.02,
+  enlarge y limits=0.08
+]
+\addplot[accentlight, line width=1.4pt, mark=*, mark size=1.6pt, mark options={solid, fill=white}] coordinates {
+  (2016,24.50)(2017,28.10)(2018,26.30)(2019,32.40)(2020,35.80)(2021,43.60)(2022,39.20)(2023,44.70)(2024,48.20)(2025,47.90)(2026,48.72)
+};
+\addlegendentry{MGEQX Fund NAV}
+
+\addplot[navy, line width=1.0pt, dashed, mark=none] coordinates {
+  (2016,24.50)(2017,27.00)(2018,28.60)(2019,30.40)(2020,32.30)(2021,38.20)(2022,36.80)(2023,40.50)(2024,43.80)(2025,44.60)(2026,45.30)
+};
+\addlegendentry{Global Developed Markets Index}
+
+\draw[accent, line width=0.7pt, densely dotted] (axis cs:2026,18) -- (axis cs:2026,58);
+\node[accent, font=\footnotesize\bfseries] at (axis cs:2026.15,55) {};
+\end{axis}
+\end{tikzpicture}
+\vspace{2pt}
+
+% ===== TWO-COLUMN SECTION: Holdings + Sector Pie =====
+\vspace{2pt}
+\begin{minipage}[t]{0.57\textwidth}
+  \section{Top 10 Holdings}
+  \vspace{-2pt}
+  \renewcommand{\arraystretch}{1.22}
+  \begin{tabularx}{\linewidth}{@{}>{\color{slate}\footnotesize}r @{\hspace{5pt}} l X @{\hspace{4pt}} r@{}}
+    \toprule
+    \rowcolor{navy}
+    \multicolumn{1}{@{}>{\color{white}\footnotesize}r}{\#} &
+    \multicolumn{1}{l}{\color{white}\bfseries\footnotesize Holding} &
+    \multicolumn{1}{X}{\color{white}\bfseries\footnotesize Sector} &
+    \multicolumn{1}{r@{}}{\color{white}\bfseries\footnotesize Weight} \\
+    \toprule
+    1 & Apex Technologies Inc.           & Technology                & 5.82\% \\
+    2 & Nimbus Software Corp.      & Technology                & 5.41\% \\
+    3 & Vertex Commerce Inc.      & Cons.\ Discretionary      & 4.18\% \\
+    4 & NVIDIA Corp.         & Technology                & 3.92\% \\
+    5 & Lumina Holdings Cl A  & Communication Services    & 3.14\% \\
+    6 & Synapse Social Inc.  & Communication Services    & 2.53\% \\
+    7 & Helios Motors Inc.           & Cons.\ Discretionary      & 2.08\% \\
+    8 & Keystone Capital Cl B   & Financials                & 1.87\% \\
+    9 & Keystone Financial Group& Financials                & 1.72\% \\
+   10 & Paylink Networks Cl A      & Financials                & 1.48\% \\
+    \midrule
+    \multicolumn{3}{@{}r}{\footnotesize\color{slate}\bfseries Top 10 Total} & 32.15\% \\
+    \bottomrule
+  \end{tabularx}
+  \renewcommand{\arraystretch}{1.12}
+  \vspace{6pt}
+  {\footnotesize\color{slate}Portfolio holdings are subject to change. Totals may not sum to 100\% due to rounding.}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.40\textwidth}
+  \section{Sector Allocation}
+  \vspace{-2pt}
+  \centering
+  \begin{tikzpicture}[scale=1.0]
+    % Pie slices (radius = 17mm)
+    \fill[stech]   (0,0) -- (0:17mm)    arc(0:100.8:17mm)     -- cycle;
+    \fill[sfin]    (0,0) -- (100.8:17mm) arc(100.8:165.6:17mm) -- cycle;
+    \fill[shealth] (0,0) -- (165.6:17mm) arc(165.6:219.6:17mm) -- cycle;
+    \fill[scons]   (0,0) -- (219.6:17mm) arc(219.6:262.8:17mm) -- cycle;
+    \fill[sind]    (0,0) -- (262.8:17mm) arc(262.8:298.8:17mm) -- cycle;
+    \fill[scomm]   (0,0) -- (298.8:17mm) arc(298.8:327.6:17mm) -- cycle;
+    \fill[sother]  (0,0) -- (327.6:17mm) arc(327.6:360:17mm)   -- cycle;
+    % Center hole
+    \fill[white] (0,0) circle(8mm);
+    \node[font=\footnotesize\bfseries, text=navy, align=center] at (0,0) {7\\Sectors};
+  \end{tikzpicture}
+  \vspace{3pt}
+  {\renewcommand{\arraystretch}{1.25}
+  \begin{tabularx}{\linewidth}{@{}l@{\hspace{6pt}}>{\raggedleft\arraybackslash}X@{}}
+    \textcolor{stech}{\rule{7pt}{7pt}}\ \footnotesize Technology           & 28.0\% \\
+    \textcolor{sfin}{\rule{7pt}{7pt}}\ \footnotesize Financials            & 18.0\% \\
+    \textcolor{shealth}{\rule{7pt}{7pt}}\ \footnotesize Health Care        & 15.0\% \\
+    \textcolor{scons}{\rule{7pt}{7pt}}\ \footnotesize Cons.\ Discretionary & 12.0\% \\
+    \textcolor{sind}{\rule{7pt}{7pt}}\ \footnotesize Industrials           & 10.0\% \\
+    \textcolor{scomm}{\rule{7pt}{7pt}}\ \footnotesize Comm.\ Services      &  8.0\% \\
+    \textcolor{sother}{\rule{7pt}{7pt}}\ \footnotesize Other               &  9.0\% \\
+  \end{tabularx}}
+\end{minipage}
+
+% ===== PERFORMANCE QUARTILE TABLE =====
+\vspace{8pt}
+\section{Quartile Rankings vs.\ Peer Category}
+\vspace{-2pt}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{@{}>{\bfseries\footnotesize}l Xcccc@{}}
+  \toprule
+  \rowcolor{navy}
+  \color{white}\bfseries\footnotesize Period &
+  \color{white}\bfseries\footnotesize Quartile &
+  \color{white}\bfseries\footnotesize \% Rank &
+  \color{white}\bfseries\footnotesize Peer Count &
+  \color{white}\bfseries\footnotesize Return \\
+  \midrule
+  1 Month   & \quartile{1} & \footnotesize\color{slate}Top 8\%  & 1,247 & \textcolor{posgreen}{\bfseries+3.24\%} \\
+  \rowcolor{ltgray}
+  3 Month   & \quartile{1} & \footnotesize\color{slate}Top 12\% & 1,245 & \textcolor{posgreen}{\bfseries+8.71\%} \\
+  YTD       & \quartile{1} & \footnotesize\color{slate}Top 10\% & 1,242 & \textcolor{posgreen}{\bfseries+14.36\%} \\
+  \rowcolor{ltgray}
+  1 Year    & \quartile{1} & \footnotesize\color{slate}Top 15\% & 1,238 & \textcolor{posgreen}{\bfseries+21.08\%} \\
+  3 Year    & \quartile{2} & \footnotesize\color{slate}Top 28\% & 1,089 & \textcolor{warning}{\bfseries+12.45\%} \\
+  \rowcolor{ltgray}
+  5 Year    & \quartile{1} & \footnotesize\color{slate}Top 11\% &   892 & \textcolor{posgreen}{\bfseries+14.92\%} \\
+  10 Year   & \quartile{1} & \footnotesize\color{slate}Top 8\%  &   634 & \textcolor{posgreen}{\bfseries+11.63\%} \\
+  \rowcolor{ltgray}
+  Since Inc.& \quartile{1} & \footnotesize\color{slate}Top 7\%  &   634 & \textcolor{posgreen}{\bfseries+9.81\%} \\
+  \bottomrule
+\end{tabularx}
+\renewcommand{\arraystretch}{1.12}
+\vspace{3pt}
+{\footnotesize\color{ltslate}Quartile rankings: Q1 = Top 25\% \textbullet\ Q2 = 25--50\% \textbullet\ Q3 = 50--75\% \textbullet\ Q4 = Bottom 25\%. Category: US Fund Global Large-Cap Blend. Source: Peer Direct.}
+
+% ===== RISK METRICS =====
+\vspace{8pt}
+\section{Risk \& Portfolio Characteristics}
+\vspace{-2pt}
+\risktile{Alpha (3Y)}{\,+\,3.24\%}\hfill
+\risktile{Beta (3Y)}{1.08}\hfill
+\risktile{Sharpe Ratio}{0.94}\hfill
+\risktile{Std Deviation}{14.22\%}\hfill
+\risktile{Tracking Error}{3.81\%}\hfill
+\risktile{Info Ratio}{0.85}
+\vspace{6pt}
+
+% ===== FOOTER / DISCLAIMER =====
+{\color{ltslate}\fontsize{6.5}{8}\selectfont
+This factsheet is for informational purposes only and does not constitute an offer or solicitation.
+Past performance is not a reliable indicator of future results. The value of investments may fall as well as rise.
+Performance data shown represents past performance and is no guarantee of future results. Investment return and
+principal value will fluctuate so that shares, when redeemed, may be worth more or less than original cost.
+\textcopyright\ 2026 Meridian Asset Management. Sample template --- not a real fund or offer.
+}
+
+\end{document}

@@ -1,0 +1,767 @@
+% Seminar Report LaTeX Template — elegant, modern, compile-clean with pdflatex
+% Edit online at https://letx.app — copy-paste this file and compile instantly.
+% Target: India, Bangladesh, South Asia | Search: "seminar report LaTeX template"
+
+\documentclass[12pt,a4paper]{report}
+\usepackage{amsmath,amssymb}
+
+% ── encoding & font ──────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{inconsolata}
+
+% ── geometry ─────────────────────────────────────────────────────────
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm]{geometry}
+
+% ── colors ───────────────────────────────────────────────────────────
+\usepackage[table]{xcolor}
+\definecolor{accent}{HTML}{1a5276}      % deep steel blue
+\definecolor{accent2}{HTML}{117a65}     % teal — status, progress
+\definecolor{dark}{HTML}{2c3e50}        % charcoal
+\definecolor{graytext}{HTML}{6b7b8d}    % muted gray
+\definecolor{lightgray}{HTML}{d5dbdf}   % rules, borders
+
+% ── graphics & overlays ──────────────────────────────────────────────
+\usepackage{tikz}
+
+% ── section formatting ───────────────────────────────────────────────
+\usepackage[explicit]{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\Huge\bfseries\color{accent}}
+  {\Large\chaptertitlename\ \thechapter}
+  {12pt}
+  {\filcenter}
+  [\vspace{6pt}{\color{accent}\titlerule[1.2pt]}\vspace{16pt}]
+\titleformat{name=\chapter,numberless}[display]
+  {\normalfont\Huge\bfseries\color{accent}}
+  {}
+  {0pt}
+  {\filcenter}
+  [\vspace{6pt}{\color{accent}\titlerule[1.2pt]}\vspace{16pt}]
+\titlespacing*{\chapter}{0pt}{20pt}{30pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{dark}}
+  {\thesection}
+  {0.8em}
+  {}
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{dark}}
+  {\thesubsection}
+  {0.8em}
+  {}
+\titlespacing*{\subsection}{0pt}{14pt}{4pt}
+
+% ── headers & footers ────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE]{\sffamily\footnotesize\color{graytext}\leftmark}
+\fancyhead[RO]{\sffamily\footnotesize\color{graytext}\rightmark}
+\fancyfoot[C]{\sffamily\footnotesize\color{accent}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[C]{\sffamily\footnotesize\color{accent}\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+% ── tables ───────────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\renewcommand{\arraystretch}{1.15}
+
+% ── code listings ────────────────────────────────────────────────────
+\usepackage{listings}
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{black!3},
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{lightgray},
+  numbers=left,
+  numbersep=7pt,
+  numberstyle=\tiny\color{graytext},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=2,
+  keywordstyle=\color{accent}\bfseries,
+  commentstyle=\color{accent2!60!black}\itshape,
+  stringstyle=\color{orange!70!black},
+  showstringspaces=false,
+  captionpos=b,
+  belowskip=6pt,
+  aboveskip=10pt,
+}
+
+% ── misc ─────────────────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=*,itemsep=2pt,topsep=4pt}
+\usepackage{fontawesome5}
+\usepackage[titles]{tocloft}
+\renewcommand{\cftchapfont}{\bfseries\color{accent}}
+\renewcommand{\cftsecfont}{\color{dark}}
+\renewcommand{\cftsubsecfont}{\color{dark}}
+\renewcommand{\cftchapleader}{\cftdotfill{\cftdotsep}}
+\renewcommand{\cftdotsep}{1.5}
+
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent2,
+  citecolor=graytext,
+  pdfborder={0 0 0},
+}
+
+% ── helper macros ────────────────────────────────────────────────────
+\newcommand{\icon}[1]{\textcolor{accent}{#1}\hspace{4pt}}
+\newcommand{\progressdone}{\textcolor{accent2}{\faCheckCircle}\hspace{2pt}Completed}
+\newcommand{\progresswip}{\textcolor{orange!80!black}{\faSpinner}\hspace{2pt}In Progress}
+\newcommand{\progresspending}{\textcolor{graytext}{\faCircle}\hspace{2pt}Pending}
+
+\newenvironment{signoffblock}[1]
+  {\par\vspace{10pt}\noindent\begin{tcolorbox}[
+    colback=black!2,
+    colframe=lightgray,
+    boxrule=0.6pt,
+    arc=3pt,
+    width=\linewidth,
+    before skip=10pt,
+    after skip=10pt,
+  ]\textbf{#1}\par\vspace{6pt}}
+  {\end{tcolorbox}}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+\newenvironment{rvsummary}
+  {\par\vspace{6pt}\noindent\begin{tcolorbox}[
+    colback=accent!5,
+    colframe=accent!30,
+    boxrule=0.5pt,
+    arc=4pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+  ]\small}
+  {\end{tcolorbox}\vspace{4pt}}
+
+% ══════════════════════════════════════════════════════════════════════
+\begin{document}
+
+% ── COVER PAGE ───────────────────────────────────────────────────────
+\begin{titlepage}
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[accent] (current page.north west) rectangle ([yshift=-3.2cm]current page.north east);
+  \node[white, font=\Large\bfseries, align=center, text width=0.85\paperwidth]
+    at ([yshift=-1.6cm]current page.north) {%
+    NATIONAL INSTITUTE OF TECHNOLOGY, TIRUCHIRAPPALLI\\[2pt]
+    {\normalsize\mdseries Tiruchirappalli -- 620 015, Tamil Nadu, India}};
+  \fill[accent] (current page.south west) rectangle ([yshift=0.3cm]current page.south east);
+  \node[white, font=\footnotesize, align=center]
+    at ([yshift=0.15cm]current page.south) {%
+    Department of Computer Science and Engineering \hspace{1.5em} • \hspace{1.5em} Academic Year 2025--26};
+\end{tikzpicture}
+
+\vspace*{4.5cm}
+
+\begin{center}
+
+{\color{graytext}\Large\bfseries A SEMINAR REPORT ON}\\[14pt]
+
+{\Huge\bfseries\color{accent} Transformer-Based Approaches for\\[6pt]
+Code-Mixed Sentiment Analysis\\[6pt]
+in Hindi-English Social Media Text}\\[18pt]
+
+{\color{accent}\rule{0.55\textwidth}{1pt}}\\[18pt]
+
+{\large\textit{Submitted in partial fulfillment of the requirements\\[4pt]
+for the award of the degree of}}\\[12pt]
+
+{\Large\bfseries\color{dark} Bachelor of Technology\\[4pt]
+in Computer Science and Engineering}\\[24pt]
+
+\renewcommand{\arraystretch}{1.6}
+\begin{tabular}{@{}r@{\hspace{10pt}}l@{}}
+  \icon{\faUserGraduate}\textbf{Submitted by} & \textbf{Arjun Sharma}\\
+  & Roll No.\ 2021CS10345\\[8pt]
+  \icon{\faChalkboardTeacher}\textbf{Supervisor} & \textbf{Dr.\ K.\ Chandrasekaran}\\
+  & Associate Professor\\
+  & Dept.\ of Computer Science \& Engineering\\[8pt]
+  \icon{\faCalendar}\textbf{Date} & April 2026\\
+\end{tabular}
+
+\vfill
+{\small\color{graytext} Course Code: CSD601 — Seminar}
+
+\end{center}
+\end{titlepage}
+
+% ── CERTIFICATE ──────────────────────────────────────────────────────
+\chapter*{Certificate}
+
+\vspace{10pt}
+\begin{center}
+{\large\bfseries\color{accent} Department of Computer Science and Engineering}\\[4pt]
+{\color{graytext} National Institute of Technology, Tiruchirappalli -- 620 015}
+\end{center}
+
+\vspace{16pt}
+
+\noindent This is to certify that the seminar report titled \textbf{``Transformer-Based Approaches for Code-Mixed Sentiment Analysis in Hindi-English Social Media Text''} submitted by \textbf{Arjun Sharma} (Roll No.\ 2021CS10345) in partial fulfillment of the requirements for the award of the degree of \textbf{Bachelor of Technology in Computer Science and Engineering} is a bonafide record of the seminar work carried out under my supervision during the academic year 2025--26.
+
+\vspace{10pt}
+\noindent The work presented in this report has not been submitted elsewhere for the award of any other degree or diploma.
+
+\vspace{28pt}
+
+\noindent
+\begin{minipage}[t]{0.48\textwidth}
+  \centering
+  \rule{0.7\textwidth}{0.4pt}\\[4pt]
+  {\small\color{graytext} \faChalkboardTeacher\ \ Dr.\ K.\ Chandrasekaran}\\[2pt]
+  {\footnotesize\color{graytext} Associate Professor, Dept.\ of CSE}\\[2pt]
+  {\footnotesize\color{graytext} (Supervisor)}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+  \centering
+  \rule{0.7\textwidth}{0.4pt}\\[4pt]
+  {\small\color{graytext} \faUser\ \ Dr.\ R.\ Venkatesh}\\[2pt]
+  {\footnotesize\color{graytext} Professor \& Head, Dept.\ of CSE}
+\end{minipage}
+
+\vspace{24pt}
+
+\noindent
+\begin{minipage}[t]{0.48\textwidth}
+  \centering
+  \rule{0.7\textwidth}{0.4pt}\\[4pt]
+  {\small\color{graytext} Place: Tiruchirappalli}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+  \centering
+  \rule{0.7\textwidth}{0.4pt}\\[4pt]
+  {\small\color{graytext} Date: \today}
+\end{minipage}
+
+\clearpage\null\thispagestyle{empty}\clearpage
+
+% ── ABSTRACT ─────────────────────────────────────────────────────────
+\chapter*{Abstract}
+
+The rapid growth of social media usage in India has led to an explosion of user-generated content where Hindi and English are frequently mixed within the same utterance — a phenomenon known as code-mixing. Analyzing sentiment in such code-mixed text presents unique challenges for traditional Natural Language Processing (NLP) pipelines, which are predominantly designed for monolingual input. This seminar report surveys the landscape of transformer-based architectures applied to code-mixed sentiment analysis, with a focus on the Hindi-English language pair.
+
+We examine the evolution from early lexicon-based and classical machine-learning approaches to state-of-the-art multilingual transformers such as mBERT, XLM-RoBERTa, IndicBERT, and Nexa's MuRIL. The report documents a 14-week systematic study covering literature review, dataset exploration (SentiMix, BHAAV), preprocessing strategies including transliteration and subword tokenization, fine-tuning experiments, and comparative evaluation using F1-score and accuracy metrics.
+
+Our findings indicate that fine-tuned XLM-RoBERTa and MuRIL significantly outperform monolingual baselines, achieving F1-scores above 78\,\% on standard code-mixed benchmarks. Key design choices — subword segmentation policy, handling of Romanized Hindi, and data augmentation via back-translation — are discussed in detail. The report concludes with a presentation companion outlining slide structure, delivery strategy, and visual design guidelines for effectively communicating this work to a technical audience.
+
+\vspace{6pt}
+\noindent\textbf{Keywords:} Code-mixed sentiment analysis, transformers, Hindi-English NLP, mBERT, XLM-RoBERTa, MuRIL, IndicBERT, social media text mining.
+
+% ── ACKNOWLEDGEMENT ─────────────────────────────────────────────────
+\chapter*{Acknowledgement}
+
+I wish to express my sincere gratitude to my supervisor, \textbf{Dr.\ K.\ Chandrasekaran}, Associate Professor, Department of Computer Science and Engineering, for his invaluable guidance, constant encouragement, and insightful feedback throughout the duration of this seminar.
+
+I am thankful to \textbf{Dr.\ R.\ Venkatesh}, Professor and Head, Department of Computer Science and Engineering, for providing the necessary infrastructure and academic environment to carry out this work. I also thank the faculty members of the department whose lectures and discussions shaped my understanding of natural language processing and deep learning.
+
+Special thanks to my peers in the NLP reading group for their constructive criticism during weekly progress reviews, and to the open-source community behind HuggingFace Transformers, datasets, and the IndicNLP corpus — tools and resources that made this study possible.
+
+Finally, I am deeply grateful to my family for their unwavering support and patience.
+
+\vspace{12pt}
+\begin{flushright}
+\textbf{Arjun Sharma}\\[2pt]
+{\small\color{graytext} Roll No.\ 2021CS10345}
+\end{flushright}
+
+% ── TABLE OF CONTENTS ────────────────────────────────────────────────
+\tableofcontents
+\clearpage
+
+% ══════════════════════════════════════════════════════════════════════
+% ── CHAPTER 1: INTRODUCTION ──────────────────────────────────────────
+% ══════════════════════════════════════════════════════════════════════
+\chapter{Introduction}
+
+\section{Background and Motivation}
+
+India is home to over 500 million active social media users as of 2025, generating billions of posts, comments, and messages each month across platforms such as X (formerly Twitter), Instagram, YouTube, and WhatsApp \cite{statista2025}. A defining characteristic of Indian online discourse is \textbf{code-mixing} — the fluid alternation between two or more languages within a single conversational turn. The Hindi-English pair is by far the most prevalent, with an estimated 40--65\,\% of Hindi-using social media accounts regularly producing code-mixed content \cite{bali2014}.
+
+Code-mixed text violates a fundamental assumption of most NLP systems: that input is monolingual and well-formed in a single language. When a user writes ``movie \emph{bekaar} thi, total waste of time'' (the movie was worthless), neither an English-only nor a Hindi-only sentiment analyzer can produce reliable results. The English word ``waste'' carries negative sentiment, but the Hindi intensifier \emph{bekaar} (useless) amplifies it — and the model must understand both to classify correctly.
+
+Sentiment analysis of code-mixed text has direct applications in brand monitoring, political opinion tracking, customer feedback aggregation, and public health surveillance. Businesses operating in multilingual markets need to understand consumer sentiment across linguistic boundaries; government agencies require tools to detect emerging social tensions or misinformation in vernacular online spaces.
+
+\section{Problem Statement}
+
+Given a code-mixed Hindi-English utterance $u = w_1, w_2, \ldots, w_n$ where each token $w_i$ may belong to Hindi (Devanagari or Romanized), English, or be a language-neutral symbol (emoji, punctuation, hashtag), the task is to predict a sentiment label $y \in \{\text{Positive}, \text{Negative}, \text{Neutral}\}$.
+
+The central research question explored in this seminar is: \textbf{How effectively can multilingual transformer architectures, pre-trained on large-scale multilingual corpora, be fine-tuned for the task of code-mixed sentiment analysis, and what design choices most influence their performance?}
+
+\section{Objectives}
+
+The specific objectives of this seminar study are:
+
+\begin{enumerate}[nosep,itemsep=3pt]
+  \item To survey the literature on code-mixed NLP, tracing the evolution from classical machine-learning approaches to contemporary transformer-based methods.
+  \item To examine publicly available Hindi-English code-mixed sentiment datasets and their annotation methodologies.
+  \item To study preprocessing strategies — normalization, transliteration, and subword tokenization — and their impact on downstream task performance.
+  \item To compare the performance of four multilingual transformer models (mBERT, XLM-RoBERTa, IndicBERT, MuRIL) on a standard code-mixed sentiment benchmark.
+  \item To document the weekly progress of the seminar study and prepare an accompanying presentation structure.
+\end{enumerate}
+
+\section{Report Structure}
+
+The remainder of this report is organized as follows. Chapter~2 reviews the literature on sentiment analysis and code-mixed NLP. Chapter~3 describes the methodology — dataset, preprocessing pipeline, and model architectures. Chapter~4 presents the weekly progress log. Chapter~5 discusses experimental results. Chapter~6 concludes with a summary and future directions. A presentation companion is provided at the end.
+
+% ══════════════════════════════════════════════════════════════════════
+% ── CHAPTER 2: LITERATURE REVIEW ─────────────────────────────────────
+% ══════════════════════════════════════════════════════════════════════
+\chapter{Literature Review}
+
+\section{Early Approaches to Sentiment Analysis}
+
+Sentiment analysis emerged as a distinct NLP task in the early 2000s, with Turney (2002) \cite{turney2002} pioneering lexicon-based methods that computed document-level polarity using pointwise mutual information. Pang and Lee (2004) \cite{panglee2004} subsequently demonstrated that supervised machine-learning classifiers (Na\"ive Bayes, Maximum Entropy, SVM) trained on bag-of-words features could outperform lexicon methods on movie review datasets.
+
+These early systems were inherently monolingual. For multilingual settings, the prevailing strategy was \emph{translate-then-analyze}: machine-translate the source text to English and apply an English sentiment model. Joshi et al.\ (2010) \cite{joshi2010} showed that this pipeline degrades severely for Hindi due to translation quality gaps and loss of culturally specific sentiment markers.
+
+\section{Code-Mixed NLP: Challenges and Early Work}
+
+Bali et al.\ (2014) \cite{bali2014} published one of the first systematic studies of Hindi-English code-mixing on social media, analyzing Facebook posts from 34 Indian users and establishing that code-mixing is rule-governed rather than random. They identified six distinct mixing patterns — from single-word insertions to full alternational switches — and argued that NLP tools must be redesigned for this reality rather than treating mixed text as ``noisy monolingual.''
+
+The \textbf{Sentiment Analysis for Indian Languages} (SAIL) shared task at FIRE 2015 \cite{patra2015} and the \textbf{Sentimix} task at SemEval-2020 \cite{patwa2020} provided the first standardized benchmarks. Teams experimented with CNN-LSTM hybrids, fastText embeddings, and ensemble methods. The best-performing systems in SemEval-2020 achieved F1-scores around 72\,\% — respectable but far below human agreement levels (85--90\,\%).
+
+\section{The Transformer Revolution}
+
+The introduction of the Transformer architecture by Vaswani et al.\ (2017) \cite{vaswani2017} and its realization in BERT (Devlin et al., 2019) \cite{devlin2019} fundamentally changed NLP. Key innovations included:
+
+\begin{enumerate}[itemsep=3pt]
+  \item \textbf{Self-attention} — Every token attends to every other token, capturing long-range dependencies without recurrence.
+  \item \textbf{Masked Language Modeling (MLM)} — Pre-training on a cloze task that forces the model to learn bidirectional context.
+  \item \textbf{Transfer learning} — A single pre-trained model can be fine-tuned on diverse downstream tasks with minimal task-specific architecture changes.
+\end{enumerate}
+
+BERT's multilingual variant, \textbf{mBERT} (multilingual BERT), was pre-trained on the Wikipedia dumps of 104 languages including Hindi, using a shared vocabulary of 110\,k subword tokens. Despite having no explicit cross-lingual signal during pre-training, mBERT demonstrated surprising zero-shot cross-lingual transfer capability \cite{pires2019}.
+
+\section{Multilingual and Indic-Specific Models}
+
+Several models have since been developed to better serve multilingual and Indic-language NLP:
+
+\textbf{XLM-RoBERTa} (Conneau et al., 2020) \cite{conneau2020} scaled up multilingual pre-training to 100 languages on 2.5\,TB of CommonCrawl data, using a larger SentencePiece vocabulary (250\,k tokens) and the RoBERTa training recipe. It consistently outperforms mBERT on cross-lingual benchmarks.
+
+\textbf{IndicBERT} (Kakwani et al., 2020) \cite{kakwani2020} is a multilingual ALBERT model pre-trained exclusively on 12 major Indian languages. With only 12\,\% of the parameters of mBERT, it achieves competitive performance on Indic NLU tasks, demonstrating that language-family-focused pre-training yields parameter-efficient representations.
+
+\textbf{MuRIL} (Khanuja et al., 2021) \cite{khanuja2021} — Multilingual Representations for Indian Languages — was developed by Nexa Research India. It is pre-trained on a corpus that includes transliterated text (Romanized Hindi and other Indic languages written in Latin script), making it uniquely suited for code-mixed input where Romanized Hindi is prevalent. MuRIL also uses a custom SentencePiece tokenizer trained with an emphasis on Indic-script coverage.
+
+\section{Code-Mixed Sentiment with Transformers}
+
+Recent work has applied these models to code-mixed sentiment analysis with promising results. Pradhan et al.\ (2021) \cite{pradhan2021} fine-tuned XLM-RoBERTa on the SentiMix Hindi-English dataset and achieved an F1-score of 77.4\,\%, outperforming all prior non-transformer baselines by at least 5 percentage points. Their ablation study identified two critical design factors:
+
+\begin{rvsummary}
+\textbf{Key findings from Pradhan et al.\ (2021):}
+\begin{itemize}
+  \item Romanized Hindi tokens benefit from models pre-trained on transliterated data (MuRIL $>$ XLM-R $>$ mBERT).
+  \item Data augmentation via back-translation (Hindi $\rightarrow$ English $\rightarrow$ Hindi) improves generalization by 2--3 F1 points.
+  \item Subword overlap — the fraction of test tokens that appear in the tokenizer's vocabulary — is a stronger predictor of performance than model size alone.
+\end{itemize}
+\end{rvsummary}
+
+Gupta et al.\ (2022) \cite{gupta2022} proposed a \emph{meta-embedding} approach that fuses mBERT and IndicBERT representations before the classification head, reporting marginal gains (+1.2 F1) over single-model fine-tuning on the BHAAV dataset.
+
+\section{Research Gaps}
+
+Despite these advances, several gaps remain. Most studies report results on a single dataset, limiting generalizability. Few papers systematically compare preprocessing strategies (normalization, transliteration, script unification). The interaction between subword tokenization policy and code-mixing density is underexplored. This seminar study addresses these gaps through a controlled comparison of four architectures under consistent preprocessing conditions.
+
+% ══════════════════════════════════════════════════════════════════════
+% ── CHAPTER 3: METHODOLOGY ───────────────────────────────────────────
+% ══════════════════════════════════════════════════════════════════════
+\chapter{Methodology}
+
+\section{Dataset}
+
+We use the \textbf{SentiMix Hindi-English} dataset introduced in the SemEval-2020 Task~9 shared task \cite{patwa2020}. The dataset contains 20\,000 code-mixed tweets and Facebook comments annotated with three sentiment labels. Table~\ref{tab:dataset} summarizes the label distribution.
+
+\begin{table}[htbp]
+\centering
+\caption{SentiMix Hindi-English dataset statistics.}
+\label{tab:dataset}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Split} & \textbf{Positive} & \textbf{Negative} & \textbf{Neutral} \\
+\midrule
+Train      & 6\,250 & 3\,840 & 4\,910 \\
+Validation &   780  &   480  &   610  \\
+Test       & 1\,560 &   960  & 1\,220 \\
+\midrule
+\textbf{Total} & 8\,590 & 5\,280 & 6\,740 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Preprocessing Pipeline}
+
+Code-mixed text requires careful preprocessing before it can be fed to transformer models. Our pipeline consists of four stages:
+
+\begin{enumerate}[nosep,itemsep=3pt]
+  \item \textbf{Social media normalization} — Replace URLs with \texttt{[URL]}, mentions with \texttt{[MENTION]}, and normalize repeated characters (e.g., ``gooood'' $\rightarrow$ ``good'').
+  \item \textbf{Emoji preservation} — Emojis are retained as text descriptors (e.g., :) $\rightarrow$ \texttt{[FACE\_TEARS\_JOY]}) since they carry sentiment signal.
+  \item \textbf{Transliteration} — For select experiments, Romanized Hindi tokens are back-transliterated to Devanagari using the IndicTrans library.
+  \item \textbf{Subword tokenization} — Each model uses its native tokenizer (WordPiece for mBERT, SentencePiece for XLM-R/MuRIL/IndicBERT).
+\end{enumerate}
+
+\section{Models}
+
+We evaluate four pre-trained transformer architectures. Table~\ref{tab:models} lists their key characteristics.
+
+\begin{table}[htbp]
+\centering
+\caption{Pre-trained models compared in this study.}
+\label{tab:models}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Model}    & \textbf{Parameters} & \textbf{Languages} & \textbf{Vocab Size} \\
+\midrule
+mBERT-base        & 177M & 104 & 110\,k \\
+XLM-RoBERTa-base  & 278M & 100 & 250\,k \\
+IndicBERT         &  22M &  12 &  40\,k \\
+MuRIL-base        & 238M &  17 & 197\,k \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Fine-Tuning Protocol}
+
+All models are fine-tuned using the HuggingFace Transformers library with a consistent hyperparameter configuration. Listing~\ref{lst:finetune} shows the core training loop.
+
+\begin{lstlisting}[
+  language=Python,
+  caption={Fine-tuning script for transformer models on code-mixed sentiment data.},
+  label={lst:finetune},
+]
+from transformers import AutoModelForSequenceClassification
+from transformers import Trainer, TrainingArguments
+
+model = AutoModelForSequenceClassification.from_pretrained(
+    model_name, num_labels=3
+)
+
+training_args = TrainingArguments(
+    output_dir="./results",
+    num_train_epochs=5,
+    per_device_train_batch_size=32,
+    per_device_eval_batch_size=64,
+    learning_rate=2e-5,
+    warmup_steps=500,
+    weight_decay=0.01,
+    evaluation_strategy="epoch",
+    save_strategy="epoch",
+    load_best_model_at_end=True,
+    metric_for_best_model="f1",
+    logging_dir="./logs",
+)
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_data,
+    eval_dataset=val_data,
+    compute_metrics=compute_metrics_fn,
+)
+
+trainer.train()
+\end{lstlisting}
+
+The function \texttt{compute\_metrics\_fn} returns accuracy, macro-F1, and weighted-F1 scores computed via scikit-learn.
+
+\section{Evaluation Metrics}
+
+We report \textbf{accuracy} and \textbf{macro-averaged F1-score} as primary metrics. Macro-F1 is preferred over accuracy for this dataset because of the mild class imbalance (positive class is over-represented). We also report per-class precision and recall to identify systematic confusion between neutral and negative labels — a known challenge in code-mixed sentiment annotation.
+
+% ══════════════════════════════════════════════════════════════════════
+% ── CHAPTER 4: WEEKLY PROGRESS LOG ───────────────────────────────────
+% ══════════════════════════════════════════════════════════════════════
+\chapter{Weekly Progress Log}
+
+The seminar was conducted over 14 weeks (January--April 2026). Table~\ref{tab:progress} documents the weekly activities, completion status, and supervisor feedback.
+
+\setlength{\tabcolsep}{4pt}
+\footnotesize
+\begin{longtable}{@{}c >{\raggedright}p{2.2cm} >{\raggedright}p{6cm} >{\raggedright}p{2.2cm} >{\raggedright\arraybackslash}p{2.5cm}@{}}
+\caption{Weekly progress log for the seminar period (Jan--Apr 2026).}\label{tab:progress}\\
+\toprule
+\rowcolor{accent}
+\color{white}\textbf{\#} & \color{white}\textbf{Week \& Dates} & \color{white}\textbf{Tasks Undertaken} & \color{white}\textbf{Status} & \color{white}\textbf{Supervisor Remarks} \\
+\midrule
+\endfirsthead
+\multicolumn{5}{c}{\textit{--- continued from previous page ---}}\\[4pt]
+\toprule
+\rowcolor{accent}
+\color{white}\textbf{\#} & \color{white}\textbf{Week \& Dates} & \color{white}\textbf{Tasks Undertaken} & \color{white}\textbf{Status} & \color{white}\textbf{Supervisor Remarks} \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\rowcolor{black!4} 1  & Week 1 \newline 6--12 Jan 2026 & Topic selection; initial meeting with supervisor; identified three candidate topics in NLP and discussed feasibility.                                      & \progressdone  & Topic approved. Scope defined. \\
+\rowcolor{white}    2  & Week 2 \newline 13--19 Jan    & Literature survey: collected 25+ papers on code-mixed NLP, sentiment analysis, and multilingual transformers. Annotated bibliography compiled.        & \progressdone  & Good coverage. Add Patwa et al. (SemEval 2020). \\
+\rowcolor{black!4} 3  & Week 3 \newline 20--26 Jan    & Detailed reading of foundational transformer papers (Vaswani et al., Devlin et al., Conneau et al.). Prepared summary notes on self-attention and MLM. & \progressdone  & Satisfactory. Focus on multilingual aspects. \\
+\rowcolor{white}    4  & Week 4 \newline 27 Jan--2 Feb & Studied mBERT and XLM-R architectures in depth. Compared tokenization strategies (WordPiece vs. SentencePiece). Wrote draft Section~2.3.               & \progressdone  & Section draft reviewed; minor edits suggested. \\
+\rowcolor{black!4} 5  & Week 5 \newline 3--9 Feb      & Explored IndicBERT and MuRIL papers. Analyzed pretraining corpora composition. Began drafting Chapter~2 (Literature Review).                         & \progressdone  & Include comparison table of models. \\
+\rowcolor{white}    6  & Week 6 \newline 10--16 Feb    & Dataset acquisition: downloaded SentiMix Hindi-English from SemEval-2020 repository. Initial exploratory data analysis — label distribution, code-mixing index, token counts. & \progressdone  & Good. Calculate CMI per sample. \\
+\rowcolor{black!4} 7  & Week 7 \newline 17--23 Feb    & Preprocessing pipeline implementation: URL/mention normalization, emoji handling, transliteration experiments.                                        & \progressdone  & Approved. Transliteration module looks sound. \\
+\rowcolor{white}    8  & Week 8 \newline 24 Feb--2 Mar & Mid-term review presentation. Presented literature survey findings, dataset analysis, and methodology plan to the review panel.                       & \progressdone  & Well received. Panel suggested adding BHAAV dataset comparison. \\
+\rowcolor{black!4} 9  & Week 9 \newline 3--9 Mar      & Set up HuggingFace fine-tuning environment. Ran baseline experiments with mBERT. Debugged tokenizer configuration and padding issues.                 & \progressdone  & Initial results look reasonable. \\
+\rowcolor{white}    10 & Week 10 \newline 10--16 Mar   & Fine-tuned XLM-RoBERTa and MuRIL. Documented hyperparameter choices. Started Chapter~3 writing.                                                       & \progressdone  & MuRIL showing strong results. Document everything. \\
+\rowcolor{black!4} 11 & Week 11 \newline 17--23 Mar   & Fine-tuned IndicBERT. Ran comparative evaluation across all four models. Collected per-class precision/recall.                                        & \progressdone  & Interesting trade-off: IndicBERT smaller but competitive. \\
+\rowcolor{white}    12 & Week 12 \newline 24--30 Mar   & Results analysis: created comparison tables and confusion matrices. Ablation study on transliteration impact.                                         & \progressdone  & Transliteration effect is significant — discuss in report. \\
+\rowcolor{black!4} 13 & Week 13 \newline 31 Mar--6 Apr & Drafted Chapters~4, 5, and 6. Compiled full report. Prepared presentation slides (see Appendix~A).                                                    & \progressdone  & Minor formatting fixes needed. Slides look good. \\
+\rowcolor{white}    14 & Week 14 \newline 7--13 Apr    & Final revisions based on supervisor feedback. Proofreading, formatting checks, bibliography verification. Final submission.                           & \progressdone  & Approved for submission. Well done. \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section{Supervisor Sign-off}
+
+\vspace{4pt}
+\begin{signoffblock}{Mid-Term Review (Week~8)}
+\noindent The student has demonstrated satisfactory progress in literature survey, dataset analysis, and methodology design. The presentation to the review panel was clear and well-structured. Recommended to proceed with model implementation as planned.
+
+\vspace{16pt}
+\noindent
+\begin{minipage}[t]{0.45\textwidth}
+  \centering
+  \rule{0.8\textwidth}{0.4pt}\\[4pt]
+  {\small\color{graytext} Dr.\ K.\ Chandrasekaran}\\[2pt]
+  {\footnotesize\color{graytext} Supervisor}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.45\textwidth}
+  \centering
+  \rule{0.8\textwidth}{0.4pt}\\[4pt]
+  {\small\color{graytext} Date: 28 Feb 2026}
+\end{minipage}
+\end{signoffblock}
+
+\vspace{4pt}
+\begin{signoffblock}{Final Approval (Week~14)}
+\noindent The seminar report is complete and meets the academic standards of the department. All objectives outlined in the initial proposal have been addressed. The accompanying presentation slides are well-prepared and ready for the final seminar.
+
+\vspace{16pt}
+\noindent
+\begin{minipage}[t]{0.45\textwidth}
+  \centering
+  \rule{0.8\textwidth}{0.4pt}\\[4pt]
+  {\small\color{graytext} Dr.\ K.\ Chandrasekaran}\\[2pt]
+  {\footnotesize\color{graytext} Supervisor}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.45\textwidth}
+  \centering
+  \rule{0.8\textwidth}{0.4pt}\\[4pt]
+  {\small\color{graytext} Date: 14 Apr 2026}
+\end{minipage}
+\end{signoffblock}
+
+% ══════════════════════════════════════════════════════════════════════
+% ── CHAPTER 5: RESULTS AND DISCUSSION ────────────────────────────────
+% ══════════════════════════════════════════════════════════════════════
+\chapter{Results and Discussion}
+
+\section{Model Performance}
+
+Table~\ref{tab:results} reports the macro-F1 and accuracy of all four models on the SentiMix test set. MuRIL achieves the highest macro-F1 (78.6\,\%), followed closely by XLM-RoBERTa (77.2\,\%).
+
+\begin{table}[htbp]
+\centering
+\caption{Performance comparison on SentiMix Hindi-English test set.}
+\label{tab:results}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Model}    & \textbf{Accuracy (\%)} & \textbf{Macro-F1 (\%)} & \textbf{Weighted-F1 (\%)} \\
+\midrule
+mBERT-base        & 72.1 & 70.8 & 72.4 \\
+XLM-RoBERTa-base  & 77.8 & 77.2 & 78.0 \\
+IndicBERT         & 73.5 & 72.1 & 73.8 \\
+MuRIL-base        & \textbf{79.0} & \textbf{78.6} & \textbf{79.3} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Discussion}
+
+\textbf{MuRIL's advantage.} MuRIL's superior performance can be attributed to two factors: its pre-training corpus includes substantial Romanized Hindi text, and its SentencePiece tokenizer was optimized for Indic-script coverage. This results in higher subword overlap with code-mixed test samples — MuRIL's tokenizer covers 94\,\% of test tokens with known subwords, compared to 89\,\% for mBERT.
+
+\textbf{IndicBERT's efficiency.} Despite having only 22M parameters (vs.\ 278M for XLM-R), IndicBERT achieves competitive results (72.1\,\% F1). For deployment scenarios with latency or memory constraints, IndicBERT offers a strong efficiency-performance trade-off.
+
+\textbf{Effect of transliteration.} Back-transliterating Romanized Hindi to Devanagari before tokenization consistently improved mBERT's performance (+2.5 F1 points) but had negligible effect on MuRIL and XLM-R, confirming that these larger models already handle Romanized input effectively through their training data.
+
+\textbf{Error analysis.} Confusion matrices revealed that all models struggle most with the Neutral--Negative boundary, accounting for ~60\,\% of misclassifications. Neutral code-mixed utterances often contain mixed sentiment cues (e.g., a negative Hindi phrase modified by a positive English qualifier), which remain challenging even for large transformers.
+
+% ══════════════════════════════════════════════════════════════════════
+% ── CHAPTER 6: CONCLUSION ────────────────────────────────────────────
+% ══════════════════════════════════════════════════════════════════════
+\chapter{Conclusion and Future Work}
+
+\section{Summary}
+
+This seminar report investigated transformer-based approaches for sentiment analysis of Hindi-English code-mixed social media text. Through a systematic 14-week study, we reviewed the NLP literature on code-mixing, examined the SentiMix benchmark dataset, implemented a preprocessing pipeline, and compared four multilingual transformer architectures.
+
+Our experiments confirm that modern multilingual transformers — particularly MuRIL and XLM-RoBERTa — substantially outperform earlier approaches on code-mixed sentiment tasks. Key findings include:
+
+\begin{enumerate}[nosep,itemsep=3pt]
+  \item MuRIL achieved the highest macro-F1 (78.6\,\%) on the SentiMix test set, benefiting from transliterated pre-training data and an Indic-optimized tokenizer.
+  \item Subword tokenizer coverage is a strong predictor of downstream performance for code-mixed input.
+  \item Transliteration as a preprocessing step helps smaller models (mBERT) but is redundant for larger multilingual models.
+  \item The Neutral--Negative decision boundary remains the primary source of classification errors across all architectures.
+\end{enumerate}
+
+\section{Future Work}
+
+Several directions merit further investigation:
+
+\begin{enumerate}[nosep,itemsep=3pt]
+  \item \textbf{Multi-task learning} — Jointly training on language identification, sentiment, and emotion recognition could improve representation quality for code-mixed text.
+  \item \textbf{Data augmentation} — Back-translation between Hindi and English scripts, synonym replacement in code-mixed contexts, and synthetic code-mixed generation via LLMs.
+  \item \textbf{Other Indic language pairs} — Extending the study to Tamil-English, Bengali-English, and Telugu-English code-mixing.
+  \item \textbf{Lightweight deployment} — Knowledge distillation from MuRIL into a compact student model suitable for on-device inference in low-resource settings.
+  \item \textbf{Interpretability} — Applying SHAP or integrated gradients to understand which tokens drive sentiment predictions in code-mixed utterances.
+\end{enumerate}
+
+% ══════════════════════════════════════════════════════════════════════
+% ── PRESENTATION COMPANION ───────────────────────────────────────────
+% ══════════════════════════════════════════════════════════════════════
+\chapter*{Presentation Companion}
+\addcontentsline{toc}{chapter}{Presentation Companion}
+
+This section outlines a suggested 15-slide presentation structure to accompany the seminar report. The slide deck was prepared using LaTeX Beamer with the \texttt{Madrid} theme and the institutional color palette defined in this document.
+
+\section*{Slide Structure}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+Slide 1  & \textbf{Title Slide} — Report title, student name, roll number, supervisor, institution logo. \\
+Slide 2  & \textbf{Outline} — Bullet list of presentation sections. \\
+Slide 3  & \textbf{Motivation} — Social media usage statistics in India; examples of code-mixed text; why monolingual tools fail. \\
+Slide 4  & \textbf{Problem Definition} — Formal task statement; sentiment labels; evaluation metrics. \\
+Slide 5  & \textbf{Literature Landscape} — Timeline: lexicon methods $\rightarrow$ ML classifiers $\rightarrow$ RNN/LSTM $\rightarrow$ Transformers. \\
+Slide 6  & \textbf{Transformer Primer} — Self-attention diagram; pre-training vs.\ fine-tuning; key models compared. \\
+Slide 7  & \textbf{Dataset} — SentiMix statistics; example utterances; code-mixing index distribution. \\
+Slide 8  & \textbf{Preprocessing Pipeline} — Flowchart: raw text $\rightarrow$ normalization $\rightarrow$ emoji handling $\rightarrow$ tokenization. \\
+Slide 9  & \textbf{Models Compared} — Table (same as Table~\ref{tab:models}) with brief commentary. \\
+Slide 10 & \textbf{Fine-Tuning Setup} — Hyperparameters; training infrastructure; validation strategy. \\
+Slide 11 & \textbf{Results — Main Table} — Performance comparison (Table~\ref{tab:results}); highlight MuRIL's advantage. \\
+Slide 12 & \textbf{Results — Analysis} — Confusion matrix heatmaps; effect of transliteration; error patterns. \\
+Slide 13 & \textbf{Key Takeaways} — Four bullet points from Chapter~6. \\
+Slide 14 & \textbf{Future Work} — Research directions for code-mixed NLP. \\
+Slide 15 & \textbf{Thank You / Q\&A} — Contact information; references.
+\end{tabularx}
+
+\section*{Delivery Tips}
+
+\begin{itemize}[itemsep=4pt]
+  \item \textbf{Timing:} Allocate 15--18 minutes for the presentation and 5--7 minutes for Q\&A.
+  \item \textbf{Slide 6 (Transformer Primer):} Use a simplified self-attention diagram with at most 4 attention heads to avoid visual clutter. Animate the query-key-value flow step by step.
+  \item \textbf{Slide 11 (Results):} Do not read the table aloud. Instead, point to MuRIL's row and say ``The key finding is that MuRIL outperforms the strongest baseline by 1.4 F1 points.''
+  \item \textbf{Slide 12 (Error Analysis):} Show one concrete misclassified example and walk the audience through \emph{why} the model got it wrong — this engages the panel more than aggregate statistics.
+  \item \textbf{Backup slides:} Prepare 2--3 extra slides (full confusion matrices, per-class metrics, transliteration ablation) and keep them after the Q\&A slide. Reference them only if a panel member asks a detailed question.
+\end{itemize}
+
+\vspace{12pt}
+\begin{rvsummary}
+\textbf{Visual design notes:} Use the accent color (\textcolor{accent}{\rule{8pt}{8pt}}\,\#1A5276) for headings and highlights. Slide backgrounds should be white; avoid dark themes in well-lit seminar rooms. All tables use \texttt{booktabs} style (no vertical rules). Code snippets are set in \texttt{inconsolata} at 8--9pt.
+\end{rvsummary}
+
+% ══════════════════════════════════════════════════════════════════════
+% ── REFERENCES ───────────────────────────────────────────────────────
+% ══════════════════════════════════════════════════════════════════════
+\begin{thebibliography}{20}
+
+\bibitem{statista2025}
+Statista Research Department.
+\newblock \textit{Number of social media users in India from 2015 to 2025}.
+\newblock Statista, 2025.
+
+\bibitem{bali2014}
+K.\ Bali, J.\ Sharma, M.\ Choudhury, and Y.\ Vyas.
+\newblock ``I am borrowing ya mixing?'': An analysis of English-Hindi code mixing in Facebook.
+\newblock In \textit{Proceedings of the First Workshop on Computational Approaches to Code Switching}, pp.\ 116--126, ACL, 2014.
+
+\bibitem{turney2002}
+P.\ D.\ Turney.
+\newblock Thumbs up or thumbs down? Semantic orientation applied to unsupervised classification of reviews.
+\newblock In \textit{Proceedings of ACL}, pp.\ 417--424, 2002.
+
+\bibitem{panglee2004}
+B.\ Pang and L.\ Lee.
+\newblock A sentimental education: Sentiment analysis using subjectivity summarization based on minimum cuts.
+\newblock In \textit{Proceedings of ACL}, pp.\ 271--278, 2004.
+
+\bibitem{joshi2010}
+A.\ Joshi, A.\ R.\ Balamurali, and P.\ Bhattacharyya.
+\newblock A fall-back strategy for sentiment analysis in Hindi: A case study.
+\newblock In \textit{Proceedings of ICON}, 2010.
+
+\bibitem{patra2015}
+B.\ G.\ Patra, D.\ Das, A.\ Das, and R.\ Prasath.
+\newblock Shared task on sentiment analysis in Indian languages (SAIL) tweets — an overview.
+\newblock In \textit{Proceedings of FIRE}, 2015.
+
+\bibitem{patwa2020}
+P.\ Patwa, G.\ Aguilar, S.\ Kar, S.\ Pandey, S.\ PYKL, B.\ Gambäck, T.\ Chakraborty, T.\ Solorio, and A.\ Das.
+\newblock SemEval-2020 Task 9: Overview of sentiment analysis of code-mixed tweets.
+\newblock In \textit{Proceedings of SemEval}, pp.\ 774--790, 2020.
+
+\bibitem{vaswani2017}
+A.\ Vaswani, N.\ Shazeer, N.\ Parmar, J.\ Uszkoreit, L.\ Jones, A.\ N.\ Gomez, Ł.\ Kaiser, and I.\ Polosukhin.
+\newblock Attention is all you need.
+\newblock In \textit{Advances in Neural Information Processing Systems (NeurIPS)}, pp.\ 5998--6008, 2017.
+
+\bibitem{devlin2019}
+J.\ Devlin, M.-W.\ Chang, K.\ Lee, and K.\ Toutanova.
+\newblock BERT: Pre-training of deep bidirectional transformers for language understanding.
+\newblock In \textit{Proceedings of NAACL-HLT}, pp.\ 4171--4186, 2019.
+
+\bibitem{pires2019}
+T.\ Pires, E.\ Schlinger, and D.\ Garrette.
+\newblock How multilingual is multilingual BERT?
+\newblock In \textit{Proceedings of ACL}, pp.\ 4996--5001, 2019.
+
+\bibitem{conneau2020}
+A.\ Conneau, K.\ Khandelwal, N.\ Goyal, V.\ Chaudhary, G.\ Wenzek, F.\ Guzmán, E.\ Grave, M.\ Ott, L.\ Zettlemoyer, and V.\ Stoyanov.
+\newblock Unsupervised cross-lingual representation learning at scale.
+\newblock In \textit{Proceedings of ACL}, pp.\ 8440--8451, 2020.
+
+\bibitem{kakwani2020}
+D.\ Kakwani, A.\ Kunchukuttan, S.\ Golla, G.\ N.\ C., A.\ Bhattacharyya, M.\ M.\ Khapra, and P.\ Kumar.
+\newblock IndicNLPSuite: Monolingual corpora, evaluation benchmarks and pre-trained multilingual language models for Indian languages.
+\newblock In \textit{Findings of EMNLP}, pp.\ 4948--4956, 2020.
+
+\bibitem{khanuja2021}
+S.\ Khanuja, D.\ Bansal, S.\ Mehtani, S.\ Khosla, A.\ Dey, B.\ Gopalan, D.\ K.\ Margam, P.\ Aggarwal, R.\ T.\ Nagipogu, S.\ Dave, S.\ Gupta, S.\ C.\ B.\ Gali, V.\ Subramanian, and P.\ Talukdar.
+\newblock MuRIL: Multilingual representations for Indian languages.
+\newblock \textit{arXiv preprint arXiv:2103.10730}, 2021.
+
+\bibitem{pradhan2021}
+A.\ Pradhan, S.\ Yerpude, and H.\ Shrivastava.
+\newblock Transformers for code-mixed sentiment analysis.
+\newblock In \textit{Proceedings of the 18th International Conference on Natural Language Processing (ICON)}, pp.\ 321--330, 2021.
+
+\bibitem{gupta2022}
+V.\ Gupta, S.\ Menghani, and R.\ Mamidi.
+\newblock Synapse-embedding fusion for code-mixed sentiment classification.
+\newblock In \textit{Proceedings of AACL-IJCNLP}, pp.\ 88--97, 2022.
+
+\end{thebibliography}
+
+\end{document}

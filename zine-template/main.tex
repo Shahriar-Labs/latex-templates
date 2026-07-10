@@ -1,0 +1,431 @@
+% !TEX program = pdflatex
+% DIY Zine Template — Half-Fold A5 Booklet (One-Sheet Mini-Zine)
+% Edit and compile online at https://letx.app
+% Compile with: latexmk -pdf main.tex
+% Prints on A3, folds to A5. Features 8-page collage-grid layout
+% with cut/fold guides, rubber-stamp details, and realistic sample content.
+
+\documentclass[10pt,a3paper,landscape]{article}
+\usepackage{amsmath}
+
+% ── Fonts & Encoding ──────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{microtype}
+
+% ── Page Geometry ────────────────────────────────────
+\usepackage{geometry}
+\geometry{margin=10mm, nohead, nofoot}
+
+% ── Colors ───────────────────────────────────────────
+\usepackage{xcolor}
+\definecolor{cream}{HTML}{F7F3EB}
+\definecolor{rust}{HTML}{C7512E}
+\definecolor{ink}{HTML}{2B2B2B}
+\definecolor{sage}{HTML}{6B8B7A}
+\definecolor{wheat}{HTML}{E8DCC8}
+\definecolor{slate}{HTML}{5C6370}
+\definecolor{panelbg}{HTML}{FCFAF5}
+
+% ── Graphics & Layout ────────────────────────────────
+\usepackage{tikz}
+\usetikzlibrary{calc, shadows, decorations.pathmorphing}
+\usepackage{fontawesome5}
+\usepackage{enumitem}
+\usepackage{ragged2e}
+\usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=rust, urlcolor=rust}
+
+% ── Global Settings ──────────────────────────────────
+\pagecolor{cream}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\pagestyle{empty}
+
+% ── Helper Macros ────────────────────────────────────
+\newcommand{\zineheading}[1]{%
+  {\fontseries{b}\selectfont\color{rust}\footnotesize\MakeUppercase{#1}\par\vspace{1.5mm}}%
+}
+\newcommand{\zinesub}[1]{%
+  {\fontseries{l}\selectfont\color{slate}\scriptsize\itshape #1\par}%
+}
+\newcommand{\zinebody}[1]{%
+  {\fontseries{m}\selectfont\small\color{ink}\setlength{\baselineskip}{11.5pt}#1\par}%
+}
+\newcommand{\zinepull}[1]{%
+  \begin{center}\vspace{1mm}
+  {\color{sage}\large\itshape``#1''\par}
+  \vspace{1mm}\end{center}%
+}
+\newcommand{\rubberstamp}[2][rust]{%
+  \begin{tikzpicture}[baseline=(stamp.base)]
+    \node[draw=#1!70, line width=0.6pt, inner xsep=5pt, inner ysep=2pt,
+          rotate=2.5, font=\scriptsize\bfseries\itshape, text=#1!70] (stamp) {#2};
+  \end{tikzpicture}%
+}
+\newcommand{\wavyrule}[1][rust!40]{%
+  \par\vspace{1mm}
+  {\color{#1}\hrule height 0.4pt}\par\vspace{1mm}%
+}
+\newcommand{\zineitem}[2]{%
+  {\fontseries{b}\selectfont\color{rust}\footnotesize #1}\quad{\color{ink}\footnotesize #2}\par\vspace{0.5mm}%
+}
+
+% ── Document ─────────────────────────────────────────
+\begin{document}
+
+% Panel grid dimensions (A3 landscape: 420 x 297 mm)
+% 4 cols x 2 rows, 10mm margin, 4mm gaps
+% Panel = 97 x 136.5 mm, text area = 91 x 130.5 mm (3mm padding)
+
+\begin{tikzpicture}[remember picture, overlay]
+
+  \def\margin{10mm}
+  \def\gap{4mm}
+  \def\pw{97mm}
+  \def\ph{136.5mm}
+  \def\pad{3mm}
+  \def\tw{91mm}
+
+  % ── Panel background nodes (with drop shadows) ──────
+  \foreach \r in {0,1} {
+    \foreach \c in {0,1,2,3} {
+      \pgfmathsetmacro{\px}{\margin + \c*(\pw+\gap)}
+      \pgfmathsetmacro{\py}{-(\margin + \r*(\ph+\gap))}
+      \node[fill=panelbg, minimum width=\pw, minimum height=\ph,
+            inner sep=0pt, anchor=north west,
+            drop shadow={shadow xshift=0.8pt, shadow yshift=-1.2pt, opacity=0.10}]
+        at ([xshift=\px, yshift=\py] current page.north west) {};
+      \draw[rust!25, line width=0.35pt]
+        ([xshift=\px, yshift=\py] current page.north west)
+        rectangle ++(\pw, -\ph);
+    }
+  }
+
+  % ── Cut / Fold Guides ──────────────────────────────
+
+  % Horizontal fold line (full width, dotted)
+  \draw[ink!25, line width=0.35pt, densely dotted]
+    ([xshift=\margin, yshift=-\margin-\ph-\gap/2] current page.north west)
+    -- ++({4*\pw+3*\gap}, 0);
+
+  % Vertical fold lines (between columns 1-2, 2-3, 3-4)
+  \foreach \i in {1,2,3} {
+    \pgfmathsetmacro{\vx}{\margin + \i*\pw + (\i-1)*\gap + \gap/2}
+    \draw[ink!18, line width=0.3pt, loosely dotted]
+      ([xshift=\vx, yshift=-\margin] current page.north west)
+      -- ++(0, {-2*\ph - \gap});
+  }
+
+  % Cut zone: dashed line in the horizontal fold gap, between cols 1-2 and 2-3
+  \pgfmathsetmacro{\cutxstart}{\margin + 1*\pw + 1*\gap}
+  \pgfmathsetmacro{\cutxend}{\margin + 2*\pw + 2*\gap}
+  \pgfmathsetmacro{\cuty}{-\margin - \ph - \gap/2}
+  \draw[rust!55, line width=0.7pt, dash pattern=on 3.5pt off 2.5pt]
+    ([xshift=\cutxstart, yshift=\cuty] current page.north west)
+    -- ([xshift=\cutxend, yshift=\cuty] current page.north west);
+
+  % Scissors icon at center of cut
+  \pgfmathsetmacro{\cutmid}{(\cutxstart + \cutxend)/2}
+  \node[rust!70, font=\tiny] at
+    ([xshift=\cutmid, yshift=\cuty] current page.north west) {\faCut};
+
+  % Fold labels
+  \node[font=\fontseries{l}\selectfont\tiny\color{ink!40}, anchor=east] at
+    ([xshift=\margin-2mm, yshift=-\margin-\ph-\gap/2] current page.north west) {\textit{fold}};
+  \node[font=\fontseries{l}\selectfont\tiny\color{ink!40}, anchor=west] at
+    ([xshift=\margin+4*\pw+3*\gap+2mm, yshift=-\margin-\ph-\gap/2] current page.north west) {\textit{fold}};
+
+  % ── Page numbers (circles in bottom-right of each panel) ──
+  \foreach \p [count=\i from 0] in {1,2,3,4,5,6,7,8} {
+    \pgfmathtruncatemacro{\col}{mod(\i,4)}
+    \pgfmathtruncatemacro{\row}{int(\i/4)}
+    \pgfmathsetmacro{\nx}{\margin + \col*(\pw+\gap) + \pw - 5mm}
+    \pgfmathsetmacro{\ny}{-\margin - \row*(\ph+\gap) - \ph + 5mm}
+    \node[circle, fill=rust!85, text=cream, font=\fontseries{b}\selectfont\footnotesize,
+          inner sep=1.8pt, minimum size=14pt]
+      at ([xshift=\nx, yshift=\ny] current page.north west) {\p};
+  }
+
+  % ════════════════════════════════════════════════════
+  %  PANEL 1 — COVER
+  % ════════════════════════════════════════════════════
+  \pgfmathsetmacro{\pwx}{\margin + 0*(\pw+\gap)}
+  \pgfmathsetmacro{\pwy}{-(\margin + 0*(\ph+\gap))}
+  \node[anchor=north west, text width=\tw, inner sep=\pad] (P1)
+    at ([xshift=\pwx+\pad, yshift=\pwy-\pad] current page.north west) {
+
+    \vspace{2mm}
+    {\fontseries{eb}\selectfont\fontsize{24}{28}\color{rust}SIGNAL}\\[1mm]
+    {\fontseries{eb}\selectfont\fontsize{24}{28}\color{ink}/ NOISE}\\[5mm]
+
+    \wavyrule[rust!45]
+
+    \vspace{3mm}
+    {\fontseries{l}\selectfont\color{slate}\footnotesize
+     A zine about finding beauty\\in the spaces between.}\\[6mm]
+
+    {\color{rust}\scriptsize\MakeUppercase{Issue \#7}}\hspace{4mm}
+    {\color{ink}\scriptsize Summer 2026}\\[3mm]
+
+    \rubberstamp[rust]{HANDMADE}
+
+    \vspace{8mm}
+    {\fontseries{l}\selectfont\color{slate}\tiny\$3 or trade}
+  };
+
+  % ════════════════════════════════════════════════════
+  %  PANEL 2 — EDITOR'S NOTE
+  % ════════════════════════════════════════════════════
+  \pgfmathsetmacro{\pwx}{\margin + 1*(\pw+\gap)}
+  \pgfmathsetmacro{\pwy}{-(\margin + 0*(\ph+\gap))}
+  \node[anchor=north west, text width=\tw, inner sep=\pad] (P2)
+    at ([xshift=\pwx+\pad, yshift=\pwy-\pad] current page.north west) {
+
+    \zineheading{From the Editor}
+
+    \zinebody{%
+      This issue started with a broken cassette deck I found at a yard sale in
+      Burlington. The seller said it hadn't played a tape since 1997. I took it
+      apart on my kitchen table and found a handwritten note tucked inside the
+      casing --- ``Side A: rain. Side B: waiting.'' That note became the
+      North Star for everything you're about to read.%
+    }
+
+    \vspace{2mm}
+    \wavyrule[sage!50]
+
+    \zinebody{%
+      Inside: poems, repair manuals for the soul, a playlist for insomniacs,
+      and one very opinionated essay about why we should all write more letters.%
+    }
+
+    \vspace{2mm}
+    {\color{slate}\footnotesize\itshape --- Mira Okonkwo, July 2026}
+  };
+
+  % ════════════════════════════════════════════════════
+  %  PANEL 3 — POEM: "STATIC"
+  % ════════════════════════════════════════════════════
+  \pgfmathsetmacro{\pwx}{\margin + 2*(\pw+\gap)}
+  \pgfmathsetmacro{\pwy}{-(\margin + 0*(\ph+\gap))}
+  \node[anchor=north west, text width=\tw, inner sep=\pad] (P3)
+    at ([xshift=\pwx+\pad, yshift=\pwy-\pad] current page.north west) {
+
+    \zineheading{Static}
+
+    \vspace{1mm}
+    {\RaggedRight\small\color{ink}\setlength{\baselineskip}{13pt}
+      The radio hums between stations\newline
+      a frequency no one broadcasts on.\newline
+      I keep it there --- that gray noise ---\newline
+      because silence feels too final.\strut\par}
+
+    \vspace{2mm}
+    {\RaggedRight\small\color{ink}\setlength{\baselineskip}{13pt}
+      My mother used to say\newline
+      every frequency carries a ghost:\newline
+      old songs, old voices, old weather\newline
+      still traveling outward from 1984.\strut\par}
+
+    \vspace{2mm}
+    {\RaggedRight\small\color{ink}\setlength{\baselineskip}{13pt}
+      I turn the dial with my eyes closed.\newline
+      Somewhere between 98.7 and nothing\newline
+      I can almost hear her humming\newline
+      along to a song I've never known.\strut\par}
+
+    \vspace{3mm}
+    {\color{sage}\footnotesize\itshape --- Samir Khalil}
+  };
+
+  % ════════════════════════════════════════════════════
+  %  PANEL 4 — MICRO-ESSAY: "ON REPAIR"
+  % ════════════════════════════════════════════════════
+  \pgfmathsetmacro{\pwx}{\margin + 3*(\pw+\gap)}
+  \pgfmathsetmacro{\pwy}{-(\margin + 0*(\ph+\gap))}
+  \node[anchor=north west, text width=\tw, inner sep=\pad] (P4)
+    at ([xshift=\pwx+\pad, yshift=\pwy-\pad] current page.north west) {
+
+    \zineheading{On Repair}
+
+    \zinebody{%
+      There is a particular kind of attention required to fix something
+      broken. It is not the attention of creation --- that wild, generative
+      rush. It is the attention of listening. You must ask the object what
+      it needs, and then you must wait for an answer.%
+    }
+
+    \vspace{2mm}
+    \zinebody{%
+      My grandfather repaired clocks in a shop no wider than a hallway.
+      He said every broken thing tells you exactly what's wrong --- you just
+      have to learn its language. A slow tick means one thing. Silence
+      means another. A clock that runs fast is afraid of something.%
+    }
+
+    \vspace{2mm}
+    \zinepull{We fix things not to make them new, but to make them ours.}
+
+    \vspace{1mm}
+    {\color{slate}\footnotesize\itshape --- Elena Vasquez}
+  };
+
+  % ════════════════════════════════════════════════════
+  %  PANEL 5 — COLLAGE / VISUAL
+  % ════════════════════════════════════════════════════
+  \pgfmathsetmacro{\pwx}{\margin + 0*(\pw+\gap)}
+  \pgfmathsetmacro{\pwy}{-(\margin + 1*(\ph+\gap))}
+  \node[anchor=north west, text width=\tw, inner sep=\pad] (P5)
+    at ([xshift=\pwx+\pad, yshift=\pwy-\pad] current page.north west) {
+
+    \zineheading{Cut \& Paste}
+
+    \begin{center}
+\resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[scale=0.55]
+      % Abstract collage composition
+      \fill[rust!25] (0,0) -- (20,0) -- (20,8) -- (0,12) -- cycle;
+      \fill[ink!15] (6,3) circle [radius=6];
+      \fill[sage!30] (18,10) circle [radius=4];
+      \fill[wheat!60] (2,2) rectangle ++(8,8);
+      \draw[rust!50, line width=1.2pt] (10,2) -- (10,14);
+      \draw[ink!30, line width=0.8pt] (4,4) -- (16,12);
+      \node[rotate=15, text=rust!70, font=\large\bfseries] at (13,7) {?};
+      \node[rotate=-8, text=sage!80, font=\footnotesize] at (3,13) {find};
+      \node[text=slate!60, font=\tiny\itshape] at (15,2) {keep looking};
+    \end{tikzpicture}}
+    \end{center}
+
+    \vspace{1mm}
+    \zinebody{%
+      Collage is the art of noticing what belongs together. Cut. Arrange.
+      Glue. Repeat until something true emerges. Send us your cut-paper
+      compositions for Issue \#8.%
+    }
+  };
+
+  % ════════════════════════════════════════════════════
+  %  PANEL 6 — RECOMMENDATIONS
+  % ════════════════════════════════════════════════════
+  \pgfmathsetmacro{\pwx}{\margin + 1*(\pw+\gap)}
+  \pgfmathsetmacro{\pwy}{-(\margin + 1*(\ph+\gap))}
+  \node[anchor=north west, text width=\tw, inner sep=\pad] (P6)
+    at ([xshift=\pwx+\pad, yshift=\pwy-\pad] current page.north west) {
+
+    \zineheading{Things We Loved}
+
+    \vspace{1mm}
+    \zineitem{Read}{{\itshape Several Short Sentences About Writing} -- Verlyn Klinkenborg}
+    \zineitem{Listen}{{\itshape Promises} -- Floating Points \& Pharoah Sanders}
+    \zineitem{Watch}{{\itshape Perfect Days} -- dir. Wim Wenders}
+    \zineitem{Visit}{The Museum of Everyday Life, Glover, Vermont}
+    \zineitem{Make}{Sourdough starter. Name it. Feed it. Write about it.}
+
+    \vspace{2mm}
+    \wavyrule[sage!50]
+
+    \zineheading{Submit to Issue \#8}
+    \zinebody{%
+      Theme: {\bfseries INTERVALS}. Poetry, prose, collage, comics,
+      photography, found text, manifestos. 500 words max. Deadline:
+      October 15, 2026. Email: submit@signalnoise.zin
+    }
+  };
+
+  % ════════════════════════════════════════════════════
+  %  PANEL 7 — COMIC / ANECDOTE
+  % ════════════════════════════════════════════════════
+  \pgfmathsetmacro{\pwx}{\margin + 2*(\pw+\gap)}
+  \pgfmathsetmacro{\pwy}{-(\margin + 1*(\ph+\gap))}
+  \node[anchor=north west, text width=\tw, inner sep=\pad] (P7)
+    at ([xshift=\pwx+\pad, yshift=\pwy-\pad] current page.north west) {
+
+    \zineheading{Overheard on the 6 Train}
+
+    \zinebody{%
+      {\bfseries Stranger A} (holding a potted fern): ``Do you think
+      plants get lonely?''\par
+      {\bfseries Stranger B} (without looking up from their book):
+      ``Only the ones in offices.''\par
+      {\bfseries A}: ``That's most of them, then.''\par
+      {\bfseries B}: ``That's the tragedy.''\par
+    }
+
+    \vspace{2mm}
+    \wavyrule[sage!50]
+
+    \vspace{1mm}
+    \zinebody{%
+      Three stops of silence. The fern swayed gently with the motion of
+      the train, as if nodding. As if it agreed. As if it had been waiting
+      for someone to finally ask.%
+    }
+
+    \vspace{3mm}
+    \begin{center}
+    {\color{wheat}\rule{40mm}{0.4pt}}\\[1mm]
+    {\color{slate}\tiny\itshape Submitted by an anonymous commuter}
+    \end{center}
+  };
+
+  % ════════════════════════════════════════════════════
+  %  PANEL 8 — CREDITS / BACK COVER
+  % ════════════════════════════════════════════════════
+  \pgfmathsetmacro{\pwx}{\margin + 3*(\pw+\gap)}
+  \pgfmathsetmacro{\pwy}{-(\margin + 1*(\ph+\gap))}
+  \node[anchor=north west, text width=\tw, inner sep=\pad] (P8)
+    at ([xshift=\pwx+\pad, yshift=\pwy-\pad] current page.north west) {
+
+    \vspace{1mm}
+    {\fontseries{eb}\selectfont\color{rust}\large SIGNAL / NOISE}\\[2mm]
+
+    \zinebody{%
+      Issue \#7 --- Summer 2026. Printed on a photocopier in
+      Burlington, Vermont. Stapled by hand. Distributed by bike,
+      mailbox, and the occasional coffee shop counter.%
+    }
+
+    \vspace{2mm}
+    \wavyrule[sage!50]
+
+    \vspace{1mm}
+    \zineheading{This Issue}
+    \zinebody{%
+      Mira Okonkwo {\color{slate}\scriptsize(editor)}\par
+      Samir Khalil {\color{slate}\scriptsize(poetry)}\par
+      Elena Vasquez {\color{slate}\scriptsize(essay)}\par
+      K. Tanaka {\color{slate}\scriptsize(illustration)}\par
+      \phantom{x} + readers like you%
+    }
+
+    \vspace{2mm}
+    \wavyrule[sage!50]
+
+    \vspace{1mm}
+    {\color{ink}\scriptsize\RaggedRight
+      \faEnvelope\ signalnoise@pm.me\\[0.5mm]
+      \faInstagram\ @signalnoisezine\\[0.5mm]
+      47 Maple Street, Burlington VT 05401\\[3mm]
+      {\color{rust}\itshape Made with a photocopier and a dream.}
+    }
+  };
+
+  % ── Crop marks at page corners ─────────────────────
+  \foreach \dx/\dy in {-\margin/-\margin, {-\margin+420mm}/-\margin,
+                       -\margin/{-\margin-297mm}, {-\margin+420mm}/{-\margin-297mm}} {
+    % Horizontal tick
+    \draw[ink!35, line width=0.3pt]
+      ([xshift=\dx-3mm, yshift=\dy] current page.north west)
+      -- ([xshift=\dx+3mm, yshift=\dy] current page.north west);
+    % Vertical tick
+    \draw[ink!35, line width=0.3pt]
+      ([xshift=\dx, yshift=\dy-3mm] current page.north west)
+      -- ([xshift=\dx, yshift=\dy+3mm] current page.north west);
+  }
+
+\end{tikzpicture}
+
+\end{document}

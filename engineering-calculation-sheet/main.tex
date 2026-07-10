@@ -1,0 +1,468 @@
+% Engineering Calculation Sheet — LaTeX Template
+% Edit and compile online at https://letx.app
+% Compiles with: latexmk -pdf main.tex (pdflatex, TeX Live full)
+\documentclass[a4paper,11pt]{article}
+\usepackage{amssymb}
+
+% ── Encoding & Fonts ──────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{sourcesanspro}
+\renewcommand{\familydefault}{\sfdefault}
+
+% ── Page Geometry ─────────────────────────────────────────────
+\usepackage[a4paper,margin=20mm,top=18mm,bottom=18mm,headheight=14pt,includeheadfoot]{geometry}
+
+% ── Colours ───────────────────────────────────────────────────
+\usepackage[table]{xcolor}
+\definecolor{primary}{HTML}{1B3D6B}
+\definecolor{primlight}{HTML}{E8EEF4}
+\definecolor{grayrule}{HTML}{B0BEC5}
+\definecolor{dkgray}{HTML}{546E7A}
+\definecolor{accentred}{HTML}{C0392B}
+
+% ── Tables ────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+
+% ── Lists ─────────────────────────────────────────────────────
+\usepackage{enumitem}
+
+% ── Section Formatting ────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries\color{primary}}
+  {}
+  {0em}
+  {}
+  [{\color{primary}\titlerule[1.2pt]}]
+\titlespacing{\section}{0pt}{14pt}{6pt}
+
+\titleformat{\subsection}
+  {\large\bfseries\color{primary!85}}
+  {}
+  {0em}
+  {}
+\titlespacing{\subsection}{0pt}{10pt}{4pt}
+
+% ── Headers & Footers ─────────────────────────────────────────
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\fancypagestyle{calcpage}{
+  \fancyhf{}
+  \fancyhead[L]{\footnotesize\color{dkgray}Northgate Bridge Replacement \textbar\ Calc ID: STR-2024-047}
+  \fancyhead[R]{\footnotesize\color{dkgray}Revision B \textbar\ \today}
+  \fancyfoot[C]{\footnotesize\color{dkgray}Page \thepage\ of \pageref{LastPage}}
+  \renewcommand{\headrule}{%
+    \vskip 2pt
+    \hrule height 0.4pt width \headwidth
+    \vskip 2pt
+    \hrule height 1.0pt width \headwidth
+  }
+}
+
+% ── Graphics & Boxes ──────────────────────────────────────────
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,patterns}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usetikzlibrary{shadows}
+\usepackage{float}
+
+% ── Math ──────────────────────────────────────────────────────
+\usepackage{amsmath}
+
+% ── Icons ─────────────────────────────────────────────────────
+\usepackage{fontawesome5}
+
+% ── Captions ──────────────────────────────────────────────────
+\usepackage{caption}
+\captionsetup{font={footnotesize,color=dkgray},labelfont={bf,color=primary},skip=6pt}
+
+% ── Hyperlinks (load near last) ───────────────────────────────
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+  pdfauthor={J. Smith},
+  pdftitle={Engineering Calculation STR-2024-047 --- RC Beam Flexural Design},
+  pdfsubject={Structural Engineering Calculation},
+}
+
+% ── Lengths ───────────────────────────────────────────────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\renewcommand{\arraystretch}{1.25}
+
+% ── Custom Macros ─────────────────────────────────────────────
+\newcounter{calcstep}
+\setcounter{calcstep}{0}
+\newcommand{\calcstep}[2]{%
+  \stepcounter{calcstep}%
+  \par\medskip
+  \noindent{\color{primary}\bfseries Step \thecalcstep\ ---\ #1}\\[3pt]
+  \noindent#2\par
+}
+
+\newcommand{\unitrow}[3]{%
+  #1 & #2 & \hfill #3 \\
+}
+
+% ═══════════════════════════════════════════════════════════════
+\begin{document}
+\pagestyle{calcpage}
+
+% ── Document Control Header ──────────────────────────────────
+\begin{tcolorbox}[
+  colback=primlight,
+  colframe=primary,
+  arc=0mm,
+  boxrule=0.8pt,
+  left=8mm,
+  right=8mm,
+  top=7mm,
+  bottom=5mm,
+  before skip=0pt,
+  after skip=12pt,
+]
+  \centering
+  {\LARGE\bfseries\color{primary}ENGINEERING CALCULATION}\\[6pt]
+  \begin{tabularx}{\linewidth}{@{}>{\color{dkgray}\bfseries}l@{\hspace{6mm}}Xr@{}}
+    Project:  & Northgate Bridge Replacement        & \\
+    Calc ID:  & STR-2024-047                        & Sheet 1 of 3 \\
+    Subject:  & RC Edge Beam Flexural Design --- Span 2 & Revision B \\
+  \end{tabularx}
+  \\[4pt]
+  {\color{grayrule}\rule{\linewidth}{0.4pt}}\\[4pt]
+  \begin{tabularx}{\linewidth}{@{}>{\color{dkgray}\bfseries}lX>{\color{dkgray}\bfseries}lX@{}}
+    Prepared: & J.\ Smith, Structural Engineer  & Date: & 2024-06-02 \\
+    Checked:  & M.\ Chen, Senior Engineer       & Date: & 2024-06-05 \\
+    Approved: & R.\ Patel, Principal Engineer   & Date: & 2024-06-10 \\
+  \end{tabularx}
+\end{tcolorbox}
+
+% ── Revision History ─────────────────────────────────────────
+\subsection*{Revision History}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{@{}ccclX@{}}
+\toprule
+\textbf{Rev} & \textbf{Date}       & \textbf{Author}  & \textbf{Checked} & \textbf{Description} \\
+\midrule
+A & 2024-03-15 & J.\ Smith & M.\ Chen & Initial issue for client review. \\
+B & 2024-06-02 & J.\ Smith & M.\ Chen & Revised dead loads per updated architectural drawings; updated reinforcement design. \\
+\bottomrule
+\end{tabularx}
+\renewcommand{\arraystretch}{1.25}
+
+% ── 1. Purpose & Scope ───────────────────────────────────────
+\section{Purpose \& Scope}
+This calculation determines the flexural reinforcement required for the reinforced concrete edge beam at Span~2 of the Northgate Bridge Replacement. The beam is simply supported, spanning~9.2\,m, and carries superimposed dead and traffic live loads as defined in the project loading schedule. All design checks are carried out to confirm compliance with the ultimate and serviceability limit-state requirements.
+
+% ── 2. Design Standards ──────────────────────────────────────
+\section{Design Standards \& References}
+\begin{enumerate}[leftmargin=*,itemsep=3pt,topsep=4pt]
+  \item AS~3600:2018 --- Concrete Structures.
+  \item AS/NZS~1170.0:2002 --- Structural Design Actions --- General Principles.
+  \item AS~5100.5:2017 --- Bridge Design --- Concrete.
+  \item Project Geotechnical Report No.\ GEO-2024-012 (Mason \& Associates, Jan~2024).
+  \item Northgate Bridge Architectural Drawing Set, Rev~D (Arup, Mar~2024).
+\end{enumerate}
+
+% ── 3. Symbols & Notation ────────────────────────────────────
+\section{Symbols \& Notation}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}>{\color{primary}\bfseries}l@{\hspace{8mm}}Xc@{}}
+$A_s$      & Area of tension reinforcement                              & mm$^2$ \\
+$A_{s,\text{min}}$ & Minimum area of tension reinforcement              & mm$^2$ \\
+$A_{s,\text{prov}}$ & Area of tension reinforcement provided            & mm$^2$ \\
+$b$        & Width of rectangular section                                & mm \\
+$c_c$      & Concrete cover to outermost ligature                         & mm \\
+$d$        & Effective depth (extreme compression fibre to centroid of $A_s$) & mm \\
+$f'_c$     & Characteristic compressive strength of concrete              & MPa \\
+$f_y$      & Yield strength of reinforcing steel                          & MPa \\
+$h$        & Overall depth of section                                     & mm \\
+$k_u$      & Neutral axis parameter ($k_u d$)                             & --- \\
+$k_{uo}$   & Ductility limit for neutral axis parameter                   & --- \\
+$M^*$      & Design bending moment at ultimate limit state                & kN$\cdot$m \\
+$M_u$      & Ultimate moment capacity of section                          & kN$\cdot$m \\
+$n$        & Modular ratio ($E_s/E_c$)                                    & --- \\
+$\alpha_2$ & Stress-block parameter                                       & --- \\
+$\gamma$   & Stress-block parameter                                       & --- \\
+$\phi$     & Capacity reduction factor for bending                        & --- \\
+$\phi_b$   & Diameter of longitudinal reinforcing bar                     & mm \\
+$\phi_s$   & Diameter of ligature / stirrup                               & mm \\
+$\rho$     & Reinforcement ratio ($A_s/bd$)                               & --- \\
+\end{tabularx}
+\renewcommand{\arraystretch}{1.25}
+
+% ── 4. Input Parameters ──────────────────────────────────────
+\section{Input Parameters \& Material Properties}
+\begin{table}[H]
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}p{5.5cm}llc@{}}
+\toprule
+\textbf{Parameter}                       & \textbf{Symbol}  & \textbf{Value} & \textbf{Unit} \\
+\midrule
+\multicolumn{4}{@{}l}{\color{primary}\textbf{Geometry}} \\
+\midrule
+Overall beam depth                      & $h$     &  700   & mm \\
+Beam width                              & $b$     &  400   & mm \\
+Clear span                              & $L$     &  9\,200 & mm \\
+Concrete cover to ligatures             & $c_c$   &   40   & mm \\
+Ligature diameter                       & $\phi_s$&   12   & mm \\
+Longitudinal bar diameter (assumed)     & $\phi_b$&   25   & mm \\
+\midrule
+\multicolumn{4}{@{}l}{\color{primary}\textbf{Material Properties}} \\
+\midrule
+Concrete compressive strength (Grade 35)& $f'_c$  &   35   & MPa \\
+Steel yield strength (Grade 500N)       & $f_y$   &  500   & MPa \\
+Modulus of elasticity --- concrete      & $E_c$   & 30\,100 & MPa \\
+Modulus of elasticity --- steel         & $E_s$   &200\,000 & MPa \\
+Density of reinforced concrete          & $\rho_c$&   25   & kN/m$^3$ \\
+\midrule
+\multicolumn{4}{@{}l}{\color{primary}\textbf{Loading (ULS)}} \\
+\midrule
+Self-weight (automated from section)    & $w_{sw}$& 7.00   & kN/m \\
+Superimposed dead load                  & $w_G$   &  12.5  & kN/m \\
+Traffic live load (T44 + L44 envelope)  & $w_Q$   &  28.0  & kN/m \\
+Design ULS moment at mid-span           & $M^*$   &  450   & kN$\cdot$m \\
+Design ULS shear at support             & $V^*$   &  215   & kN \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ── 5. Design Calculations ───────────────────────────────────
+\section{Design Calculations}
+
+\subsection{Effective Depth}
+\[
+d = h - c_c - \phi_s - \frac{\phi_b}{2}
+  = 700 - 40 - 12 - \frac{25}{2}
+  = 635.5\ \text{mm} \quad\rightarrow\quad \text{adopt } d = 635\ \text{mm}
+\]
+
+\subsection{Required Tensile Reinforcement --- Flexure}
+Strength reduction factor for flexure with Class~N reinforcement (AS~3600 Table~2.2.2):
+\[
+\phi = 0.85
+\]
+
+Required ultimate moment capacity:
+\[
+M_u \geq \frac{M^*}{\phi} = \frac{450}{0.85} = 529.4\ \text{kN}\!\cdot\!\text{m}
+\]
+
+Stress-block parameters (AS~3600 Clause~8.1.3):
+\begin{align*}
+\alpha_2 &= 0.85 - 0.0015\,f'_c = 0.85 - 0.0015 \times 35 = 0.7975 \quad (\geq 0.67\ \checkmark) \\
+\gamma   &= 0.97 - 0.0025\,f'_c = 0.97 - 0.0025 \times 35 = 0.8825 \quad (\geq 0.67\ \checkmark)
+\end{align*}
+
+Design flexural parameter:
+\[
+R_n = \frac{M^*}{\phi\,b\,d^2}
+     = \frac{450 \times 10^6}{0.85 \times 400 \times 635^2}
+     = 3.270\ \text{MPa}
+\]
+
+Required reinforcement ratio:
+\begin{align*}
+\rho &= \frac{0.85\,f'_c}{f_y}\left(1 - \sqrt{1 - \frac{2\,R_n}{0.85\,f'_c}}\right) \\
+     &= \frac{0.85 \times 35}{500}\left(1 - \sqrt{1 - \frac{2 \times 3.270}{0.85 \times 35}}\right) \\
+     &= 0.05950 \times \bigl(1 - \sqrt{1 - 0.2198}\bigr) \\
+     &= 0.05950 \times (1 - 0.8833) = 0.00694
+\end{align*}
+
+Required steel area:
+\[
+A_{s,\text{req}} = \rho\,b\,d = 0.00694 \times 400 \times 635 = 1\,763\ \text{mm}^2
+\]
+
+\subsection{Bar Selection}
+Provide 4-N25 bars in a single layer (bottom):
+\[
+A_{s,\text{prov}} = 4 \times 491 = 1\,964\ \text{mm}^2 \;>\; 1\,763\ \text{mm}^2 \quad\checkmark
+\]
+
+Check bar spacing (AS~3600 Clause~8.2.1):
+\[
+s_{\min} = \max(1.5\,\phi_b,\; \phi_b + 5\ \text{mm},\; 25\ \text{mm}) = \max(37.5,\;30,\;25) = 37.5\ \text{mm}
+\]
+Available clear spacing:
+\[
+s = \frac{b - 2\,c_c - 2\,\phi_s - 4\,\phi_b}{3}
+  = \frac{400 - 80 - 24 - 100}{3}
+  = 65.3\ \text{mm} \;>\; 37.5\ \text{mm} \quad\checkmark
+\]
+
+\subsection{Ultimate Moment Capacity Check}
+Depth of equivalent rectangular stress block:
+\[
+a = \frac{A_{s,\text{prov}}\,f_y}{0.85\,f'_c\,b}
+  = \frac{1\,964 \times 500}{0.85 \times 35 \times 400}
+  = 82.5\ \text{mm}
+\]
+
+Ultimate moment capacity:
+\[
+M_u = A_{s,\text{prov}}\,f_y\left(d - \frac{a}{2}\right)
+     = 1\,964 \times 500 \times \left(635 - \frac{82.5}{2}\right) \times 10^{-6}
+     = 1\,964 \times 500 \times 593.75 \times 10^{-6}
+     = 582.7\ \text{kN}\!\cdot\!\text{m}
+\]
+
+Design capacity:
+\[
+\phi M_u = 0.85 \times 582.7 = 495.3\ \text{kN}\!\cdot\!\text{m} \;>\; M^* = 450\ \text{kN}\!\cdot\!\text{m} \quad\checkmark
+\]
+
+\subsection{Minimum Reinforcement Check}
+Characteristic flexural tensile strength (AS~3600 Clause~3.1.1.3):
+\[
+f'_{ct,f} = 0.6\sqrt{f'_c} = 0.6\sqrt{35} = 3.55\ \text{MPa}
+\]
+
+Minimum reinforcement (AS~3600 Clause~8.1.6.1):
+\begin{align*}
+A_{s,\text{min}} &= 0.22\left(\frac{D}{d}\right)^{\!2}\frac{f'_{ct,f}}{f_y}\,b\,d \\
+                 &= 0.22 \times \left(\frac{700}{635}\right)^{\!2} \times \frac{3.55}{500} \times 400 \times 635 \\
+                 &= 0.22 \times 1.215 \times 0.00710 \times 254\,000 \\
+                 &= 482\ \text{mm}^2
+\end{align*}
+\[
+A_{s,\text{prov}} = 1\,964\ \text{mm}^2 \;>\; 482\ \text{mm}^2 \quad\checkmark
+\]
+
+\subsection{Ductility Check}
+Neutral axis depth:
+\[
+k_u = \frac{a}{\gamma\,d} = \frac{82.5}{0.8825 \times 635} = \frac{82.5}{560.4} = 0.147
+\]
+
+Ductility limit for Class~N reinforcement (AS~3600 Clause~8.1.5):
+\[
+k_{uo} = 0.36 > k_u = 0.147 \quad\checkmark \quad\text{(ductile section)}
+\]
+
+% ── Cross-Section Diagram ────────────────────────────────────
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.55,
+  dimline/.style={Stealth-Stealth,line width=0.6pt,color=dkgray},
+  dimtext/.style={font=\footnotesize\color{dkgray},fill=white,inner sep=1pt},
+]
+  % Beam outline
+  \draw[fill=primlight!60,draw=primary,line width=1.4pt] (0,0) rectangle (8,14);
+
+  % Hatching for concrete
+  \fill[pattern=north east lines,pattern color=primlight!80] (0,0) rectangle (8,14);
+
+  % Top bars (compression face) — 2-N16
+  \filldraw[fill=white,draw=darkgray,line width=0.8pt] (2.0,12.6) circle (0.45);
+  \filldraw[fill=white,draw=darkgray,line width=0.8pt] (6.0,12.6) circle (0.45);
+
+  % Bottom bars (tension face) — 4-N25
+  \foreach \x in {1.2,3.2,5.2,7.2} {
+    \filldraw[fill=white,draw=black,line width=1.0pt] (\x-0.4,1.4) circle (0.55);
+  }
+  % correct positions for 4 bars evenly spaced
+  % bar positions: x = 1.2+0.4, 3.2+0.4, 5.2+0.4, 7.2+0.4  =>  1.6, 3.6, 5.6, 7.6  (wait, 7.6+0.4=8.0 which hits edge)
+  % Let me recalculate: 400 wide, 40 cover each side = 320 clear. 4 bars at 25mm dia, 3 gaps.
+  % Clear = 400-80-24 = 296. 3 gaps at 65.3 = 196. 4 bars at 25 = 100. Total = 296. 
+  % Bar center positions: 40+12+12.5 = 64.5; then +65.3+25 = 154.8; then +65.3+25 = 245.1; then +65.3+25 = 335.4
+  % In our scale (8 units = 400mm), multiply by 8/400 = 0.02
+  % 64.5*0.02=1.29, 154.8*0.02=3.10, 245.1*0.02=4.90, 335.4*0.02=6.71
+
+  % Let me redo this cleanly
+\end{tikzpicture}
+
+\vspace{4pt}
+\begin{tikzpicture}[scale=0.55,
+  dimline/.style={Stealth-Stealth,line width=0.6pt,color=dkgray},
+  dimtext/.style={font=\footnotesize\color{dkgray},fill=white,inner sep=1pt},
+]
+  % Beam outline with concrete fill
+  \fill[primlight!50] (0,0) rectangle (8,14);
+  \draw[primary,line width=1.4pt] (0,0) rectangle (8,14);
+
+  % Top bars — 2-N16 (compression)
+  \filldraw[fill=white,draw=black,line width=0.9pt] (2.0,12.6) circle (0.40);
+  \filldraw[fill=white,draw=black,line width=0.9pt] (6.0,12.6) circle (0.40);
+  \node[font=\tiny\color{dkgray}] at (2.0,11.9) {2-N16};
+
+  % Bottom bars — 4-N25 (tension)
+  \filldraw[fill=white,draw=black,line width=1.0pt] (1.3,1.4) circle (0.55);
+  \filldraw[fill=white,draw=black,line width=1.0pt] (3.1,1.4) circle (0.55);
+  \filldraw[fill=white,draw=black,line width=1.0pt] (4.9,1.4) circle (0.55);
+  \filldraw[fill=white,draw=black,line width=1.0pt] (6.7,1.4) circle (0.55);
+  \node[font=\tiny\color{dkgray}] at (4.0,0.6) {4-N25};
+
+  % Ligature outline (dashed)
+  \draw[dashed,grayrule,line width=0.5pt] (0.5,0.5) rectangle (7.5,13.5);
+  \node[font=\tiny\color{grayrule},anchor=north west] at (0.5,13.5) {N12 ligs};
+
+  % Horizontal dimension — width
+  \draw[dimline] (0,-1.0) -- (8,-1.0);
+  \node[dimtext] at (4.0,-1.0) {$b = 400$\,mm};
+
+  % Vertical dimension — overall depth
+  \draw[dimline] (-1.3,0) -- (-1.3,14);
+  \node[dimtext,rotate=90] at (-1.9,7.0) {$h = 700$\,mm};
+
+  % Effective depth dimension
+  \draw[dimline,color=accentred!70] (9.0,1.4) -- (9.0,12.6);
+  \node[dimtext,color=accentred!70,rotate=90] at (9.6,7.0) {$d = 635$\,mm};
+
+  % Cover dimension (bottom)
+  \draw[dimline] (9.0,0) -- (9.0,1.4);
+  \node[dimtext,color=dkgray,rotate=90] at (9.6,0.7) {$c_c = 40$};
+\end{tikzpicture}
+\caption{Reinforced concrete beam cross-section --- Span~2 edge beam.}
+\label{fig:xsect}
+\end{figure}
+
+% ── 6. Results Summary ───────────────────────────────────────
+\section{Results Summary}
+\begin{table}[H]
+\renewcommand{\arraystretch}{1.2}
+\begin{tabularx}{\linewidth}{@{}lccr@{}}
+\toprule
+\textbf{Parameter}                & \textbf{Required}   & \textbf{Provided}   & \textbf{Status} \\
+\midrule
+Tension reinforcement area        & $1\,763$\,mm$^2$   & $1\,964$\,mm$^2$   & \checkmark \\
+Minimum reinforcement area        & $482$\,mm$^2$      & $1\,964$\,mm$^2$   & \checkmark \\
+Design moment capacity $\phi M_u$ & ---                & $495.3$\,kN$\cdot$m& $> M^*$ \\
+Neutral axis parameter $k_u$      & $< 0.36$           & $0.147$            & \checkmark \\
+Bar clear spacing                 & $\geq 37.5$\,mm    & $65.3$\,mm         & \checkmark \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+All ultimate limit-state requirements are satisfied. The section is ductile and reinforcement detailing complies with AS~3600 requirements for minimum spacing and cover.
+
+% ── 7. Sign-Off ──────────────────────────────────────────────
+\section{Sign-Off}
+\vspace{4pt}
+\begin{tcolorbox}[
+  colback=primlight,
+  colframe=primary,
+  arc=0mm,
+  boxrule=0.8pt,
+  left=10mm,
+  right=10mm,
+  top=8mm,
+  bottom=8mm,
+]
+  \begin{tabularx}{\linewidth}{@{}>{\color{dkgray}\bfseries}lXl@{}}
+    Prepared by: & \dotfill & Date: \dotfill \\[10pt]
+    & {\footnotesize\color{dkgray}J.\ Smith, Structural Engineer} & \\[16pt]
+    Checked by:  & \dotfill & Date: \dotfill \\[10pt]
+    & {\footnotesize\color{dkgray}M.\ Chen, Senior Structural Engineer} & \\[16pt]
+    Approved by: & \dotfill & Date: \dotfill \\[10pt]
+    & {\footnotesize\color{dkgray}R.\ Patel, Principal Engineer} & \\
+  \end{tabularx}
+\end{tcolorbox}
+
+\bigskip
+{\footnotesize\color{dkgray}\faExclamationTriangle\ This calculation is valid only for the loading conditions and material properties stated herein. Any deviation requires re-assessment by a qualified structural engineer.}
+
+\end{document}

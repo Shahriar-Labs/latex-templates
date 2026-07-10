@@ -1,0 +1,597 @@
+%%
+%% Research Proposal Template — "elegant-research-proposal"
+%% Edit and compile online at https://letx.app
+%% Compiles with: latexmk -pdf main.tex (pdflatex)
+%% Target: PhD applicants, grant proposals, funder-ready
+%%
+
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath,amssymb}
+
+% ── Encoding & Fonts ──────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+
+% ── Page geometry ─────────────────────────────────────────────
+\usepackage[margin=2.2cm,top=2cm,bottom=2.2cm]{geometry}
+
+% ── Colors ────────────────────────────────────────────────────
+\usepackage{xcolor}
+\definecolor{accent}{HTML}{1B5E7B}       % deep teal-blue
+\definecolor{accentlight}{HTML}{D6EAF5}  % pale accent tint
+\definecolor{dark}{HTML}{2D2D2D}
+\definecolor{midgray}{HTML}{777777}
+\definecolor{lightgray}{HTML}{EEEEEE}
+\definecolor{softbg}{HTML}{FAFBFC}
+
+% ── Tables ────────────────────────────────────────────────────
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{colortbl}
+\raggedbottom
+
+% ── Graphics & TikZ ───────────────────────────────────────────
+\usepackage{tikz}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+
+% ── Section formatting ────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries\color{accent}}
+  {\thesection}{1em}{}[\vspace{-0.5em}\rule{\textwidth}{0.4pt}\vspace{0.5em}]
+\titleformat{\subsection}
+  {\large\bfseries\color{dark}}
+  {\thesubsection}{1em}{}
+
+% ── Lists ─────────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=*,itemsep=2pt,topsep=4pt}
+
+% ── Icons ─────────────────────────────────────────────────────
+\usepackage{fontawesome5}
+
+% ── Headers / footers ────────────────────────────────────────
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\color{midgray}\footnotesize\sffamily Page \thepage\ of \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% ── Hyperlinks ────────────────────────────────────────────────
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent!80!dark,
+  citecolor=accent,
+  pdfborder={0 0 0},
+}
+
+% ── Paragraph setup ───────────────────────────────────────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt plus 1pt minus 1pt}
+
+% ═══════════════════════════════════════════════════════════════
+%  HELPER MACROS
+% ═══════════════════════════════════════════════════════════════
+
+% --- Abstract box with left accent bar ---
+\newtcolorbox{abstractbox}{
+  colback=accentlight!30,
+  colframe=accent,
+  arc=0mm,
+  boxrule=0pt,
+  leftrule=3.5pt,
+  top=10pt,
+  bottom=10pt,
+  left=14pt,
+  right=10pt,
+  before skip=10pt,
+  after skip=16pt,
+}
+
+% --- Contact-info key/value row ---
+\newcommand{\contactrow}[2]{%
+  \raisebox{-0.5pt}{\textcolor{accent}{#1}}\hspace{4pt}{\footnotesize #2}%
+}
+
+% --- Budget table row ---
+\newcommand{\budgetrow}[4]{%
+  #1 & #2 & #3 & #4 \\[4pt]
+}
+
+% --- Gantt bar dimensions ---
+\newlength{\ganttunit}
+\setlength{\ganttunit}{5.8mm}
+
+% ═══════════════════════════════════════════════════════════════
+%  DOCUMENT
+% ═══════════════════════════════════════════════════════════════
+
+\begin{document}
+
+% ── Header Block ──────────────────────────────────────────────
+
+{
+\centering
+\colorbox{accent}{%
+  \parbox{\dimexpr\textwidth-2\fboxsep\relax}{%
+    \vspace{14pt}
+    \centering
+    {\LARGE\bfseries\color{white}Research Proposal\par}
+    \vspace{6pt}
+    {\large\color{white!90}A Privacy-Preserving Federated Learning Framework\par}
+    {\large\color{white!90}for Cross-Institutional Healthcare Analytics\par}
+    \vspace{14pt}
+  }%
+}
+
+\vspace{16pt}
+
+{\large\bfseries\color{dark}Principal Investigator}\\[2pt]
+{\normalsize Dr.\ Sarah Chen\\
+  Assistant Professor\\
+  Department of Computer Science\\
+  University of Toronto\\[2pt]
+  \contactrow{\faEnvelope[regular]}{s.chen@utoronto.ca}\quad
+  \contactrow{\faPhone}{+1\,(416)\,555\!-\!0182}\quad
+  \contactrow{\faGlobe}{https://chenlab.cs.utoronto.ca}
+}
+
+\vspace{6pt}
+
+\begin{tabularx}{\textwidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  Co-Investigator & Dr.\ Michael Okafor, Department of Biomedical Informatics, University of Toronto \\
+  Funding Scheme  & NSERC Discovery Grant — Individual \\
+  Duration        & 24 months \\
+  Requested Budget& CAD\,\$295{,}000 \\
+  Date            & \today \\
+\end{tabularx}
+
+\vspace{14pt}
+
+% ── Abstract ──────────────────────────────────────────────────
+
+\begin{abstractbox}
+{\bfseries\color{accent}Abstract.}\enspace
+Modern machine learning in healthcare demands access to large, diverse patient datasets,
+yet privacy regulations and institutional barriers severely restrict data sharing. This
+proposal outlines a novel federated learning (FL) framework that enables collaborative
+model training across multiple hospitals without exposing raw patient data. We address
+three critical gaps in the current literature: (i)~the absence of formal differential-privacy
+guarantees in heterogeneous FL settings, (ii)~the lack of interpretable model-aggregation
+strategies that account for site-specific data distributions, and (iii)~unresolved
+communication-efficiency bottlenecks in bandwidth-constrained hospital networks. The
+project will deliver an open-source software toolkit, peer-reviewed publications in top-tier
+venues, and a validated deployment across three partner hospitals in the Greater Toronto Area.
+\end{abstractbox}
+
+% ── 1. Introduction & Literature Review ───────────────────────
+
+\section{Introduction and Literature Review}
+
+The past decade has witnessed an explosion of machine-learning applications in clinical
+medicine, from radiological image analysis~\cite{esteva2017} to early-warning systems for
+sepsis~\cite{reynolds2024}. Yet the performance of these models is fundamentally limited by
+the quantity and diversity of training data they can access. Patient privacy regulations
+such as HIPAA (United States), GDPR (Europe), and PIPEDA (Canada) impose strict constraints
+on cross-institutional data sharing, creating ``data silos'' that fragment the available
+training corpus and bias models toward the demographics of single institutions~\cite{rieke2020}.
+
+\textbf{Federated learning}~\cite{mcmahan2017} has emerged as a promising solution: models
+travel to the data, rather than the reverse. In each round, a central server distributes the
+current global model to participating sites; each site trains locally on its private dataset;
+and only model updates — never raw data — are transmitted back for aggregation. Recent
+surveys confirm rapid adoption in healthcare imaging~\cite{sheller2020} and genomics, yet
+three persistent gaps remain.
+
+\subsection{Privacy Guarantees in Heterogeneous Settings}
+
+Differential privacy (DP) provides a rigorous mathematical framework for bounding
+information leakage from trained models~\cite{abadi2016}. However, existing DP-FL schemes
+assume homogeneous data distributions across sites — an assumption that is demonstrably
+false in healthcare, where patient populations differ markedly in age, comorbidity profiles,
+and imaging-equipment specifications. When sites are heterogeneous, standard DP noise
+calibration either under-protects minority subgroups or over-perturbs the model to the point
+of clinical uselessness~\cite{li2020}. No existing framework provides \emph{adaptive}
+privacy budgeting that scales noise injection to per-site distributional divergence.
+
+\subsection{Interpretable Aggregation Under Distribution Shift}
+
+The dominant aggregation algorithm, Federated Averaging (FedAvg)~\cite{mcmahan2017},
+weights site contributions by local dataset size. When sites differ in disease prevalence —
+one hospital may treat predominantly cardiac patients while another specializes in
+neurology — naive weighting produces a global model that under-performs on low-prevalence
+sites. Recent work on personalized FL~\cite{fallah2020} allows per-site model variants but
+sacrifices the global model entirely. An intermediate approach — interpretable,
+divergence-aware aggregation that produces both a robust global model and transparent
+per-site adaptation metrics — has not been demonstrated.
+
+\subsection{Communication Efficiency in Bandwidth-Constrained Networks}
+
+Hospital IT infrastructure often operates behind strict firewalls with limited outgoing
+bandwidth. State-of-the-art FL requires transmitting full model parameters (potentially
+hundreds of megabytes for modern architectures) dozens of times per training run.
+Gradient-compression techniques~\cite{lin2018} and federated dropout~\cite{caldas2018}
+reduce communication payloads but have not been validated under the joint constraints of
+heterogeneous data \emph{and} privacy noise, where compressed gradients interact
+unpredictably with DP perturbation.
+
+\textbf{This proposal directly addresses all three gaps} through an integrated framework
+that combines adaptive differential privacy, divergence-aware aggregation, and
+privacy-preserving gradient compression into a single, rigorously evaluated system.
+
+% ── 2. Research Aims & Objectives ─────────────────────────────
+
+\section{Research Aims and Objectives}
+
+The overarching goal is to design, implement, and empirically validate a federated learning
+framework that delivers clinically useful models under realistic constraints of data
+heterogeneity, privacy regulation, and network bandwidth. This goal decomposes into four
+specific aims.
+
+\subsection{Aim 1: Adaptive Differential Privacy for Heterogeneous Federated Learning}
+\vspace{-2pt}
+\begin{itemize}
+  \item Derive a per-site privacy budget that scales with the Jensen--Shannon divergence
+    between each site's local data distribution and the estimated global distribution.
+  \item Implement moment-accountant-based privacy tracking that reports $(\varepsilon,\delta)$
+    guarantees on a per-round and per-site basis.
+  \item Evaluate privacy--utility trade-offs on the MIMIC-IV and eICU-CRD benchmark datasets
+    under three clinically relevant prediction tasks.
+\end{itemize}
+
+\subsection{Aim 2: Divergence-Aware Model Aggregation}
+\vspace{-2pt}
+\begin{itemize}
+  \item Develop a weighted aggregation scheme where site weights are inversely proportional
+    to the empirical Wasserstein distance between local and global model updates.
+  \item Produce per-site interpretability reports quantifying the contribution of each
+    participating institution to the final model's decision boundaries.
+  \item Benchmark against FedAvg, FedProx, and SCAFFOLD on five heterogeneous data splits.
+\end{itemize}
+
+\subsection{Aim 3: Privacy-Preserving Gradient Compression}
+\vspace{-2pt}
+\begin{itemize}
+  \item Extend top-$k$ sparsification and randomized quantization to operate under DP noise
+    without leaking additional information through the compression pattern itself.
+  \item Prove a composition theorem bounding the total privacy cost of compressed-DP
+    communication rounds.
+  \item Measure wall-clock communication time on a simulated hospital network topology
+    with realistic bandwidth caps (10--100\,Mbps).
+\end{itemize}
+
+\subsection{Aim 4: End-to-End Validation at Partner Hospitals}
+\vspace{-2pt}
+\begin{itemize}
+  \item Deploy the integrated framework across three hospital sites in the Greater Toronto
+    Area (Sunnybrook Health Sciences Centre, St.\ Michael's Hospital, University Health
+    Network) using de-identified electronic health record data.
+  \item Conduct a blinded clinician evaluation comparing model predictions against current
+    standard-of-care risk scores.
+  \item Release the full codebase as open-source software with comprehensive documentation
+    and reproducibility scripts.
+\end{itemize}
+
+% ── 3. Methodology ────────────────────────────────────────────
+
+\section{Methodology}
+
+\subsection{Problem Formalization}
+
+We consider $K$ hospitals, each holding a private dataset
+$\mathcal{D}_k = \{(\mathbf{x}_i, y_i)\}_{i=1}^{n_k}$ drawn from a site-specific distribution
+$P_k(\mathbf{x}, y)$. The goal is to learn a global model
+$\theta^* = \arg\min_\theta \sum_{k=1}^{K} \frac{n_k}{n}\,\mathcal{L}_k(\theta)$ where
+$n = \sum_k n_k$ and $\mathcal{L}_k(\theta)$ is the empirical risk on site $k$, subject to:
+(i)~raw data never leave site $k$; (ii)~the global model satisfies
+$(\varepsilon,\delta)$-differential privacy; and (iii)~total communication per round does
+not exceed $B$ bytes.
+
+\subsection{Adaptive Privacy Budgeting (Aim~1)}
+
+We define the \emph{distributional skew} of site $k$ as
+$D_{\mathrm{JS}}(P_k \,\|\, \bar{P})$ where $\bar{P}$ is a mixture estimate broadcast by the
+server. The per-round privacy budget for site $k$ is
+$\varepsilon_k = \varepsilon_{\mathrm{base}} \cdot \bigl(1 +
+\alpha \cdot D_{\mathrm{JS}}(P_k \,\|\, \bar{P})\bigr)^{-1}$, ensuring that sites with
+atypical data distributions receive proportionally less noise. We track cumulative privacy
+expenditure using a modified moments accountant~\cite{abadi2016} adapted for federated
+rounds. The scheme guarantees $(\sum_r \max_k \varepsilon_k^{(r)}, \delta)$-DP for the full
+training procedure.
+
+\subsection{Divergence-Aware Aggregation (Aim~2)}
+
+After each round $t$, the server receives local updates $\Delta\theta_k^{(t)}$ from
+participating sites. We compute the pairwise Wasserstein-1 distance
+$W_1(\Delta\theta_k^{(t)}, \Delta\theta_j^{(t)})$ using the sliced-Wasserstein approximation
+for computational tractability in high-dimensional parameter space. Site weights are
+assigned as $w_k \propto \bigl(\frac{1}{K-1}\sum_{j \neq k} W_1(\Delta\theta_k,
+\Delta\theta_j)\bigr)^{-1}$, down-weighting outlier sites whose update direction diverges
+from the consensus. The global update becomes
+$\Delta\theta^{(t)} = \sum_k w_k \Delta\theta_k^{(t)}$.
+
+\subsection{Gradient Compression Under DP (Aim~3)}
+
+We adopt top-$k$ sparsification: each site transmits only the $k$ largest-magnitude gradient
+entries, with the remainder accumulated as local residual for the next round. To prevent
+the sparsification mask from leaking private information, we prove that transmitting the
+indices of selected coordinates does not increase the privacy budget beyond the DP noise
+already applied — the indices carry no magnitude information and are post-processed from
+an already-private vector. For further compression, we apply stochastic
+$q$-level quantization to the transmitted values, with quantization bins calibrated to the
+DP noise scale $\sigma$.
+
+\subsection{Evaluation Protocol}
+
+\textbf{Datasets.} We use MIMIC-IV (critical care, $\approx$380\,000 patients) and
+eICU-CRD (multi-center ICU, $\approx$200\,000 patients) split into $K \in \{5, 10, 20\}$
+sites with varying degrees of label-distribution skew (simulated via Dirichlet allocation
+with $\alpha \in \{0.1, 0.5, 1.0\}$).
+
+\textbf{Tasks.} (1)~48-hour in-hospital mortality prediction; (2)~acute kidney injury
+onset within 72\,hours; (3)~length-of-stay prediction ($\leq 3$ vs.\ $> 7$ days).
+
+\textbf{Metrics.} Area under the ROC curve (AUROC), area under the precision-recall curve
+(AUPRC), model calibration (ECE), communication cost (total MB transmitted), and wall-clock
+training time. Privacy metrics: empirical $(\varepsilon,\delta)$ via privacy audit and
+membership-inference attack success rate.
+
+% ── 4. Timeline & Work Plan ───────────────────────────────────
+
+\section{Timeline and Work Plan}
+
+The project spans 24 months organized into six work packages (WPs). Figure~\ref{fig:gantt}
+presents the Gantt chart; milestones are marked with diamonds ($\lozenge$).
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  x=0.76cm, y=0.58cm,
+  barA/.style={fill=accent!90, rounded corners=0.8pt},
+  barB/.style={fill=accent!60, rounded corners=0.8pt},
+  barC/.style={fill=accent!35, rounded corners=0.8pt},
+]
+
+% ── Month headers ──
+\foreach \m [count=\c from 1] in {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24} {
+  \node[font=\footnotesize\bfseries\color{dark}] at (\c, 0.35) {\m};
+}
+\draw[lightgray, very thin] (0.5, 0.1) -- (24.5, 0.1);
+
+% ── Quarter labels ──
+\foreach \q/\x in {Q1/3.5, Q2/6.5, Q3/9.5, Q4/12.5, Q5/15.5, Q6/18.5, Q7/21.5, Q8/24} {
+  \node[font=\tiny\color{midgray}] at (\x, -6.5) {\q};
+}
+
+% ── Vertical grid ──
+\foreach \i in {1,...,24} {
+  \draw[lightgray!40, very thin] (\i, -6.2) -- (\i, 0.1);
+}
+
+% ── Tasks ──
+\node[anchor=east, font=\footnotesize, text=dark] at (0.3, -0.55) {WP1: Lit.\ Review \& Requirements};
+\fill[barA] (1, -0.78) rectangle ++(4, 0.38);
+\node[accent, font=\tiny] at (7.2, -0.59) {$\lozenge$ M4};
+
+\node[anchor=east, font=\footnotesize, text=dark] at (0.3, -1.45) {WP2: Framework Design \& Arch.};
+\fill[barA] (3, -1.68) rectangle ++(6, 0.38);
+\node[accent, font=\tiny] at (11.2, -1.49) {$\lozenge$ M8};
+
+\node[anchor=east, font=\footnotesize, text=dark] at (0.3, -2.35) {WP3: Adaptive DP Algorithm};
+\fill[barA] (5, -2.58) rectangle ++(8, 0.38);
+\node[accent, font=\tiny] at (15.2, -2.39) {$\lozenge$ M12};
+
+\node[anchor=east, font=\footnotesize, text=dark] at (0.3, -3.25) {WP4: Aggregation \& Compression};
+\fill[barB] (8, -3.48) rectangle ++(7, 0.38);
+\node[accent, font=\tiny] at (17.2, -3.29) {$\lozenge$ M14};
+
+\node[anchor=east, font=\footnotesize, text=dark] at (0.3, -4.15) {WP5: Hospital Deployment};
+\fill[barB] (13, -4.38) rectangle ++(7, 0.38);
+\node[accent, font=\tiny] at (22.2, -4.19) {$\lozenge$ M19};
+
+\node[anchor=east, font=\footnotesize, text=dark] at (0.3, -5.05) {WP6: Writing \& Dissemination};
+\fill[barC] (16, -5.28) rectangle ++(8, 0.38);
+\node[accent, font=\tiny] at (25.7, -5.09) {$\lozenge$ M24};
+
+\end{tikzpicture}}
+\caption{Project Gantt chart: 24-month timeline with six work packages and key milestones.}
+\label{fig:gantt}
+\end{figure}
+
+\subsection{Deliverables by Quarter}
+
+\begin{tabularx}{\textwidth}{@{}>{\color{accent}\bfseries}l@{\hspace{6mm}}X@{}}
+  Q1--Q2 (M1--6)  & Systematic literature survey manuscript; requirements document;
+                     baseline FedAvg implementation on MIMIC-IV. \\
+  Q3--Q4 (M7--12) & Adaptive DP algorithm and initial privacy-utility benchmarks;
+                     divergence-aware aggregation prototype; mid-project report. \\
+  Q5--Q6 (M13--18)& Integrated framework with gradient compression; internal
+                     ablation studies; hospital deployment at first partner site. \\
+  Q7--Q8 (M19--24)& Multi-site validation results; two journal manuscripts;
+                     open-source release v1.0; final project report. \\
+\end{tabularx}
+
+% ── 5. Budget Justification ───────────────────────────────────
+
+\section{Budget Justification}
+
+The requested budget of CAD\,\$295{,}000 over 24 months is allocated as detailed in
+Table~\ref{tab:budget}. All figures are in Canadian dollars.
+
+\begin{table}[htbp]
+\centering
+\caption{Detailed budget breakdown.}
+\label{tab:budget}
+\vspace{4pt}
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{2.8cm}
+                                >{\raggedright\arraybackslash}p{3.2cm}
+                                >{\raggedright\arraybackslash}X
+                                >{\raggedleft\arraybackslash}p{2cm}@{}}
+\toprule
+\rowcolor{accent!15}
+\bfseries Category      & \bfseries Item                     & \bfseries Justification                              & \bfseries Amount \\
+\midrule
+\budgetrow{Personnel}
+          {Postdoctoral Researcher (24\,mos @ \$65{,}000/yr + benefits)}
+          {Lead algorithm design, convergence proofs, and manuscript preparation.}
+          {\$156{,}000}
+\addlinespace
+\budgetrow{Personnel}
+          {PhD Student stipend (24\,mos @ \$30{,}000/yr)}
+          {Implementation, experiments, and hospital-deployment coordination.}
+          {\$72{,}000}
+\addlinespace
+\budgetrow{Equipment}
+          {GPU computing node (2$\times$ NVIDIA A6000, 512\,GB RAM)}
+          {Local training at partner sites requires dedicated hardware behind hospital firewalls.}
+          {\$38{,}000}
+\addlinespace
+\budgetrow{Travel}
+          {Conference attendance (NeurIPS, ICML, MLHC $\times$ 2 persons)}
+          {Dissemination of results; networking with FL and healthcare-ML communities.}
+          {\$14{,}000}
+\addlinespace
+\budgetrow{Operations}
+          {Cloud computing credits (AWS/GCP)}
+          {Central-server coordination and public benchmark reproduction.}
+          {\$8{,}500}
+\addlinespace
+\budgetrow{Operations}
+          {Open-access publication fees}
+          {Three journal articles in venues requiring APCs (e.g., PLOS ONE, JMLR).}
+          {\$6{,}500}
+\midrule
+\rowcolor{accent!10}
+\bfseries Total        &                                    &                                                     & \bfseries \$295{,}000 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Personnel}
+
+The postdoctoral researcher will dedicate 100\% effort to the theoretical components:
+deriving the adaptive privacy budget, proving the compression--privacy composition theorem,
+and leading the writing of journal manuscripts. The PhD student will focus on
+implementation, running experiments at scale, and coordinating with hospital IT teams for
+the deployment phase. Both positions are essential — the theoretical and empirical
+components must proceed in parallel to meet the 24-month timeline.
+
+\subsection{Equipment and Infrastructure}
+
+Dedicated GPU nodes are required at each hospital site because patient data cannot leave
+institutional networks. We budget for two nodes (one at the primary lab for development,
+one deployed at the first partner hospital) with a path to cost-share a third node through
+existing hospital infrastructure grants. Cloud credits cover the central coordination server
+and public reproducibility benchmarks that do not involve protected health information.
+
+% ── 6. Expected Outcomes & Impact ─────────────────────────────
+
+\section{Expected Outcomes and Impact}
+
+\subsection{Scientific Contributions}
+
+\begin{enumerate}[leftmargin=*,label={\color{accent}\bfseries\arabic*.}]
+  \item \textbf{Theoretical:} A composition theorem for differentially private gradient
+    compression in federated settings, closing the gap between the privacy and
+    systems-efficiency literatures.
+  \item \textbf{Algorithmic:} An adaptive privacy-budgeting scheme that accounts for
+    inter-site distributional heterogeneity — the first method to provide rigorous DP
+    guarantees while calibrating noise to site-level data characteristics.
+  \item \textbf{Empirical:} The largest multi-hospital federated learning validation to date
+    using real electronic health record data, with transparent reporting of both clinical
+    performance metrics and privacy-leakage audits.
+  \item \textbf{Software:} An open-source Python library (\texttt{fedhealth}) built on
+    PyTorch and the Flower FL framework, with modular components for privacy accounting,
+    divergence-aware aggregation, and compressed communication.
+\end{enumerate}
+
+\subsection{Broader Impact}
+
+\textbf{Clinical translation.} The framework directly enables multi-site clinical prediction
+models that are more robust — and thus safer — than single-institution models, particularly
+for rare conditions where no single hospital has sufficient cases.
+
+\textbf{Health equity.} By adaptively weighting contributions from hospitals serving
+underrepresented populations, the divergence-aware aggregation prevents majority-class
+domination and produces models that perform equitably across demographic groups.
+
+\textbf{Policy.} The explicit, auditable privacy budgets produced by our framework provide
+concrete evidence for institutional review boards and data-governance committees evaluating
+the risks of federated model training.
+
+\textbf{Open science.} All code, experiment configurations, and synthetic benchmark splits
+will be publicly released under the MIT license. We will also publish a ``reproducibility
+handbook'' documenting the end-to-end pipeline from raw EHR extraction to trained model.
+
+% ── References ─────────────────────────────────────────────────
+
+\begin{thebibliography}{99}
+
+\bibitem{abadi2016}
+M.\ Abadi, A.\ Chu, I.\ Goodfellow, H.\ B.\ McMahan, I.\ Mironov, K.\ Talwar, and L.\ Zhang.
+\emph{Deep learning with differential privacy.}
+In \textit{Proc.\ ACM CCS}, pp.\ 308--318, 2016.
+
+\bibitem{caldas2018}
+S.\ Caldas, J.\ Kone\v{c}ny, H.\ B.\ McMahan, and A.\ Talwalkar.
+\emph{Expanding the reach of federated learning by reducing client resource requirements.}
+\textit{arXiv:1812.07210}, 2018.
+
+\bibitem{esteva2017}
+A.\ Esteva, B.\ Kuprel, R.\ A.\ Novoa, J.\ Ko, S.\ M.\ Swetter, H.\ M.\ Blau, and S.\ Thrun.
+\emph{Dermatologist-level classification of skin cancer with deep neural networks.}
+\textit{Nature}, 542(7639):115--118, 2017.
+
+\bibitem{fallah2020}
+A.\ Fallah, A.\ Mokhtari, and A.\ Ozdaglar.
+\emph{Personalized federated learning with theoretical guarantees: a model-agnostic
+  meta-learning approach.}
+In \textit{Proc.\ NeurIPS}, 2020.
+
+\bibitem{li2020}
+T.\ Li, A.\ K.\ Sahu, A.\ Talwalkar, and V.\ Smith.
+\emph{Federated learning: challenges, methods, and future directions.}
+\textit{IEEE Signal Processing Magazine}, 37(3):50--60, 2020.
+
+\bibitem{lin2018}
+Y.\ Lin, S.\ Han, H.\ Mao, Y.\ Wang, and W.\ J.\ Dally.
+\emph{Deep gradient compression: reducing the communication bandwidth for distributed
+  training.}
+In \textit{Proc.\ ICLR}, 2018.
+
+\bibitem{mcmahan2017}
+B.\ McMahan, E.\ Moore, D.\ Ramage, S.\ Hampson, and B.\ A.\ y Arcas.
+\emph{Communication-efficient learning of deep networks from decentralized data.}
+In \textit{Proc.\ AISTATS}, pp.\ 1273--1282, 2017.
+
+\bibitem{reynolds2024}
+K.\ Reynolds, A.\ Nori, B.\ Brown, J.\ T.\ Lee, and M.\ Ghassemi.
+\emph{Prospective validation of a clinical early-warning system: a multi-site
+  deployment study.}
+\textit{NEJM AI}, 1(3):AIdbp2300154, 2024.
+
+\bibitem{rieke2020}
+N.\ Rieke, J.\ Hancox, W.\ Li, F.\ Milletar\`{i}, H.\ R.\ Roth, S.\ Albarqouni,
+S.\ Bakas, M.\ N.\ Galtier, B.\ A.\ Landman, K.\ Maier-Hein, \emph{et al.}
+\emph{The future of digital health with federated learning.}
+\textit{npj Digital Medicine}, 3(1):1--7, 2020.
+
+\bibitem{sheller2020}
+M.\ J.\ Sheller, B.\ Edwards, G.\ A.\ Reina, J.\ Martin, S.\ Pati, A.\ Kotrotsou,
+P.\ Milchenko, W.\ Xu, D.\ Marcus, R.\ R.\ Colen, and S.\ Bakas.
+\emph{Federated learning in medicine: facilitating multi-institutional collaborations
+  without sharing patient data.}
+\textit{Scientific Reports}, 10(1):12598, 2020.
+
+\end{thebibliography}
+
+\end{document}

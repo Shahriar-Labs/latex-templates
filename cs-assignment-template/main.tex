@@ -1,0 +1,412 @@
+% CS Assignment Template — edit and compile online at https://letx.app
+\documentclass[11pt,a4paper]{article}
+
+% --- Fonts ---
+\usepackage{sourcesanspro}
+\usepackage[scale=0.9]{sourcecodepro}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Layout ---
+\usepackage[margin=1in,headsep=14pt,footskip=24pt]{geometry}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt plus 2pt minus 1pt}
+
+% --- Colors ---
+\usepackage[table]{xcolor}
+\definecolor{accent}{HTML}{2563EB}
+\definecolor{dark}{HTML}{1F2937}
+\definecolor{lightgray}{HTML}{F3F4F6}
+\definecolor{codebg}{HTML}{F8FAFC}
+\definecolor{bordergray}{HTML}{D1D5DB}
+
+% --- Headers ---
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries\color{accent}}
+  {}{0pt}
+  {}
+  [\vspace{-4pt}\titlerule\vspace{6pt}]
+\titlespacing{\section}{0pt}{16pt}{8pt}
+
+\titleformat{\subsection}
+  {\large\bfseries\color{dark}}
+  {}{0pt}
+  {}
+\titlespacing{\subsection}{0pt}{12pt}{4pt}
+
+% --- Tables ---
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+
+% --- Code ---
+\usepackage{listings}
+\lstset{
+  basicstyle=\small\ttfamily\color{dark},
+  backgroundcolor=\color{codebg},
+  frame=single,
+  framerule=0.5pt,
+  rulecolor=\color{bordergray},
+  numbers=left,
+  numbersep=8pt,
+  numberstyle=\tiny\color{gray},
+  breaklines=true,
+  tabsize=2,
+  showstringspaces=false,
+  keywordstyle=\color{accent}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{teal},
+  aboveskip=10pt,
+  belowskip=10pt,
+  xleftmargin=12pt,
+  framexleftmargin=12pt,
+}
+
+% --- Math & Theorems ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\theoremstyle{remark}
+\newtheorem{rvremark}{Remark}[section]
+
+% --- Algorithms ---
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\SetKwComment{Comment}{// }{}
+
+% --- Header/Footer ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{gray}CS 224 --- Algorithms \& Data Structures}
+\fancyhead[R]{\small\color{gray}Problem Set 3}
+\fancyfoot[C]{\small\color{gray}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{bordergray}\leaders\hrule height \headrulewidth\hfill}}
+
+% --- TikZ ---
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+
+% --- Hyperlinks ---
+\usepackage[hidelinks]{hyperref}
+
+% --- Helper Commands ---
+\newcommand{\prob}[1]{%
+  \subsection*{Problem #1}%
+  \addcontentsline{toc}{subsection}{Problem #1}%
+}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\bigO}[1]{\mathcal{O}(#1)}
+
+\begin{document}
+
+% ============================================================================
+% TITLE BLOCK
+% ============================================================================
+\thispagestyle{empty}
+\vspace*{-8pt}
+\begin{center}
+  {\Huge\bfseries\color{dark} Problem Set 3}\\[4pt]
+  {\Large\color{accent} Divide \& Conquer \ \textbullet\  Dynamic Programming}
+\end{center}
+
+\vspace{10pt}
+{\centering
+\begin{tabularx}{0.82\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{10mm}}X@{}}
+  Course      & CS 224 --- Algorithms \& Data Structures \\
+  Instructor  & Prof.\ Maria Chen \\
+  Student     & Arjun Sharma \\
+  Student ID  & 2024A7PS0134H \\
+  Date        & March 15, 2025 \\
+  Institution & Department of Computer Science \\
+              & Stanford University \\
+\end{tabularx}
+\par}
+
+\vspace{10pt}
+\begin{center}
+  \rule{0.35\linewidth}{0.6pt}
+\end{center}
+\vspace{4pt}
+
+% ============================================================================
+% PROBLEM 1
+% ============================================================================
+\prob{1: Recurrence Relations \& the Master Theorem}
+
+Consider the recurrence \(T(n) = 2\,T(n/2) + n \log_2 n\) with base case
+\(T(1) = 1\). Determine the asymptotic behavior of \(T(n)\).
+
+\medskip
+\textbf{Solution.} We apply the Master Theorem. The recurrence has the form
+\(T(n) = a\,T(n/b) + f(n)\) with \(a = 2\), \(b = 2\), and
+\(f(n) = n \log_2 n\).
+
+The critical exponent is \(c_{\text{crit}} = \log_b a = \log_2 2 = 1\).
+Comparing \(f(n) = n \log_2 n\) with \(n^{c_{\text{crit}}} = n\):
+\[
+\frac{f(n)}{n^{c_{\text{crit}}}} = \frac{n \log_2 n}{n} = \log_2 n
+\]
+This grows slower than any \(n^\varepsilon\) for \(\varepsilon > 0\), yet
+faster than a constant. This places us in \textbf{Case~2} of the Master
+Theorem (extended form): when
+\(f(n) = \Theta\bigl(n^{\log_b a} \log^k n\bigr)\) with \(k \ge 0\), we have
+\[
+T(n) = \Theta\bigl(n^{\log_b a} \log^{k+1} n\bigr).
+\]
+Here \(k = 1\), so
+\[
+\boxed{T(n) = \Theta\bigl(n \log^2 n\bigr)}.
+\]
+
+\begin{rvremark}
+  The recurrence \(T(n) = 2\,T(n/2) + n \log n\) arises in the analysis of
+  certain divide-and-conquer sorting networks and in the expected-time
+  analysis of randomized quicksort with a median-of-three pivot strategy.
+\end{rvremark}
+
+% ============================================================================
+% PROBLEM 2
+% ============================================================================
+\prob{2: Closest Pair of Points}
+
+Given a set \(P = \{p_1, \dots, p_n\}\) of \(n\) points in \(\R^2\), design
+a divide-and-conquer algorithm to find the closest pair under the Euclidean
+distance \(d(p,q) = \|p - q\|_2\). Your algorithm must run in
+\(\bigO{n \log n}\) time.
+
+\medskip
+\textbf{Solution.} The algorithm proceeds in three phases:
+
+\begin{enumerate}
+  \item \textbf{Pre-sort.} Build two sorted copies of \(P\): \(P_x\) sorted
+    by \(x\)-coordinate and \(P_y\) sorted by \(y\)-coordinate. This costs
+    \(\bigO{n \log n}\).
+  \item \textbf{Divide.} Find the median \(x\)-coordinate \(x_m\) and
+    partition \(P\) into the left half \(P_L\) and right half \(P_R\). Also
+    split \(P_y\) into \(P_{y,L}\) and \(P_{y,R}\) while preserving the
+    \(y\)-sorted order.
+  \item \textbf{Conquer \& Combine.} Recursively compute
+    \(\delta_L = \textsc{ClosestPair}(P_L)\) and
+    \(\delta_R = \textsc{ClosestPair}(P_R)\). Let
+    \(\delta = \min(\delta_L, \delta_R)\). Build the \emph{strip}
+    \(S = \{\,p \in P_y \mid |x(p) - x_m| < \delta \,\}\) and check every
+    point in \(S\) against the next 7 points in \(y\)-order. Return the
+    minimum distance found.
+\end{enumerate}
+
+\begin{algorithm}[H]
+\caption{ClosestPair($P_x$, $P_y$)}
+\KwIn{Sets $P_x$, $P_y$ of points sorted by $x$ and $y$, respectively.}
+\KwOut{Minimum Euclidean distance between any two distinct points in $P$.}
+\If{$|P_x| \le 3$}{
+  Compute all pairwise distances by brute force\;
+  \Return the minimum\;
+}
+Let $x_m \gets$ median $x$-coordinate of $P_x$\;
+Partition $P$ into $P_L$, $P_R$ about the vertical line $x = x_m$\;
+Build $P_{y,L}$ and $P_{y,R}$ from $P_y$ accordingly\;
+$\delta_L \gets \textsc{ClosestPair}(P_{x,L},\, P_{y,L})$\;
+$\delta_R \gets \textsc{ClosestPair}(P_{x,R},\, P_{y,R})$\;
+$\delta \gets \min(\delta_L,\; \delta_R)$\;
+$S \gets \{\, p \in P_y \mid |x(p) - x_m| < \delta \,\}$ \Comment{the strip}
+\For{$i \gets 1$ \KwTo $|S|$}{
+  \For{$j \gets i+1$ \KwTo $\min(i+7,\; |S|)$}{
+    $\delta \gets \min(\delta,\; d(S[i],\, S[j]))$\;
+  }
+}
+\Return $\delta$\;
+\end{algorithm}
+
+\begin{proof}[Correctness of the combine step]
+  The only pairs that could beat \(\delta\) are those where one point lies in
+  \(P_L\) and the other in \(P_R\) \emph{and} both lie within distance
+  \(\delta\) of the split line \(x = x_m\). Every such pair belongs to the
+  strip \(S\).
+
+  Sort \(S\) by \(y\)-coordinate. For any point \(p \in S\), consider a
+  \(2\delta \times \delta\) rectangle whose bottom edge passes through
+  \(p\). This rectangle can contain at most 8 points (4 per side of the
+  split) without any two being closer than \(\delta\). Hence checking the
+  next 7 points in \(y\)-order suffices to find the closest split pair.
+  The recurrence
+  \[
+  T(n) = 2\,T(n/2) + \bigO{n}
+  \]
+  solves to \(T(n) = \bigO{n \log n}\).
+\end{proof}
+
+% ============================================================================
+% PROBLEM 3
+% ============================================================================
+\prob{3: Longest Common Subsequence (LCS)}
+
+Given two strings \(X = x_1 x_2 \dots x_m\) and \(Y = y_1 y_2 \dots y_n\)
+over an alphabet \(\Sigma\), find the length of the longest subsequence
+common to both strings. A subsequence need not consist of contiguous
+characters.
+
+\medskip
+\textbf{(a) Recurrence.} Let \(\mathrm{LCS}(i,j)\) denote the LCS length for
+the prefixes \(X[1 \dots i]\) and \(Y[1 \dots j]\). Then
+\[
+\mathrm{LCS}(i,j) =
+\begin{cases}
+  0 & \text{if } i = 0 \text{ or } j = 0,\\[3pt]
+  \mathrm{LCS}(i-1,\, j-1) + 1 & \text{if } x_i = y_j,\\[3pt]
+  \max\bigl(\mathrm{LCS}(i-1,\,j),\;\mathrm{LCS}(i,\,j-1)\bigr)
+    & \text{otherwise.}
+\end{cases}
+\]
+
+\medskip
+\textbf{(b) Implementation.} The DP solution fills an \((m+1) \times (n+1)\)
+table bottom-up in \(\bigO{mn}\) time.
+
+\begin{lstlisting}[language=Python, caption={Bottom-up DP for LCS length and reconstruction.}]
+def lcs(X: str, Y: str) -> tuple[int, str]:
+    m, n = len(X), len(Y)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if X[i - 1] == Y[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1] + 1
+            else:
+                dp[i][j] = max(dp[i - 1][j], dp[i][j - 1])
+
+    # Reconstruct one LCS
+    i, j = m, n
+    seq = []
+    while i > 0 and j > 0:
+        if X[i - 1] == Y[j - 1]:
+            seq.append(X[i - 1])
+            i -= 1; j -= 1
+        elif dp[i - 1][j] >= dp[i][j - 1]:
+            i -= 1
+        else:
+            j -= 1
+
+    return dp[m][n], ''.join(reversed(seq))
+\end{lstlisting}
+
+\medskip
+\textbf{(c) Worked Example.} Let \(X = \texttt{AGGTAB}\) and
+\(Y = \texttt{GXTXAYB}\). The DP table is:
+
+\medskip
+{\centering
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{c|cccccccc}
+\toprule
+      &     & G & X & T & X & A & Y & B \\
+\midrule
+      & 0 & 0 & 0 & 0 & 0 & 0 & 0 & 0 \\
+A     & 0 & 0 & 0 & 0 & 0 & 1 & 1 & 1 \\
+G     & 0 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\
+G     & 0 & 1 & 1 & 1 & 1 & 1 & 1 & 1 \\
+T     & 0 & 1 & 1 & 2 & 2 & 2 & 2 & 2 \\
+A     & 0 & 1 & 1 & 2 & 2 & 3 & 3 & 3 \\
+B     & 0 & 1 & 1 & 2 & 2 & 3 & 3 & \cellcolor{accent!15}{\color{accent}\bfseries 4} \\
+\bottomrule
+\end{tabular}
+\par}
+
+\medskip
+The LCS length is~4; one LCS is \texttt{GTAB} (traced by following the
+highlighted cell back through matches). Time complexity is
+\(\bigO{mn} = \bigO{42}\) for \(|X|=6\), \(|Y|=7\); space can be reduced
+to \(\bigO{\min(m,n)}\) by storing only two rows.
+
+% ============================================================================
+% PROBLEM 4
+% ============================================================================
+\prob{4: Single-Source Shortest Paths}
+
+Consider the directed graph \(G = (V,E)\) shown below with non-negative
+edge weights. Run \textbf{Dijkstra's algorithm} starting from node~\(S\).
+
+\medskip
+\begin{center}
+\begin{tikzpicture}[
+  node/.style={circle,draw,fill=lightgray,minimum size=9mm,inner sep=0pt,font=\small\bfseries\color{dark}},
+  edge/.style={-{Stealth[length=6pt]},thick,color=dark!70},
+  label/.style={font=\footnotesize\color{dark},fill=white,inner sep=1pt},
+  scale=1.1
+]
+  \node[node] (S) at (0,2)   {S};
+  \node[node] (A) at (2,4)   {A};
+  \node[node] (B) at (2,0)   {B};
+  \node[node] (C) at (4,3)   {C};
+  \node[node] (D) at (4,1)   {D};
+  \node[node] (T) at (6,2)   {T};
+
+  \draw[edge] (S) -- (A) node[label,midway,above left] {7};
+  \draw[edge] (S) -- (B) node[label,midway,below left] {3};
+  \draw[edge] (A) -- (C) node[label,midway,above]     {2};
+  \draw[edge] (A) -- (D) node[label,midway,right]     {4};
+  \draw[edge] (B) -- (A) node[label,midway,left]      {1};
+  \draw[edge] (B) -- (D) node[label,midway,below]     {6};
+  \draw[edge] (C) -- (T) node[label,midway,above right] {5};
+  \draw[edge] (D) -- (C) node[label,midway,left]      {1};
+  \draw[edge] (D) -- (T) node[label,midway,below right] {8};
+\end{tikzpicture}
+\end{center}
+
+\medskip
+\textbf{Solution.} We maintain a min-priority queue of \((d[v], v)\) pairs
+and relax edges as we extract the minimum. The state at each iteration:
+
+\medskip
+{\centering
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{ccll}
+\toprule
+\textbf{Step} & \textbf{Extract} & \multicolumn{2}{c}{\textbf{Distances} \((d[S],\, d[A],\, d[B],\, d[C],\, d[D],\, d[T])\)} \\
+\midrule
+Init  & ---    & \((0,\) & \(\infty,\; \infty,\; \infty,\; \infty,\; \infty)\) \\
+1     & \(S\)  & \((0,\) & \(7,\;           3,\;           \infty,\; \infty,\; \infty)\) \\
+2     & \(B\)  & \((0,\) & \(4,\;           3,\;           \infty,\; 9,\;            \infty)\) \\
+3     & \(A\)  & \((0,\) & \(4,\;           3,\;           6,\;           8,\;            \infty)\) \\
+4     & \(C\)  & \((0,\) & \(4,\;           3,\;           6,\;           8,\;            11)\) \\
+5     & \(D\)  & \((0,\) & \(4,\;           3,\;           6,\;           7,\;            11)\) \\
+6     & \(T\)  & \((0,\) & \(4,\;           3,\;           6,\;           7,\;            11)\) \\
+\bottomrule
+\end{tabular}
+\par}
+
+\medskip
+The shortest-path distances from \(S\) are:
+
+\medskip
+{\centering
+\begin{tabular}{@{}c|c|c|c|c|c@{}}
+\toprule
+\(S\) & \(A\) & \(B\) & \(C\) & \(D\) & \(T\) \\
+\midrule
+0 & 4 & 3 & 6 & 7 & 11 \\
+\bottomrule
+\end{tabular}
+\par}
+
+\medskip
+The shortest path \(S \to T\) is \(S \to B \to A \to C \to T\) with total
+weight \(3 + 1 + 2 + 5 = 11\). Alternative route \(S \to B \to D \to C \to T\)
+has weight \(3 + 6 + 1 + 5 = 15\), confirming Dijkstra's correctness on
+this instance.
+
+\vfill
+\begin{center}
+  \rule{0.25\linewidth}{0.4pt}\\[4pt]
+  {\small\color{gray}\textit{End of Problem Set 3}}
+\end{center}
+
+\end{document}

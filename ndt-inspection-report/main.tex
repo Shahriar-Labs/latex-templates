@@ -1,0 +1,487 @@
+% NDT Inspection Report — Elegant Engineering Template
+% Compile with: latexmk -pdf main.tex
+% Edit & compile online at: https://letx.app
+\documentclass[a4paper,11pt]{article}
+\usepackage{upgreek}
+
+% ============ ENCODING & FONTS ============
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{sourcesanspro}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{microtype}
+
+% ============ GEOMETRY ============
+\usepackage[margin=1.7cm, a4paper, footskip=1.1cm, headsep=0.6cm]{geometry}
+
+% ============ COLORS ============
+\usepackage[table]{xcolor}
+\definecolor{primary}{HTML}{1A5276}
+\definecolor{dark}{HTML}{2C3E50}
+\definecolor{lightbg}{HTML}{EBF5FB}
+\definecolor{grayrule}{HTML}{AAB7B8}
+\definecolor{fail}{HTML}{C0392B}
+\definecolor{pass}{HTML}{27AE60}
+\definecolor{warn}{HTML}{D4AC0D}
+\definecolor{liteblue}{HTML}{D6EAF8}
+
+% ============ TABLES ============
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{colortbl}
+
+% ============ GRAPHICS ============
+\usepackage{tikz}
+\usetikzlibrary{shapes, arrows.meta, positioning, calc, patterns, backgrounds, decorations.pathreplacing, fit}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+
+% ============ TYPOGRAPHY & LAYOUT ============
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{fontawesome5}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+% ============ MATH ============
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ============ LINKS ============
+\usepackage[hidelinks]{hyperref}
+
+% ============ PARAGRAPH SETTINGS ============
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\renewcommand{\arraystretch}{1.2}
+
+% ============ SECTION FORMATTING ============
+\titleformat{\section}
+  {\color{primary}\Large\bfseries}
+  {\thesection}
+  {0.6em}
+  {}
+  [\vspace{-0.4em}{\color{primary}\rule{\linewidth}{0.5pt}}]
+
+\titleformat{\subsection}
+  {\color{primary!85}\large\bfseries}
+  {\thesubsection}
+  {0.5em}
+  {}
+
+\titlespacing{\section}{0pt}{10pt}{5pt}
+\titlespacing{\subsection}{0pt}{7pt}{3pt}
+
+% ============ PAGE STYLE ============
+\fancyhf{}
+\fancyhead[L]{\footnotesize\color{primary}\textbf{NDT-2026-07-001}~~Rev.~A}
+\fancyhead[R]{\footnotesize\color{dark!55}Nondestructive Testing Inspection Report}
+\fancyfoot[L]{\footnotesize\color{dark!45}Controlled Document}
+\fancyfoot[C]{\footnotesize\color{dark!55}Page \thepage\ of \pageref{LastPage}}
+\fancyfoot[R]{\footnotesize\color{dark!45}Uncontrolled When Printed}
+\renewcommand{\headrulewidth}{0.4pt}
+\pagestyle{fancy}
+
+% ============ HELPER MACROS ============
+\newcommand{\infokv}[2]{%
+  \textbf{\color{primary}#1} & #2 \\[1.5pt]}
+
+\newcommand{\statuspass}{\textcolor{pass}{\faCheckCircle}\enspace\textbf{ACCEPT}}
+\newcommand{\statusfail}{\textcolor{fail}{\faTimesCircle}\enspace\textbf{REJECT}}
+\newcommand{\statusrework}{\textcolor{warn}{\faExclamationTriangle}\enspace\textbf{REWORK}}
+
+% ============ BEGIN DOCUMENT ============
+\begin{document}
+
+% --- DOCUMENT CONTROL HEADER ---
+\begin{tcolorbox}[
+  enhanced,
+  colback=lightbg,
+  colframe=primary,
+  boxrule=0.7pt,
+  arc=1.5mm,
+  top=3mm, bottom=2mm, left=4mm, right=4mm,
+  before skip=0pt, after skip=8pt,
+]
+  {\color{primary}\Large\bfseries NONDESTRUCTIVE TESTING INSPECTION REPORT}\\[3pt]
+  \begin{tabularx}{\linewidth}{@{}>{\color{primary}\bfseries}l@{\hspace{6mm}}X@{\hspace{10mm}}>{\color{primary}\bfseries}l@{\hspace{6mm}}X@{}}
+    Report Number & NDT-2026-07-001 & Revision    & A \\
+    Issue Date    & 09 July 2026     & Status      & Final \\
+    Project       & Boeing 737-800 Main Landing Gear Trunnion --- Pre-Overhaul Baseline \\
+    Client        & AeroTech MRO Services, LLC --- MRO Station ATL-4 \\
+    Location      & Hangar 12, Hartsfield-Jackson Atlanta International Airport (KATL) \\
+  \end{tabularx}
+\end{tcolorbox}
+
+% --- TITLE BLOCK ---
+\begin{flushleft}
+  {\Huge\bfseries\color{primary}MLG Trunnion Assembly}\\[2pt]
+  {\Large\color{dark}Magnetic Particle \& Ultrasonic Inspection}
+  \vspace{6pt}
+\end{flushleft}
+
+% --- REVISION HISTORY ---
+\section{Revision History}
+\begin{tabularx}{\linewidth}{@{}>{\centering\arraybackslash}p{12mm}>{\centering\arraybackslash}p{24mm}>{\raggedright\arraybackslash}X>{\centering\arraybackslash}p{30mm}>{\centering\arraybackslash}p{30mm}@{}}
+  \toprule
+  \rowcolor{primary!12}
+  \textbf{Rev} & \textbf{Date} & \textbf{Description of Change} & \textbf{Author} & \textbf{Approved By} \\
+  \midrule
+  A & 09 Jul 2026 & Initial issue --- pre-overhaul baseline MT \& UT inspection of LH MLG trunnion, S/N SN-2847-MLG-LH & J.\ Martinez, ASNT Level III (MT/UT) & S.\ Chen, Quality Engineer \\
+  \bottomrule
+\end{tabularx}
+
+% ============ SECTION 1: GENERAL INFORMATION ============
+\section{General Information}
+
+\subsection{Component Data}
+\begin{tabularx}{\linewidth}{@{}>{\color{primary}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  \toprule
+  \rowcolor{liteblue}
+  \multicolumn{2}{@{}l@{}}{\color{primary}\textbf{Part Identification}} \\
+  \midrule
+  Part Name          & Main Landing Gear Trunnion Assembly \\
+  Part Number        & 69-73782-1 \\
+  Serial Number      & SN-2847-MLG-LH \\
+  Material           & 300M High-Strength Steel (AMS 6419), Vacuum Arc Remelted \\
+  Heat Treatment     & Quenched \& tempered to 280--300~ksi UTS \\
+  Surface Condition  & Cadmium-plated per AMS 2400; chemically stripped in designated inspection zones \\
+  Prior Repairs      & None recorded --- first overhaul cycle at 24\,000 flight cycles \\
+  \midrule
+  \rowcolor{liteblue}
+  \multicolumn{2}{@{}l@{}}{\color{primary}\textbf{Inspection Scope}} \\
+  \midrule
+  Inspection Type    & Pre-Overhaul Baseline --- Magnetic Particle (MT) + Ultrasonic (UT) \\
+  Zones Inspected    & Zone~A: Trunnion barrel OD (full circumference, 317.5~mm length) \\
+                     & Zone~B: Lug bores (2$\times$, 38.1~mm diameter) \\
+                     & Zone~C: Flange fillet radii (4$\times$, R~6.35~mm) \\
+  Primary Standard   & ASTM E1417/E1417M (MT),~~ASTM E2375 (UT) \\
+  Procedure Ref.     & AeroTech NDT-PROC-014, Revision~G \\
+  Acceptance Ref.    & Boeing BAC~5424, Type~I, Class~A \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Equipment \& Calibration Status}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{30mm}>{\centering\arraybackslash}p{28mm}>{\centering\arraybackslash}p{24mm}>{\centering\arraybackslash}p{24mm}>{\raggedright\arraybackslash}X@{}}
+  \toprule
+  \rowcolor{primary!12}
+  \textbf{Equipment} & \textbf{Model / S/N} & \textbf{Cal.\ Date} & \textbf{Cal.\ Due} & \textbf{Cal.\ Standard \& Remarks} \\
+  \midrule
+  MT Bench Unit      & Magnaflux A-2030 / FL-4721 & 05 Jul 2026 & 05 Jan 2027 & ASTM E1444, Annex~A3; 3\,000~A AC output verified \\
+  UT Flaw Detector   & Olympus EPOCH~650 / 21057A & 02 Jul 2026 & 02 Jan 2027 & ASTM E317; linearity within $\pm$2\% \\
+  UT Transducer      & Olympus A543S (5~MHz, 0.25$^{\prime\prime}$, 45$^{\circ}$ SW) & \multicolumn{2}{c}{Included in system calibration} & ASTM E2375; wedge delay verified \\
+  Gauss/Helios Meter  & Lake Shore~410 / LS-8829 & 01 Jul 2026 & 01 Jul 2027 & NIST traceable; probe type: transverse \\
+  UV-A Lamp          & Spectroline SB-100P / UV-312 & 04 Jul 2026 & 04 Jan 2027 & ASTM E3022; $\lambda$ = 365$\pm$5~nm \\
+  \bottomrule
+\end{tabularx}
+
+% ============ SECTION 2: INSPECTION TECHNIQUE ============
+\section{Inspection Technique Summary}
+
+\subsection{Magnetic Particle Testing (MT)}
+\begin{tabularx}{\linewidth}{@{}>{\color{primary}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  \toprule
+  Method             & Wet fluorescent magnetic particle, continuous technique \\
+  Magnetisation Type & Circular --- central conductor (3.0~kA~AC, 50~Hz) \\
+  Particle Medium    & Magnaflux MG-410, concentration 0.15\%~v/v (verified by settling tube) \\
+  UV-A Irradiance    & 1\,200~$\upmu$W/cm$^{2}$ at inspection surface (measured before \& after) \\
+  Ambient White Light& $<$\,20~lx at inspection surface \\
+  System Performance & Ketos test ring: 30~$\upmu$m notch clearly resolved at 3.0~kA \\
+  Sensitivity        & Capable of resolving 30~$\upmu$m surface-breaking discontinuities \\
+  Acceptance Criteria& BAC~5424 Type~I, Class~A --- no linear indications $>$\,1.6~mm \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Ultrasonic Testing (UT)}
+\begin{tabularx}{\linewidth}{@{}>{\color{primary}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  \toprule
+  Technique          & Pulse-echo, shear wave, contact method \\
+  Probe              & 5~MHz, 6~mm diameter element, 45$^{\circ}$ angle beam (acrylic wedge) \\
+  Couplant           & Sonotech Ultragel II (sulfur-free, viscosity grade~H) \\
+  Calibration Block  & 7075-T6 aluminium, \#2 FBH (0.8~mm diam.\ at 19.0~mm depth) \\
+  Scanning Pattern   & 90$^{\circ}$ raster grid with $\geq$\,50\% transducer overlap \\
+  Gate A Settings    & 5.0--25.0~mm metal path; threshold 40\% FSH \\
+  Gate B Settings    & 25.0--50.0~mm metal path; threshold 30\% FSH \\
+  Sensitivity Level  & Primary reference level + 6~dB scanning gain \\
+  Acceptance Criteria& BAC~5424 Type~I, Class~A --- no reflector $>$\,50\% DAC \\
+  \bottomrule
+\end{tabularx}
+
+% ============ SECTION 3: INDICATION SUMMARY ============
+\section{Indication Summary}
+
+\begin{tabularx}{\linewidth}{@{} c c c >{\raggedright\arraybackslash}p{22mm} >{\raggedright\arraybackslash}p{30mm} >{\raggedright\arraybackslash}X @{}}
+  \toprule
+  \rowcolor{primary!12}
+  \textbf{ID} & \textbf{Method} & \textbf{Type} & \textbf{Size~(mm)} & \textbf{Location} & \textbf{Orientation / Remarks} \\
+  \midrule
+  IND-001 & MT & Linear & $3.2 \times 0.3$ & Zone~A, 12~o'clock,\newline 47~mm from flange face & Axial (0--5$^{\circ}$). Sharp, well-defined. Morphology consistent with grinding burn. \\
+  IND-002 & MT & Rounded & $1.5$~dia. & Zone~A, 4~o'clock,\newline 112~mm from flange face & ---~~No linear tail. Likely subsurface inclusion exposed by acid strip. \\
+  IND-003 & UT & Volumetric & $4.1 \times 2.8$ & Zone~C, upper fillet radius,\newline 9.0~mm depth & Radial. Signal 82\%~FSH at ref.\ + 6~dB. Probable forging inclusion cluster. \\
+  IND-004 & UT & Planar & $6.5 \times 1.2$ & Zone~B, LH lug bore ID,\newline 3.2~mm depth & 30$^{\circ}$ to bore axis. Exceeds DAC by 4~dB. Consistent with fatigue initiation from pitting. \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Indication Details}
+\begin{enumerate}[leftmargin=*, itemsep=2pt, topsep=4pt]
+  \item \textbf{IND-001 --- Linear MT Indication.} Orientation parallel to grinding lay
+        (circumferential). Indication bleeds rapidly at 0.5~s dwell, indicating shallow depth
+        ($<$~0.5~mm). Photographed at 10$\times$ magnification. Recommended for blend-out
+        assessment per SRM~57-20-01.
+  \item \textbf{IND-002 --- Rounded MT Indication.} Isolated, non-linear. Characteristic of
+        non-metallic inclusion intersecting the surface after chemical stripping. Deemed
+        non-relevant per BAC~5424 paragraph~7.2.3.
+  \item \textbf{IND-003 --- Volumetric UT Indication.} Located at 9.0~mm below surface in the
+        fillet radius transition zone. Signal morphology suggests a cluster of small reflectors
+        rather than a single discrete flaw. Amplitude: 82\%~FSH (exceeds 50\%~DAC threshold).
+  \item \textbf{IND-004 --- Planar UT Indication.} Oriented at approximately 30$^{\circ}$ to the
+        bore centreline axis. Signal rises sharply and exceeds the DAC curve by 4~dB at the
+        peak. Likely a fatigue crack initiating from bore-surface corrosion pitting.
+\end{enumerate}
+
+% ============ SECTION 4: ACCEPTANCE CRITERIA ============
+\section{Acceptance Criteria Matrix}
+
+\setlength{\tabcolsep}{5pt}
+\begin{tabularx}{\linewidth}{@{} c >{\raggedright\arraybackslash}X c c c @{}}
+  \toprule
+  \rowcolor{primary!12}
+  \textbf{Indication} & \textbf{Criterion (BAC~5424 Type~I, Class~A)} & \textbf{Measured} & \textbf{Limit} & \textbf{Disposition} \\
+  \midrule
+  IND-001 &
+    No linear MT indication $>$\,1.6~mm in critical zones. &
+    3.2~mm &
+    $\leq$\,1.6~mm &
+    \cellcolor{fail!12}\statusfail \\[3pt]
+  IND-002 &
+    Rounded indications $\leq$\,4.0~mm are acceptable. &
+    1.5~mm &
+    $\leq$\,4.0~mm &
+    \cellcolor{pass!12}\statuspass \\[3pt]
+  IND-003 &
+    No UT reflector $>$\,50\%~DAC at depths $<$\,12.5~mm. &
+    82\%~FSH &
+    $\leq$\,50\%~FSH &
+    \cellcolor{fail!12}\statusfail \\[3pt]
+  IND-004 &
+    Planar reflectors in lug bores: reject if $>$\,20\% above DAC. &
+    DAC~+~4~dB &
+    $\leq$\,DAC~+~0~dB &
+    \cellcolor{fail!12}\statusfail \\[3pt]
+  \bottomrule
+\end{tabularx}
+
+\vspace{6pt}
+\begin{tcolorbox}[
+  enhanced,
+  colback=fail!7,
+  colframe=fail!70,
+  boxrule=0.7pt,
+  arc=1.5mm,
+  left=4mm, right=4mm, top=3mm, bottom=3mm,
+]
+  {\color{fail}\large\faExclamationTriangle\quad\textbf{COMPONENT DOES NOT MEET ACCEPTANCE CRITERIA}}\\[2pt]
+  {\small Three of four recorded indications (IND-001, IND-003, IND-004) exceed allowable limits
+  per BAC~5424 Type~I, Class~A. Engineering disposition is required. See Section~5 for
+  recommendations.}
+\end{tcolorbox}
+
+% ============ SECTION 5: RESULTS \& DISPOSITION ============
+\section{Results and Disposition}
+\begin{tabularx}{\linewidth}{@{}>{\color{primary}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  \toprule
+  Overall Result     & \textcolor{fail}{\textbf{REJECTED}} --- does not satisfy BAC~5424 Type~I, Class~A \\
+  \midrule
+  Disposition &
+    \begin{enumerate}[leftmargin=*, itemsep=2pt, topsep=2pt]
+      \item \textbf{IND-001 (MT Linear):} Blend-out permissible if post-blend wall thickness
+            $\geq$\,90\% of nominal, per SRM~57-20-01. Re-inspect with MT post-blend.
+      \item \textbf{IND-003 (UT Volumetric):} Excavate to 1.5~mm max depth per ECP-008. If
+            indication persists beyond 1.5~mm, condemn component per CMM~57-20-02.
+      \item \textbf{IND-004 (UT Planar):} Bore-sleeve repair per CMM~57-20-02 Repair~Scheme~B,
+            or replace trunnion assembly if bore damage exceeds sleeve limits.
+    \end{enumerate} \\
+  \midrule
+  Concession Ref.    & Pending --- submit to Boeing LGE for MRB disposition \\
+  Next Inspection    & After repair: repeat full baseline MT + UT per NDT-PROC-014 Rev.~G \\
+  \bottomrule
+\end{tabularx}
+
+% ============ SECTION 6: ANNOTATED DIAGRAM ============
+\section{Annotated Diagram}
+
+\begin{center}
+\begin{tikzpicture}[
+  scale=0.88,
+  >=Stealth,
+  dimarrow/.style={|<->|, thin, color=dark!45},
+  callout/.style={->, >=stealth, thick, color=primary!80},
+  annot/.style={font=\footnotesize\bfseries, color=primary, fill=white, inner sep=1.5pt, text depth=0pt},
+  inddot/.style={circle, fill=fail, inner sep=1.3pt},
+  inddotwarn/.style={circle, fill=warn!80, inner sep=1.3pt},
+]
+
+% --- Trunnion barrel (main body) ---
+\fill[primary!7, draw=primary, line width=0.9pt, rounded corners=1.5mm]
+  (0,0) rectangle (14, -5);
+
+% --- Flange (right end) ---
+\fill[primary!14, draw=primary, line width=0.8pt, rounded corners=1mm]
+  (13.4, 0.6) rectangle (16.2, -5.6);
+\draw[primary!30, line width=0.4pt] (13.4, -2.5) -- (16.2, -2.5);
+
+% --- Lug bore (left end) ---
+\draw[primary!25, fill=white, line width=0.5pt] (1.6, -1.2) circle (0.7);
+\draw[primary!25, fill=white, line width=0.5pt] (1.6, -3.8) circle (0.7);
+\node[font=\tiny\color{primary!50}] at (1.6, -2.5) {Lug Bores};
+
+% --- Inspection Zone A (barrel surface) ---
+\draw[dashed, primary!55, line width=0.7pt] (2.3, 0.4) rectangle (12.7, -5.4);
+\node[annot, font=\footnotesize] at (7.5, -5.85) {\textbf{Zone A} --- Barrel OD (MT + UT)};
+
+% --- Inspection Zone C (fillet radii) ---
+\draw[dashed, warn!75, line width=0.7pt] (11.3, 0.4) rectangle (14.0, -5.4);
+\node[annot, font=\footnotesize, color=warn!80] at (12.65, -5.85) {\textbf{Zone C} --- Fillet Radii (UT)};
+
+% --- IND-001: top surface, near flange ---
+\node[inddot, label={[annot]90:IND-001}] (i1) at (11.2, -1.0) {};
+\draw[callout] (i1) -- ++(0.5, 1.8) node[annot, right, font=\footnotesize, align=left]
+  {MT Linear\\3.2~mm, axial};
+
+% --- IND-002: lower surface, mid-barrel ---
+\node[inddot, label={[annot]-90:IND-002}] (i2) at (7.0, -3.8) {};
+\draw[callout] (i2) -- ++(0, -1.6) node[annot, below, font=\footnotesize, align=center]
+  {MT Rounded\\1.5~mm dia.};
+
+% --- IND-003: fillet zone, top ---
+\node[inddotwarn, label={[annot]90:IND-003}] (i3) at (12.8, -1.2) {};
+\draw[callout] (i3) -- ++(1.2, 1.5) node[annot, right, font=\footnotesize, align=left]
+  {UT Volumetric\\4.1~mm, depth 9~mm};
+
+% --- IND-004: near lug bore, lower ---
+\node[inddot, label={[annot]-90:IND-004}] (i4) at (2.6, -3.8) {};
+\draw[callout] (i4) -- ++(-1.4, -1.2) node[annot, left, font=\footnotesize, align=right]
+  {UT Planar\\6.5~mm, depth 3.2~mm};
+
+% --- Dimension: overall length ---
+\draw[dimarrow] (0, -6.3) -- (14, -6.3)
+  node[midway, fill=white, font=\footnotesize\color{dark!60}, inner sep=1pt] {317.5~mm (12.50~in)};
+
+% --- Dimension: flange ---
+\draw[dimarrow] (13.4, 1.0) -- (16.2, 1.0)
+  node[midway, fill=white, font=\footnotesize\color{dark!60}, inner sep=1pt] {Flange $\varnothing$152.4};
+
+% --- Dimension callout lines ---
+\draw[thin, dark!35] (0, -6.3) -- ++(0, -0.15);
+\draw[thin, dark!35] (14, -6.3) -- ++(0, -0.15);
+\draw[thin, dark!35] (13.4, 1.0) -- ++(0, 0.15);
+\draw[thin, dark!35] (16.2, 1.0) -- ++(0, 0.15);
+
+\end{tikzpicture}
+\end{center}
+
+% --- CAD Image Slot ---
+\begin{tcolorbox}[
+  enhanced,
+  colback=liteblue!40,
+  colframe=primary!35,
+  boxrule=0.5pt,
+  arc=1.5mm,
+  left=4mm, right=4mm, top=5mm, bottom=5mm,
+  before skip=6pt, after skip=0pt,
+]
+  \begin{center}
+    {\color{primary!45}\Large\faImage}\\[3pt]
+    {\color{primary!70}\textbf{Insert CAD-Annotated Inspection Image}}\\[1pt]
+    {\footnotesize\color{dark!45}Photograph or CAD screenshot with indication locations,
+    reference dimensions, and zone markings superimposed}
+  \end{center}
+\end{tcolorbox}
+
+% ============ SECTION 7: SYMBOLS \& ABBREVIATIONS ============
+\section{Symbols and Abbreviations}
+
+\begin{multicols}{2}
+\raggedcolumns
+\begin{tabularx}{\linewidth}{@{}>{\color{primary}\bfseries}l X@{}}
+  \toprule
+  \rowcolor{primary!10}
+  \multicolumn{2}{@{}l@{}}{\textbf{Abbreviation}} \\
+  \midrule
+  ASNT  & American Society for Nondestructive Testing \\
+  BAC   & Boeing Aircraft Company \\
+  CMM   & Component Maintenance Manual \\
+  DAC   & Distance-Amplitude Correction \\
+  ECP   & Engineering Concession Procedure \\
+  FBH   & Flat-Bottomed Hole \\
+  FSH   & Full Screen Height \\
+  LGE   & Landing Gear Engineering \\
+  MLG   & Main Landing Gear \\
+  MRB   & Material Review Board \\
+  MRO   & Maintenance, Repair \& Overhaul \\
+  MT    & Magnetic Particle Testing \\
+  NDT   & Nondestructive Testing \\
+  OD/ID & Outer / Inner Diameter \\
+  QE    & Quality Engineer \\
+  SRM   & Structural Repair Manual \\
+  SW    & Shear Wave \\
+  UT    & Ultrasonic Testing \\
+  UTS   & Ultimate Tensile Strength \\
+  UV-A  & Ultraviolet A (315--400~nm) \\
+  \bottomrule
+\end{tabularx}
+\end{multicols}
+
+% ============ SECTION 8: INSPECTOR CERTIFICATION ============
+\section{Inspector Certification}
+
+\vspace{3pt}
+\begin{tcolorbox}[
+  enhanced,
+  colback=white,
+  colframe=primary,
+  boxrule=0.7pt,
+  arc=2mm,
+  left=4mm, right=4mm, top=3mm, bottom=3mm,
+]
+  \begin{tabularx}{\linewidth}{@{}>{\color{primary}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+    \toprule
+    \rowcolor{liteblue}
+    \multicolumn{2}{@{}l@{}}{\color{primary}\textbf{Inspector Statement}} \\
+    \midrule
+    \multicolumn{2}{@{}p{\linewidth}@{}}{\small I certify that the inspections documented in this
+    report were performed in accordance with the referenced procedures and standards, and that the
+    results recorded herein represent a true and accurate account of all findings observed during
+    the inspection.}\\[6pt]
+    Inspector Name     & Javier Martinez \\
+    Certification      & ASNT NDT Level III, MT \& UT (Certificate No.\ LM-28491) \\
+    Employer           & AeroTech MRO Services, LLC \\
+    Signature          & \rule{55mm}{0.3pt} \\
+    Date               & \makebox[30mm]{\dotfill} \\[4pt]
+    \midrule
+    \rowcolor{liteblue}
+    \multicolumn{2}{@{}l@{}}{\color{primary}\textbf{Technical Review}} \\
+    \midrule
+    Reviewed By        & Sarah Chen, Quality Engineer \\
+    Signature          & \rule{55mm}{0.3pt} \\
+    Date               & \makebox[30mm]{\dotfill} \\[4pt]
+    \midrule
+    \rowcolor{liteblue}
+    \multicolumn{2}{@{}l@{}}{\color{primary}\textbf{Final Approval}} \\
+    \midrule
+    Approved By        & Michael Okonkwo, Chief Inspector \\
+    Signature          & \rule{55mm}{0.3pt} \\
+    Date               & \makebox[30mm]{\dotfill} \\
+    \bottomrule
+  \end{tabularx}
+\end{tcolorbox}
+
+\vspace{4pt}
+{\footnotesize\color{dark!40}\hrulefill\\[1pt]
+\hfill NDT-2026-07-001~~Rev.~A \textbullet\ End of Report \textbullet\ Page \thepage\ of \pageref{LastPage} \hfill\null}
+
+\label{LastPage}
+
+\end{document}

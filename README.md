@@ -1,6 +1,6 @@
 # LetX LaTeX Template Library
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Templates](https://img.shields.io/badge/templates-86-success.svg)](https://letx.app/templates)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates) [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE) [![Templates](https://img.shields.io/badge/templates-222-success.svg)](https://letx.app/templates)
 
 **Free, elegant, open-source LaTeX templates** — research papers, CVs, grants, lab reports, posters, letters and more. Every template is compile-tested and designed to look genuinely good, not plain.
 

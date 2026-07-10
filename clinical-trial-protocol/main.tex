@@ -1,0 +1,720 @@
+% ============================================================
+%  Clinical Trial Protocol Template — Phase II Oncology
+%  Edit and compile online at https://letx.app
+%  Engine: pdflatex  |  Build: latexmk -pdf main.tex
+% ============================================================
+
+\documentclass[11pt, a4paper]{article}
+\usepackage{amsmath}
+
+% ── Core layout ─────────────────────────────────────────────
+\usepackage[
+  top=2.4cm, bottom=2.6cm,
+  left=2.6cm, right=2.6cm,
+  headheight=16pt
+]{geometry}
+
+% ── Font: Lato (sans) ────────────────────────────────────────
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+
+% ── Color ───────────────────────────────────────────────────
+\usepackage[table]{xcolor}
+\definecolor{accent}{HTML}{1D4E89}
+\definecolor{accentlt}{HTML}{D6E4F0}
+\definecolor{neutral}{HTML}{4A5568}
+\definecolor{rulegray}{HTML}{B0BEC5}
+\definecolor{pagebg}{HTML}{FAFBFC}
+\definecolor{safetyred}{HTML}{C0392B}
+\definecolor{safetylt}{HTML}{FDEDEC}
+
+% ── Tables ──────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{makecell}
+\renewcommand{\arraystretch}{1.35}
+\setlength{\tabcolsep}{6pt}
+
+% ── Lists ───────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.4em,itemsep=2pt,parsep=0pt,topsep=3pt}
+\setlist[enumerate]{leftmargin=1.6em,itemsep=2pt,parsep=0pt,topsep=3pt}
+
+% ── Spacing ─────────────────────────────────────────────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\usepackage{setspace}
+\setstretch{1.10}
+
+% ── Section styling ─────────────────────────────────────────
+\usepackage{titlesec}
+
+\titleformat{\section}
+  {\large\bfseries\color{accent}}
+  {\thesection}{0.7em}{}[{\color{rulegray}\titlerule[0.5pt]}]
+\titlespacing{\section}{0pt}{14pt}{6pt}
+
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{neutral}}
+  {\thesubsection}{0.6em}{}
+\titlespacing{\subsection}{0pt}{10pt}{4pt}
+
+\titleformat{\subsubsection}
+  {\normalsize\itshape\color{neutral}}
+  {\thesubsubsection}{0.5em}{}
+\titlespacing{\subsubsection}{0pt}{7pt}{3pt}
+
+% ── Header / Footer ─────────────────────────────────────────
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{neutral}\textbf{Protocol No.\ VNX-NSCLC-201}}
+\fancyhead[R]{\small\color{neutral}CONFIDENTIAL}
+\fancyfoot[L]{\small\color{neutral}Version 2.1 --- 10 June 2025}
+\fancyfoot[C]{\small\color{neutral}Page \thepage\ of \pageref{LastPage}}
+\fancyfoot[R]{\small\color{neutral}Vantrix Oncology, Inc.}
+
+% ── tcolorbox ───────────────────────────────────────────────
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable, most}
+
+\tcbset{
+  infobox/.style={
+    enhanced, breakable,
+    colback=accentlt, colframe=accent, boxrule=0.6pt, arc=3pt,
+    left=8pt, right=8pt, top=5pt, bottom=5pt,
+    fonttitle=\bfseries\color{accent},
+    attach boxed title to top left={yshift=-2mm, xshift=6mm},
+    boxed title style={colback=accent, colframe=accent, arc=2pt,
+                        boxrule=0pt, left=4pt, right=4pt}
+  }
+}
+
+\tcbset{
+  safebox/.style={
+    enhanced, breakable,
+    colback=safetylt, colframe=safetyred, boxrule=0.8pt, arc=3pt,
+    left=8pt, right=8pt, top=5pt, bottom=5pt,
+    fonttitle=\bfseries\color{safetyred},
+    attach boxed title to top left={yshift=-2mm, xshift=6mm},
+    boxed title style={colback=safetyred, colframe=safetyred, arc=2pt,
+                        boxrule=0pt, left=4pt, right=4pt}
+  }
+}
+
+% ── Icons ───────────────────────────────────────────────────
+\usepackage{fontawesome5}
+
+% ── Hyperref ────────────────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent,
+  citecolor=accent,
+  pdftitle={Clinical Trial Protocol VNX-NSCLC-201},
+  pdfauthor={Vantrix Oncology Inc.},
+  pdfsubject={Phase II Clinical Trial Protocol}
+]{hyperref}
+
+% ── TikZ ────────────────────────────────────────────────────
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc}
+
+% ── Page background tint ────────────────────────────────────
+\usepackage{eso-pic}
+\AddToShipoutPictureBG{%
+  \AtPageLowerLeft{%
+    \color{pagebg}\rule{\paperwidth}{\paperheight}%
+  }%
+}
+
+% ── Helper macros ───────────────────────────────────────────
+\newcommand{\xmark}{\textbf{X}}
+\newcommand{\smark}{\textcolor{neutral}{$\circ$}}
+
+\newenvironment{protocolnote}[1]{%
+  \begin{tcolorbox}[infobox, title={#1}]
+}{%
+  \end{tcolorbox}
+}
+
+\newenvironment{safetynote}[1]{%
+  \begin{tcolorbox}[safebox, title={#1}]
+}{%
+  \end{tcolorbox}
+}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+
+% ════════════════════════════════════════════════════════════
+\begin{document}
+\thispagestyle{empty}
+
+% ── TITLE PAGE ──────────────────────────────────────────────
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[accent] (current page.north west)
+    rectangle ([yshift=-1.8cm] current page.north east);
+  \fill[accentlt!60!accent] ([yshift=-1.8cm] current page.north west)
+    rectangle ([yshift=-1.85cm] current page.north east);
+  \fill[accent] (current page.south west)
+    rectangle ([yshift=1.2cm] current page.south east);
+\end{tikzpicture}
+
+\vspace*{2.2cm}
+
+\begin{center}
+  {\small\color{accent}\bfseries
+   VANTRIX ONCOLOGY, INC.\quad\textbullet\quad PHASE II STUDY}
+
+  \vspace{0.5cm}
+  {\fontsize{19}{24}\selectfont\bfseries\color{accent}
+   A Phase II, Open-Label, Single-Arm Study of\\[4pt]
+   Velanixib (VNX-1803) in Combination with\\[4pt]
+   Pembrolizumab in Patients with Advanced\\[4pt]
+   Non-Small Cell Lung Cancer Harboring\\[4pt]
+   KRAS G12C Mutations}
+
+  \vspace{0.8cm}
+  {\large\color{neutral}\itshape
+   ``KITE-II: KRAS Inhibitor Trial Evaluation --- Part II''}
+
+  \vspace{1.2cm}
+  {\color{rulegray}\rule{10cm}{0.5pt}}
+  \vspace{0.6cm}
+
+  \begin{tabular}{@{}>{\color{accent}\bfseries}l@{\hspace{10mm}}>{\raggedright\arraybackslash}l@{}}
+    Protocol Number      & VNX-NSCLC-201 \\[4pt]
+    IND Number           & IND 156,847 (FDA) \\[4pt]
+    EudraCT Number       & 2025-002384-11 \\[4pt]
+    Phase                & II \\[4pt]
+    Version / Date       & Version 2.1 / 10 June 2025 \\[4pt]
+    Sponsor              & Vantrix Oncology, Inc. \\[4pt]
+    Medical Monitor      & Dr.\ Catherine R.\ Hollis, MD, PhD \\[4pt]
+    Regulatory Contact   & Mr.\ James T.\ Nguyen, RAC \\[4pt]
+  \end{tabular}
+
+  \vspace{1.0cm}
+  {\color{rulegray}\rule{10cm}{0.5pt}}
+  \vspace{0.6cm}
+
+  {\small\color{neutral}
+   \textbf{CONFIDENTIAL} --- This document is the property of Vantrix Oncology, Inc.\\
+   It may not be disclosed, reproduced, or used without written authorisation.\\[4pt]
+   Compiled with \LaTeX. Edit online at \href{https://letx.app}{\textcolor{accent}{letx.app}}}
+\end{center}
+
+\vfill
+
+\newpage
+\pagestyle{fancy}
+
+% ── TABLE OF CONTENTS ───────────────────────────────────────
+\tableofcontents
+\newpage
+
+% ════════════════════════════════════════════════════════════
+\section{Protocol Synopsis}
+\label{sec:synopsis}
+% ════════════════════════════════════════════════════════════
+
+\renewcommand{\arraystretch}{1.5}
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  \toprule
+  Title & A Phase II, Open-Label, Single-Arm Study of Velanixib (VNX-1803) plus Pembrolizumab in Previously Treated Advanced KRAS G12C-Mutant NSCLC (KITE-II) \\[2pt]
+  Protocol Number & VNX-NSCLC-201 / Version 2.1 \\[2pt]
+  Sponsor & Vantrix Oncology, Inc., 1200 Harbor Blvd, Suite 400, Boston, MA 02210, USA \\[2pt]
+  Phase & II \\[2pt]
+  Study Design & Open-label, single-arm, multi-centre, proof-of-concept \\[2pt]
+  Indication & Advanced/metastatic NSCLC (non-squamous) with confirmed KRAS G12C, after $\geq$1 prior platinum-based regimen \\[2pt]
+  Investigational Products & Velanixib 240\,mg oral QD + Pembrolizumab 200\,mg IV Q3W \\[2pt]
+  Primary Endpoint & Objective Response Rate (ORR) per RECIST v1.1 by BICR \\[2pt]
+  Key Secondary Endpoints & DCR, DoR, PFS, OS, Safety \& tolerability, PROs \\[2pt]
+  Sample Size & 62 evaluable (82 enrolled; 25\% screen failure assumed) \\[2pt]
+  Duration & Treatment: up to 24 months; Follow-up: 12 months post-treatment \\[2pt]
+  Study Sites & $\sim$18 sites across USA and EU \\[2pt]
+  Regulatory Status & FDA IND 156,847 (active); EMA Scientific Advice obtained Dec 2024 \\[2pt]
+  \bottomrule
+\end{tabularx}
+\renewcommand{\arraystretch}{1.35}
+
+% ════════════════════════════════════════════════════════════
+\section{Background and Rationale}
+\label{sec:background}
+% ════════════════════════════════════════════════════════════
+
+\subsection{Disease Context}
+
+Non-small cell lung cancer (NSCLC) remains the leading cause of cancer-related mortality worldwide, accounting for approximately 1.8 million deaths annually. Despite transformative advances in immune checkpoint inhibitor (ICI) therapy and targeted agents, patients whose tumours harbour \textit{KRAS} mutations --- representing 25--30\% of all lung adenocarcinomas --- have historically lacked effective molecularly targeted options.
+
+The \textit{KRAS} G12C substitution is the most prevalent oncogenic \textit{KRAS} allele in NSCLC ($\sim$13\% of cases). The landmark approval of sotorasib in 2021 validated KRAS G12C as a druggable target; however, median PFS of 6.8 months and an ORR of 37\% in the second-line setting underscore the need for more durable strategies.
+
+\subsection{Velanixib (VNX-1803)}
+
+Velanixib is a novel, potent, highly selective, orally bioavailable covalent inhibitor of KRAS G12C (IC\textsubscript{50} = 0.42\,nM, SOS1-displacement biochemical assay). Preclinical studies demonstrate nanomolar growth inhibition in KRAS G12C-positive cell lines (NCI-H23, MIA PaCa-2) and durable tumour regression in xenograft models. Importantly, VNX-1803 achieves brain-penetrant concentrations ($K_{\mathrm{p,uu,brain}}$ = 0.38), addressing a major unmet need given the 30--50\% incidence of CNS metastases in advanced NSCLC.
+
+Phase I dose-escalation (VNX-NSCLC-101; $n=48$) established the recommended Phase II dose (RP2D) of 240\,mg QD, with a manageable safety profile (dose-limiting toxicity: Grade 3 fatigue at 360\,mg in 2 patients). Preliminary efficacy data yielded an ORR of 44\% and a 12-month OS rate of 68\% in KRAS G12C NSCLC.
+
+\subsection{Scientific Rationale for Combination}
+
+Accumulating evidence supports synergistic interaction between KRAS inhibition and PD-1 blockade:
+
+\begin{itemize}
+  \item KRAS G12C inhibition upregulates MHC-I surface expression and increases tumour-infiltrating lymphocyte density in preclinical models.
+  \item Immune evasion via KRAS-driven MAPK pathway suppresses interferon-$\gamma$ signalling; VNX-1803 reverses this immunosuppressive phenotype.
+  \item Clinical data from the CodeBreaK 101 study suggest sotorasib plus pembrolizumab is feasible, though hepatotoxicity requires monitoring.
+  \item VNX-1803 exhibits a differentiated hepatic safety profile (ALT elevation $>3\times$ULN: 6\% vs.\ 23\% for sotorasib) and is hypothesised to enable safer combination use.
+\end{itemize}
+
+\begin{protocolnote}{\faInfoCircle\quad Scientific Premise}
+  The KITE-II study tests the hypothesis that dual blockade of the KRAS G12C oncogenic driver and the PD-1/PD-L1 immune checkpoint will produce superior and more durable responses compared with either agent alone in a biomarker-selected NSCLC population.
+\end{protocolnote}
+
+% ════════════════════════════════════════════════════════════
+\section{Objectives and Endpoints}
+\label{sec:objectives}
+% ════════════════════════════════════════════════════════════
+
+\subsection{Primary Objective}
+
+To evaluate the antitumour activity of velanixib plus pembrolizumab, as measured by ORR per RECIST v1.1 (BICR), in patients with previously treated advanced KRAS G12C-mutant NSCLC.
+
+\subsection{Secondary and Exploratory Objectives}
+
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{accent}}l@{\hspace{5mm}}>{\raggedright\arraybackslash}X@{\hspace{5mm}}>{\raggedright\arraybackslash}l@{}}
+  \toprule
+  \normalcolor\textbf{Objective} & \normalcolor\textbf{Endpoint} & \normalcolor\textbf{Method} \\
+  \midrule
+  Secondary 1 & Disease Control Rate (CR+PR+SD $\geq$12 weeks) & BICR, RECIST v1.1 \\
+  Secondary 2 & Duration of Response (DoR) & BICR \\
+  Secondary 3 & Progression-Free Survival (PFS) & BICR \\
+  Secondary 4 & Overall Survival (OS) & Kaplan-Meier \\
+  Secondary 5 & PROs: LCSS, EQ-5D-5L & ePRO \\
+  Secondary 6 & PK of VNX-1803 and pembrolizumab & Sparse PK sampling \\
+  Secondary 7 & Immunogenicity of pembrolizumab & ADA ELISA \\
+  \midrule
+  \itshape Exploratory & ctDNA KRAS G12C allele frequency dynamics & Plasma NGS \\
+  \itshape Exploratory & Tumour mutational burden (TMB), PD-L1 TPS & IHC / NGS \\
+  \itshape Exploratory & Mechanisms of acquired resistance at progression & Biopsy WES \\
+  \bottomrule
+\end{tabularx}
+\renewcommand{\arraystretch}{1.35}
+
+% ════════════════════════════════════════════════════════════
+\section{Study Design}
+\label{sec:design}
+% ════════════════════════════════════════════════════════════
+
+\subsection{Overview}
+
+KITE-II is a Phase II, open-label, single-arm, multi-centre study enrolling approximately 82 patients across $\sim$18 investigational sites. There is no randomisation or blinding of investigators; however, tumour response assessment will be performed by a blinded independent central review (BICR) committee to minimise ascertainment bias.
+
+\subsection{Treatment Regimen}
+
+Eligible patients will receive:
+
+\begin{itemize}
+  \item \textbf{Velanixib (VNX-1803):} 240\,mg orally, once daily (QD), continuously in 21-day cycles.
+  \item \textbf{Pembrolizumab:} 200\,mg IV over 30 minutes on Day 1 of each 21-day cycle.
+\end{itemize}
+
+Treatment continues until radiographic progression per RECIST v1.1 (confirmed by BICR), unacceptable toxicity, patient withdrawal, or a maximum of 24 months (pembrolizumab), whichever occurs first. Velanixib may continue beyond 24 months at investigator discretion if clinical benefit is maintained.
+
+\subsection{Study Periods}
+
+\begin{enumerate}
+  \item \textbf{Screening:} Up to 28 days prior to Cycle 1 Day 1 (C1D1).
+  \item \textbf{Treatment Period:} C1D1 until end of treatment (EoT).
+  \item \textbf{Safety Follow-Up:} 30-day safety visit after last dose.
+  \item \textbf{Survival Follow-Up:} Minimum 12 months post-EoT (Q12W contacts).
+\end{enumerate}
+
+% ════════════════════════════════════════════════════════════
+\section{Eligibility Criteria}
+\label{sec:eligibility}
+% ════════════════════════════════════════════════════════════
+
+\subsection{Inclusion Criteria}
+
+Patients must meet \textbf{all} of the following:
+
+\begin{enumerate}
+  \item Histologically or cytologically confirmed advanced or metastatic NSCLC (Stage IIIB--IVB per AJCC 8th ed.), predominantly non-squamous histology.
+  \item Documented \textit{KRAS} G12C mutation by a validated local or central NGS or PCR assay.
+  \item Receipt of at least one prior platinum-containing chemotherapy regimen for advanced/metastatic disease; prior immunotherapy permitted if not within 6 months.
+  \item Age $\geq$18 years at time of informed consent.
+  \item ECOG Performance Status 0 or 1.
+  \item Measurable disease per RECIST v1.1 (target lesion $\geq$10\,mm in longest diameter, or $\geq$15\,mm for lymph nodes in short axis).
+  \item Adequate organ function within 10 days prior to C1D1:
+    \begin{itemize}
+      \item ANC $\geq 1.5 \times 10^9$/L; Haemoglobin $\geq$9\,g/dL; Platelets $\geq 100 \times 10^9$/L.
+      \item Creatinine $\leq$1.5$\times$ULN or GFR $\geq$50\,mL/min/1.73\,m\textsuperscript{2}.
+      \item AST and ALT $\leq$2.5$\times$ULN ($\leq$5$\times$ULN if hepatic metastases).
+      \item Total bilirubin $\leq$1.5$\times$ULN (Gilbert syndrome: $\leq$3$\times$ULN).
+    \end{itemize}
+  \item Female patients of childbearing potential: negative serum pregnancy test within 72 hours of C1D1; agree to highly effective contraception during treatment and 6 months after last dose.
+  \item Ability to swallow oral medication.
+  \item Written informed consent prior to any study-specific procedure.
+\end{enumerate}
+
+\subsection{Exclusion Criteria}
+
+Patients must not meet \textbf{any} of the following:
+
+\begin{enumerate}
+  \item Known activating \textit{EGFR} mutation (exon 19 del or L858R) or \textit{ALK}/\textit{ROS1}/\textit{RET}/\textit{MET} exon 14 alteration qualifying for approved targeted therapy.
+  \item Prior treatment with any KRAS G12C inhibitor.
+  \item Uncontrolled or symptomatic brain metastases. (Stable, treated CNS metastases off steroids $\geq$14 days are eligible.)
+  \item Active autoimmune disease requiring systemic treatment within 2 years. Replacement therapies are permitted.
+  \item Systemic immunosuppressive agents within 14 days of C1D1.
+  \item History of pneumonitis requiring systemic steroids, or current non-infectious pneumonitis.
+  \item Active hepatitis B (HBsAg+) or hepatitis C (HCV RNA detectable).
+  \item Known HIV with CD4 $<$350 cells/$\mu$L or detectable viral load within 6 months.
+  \item Concurrent malignancy (except adequately treated basal/squamous cell skin carcinoma or cervical carcinoma in situ).
+  \item Significant cardiovascular disease: uncontrolled hypertension (BP $>$160/100), NYHA Class III/IV HF, MI within 6 months, QTcF $>$470\,ms (female) or $>$450\,ms (male).
+  \item Major surgery within 28 days prior to C1D1.
+  \item Pregnancy or breast-feeding.
+  \item Any condition that in the investigator's judgement would make the patient unsuitable for participation.
+\end{enumerate}
+
+% ════════════════════════════════════════════════════════════
+\section{Schedule of Assessments}
+\label{sec:soa}
+% ════════════════════════════════════════════════════════════
+
+\textbf{X} = required; \textbf{$\circ$} = at investigator discretion; blank = not required.
+
+\vspace{4pt}
+
+{\footnotesize
+\setlength{\tabcolsep}{3.5pt}
+\renewcommand{\arraystretch}{1.22}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X
+    c c c c c c c c c c@{}}
+  \toprule
+  \multirow{2}{*}{\textbf{Assessment}} &
+  \textbf{Scr} &
+  \multicolumn{6}{c}{\textbf{On-Treatment (Cycle, Day 1 unless noted)}} &
+  \textbf{EoT} &
+  \textbf{SFU} &
+  \textbf{SuFU} \\
+  \cmidrule(lr){3-8}
+  & \textbf{$-28$d} &
+  \textbf{C1} & \textbf{C2} & \textbf{C3} & \textbf{C4} & \textbf{C6} & \textbf{C9+} &
+  & \textbf{+30d} & \textbf{Q12W} \\
+  \midrule
+  Informed consent                    & \xmark &        &        &        &        &        &        &        &        &        \\
+  Eligibility review                  & \xmark &        &        &        &        &        &        &        &        &        \\
+  Medical history / demographics      & \xmark &        &        &        &        &        &        &        &        &        \\
+  Physical examination                & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark &        &        \\
+  Vital signs                         & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark &        \\
+  ECOG performance status             & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark &        &        \\
+  12-lead ECG                         & \xmark & \xmark &        & \xmark &        & \xmark &        & \xmark &        &        \\
+  Haematology (CBC/diff)              & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark &        \\
+  Chemistry (LFTs, renal)             & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark &        \\
+  Coagulation (PT, aPTT)              & \xmark &        &        & \xmark &        & \xmark &        & \xmark &        &        \\
+  Serum pregnancy test (FOCBP)        & \xmark & \xmark &        & \xmark &        & \xmark &        & \xmark &        &        \\
+  Thyroid function (TSH, fT4)         & \xmark &        &        & \xmark &        & \xmark &        & \xmark &        &        \\
+  Urinalysis                          & \xmark &        & \xmark &        & \xmark &        & \xmark &        &        &        \\
+  CT chest/abdomen/pelvis             & \xmark &        &        & \xmark &        & \xmark & \xmark & \xmark &        & \smark \\
+  Brain MRI                           & \xmark &        &        &        &        & \xmark &        & \xmark &        &        \\
+  KRAS G12C confirmation (local/central) & \xmark &     &        &        &        &        &        &        &        &        \\
+  PD-L1 TPS (IHC 22C3)               & \xmark &        &        &        &        &        &        &        &        &        \\
+  ctDNA plasma sample                 & \xmark & \xmark &        & \xmark &        & \xmark &        & \xmark &        & \smark \\
+  Tumour biopsy (archival or fresh)   & \xmark &        &        &        &        &        &        & \smark &        &        \\
+  PK blood sampling (VNX-1803)        &        & \xmark &        & \xmark &        & \xmark &        &        &        &        \\
+  ADA sampling (pembrolizumab)        &        & \xmark &        & \xmark &        & \xmark &        & \xmark &        &        \\
+  PRO: LCSS questionnaire             & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark &        &        \\
+  PRO: EQ-5D-5L                       & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark &        &        \\
+  Survival status / OS                &        &        &        &        &        &        &        &        &        & \xmark \\
+  Adverse event review                &        & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark &        \\
+  Concomitant medication review       & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark &        \\
+  IP dispensing                       &        & \xmark & \xmark & \xmark & \xmark & \xmark & \xmark &        &        &        \\
+  \bottomrule
+  \multicolumn{11}{@{}p{\linewidth}@{}}{\footnotesize\itshape Scr = Screening; EoT = End of Treatment; SFU = Safety Follow-Up; SuFU = Survival Follow-Up; FOCBP = Female of Childbearing Potential}
+\end{tabularx}
+}
+
+\renewcommand{\arraystretch}{1.35}
+
+% ════════════════════════════════════════════════════════════
+\section{Statistical Considerations}
+\label{sec:stats}
+% ════════════════════════════════════════════════════════════
+
+\subsection{Sample Size and Power}
+
+The primary endpoint is ORR assessed by BICR. Based on published Phase II data for KRAS G12C-targeted agents:
+
+\begin{itemize}
+  \item \textbf{Null hypothesis (H\textsubscript{0}):} ORR $\leq$25\% (historical second-line docetaxel).
+  \item \textbf{Alternative hypothesis (H\textsubscript{1}):} ORR $\geq$45\% (anticipated for the combination).
+  \item \textbf{Statistical test:} One-sample exact binomial test (one-sided $\alpha$ = 0.05).
+  \item \textbf{Power:} $\geq$85\% to reject H\textsubscript{0} if true ORR = 45\%.
+  \item \textbf{Sample size:} 62 evaluable patients; $\sim$82 enrolled (25\% screen failure).
+\end{itemize}
+
+\begin{protocolnote}{\faChartBar\quad Sample Size Note}
+  Calculated using the exact binomial method (nQuery Advisor v10.0; one-sided $\alpha=0.05$, power $=85\%$, $p_0=0.25$, $p_1=0.45$). Sensitivity analysis confirms $n=62$ yields $>$90\% power if true ORR $=50\%$.
+\end{protocolnote}
+
+\subsection{Analysis Populations}
+
+\renewcommand{\arraystretch}{1.4}
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{6mm}}>{\raggedright\arraybackslash}X@{}}
+  \toprule
+  Population & Definition \\
+  \midrule
+  Full Analysis Set (FAS) & All enrolled patients who received $\geq$1 dose of any study drug. Primary efficacy population. \\
+  Efficacy Evaluable Set (EES) & FAS patients with confirmed KRAS G12C and $\geq$1 post-baseline RECIST assessment. Sensitivity analysis. \\
+  Safety Population & All patients who received $\geq$1 dose of any study drug. Primary safety population. \\
+  PK Population & All patients with $\geq$1 evaluable PK sample. \\
+  \bottomrule
+\end{tabularx}
+\renewcommand{\arraystretch}{1.35}
+
+\subsection{Statistical Methods}
+
+\textbf{Primary endpoint (ORR):} The point estimate and exact 95\% Clopper-Pearson confidence interval will be computed. A one-sided one-sample exact binomial test will be conducted at $\alpha=0.05$. H\textsubscript{0} will be rejected if the lower bound of the 95\% CI exceeds 25\%.
+
+\textbf{Time-to-event endpoints:} PFS, OS, and DoR will be estimated using the Kaplan-Meier method. Medians and 95\% CIs (Brookmeyer-Crowley method) will be reported. Landmark analyses at 6, 12, and 18 months will be performed.
+
+\textbf{Subgroup analyses:} Pre-specified subgroup analyses will explore ORR by PD-L1 TPS ($<$1\%, 1--49\%, $\geq$50\%), prior immunotherapy history, CNS metastases, and ctDNA kinetics. These are considered exploratory.
+
+\textbf{Missing data:} No imputation for the primary endpoint (non-responders classified as failures). Sensitivity analyses with per-protocol and worst-case imputation will be conducted for secondary endpoints.
+
+% ════════════════════════════════════════════════════════════
+\section{Safety and Adverse Event Reporting}
+\label{sec:safety}
+% ════════════════════════════════════════════════════════════
+
+\subsection{Adverse Event Definitions}
+
+All AEs will be graded per \textbf{NCI CTCAE Version 5.0}.
+
+\begin{itemize}
+  \item \textbf{Adverse Event (AE):} Any untoward medical occurrence, not necessarily causally related to study treatment.
+  \item \textbf{Serious Adverse Event (SAE):} Any AE resulting in: death; life-threatening condition; new/prolonged hospitalisation; persistent significant disability; congenital anomaly; or medically significant event.
+  \item \textbf{Dose-Limiting Toxicity (DLT):} As defined in the Phase I VNX-NSCLC-101 study and the Investigator's Brochure (Section 7.3).
+  \item \textbf{Adverse Event of Special Interest (AESI):} Immune-related AEs (irAEs), hepatotoxicity (ALT/AST $\geq 3\times$ULN), interstitial lung disease/pneumonitis, QTc prolongation $>$60\,ms from baseline or absolute $>$500\,ms.
+\end{itemize}
+
+\subsection{SAE Reporting Timelines}
+
+\begin{safetynote}{\faExclamationTriangle\quad Mandatory SAE Reporting Requirements}
+  \begin{itemize}[leftmargin=1.2em]
+    \item \textbf{Fatal or Life-Threatening SAEs:} Report to Sponsor Medical Monitor within \textbf{24 hours}. Initial report may be verbal; written follow-up required.
+    \item \textbf{All other SAEs:} Report to Sponsor within \textbf{72 hours} using the study SAE form.
+    \item \textbf{Sponsor-to-Regulatory (SUSARs):} Fatal/life-threatening: \textbf{7 calendar days}; all others: \textbf{15 calendar days} (per 21 CFR 312.32; EudraVigilance).
+    \item \textbf{IRB/IEC:} Per local requirements, typically within 10 business days.
+    \item \textbf{DSMB:} All Grade 4--5 AEs regardless of attribution within \textbf{14 days}.
+  \end{itemize}
+\end{safetynote}
+
+\subsection{Dose Modifications}
+
+\subsubsection{Velanixib Dose Levels}
+
+Dose levels: Level 0 (starting) 240\,mg QD; Level $-$1: 160\,mg QD; Level $-$2: 80\,mg QD. No re-escalation permitted after reduction.
+
+\begin{itemize}
+  \item Grade 2 persisting $>$7 days: Interrupt until $\leq$ Grade 1; restart at same dose.
+  \item Grade 3 (first): Interrupt; restart at Level $-$1 after recovery.
+  \item Grade 3 (second) or Grade 4: Permanently discontinue velanixib.
+\end{itemize}
+
+\subsubsection{Pembrolizumab}
+
+No dose reduction scheme; pembrolizumab is withheld or permanently discontinued per irAE grade (Keytruda\textsuperscript{\textregistered} USPI and site-specific irAE management guidelines):
+
+\begin{itemize}
+  \item Grade 2 irAE: Withhold; restart when $\leq$ Grade 1 and steroids $\leq$10\,mg prednisone equivalent.
+  \item Grade 3 irAE: Withhold + high-dose corticosteroids (1--2\,mg/kg). Permanently discontinue if not improved to $\leq$ Grade 1 within 12 weeks.
+  \item Grade 4 irAE (non-endocrinopathy): Permanently discontinue pembrolizumab.
+\end{itemize}
+
+\subsection{Data Safety Monitoring Board (DSMB)}
+
+An independent DSMB (three oncologists, one biostatistician, one patient advocate) will conduct scheduled safety reviews after every 20 enrolled patients and after the first 40 patients complete Cycle 3. Pre-specified stopping rules:
+
+\begin{itemize}
+  \item $\geq$5 Grade 5 AEs considered at least possibly treatment-related.
+  \item $\geq$30\% incidence of Grade $\geq$3 hepatotoxicity (ALT/AST $\geq 5\times$ULN confirmed).
+  \item $\geq$20\% incidence of Grade $\geq$3 pneumonitis.
+\end{itemize}
+
+% ════════════════════════════════════════════════════════════
+\section{Ethics and Informed Consent}
+\label{sec:ethics}
+% ════════════════════════════════════════════════════════════
+
+\subsection{Ethical Principles}
+
+This study will be conducted in full compliance with:
+\begin{itemize}
+  \item The Declaration of Helsinki (Fortaleza 2013 revision).
+  \item ICH E6(R2) Good Clinical Practice guidelines.
+  \item ICH E8(R1) General Considerations for Clinical Studies.
+  \item 21 CFR Parts 50, 56, and 312 (USA); EU Clinical Trials Regulation No.\ 536/2014.
+\end{itemize}
+
+\subsection{IRB/IEC Approval}
+
+The final protocol, ICF, and all patient-facing materials must receive written approval from the accredited IRB/IEC at each site prior to any study-specific procedures. Protocol amendments must be approved before implementation unless necessary to eliminate an immediate safety hazard.
+
+\subsection{Informed Consent Process}
+
+\begin{enumerate}
+  \item The investigator or delegated, trained team member will explain the study in full in a private setting, using plain-language materials appropriate to the patient's comprehension level.
+  \item Adequate time (minimum 24 hours) will be provided for the patient to consider participation; involvement of family or an independent advocate is encouraged.
+  \item Written informed consent must be obtained \textbf{before} any study-specific procedure, including eligibility blood or tissue collection.
+  \item For patients with diminished decision-making capacity, consent of a legally authorised representative will be sought per applicable law.
+  \item Patients may withdraw at any time without penalty or loss of otherwise-entitled benefit.
+  \item Re-consent is required for amendments affecting patient participation, risk, or data collection.
+\end{enumerate}
+
+\subsection{Data Protection and Confidentiality}
+
+Patient data will be coded by unique patient identification number; no identifying information will be transmitted to the Sponsor. Data will be processed in accordance with GDPR (EU 2016/679) and HIPAA (45 CFR Parts 160 and 164) as applicable, and stored in a validated, access-controlled EDC system (Medidata Rave, Version 6.x).
+
+\subsection{Publication Policy}
+
+Results will be submitted for peer-reviewed publication within 12 months of primary data lock, regardless of outcome, per ICMJE guidelines. All investigators contributing $\geq$3 enrolled patients will review manuscripts prior to submission.
+
+% ════════════════════════════════════════════════════════════
+\section{Regulatory and Administrative Provisions}
+\label{sec:regulatory}
+% ════════════════════════════════════════════════════════════
+
+\subsection{Protocol Amendments}
+
+Amendments will be formalised as numbered changes requiring Sponsor, Medical Monitor, and IRB/IEC approval (unless urgent safety measures). All amendments will be tracked in the Protocol Amendment Log (Appendix E).
+
+\subsection{Investigator Responsibilities}
+
+Each principal investigator (PI) is responsible for: conducting the study per protocol, GCP, and applicable regulations; maintaining delegation logs, training records, and site staff CVs; accurate timely EDC data entry; IP storage and dispensing per the IMP management plan; and immediate SAE and protocol deviation reporting to the Sponsor.
+
+\subsection{Record Retention}
+
+All study documents (source data, signed ICFs, IP accountability records, regulatory correspondence) must be retained for a minimum of 15 years after study completion or as required by applicable regulation.
+
+\subsection{Monitoring}
+
+Monitoring will be performed by Sponsor-appointed CRAs or a CRO. Site initiation, routine (risk-based, minimum Q3M), and close-out visits are planned. Remote monitoring may be used as appropriate.
+
+% ════════════════════════════════════════════════════════════
+\section*{Abbreviations}
+\addcontentsline{toc}{section}{Abbreviations}
+% ════════════════════════════════════════════════════════════
+
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{accent}}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  ADA & Anti-drug antibody \\
+  AE  & Adverse event \\
+  ANC & Absolute neutrophil count \\
+  AESI & Adverse event of special interest \\
+  BICR & Blinded independent central review \\
+  CBC & Complete blood count \\
+  CNS & Central nervous system \\
+  CR  & Complete response \\
+  CRO & Contract research organisation \\
+  CT  & Computed tomography \\
+  ctDNA & Circulating tumour DNA \\
+  DCR & Disease control rate \\
+  DLT & Dose-limiting toxicity \\
+  DoR & Duration of response \\
+  DSMB & Data Safety Monitoring Board \\
+  ECG & Electrocardiogram \\
+  ECOG & Eastern Cooperative Oncology Group \\
+  EDC & Electronic data capture \\
+  EoT & End of treatment \\
+  FOCBP & Female of childbearing potential \\
+  GCP & Good clinical practice \\
+  GDPR & General Data Protection Regulation \\
+  ICF & Informed consent form \\
+  ICH & International Council for Harmonisation \\
+  IEC & Independent ethics committee \\
+  IHC & Immunohistochemistry \\
+  IND & Investigational new drug \\
+  IP  & Investigational product \\
+  irAE & Immune-related adverse event \\
+  IRB & Institutional review board \\
+  KRAS & Kirsten rat sarcoma viral proto-oncogene \\
+  LCSS & Lung Cancer Symptom Scale \\
+  LFT & Liver function test \\
+  MRI & Magnetic resonance imaging \\
+  NCI CTCAE & NCI Common Terminology Criteria for Adverse Events \\
+  NGS & Next-generation sequencing \\
+  NSCLC & Non-small cell lung cancer \\
+  ORR & Objective response rate \\
+  OS  & Overall survival \\
+  PD  & Progressive disease \\
+  PD-1 & Programmed death-1 receptor \\
+  PFS & Progression-free survival \\
+  PI  & Principal investigator \\
+  PK  & Pharmacokinetics \\
+  PR  & Partial response \\
+  PRO & Patient-reported outcome \\
+  QD  & Once daily \\
+  Q3W & Every 3 weeks \\
+  RECIST & Response Evaluation Criteria in Solid Tumours \\
+  RP2D & Recommended Phase II dose \\
+  SAE & Serious adverse event \\
+  SD  & Stable disease \\
+  SFU & Safety follow-up \\
+  SoA & Schedule of assessments \\
+  SUSAR & Suspected unexpected serious adverse reaction \\
+  TMB & Tumour mutational burden \\
+  TPS & Tumour proportion score \\
+  ULN & Upper limit of normal \\
+  USPI & United States Prescribing Information \\
+  WES & Whole exome sequencing \\
+\end{tabularx}
+\renewcommand{\arraystretch}{1.35}
+
+% ════════════════════════════════════════════════════════════
+\section*{Signature Page}
+\addcontentsline{toc}{section}{Signature Page}
+% ════════════════════════════════════════════════════════════
+
+\vspace{0.6cm}
+
+By signing below, the undersigned confirm they have read and understood Protocol VNX-NSCLC-201 (Version 2.1, 10 June 2025) and agree to conduct the study in accordance with this protocol, GCP, and all applicable regulatory requirements.
+
+\vspace{1.4cm}
+
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X
+  >{\centering\arraybackslash}p{4.5cm}
+  >{\centering\arraybackslash}p{3.5cm}@{}}
+  \textbf{Name / Title} & \textbf{Signature} & \textbf{Date} \\[18pt]
+  \color{neutral}Dr.\ Catherine R.\ Hollis, MD, PhD\newline
+  Chief Medical Officer \& Medical Monitor\newline
+  Vantrix Oncology, Inc.
+  & \hrulefill & \hrulefill \\[22pt]
+  \color{neutral}Mr.\ James T.\ Nguyen, RAC\newline
+  Vice President, Regulatory Affairs\newline
+  Vantrix Oncology, Inc.
+  & \hrulefill & \hrulefill \\[22pt]
+  \color{neutral}Dr.\ Priya S.\ Mehta, PhD\newline
+  Lead Biostatistician\newline
+  Vantrix Oncology, Inc.
+  & \hrulefill & \hrulefill \\
+\end{tabularx}
+
+\vspace{2cm}
+\begin{center}
+  {\color{rulegray}\rule{12cm}{0.4pt}}\\[4pt]
+  {\small\color{neutral}Protocol VNX-NSCLC-201 v2.1 \textbullet\ \textbf{CONFIDENTIAL} \textbullet\ Vantrix Oncology, Inc.}\\[2pt]
+  {\small\color{neutral}Compiled with \LaTeX\ \textbullet\ Edit online at \href{https://letx.app}{\textcolor{accent}{letx.app}}}
+\end{center}
+
+\end{document}

@@ -1,0 +1,331 @@
+% Family Tree Template — The Hawthorne Family
+% Compile with: latexmk -pdf main.tex
+% Edit and compile online at: https://letx.app
+
+\documentclass[11pt]{article}
+
+% ── Encoding & Fonts ──
+\usepackage[T1]{fontenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+
+% ── Page Geometry ──
+\usepackage[landscape, margin=1.2cm, a4paper]{geometry}
+
+% ── Colors ──
+\usepackage[table]{xcolor}
+\definecolor{accent}{HTML}{8B3A3A}
+\definecolor{male}{HTML}{4A7B9D}
+\definecolor{female}{HTML}{9B5985}
+\definecolor{pagetint}{HTML}{FDFBF9}
+\definecolor{band1}{HTML}{F3EDE7}
+\definecolor{band2}{HTML}{EDE5DD}
+\definecolor{textdark}{HTML}{3A3A3A}
+\definecolor{textlight}{HTML}{888888}
+
+% ── Packages ──
+\usepackage{tikz}
+\usepackage{fontawesome5}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usetikzlibrary{calc, backgrounds, arrows.meta, shadows}
+
+% ── Base settings ──
+\pagecolor{pagetint}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent,
+  pdfborder={0 0 0},
+}
+
+% ── TikZ styles ──
+\tikzset{
+  person m/.style={
+    rectangle,
+    draw=male!60,
+    line width=0.8pt,
+    rounded corners=5pt,
+    fill=white,
+    text width=2.8cm,
+    align=center,
+    inner sep=0pt,
+    drop shadow={shadow xshift=0.4pt, shadow yshift=-0.4pt, opacity=0.07},
+    path picture={
+      \fill[male!10]
+        ([yshift=-0.4pt]path picture bounding box.north west)
+        rectangle
+        ([yshift=-1.5cm]path picture bounding box.north east);
+      \draw[male!40, line width=0.30pt]
+        ([yshift=-1.5cm]path picture bounding box.north west)
+        --
+        ([yshift=-1.5cm]path picture bounding box.north east);
+    },
+  },
+  person f/.style={
+    rectangle,
+    draw=female!60,
+    line width=0.8pt,
+    rounded corners=5pt,
+    fill=white,
+    text width=2.8cm,
+    align=center,
+    inner sep=0pt,
+    drop shadow={shadow xshift=0.4pt, shadow yshift=-0.4pt, opacity=0.07},
+    path picture={
+      \fill[female!10]
+        ([yshift=-0.4pt]path picture bounding box.north west)
+        rectangle
+        ([yshift=-1.5cm]path picture bounding box.north east);
+      \draw[female!40, line width=0.30pt]
+        ([yshift=-1.5cm]path picture bounding box.north west)
+        --
+        ([yshift=-1.5cm]path picture bounding box.north east);
+    },
+  },
+  conn/.style={
+    draw=accent!35,
+    line width=0.55pt,
+  },
+  marriage/.style={
+    draw=accent!25,
+    line width=2.5pt,
+  },
+}
+
+\begin{document}
+
+% ── Generational Background Bands ──
+\begin{tikzpicture}[remember picture, overlay]
+  \begin{scope}[on background layer]
+    \fill[band1]
+      (current page.north west) rectangle
+      ([yshift=-5.6cm]current page.north east);
+    \fill[band2]
+      ([yshift=-5.6cm]current page.north west) rectangle
+      ([yshift=-10.2cm]current page.north east);
+    \fill[band1]
+      ([yshift=-10.2cm]current page.north west) rectangle
+      ([yshift=-14.8cm]current page.north east);
+    \fill[band2]
+      ([yshift=-14.8cm]current page.north west) rectangle
+      ([yshift=-19.6cm]current page.north east);
+  \end{scope}
+  % Generation labels
+  \node[anchor=east, font=\footnotesize\color{accent!60}\itshape]
+    at ([xshift=-0.4cm,yshift=-3cm]current page.north west) {Gen I};
+  \node[anchor=east, font=\footnotesize\color{accent!60}\itshape]
+    at ([xshift=-0.4cm,yshift=-7.9cm]current page.north west) {Gen II};
+  \node[anchor=east, font=\footnotesize\color{accent!60}\itshape]
+    at ([xshift=-0.4cm,yshift=-12.5cm]current page.north west) {Gen III};
+  \node[anchor=east, font=\footnotesize\color{accent!60}\itshape]
+    at ([xshift=-0.4cm,yshift=-17.2cm]current page.north west) {Gen IV};
+\end{tikzpicture}
+
+% ── Header ──
+\vspace*{0.2cm}
+\begin{center}
+  {\Huge\bfseries\color{accent}The Hawthorne Family Tree}\\[3pt]
+  {\large\color{textdark}Four Generations \textbullet{} 1920--Present}\\[2pt]
+  {\color{accent!60}\rule{0.32\textwidth}{0.8pt}}
+\end{center}
+
+\vspace{0.5cm}
+
+% ── Main Tree ──
+\begin{center}
+\begin{tikzpicture}[node distance=0.8cm]
+
+% ═══════════════════════════════════════
+% GENERATION I — Great-Grandparents
+% ═══════════════════════════════════════
+\node[person m] (frederick) at (7.5,0) {%
+  \rule{0pt}{1.3cm}%
+  {\Huge\color{male!40}\faMale}\\[-0.25cm]
+  \rule{0pt}{0.08cm}%
+  {\bfseries Frederick}\\[0.8pt]
+  {\bfseries Hawthorne}\\[2pt]
+  {\footnotesize\color{textlight}1920--1995}\\[3pt]
+};
+
+\node[person f] (eleanor) at (14.5,0) {%
+  \rule{0pt}{1.3cm}%
+  {\Huge\color{female!40}\faFemale}\\[-0.25cm]
+  \rule{0pt}{0.08cm}%
+  {\bfseries Eleanor}\\[0.8pt]
+  {\bfseries Hawthorne}\\[2pt]
+  {\footnotesize\color{textlight}1922--1997}\\[3pt]
+};
+
+% ═══════════════════════════════════════
+% GENERATION II — Grandparents
+% ═══════════════════════════════════════
+\node[person m] (william) at (4,-4.4) {%
+  \rule{0pt}{1.3cm}%
+  {\Huge\color{male!40}\faMale}\\[-0.25cm]
+  \rule{0pt}{0.08cm}%
+  {\bfseries William}\\[0.8pt]
+  {\bfseries Hawthorne}\\[2pt]
+  {\footnotesize\color{textlight}1945--2018}\\[3pt]
+};
+
+\node[person f] (margaret) at (9.5,-4.4) {%
+  \rule{0pt}{1.3cm}%
+  {\Huge\color{female!40}\faFemale}\\[-0.25cm]
+  \rule{0pt}{0.08cm}%
+  {\bfseries Margaret}\\[0.8pt]
+  {\bfseries Clark}\\[2pt]
+  {\footnotesize\color{textlight}1948--2020}\\[3pt]
+};
+
+\node[person m] (robert) at (16.5,-4.4) {%
+  \rule{0pt}{1.3cm}%
+  {\Huge\color{male!40}\faMale}\\[-0.25cm]
+  \rule{0pt}{0.08cm}%
+  {\bfseries Robert}\\[0.8pt]
+  {\bfseries Bennett}\\[2pt]
+  {\footnotesize\color{textlight}1943--2019}\\[3pt]
+};
+
+\node[person f] (catherine) at (22,-4.4) {%
+  \rule{0pt}{1.3cm}%
+  {\Huge\color{female!40}\faFemale}\\[-0.25cm]
+  \rule{0pt}{0.08cm}%
+  {\bfseries Catherine}\\[0.8pt]
+  {\bfseries Wilson}\\[2pt]
+  {\footnotesize\color{textlight}1946--2021}\\[3pt]
+};
+
+% ═══════════════════════════════════════
+% GENERATION III — Parents
+% ═══════════════════════════════════════
+\node[person m] (james) at (8.5,-8.8) {%
+  \rule{0pt}{1.3cm}%
+  {\Huge\color{male!40}\faMale}\\[-0.25cm]
+  \rule{0pt}{0.08cm}%
+  {\bfseries James}\\[0.8pt]
+  {\bfseries Hawthorne}\\[2pt]
+  {\footnotesize\color{textlight}1970--Present}\\[3pt]
+};
+
+\node[person f] (elizabeth) at (15.5,-8.8) {%
+  \rule{0pt}{1.3cm}%
+  {\Huge\color{female!40}\faFemale}\\[-0.25cm]
+  \rule{0pt}{0.08cm}%
+  {\bfseries Elizabeth}\\[0.8pt]
+  {\bfseries Bennett}\\[2pt]
+  {\footnotesize\color{textlight}1972--Present}\\[3pt]
+};
+
+% ═══════════════════════════════════════
+% GENERATION IV — Children
+% ═══════════════════════════════════════
+\node[person f] (sophia) at (6.5,-13.2) {%
+  \rule{0pt}{1.3cm}%
+  {\Huge\color{female!40}\faFemale}\\[-0.25cm]
+  \rule{0pt}{0.08cm}%
+  {\bfseries Sophia}\\[0.8pt]
+  {\bfseries Hawthorne}\\[2pt]
+  {\footnotesize\color{textlight}1998--Present}\\[3pt]
+};
+
+\node[person m] (thomas) at (12,-13.2) {%
+  \rule{0pt}{1.3cm}%
+  {\Huge\color{male!40}\faMale}\\[-0.25cm]
+  \rule{0pt}{0.08cm}%
+  {\bfseries Thomas}\\[0.8pt]
+  {\bfseries Hawthorne}\\[2pt]
+  {\footnotesize\color{textlight}2001--Present}\\[3pt]
+};
+
+\node[person f] (emma) at (17.5,-13.2) {%
+  \rule{0pt}{1.3cm}%
+  {\Huge\color{female!40}\faFemale}\\[-0.25cm]
+  \rule{0pt}{0.08cm}%
+  {\bfseries Emma}\\[0.8pt]
+  {\bfseries Hawthorne}\\[2pt]
+  {\footnotesize\color{textlight}2005--Present}\\[3pt]
+};
+
+% ═══════════════════════════════════════
+% CONNECTORS
+% ═══════════════════════════════════════
+
+% ── Marriage bars ──
+\draw[marriage] (frederick.east) -- (eleanor.west);
+\draw[marriage] (william.east) -- (margaret.west);
+\draw[marriage] (robert.east) -- (catherine.west);
+\draw[marriage] (james.east) -- (elizabeth.west);
+
+% Marriage rings
+\fill[white, draw=accent!45, line width=0.7pt]
+  ($(frederick.east)!0.5!(eleanor.west)$) circle (2.2pt);
+\fill[white, draw=accent!45, line width=0.7pt]
+  ($(william.east)!0.5!(margaret.west)$) circle (2.2pt);
+\fill[white, draw=accent!45, line width=0.7pt]
+  ($(robert.east)!0.5!(catherine.west)$) circle (2.2pt);
+\fill[white, draw=accent!45, line width=0.7pt]
+  ($(james.east)!0.5!(elizabeth.west)$) circle (2.2pt);
+
+% ── Frederick + Eleanor → William ──
+\coordinate (j1) at ($(frederick.south)!0.5!(eleanor.south) + (0,-1.0)$);
+\draw[conn, rounded corners=3pt]
+  (frederick.south) |- (j1) -| (eleanor.south);
+\draw[conn, rounded corners=3pt]
+  (j1) -| (william.north);
+
+% ── William + Margaret → James ──
+\coordinate (j2) at ($(william.south)!0.5!(margaret.south) + (0,-1.0)$);
+\draw[conn, rounded corners=3pt]
+  (william.south) |- (j2) -| (margaret.south);
+\draw[conn, rounded corners=3pt]
+  (j2) -| (james.north);
+
+% ── Robert + Catherine → Elizabeth ──
+\coordinate (j3) at ($(robert.south)!0.5!(catherine.south) + (0,-1.0)$);
+\draw[conn, rounded corners=3pt]
+  (robert.south) |- (j3) -| (catherine.south);
+\draw[conn, rounded corners=3pt]
+  (j3) -| (elizabeth.north);
+
+% ── James + Elizabeth → Children ──
+\coordinate (j4) at ($(james.south)!0.5!(elizabeth.south) + (0,-1.0)$);
+\draw[conn, rounded corners=3pt]
+  (james.south) |- (j4) -| (elizabeth.south);
+\draw[conn, rounded corners=3pt]
+  (j4) -| (sophia.north);
+\draw[conn, rounded corners=3pt]
+  (j4) -- (thomas.north);
+\draw[conn, rounded corners=3pt]
+  (j4) -| (emma.north);
+
+\end{tikzpicture}
+\end{center}
+
+% ── Legend ──
+\vspace{0.15cm}
+\begin{center}
+  \begin{tikzpicture}
+    \fill[male!10, draw=male!60, line width=0.6pt, rounded corners=3pt]
+      (0,0) rectangle (0.7,0.7);
+    \node at (0.35,0.35) {\footnotesize\color{male!60}\faMale};
+    \node[anchor=west] at (0.85,0.35) {\footnotesize\color{textdark}Male};
+
+    \fill[female!10, draw=female!60, line width=0.6pt, rounded corners=3pt]
+      (2.5,0) rectangle (3.2,0.7);
+    \node at (2.85,0.35) {\footnotesize\color{female!60}\faFemale};
+    \node[anchor=west] at (3.35,0.35) {\footnotesize\color{textdark}Female};
+
+    \draw[marriage] (5.7,0.35) -- (6.3,0.35);
+    \fill[white, draw=accent!45, line width=0.5pt]
+      (6.0,0.35) circle (1.8pt);
+    \node[anchor=west] at (6.45,0.35) {\footnotesize\color{textdark}Married};
+  \end{tikzpicture}
+\end{center}
+
+\end{document}

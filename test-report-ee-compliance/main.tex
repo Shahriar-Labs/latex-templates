@@ -1,0 +1,395 @@
+% Test Report -- Electrical & Electronic Equipment Compliance
+% Template by LetX -- can be edited and compiled online at https://letx.app
+% Compile with: latexmk -pdf main.tex
+
+\documentclass[11pt,a4paper]{article}
+\usepackage{amsmath}
+
+% ---------- Core packages ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[left=20mm,right=20mm,top=28mm,bottom=22mm,headheight=16pt]{geometry}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+
+\usepackage[table]{xcolor}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{siunitx}
+\usepackage{float}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,patterns,calc}
+\usepackage{fontawesome5}
+\usepackage{amssymb}
+\usepackage{hyperref}
+
+% ---------- Colors ----------
+\definecolor{accent}{HTML}{0B4F8A}
+\definecolor{accent2}{HTML}{4A5A6A}
+\definecolor{lightgray}{HTML}{F1F4F7}
+\definecolor{palegray}{HTML}{FAFBFC}
+\definecolor{passgreen}{HTML}{1E7B34}
+\definecolor{failred}{HTML}{B3261E}
+\definecolor{rulegray}{HTML}{D7DDE3}
+
+% ---------- Spacing (required whenever key/value tabularx tables are used) ----------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+% ---------- Column types ----------
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+% ---------- Section styling ----------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{accent}}
+  {\thesection}{0.6em}{}[{\color{rulegray}\titlerule[1pt]}]
+\titlespacing*{\section}{0pt}{16pt}{8pt}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{accent2}}
+  {\thesubsection}{0.6em}{}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+
+% ---------- Header / Footer ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\headrule}{\color{rulegray}\hrule width\headwidth height\headrulewidth}
+\fancyhead[L]{\footnotesize\color{accent2}\textbf{Report No.\ MCL-25-0741-PS}}
+\fancyhead[R]{\footnotesize\color{accent2}Test Report --- EE Compliance}
+\fancyfoot[L]{\footnotesize\color{accent2}Meridian Compliance Testing Laboratory}
+\fancyfoot[C]{\footnotesize\color{accent2}CONFIDENTIAL --- For Client Use Only}
+\fancyfoot[R]{\footnotesize\color{accent2}Page \thepage\ of \pageref{LastPage}}
+
+% ---------- Misc ----------
+\renewcommand{\arraystretch}{1.25}
+\setlist[itemize]{leftmargin=1.4em, itemsep=2pt, topsep=2pt}
+\setlist[enumerate]{leftmargin=1.6em, itemsep=2pt, topsep=2pt}
+
+\hypersetup{
+  pdftitle={Test Report -- EE Compliance},
+  pdfauthor={Meridian Compliance Testing Laboratory},
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent,
+  citecolor=accent
+}
+
+% ---------- Reusable block-diagram node style ----------
+\tikzset{
+  block/.style={draw=accent2, thick, fill=lightgray, rounded corners=1.5pt,
+    minimum width=2.5cm, minimum height=1.05cm, align=center, font=\small, text=accent2},
+  smallblock/.style={draw=accent2, thick, fill=white, rounded corners=1.5pt,
+    minimum width=2.0cm, minimum height=0.9cm, align=center, font=\scriptsize, text=accent2},
+  conn/.style={-{Latex[length=2mm]}, thick, accent2},
+}
+
+\begin{document}
+
+% ============================================================
+% COVER / DOCUMENT HEADER
+% ============================================================
+\begin{center}
+{\color{accent}\rule{\linewidth}{1.4pt}}\\[2mm]
+{\Large\textbf{\textcolor{accent}{MERIDIAN COMPLIANCE TESTING LABORATORY}}}\\[1mm]
+{\small\textcolor{accent2}{ISO/IEC 17025:2017 Accredited Laboratory \quad\textbar\quad Electrical, Electronic \& EMC Compliance Testing}}\\[2mm]
+{\color{accent}\rule{\linewidth}{1.4pt}}
+\end{center}
+
+\vspace{4mm}
+\begin{center}
+{\fontsize{26}{30}\selectfont\bfseries\textcolor{accent}{TEST REPORT}}\\[1.5mm]
+{\large\textcolor{accent2}{Electrical \& Electronic Equipment Compliance Evaluation}}
+\end{center}
+
+\vspace{5mm}
+
+% ---- Document control / EUT summary grid ----
+\noindent
+\begin{minipage}[t]{0.485\linewidth}
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{5mm}}>{\raggedright\arraybackslash}X@{}}
+\faFile\ Report No.        & MCL-25-0741-PS \\
+\faCalendar\ Date of Issue  & 2026-07-10 \\
+\faIndustry\ Client / Applicant & Nova Electronics Inc. \\
+\faIndustry\ Manufacturer      & Nova Electronics (Shenzhen) Co., Ltd. \\
+\faUser\ Test Engineer      & J. Alvarez, C.E.T. \\
+\faUser\ Technical Reviewer & M. Chen, P.Eng. \\
+\end{tabularx}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.485\linewidth}
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{5mm}}>{\raggedright\arraybackslash}X@{}}
+\faMicrochip\ EUT Description  & USB-C GaN Power Adapter \\
+\faTag\ Model No.              & XR-450 \\
+\faBarcode\ Serial No.         & NX2026-004871 \\
+\faBolt\ Rated Output          & 20\,V / 3.25\,A (65\,W max) \\
+\faPlug\ Rated Input           & 100--240\,V\textasciitilde, 50/60\,Hz, 1.2\,A \\
+\faClipboardCheck\ Sample Condition & New, factory sealed \\
+\end{tabularx}
+\end{minipage}
+
+\vspace{3mm}
+\noindent{\color{rulegray}\rule{\linewidth}{0.6pt}}
+\vspace{2mm}
+
+\noindent{\small\textcolor{accent2}{This report shall not be reproduced except in full, without the written approval of Meridian Compliance Testing Laboratory. Results relate only to the item(s) tested and were obtained under the conditions stated herein.}}
+
+\vspace{4mm}
+
+% ---- Revision history ----
+\subsection*{\textcolor{accent2}{Revision History}}
+\vspace{-2mm}
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\linewidth}{@{} c c Y l l @{}}
+\toprule
+\textbf{Rev} & \textbf{Date} & \textbf{Description} & \textbf{Prepared By} & \textbf{Approved By} \\
+\midrule
+0 & 2026-06-28 & Initial issue for internal technical review & J. Alvarez & --- \\
+1 & 2026-07-05 & Added conducted emissions data; corrected LISN calibration date & J. Alvarez & M. Chen \\
+2 & 2026-07-10 & Final issue --- incorporated reviewer comments & J. Alvarez & M. Chen \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\vspace{2mm}
+
+% ============================================================
+% 1. SCOPE AND PURPOSE
+% ============================================================
+\section{Scope and Purpose}
+This report documents the test methods, configurations, results, and evaluation of compliance for the Equipment Under Test (EUT) identified above, against the electromagnetic compatibility (EMC) and electrical safety standards listed in Section~4. Testing was performed at the request of the Client to support CE marking and regulatory submission of the product in the target markets of the European Union and the United Kingdom.
+
+All measurements were performed at Meridian Compliance Testing Laboratory, Building~3 EMC Chamber and Safety Test Bay, using calibrated equipment traceable to national metrology standards. Test methods followed the referenced editions of the applicable CISPR, IEC, and EN standards current as of the date of testing.
+
+% ============================================================
+% 2. SYMBOLS, ABBREVIATIONS AND DEFINITIONS
+% ============================================================
+\section{Symbols, Abbreviations and Definitions}
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{accent}}l@{\hspace{6mm}}Y@{}}
+\toprule
+\textbf{Term} & \textbf{Definition} \\
+\midrule
+EUT   & Equipment Under Test \\
+AE    & Auxiliary Equipment used to exercise the EUT during testing \\
+LISN  & Line Impedance Stabilization Network \\
+EMC   & Electromagnetic Compatibility \\
+EMI   & Electromagnetic Interference \\
+CISPR & Comit\'e International Sp\'ecial des Perturbations Radio\'electriques \\
+ESD   & Electrostatic Discharge \\
+EFT   & Electrical Fast Transient \\
+RF    & Radio Frequency \\
+$U$   & Expanded measurement uncertainty \\
+$k$   & Coverage factor ($k = 2$ corresponds to a 95\,\% confidence level) \\
+$u_i$ & Standard uncertainty contribution of source $i$ \\
+dB\textmu V & Decibels relative to 1 microvolt \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ============================================================
+% 3. EQUIPMENT UNDER TEST
+% ============================================================
+\section{Equipment Under Test}
+
+\subsection{General Description}
+The EUT is a single-port USB-C GaN (gallium nitride) power adapter intended for charging portable electronic devices. The unit accepts universal mains input and delivers regulated DC output via USB Power Delivery (PD~3.0) protocol, with a maximum continuous output of 65\,W. The enclosure is flame-retardant polycarbonate (UL~94 V-0), with foldable AC prongs and a single status LED. Internal construction comprises an EMI filter stage, a primary-side GaN FET half-bridge converter, a planar transformer, and synchronous rectification on the secondary side.
+
+Three (3) production-representative samples were submitted by the Client on 2026-06-20 and assigned laboratory sample identifiers NX2026-004871 through NX2026-004873. Sample NX2026-004871 was used for the tests reported herein unless otherwise noted.
+
+\subsection{EUT Photograph}
+\begin{figure}[H]
+\centering
+\resizebox{0.55\linewidth}{!}{%
+\begin{tikzpicture}
+\fill[lightgray] (0,0) rectangle (7,5);
+\draw[thick, accent2] (0,0) rectangle (7,5);
+\draw[accent2!45, line width=0.4pt] (0,0) -- (7,5);
+\draw[accent2!45, line width=0.4pt] (0,5) -- (7,0);
+\node[align=center, text=accent2] at (3.5,2.5)
+  {\Huge\faCamera\\[2mm]\textbf{\normalsize EUT PHOTOGRAPH}\\[1mm]\footnotesize Front View --- Model XR-450};
+\end{tikzpicture}}
+\caption{Equipment Under Test --- USB-C GaN Power Adapter, Model XR-450, S/N NX2026-004871.}
+\end{figure}
+
+% ============================================================
+% 4. APPLICABLE STANDARDS
+% ============================================================
+\section{Applicable Standards and Reference Documents}
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{} >{\bfseries\color{accent}}p{3.1cm} Y @{}}
+\toprule
+\textbf{Standard} & \textbf{Title} \\
+\midrule
+EN 55032:2015+A11:2020     & Electromagnetic compatibility of multimedia equipment --- Emission requirements \\
+EN 55035:2017+A11:2020     & Electromagnetic compatibility of multimedia equipment --- Immunity requirements \\
+EN IEC 61000-3-2:2019      & Limits for harmonic current emissions ($\leq$ 16\,A per phase) \\
+EN 61000-3-3:2013+A2:2021  & Limitation of voltage changes, fluctuations and flicker \\
+IEC 62368-1:2018+AMD1:2020 & Audio/video, information and communication technology equipment --- Safety requirements \\
+CISPR 16-4-2:2020          & Uncertainty, statistics and limit modeling --- Measurement instrumentation uncertainty \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ============================================================
+% 5. TEST FACILITY AND SETUP
+% ============================================================
+\section{Test Facility and Setup}
+
+\subsection{Test Configuration}
+Conducted emissions measurements were performed with the EUT operating at rated output (20\,V / 3.25\,A) into a resistive load, positioned 0.4\,m above a bonded ground reference plane on a non-conductive support, in accordance with CISPR 32 and CISPR 16-2-1. The AE (electronic load and USB-PD trigger board) was placed 0.1\,m from the EUT and connected via a 0.8\,m USB-C cable. Mains power was supplied through a two-line V-network LISN, with the unused monitoring port terminated in 50\,$\Omega$.
+
+\subsection{Test Setup Diagram}
+\begin{figure}[H]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}
+
+% Ground reference plane
+\fill[pattern=north east lines, pattern color=accent2!35] (6.5,1.6) rectangle (13.5,2.0);
+\draw[accent2, thick] (6.5,2.0) -- (13.5,2.0);
+\node[font=\scriptsize, text=accent2, anchor=north] at (10,1.55) {Bonded ground reference plane};
+
+% Signal chain blocks
+\node[block] (mains) at (0,4)  {AC MAINS\\230\,V / 50\,Hz};
+\node[block] (lisn)  at (4,4)  {LISN\\(CISPR 16-1-2)};
+\node[block] (eut)   at (8,4)  {EUT\\XR-450 Adapter};
+\node[block] (ae)    at (12,4) {AE\\Electronic Load};
+
+\node[block]     (rx) at (4,1.0)   {EMI RECEIVER\\9\,kHz -- 30\,MHz};
+\node[smallblock] (pc) at (7.7,1.0) {PC\\Data Logging};
+
+% Support legs to ground plane
+\draw[accent2, thick] (eut.south) -- (8,2.0);
+\draw[accent2, thick] (ae.south)  -- (12,2.0);
+\draw[{Latex[length=1.5mm]}-{Latex[length=1.5mm]}, accent2, thin]
+  (8.4,2.0) -- (8.4,3.475) node[midway, right, font=\tiny] {0.4 m};
+
+% Signal connections
+\draw[conn] (mains) -- (lisn);
+\draw[conn] (lisn)  -- (eut);
+\draw[conn] (eut)   -- (ae) node[midway, above, font=\scriptsize, text=accent2] {USB-C};
+\draw[conn] (lisn.south) -- (rx.north) node[midway, right, font=\scriptsize, text=accent2] {RG-58, 50\,$\Omega$};
+\draw[conn] (rx) -- (pc);
+
+\end{tikzpicture}}
+\caption{Conducted emissions test setup (CISPR 32 / CISPR 16-2-1 configuration).}
+\end{figure}
+
+% ============================================================
+% 6. MEASUREMENT UNCERTAINTY BUDGET
+% ============================================================
+\section{Measurement Uncertainty Budget}
+The expanded measurement uncertainty for conducted emissions measurements was evaluated in accordance with CISPR 16-4-2. Table~\ref{tab:uncertainty} summarizes the individual uncertainty contributions, evaluated at 1\,MHz for the quasi-peak detector.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\linewidth}{@{} Y S[table-format=1.2] l S[table-format=1.2] S[table-format=1.2] S[table-format=1.2] @{}}
+\toprule
+\textbf{Source of Uncertainty} & {\textbf{$\pm$ Value}} & \textbf{Distrib.} & {\textbf{Divisor}} & {\textbf{$c_i$}} & {\textbf{$u_i$ (dB)}} \\
+\midrule
+LISN--EUT mismatch                & 0.50 & U-shape  & 1.41 & 1.00 & 0.35 \\
+LISN--Receiver mismatch           & 0.30 & U-shape  & 1.41 & 1.00 & 0.21 \\
+LISN insertion loss / voltage div.& 0.30 & Normal   & 2.00 & 1.00 & 0.15 \\
+LISN impedance deviation          & 0.68 & Rectang. & 1.73 & 1.00 & 0.39 \\
+Connecting cable loss              & 0.20 & Rectang. & 1.73 & 1.00 & 0.12 \\
+Receiver sine-wave reading         & 1.00 & Normal   & 1.00 & 1.00 & 1.00 \\
+Receiver noise floor proximity     & 0.50 & U-shape  & 1.41 & 1.00 & 0.35 \\
+Ambient temperature / humidity     & 0.20 & Rectang. & 1.73 & 1.00 & 0.12 \\
+Pulse amplitude repeatability      & 0.30 & Normal   & 1.00 & 1.00 & 0.30 \\
+\midrule
+\multicolumn{5}{@{}l}{Combined standard uncertainty, $u_c = \sqrt{\sum u_i^2}$} & 1.24 \\
+\multicolumn{5}{@{}l}{Expanded uncertainty, $U = k \cdot u_c$ ($k = 2$, 95\,\% confidence)} & 2.48 \\
+\bottomrule
+\end{tabularx}
+\caption{Conducted emissions measurement uncertainty budget (all values in dB).}
+\label{tab:uncertainty}
+\end{table}
+
+The reported expanded uncertainty of $U = \pm 2.48$\,dB ($k=2$) has been applied for information only; compliance decisions in Section~7 are based on the measured value against the specified limit without uncertainty margin, per the Client's request and the applicable CISPR 16-4-2 decision rule.
+
+% ============================================================
+% 7. TEST RESULTS AND COMPLIANCE MATRIX
+% ============================================================
+\section{Test Results and Compliance Matrix}
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\linewidth}{@{} >{\bfseries\color{accent}}p{1.5cm} Y p{2.5cm} c p{2.6cm} @{}}
+\toprule
+\textbf{Clause} & \textbf{Requirement} & \textbf{Test Method} & \textbf{Result} & \textbf{Remarks} \\
+\midrule
+EN 55032 \S 6.1 & Conducted emissions, 150\,kHz--30\,MHz, AC mains port & CISPR 16-1-1/-2-1 & \textcolor{passgreen}{\faCheckCircle\ PASS} & Margin $\geq$ 4.2\,dB at all frequencies \\
+EN 55032 \S 6.2 & Radiated emissions, 30\,MHz--1\,GHz, 3\,m semi-anechoic & CISPR 16-1-4/-2-3 & \textcolor{passgreen}{\faCheckCircle\ PASS} & Margin $\geq$ 3.1\,dB \\
+IEC 61000-3-2 & Harmonic current emissions, Class~D & IEC 61000-3-2 Annex~C & \textcolor{passgreen}{\faCheckCircle\ PASS} & Worst harmonic (h=3) at 61\,\% of limit \\
+IEC 61000-3-3 & Voltage change, fluctuation and flicker & $P_{st}$, $P_{lt}$, $d_{max}$, $d_c$ & \textcolor{passgreen}{\faCheckCircle\ PASS} & $P_{lt} = 0.14$ (limit 0.65) \\
+IEC 61000-4-2 & ESD immunity, $\pm$8\,kV contact / $\pm$15\,kV air & Performance criterion~B & \textcolor{passgreen}{\faCheckCircle\ PASS} & No loss of function observed \\
+IEC 61000-4-3 & Radiated RF immunity, 80\,MHz--6\,GHz, 3\,V/m & Performance criterion~A & \textcolor{passgreen}{\faCheckCircle\ PASS} & See Note~1, Section~8 \\
+IEC 61000-4-4 & EFT/burst immunity, AC port, $\pm$2\,kV & Performance criterion~B & \textcolor{passgreen}{\faCheckCircle\ PASS} & 5/50\,ns burst, 100\,kHz \\
+IEC 61000-4-5 & Surge immunity, L-N $\pm$1\,kV, L/N-PE $\pm$2\,kV & Performance criterion~B & \textcolor{passgreen}{\faCheckCircle\ PASS} & Output ripple within limits post-surge \\
+IEC 62368-1 \S 5.4.9 & Dielectric withstand (Hipot), primary--secondary & 3000\,V AC, 60\,s & \textcolor{passgreen}{\faCheckCircle\ PASS} & Leakage current $< 1$\,mA \\
+IEC 62368-1 \S 5.7 & Touch current, normal condition & AC input energized & \textcolor{passgreen}{\faCheckCircle\ PASS} & Measured 0.08\,mA (limit 0.25\,mA) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ============================================================
+% 8. DEVIATIONS AND OBSERVATIONS
+% ============================================================
+\section{Deviations and Observations}
+\begin{enumerate}[label=\textbf{Note \arabic*.}]
+\item During radiated RF immunity testing (IEC 61000-4-3), ambient chamber temperature was recorded at 24.8\,$^{\circ}$C, marginally above the standard's recommended range midpoint but within the permitted overall range of 15--35\,$^{\circ}$C. This deviation is not considered to have influenced the test outcome and is noted for traceability only.
+\item The Client-supplied AE (electronic load) required a firmware update (v2.3.1) prior to testing to correctly negotiate USB-PD 3.0 contracts; this update did not alter the EUT and is documented for reproducibility.
+\end{enumerate}
+No other deviations from the specified test methods were observed. All test equipment used was within its current calibration interval; calibration certificates are retained on file under laboratory QMS record MCL-CAL-2026-0114.
+
+% ============================================================
+% 9. CONCLUSION
+% ============================================================
+\section{Conclusion and Statement of Compliance}
+\noindent
+\fcolorbox{accent}{palegray}{%
+\begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule}
+\vspace{1mm}
+\textbf{\textcolor{accent}{Statement of Compliance}}\\[1mm]
+Based on the tests performed and results obtained, the EUT (USB-C GaN Power Adapter, Model XR-450) \textbf{COMPLIES} with the requirements of EN~55032:2015+A11:2020, EN~55035:2017+A11:2020, EN~IEC~61000-3-2:2019, EN~61000-3-3:2013+A2:2021, and IEC~62368-1:2018+AMD1:2020, as evaluated under the test configuration described in Section~5.
+\vspace{1mm}
+\end{minipage}}
+
+This report applies only to the sample(s) tested and does not, by itself, imply certification or ongoing regulatory approval of the product. Any modification to the EUT design, construction, or rated operating conditions may invalidate the conclusions of this report.
+
+% ============================================================
+% 10. APPROVAL AND SIGNATURES
+% ============================================================
+\section{Approval and Signatures}
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{} >{\bfseries\color{accent}}p{2.6cm} Y Y c @{}}
+\toprule
+\textbf{Role} & \textbf{Name} & \textbf{Signature} & \textbf{Date} \\
+\midrule
+Tested By    & J. Alvarez, C.E.T. & \rule{3cm}{0.4pt} & 2026-07-08 \\[6mm]
+Reviewed By  & M. Chen, P.Eng.    & \rule{3cm}{0.4pt} & 2026-07-09 \\[6mm]
+Approved By  & S. Whitfield, Laboratory Manager & \rule{3cm}{0.4pt} & 2026-07-10 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\vspace{2mm}
+\noindent{\footnotesize\textcolor{accent2}{Meridian Compliance Testing Laboratory \textbar\ 1275 Innovation Parkway, Suite 400, Austin, TX 78729 \textbar\ Accreditation No. A2LA-9284.01 \textbar\ www.meridianctl.example}}
+
+\end{document}

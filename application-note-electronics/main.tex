@@ -1,0 +1,510 @@
+% Application Note template -- Electronics / Power Management
+% Can be edited and compiled online at https://letx.app
+% Compile with: latexmk -pdf main.tex   (pdfLaTeX)
+\documentclass[11pt,a4paper]{article}
+
+% ---------------------------------------------------------------------------
+% PAGE GEOMETRY
+% ---------------------------------------------------------------------------
+\usepackage[a4paper,margin=2.2cm,top=3.0cm,bottom=3.0cm,headheight=28pt,%
+            headsep=10pt,footskip=1.2cm]{geometry}
+
+% ---------------------------------------------------------------------------
+% COLOR (load before tikz/circuitikz so xcolor options are not re-requested)
+% ---------------------------------------------------------------------------
+\usepackage[table]{xcolor}
+\definecolor{accent}{HTML}{0B5D71}
+\definecolor{accentdark}{HTML}{073F4C}
+\definecolor{neutral}{HTML}{3C4145}
+\definecolor{neutrallight}{HTML}{EEF3F5}
+\definecolor{graytext}{HTML}{65707A}
+\definecolor{caution}{HTML}{8A4B08}
+\definecolor{cautionbg}{HTML}{FBF1E6}
+\definecolor{rowalt}{HTML}{F4F7F8}
+\definecolor{scopebg}{HTML}{0A1F2E}
+\definecolor{gridcol}{HTML}{2A5561}
+\definecolor{chYellow}{HTML}{FFCC33}
+\definecolor{chCyan}{HTML}{33D6E0}
+
+% ---------------------------------------------------------------------------
+% DRAWING
+% ---------------------------------------------------------------------------
+\usepackage{tikz}
+\usetikzlibrary{calc,positioning,arrows.meta}
+\usepackage{circuitikz}
+
+% ---------------------------------------------------------------------------
+% TYPOGRAPHY
+% ---------------------------------------------------------------------------
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{textcomp}
+
+% ---------------------------------------------------------------------------
+% STRUCTURE / TABLES / LISTS
+% ---------------------------------------------------------------------------
+\usepackage{titlesec}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{float}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usetikzlibrary{shadows}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{fontawesome5}
+\usepackage[font=small,labelfont={bf,color=accent}]{caption}
+\usepackage[hidelinks]{hyperref}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% ---------------------------------------------------------------------------
+% SECTION STYLE
+% ---------------------------------------------------------------------------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{accent}}{\thesection}{0.6em}{}
+  [{\color{accent!35}\titlerule[0.8pt]}]
+\titlespacing*{\section}{0pt}{1.6em}{0.9em}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{neutral}}{\thesubsection}{0.6em}{}
+\titlespacing*{\subsection}{0pt}{1.1em}{0.5em}
+
+% ---------------------------------------------------------------------------
+% HEADER / FOOTER
+% ---------------------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0.3pt}
+\fancyheadoffset{0pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{accent!50}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[L]{\footnotesize\color{graytext} Solstice Semiconductor -- Applications Engineering}
+\fancyhead[R]{\footnotesize\color{graytext} AN-2381 \quad Rev.~C}
+\fancyfoot[L]{\footnotesize\color{graytext} \textcopyright~2026 Solstice Semiconductor Corp. -- Public}
+\fancyfoot[R]{\footnotesize\color{graytext} Page \thepage\ of \pageref{LastPage}}
+
+\hypersetup{
+  pdftitle={AN-2381: 5V-to-3.3V Synchronous Buck Converter Reference Design},
+  pdfauthor={Solstice Semiconductor Corporation}
+}
+
+\begin{document}
+
+% ===========================================================================
+% TITLE BLOCK
+% ===========================================================================
+\begin{tcolorbox}[colback=accent,colframe=accentdark,boxrule=0.4pt,arc=1pt,
+  left=10pt,right=10pt,top=7pt,bottom=7pt]
+\color{white}
+\begin{tabularx}{\linewidth}{@{}X r@{}}
+\raisebox{-0.15em}{\Large\faMicrochip}\ \ \textbf{\large Solstice Semiconductor} &
+\textbf{\small APPLICATION NOTE} \\
+\end{tabularx}
+\end{tcolorbox}
+
+\vspace{6pt}
+{\LARGE\bfseries\color{accent} 5V-to-3.3V, 2A Synchronous Buck Converter}\\[2pt]
+{\LARGE\bfseries\color{accent} Reference Design for Industrial IoT Sensor Nodes}\\[6pt]
+{\large\color{graytext} Featuring the SSC61830 Synchronous Buck Converter Controller}
+
+\vspace{10pt}
+\begin{tcolorbox}[colback=neutrallight,colframe=accent,boxrule=0.7pt,arc=1pt,
+  left=10pt,right=10pt,top=6pt,bottom=6pt]
+\setlength{\extrarowheight}{2pt}
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+Doc. Number:      & AN-2381 \\
+Revision:         & C \\
+Classification:   & Public -- No NDA Required \\
+Author:           & D. Alvarez, Applications Engineering \\
+Approved By:      & M. Chen, Sr. Applications Manager \\
+Date of Issue:    & 2026-06-15 \\
+Status:           & Released for Production \\
+\end{tabularx}
+\end{tcolorbox}
+
+\vspace{6pt}
+\section*{Revision History}
+\begin{table}[H]
+\centering
+\footnotesize
+\begin{tabularx}{\linewidth}{@{}>{\centering\arraybackslash}p{1.0cm} >{\centering\arraybackslash}p{2.1cm} p{3.0cm} X@{}}
+\toprule
+\textbf{Rev} & \textbf{Date} & \textbf{Author} & \textbf{Description of Change} \\
+\midrule
+A & 2025-11-03 & D. Alvarez & Initial release. \\
+B & 2026-02-18 & D. Alvarez & Updated bill of materials for X7R dielectric substitution; added thermal derating note. \\
+C & 2026-06-15 & M. Chen & Added oscilloscope validation data; revised feedback divider values for tighter output-voltage tolerance. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ===========================================================================
+\section{Scope}
+This application note describes a complete reference design for a 5\,V-to-3.3\,V,
+2\,A synchronous buck converter intended to power sensor and communication
+subsystems in industrial Internet-of-Things (IoT) nodes. It covers the circuit
+design, component selection with trade-off rationale, printed-circuit-board
+(PCB) layout guidance, and bench validation results for a design built around
+the Solstice Semiconductor SSC61830 synchronous buck converter controller.
+
+This document does \emph{not} cover firmware, digital communication interfaces,
+or enclosure/mechanical design. Full electrical specifications for the
+SSC61830 are provided in the associated datasheet, Reference~\ref{ref:datasheet}.
+
+% ===========================================================================
+\section{Symbols, Abbreviations, and Acronyms}
+\begin{minipage}[t]{0.48\linewidth}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{3mm}}>{\raggedright\arraybackslash}X@{}}
+$V_{IN}$          & Input supply voltage \\
+$V_{OUT}$         & Regulated output voltage \\
+$I_{OUT}$         & Output load current \\
+$f_{SW}$          & Switching frequency \\
+$D$               & Duty cycle \\
+$\Delta V_{OUT}$  & Output voltage ripple (peak-to-peak) \\
+$\eta$            & Power conversion efficiency \\
+\end{tabularx}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+\small
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{3mm}}>{\raggedright\arraybackslash}X@{}}
+ESR  & Equivalent series resistance \\
+EMI  & Electromagnetic interference \\
+PWM  & Pulse-width modulation \\
+SMD  & Surface-mount device \\
+PCB  & Printed circuit board \\
+RMS  & Root mean square \\
+ECO  & Engineering change order \\
+\end{tabularx}
+\end{minipage}
+
+% ===========================================================================
+\section{System Overview and Design Requirements}
+Industrial IoT sensor nodes are commonly powered from a 5\,V USB or wall-adapter
+rail and require a well-regulated 3.3\,V supply for microcontrollers, radios,
+and analog front ends. The converter must remain efficient across a wide load
+range, tolerate the ambient temperature extremes of an outdoor enclosure, and
+keep switching-noise coupling to a minimum so nearby analog sensor channels are
+not disturbed.
+
+\subsection{Functional Requirements}
+\begin{enumerate}[label=\textbf{REQ-\arabic*:},leftmargin=2.4cm,itemsep=4pt,topsep=4pt]
+\item The regulator shall accept an input voltage range of 4.5\,V to 5.5\,V.
+\item The regulator shall deliver a regulated output of 3.3\,V $\pm$2\% at up
+      to 2\,A continuous load current.
+\item Efficiency shall exceed 90\% at 1\,A load, 5\,V input.
+\item Output voltage ripple shall not exceed 33\,mV peak-to-peak (1\% of
+      $V_{OUT}$) at full load.
+\item The design shall operate over an ambient temperature range of
+      $-40^\circ$C to $+85^\circ$C.
+\item Quiescent supply current in light-load operation shall not exceed
+      25\,\textmu A.
+\item Conducted EMI emissions shall comply with CISPR~32 Class~B
+      limits, Reference~\ref{ref:cispr}.
+\end{enumerate}
+
+\subsection{Target Applications}
+\begin{itemize}[leftmargin=1.3em,itemsep=2pt]
+\item Battery-backed industrial IoT sensor nodes
+\item Distributed PLC digital and analog I/O modules
+\item Low-power edge gateways and wireless sensor hubs
+\end{itemize}
+
+% ===========================================================================
+\section{Circuit Description}
+
+\subsection{Power Stage}
+The power stage uses the SSC61830, a peak-current-mode synchronous buck
+converter controller with integrated 30\,V / 2.5\,A high-side and low-side
+MOSFETs. The controller switches at a fixed frequency of 500\,kHz, set
+internally, and regulates the output through an external resistive feedback
+divider. Figure~\ref{fig:schematic} shows the simplified schematic of the
+power stage.
+
+\begin{figure}[H]
+\centering
+\begin{circuitikz}[every node/.append style={font=\scriptsize}]
+% --- input source and ground rail ---
+\draw (0,0) to[V, l={$V_{IN}$ = 5\,V}] (0,3.4);
+\draw (0,0) node[ground]{};
+\draw (0,0) -- (10.3,0);
+% --- VIN rail ---
+\draw (0,3.4) -- (4.2,3.4);
+\draw (1.6,3.4) node[circ]{};
+\draw (1.6,3.4) to[C, l={$C_{IN}$}] (1.6,0);
+\draw (1.6,0) node[circ]{};
+\draw (3.4,3.4) node[circ]{};
+% --- EN tied to VIN ---
+\draw (4.2,2.6) -- (3.4,2.6) -- (3.4,3.4);
+% --- controller IC ---
+\draw (4.2,0.8) rectangle (6.6,4.0);
+\node[font=\bfseries\small] at (5.4,2.65) {U1};
+\node[font=\scriptsize] at (5.4,2.2) {SSC61830};
+\node[anchor=south,font=\scriptsize] at ($(4.2,3.4)+(0.4,0.05)$) {VIN};
+\node[anchor=north,font=\scriptsize] at ($(4.2,2.6)+(0.35,-0.05)$) {EN};
+\node[anchor=south,font=\scriptsize] at ($(6.6,3.0)+(-0.35,0.05)$) {SW};
+\node[anchor=north,font=\scriptsize] at ($(6.6,1.4)+(-0.35,-0.05)$) {FB};
+\node[anchor=north,font=\scriptsize] at (5.4,0.75) {GND};
+\draw (5.4,0.8) -- (5.4,0);
+\draw (5.4,0) node[circ]{};
+% --- SW node, inductor, Vout ---
+\draw (6.6,3.0) -- (7.4,3.0);
+\draw (7.4,3.0) to[L, l={$L_1$ = 2.2\,\textmu H}] (9.0,3.0);
+\draw (9.0,3.0) node[circ]{};
+% --- feedback divider ---
+\draw (9.0,3.0) to[R, l={$R_1$ = 45.0\,k$\Omega$}] (9.0,1.4);
+\draw (9.0,1.4) node[circ]{};
+\draw (9.0,1.4) -- (6.6,1.4);
+\draw (9.0,1.4) to[R, l={$R_2$ = 10.0\,k$\Omega$}] (9.0,0);
+\draw (9.0,0) node[circ]{};
+% --- output capacitor ---
+\draw (9.0,3.0) -- (9.6,3.0);
+\draw (9.6,3.0) to[C, l={$C_{OUT}$}] (9.6,0);
+\draw (9.6,0) node[circ]{};
+% --- load resistor ---
+\draw (9.6,3.0) -- (10.3,3.0);
+\draw (10.3,3.0) to[R, l={$R_L$}] (10.3,0);
+\end{circuitikz}
+\caption{Simplified schematic of the 5\,V-to-3.3\,V, 2\,A synchronous buck
+converter built around the SSC61830 controller.}
+\label{fig:schematic}
+\end{figure}
+
+\subsection{Feedback Network Design}
+The SSC61830 regulates its feedback (FB) pin to an internal reference,
+$V_{REF} = 0.6$\,V. The output voltage is set by the resistive divider $R_1$,
+$R_2$ according to:
+\begin{equation}
+V_{OUT} = V_{REF}\left(1+\dfrac{R_1}{R_2}\right)
+\label{eq:fb}
+\end{equation}
+Choosing $R_2 = 10.0\,\mathrm{k}\Omega$ (a divider current of approximately
+60\,\textmu A) and solving Equation~\eqref{eq:fb} for a 3.3\,V output gives
+$R_1 = 45.0\,\mathrm{k}\Omega$. Both resistors use 1\% tolerance thin-film
+parts to hold the output within the $\pm2\%$ requirement of REQ-2 across
+process and temperature.
+
+% ===========================================================================
+\section{Bill of Materials}
+Table~\ref{tab:bom} lists the components used in the reference design shown
+in Figure~\ref{fig:schematic}.
+
+\begin{table}[H]
+\centering
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}p{1.3cm} X >{\raggedright\arraybackslash}p{2.6cm} >{\centering\arraybackslash}p{1.6cm} >{\raggedright\arraybackslash}p{3.6cm} >{\centering\arraybackslash}p{0.9cm}@{}}
+\toprule
+\textbf{Ref. Des.} & \textbf{Description} & \textbf{Value} & \textbf{Package} & \textbf{Mfr. Part Number} & \textbf{Qty} \\
+\midrule
+\rowcolor{rowalt}
+U1   & Synchronous buck converter controller & SSC61830          & HTSSOP-16      & Solstice SSC61830QTR            & 1 \\
+L1   & Shielded power inductor               & 2.2\,\textmu H, 4.5\,A sat. & 4x4x1.8\,mm & Coilcraft XAL4020-222            & 1 \\
+\rowcolor{rowalt}
+Cin  & X7R ceramic capacitor                 & 10\,\textmu F, 10\,V       & 0805      & Murata GRM21BR61A106KE19L        & 2 \\
+Cout & X7R ceramic capacitor                 & 22\,\textmu F, 6.3\,V      & 0805      & Murata GRM21BR60J226ME39L        & 2 \\
+\rowcolor{rowalt}
+R1   & Thin-film resistor, 1\%               & 45.0\,k$\Omega$   & 0402           & Yageo RC0402FR-0745K0L            & 1 \\
+R2   & Thin-film resistor, 1\%               & 10.0\,k$\Omega$   & 0402           & Yageo RC0402FR-0710KL             & 1 \\
+\rowcolor{rowalt}
+$R_{EN}$ & EN pull-up resistor               & 100\,k$\Omega$, 5\%    & 0402      & Yageo RC0402JR-07100KL            & 1 \\
+$C_{FF}$ & Feed-forward capacitor (optional) & 10\,pF, 50\,V     & 0402           & TDK C1005C0G1H100J                & 1 \\
+\bottomrule
+\end{tabularx}
+\caption{Reference design bill of materials.}
+\label{tab:bom}
+\end{table}
+
+% ===========================================================================
+\section{Design Trade-off Analysis}
+
+\subsection{Inductor Selection}
+Table~\ref{tab:tradeoff-l} compares the selected 2.2\,\textmu H inductor
+against a higher-inductance alternative.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}p{2.8cm} p{2.7cm} p{2.7cm} X@{}}
+\toprule
+\textbf{Parameter} & \textbf{2.2\,\textmu H (Selected)} & \textbf{4.7\,\textmu H (Alternate)} & \textbf{Design Impact} \\
+\midrule
+Peak-to-peak ripple current & 1.15\,A & 0.54\,A & Lower $L$ raises conduction loss slightly but improves load-transient slew rate. \\
+Output voltage ripple & 28\,mV & 14\,mV & Higher $L$ reduces ripple, easing the REQ-4 margin further. \\
+Solution footprint & 4x4x1.8\,mm & 5x5x2.0\,mm & Smaller part saves approximately 2.4\,mm$^2$ of board area. \\
+Efficiency at 1\,A & 91.2\% & 92.6\% & Higher $L$ gives a modest efficiency gain from lower RMS current. \\
+\midrule
+Recommendation & \multicolumn{3}{p{9.2cm}}{2.2\,\textmu H selected to prioritize fast load-transient response for sensor wake events over the small efficiency gain of the larger part.} \\
+\bottomrule
+\end{tabularx}
+\caption{Inductor value trade-off analysis.}
+\label{tab:tradeoff-l}
+\end{table}
+
+\subsection{Switching Frequency Selection}
+Table~\ref{tab:tradeoff-f} summarizes the trade-off between the selected
+500\,kHz switching frequency and a 1\,MHz alternative.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}p{3.0cm} p{2.6cm} p{2.6cm} X@{}}
+\toprule
+\textbf{Parameter} & \textbf{500\,kHz (Selected)} & \textbf{1\,MHz (Alternate)} & \textbf{Design Impact} \\
+\midrule
+Passive component size & Larger $L_1$, $C_{OUT}$ & Smaller $L_1$, $C_{OUT}$ & 1\,MHz permits a smaller solution footprint. \\
+Switching loss & Lower & Higher & 500\,kHz reduces gate-drive and switching losses, favoring efficiency. \\
+Conducted EMI & Lower peak, easier filtering & Higher fundamental frequency & 500\,kHz was selected for margin against the REQ-7 CISPR~32 Class~B limit. \\
+\bottomrule
+\end{tabularx}
+\caption{Switching frequency trade-off analysis.}
+\label{tab:tradeoff-f}
+\end{table}
+
+% ===========================================================================
+\section{Bench Validation}
+The reference design was built and measured on the bench under the conditions
+of Section~3.1. Figure~\ref{fig:scope} shows representative oscilloscope
+captures of the switch-node waveform and the output ripple voltage at
+$V_{IN} = 5$\,V, $I_{OUT} = 2$\,A.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\linewidth}
+\centering
+\begin{tikzpicture}
+\fill[scopebg] (0,0) rectangle (7.2,4.2);
+\foreach \x in {0,0.9,...,7.2}
+  \draw[gridcol,thin] (\x,0) -- (\x,4.2);
+\foreach \y in {0,0.7,...,4.2}
+  \draw[gridcol,thin] (0,\y) -- (7.2,\y);
+\draw[thick,chYellow]
+  (0,0.9) -- (0.15,3.4) -- (1.6,3.4) -- (1.75,0.9) -- (2.4,0.9) --
+  (2.55,3.4) -- (4.0,3.4) -- (4.15,0.9) -- (4.8,0.9) --
+  (4.95,3.4) -- (6.4,3.4) -- (6.55,0.9) -- (7.2,0.9);
+\node[anchor=north west,font=\tiny,text=white] at (0.1,4.15)
+  {CH1 \ 5.00\,V/div \ \ 500\,ns/div};
+\node[anchor=south west,font=\tiny,text=white] at (0.1,0.08)
+  {Freq = 500.3\,kHz \ \ Duty = 66.1\%};
+\draw[gridcol,thick] (0,0) rectangle (7.2,4.2);
+\end{tikzpicture}
+\small\itshape (a) Switch-node (SW) voltage
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+\centering
+\begin{tikzpicture}
+\fill[scopebg] (0,0) rectangle (7.2,4.2);
+\foreach \x in {0,0.9,...,7.2}
+  \draw[gridcol,thin] (\x,0) -- (\x,4.2);
+\foreach \y in {0,0.7,...,4.2}
+  \draw[gridcol,thin] (0,\y) -- (7.2,\y);
+\draw[thick,chCyan,samples=150,domain=0:7.2]
+  plot (\x,{2.1+0.2*sin(2*180*\x/0.8)});
+\node[anchor=north west,font=\tiny,text=white] at (0.1,4.15)
+  {CH2 \ 20.0\,mV/div (AC) \ \ 500\,ns/div};
+\node[anchor=south west,font=\tiny,text=white] at (0.1,0.08)
+  {Vpp = 24.6\,mV \ \ Ripple f = 498.7\,kHz};
+\draw[gridcol,thick] (0,0) rectangle (7.2,4.2);
+\end{tikzpicture}
+\small\itshape (b) $V_{OUT}$ ripple, AC-coupled
+\end{minipage}
+\caption{Representative bench oscilloscope captures at $V_{IN}=5$\,V,
+$I_{OUT}=2$\,A. Waveforms are illustrative placeholders for the captured
+screen data.}
+\label{fig:scope}
+\end{figure}
+
+Table~\ref{tab:measured} summarizes key measured parameters against the
+requirements of Section~3.1.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}p{2.6cm} X >{\centering\arraybackslash}p{2.0cm} >{\centering\arraybackslash}p{2.0cm} >{\centering\arraybackslash}p{1.4cm}@{}}
+\toprule
+\textbf{Parameter} & \textbf{Test Condition} & \textbf{Measured} & \textbf{Spec} & \textbf{Result} \\
+\midrule
+Efficiency & $V_{IN}=5$\,V, $I_{OUT}=1$\,A & 91.4\% & $>$90\% & Pass \\
+$V_{OUT}$ accuracy & $I_{OUT}=0$ to 2\,A & 3.29\,V -- 3.31\,V & 3.3\,V $\pm2$\% & Pass \\
+Output ripple & $I_{OUT}=2$\,A & 24.6\,mV pk-pk & $<$33\,mV & Pass \\
+Quiescent current & Burst mode, no load & 21\,\textmu A & $<$25\,\textmu A & Pass \\
+Load transient (0-2\,A) & 1\,A/\textmu s step & 1.8\% deviation & $<$2\% & Pass \\
+\bottomrule
+\end{tabularx}
+\caption{Summary of measured bench performance.}
+\label{tab:measured}
+\end{table}
+
+% ===========================================================================
+\section{PCB Layout Recommendations}
+\begin{itemize}[leftmargin=1.3em,itemsep=3pt]
+\item Minimize the area of the high-frequency loop formed by $C_{IN}$, U1, and
+      the power ground return; place $C_{IN}$ as close as possible to the
+      VIN and GND pins of U1.
+\item Route the SW node as a short, wide trace directly to $L_1$; avoid
+      routing SW beneath sensitive analog circuitry.
+\item Place $R_1$ and $R_2$ close to the FB pin and route the FB trace away
+      from SW and $L_1$ to avoid noise coupling into the feedback loop.
+\item Use a solid ground plane on an inner layer with multiple vias
+      stitching U1's thermal pad to the plane for heat spreading.
+\item Keep $C_{OUT}$ close to the load connector to minimize output
+      trace inductance and improve transient response.
+\item Provide a dedicated thermal relief and generous copper pour on the
+      VIN and SW planes to aid conducted heat dissipation.
+\end{itemize}
+
+\begin{tcolorbox}[colback=cautionbg,colframe=caution,boxrule=0.7pt,arc=1pt,
+  left=8pt,right=8pt,top=5pt,bottom=5pt]
+\textbf{\color{caution}\faExclamationTriangle\ CAUTION:} Excessive loop area
+in the $C_{IN}$--U1--ground path is the most common root cause of switch-node
+ringing and CISPR~32 conducted-emission failures observed in early
+prototypes. Verify loop area against Figure~\ref{fig:schematic} before
+release to production.
+\end{tcolorbox}
+
+% ===========================================================================
+\section{Reference Design Checklist}
+\begin{itemize}[label=$\square$,leftmargin=1.3em,itemsep=5pt]
+\item Confirm $V_{IN}$ is present and within 4.5\,V--5.5\,V at the input
+      connector before enabling the board.
+\item Verify the EN pin transitions high and $V_{OUT}$ rises to
+      3.3\,V $\pm2$\% within 5\,ms of enable.
+\item Measure output ripple with an AC-coupled scope probe; confirm
+      $<$33\,mV peak-to-peak at full load.
+\item Record efficiency at 0.2\,A, 1\,A, and 2\,A load points; confirm
+      $>$90\% at 1\,A.
+\item Perform a 0\,A-to-2\,A load transient test; confirm $V_{OUT}$
+      recovers within 2\% in under 50\,\textmu s.
+\item Capture a thermal image at 2\,A, 25$^\circ$C ambient, after 10 minutes;
+      confirm the U1 case temperature is below 105$^\circ$C.
+\item Verify the FB trace is routed away from the SW node and $L_1$ per
+      Section~8.
+\item Confirm the silkscreen revision marking matches the assembly drawing
+      revision (Rev.~C).
+\item Run a conducted-emissions pre-scan and compare against the
+      CISPR~32 Class~B limit.
+\item Archive all test data and sign off in the engineering change order
+      (ECO) system.
+\end{itemize}
+
+% ===========================================================================
+\section*{References}
+\begin{enumerate}[leftmargin=1.6em,itemsep=2pt]
+\item\label{ref:datasheet} Solstice Semiconductor, ``SSC61830 -- 5.5\,V
+      Input, 2\,A Synchronous Step-Down Converter,'' Datasheet Rev.~4, 2026.
+\item Solstice Semiconductor, ``AN-2205: PCB Layout Guidelines for
+      High-Efficiency DC-DC Converters,'' Application Note, 2025.
+\item\label{ref:cispr} CISPR~32:2015, ``Electromagnetic compatibility of
+      multimedia equipment -- Emission requirements.''
+\end{enumerate}
+
+\end{document}

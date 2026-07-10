@@ -1,0 +1,269 @@
+% PhD Defense Beamer Presentation — editable & compilable online at https://letx.app
+% Compiles with pdflatex. A clean, modern PhD defense deck built on a hand-made
+% theme (NO metropolis/fontspec) so it compiles anywhere. ~15 slides.
+\documentclass[aspectratio=169,11pt]{beamer}
+\usepackage[T1]{fontenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+
+% ---------------- custom theme ----------------
+\definecolor{ink}{HTML}{1B2A4A}
+\definecolor{accent}{HTML}{3A7CA5}
+\definecolor{accent2}{HTML}{E9A44C}
+\definecolor{light}{HTML}{EEF3F8}
+\definecolor{mist}{HTML}{5A6577}
+
+\usecolortheme{default}
+\setbeamercolor{normal text}{fg=ink}
+\setbeamercolor{frametitle}{fg=white,bg=ink}
+\setbeamercolor{structure}{fg=accent}
+\setbeamercolor{block title}{fg=white,bg=accent}
+\setbeamercolor{block body}{bg=light}
+\setbeamercolor{itemize item}{fg=accent}
+\setbeamercolor{itemize subitem}{fg=accent2}
+\setbeamerfont{frametitle}{series=\bfseries}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=3.2ex,dp=1.2ex,leftskip=0.6cm]{frametitle}%
+    \usebeamerfont{frametitle}\insertframetitle%
+  \end{beamercolorbox}%
+  {\color{accent2}\rule{\paperwidth}{2pt}}}
+\setbeamertemplate{itemize item}{\small\raise0.5pt\hbox{\donotcoloroutermaths$\blacktriangleright$}}
+\setbeamertemplate{footline}{%
+  \hbox{\begin{beamercolorbox}[wd=\paperwidth,ht=2.6ex,dp=1ex,leftskip=0.5cm,rightskip=0.5cm]{}%
+    \color{mist}\tiny K.\ Ramaswamy \textbullet\ PhD Defense
+    \hfill \color{mist}\tiny letx.app \hfill \color{mist}\tiny \insertframenumber/\inserttotalframenumber%
+  \end{beamercolorbox}}}
+
+% ---------------- title info ----------------
+\title{\bfseries Robustness of Deep Sequence Models\\ under Distribution Shift}
+\subtitle{A Framework for Detection, Analysis, and Mitigation}
+\author{Karthik Ramaswamy}
+\institute{Department of Computer Science \textbullet\ Northbridge University}
+\date{Doctoral Defense \textbullet\ 12 June 2026}
+
+\begin{document}
+
+% ---- title slide ----
+{\setbeamertemplate{footline}{}
+\begin{frame}
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[ink] (current page.north west) rectangle ([yshift=-2.2cm]current page.north east);
+    \fill[accent2] ([yshift=-2.2cm]current page.north west)
+          rectangle ([yshift=-2.32cm]current page.north east);
+  \end{tikzpicture}
+  \vspace{1.4cm}
+  {\color{ink}\Large\bfseries Robustness of Deep Sequence Models under Distribution Shift}\\[4pt]
+  {\color{accent}\normalsize A Framework for Detection, Analysis, and Mitigation}\\[16pt]
+  {\bfseries Karthik Ramaswamy}\\[2pt]
+  {\color{mist}\small Department of Computer Science \textbullet\ Northbridge University}\\[10pt]
+  {\color{mist}\small Doctoral Defense \textbullet\ 12 June 2026}\\[8pt]
+  {\color{mist}\footnotesize Advisor: Prof.\ E.\ Hartmann \quad\textbullet\quad
+   Committee: Prof.\ L.\ Osei, Prof.\ M.\ Bianchi}
+\end{frame}}
+
+% ---- outline ----
+\begin{frame}{Outline}
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+      \begin{enumerate}
+        \item Motivation \& Problem
+        \item Research Questions
+        \item Contributions
+        \item Method: Shift Detection
+      \end{enumerate}
+    \column{0.5\textwidth}
+      \begin{enumerate}\setcounter{enumi}{4}
+        \item Experiments \& Results
+        \item Analysis
+        \item Conclusions \& Future Work
+      \end{enumerate}
+  \end{columns}
+\end{frame}
+
+% ---- section divider macro ----
+\newcommand{\sectionslide}[2]{%
+{\setbeamertemplate{footline}{}
+\begin{frame}
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[ink] (current page.center) ++(-\paperwidth/2,-1.4cm)
+      rectangle ++(\paperwidth,2.8cm);
+  \end{tikzpicture}
+  \vfill
+  \centering{\color{accent2}\large #1}\\[6pt]
+  {\color{white}\Huge\bfseries #2}
+  \vfill
+\end{frame}}}
+
+\sectionslide{Part 1}{Motivation \& Problem}
+
+% ---- motivation ----
+\begin{frame}{Motivation}
+  \begin{columns}[T]
+    \column{0.58\textwidth}
+      Deep sequence models power translation, forecasting, and clinical
+      prediction --- yet they \alert{degrade silently} when deployment data drifts
+      from training data.
+      \begin{itemize}
+        \item Failures are often \textbf{undetected} until downstream harm.
+        \item Retraining is costly and \textbf{reactive}.
+        \item No unified framework links \textbf{detection} to \textbf{mitigation}.
+      \end{itemize}
+    \column{0.42\textwidth}
+      \begin{block}{The gap}
+        We can measure accuracy \emph{after} labels arrive --- but need to flag
+        shift \emph{before} performance collapses.
+      \end{block}
+  \end{columns}
+\end{frame}
+
+% ---- research questions ----
+\begin{frame}{Research Questions}
+  \begin{enumerate}
+    \item[\textbf{RQ1}] Can we detect distribution shift from \textbf{unlabeled} model
+      internals, in real time?
+    \item[\textbf{RQ2}] Which representation-level signals best \textbf{predict} accuracy
+      loss under shift?
+    \item[\textbf{RQ3}] Can a lightweight adaptation \textbf{recover} performance without
+      full retraining?
+  \end{enumerate}
+  \vspace{4pt}
+  \begin{block}{Thesis statement}
+    Representation-drift signals provide an early, label-free indicator of accuracy loss,
+    and enable targeted adaptation that restores most of the lost performance.
+  \end{block}
+\end{frame}
+
+% ---- contributions ----
+\begin{frame}{Contributions}
+  \begin{columns}[T]
+    \column{0.33\textwidth}
+      \begin{block}{1. Detector}
+        A label-free drift score from hidden-state statistics; $O(d)$ per step.
+      \end{block}
+    \column{0.33\textwidth}
+      \begin{block}{2. Analysis}
+        A study linking drift magnitude to accuracy loss across 6 datasets.
+      \end{block}
+    \column{0.33\textwidth}
+      \begin{block}{3. Mitigation}
+        A test-time adaptation recovering 78\% of lost accuracy at 4\% compute.
+      \end{block}
+  \end{columns}
+\end{frame}
+
+\sectionslide{Part 2}{Method}
+
+% ---- method ----
+\begin{frame}{Method: Representation-Drift Detection}
+  For hidden states $h_t$, we track the divergence between a reference window
+  $\mathcal{R}$ and a live window $\mathcal{L}$:
+  \begin{equation}
+    D_t = \mathrm{MMD}^2\!\left(\mathcal{R},\mathcal{L}\right)
+        = \left\lVert \mu_\mathcal{R} - \mu_\mathcal{L}\right\rVert^2_{\mathcal{H}}.
+  \end{equation}
+  A shift is flagged when $D_t$ exceeds a calibrated threshold $\tau$.
+  \vspace{4pt}
+  \begin{center}
+  \begin{tikzpicture}[node distance=8mm,every node/.style={font=\footnotesize},
+                      b/.style={draw=accent,fill=light,rounded corners=2pt,
+                                minimum height=8mm,minimum width=20mm,align=center}]
+    \node[b](in){Input\\stream};
+    \node[b,right=of in](enc){Encoder\\$h_t$};
+    \node[b,right=of enc](sc){Drift\\score $D_t$};
+    \node[b,right=of sc,fill=accent2!25](al){Flag \&\\adapt};
+    \foreach \a/\bnode in {in/enc,enc/sc,sc/al}{\draw[-{Stealth},accent,thick](\a)--(\bnode);}
+  \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+\sectionslide{Part 3}{Experiments \& Results}
+
+% ---- results table ----
+\begin{frame}{Results: Detection \& Recovery}
+  \begin{columns}[T]
+    \column{0.56\textwidth}
+      \begin{table}
+        \footnotesize
+        \begin{tabular}{@{}lccc@{}}
+          \toprule
+          \textbf{Dataset} & \textbf{AUROC} & \textbf{Lead} & \textbf{Recov.}\\
+          \midrule
+          WMT-News     & 0.94 & 1.8k & 81\%\\
+          MIMIC-Vitals & 0.91 & 2.3k & 74\%\\
+          Traffic-Flow & 0.96 & 1.2k & 83\%\\
+          Energy-Load  & 0.89 & 3.1k & 71\%\\
+          \midrule
+          \textbf{Mean} & \textbf{0.925} & \textbf{2.1k} & \textbf{77.8\%}\\
+          \bottomrule
+        \end{tabular}
+      \end{table}
+    \column{0.44\textwidth}
+      \begin{block}{Takeaways}
+        \begin{itemize}\footnotesize
+          \item Detects shift \textbf{ahead} of accuracy collapse (lead in steps).
+          \item Recovers \textbf{$\sim$78\%} of lost accuracy at low compute.
+          \item Robust across text, clinical, and sensor data.
+        \end{itemize}
+      \end{block}
+  \end{columns}
+\end{frame}
+
+% ---- analysis ----
+\begin{frame}{Analysis: When Does It Work?}
+  \begin{itemize}
+    \item \textbf{Strong}: gradual covariate shift --- drift score rises smoothly, giving
+      long lead time.
+    \item \textbf{Moderate}: label shift --- detectable, but recovery depends on class
+      overlap.
+    \item \alert{Limitation}: adversarial or abrupt shifts leave little lead time; detection
+      still fires but mitigation lags.
+  \end{itemize}
+  \begin{block}{Why it generalizes}
+    The signal lives in \emph{representations}, not task labels --- so it transfers across
+    domains and architectures.
+  \end{block}
+\end{frame}
+
+\sectionslide{Part 4}{Conclusions}
+
+% ---- conclusions ----
+\begin{frame}{Conclusions \& Future Work}
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+      \textbf{Conclusions}
+      \begin{itemize}
+        \item Label-free drift detection is \textbf{feasible and accurate}.
+        \item Drift magnitude \textbf{predicts} accuracy loss.
+        \item Targeted adaptation \textbf{recovers} most lost performance cheaply.
+      \end{itemize}
+    \column{0.5\textwidth}
+      \textbf{Future Work}
+      \begin{itemize}
+        \item Abrupt/adversarial shift handling.
+        \item Multi-modal streams.
+        \item On-device deployment study.
+      \end{itemize}
+  \end{columns}
+\end{frame}
+
+% ---- thanks ----
+{\setbeamertemplate{footline}{}
+\begin{frame}
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[ink] (current page.north west) rectangle (current page.south east);
+  \end{tikzpicture}
+  \vfill\centering
+  {\color{white}\Huge\bfseries Thank You}\\[10pt]
+  {\color{accent2}\large Questions \& Discussion}\\[16pt]
+  {\color{light}\small Karthik Ramaswamy \textbullet\ ramaswamy@northbridge.edu}\\[4pt]
+  {\color{mist}\footnotesize Made with letx.app}
+  \vfill
+\end{frame}}
+
+\end{document}

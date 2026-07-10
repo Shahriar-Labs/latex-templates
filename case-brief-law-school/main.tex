@@ -1,0 +1,467 @@
+% ============================================================
+%  Case Brief Template — Law School / Bar Exam Prep
+%  Edit or compile online at https://letx.app
+%  Engine: pdflatex  |  latexmk -pdf main.tex
+% ============================================================
+
+\documentclass[11pt, letterpaper]{article}
+
+% ── Geometry ─────────────────────────────────────────────────
+\usepackage[
+  top=0.85in, bottom=0.85in,
+  left=0.90in, right=0.90in,
+  headheight=28pt
+]{geometry}
+
+% ── Font: Palatino-family (elegant serif) ────────────────────
+\usepackage{newpxtext}
+\let\Bbbk\relax
+\let\openbox\relax
+\usepackage{newpxmath}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+% ── Micro-typography ─────────────────────────────────────────
+\usepackage{microtype}
+
+% ── Colour palette ───────────────────────────────────────────
+\usepackage[table]{xcolor}
+\definecolor{navyblue}{HTML}{1B2A4A}   % deep navy — headings & rules
+\definecolor{accent}{HTML}{8B0000}     % dark crimson — case name, labels
+\definecolor{midgray}{HTML}{5A5A5A}   % running text secondary
+\definecolor{lightgray}{HTML}{F4F2EE}  % section band fills
+\definecolor{rulegray}{HTML}{BBBBBB}   % thin horizontal rules
+\definecolor{pagebg}{HTML}{FDFCFA}     % very warm off-white page
+
+% ── Page tint ────────────────────────────────────────────────
+\usepackage{pagecolor}
+\pagecolor{pagebg}
+
+% ── Core packages ────────────────────────────────────────────
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{fontawesome5}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable, most}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{parskip}
+\usepackage{ragged2e}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{amsmath}
+
+% ── Spacing resets (required with parskip + tabularx) ────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+% ── Hyperref ─────────────────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=navyblue,
+  urlcolor=accent,
+  pdftitle={Case Brief: Brown v. Board of Education},
+  pdfauthor={Law School Case Brief Template},
+  pdfsubject={Constitutional Law},
+  pdfkeywords={case brief, constitutional law, equal protection, desegregation}
+]{hyperref}
+
+% ═══════════════════════════════════════════════════════════════
+%  TYPOGRAPHY — Section headings
+% ═══════════════════════════════════════════════════════════════
+\titleformat{\section}
+  {\color{navyblue}\large\bfseries\scshape}
+  {}
+  {0pt}
+  {}
+  [\vspace{-2pt}\color{accent}\rule{\linewidth}{0.6pt}\vspace{2pt}]
+
+\titlespacing*{\section}{0pt}{10pt}{4pt}
+
+\titleformat{\subsection}
+  {\color{navyblue}\normalsize\bfseries}
+  {}
+  {0pt}
+  {}
+
+\titlespacing*{\subsection}{0pt}{6pt}{2pt}
+
+% ═══════════════════════════════════════════════════════════════
+%  TCOLORBOX STYLES
+% ═══════════════════════════════════════════════════════════════
+\tcbset{
+  holdingbox/.style={
+    enhanced,
+    colback=navyblue!8,
+    colframe=navyblue,
+    boxrule=0.7pt,
+    arc=2pt,
+    left=7pt, right=7pt, top=5pt, bottom=5pt,
+    fontupper=\small,
+    breakable,
+  },
+  issuebox/.style={
+    enhanced,
+    colback=accent!6,
+    colframe=accent,
+    boxrule=0.7pt,
+    arc=2pt,
+    left=7pt, right=7pt, top=5pt, bottom=5pt,
+    fontupper=\small\itshape,
+    breakable,
+  },
+  sidenotebox/.style={
+    enhanced,
+    colback=lightgray,
+    colframe=rulegray,
+    boxrule=0.4pt,
+    arc=2pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    fontupper=\footnotesize\color{midgray},
+    breakable,
+  },
+}
+
+% ═══════════════════════════════════════════════════════════════
+%  CUSTOM MACROS
+% ═══════════════════════════════════════════════════════════════
+
+% Inline label used in key/value citation table
+\newcommand{\kv}[1]{\textcolor{accent}{\textbf{#1}}}
+
+% Small caps label for inline call-outs
+\newcommand{\legalterm}[1]{\textsc{#1}}
+
+% Numbered reasoning step
+\newcounter{reasonstep}
+\newcommand{\reasonstep}[1]{%
+  \stepcounter{reasonstep}%
+  \smallskip
+  \noindent
+  \begin{tikzpicture}[baseline=(char.base)]
+    \node[circle, fill=navyblue, text=white,
+          inner sep=1.8pt, font=\tiny\bfseries] (char) {\thereasoningstep};
+  \end{tikzpicture}\hspace{4pt}\textbf{#1}%
+  \par
+}
+
+% Alias for cleaner reference
+\let\thereasoningstep\thereasoningstep
+\newcommand{\thereasoningstep}{\arabic{reasonstep}}
+
+% Dissent/concurrence callout
+\newenvironment{rvcomment}[1]{%
+  \par\smallskip
+  \noindent{\color{midgray}\rule{0.3\linewidth}{0.3pt}}
+  \par\noindent{\footnotesize\color{midgray}\textbf{#1}}\par\small\color{midgray}%
+}{%
+  \par\smallskip
+}
+
+% ═══════════════════════════════════════════════════════════════
+%  HEADER / FOOTER
+% ═══════════════════════════════════════════════════════════════
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+
+\fancyhead[L]{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[navyblue] (current page.north west)
+      rectangle ([yshift=-28pt]current page.north east);
+  \end{tikzpicture}%
+  \hspace{-2pt}\color{white}\footnotesize\textbf{CASE BRIEF}
+  \enspace\textcolor{white!60!navyblue}{$\cdot$}\enspace
+  \textit{Constitutional Law}%
+}
+\fancyhead[R]{%
+  \color{white}\footnotesize
+  \faIcon{balance-scale}\enspace
+  \textit{Brown v.\ Board of Education}%
+}
+\fancyfoot[C]{%
+  \footnotesize\color{midgray}
+  \rule{0.4\linewidth}{0.3pt}\quad
+  Page \thepage
+  \quad\rule{0.4\linewidth}{0.3pt}%
+}
+
+% ═══════════════════════════════════════════════════════════════
+%  DOCUMENT BEGIN
+% ═══════════════════════════════════════════════════════════════
+\begin{document}
+
+% ── TITLE BLOCK ──────────────────────────────────────────────
+\begin{center}
+  {\Large\bfseries\color{accent}%
+    Brown v.\ Board of Education}\\[4pt]
+  {\normalsize\color{navyblue}%
+    347 U.S.\ 483 \textbf{(1954)}
+    \enspace$\cdot$\enspace
+    United States Supreme Court}\\[3pt]
+  {\small\color{midgray}
+    \faIcon{gavel}\enspace Argued December 9, 1952 \& December 8, 1953
+    \enspace$\cdot$\enspace
+    \faIcon{calendar-check}\enspace Decided May 17, 1954}
+\end{center}
+
+\vspace{4pt}
+\color{accent}\rule{\linewidth}{1.2pt}
+\color{navyblue}\rule{\linewidth}{0.3pt}
+\vspace{4pt}
+
+% ── CITATION / PARTIES TABLE ─────────────────────────────────
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  Citation        & 347 U.S.\ 483, 74 S.\ Ct.\ 686, 98 L.\ Ed.\ 873 (1954)                        \\[2pt]
+  Court           & Supreme Court of the United States                                              \\[2pt]
+  Author          & Chief Justice Earl Warren (unanimous opinion)                                   \\[2pt]
+  Petitioners     & Oliver L.\ Brown, et al.                                                        \\[2pt]
+  Respondent      & Board of Education of Topeka, Kansas, et al.                                    \\[2pt]
+  Consolidated    & Briggs v.\ Elliott (S.C.); Davis v.\ County School Bd.\ (Va.);
+                    Gebhart v.\ Belton (Del.)                                                       \\[2pt]
+  Counsel         & Thurgood Marshall (NAACP LDF) for Petitioners;
+                    Paul E.\ Wilson for Respondent                                                  \\[2pt]
+  Classification  & Constitutional Law --- Equal Protection --- Fourteenth Amendment                 \\
+\end{tabularx}
+
+\vspace{6pt}
+\color{rulegray}\rule{\linewidth}{0.4pt}
+\vspace{2pt}
+
+% ─────────────────────────────────────────────────────────────
+\section{Facts}
+% ─────────────────────────────────────────────────────────────
+
+Oliver L.\ Brown, a Black resident of Topeka, Kansas, attempted to enroll his daughter
+Linda Brown in Sumner Elementary School, a white-only public school seven blocks from their
+home.  The Board of Education denied admission pursuant to a Kansas statute permitting
+(but not requiring) cities of more than 15{,}000 inhabitants to maintain separate school
+facilities for Black and white children.  Linda was instead required to travel approximately
+21 blocks to Monroe Elementary School, the nearest Black school.
+
+Four consolidated cases from Kansas, South Carolina, Virginia, and Delaware challenged
+segregated public school systems maintained under state law.  In each jurisdiction,
+Black children had been denied admission to schools attended by white children under
+laws requiring or permitting segregation.  While the facilities in some locales were
+being equalized in physical terms, segregation as a policy remained.
+
+The cases were initially heard by three-judge federal district courts; each court applied
+the ``separate but equal'' doctrine established in \textit{Plessy v.\ Ferguson},
+163 U.S.\ 537 (1896), and denied relief.  Only the Delaware court ordered admission to
+white schools because the Black schools were found to be inferior.  All parties then
+petitioned the Supreme Court.
+
+% ─────────────────────────────────────────────────────────────
+\section{Procedural History}
+% ─────────────────────────────────────────────────────────────
+
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  Trial Courts    & United States District Courts for the Districts of Kansas, South Carolina,
+                    Virginia, and Delaware ruled against the petitioners, upholding segregation
+                    under \textit{Plessy}.                                                         \\[3pt]
+  First Argument  & Argued before the Supreme Court on December 9--11, 1952.                       \\[3pt]
+  Re-argument     & Re-argued December 7--9, 1953, on the Court's own order, directing
+                    counsel to address the original intent of the Fourteenth Amendment and
+                    appropriate remedial powers.                                                    \\[3pt]
+  Disposition     & Reversed and remanded with instructions to admit petitioners
+                    to public schools on a racially non-discriminatory basis.                       \\
+\end{tabularx}
+
+% ─────────────────────────────────────────────────────────────
+\section{Issue}
+% ─────────────────────────────────────────────────────────────
+
+\begin{tcolorbox}[issuebox]
+  Does the racial segregation of children in public schools solely on the basis of race,
+  even when the physical facilities and other \legalterm{tangible} factors may be equal,
+  deprive the minority children of equal educational opportunities, and thereby violate the
+  Equal Protection Clause of the \textbf{Fourteenth Amendment} to the United States
+  Constitution?
+\end{tcolorbox}
+
+% ─────────────────────────────────────────────────────────────
+\section{Holding}
+% ─────────────────────────────────────────────────────────────
+
+\begin{tcolorbox}[holdingbox]
+  \textbf{Yes.}  Separate educational facilities are \textbf{inherently unequal}.
+  Segregation in public schools on the basis of race violates the Equal Protection Clause
+  of the Fourteenth Amendment, regardless of whether the physical facilities and tangible
+  factors are equal.  The Court unanimously overruled \textit{Plessy v.\ Ferguson}
+  insofar as it applied to public education.
+\end{tcolorbox}
+
+% ─────────────────────────────────────────────────────────────
+\section{Reasoning}
+% ─────────────────────────────────────────────────────────────
+
+\subsection{Historical Ambiguity of the Fourteenth Amendment}
+
+Chief Justice Warren acknowledged that the historical record surrounding the adoption of
+the Fourteenth Amendment was ``inconclusive'' with respect to its intended application to
+segregated public schools.  Public education in 1868 was rudimentary in the South; the
+question of segregation in schools had not been the subject of substantial congressional
+debate.  The Court therefore declined to resolve the case on original intent grounds and
+instead examined the \textit{current} role of public education.
+
+\subsection{Importance of Education in Modern Society}
+
+\setcounter{reasonstep}{0}
+\reasonstep{Public education as the foundation of citizenship.}
+The Court emphasized that education is ``perhaps the most important function of state and
+local governments.''  Compulsory school attendance laws and substantial public expenditure
+testify to its importance in a democratic society.  A child denied a good education is
+unlikely to succeed.
+
+\reasonstep{``Separate but equal'' cannot be squared with modern social science.}
+Drawing on empirical social-science evidence, including the \textit{doll studies} of
+Dr.\ Kenneth Clark, the Court found that segregation generated a ``feeling of inferiority''
+in Black children as to their status in the community, affecting their motivation to learn.
+This psychological harm was compounded where state law sanctioned it.
+
+\reasonstep{Intangible factors render separate schools unequal.}
+Even where physical facilities were being equalized, the intangible components of
+educational opportunity --- the ability to study, engage, and interact with students of other
+races --- remained unequal.  The Court cited its own precedents in \textit{Sweatt v.\ Painter}
+and \textit{McLaurin v.\ Oklahoma} to establish that intangible factors matter.
+
+\reasonstep{The Equal Protection Clause forbids such inequality.}
+Whatever may have been the extent of psychological knowledge at the time of \textit{Plessy},
+the 1954 Court held that this finding of inferiority could not be erased by physical
+equalization.  Separate educational facilities are, by their very nature, unequal.
+
+\subsection{Scope of the Decision}
+
+The Court limited its holding to public education and expressly reserved the question of
+remedy, scheduling further argument --- resulting in \textit{Brown II} (1955), which ordered
+desegregation ``with all deliberate speed.''
+
+% ─────────────────────────────────────────────────────────────
+\section{Concurrences \& Dissents}
+% ─────────────────────────────────────────────────────────────
+
+\begin{rvcomment}{Concurrence --- Chief Justice Warren (for a unanimous Court)}
+  The decision was deliberately rendered unanimous, at Chief Justice Warren's urging,
+  to present a united judicial front on so momentous a constitutional question.  There
+  were no separate concurrences or dissents.  Justices who had privately expressed
+  reservations --- including Justice Robert H.\ Jackson and Justice Stanley F.\ Reed ---
+  ultimately joined the opinion.  Justice Jackson, hospitalized with a heart attack,
+  left the hospital to be present for the announcement.
+\end{rvcomment}
+
+\begin{rvcomment}{Historical Contrast --- \textit{Plessy v.\ Ferguson} (1896), Harlan, J., dissenting}
+  Justice John Marshall Harlan's celebrated dissent in \textit{Plessy} anticipated
+  \textit{Brown} by nearly 60 years: ``Our Constitution is color-blind, and neither
+  knows nor tolerates classes among citizens.''  Harlan alone argued that the Louisiana
+  ``Separate Car Act'' violated the Thirteenth and Fourteenth Amendments.
+  \textit{Brown} vindicated Harlan's dissent.
+\end{rvcomment}
+
+% ─────────────────────────────────────────────────────────────
+\section{Significance \& Doctrinal Impact}
+% ─────────────────────────────────────────────────────────────
+
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  Constitutional  & Definitively established that the Equal Protection Clause of the
+                    Fourteenth Amendment prohibits racial segregation in public schools;
+                    repudiated \textit{Plessy v.\ Ferguson} in the education context.         \\[3pt]
+  Civil Rights    & Catalyzed the modern civil rights movement; provided the constitutional
+                    foundation for the Civil Rights Act of 1964 and the Voting Rights
+                    Act of 1965.                                                               \\[3pt]
+  Judicial Role   & Demonstrated the Court's willingness to rely on social science evidence
+                    in constitutional adjudication, triggering debate over \legalterm{judicial
+                    empiricism}.                                                               \\[3pt]
+  Education Law   & Extended through subsequent cases to prohibit segregation in higher
+                    education (\textit{Green v.\ County School Bd.}, 391 U.S.\ 430 (1968);
+                    \textit{Swann v.\ Charlotte-Mecklenburg}, 402 U.S.\ 1 (1971)).            \\[3pt]
+  Precedent       & Repeatedly cited as authority for the proposition that
+                    \textit{separate is inherently unequal} beyond the education context.     \\
+\end{tabularx}
+
+\vspace{4pt}
+\color{rulegray}\rule{\linewidth}{0.4pt}
+\vspace{2pt}
+
+% ─────────────────────────────────────────────────────────────
+\section{Key Quotes}
+% ─────────────────────────────────────────────────────────────
+
+\begin{tcolorbox}[sidenotebox]
+  \textbf{Chief Justice Warren (majority):}\\[3pt]
+  ``We conclude that, in the field of public education, the doctrine of `separate but equal'
+  has no place.  Separate educational facilities are \textbf{inherently unequal}.  Therefore,
+  we hold that the plaintiffs and others similarly situated for whom the actions have been
+  brought are, by reason of the segregation complained of, deprived of the equal protection
+  of the laws guaranteed by the Fourteenth Amendment.''
+  \hfill\textit{347 U.S.\ at 495}
+\end{tcolorbox}
+
+\begin{tcolorbox}[sidenotebox]
+  \textbf{Chief Justice Warren (on psychology of segregation):}\\[3pt]
+  ``To separate [Black children] from others of similar age and qualifications solely
+  because of their race generates a feeling of inferiority as to their status in the community
+  that may affect their hearts and minds in a way unlikely ever to be undone.''
+  \hfill\textit{347 U.S.\ at 494}
+\end{tcolorbox}
+
+% ─────────────────────────────────────────────────────────────
+\section{Related Authority \& Further Reading}
+% ─────────────────────────────────────────────────────────────
+
+\begin{itemize}[leftmargin=1.2em, itemsep=1pt, topsep=2pt]
+  \item \textit{Plessy v.\ Ferguson}, 163 U.S.\ 537 (1896) --- overruled \textit{in re} public education.
+  \item \textit{Sweatt v.\ Painter}, 339 U.S.\ 629 (1950) --- intangible inequalities in law school admissions.
+  \item \textit{McLaurin v.\ Oklahoma State Regents}, 339 U.S.\ 637 (1950) --- impairment of graduate instruction.
+  \item \textit{Brown v.\ Board of Education II}, 349 U.S.\ 294 (1955) --- remedial decree; ``all deliberate speed.''
+  \item \textit{Green v.\ County School Bd.\ of New Kent Cty.}, 391 U.S.\ 430 (1968) --- affirmative duty to desegregate.
+  \item \textit{Swann v.\ Charlotte-Mecklenburg Bd.\ of Ed.}, 402 U.S.\ 1 (1971) --- busing as remedial tool.
+  \item \textit{Parents Involved in Community Schools v.\ Seattle School Dist.\ No.\ 1}, 551 U.S.\ 701 (2007) --- limits on voluntary race-conscious school assignments.
+  \item Richard Kluger, \textit{Simple Justice: The History of Brown v.\ Board of Education and Black America's Struggle for Equality} (1975).
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────
+\section{Exam / Bar Notes}
+% ─────────────────────────────────────────────────────────────
+
+\begin{tcolorbox}[sidenotebox]
+  \textbf{\color{navyblue}Analytical Checklist for Equal Protection (post-\textit{Brown})}\\[4pt]
+  \begin{tabularx}{\linewidth}{@{}>{\color{navyblue}\bfseries}l@{\hspace{6mm}}>{\raggedright\arraybackslash}X@{}}
+    Step 1 & Identify the classification (race $\Rightarrow$ strict scrutiny).               \\[2pt]
+    Step 2 & Determine whether a fundamental right or suspect class is implicated.           \\[2pt]
+    Step 3 & Apply appropriate tier: strict / intermediate / rational basis.                  \\[2pt]
+    Step 4 & Assess government interest (compelling vs.\ substantial vs.\ legitimate).       \\[2pt]
+    Step 5 & Assess means (narrowly tailored vs.\ substantially related vs.\ rational).      \\[2pt]
+    Step 6 & Under strict scrutiny, segregation by race in public schools is per se invalid. \\
+  \end{tabularx}
+\end{tcolorbox}
+
+\begin{itemize}[leftmargin=1.2em, itemsep=2pt, topsep=2pt]
+  \item \textbf{Standard:} Strict scrutiny applies to racial classifications; the government bears the burden.
+  \item \textbf{Overruling:} \textit{Plessy}'s ``separate but equal'' doctrine survives only outside the \textit{Brown} context --- note continuing debates in higher education (\textit{Grutter}, \textit{Fisher}, \textit{SFFA v.\ Harvard} (2023)).
+  \item \textbf{Distinguish:} \textit{Brown} invalidates \textit{de jure} segregation (state-mandated); \textit{de facto} segregation (residential patterns) is analyzed differently.
+  \item \textbf{Mooting risk:} A challenge to a voluntary desegregation plan may moot the claim if the school board subsequently discontinues it (\textit{Parents Involved}).
+\end{itemize}
+
+% ─────────────────────────────────────────────────────────────
+%  SIGNATURE / ATTESTATION BLOCK
+% ─────────────────────────────────────────────────────────────
+\vspace{8pt}
+\color{rulegray}\rule{\linewidth}{0.4pt}
+
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X@{\hspace{6mm}}>{\raggedright\arraybackslash}X@{}}
+  \textbf{Prepared by:} \underline{\hspace{4.5cm}} &
+  \textbf{Course / Section:} \underline{\hspace{3.8cm}} \\[10pt]
+  \textbf{Date:} \underline{\hspace{5.2cm}} &
+  \textbf{Professor:} \underline{\hspace{4.2cm}} \\
+\end{tabularx}
+
+\vspace{4pt}
+{\footnotesize\color{midgray}
+  \textit{This template is provided for educational purposes only.  It does not constitute
+  legal advice.  All case citations should be verified against official reporters before
+  submission.  Compiled with \LaTeX\ --- edit or share at \href{https://letx.app}{letx.app}.}}
+
+\end{document}

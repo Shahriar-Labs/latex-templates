@@ -1,0 +1,625 @@
+% Ablation Study Report — elegant, modern LaTeX template
+% Edit and compile online at https://letx.app
+% Compiles with: latexmk -pdf main.tex (pdflatex, TeX Live full)
+
+\documentclass[11pt,a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[margin=2.2cm,a4paper]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shadows,arrows.meta,positioning,calc,fit,backgrounds,decorations.pathreplacing}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fontawesome5}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{multicol}
+\usepackage{hyperref}
+
+% ── Colors ────────────────────────────────────────────────────
+\definecolor{accent}{HTML}{2563EB}
+\definecolor{accentdark}{HTML}{1E40AF}
+\definecolor{slate}{HTML}{1E293B}
+\definecolor{slatelight}{HTML}{64748B}
+\definecolor{slatebg}{HTML}{F8FAFC}
+\definecolor{green}{HTML}{16A34A}
+\definecolor{greenlight}{HTML}{DCFCE7}
+\definecolor{amber}{HTML}{D97706}
+\definecolor{red}{HTML}{DC2626}
+\definecolor{redlight}{HTML}{FEE2E2}
+\definecolor{barstart}{HTML}{3B82F6}
+\definecolor{barmid}{HTML}{6366F1}
+\definecolor{barend}{HTML}{DC2626}
+
+% ── Page style ────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\color{slatelight}EXP-2026-07-ABL-042}
+\fancyhead[R]{\footnotesize\color{slatelight}Ablation Study Report}
+\fancyfoot[C]{\footnotesize\color{slatelight}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\setlength{\headheight}{14.5pt}
+
+% ── Section formatting ────────────────────────────────────────
+\titleformat{\section}
+  {\Large\bfseries\color{accent}}
+  {\thesection}{1em}{}
+  [{\color{accent!25}\titlerule[0.6pt]\vspace{4pt}}]
+\titleformat{\subsection}
+  {\large\bfseries\color{slate}}
+  {\thesubsection}{1em}{}
+
+% ── Paragraph setup ───────────────────────────────────────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\raggedbottom
+
+% ── Listings style ────────────────────────────────────────────
+\lstset{
+  basicstyle=\ttfamily\footnotesize\color{slate},
+  breaklines=true,
+  backgroundcolor=\color{slatebg},
+  frame=none,
+  xleftmargin=14pt,
+  xrightmargin=14pt,
+  aboveskip=10pt,
+  belowskip=10pt,
+  numbers=none,
+  showstringspaces=false,
+  columns=flexible,
+  keepspaces=true,
+}
+
+% ── tcolorbox styles ─────────────────────────────────────────
+\newtcolorbox{calloutbox}{
+  enhanced,
+  colback=accent!4,
+  colframe=accent!30,
+  arc=4pt,
+  boxrule=0.6pt,
+  left=12pt,
+  right=12pt,
+  top=8pt,
+  bottom=8pt,
+  fontupper=\small,
+  before skip=12pt,
+  after skip=12pt,
+}
+
+\newtcolorbox{findingbox}{
+  enhanced,
+  colback=greenlight!50,
+  colframe=green!30,
+  arc=4pt,
+  boxrule=0.6pt,
+  left=14pt,
+  right=14pt,
+  top=9pt,
+  bottom=9pt,
+  fontupper=\small,
+  before skip=12pt,
+  after skip=12pt,
+}
+
+% ── Helper macros ─────────────────────────────────────────────
+\newcommand{\chaptername}{Ablation Study}
+\newcommand{\modelname}{EGNN-X}
+\newcommand{\dataset}{QM9}
+\newcommand{\metric}{MAE}
+\newcommand{\metricunit}{kcal/mol}
+\newcommand{\pcheck}{\textcolor{green}{\textbf{\(\bullet\)}}}
+\newcommand{\pcross}{\textcolor{slatelight!50}{\textbf{\(\circ\)}}}
+\newcommand{\pna}{\textcolor{slatelight!30}{---}}
+
+% ── Document ──────────────────────────────────────────────────
+\emergencystretch=3em\relax
+\begin{document}
+
+% ── Title block ───────────────────────────────────────────────
+\begin{center}
+  {\Huge\bfseries\color{slate}Ablation Analysis of\\[1pt]Equivariant Message-Passing Networks}
+
+  \vspace{6pt}
+  {\Large\color{slatelight}Molecular Property Prediction on \dataset}
+
+  \vspace{10pt}
+  {\normalsize\color{slate}
+    \textbf{A.\ Chen}$^{1}$\hspace{6pt}
+    \textbf{M.\ Kowalski}$^{1}$\hspace{6pt}
+    \textbf{S.\ Park}$^{2}$\hspace{6pt}
+    \textbf{J.\ Ramirez}$^{1}$
+  }
+
+  \vspace{3pt}
+  {\footnotesize\color{slatelight}
+    $^{1}$Nexa DeepMind\hspace{14pt}$^{2}$Massachusetts Institute of Technology
+  }
+
+  \vspace{6pt}
+  {\footnotesize\color{slatelight}
+    Experiment ID:\;\texttt{EXP-2026-07-ABL-042}
+    \quad\(\mid\)\quad
+    July 2026
+    \quad\(\mid\)\quad
+    Status:\;\textcolor{green}{\textbf{Final}}
+  }
+
+  \vspace{6pt}
+  {\color{accent!35}\rule{\textwidth}{0.8pt}}
+\end{center}
+
+\vspace{4pt}
+
+% ── Abstract ──────────────────────────────────────────────────
+{\bfseries\color{accent}Abstract.}\;
+We conduct a systematic ablation study of \modelname, an equivariant graph neural network
+for molecular property prediction on the \dataset\ benchmark. By sequentially removing
+eight architectural components and measuring degradation in \metric\ (\(\metricunit\)),
+we identify equivariant message-passing and residual connections as the dominant
+contributors to model accuracy. Layer normalization and attention-weighted aggregation
+provide moderate gains, while auxiliary denoising and global context injection show
+diminishing returns. The full model achieves \metric\ \(= 0.312\), degrading to
+\(0.478\) with all components removed. We provide a compute-budget breakdown and a
+modular dependency graph to guide future architecture design.
+
+\vspace{8pt}
+
+% ═══════════════════════════════════════════════════════════════
+\section{Experimental Setup}
+% ═══════════════════════════════════════════════════════════════
+
+\subsection{Model Architecture}
+\modelname\ is an equivariant graph neural network designed for molecular graphs. Each
+molecule is represented as a graph \(G = (V, E)\) where nodes \(v \in V\) encode atomic
+species and edges \(e \in E\) encode interatomic distances. The architecture comprises
+eight modular components:
+
+\begin{itemize}[nosep,leftmargin=*,itemsep=1pt]
+  \item \textbf{Equivariant Message-Passing (EquiMP):} SE(3)-equivariant message functions
+        that operate on vector-valued features, ensuring rotational invariance of scalar
+        predictions.
+  \item \textbf{Attention-Weighted Aggregation (Attn):} Multi-head graph attention over
+        neighbor messages, learned per message-passing layer.
+  \item \textbf{RBF Distance Encoding (RBF):} Radial basis function expansion of
+        pairwise distances into 64-dimensional edge embeddings.
+  \item \textbf{Residual Connections (Res):} Additive skip connections wrapping each
+        message-passing block with pre-activation.
+  \item \textbf{Layer Normalization (LN):} Pre-layer normalization applied before each
+        message-passing and feed-forward sub-layer.
+  \item \textbf{Edge Feature Updating (Edge):} Bidirectional edge feature refinement
+        after each message-passing round.
+  \item \textbf{Global Context Injection (Global):} A learned global token appended to the
+        node set and updated via cross-attention at each layer.
+  \item \textbf{Auxiliary Denoising (Aux):} A coordinate-denoising auxiliary loss
+        added to the primary regression objective at training time.
+\end{itemize}
+
+\subsection{Dataset and Metric}
+We evaluate on the \dataset\ dataset (130\,K organic molecules, up to 9 heavy atoms
+C/N/O/F). The target is the HOMO-LUMO gap (\(\metricunit\)); we report mean absolute
+error (\metric). Training uses 110\,K molecules, validation 10\,K, test 10\,K.
+
+\subsection{Training Configuration}
+
+\begin{tabularx}{\textwidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  Optimizer        & AdamW (\(\beta_1 = 0.9\), \(\beta_2 = 0.999\), weight decay \(= 10^{-4}\)) \\
+  Learning rate    & \(3 \times 10^{-4}\) with cosine decay to \(10^{-6}\) over 300 epochs \\
+  Batch size       & 128 (single Quanta A100-80GB) \\
+  Epochs           & 300 (early stopping patience 40 on validation \metric) \\
+  Message-passing layers & 6 \\
+  Hidden dimension  & 256 \\
+  Attention heads  & 8 \\
+  RBF basis        & 64 radial bases, cutoff \(r_{\text{max}} = 5.0\)\,\AA \\
+  Auxiliary weight  & \(\lambda_{\text{aux}} = 0.1\) \\
+\end{tabularx}
+
+\vspace{4pt}
+
+% ═══════════════════════════════════════════════════════════════
+\section{Ablation Matrix}
+% ═══════════════════════════════════════════════════════════════
+
+Each experiment removes exactly one component while keeping all others intact. The final
+row removes all eight components, reducing the model to bare message-passing without
+attention, residuals, normalization, or auxiliary objectives. \(\bullet\) = component
+present; \(\circ\) = component ablated.
+
+\vspace{6pt}
+
+{\footnotesize
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}l *{8}{>{\centering\arraybackslash}X}@{}}
+\toprule
+\rowcolor{accent!6}
+& \textbf{EquiMP} & \textbf{Attn} & \textbf{RBF} & \textbf{Res} & \textbf{LN} & \textbf{Edge} & \textbf{Global} & \textbf{Aux} \\
+\midrule
+Full Model   & \pcheck & \pcheck & \pcheck & \pcheck & \pcheck & \pcheck & \pcheck & \pcheck \\[2pt]
+\rowcolor{slatebg}
+\(-\;\)EquiMP  & \pcross & \pcheck & \pcheck & \pcheck & \pcheck & \pcheck & \pcheck & \pcheck \\[2pt]
+\(-\;\)Attn    & \pcheck & \pcross & \pcheck & \pcheck & \pcheck & \pcheck & \pcheck & \pcheck \\[2pt]
+\rowcolor{slatebg}
+\(-\;\)RBF     & \pcheck & \pcheck & \pcross & \pcheck & \pcheck & \pcheck & \pcheck & \pcheck \\[2pt]
+\(-\;\)Res     & \pcheck & \pcheck & \pcheck & \pcross & \pcheck & \pcheck & \pcheck & \pcheck \\[2pt]
+\rowcolor{slatebg}
+\(-\;\)LN      & \pcheck & \pcheck & \pcheck & \pcheck & \pcross & \pcheck & \pcheck & \pcheck \\[2pt]
+\(-\;\)Edge    & \pcheck & \pcheck & \pcheck & \pcheck & \pcheck & \pcross & \pcheck & \pcheck \\[2pt]
+\rowcolor{slatebg}
+\(-\;\)Global  & \pcheck & \pcheck & \pcheck & \pcheck & \pcheck & \pcheck & \pcross & \pcheck \\[2pt]
+\(-\;\)Aux     & \pcheck & \pcheck & \pcheck & \pcheck & \pcheck & \pcheck & \pcheck & \pcross \\[2pt]
+\rowcolor{redlight!25}
+All Ablated & \pcross & \pcross & \pcross & \pcross & \pcross & \pcross & \pcross & \pcross \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{10pt}
+
+% ═══════════════════════════════════════════════════════════════
+\section{Results: \(\Delta\)-Metric Waterfall}
+% ═══════════════════════════════════════════════════════════════
+
+The waterfall chart below shows how \metric\ degrades as components are sequentially
+removed. Each bar represents the \emph{incremental} increase in \metric\ (\(\Delta\))
+caused by removing that component, stacked cumulatively from the full-model baseline
+(\(0.312\)) to the fully ablated model (\(0.478\)).
+
+\vspace{6pt}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,>=Latex]
+
+  % ── Constants ──
+  \def\bw{1.6}            % bar width
+  \def\gap{0.85}          % gap between bars
+  \def\base{1.6}          % y-coordinate of chart baseline
+  \def\s{34}              % vertical scale factor (cm per MAE unit)
+
+  % Delta values
+  \def\dA{0.77}           % Δ EquiMP   = 0.022 * 34
+  \def\dB{0.49}           % Δ Attn     = 0.014 * 34
+  \def\dC{0.39}           % Δ RBF      = 0.011 * 34
+  \def\dD{0.95}           % Δ Residual = 0.027 * 34
+  \def\dE{0.95}           % Δ LN       = 0.027 * 34
+  \def\dF{2.21}           % Δ All rem. = 0.065 * 34
+
+  % Cumulative tops
+  \pgfmathsetmacro{\tA}{\base + \dA}
+  \pgfmathsetmacro{\tB}{\tA  + \dB}
+  \pgfmathsetmacro{\tC}{\tB  + \dC}
+  \pgfmathsetmacro{\tD}{\tC  + \dD}
+  \pgfmathsetmacro{\tE}{\tD  + \dE}
+  \pgfmathsetmacro{\tF}{\tE  + \dF}
+
+  % X centers
+  \def\xA{2.0}
+  \def\xB{4.45}
+  \def\xC{6.9}
+  \def\xD{9.35}
+  \def\xE{11.8}
+  \def\xF{14.25}
+
+  % ── Bars (waterfall) ──
+  \fill[color=barstart]          (\xA-\bw/2,\base) rectangle (\xA+\bw/2,\tA);
+  \fill[color=barstart!80!barmid] (\xB-\bw/2,\tA)   rectangle (\xB+\bw/2,\tB);
+  \fill[color=barmid!70]         (\xC-\bw/2,\tB)   rectangle (\xC+\bw/2,\tC);
+  \fill[color=barmid!50!amber]   (\xD-\bw/2,\tC)   rectangle (\xD+\bw/2,\tD);
+  \fill[color=amber]             (\xE-\bw/2,\tD)   rectangle (\xE+\bw/2,\tE);
+  \fill[color=red!75]            (\xF-\bw/2,\tE)   rectangle (\xF+\bw/2,\tF);
+
+  % ── Connecting lines ──
+  \draw[slatelight!40,dashed,line width=0.5pt]
+    (\xA+\bw/2,\tA) -- (\xB-\bw/2,\tA)
+    (\xB+\bw/2,\tB) -- (\xC-\bw/2,\tB)
+    (\xC+\bw/2,\tC) -- (\xD-\bw/2,\tC)
+    (\xD+\bw/2,\tD) -- (\xE-\bw/2,\tD)
+    (\xE+\bw/2,\tE) -- (\xF-\bw/2,\tE);
+
+  % ── Delta annotations ──
+  \node[font=\footnotesize\bfseries\color{accentdark},anchor=south] at (\xA,\tA+0.22) {\(+0.022\)};
+  \node[font=\footnotesize\bfseries\color{accentdark},anchor=south] at (\xB,\tB+0.22) {\(+0.014\)};
+  \node[font=\footnotesize\bfseries\color{accentdark},anchor=south] at (\xC,\tC+0.22) {\(+0.011\)};
+  \node[font=\footnotesize\bfseries\color{accentdark},anchor=south] at (\xD,\tD+0.22) {\(+0.027\)};
+  \node[font=\footnotesize\bfseries\color{accentdark},anchor=south] at (\xE,\tE+0.22) {\(+0.027\)};
+  \node[font=\footnotesize\bfseries\color{red},anchor=south]      at (\xF,\tF+0.22) {\(+0.065\)};
+
+  % ── Cumulative MAE labels (right of bars) ──
+  \node[font=\footnotesize\color{slatelight},anchor=west] at (\xA+\bw/2+0.1,\tA-0.1) {\scriptsize 0.334};
+  \node[font=\footnotesize\color{slatelight},anchor=west] at (\xB+\bw/2+0.1,\tB-0.1) {\scriptsize 0.348};
+  \node[font=\footnotesize\color{slatelight},anchor=west] at (\xC+\bw/2+0.1,\tC-0.1) {\scriptsize 0.359};
+  \node[font=\footnotesize\color{slatelight},anchor=west] at (\xD+\bw/2+0.1,\tD-0.1) {\scriptsize 0.386};
+  \node[font=\footnotesize\color{slatelight},anchor=west] at (\xE+\bw/2+0.1,\tE-0.1) {\scriptsize 0.413};
+  \node[font=\footnotesize\color{slatelight},anchor=west] at (\xF+\bw/2+0.1,\tF-0.1) {\scriptsize 0.478};
+
+  % ── Baseline bar ──
+  \fill[color=slatebg] (\xA-\bw/2-0.05,\base-0.6) rectangle (\xA+\bw/2+0.05,\base);
+  \node[font=\footnotesize\bfseries\color{slate},anchor=north] at (\xA,\base-0.65) {Baseline 0.312};
+
+  % ── X-axis labels ──
+  \node[font=\footnotesize\bfseries,anchor=north,align=center,text width=2.2cm] at (\xA,\base-1.35) {Full\\Model};
+  \node[font=\footnotesize\bfseries\color{slatelight},anchor=north,align=center,text width=2.2cm] at (\xB,\base-1.35) {\(-\)EquiMP};
+  \node[font=\footnotesize\bfseries\color{slatelight},anchor=north,align=center,text width=2.2cm] at (\xC,\base-1.35) {\(-\)Attn};
+  \node[font=\footnotesize\bfseries\color{slatelight},anchor=north,align=center,text width=2.2cm] at (\xD,\base-1.35) {\(-\)RBF};
+  \node[font=\footnotesize\bfseries\color{slatelight},anchor=north,align=center,text width=2.2cm] at (\xE,\base-1.35) {\(-\)Res / LN};
+  \node[font=\footnotesize\bfseries\color{slatelight},anchor=north,align=center,text width=2.2cm] at (\xF,\base-1.35) {\(-\)All Rem.};
+
+  % ── Y-axis label ──
+  \node[rotate=90,font=\footnotesize\bfseries\color{slatelight},anchor=south] at (-0.4,\tF/2+1.5) {MAE \(\uparrow\) (\metricunit)};
+
+  % ── Reference line at baseline ──
+  \draw[accent!30,line width=0.6pt] (\xA-\bw/2-0.4,\base) -- (\xF+\bw/2+0.4,\base);
+
+  % ── Total degradation bracket ──
+  \draw[slatelight!50,line width=0.5pt,decorate,decoration={brace,amplitude=6pt}]
+    (\xA-\bw/2-0.3,\base) -- (\xA-\bw/2-0.3,\tF);
+  \node[font=\footnotesize\color{slatelight},anchor=east] at (\xA-\bw/2-0.8,\base/2+\tF/2)
+    {\shortstack{Total\\\(\Delta = 0.166\)}};
+
+\end{tikzpicture}
+\caption*{\footnotesize\color{slatelight}Cumulative waterfall of \metric\ degradation.
+Each bar shows the incremental \(\Delta\) from removing one component. Dotted connectors
+track cumulative \metric\ (right-hand labels). Bar color intensifies with contribution magnitude.}
+\end{figure}
+
+% ═══════════════════════════════════════════════════════════════
+\section{Compute Budget}
+% ═══════════════════════════════════════════════════════════════
+
+All experiments were run on a single Quanta A100-80GB node. We report wall-clock
+training time and estimated cloud cost (on-demand equivalent).
+
+\vspace{6pt}
+
+{\footnotesize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}l c c c c c@{}}
+\toprule
+\rowcolor{accent!6}
+Experiment & GPU-h & Wall Time (h) & Params (M) & Est.\ Cost (USD) & Status \\
+\midrule
+Full Model           & 14.2 & 3.8  & 8.74 & \$28.40 & \textcolor{green}{Done} \\
+\rowcolor{slatebg}
+\(-\;\)EquiMP         & 11.8 & 3.1  & 7.12 & \$23.60 & \textcolor{green}{Done} \\
+\(-\;\)Attn           & 12.9 & 3.4  & 8.41 & \$25.80 & \textcolor{green}{Done} \\
+\rowcolor{slatebg}
+\(-\;\)RBF            & 12.3 & 3.2  & 8.30 & \$24.60 & \textcolor{green}{Done} \\
+\(-\;\)Res            & 13.7 & 3.6  & 8.74 & \$27.40 & \textcolor{green}{Done} \\
+\rowcolor{slatebg}
+\(-\;\)LN             & 13.5 & 3.5  & 8.73 & \$27.00 & \textcolor{green}{Done} \\
+\(-\;\)Edge           & 11.4 & 3.0  & 7.98 & \$22.80 & \textcolor{green}{Done} \\
+\rowcolor{slatebg}
+\(-\;\)Global         & 12.1 & 3.2  & 8.58 & \$24.20 & \textcolor{green}{Done} \\
+\(-\;\)Aux            & 14.0 & 3.7  & 8.74 & \$28.00 & \textcolor{green}{Done} \\
+\rowcolor{redlight!20}
+All Ablated          &  9.8 & 2.6  & 6.41 & \$19.60 & \textcolor{green}{Done} \\
+\midrule
+\rowcolor{slatebg!70}
+\textbf{Total}       & \textbf{126.7} & \textbf{33.1} & --- & \textbf{\$253.40} & --- \\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{4pt}
+
+\begin{calloutbox}
+  \textbf{\color{accent}\faInfoCircle\; Cost note:} Estimated at \$2.00/GPU-hour
+  (on-demand A100-80GB equivalent). All experiments ran with identical random seeds
+  (seed 42) and identical data splits. Wall time includes evaluation and checkpointing
+  overhead.
+\end{calloutbox}
+
+% ═══════════════════════════════════════════════════════════════
+\section{Component Dependency Graph}
+% ═══════════════════════════════════════════════════════════════
+
+The dependency graph below captures the modular architecture of \modelname, showing
+how each component feeds into the next. Solid arrows denote mandatory data-flow
+dependencies; dashed arrows denote optional (learned) pathways.
+
+\vspace{6pt}
+
+\begin{figure}[ht]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  >=Latex,
+  node distance=1.2cm and 1.6cm,
+  block/.style={
+    draw=accent!60,
+    fill=accent!5,
+    rounded corners=3pt,
+    minimum width=2.6cm,
+    minimum height=0.75cm,
+    font=\footnotesize\bfseries,
+    align=center,
+    inner sep=4pt,
+  },
+  smallblock/.style={
+    draw=accent!40,
+    fill=accent!3,
+    rounded corners=2pt,
+    minimum width=2.0cm,
+    minimum height=0.65cm,
+    font=\footnotesize,
+    align=center,
+    inner sep=3pt,
+  },
+  arr/.style={->,line width=0.7pt,color=accent!70},
+  dasarr/.style={->,dashed,line width=0.5pt,color=slatelight!60},
+]
+
+  % ── Nodes (left to right, top to bottom) ──
+  \node[block] (feat)               {Atomic\\Features};
+  \node[block,right=of feat] (rbf)  {RBF Distance\\Encoding};
+  \node[block,right=of rbf]  (edge) {Edge\\Features};
+
+  \node[smallblock,below=0.8cm of feat] (embed) {Node\\Embeddings};
+  \node[block,right=of embed,xshift=0.8cm] (mp) {Equivariant\\Message-Passing};
+  \node[block,right=of mp] (attn)  {Attention\\Aggregation};
+  \node[smallblock,right=of attn] (res)  {Residual\\+ LayerNorm};
+
+  \node[smallblock,below=0.9cm of mp] (eup)  {Edge Feature\\Update};
+  \node[block,right=of eup,xshift=0.8cm] (pool) {Global\\Readout};
+  \node[smallblock,right=of pool] (pred)  {MLP\\Predictor};
+  \node[block,right=of pred] (loss)  {MAE Loss\\+ Aux.\ Denoising};
+
+  % ── Arrows ──
+  \draw[arr] (feat) -- (rbf);
+  \draw[arr] (rbf)  -- (edge);
+  \draw[arr] (feat) -- (embed);
+  \draw[arr] (embed) -- (mp);
+  \draw[arr] (edge.east) -- ++(0.4,0) |- (mp.north);
+  \draw[arr] (mp)   -- (attn);
+  \draw[arr] (attn) -- (res);
+  \draw[arr] (mp.south) -- ++(0,-0.35) -| (eup.north);
+  \draw[arr] (eup.east) -- ++(0.4,0) |- (mp.south east);
+  \draw[arr] (res.south) -- ++(0,-0.35) -| (pool.north);
+  \draw[arr] (attn.south) -- ++(0,-0.35) -| (pool.north west);
+  \draw[arr] (pool) -- (pred);
+  \draw[arr] (pred) -- (loss);
+
+  % ── Global context injection (dashed) ──
+  \node[smallblock,fill=amber!8,draw=amber!50,below=1.1cm of rbf] (gctx)
+    {Global Context\\(optional)};
+  \draw[dasarr] (gctx.north) -- (edge.south);
+  \draw[dasarr] (gctx.east) -- ++(0.6,0) |- (mp.south west);
+
+  % ── Legend ──
+  \node[font=\footnotesize\color{slatelight},anchor=north west]
+    at (current bounding box.south west|-0,-0.7) {
+    \textcolor{accent!70}{\textbf{---}} mandatory data flow \quad
+    \textcolor{slatelight!60}{\textbf{-\,-}} optional / learned pathway
+  };
+
+\end{tikzpicture}}
+\caption*{\footnotesize\color{slatelight}Modular component dependency graph for \modelname.
+Solid arrows indicate hard data-flow dependencies; the global-context pathway (dashed)
+is a learned injection that the attention mechanism can optionally attend to.}
+\end{figure}
+
+% ═══════════════════════════════════════════════════════════════
+\section{Discussion}
+% ═══════════════════════════════════════════════════════════════
+
+\subsection{Dominant Components}
+Equivariant message-passing and residual connections account for the largest individual
+degradations (\(\Delta = +0.022\) and \(+0.027\) respectively). Removing EquiMP forces
+the model to learn rotation invariance from data alone --- a known failure mode on small
+molecular datasets where spatial symmetries are critical. Removing residual connections
+destabilizes gradient flow in the 6-layer stack, causing training to converge to a
+higher-loss basin.
+
+\subsection{Moderate Contributors}
+Attention-weighted aggregation (\(\Delta = +0.014\)) and layer normalization
+(\(\Delta = +0.027\)) each provide tangible gains. The attention mechanism learns
+chemically meaningful neighbor-weighting patterns (bond-order sensitivity), while
+pre-normalization stabilizes training dynamics at larger learning rates.
+
+\subsection{Diminishing Returns}
+RBF distance encoding (\(\Delta = +0.011\)), edge feature updating (\(\Delta = +0.008\)),
+and global context injection (\(\Delta = +0.006\)) show the smallest individual impacts.
+This suggests redundancy: the model can partially recover distance information through
+learned embeddings, and the 6-layer stack already captures long-range dependencies
+without an explicit global token.
+
+\subsection{Auxiliary Denoising}
+The auxiliary coordinate-denoising loss provides a marginal gain (\(\Delta = +0.005\))
+at negligible compute overhead. While statistically significant (\(p < 0.05\) on 5
+seeds), it does not justify the added architectural complexity for this task.
+
+\begin{findingbox}
+  \textbf{\color{green}\faLightbulb\; Key finding:} The top 3 components --- residual
+  connections, equivariant message-passing, and layer normalization --- collectively
+  account for 67\% of the total degradation gap (\(0.076\) of \(0.166\)). A minimal
+  viable architecture retaining only these three components achieves \metric\
+  \(= 0.389\), within 25\% of the full model at 54\% of the parameter count.
+\end{findingbox}
+
+\subsection{Compute-Aware Architecture Design}
+The compute-budget analysis (\S\,4) reveals that the most impactful components
+(Residual, EquiMP, LN) do not carry disproportionate compute costs. The EquiMP
+ablation actually \emph{reduces} parameter count by 18\%, suggesting that the
+performance gain comes from inductive bias rather than increased capacity.
+
+% ── Example configuration snippet ──
+\vspace{4pt}
+{\bfseries\color{accent}Minimal Viable Configuration.}\;
+The stripped-down architecture can be expressed as:
+
+\begin{lstlisting}[language=Python]
+# Minimal viable EGNN variant
+config = {
+    "mp_layers": 6,
+    "hidden_dim": 256,
+    "equivariant_mp": True,       # keep  -- +0.022
+    "residual_connections": True, # keep  -- +0.027
+    "layer_norm": "pre",          # keep  -- +0.027
+    "attention_aggregation": False,  # drop -- +0.014 saved
+    "rbf_encoding": False,          # drop -- +0.011 saved
+    "edge_update": False,           # drop -- +0.008 saved
+    "global_context": False,        # drop -- +0.006 saved
+    "aux_denoising": False,         # drop -- +0.005 saved
+}
+</parameter>
+\end{lstlisting}
+
+% ═══════════════════════════════════════════════════════════════
+\section{Key Findings}
+% ═══════════════════════════════════════════════════════════════
+
+\begin{enumerate}[nosep,leftmargin=*,itemsep=2pt]
+  \item \textbf{Equivariance is the strongest inductive bias.} Removing SE(3)-equivariant
+        message-passing incurs the largest single-component degradation, confirming that
+        rotational symmetry is not easily learned from data alone on \dataset.
+
+  \item \textbf{Residual connections are non-negotiable for depth.} At 6 layers, the
+        absence of skip connections destabilizes optimization and causes a \(\sim 9\%\)
+        relative increase in \metric.
+
+  \item \textbf{Three components dominate.} EquiMP, residuals, and layer normalization
+        account for two-thirds of the total architecture contribution. A minimal model
+        retaining only these achieves competitive performance at reduced parameter count.
+
+  \item \textbf{Auxiliary losses provide diminishing returns.} The coordinate-denoising
+        auxiliary objective yields a marginal gain not commensurate with added
+        implementation complexity.
+
+  \item \textbf{Compute cost does not correlate with impact.} The most impactful
+        components (residuals, normalization) are parameter-free operations, while the
+        least impactful (global context, edge updates) carry non-trivial parameter counts.
+\end{enumerate}
+
+\vspace{6pt}
+
+\begin{center}
+  {\color{accent!35}\rule{\textwidth}{0.6pt}}
+  \vspace{4pt}
+
+  {\footnotesize\color{slatelight}
+    \modelname\ Ablation Study \,\(\mid\)\, Experiment EXP-2026-07-ABL-042
+    \,\(\mid\)\, Generated July 2026
+    \,\(\mid\)\, \faGithub\; github.com/deepmind/egnn-x
+  }
+
+  \vspace{2pt}
+  {\footnotesize\color{slatelight!60}
+    Template created with \href{https://letx.app}{LetX} ---
+    edit and compile online at letx.app
+  }
+\end{center}
+
+\end{document}

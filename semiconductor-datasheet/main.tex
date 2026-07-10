@@ -1,0 +1,511 @@
+% Semiconductor Datasheet template
+% Edit and compile online at https://letx.app
+% Compile with: latexmk -pdf main.tex  (pdflatex)
+
+\documentclass[10pt,a4paper]{article}
+
+% ---------------------------------------------------------------------------
+% Packages
+% ---------------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{amsmath}
+\usepackage{textcomp}
+\usepackage[table]{xcolor}
+\usepackage[a4paper,left=2cm,right=2cm,top=2.6cm,bottom=2.4cm,%
+            headheight=28pt,headsep=12pt,includeheadfoot]{geometry}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,positioning}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usetikzlibrary{shadows}
+\usepackage{fontawesome5}
+\usepackage[hidelinks,
+            pdftitle={ADX2050 Datasheet},
+            pdfauthor={Apex Semiconductor, Inc.},
+            pdfsubject={Dual-Channel Precision Operational Amplifier}]{hyperref}
+
+% ---------------------------------------------------------------------------
+% Colors
+% ---------------------------------------------------------------------------
+\definecolor{accent}{HTML}{15507A}
+\definecolor{accent2}{HTML}{A33A2E}
+\definecolor{neutral}{HTML}{3A3A3A}
+\definecolor{lightbg}{HTML}{F1F5F8}
+\definecolor{chipbody}{HTML}{2B2B2E}
+\definecolor{rowshade}{HTML}{F6F8FA}
+
+% ---------------------------------------------------------------------------
+% Spacing / paragraph settings (required: key-value tables are used)
+% ---------------------------------------------------------------------------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.25}
+
+% ---------------------------------------------------------------------------
+% Table column helpers
+% ---------------------------------------------------------------------------
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash\footnotesize}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash\footnotesize}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash\footnotesize}p{#1}}
+
+% ---------------------------------------------------------------------------
+% Section formatting
+% ---------------------------------------------------------------------------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{accent}}
+  {\thesection}
+  {0.6em}
+  {}
+  [{\vspace{2pt}\color{accent!55}\titlerule[1pt]}]
+\titlespacing*{\section}{0pt}{1.6em}{0.9em}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{neutral}}
+  {\thesubsection}
+  {0.5em}
+  {}
+\titlespacing*{\subsection}{0pt}{1.1em}{0.5em}
+
+% ---------------------------------------------------------------------------
+% List formatting
+% ---------------------------------------------------------------------------
+\setlist[itemize,1]{leftmargin=1.3em, itemsep=2pt, topsep=3pt,
+  label=\textcolor{accent}{\textbullet}}
+
+% ---------------------------------------------------------------------------
+% Header / footer
+% ---------------------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\bfseries\color{neutral}APEX SEMICONDUCTOR}
+\fancyhead[R]{\footnotesize\color{neutral}ADX2050 --- Dual-Channel Precision Op-Amp}
+\renewcommand{\headrulewidth}{0.8pt}
+\renewcommand{\headrule}{\color{accent}\hrule width\headwidth height\headrulewidth}
+\fancyfoot[L]{\footnotesize\color{neutral}APX-ADX2050-DS, Rev.\,C}
+\fancyfoot[C]{\footnotesize\color{neutral}\copyright\ 2026 Apex Semiconductor, Inc.}
+\fancyfoot[R]{\footnotesize\color{neutral}Page \thepage\ of \pageref{LastPage}}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% ---------------------------------------------------------------------------
+% Figure / table numbering (non-floating, in-flow to prevent overflow)
+% ---------------------------------------------------------------------------
+\newcounter{dsfig}
+\newcounter{dstab}
+\newcommand{\dsfigcaption}[1]{%
+  \par\vspace{4pt}\noindent\refstepcounter{dsfig}%
+  {\footnotesize\bfseries\color{accent}Figure \thedsfig.}~{\footnotesize #1}\par\vspace{8pt}%
+}
+\newcommand{\dstabcaption}[1]{%
+  \par\vspace{10pt}\noindent\refstepcounter{dstab}%
+  {\footnotesize\bfseries\color{accent}Table \thedstab.}~{\footnotesize #1}\par\vspace{4pt}%
+}
+\newcommand{\dsnote}[1]{\par\vspace{3pt}\noindent{\footnotesize\itshape\color{neutral}#1}\par\vspace{8pt}}
+
+% ---------------------------------------------------------------------------
+% Caution box
+% ---------------------------------------------------------------------------
+\newtcolorbox{caution}{%
+  colback=accent2!6, colframe=accent2, boxrule=0.8pt, arc=1.5pt,
+  left=8pt, right=8pt, top=6pt, bottom=6pt, before skip=8pt, after skip=10pt
+}
+
+\begin{document}
+
+% =============================================================================
+% DOCUMENT HEADER / DOCUMENT CONTROL BLOCK
+% =============================================================================
+\begin{tcolorbox}[colback=accent!6, colframe=accent, boxrule=0.9pt, arc=2pt,
+  left=12pt, right=12pt, top=9pt, bottom=9pt]
+\begin{minipage}[t]{0.62\textwidth}
+{\large\faMicrochip\ \textbf{\color{accent}APEX SEMICONDUCTOR}}\\[1pt]
+{\footnotesize\color{neutral}Analog \& Mixed-Signal Solutions}\\[8pt]
+{\Huge\bfseries\color{accent}ADX2050}\\[3pt]
+{\large\color{neutral}Dual-Channel Precision, Low-Noise Operational Amplifier}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.34\textwidth}
+\begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries\footnotesize}l@{\hspace{4mm}}>{\raggedright\arraybackslash\footnotesize}X@{}}
+Doc.\ No.    & APX-ADX2050-DS \\
+Revision     & C \\
+Date         & 2026-06-15 \\
+Class.       & Public \\
+ECCN         & EAR99 \\
+\end{tabularx}
+\end{minipage}
+\end{tcolorbox}
+
+% =============================================================================
+\section{General Description}
+% =============================================================================
+The ADX2050 is a dual-channel, precision operational amplifier optimized for
+low-noise, low-offset signal conditioning in industrial and instrumentation
+applications. Fabricated on Apex Semiconductor's third-generation complementary
+bipolar process, the ADX2050 combines rail-to-rail output swing with a wide
+3\,V to 32\,V single-supply operating range, enabling direct interfacing with
+sensor bridges, thermocouples, and precision data-acquisition front ends.
+
+\medskip
+Each amplifier channel is unity-gain stable and offers a 10\,MHz
+gain-bandwidth product with a 5.5\,V/\textmu s slew rate, making the device
+well suited to active filtering and moderate-speed signal-processing tasks.
+The ADX2050 is offered in an 8-pin SOIC package and is fully specified over
+the $-40\,^{\circ}$C to $+125\,^{\circ}$C industrial temperature range.
+
+% =============================================================================
+\section{Features}
+% =============================================================================
+\begin{itemize}
+  \item Ultra-low input offset voltage: 0.3\,mV (typ), 1.2\,mV (max)
+  \item Low input bias current: 45\,nA (typ)
+  \item Wide supply range: 3\,V to 32\,V single-supply, $\pm$1.5\,V to $\pm$16\,V dual-supply
+  \item Rail-to-rail output swing
+  \item Unity-gain stable, 10\,MHz gain-bandwidth product
+  \item Low voltage noise density: 8\,nV/$\sqrt{\text{Hz}}$ at 1\,kHz
+  \item Industrial temperature range: $-40\,^{\circ}$C to $+125\,^{\circ}$C
+  \item ESD protection: 2\,kV (HBM), 1\,kV (CDM)
+  \item Available in 8-pin SOIC package
+\end{itemize}
+
+% =============================================================================
+\section{Applications}
+% =============================================================================
+\begin{itemize}
+  \item Precision instrumentation amplifiers
+  \item Sensor and bridge signal conditioning
+  \item Battery-powered and portable medical instrumentation
+  \item Audio pre-amplification
+  \item Industrial process-control loops (4--20\,mA)
+  \item Active filters and signal buffering
+\end{itemize}
+
+% =============================================================================
+\section{Pin Configuration and Functions}
+% =============================================================================
+
+\subsection{Pinout Diagram}
+
+\begin{center}
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \fill[chipbody] (0,0) rectangle (4,3);
+  \draw[thick] (0,0) rectangle (4,3);
+  \fill[white] (0.35,2.65) circle (0.07);
+
+  \foreach \i/\name/\y in {1/OUT1/2.6, 2/IN1-/1.85, 3/IN1+/1.10, 4/V-/0.35} {
+    \draw[thick] (-0.9,\y) -- (0,\y);
+    \node[font=\small, anchor=east] at (-0.95,\y) {\name};
+    \node[font=\scriptsize\bfseries, color=white] at (0.32,\y) {\i};
+  }
+
+  \foreach \i/\name/\y in {8/V+/2.6, 7/OUT2/1.85, 6/IN2-/1.10, 5/IN2+/0.35} {
+    \draw[thick] (4,\y) -- (4.9,\y);
+    \node[font=\small, anchor=west] at (4.95,\y) {\name};
+    \node[font=\scriptsize\bfseries, color=white] at (3.68,\y) {\i};
+  }
+
+  \node[color=white, font=\bfseries] at (2,1.65) {ADX2050};
+  \node[color=white, font=\scriptsize] at (2,1.25) {SOIC-8 (Top View)};
+\end{tikzpicture}
+\end{center}
+\dsfigcaption{ADX2050 pin configuration, 8-pin SOIC package (top view). Pin~1 is marked by the reference dot.}
+
+\subsection{Pin Description}
+
+\dstabcaption{Pin functions.}
+\begin{center}
+\begin{tabular}{@{}C{1.0cm}C{1.8cm}C{2.0cm}L{9.5cm}@{}}
+\toprule
+\rowcolor{lightbg}
+{\footnotesize\bfseries Pin} & {\footnotesize\bfseries Name} & {\footnotesize\bfseries Type} & {\footnotesize\bfseries Description} \\
+\midrule
+1 & OUT1  & Output & Output of amplifier channel 1 \\
+2 & IN1-- & Input  & Inverting input, channel 1 \\
+3 & IN1+  & Input  & Non-inverting input, channel 1 \\
+4 & V--   & Power  & Negative supply / ground (single-supply operation) \\
+5 & IN2+  & Input  & Non-inverting input, channel 2 \\
+6 & IN2-- & Input  & Inverting input, channel 2 \\
+7 & OUT2  & Output & Output of amplifier channel 2 \\
+8 & V+    & Power  & Positive supply \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% =============================================================================
+\section{Absolute Maximum Ratings}
+% =============================================================================
+Stresses beyond those listed in Table~3 may cause permanent damage to the
+device. These are stress ratings only; functional operation at or beyond
+these conditions is not implied. Exposure to absolute-maximum-rated
+conditions for extended periods may affect device reliability.
+
+\dstabcaption{Absolute maximum ratings ($T_A = 25\,^{\circ}$C unless otherwise noted).}
+\begin{center}
+\begin{tabular}{@{}L{6.0cm}C{1.8cm}C{3.6cm}C{1.6cm}@{}}
+\toprule
+\rowcolor{lightbg}
+{\footnotesize\bfseries Parameter} & {\footnotesize\bfseries Symbol} & {\footnotesize\bfseries Rating} & {\footnotesize\bfseries Unit} \\
+\midrule
+Supply voltage (V+ to V--)                 & $V_S$      & $-0.3$ to $36$              & V \\
+Differential input voltage                 & $V_{ID}$   & $\pm 36$                    & V \\
+Input voltage (either input)                & $V_{IN}$   & (V--)$-0.3$ to (V+)$+0.3$   & V \\
+Output short-circuit duration               & --         & Continuous                  & -- \\
+Continuous power dissipation                & $P_D$      & Internally limited          & -- \\
+Junction temperature                        & $T_J$      & 150                         & $^{\circ}$C \\
+Storage temperature range                   & $T_{STG}$  & $-65$ to $150$              & $^{\circ}$C \\
+Lead temperature (soldering, 10\,s)         & $T_L$      & 260                         & $^{\circ}$C \\
+ESD rating, human body model                & --         & 2000                        & V \\
+ESD rating, charged device model            & --         & 1000                        & V \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{caution}
+\faExclamationTriangle\ \textbf{ESD Sensitivity.} This device contains
+circuitry sensitive to electrostatic discharge (ESD). Apex Semiconductor
+recommends that proper ESD precautions be observed during handling, storage,
+and assembly to prevent damage or parametric degradation.
+\end{caution}
+
+% =============================================================================
+\section{Recommended Operating Conditions}
+% =============================================================================
+\dstabcaption{Recommended operating conditions.}
+\begin{center}
+\begin{tabular}{@{}L{5.8cm}C{1.6cm}C{1.5cm}C{1.5cm}C{1.5cm}C{1.4cm}@{}}
+\toprule
+\rowcolor{lightbg}
+{\footnotesize\bfseries Parameter} & {\footnotesize\bfseries Symbol} & {\footnotesize\bfseries Min} & {\footnotesize\bfseries Typ} & {\footnotesize\bfseries Max} & {\footnotesize\bfseries Unit} \\
+\midrule
+Supply voltage, single-supply        & $V_S$      & 3.0        & 5.0  & 32          & V \\
+Supply voltage, dual-supply          & $V_{S\pm}$ & $\pm 1.5$  & $\pm 5.0$ & $\pm 16$ & V \\
+Operating free-air temperature       & $T_A$      & $-40$      & 25   & 125         & $^{\circ}$C \\
+Common-mode input voltage range      & $V_{ICR}$  & (V--)      & --   & (V+)$-1.5$  & V \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% =============================================================================
+\section{Electrical Characteristics}
+% =============================================================================
+
+\subsection{DC Characteristics}
+Unless otherwise noted: $V_S = 5\,\text{V}$, $T_A = 25\,^{\circ}\text{C}$.
+
+\dstabcaption{DC electrical characteristics.}
+\begin{center}
+\begin{tabular}{@{}L{3.3cm}C{1.2cm}L{4.0cm}R{1.1cm}R{1.1cm}R{1.1cm}C{1.2cm}@{}}
+\toprule
+\rowcolor{lightbg}
+{\footnotesize\bfseries Parameter} & {\footnotesize\bfseries Sym.} & {\footnotesize\bfseries Test Conditions} & {\footnotesize\bfseries Min} & {\footnotesize\bfseries Typ} & {\footnotesize\bfseries Max} & {\footnotesize\bfseries Unit} \\
+\midrule
+Input offset voltage            & $V_{OS}$  & $V_{CM} = V_S/2$                          & --   & 0.3  & 1.2  & mV \\
+Input offset voltage drift      & $\Delta V_{OS}/\Delta T$ & --                       & --   & 2    & 8    & \textmu V/$^{\circ}$C \\
+Input bias current              & $I_B$     & --                                        & --   & 45   & 150  & nA \\
+Input offset current            & $I_{OS}$  & --                                        & --   & 5    & 40   & nA \\
+Common-mode rejection ratio     & CMRR      & $V_{CM} = 0$ to 3\,V                      & 85   & 100  & --   & dB \\
+Power-supply rejection ratio    & PSRR      & $V_S = 3$\,V to 32\,V                     & 90   & 108  & --   & dB \\
+Large-signal voltage gain       & $A_{VOL}$ & $R_L = 10\,\text{k}\Omega$, $V_O = 0.5$ to $4.5$\,V & 100 & 120 & -- & dB \\
+Output voltage, high            & $V_{OH}$  & $R_L = 10\,\text{k}\Omega$ to $V_S/2$      & $V_S{-}0.15$ & $V_S{-}0.05$ & -- & V \\
+Output voltage, low             & $V_{OL}$  & $R_L = 10\,\text{k}\Omega$ to $V_S/2$      & --   & 0.03 & 0.15 & V \\
+Output short-circuit current    & $I_{SC}$  & --                                        & 15   & 25   & --   & mA \\
+Supply current (per amplifier)  & $I_{CC}$  & No load                                   & --   & 0.6  & 0.9  & mA \\
+\bottomrule
+\end{tabular}
+\end{center}
+\dsnote{Typical values represent the most likely parametric norm at $T_A = 25\,^{\circ}$C and are not production tested. Min/Max limits apply over the full recommended operating temperature range unless otherwise noted.}
+
+\subsection{AC / Switching Characteristics}
+Unless otherwise noted: $V_S = 5\,\text{V}$, $T_A = 25\,^{\circ}\text{C}$, $C_L = 100\,\text{pF}$.
+
+\dstabcaption{AC and switching characteristics.}
+\begin{center}
+\begin{tabular}{@{}L{3.3cm}C{1.2cm}L{4.0cm}R{1.1cm}R{1.1cm}R{1.1cm}C{1.2cm}@{}}
+\toprule
+\rowcolor{lightbg}
+{\footnotesize\bfseries Parameter} & {\footnotesize\bfseries Sym.} & {\footnotesize\bfseries Test Conditions} & {\footnotesize\bfseries Min} & {\footnotesize\bfseries Typ} & {\footnotesize\bfseries Max} & {\footnotesize\bfseries Unit} \\
+\midrule
+Gain-bandwidth product          & GBW        & --                          & --  & 10    & --  & MHz \\
+Slew rate                       & SR         & $R_L = 2\,\text{k}\Omega$   & --  & 5.5   & --  & V/\textmu s \\
+Phase margin                    & $\phi_m$   & $C_L = 100\,\text{pF}$      & --  & 60    & --  & deg \\
+Settling time (0.1\%)           & $t_S$      & 2\,V step                   & --  & 1.2   & --  & \textmu s \\
+Total harmonic distortion+noise & THD$+$N    & $f = 1\,$kHz, $A_V = 1$     & --  & 0.002 & --  & \% \\
+Input voltage noise density     & $e_n$      & $f = 1\,$kHz                & --  & 8     & --  & nV/$\sqrt{\text{Hz}}$ \\
+Input current noise density     & $i_n$      & $f = 1\,$kHz                & --  & 0.3   & --  & pA/$\sqrt{\text{Hz}}$ \\
+Channel separation              & --         & $f = 1\,$kHz                & 100 & 120   & --  & dB \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% =============================================================================
+\section{Package Mechanical Data}
+% =============================================================================
+The ADX2050 is supplied in an industry-standard 8-pin small outline (SOIC-8)
+package, illustrated in Figure~2. Dimensions are per Table~7.
+
+\begin{center}
+\begin{minipage}{0.47\textwidth}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \draw[thick, fill=lightbg] (0,0) rectangle (3.2,2.0);
+  \fill (0.25,1.85) circle (0.05);
+
+  \foreach \y in {0.25,0.75,1.25,1.75} {
+    \draw[thick] (-0.5,\y) -- (0,\y);
+    \draw[thick] (3.2,\y) -- (3.7,\y);
+  }
+
+  % D dimension (body length)
+  \draw[thin] (0,0) -- (0,-0.7);
+  \draw[thin] (3.2,0) -- (3.2,-0.7);
+  \draw[{Stealth[length=1.6mm]}-{Stealth[length=1.6mm]}] (0,-0.5) -- (3.2,-0.5)
+     node[midway, fill=lightbg, inner sep=1pt] {\scriptsize $D$};
+
+  % E dimension (overall width incl. leads)
+  \draw[thin] (-0.5,0.25) -- (-0.5,-1.3);
+  \draw[thin] (3.7,0.25) -- (3.7,-1.3);
+  \draw[{Stealth[length=1.6mm]}-{Stealth[length=1.6mm]}] (-0.5,-1.1) -- (3.7,-1.1)
+     node[midway, fill=lightbg, inner sep=1pt] {\scriptsize $E$};
+
+  % pitch e
+  \draw[thin] (-0.5,0.25) -- (-0.9,0.25);
+  \draw[thin] (-0.5,0.75) -- (-0.9,0.75);
+  \draw[{Stealth[length=1.3mm]}-{Stealth[length=1.3mm]}] (-0.8,0.25) -- (-0.8,0.75)
+     node[midway, fill=lightbg, inner sep=1pt, rotate=90] {\tiny $e$};
+\end{tikzpicture}
+\centering{\scriptsize Top view}
+\end{minipage}\hfill
+\begin{minipage}{0.47\textwidth}
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm]
+  \draw[thick, fill=lightbg] (0,0.5) rectangle (2.2,1.0);
+  \draw[thick] (0,0.5) -- (-0.3,0.15) -- (-0.55,0.15);
+  \draw[thick] (2.2,0.5) -- (2.5,0.15) -- (2.75,0.15);
+  \node[font=\tiny] at (-0.05,0.33) {$\theta$};
+
+  \draw[dashed, thin] (-0.8,0) -- (3.1,0);
+  \node[font=\scriptsize, anchor=west] at (3.1,0) {seating plane};
+
+  % A dimension (overall height)
+  \draw[thin] (3.4,0) -- (3.7,0);
+  \draw[thin] (3.4,1.0) -- (3.7,1.0);
+  \draw[{Stealth[length=1.5mm]}-{Stealth[length=1.5mm]}] (3.55,0) -- (3.55,1.0)
+     node[midway, fill=lightbg, inner sep=1pt, rotate=90] {\scriptsize $A$};
+
+  % L dimension (foot length)
+  \draw[thin] (-0.55,0.15) -- (-0.55,-0.45);
+  \draw[thin] (-0.30,0.15) -- (-0.30,-0.45);
+  \draw[{Stealth[length=1.3mm]}-{Stealth[length=1.3mm]}] (-0.55,-0.35) -- (-0.30,-0.35)
+     node[midway, fill=lightbg, inner sep=1pt] {\tiny $L$};
+\end{tikzpicture}
+\centering{\scriptsize Side view}
+\end{minipage}
+\end{center}
+\dsfigcaption{SOIC-8 package outline, top and side views (schematic, not to scale).}
+
+\dstabcaption{Package mechanical dimensions.}
+\begin{center}
+\begin{tabular}{@{}C{1.6cm}C{2.0cm}C{2.0cm}C{2.0cm}C{1.6cm}@{}}
+\toprule
+\rowcolor{lightbg}
+{\footnotesize\bfseries Symbol} & {\footnotesize\bfseries Min} & {\footnotesize\bfseries Nom} & {\footnotesize\bfseries Max} & {\footnotesize\bfseries Unit} \\
+\midrule
+$A$        & --    & --    & 1.75 & mm \\
+$A_1$      & 0.10  & --    & 0.25 & mm \\
+$A_2$      & 1.25  & 1.45  & 1.65 & mm \\
+$b$        & 0.31  & --    & 0.51 & mm \\
+$c$        & 0.17  & --    & 0.25 & mm \\
+$D$        & 4.80  & 4.90  & 5.00 & mm \\
+$E$        & 5.80  & 6.00  & 6.20 & mm \\
+$E_1$      & 3.80  & 3.90  & 4.00 & mm \\
+$e$        & --    & 1.27 BSC   & --   & mm \\
+$L$        & 0.40  & --    & 1.27 & mm \\
+$\theta$   & 0     & --    & 8    & deg \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% =============================================================================
+\section{Ordering Information}
+% =============================================================================
+\dstabcaption{Ordering information.}
+\begin{center}
+\begin{tabular}{@{}L{3.2cm}C{2.2cm}C{2.0cm}C{2.2cm}L{3.6cm}@{}}
+\toprule
+\rowcolor{lightbg}
+{\footnotesize\bfseries Order Part No.} & {\footnotesize\bfseries Temp.\ Range} & {\footnotesize\bfseries Package} & {\footnotesize\bfseries Marking} & {\footnotesize\bfseries Transport Media} \\
+\midrule
+ADX2050AIDR  & $-40$ to $125\,^{\circ}$C & SOIC-8 (D) & ADX2050A  & Tape and reel, 2500 units \\
+ADX2050AID   & $-40$ to $125\,^{\circ}$C & SOIC-8 (D) & ADX2050A  & Rails, 100 units/rail \\
+ADX2050ACDR  & $0$ to $70\,^{\circ}$C    & SOIC-8 (D) & ADX2050AC & Tape and reel, 2500 units \\
+\bottomrule
+\end{tabular}
+\end{center}
+\dsnote{All package types comply with JEDEC MS-012 and are RoHS-compliant / halogen-free.}
+
+% =============================================================================
+\section{Symbols and Abbreviations}
+% =============================================================================
+\dstabcaption{Symbols and abbreviations used in this document.}
+\begin{center}
+\begin{tabular}{@{}L{2.4cm}L{13.0cm}@{}}
+\toprule
+\rowcolor{lightbg}
+{\footnotesize\bfseries Symbol} & {\footnotesize\bfseries Definition} \\
+\midrule
+$V_{OS}$  & Input offset voltage \\
+$I_B$     & Input bias current \\
+$I_{OS}$  & Input offset current \\
+CMRR      & Common-mode rejection ratio \\
+PSRR      & Power-supply rejection ratio \\
+GBW       & Gain-bandwidth product \\
+SR        & Slew rate \\
+THD$+$N   & Total harmonic distortion plus noise \\
+ESD       & Electrostatic discharge \\
+HBM       & Human body model \\
+CDM       & Charged device model \\
+$T_A$     & Ambient temperature \\
+$T_J$     & Junction temperature \\
+RoHS      & Restriction of Hazardous Substances (Directive 2011/65/EU) \\
+BSC       & Basic spacing between centers (theoretically exact dimension) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+% =============================================================================
+\section{Revision History}
+% =============================================================================
+\dstabcaption{Document revision history.}
+\begin{center}
+\begin{tabular}{@{}C{1.1cm}C{2.1cm}L{8.4cm}C{2.6cm}@{}}
+\toprule
+\rowcolor{lightbg}
+{\footnotesize\bfseries Rev} & {\footnotesize\bfseries Date} & {\footnotesize\bfseries Description} & {\footnotesize\bfseries Approved} \\
+\midrule
+A & 2025-11-03 & Initial release. & J.\ Alvarez \\
+B & 2026-02-18 & Updated AC characteristics; corrected pin-1 orientation in Figure~1. & J.\ Alvarez \\
+C & 2026-06-15 & Added industrial temperature grade; revised Ordering Information (Table~8). & M.\ Chen \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\vspace{10pt}
+\begin{tcolorbox}[colback=lightbg, colframe=lightbg!60!black, boxrule=0.4pt, arc=1pt,
+  left=8pt, right=8pt, top=6pt, bottom=6pt]
+{\footnotesize\color{neutral}\textbf{Important Notice.} This document contains
+information on a product under continuing development. Apex Semiconductor,
+Inc.\ reserves the right to change or discontinue this product without
+notice. Apex Semiconductor does not assume any liability arising out of the
+application or use of this product. All trademarks are the property of their
+respective owners.}
+\end{tcolorbox}
+
+\end{document}

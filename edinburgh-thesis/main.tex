@@ -1,0 +1,1095 @@
+% Edinburgh Thesis Template — University of Edinburgh
+% DISCLAIMER: Unofficial template. Not affiliated with, endorsed by, or an official
+% publication of any named institution or venue. All names/data are fictional samples.
+% Edit and compile online at https://letx.app
+% Compiles with: latexmk -pdf main.tex
+\documentclass[12pt,a4paper,oneside]{book}
+
+% ── Encoding & fonts ────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathpazo}                         % Palatino-like serif (text + math)
+\usepackage[scaled=0.92]{helvet}              % sans-serif for headings
+\usepackage{microtype}                        % better typography
+
+% ── Geometry & spacing ─────────────────────────────────────────
+\usepackage[margin=1in]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% ── Colors ──────────────────────────────────────────────────────
+\usepackage{xcolor}
+\definecolor{edinburghblue}{HTML}{041E42}
+\definecolor{saltireblue}{HTML}{0065BF}
+\definecolor{softgray}{HTML}{F2F2F2}
+\definecolor{rulegray}{HTML}{B0B0B0}
+
+% ── Mathematics & theorems ──────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{lemma}[theorem]{Lemma}
+
+% ── Graphics & figures ─────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta, positioning, shapes.geometric, calc, backgrounds}
+
+% ── Tables ──────────────────────────────────────────────────────
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{multirow}
+
+% ── Captions ────────────────────────────────────────────────────
+\usepackage{caption}
+\captionsetup{
+  font=small,
+  labelfont={bf,color=edinburghblue},
+  labelsep=period,
+  skip=6pt
+}
+
+% ── Chapter / section formatting ───────────────────────────────
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\Huge\bfseries\color{edinburghblue}}
+  {\filleft\fontsize{72}{72}\selectfont\thechapter}
+  {0pt}
+  {\Huge}
+  [{\color{saltireblue}\titlerule[1.5pt]}\vspace{-\baselineskip}]
+\titlespacing*{\chapter}{0pt}{40pt}{40pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{edinburghblue}}
+  {\thesection}
+  {1em}
+  {}
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{edinburghblue!85!black}}
+  {\thesubsection}
+  {1em}
+  {}
+\titlespacing*{\subsection}{0pt}{14pt}{6pt}
+
+% ── Headers & footers ──────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{edinburghblue!60}\nouppercase{\leftmark}}
+\fancyhead[R]{\small\color{edinburghblue!60}\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\headrule}{\vskip 2pt\hrule width\headwidth height\headrulewidth\vskip 2pt}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyhead[R]{\small\color{edinburghblue!60}\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+% ── Hyperlinks ──────────────────────────────────────────────────
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=saltireblue,
+  citecolor=saltireblue,
+  urlcolor=saltireblue,
+  bookmarksnumbered=true,
+  pdfpagemode=UseOutlines
+}
+
+% ── Font Awesome icons ─────────────────────────────────────────
+\usepackage{fontawesome5}
+
+% ── Lists ───────────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist{nosep, leftmargin=*}
+
+% ── Coloured boxes ───────────────────────────────────────────────
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+% ── Plotting ────────────────────────────────────────────────────
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% ── Helper environments / macros ────────────────────────────────
+\newenvironment{rvbox}[1][]
+  {\begin{tcolorbox}[
+    colback=softgray,
+    colframe=rulegray,
+    boxrule=0.5pt,
+    arc=2pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    #1
+  ]}
+  {\end{tcolorbox}}
+\newcommand{\parsp}[1]{\medskip\noindent#1\medskip}
+
+% ══════════════════════════════════════════════════════════════════
+%  TITLE PAGE
+% ══════════════════════════════════════════════════════════════════
+\newcommand{\makethesistitle}{
+  \thispagestyle{empty}
+  \begin{center}
+    \vspace*{30mm}
+
+    {\LARGE\bfseries\color{edinburghblue}THE UNIVERSITY OF EDINBURGH}\\[6mm]
+    {\large\color{edinburghblue!80}SCHOOL OF INFORMATICS}
+
+    \vspace{30mm}
+
+    {\Huge\bfseries\color{edinburghblue}
+    Efficient Attention Mechanisms\\[4mm]
+    for Long-Range Sequence\\[4mm]
+    Modelling}
+
+    \vspace{25mm}
+
+    {\Large\color{edinburghblue!85}\textbf{Alistair James MacLeod}}
+
+    \vspace{15mm}
+
+    {\large\itshape
+    A thesis submitted in fulfilment of the requirements\\
+    for the degree of Doctor of Philosophy}
+
+    \vspace{15mm}
+
+    {\large
+    in the\\
+    School of Informatics\\
+    The University of Edinburgh}
+
+    \vspace{22mm}
+
+    {\large 2026}
+
+    \vspace{8mm}
+    {\color{saltireblue}\rule{60mm}{0.5pt}}
+
+    \vfill
+  \end{center}
+  \cleardoublepage
+}
+
+% ══════════════════════════════════════════════════════════════════
+%  DOCUMENT
+% ══════════════════════════════════════════════════════════════════
+\emergencystretch=3em\relax
+\begin{document}
+
+\frontmatter
+
+% ── Title page ──────────────────────────────────────────────────
+\makethesistitle
+
+% ── Declaration ─────────────────────────────────────────────────
+\chapter*{Declaration}
+\thispagestyle{plain}
+\vspace*{10mm}
+
+I declare that this thesis was composed by myself, that the work contained herein is my own
+except where explicitly stated otherwise in the text, and that this work has not been submitted
+for any other degree or professional qualification except as specified. Parts of this work have
+been published in the following peer-reviewed venues:
+
+\begin{itemize}
+  \item \textbf{A.\ J.\ MacLeod}, S.\ Chen, and M.\ R.\ Thompson. ``Sparse Contextual Attention
+    for Efficient Long-Range Transformers.'' In \textit{Proceedings of the 39th AAAI Conference
+    on Artificial Intelligence}, 2025.
+  \item \textbf{A.\ J.\ MacLeod} and M.\ R.\ Thompson. ``Hierarchical Memory Gating in Deep
+    Sequence Models.'' In \textit{Advances in Neural Information Processing Systems 38}, 2025.
+\end{itemize}
+
+\vspace{20mm}
+\noindent\textit{Signed:} \hrulefill\\[4mm]
+\noindent\textit{Date:} \hrulefill
+
+\cleardoublepage
+
+% ── Abstract ────────────────────────────────────────────────────
+\chapter*{Abstract}
+\thispagestyle{plain}
+
+\parsp{
+  Transformer-based architectures have revolutionised natural language processing, yet their
+  quadratic computational complexity with respect to sequence length severely limits their
+  applicability to long-range sequence modelling tasks. This thesis addresses the fundamental
+  challenge of designing attention mechanisms that achieve linear or near-linear complexity while
+  preserving the expressiveness of standard self-attention.
+}
+
+\parsp{
+  We first present a comprehensive analysis of existing efficient attention variants, categorising
+  them by their approximation strategy and establishing a unified theoretical framework for
+  comparing their computational and representational properties. Building on this analysis, we
+  introduce Sparse Contextual Attention (SCA), a novel mechanism that dynamically selects a
+  context-dependent subset of key--value pairs using a lightweight learned sparsity controller.
+  SCA achieves $\mathcal{O}(n\sqrt{n})$ complexity in the worst case while retaining the ability
+  to capture long-range dependencies critical for tasks such as document summarisation and
+  protein sequence analysis.
+}
+
+\parsp{
+  We further propose Hierarchical Memory Gating (HMG), a complementary approach that augments
+  transformer layers with a structured external memory bank organised as a multi-resolution
+  hierarchy. HMG enables the model to store and retrieve information at multiple temporal scales,
+  reducing the effective sequence length seen by each attention head by up to $40\times$ on
+  benchmarks including Long Range Arena and the PG-19 language modelling corpus.
+}
+
+\parsp{
+  Extensive empirical evaluation demonstrates that SCA and HMG jointly outperform full-attention
+  baselines on five long-context benchmarks while reducing peak memory consumption by $63\%$ and
+  training time by $47\%$. Our analysis further reveals that the inductive biases introduced by
+  both mechanisms contribute complementary benefits: SCA excels at local pattern extraction,
+  while HMG provides robust long-horizon recall. These findings establish a new Pareto frontier
+  for the accuracy--efficiency trade-off in long-range sequence modelling.
+}
+
+\cleardoublepage
+
+% ── Acknowledgements ────────────────────────────────────────────
+\chapter*{Acknowledgements}
+\thispagestyle{plain}
+
+I am deeply grateful to my supervisor, Professor Margaret R.\ Thompson, for her unwavering
+guidance, intellectual generosity, and patience throughout this journey. Her insistence on
+rigour and clarity has shaped not only this thesis but also my development as a researcher.
+
+I thank my second supervisor, Dr.\ Sarah Chen, for her insightful feedback and for many
+stimulating discussions that refined the ideas presented here. My gratitude extends to the
+members of the Edinburgh Language and Cognition group, particularly Dr.\ James Harrington,
+Dr.\ Priya Nair, and Thomas Bergström, whose camaraderie and constructive criticism enriched
+both this work and my time in Edinburgh.
+
+I am indebted to the Edinburgh Doctoral College and the School of Informatics for financial
+support through the Principal's Career Development Scholarship. This research also benefited
+from computational resources provided by the Edinburgh Compute and Data Facility.
+
+Finally, I thank my family — my parents, Fiona and Douglas, for their boundless encouragement;
+my partner, Elena, for her patience and perspective; and my late grandfather, Iain, who first
+taught me that questions are more valuable than answers.
+
+\cleardoublepage
+
+% ── Table of Contents ───────────────────────────────────────────
+\tableofcontents
+\cleardoublepage
+
+% ── List of Figures ─────────────────────────────────────────────
+\listoffigures
+\cleardoublepage
+
+% ── List of Tables ──────────────────────────────────────────────
+\listoftables
+\cleardoublepage
+
+% ══════════════════════════════════════════════════════════════════
+\mainmatter
+% ══════════════════════════════════════════════════════════════════
+
+% ────────────────────────────────────────────────────────────────
+\chapter{Introduction}
+% ────────────────────────────────────────────────────────────────
+
+\section{Motivation}
+
+The ability to model long-range dependencies in sequential data is fundamental to progress
+across artificial intelligence. From understanding the narrative arc of a novel to predicting
+protein folding from amino acid sequences, many of the most impactful applications of machine
+learning require reasoning over thousands — and increasingly millions — of tokens. The
+transformer architecture \cite{vaswani2017attention}, with its self-attention mechanism, has
+proven remarkably effective at capturing these dependencies. However, its standard formulation
+incurs quadratic computational and memory costs in the sequence length $n$, making it
+prohibitively expensive for the very long-range tasks where it would be most valuable.
+
+This thesis investigates the central question: \textbf{Can we design attention mechanisms that
+scale efficiently to long sequences without sacrificing the representational power that makes
+self-attention so effective?} We answer this question affirmatively by introducing two
+complementary mechanisms — Sparse Contextual Attention (SCA) and Hierarchical Memory Gating
+(HMG) — and demonstrating that their combination pushes the accuracy--efficiency frontier
+substantially beyond the state of the art.
+
+\section{Research Questions}
+
+This thesis is organised around four research questions:
+
+\begin{enumerate}[label=\textbf{RQ\arabic*}, leftmargin=3em]
+  \item What structural properties of standard self-attention are essential for long-range
+    dependency modelling, and which can be relaxed without degrading performance?
+  \item Can a learned, context-dependent sparsity pattern reduce the computational footprint
+    of attention while preserving its ability to route information across long distances?
+  \item How can structured external memory augment transformer layers to decouple the
+    representational capacity from the per-layer sequence length?
+  \item What complementary benefits arise from combining sparse attention with hierarchical
+    memory, and how do these benefits manifest across diverse long-context benchmarks?
+\end{enumerate}
+
+\section{Contributions}
+
+This thesis makes the following contributions:
+
+\begin{enumerate}[label=\textbf{C\arabic*}, leftmargin=2.5em]
+  \item A unified taxonomy of efficient attention mechanisms, formalising the design space
+    along axes of sparsity structure, context dependence, and memory hierarchy \hfill
+    (\S\ref{sec:background-taxonomy}).
+
+  \item Sparse Contextual Attention (SCA), a novel attention variant that learns to select
+    a context-dependent subset of key--value pairs, achieving worst-case complexity of
+    $\mathcal{O}(n\sqrt{n})$ with minimal accuracy loss \hfill (\S\ref{sec:sca}).
+
+  \item Hierarchical Memory Gating (HMG), a structured external memory bank operating at
+    multiple temporal resolutions that enables up to $40\times$ reduction in effective
+    sequence length per attention head \hfill (\S\ref{sec:hmg}).
+
+  \item Extensive empirical evaluation on five benchmarks — Long Range Arena, PG-19,
+    SCROLLS, ProteinNet, and a novel long-context diagnostic suite — establishing new
+    state-of-the-art results for efficient transformers \hfill (Chapter~4).
+
+  \item A detailed ablation and analysis framework that isolates the contributions of
+    sparsity, hierarchy, and their interaction \hfill (Chapter~4,\S\ref{sec:ablation}).
+\end{enumerate}
+
+\section{Thesis Structure}
+
+The remainder of this thesis is structured as follows.
+Chapter~\ref{chap:background} reviews the transformer architecture, surveys existing
+approaches to efficient attention, and establishes the theoretical framework used throughout.
+Chapter~\ref{chap:sca} presents Sparse Contextual Attention, including its design rationale,
+implementation details, and a theoretical analysis of its approximation guarantees.
+Chapter~\ref{chap:hmg} introduces Hierarchical Memory Gating and describes how multi-resolution
+memory structures can be integrated into standard transformer layers.
+Chapter~\ref{chap:evaluation} provides a comprehensive empirical evaluation of SCA and HMG,
+both independently and jointly, across a diverse suite of benchmarks. Finally,
+Chapter~\ref{chap:conclusion} summarises our findings and discusses promising directions for
+future work.
+
+% ── Figure: Thesis structure ────────────────────────────────────
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    node distance=6mm and 12mm,
+    box/.style={
+      draw=edinburghblue, fill=edinburghblue!5, rounded corners=2pt,
+      minimum width=52mm, minimum height=10mm, align=center, font=\small\bfseries
+    },
+    arr/.style={->, >=Stealth, saltireblue, thick}
+  ]
+    \node[box] (intro)  {Chapter 1\\Introduction};
+    \node[box, below=of intro] (bg)    {Chapter 2\\Background \& Related Work};
+    \node[box, below=of bg, xshift=-30mm] (sca)   {Chapter 3\\Sparse Contextual\\Attention};
+    \node[box, below=of bg, xshift=30mm]  (hmg)   {Chapter 4\\Hierarchical Memory\\Gating};
+    \node[box, below=of sca, xshift=30mm] (eval)  {Chapter 5\\Empirical Evaluation};
+    \node[box, below=of eval] (conc) {Chapter 6\\Conclusions};
+
+    \draw[arr] (intro) -- (bg);
+    \draw[arr] (bg.south) -- ++(0,-3mm) -| (sca);
+    \draw[arr] (bg.south) -- ++(0,-3mm) -| (hmg);
+    \draw[arr] (sca.south) -- ++(0,-3mm) -| (eval);
+    \draw[arr] (hmg.south) -- ++(0,-3mm) -| (eval);
+    \draw[arr] (eval) -- (conc);
+  \end{tikzpicture}
+  \caption{Thesis structure and chapter dependencies. Solid arrows indicate logical
+    progression; Chapters~3 and~4 may be read independently.}
+  \label{fig:thesis-structure}
+\end{figure}
+
+% ────────────────────────────────────────────────────────────────
+\chapter{Background and Related Work}
+\label{chap:background}
+% ────────────────────────────────────────────────────────────────
+
+\section{The Transformer Architecture}
+
+The transformer, introduced by Vaswani et al.\ \cite{vaswani2017attention}, has become the
+dominant architecture for sequence processing across natural language processing, computer
+vision, and computational biology. Its core innovation is the \textit{self-attention}
+mechanism, which allows each position in a sequence to attend directly to every other
+position, computing a weighted sum of value vectors:
+
+\begin{equation}
+  \operatorname{Attention}(Q,K,V) = \operatorname{softmax}\!\left(
+    \frac{QK^{\top}}{\sqrt{d_k}}
+  \right) V ,
+  \label{eq:attention}
+\end{equation}
+
+where $Q, K, V \in \mathbb{R}^{n \times d}$ denote the query, key, and value matrices
+respectively, $n$ is the sequence length, and $d_k$ is the per-head dimension. The
+$\operatorname{softmax}$ operation is applied row-wise, producing an $n \times n$ attention
+matrix that encodes pairwise interaction strengths.
+
+\subsection{Multi-Head Attention}
+
+In practice, transformers employ \textit{multi-head attention} (MHA), which projects
+$Q$, $K$, and $V$ into $h$ separate subspaces, computes attention independently in each,
+and concatenates the results:
+
+\begin{equation}
+  \operatorname{MHA}(Q,K,V) = \bigl[\,\operatorname{head}_1 \,\|\; \cdots \;\|\,
+    \operatorname{head}_h\,\bigr]\,W^{O},
+  \label{eq:mha}
+\end{equation}
+
+where $\operatorname{head}_i = \operatorname{Attention}(QW_i^{Q}, KW_i^{K}, VW_i^{V})$ and
+$\|$ denotes concatenation along the feature dimension. Multi-head attention allows the model
+to attend to information from different representation subspaces simultaneously, which has
+been shown to be critical for capturing diverse linguistic phenomena
+\cite{voita2019analyzing}.
+
+\subsection{Positional Encoding}
+
+Since self-attention is permutation-invariant, transformers require an explicit mechanism to
+encode sequence order. The original formulation uses sinusoidal positional encodings:
+
+\begin{equation}
+  \begin{aligned}
+    \operatorname{PE}_{(pos,2i)}   &= \sin\!\left( pos \,/\, 10000^{\,2i/d} \right) ,\\
+    \operatorname{PE}_{(pos,2i+1)} &= \cos\!\left( pos \,/\, 10000^{\,2i/d} \right) ,
+  \end{aligned}
+  \label{eq:positional}
+\end{equation}
+
+where $pos$ is the position and $i$ indexes the dimension. Learned positional embeddings
+\cite{devlin2019bert} and relative position representations \cite{shaw2018self} have since
+become common alternatives, each offering different inductive biases for length
+generalisation.
+
+\section{A Taxonomy of Efficient Attention Mechanisms}
+\label{sec:background-taxonomy}
+
+The quadratic complexity of standard self-attention has motivated a large body of work on
+efficient approximations. Table~\ref{tab:taxonomy} provides a structured overview of the
+design space.
+
+\begin{table}[htbp]
+  \centering
+  \caption{A taxonomy of efficient attention mechanisms categorised by sparsity structure,
+    context dependence, and use of external memory.}
+  \label{tab:taxonomy}
+  \begin{tabularx}{\linewidth}{@{}>{\color{edinburghblue}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+    \toprule
+    \textbf{Category} & \textbf{Mechanism} & \textbf{Key Works} \\
+    \midrule
+    Fixed Sparse
+      & Predefined sparsity patterns (local windows, strided, dilated)
+      & \cite{child2019generating, beltagy2020longformer} \\
+    Learned Sparse
+      & Input-dependent sparsity via hashing, clustering, or routing
+      & \cite{kitaev2020reformer, roy2021efficient} \\
+    Low-Rank
+      & Kernelised or linearised attention via feature maps
+      & \cite{katharopoulos2020transformers, choromanski2021rethinking} \\
+    Memory-Augmented
+      & External memory with read/write operations; compression
+      & \cite{rae2019compressive, dai2019transformer} \\
+    Recurrence-Based
+      & Recurrent connection across transformer layers
+      & \cite{dai2019transformer} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Each category trades off a different dimension of the accuracy--efficiency Pareto frontier.
+Fixed-sparse methods offer predictable speedups but may miss critical long-range
+connections; learned-sparse methods adapt to the input but incur routing overhead;
+low-rank methods achieve linear complexity but can struggle with tasks requiring precise
+token-level interactions. The work presented in this thesis spans the learned-sparse
+(Chapter~\ref{chap:sca}) and memory-augmented (Chapter~\ref{chap:hmg}) categories.
+
+\section{The Long Range Arena Benchmark}
+
+The Long Range Arena (LRA) \cite{tay2021long} is a standardised benchmark designed to
+evaluate models on tasks requiring long-range reasoning. It comprises five tasks spanning
+text, image, and mathematical modalities, with sequence lengths ranging from 1,024 to
+4,096 tokens. LRA has become the de-facto evaluation suite for efficient transformers and
+serves as a primary benchmark in our evaluation (Chapter~\ref{chap:evaluation}).
+
+% ── Figure: LRA tasks overview ──────────────────────────────────
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    box/.style={
+      draw=edinburghblue!40, fill=edinburghblue!3, rounded corners=3pt,
+      minimum width=32mm, minimum height=14mm, align=center, font=\small
+    },
+    arr/.style={->, >=Stealth, saltireblue!60, thick}
+  ]
+    \node[box] (listops) {\textbf{ListOps}\\[2pt]\footnotesize Hierarchical\\\footnotesize expressions};
+    \node[box, right=5mm of listops] (text) {\textbf{Text}\\[2pt]\footnotesize Sentiment\\\footnotesize classification};
+    \node[box, right=5mm of text] (retrieval) {\textbf{Retrieval}\\[2pt]\footnotesize Document\\\footnotesize matching};
+    \node[box, below=8mm of listops] (image) {\textbf{Image}\\[2pt]\footnotesize CIFAR-10\\\footnotesize classification};
+    \node[box, right=5mm of image] (pathfinder) {\textbf{Pathfinder}\\[2pt]\footnotesize Long-range\\\footnotesize spatial reasoning};
+
+    \node[font=\footnotesize\color{edinburghblue!70}, below=3mm of image, xshift=24mm]
+      {$n \in [1024,\,4096]$ tokens};
+  \end{tikzpicture}
+  \caption{The five tasks of the Long Range Arena benchmark, spanning text,
+    image, and mathematical reasoning with long input sequences.}
+  \label{fig:lra-tasks}
+\end{figure}
+
+% ────────────────────────────────────────────────────────────────
+\chapter{Sparse Contextual Attention}
+\label{chap:sca}
+% ────────────────────────────────────────────────────────────────
+
+\section{Motivation and Design Principles}
+
+Standard self-attention computes a dense $n \times n$ interaction matrix, yet empirical
+studies \cite{clark2019does, kovaleva2019revealing} have shown that attention maps in
+trained transformers are highly sparse: only a small fraction of token pairs receive
+non-negligible attention weights. This observation suggests that explicit sparsity
+constraints, if applied intelligently, may reduce computation without sacrificing
+expressiveness.
+
+The key challenge is that the sparsity pattern is \textit{context-dependent}:
+which tokens a given query should attend to depends on the input itself. Fixed patterns
+— such as local windows — cannot capture long-range dependencies that span arbitrary
+distances. Our Sparse Contextual Attention mechanism addresses this by learning to
+predict, for each query, a small set of relevant keys directly from the input
+representations.
+
+\section{Mechanism Description}
+\label{sec:sca}
+
+\subsection{Context-Dependent Sparsity Controller}
+
+Given queries $Q \in \mathbb{R}^{n \times d}$ and keys $K \in \mathbb{R}^{n \times d}$,
+SCA first computes a \textit{sparsity score} for each query--key pair using a lightweight
+controller network:
+
+\begin{equation}
+  S(Q,K) = \sigma\!\left( Q\,W_s\,K^{\top} \oslash \sqrt{d} \right),
+  \label{eq:sparsity-score}
+\end{equation}
+
+where $W_s \in \mathbb{R}^{d \times d}$ is a learned projection, $\sigma$ denotes the
+sigmoid function, and $\oslash$ indicates element-wise division by the broadcast scalar.
+For each query $q_i$, we retain the top-$k$ keys according to $S(q_i, \cdot)$, where
+$k = \lceil c\sqrt{n} \rceil$ for a configurable constant $c$. This yields worst-case
+complexity $\mathcal{O}(n k d) = \mathcal{O}(c\, n^{3/2} d)$.
+
+\subsection{Gated Attention with Sparsity Mask}
+
+Let $\mathcal{M} \in \{0,1\}^{n \times n}$ be the binary mask indicating retained
+query--key pairs. The SCA output is computed as:
+
+\begin{equation}
+  \operatorname{SCA}(Q,K,V) = \operatorname{softmax}\!\left(
+    \frac{QK^{\top}}{\sqrt{d_k}} + \log \mathcal{M}
+  \right) V ,
+  \label{eq:sca}
+\end{equation}
+
+where we add $\log 0 = -\infty$ for masked-out positions, ensuring they receive zero
+weight after the softmax. Crucially, the sparsity controller $S$ is trained end-to-end
+with the main objective; the top-$k$ selection is treated as a straight-through estimator
+during backpropagation \cite{bengio2013estimating}.
+
+\section{Theoretical Analysis}
+
+We establish the following approximation guarantee for SCA:
+
+\begin{theorem}[SCA Approximation Bound]\label{thm:sca-bound}
+  Let $A = \operatorname{softmax}(QK^{\top}/\sqrt{d_k})$ be the full attention matrix
+  and $\hat{A}$ be the SCA attention matrix with $k$ retained keys per query. Assume
+  the attention scores $\langle q_i, k_j \rangle / \sqrt{d_k}$ are bounded. Then there
+  exists a constant $C$ such that for any $\varepsilon > 0$, with
+  $k = \Omega(\log(n)/\varepsilon^2)$, we have
+  $\|A - \hat{A}\|_F \leq \varepsilon \|A\|_F$ with high probability.
+\end{theorem}
+
+The proof proceeds by bounding the contribution of dropped attention weights via
+Hoeffding's inequality and the Lipschitz property of the softmax function. A complete
+derivation is provided in Appendix~A.
+
+% ── Figure: SCA architecture ────────────────────────────────────
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    node distance=5mm and 8mm,
+    block/.style={
+      draw=edinburghblue, fill=edinburghblue!4, rounded corners=3pt,
+      minimum width=28mm, minimum height=9mm, align=center, font=\footnotesize\bfseries
+    },
+    smallblock/.style={
+      draw=saltireblue!60, fill=saltireblue!3, rounded corners=2pt,
+      minimum width=22mm, minimum height=8mm, align=center, font=\footnotesize
+    },
+    arr/.style={->, >=Stealth, thick, edinburghblue!70}
+  ]
+    \node[block] (input) {$Q, K, V$};
+
+    \node[smallblock, below left=8mm and -4mm of input] (controller)
+      {Sparsity Controller\\$\sigma(Q W_s K^{\top}/\sqrt{d})$};
+    \node[smallblock, below right=8mm and -4mm of input] (attn)
+      {Masked Attention\\$\operatorname{softmax}(QK^{\top}/\sqrt{d} + \log\mathcal{M})$};
+
+    \node[block, below=12mm of attn] (output) {Output Projection};
+
+    \draw[arr] (input.south) -- ++(0,-3mm) -| (controller);
+    \draw[arr] (input.south) -- ++(0,-3mm) -| (attn);
+    \draw[arr] (controller) -- node[right,font=\footnotesize] {$\mathcal{M}$} (attn);
+    \draw[arr] (attn) -- (output);
+  \end{tikzpicture}
+  \caption{The Sparse Contextual Attention architecture. The sparsity controller
+    (left) and the masked attention module (right) operate in parallel on shared
+    inputs. The binary mask $\mathcal{M}$ gates the attention computation.}
+  \label{fig:sca-architecture}
+\end{figure}
+
+% ────────────────────────────────────────────────────────────────
+\chapter{Hierarchical Memory Gating}
+\label{chap:hmg}
+% ────────────────────────────────────────────────────────────────
+
+\section{The Memory Bottleneck in Deep Transformers}
+
+While SCA addresses the quadratic cost of per-layer attention, deep transformer stacks
+face a second bottleneck: each layer must re-encode information from the raw token
+representations, limiting the effective context that can be maintained across layers.
+Recurrent memory mechanisms \cite{dai2019transformer, rae2019compressive} partially
+address this by passing a compressed state between time steps, but they operate at a
+single temporal resolution and can suffer from the same vanishing-gradient issues that
+affect classical RNNs.
+
+\section{Multi-Resolution Memory Hierarchy}
+
+Hierarchical Memory Gating introduces a structured external memory bank organised as a
+pyramid of $L$ resolutions. At level $\ell \in \{1, \dots, L\}$, the memory stores
+$\lceil n / 2^{\ell} \rceil$ slots, each aggregating information from a segment of
+$2^{\ell}$ consecutive tokens.
+
+\subsection{Memory Write}
+
+At each transformer layer, the memory is updated via a gated write operation:
+
+\begin{equation}
+  M_{\ell}^{(t)} = (1 - g_{\ell})\, M_{\ell}^{(t-1)} + g_{\ell}\,
+    \operatorname{Agg}_{\ell}\!\bigl(H^{(t)}\bigr),
+  \label{eq:mem-write}
+\end{equation}
+
+where $H^{(t)} \in \mathbb{R}^{n \times d}$ is the hidden state at layer $t$,
+$\operatorname{Agg}_{\ell}$ is a learned aggregation function (we use strided
+convolution with kernel size $2^{\ell}$) that compresses segments into memory slots,
+and $g_{\ell} \in [0,1]$ is an input-dependent gate computed as
+$g_{\ell} = \sigma(W_g\, [\bar{h}; \bar{m}_{\ell}] + b_g)$.
+
+\subsection{Memory Read}
+
+Each attention head can read from the memory bank via a cross-attention operation:
+
+\begin{equation}
+  \operatorname{MemRead}(Q, \mathcal{M}) = \operatorname{softmax}\!\left(
+    \frac{Q\, \tilde{K}^{\top}}{\sqrt{d_k}}
+  \right) \tilde{V},
+  \label{eq:mem-read}
+\end{equation}
+
+where $\tilde{K}, \tilde{V}$ are obtained by flattening the memory slots across all
+resolution levels. Since the total number of memory slots is
+$\sum_{\ell=1}^{L} \lceil n / 2^{\ell} \rceil < n$, the memory read operation is
+cheaper than full self-attention.
+
+\section{Integration with Sparse Contextual Attention}
+
+HMG is designed to complement SCA rather than replace it. In our joint architecture,
+each transformer layer computes both SCA (for fine-grained local interactions) and
+HMG memory reads (for long-horizon recall), combining their outputs via a learned
+gating mechanism:
+
+\begin{equation}
+  H_{\text{out}} = \alpha \odot \operatorname{SCA}(Q,K,V)
+    + (1-\alpha) \odot \operatorname{MemRead}(Q, \mathcal{M}),
+  \label{eq:joint}
+\end{equation}
+
+where $\alpha = \sigma(W_{\alpha}\, H + b_{\alpha})$ and $\odot$ denotes element-wise
+multiplication. This allows the model to dynamically balance local precision and global
+context depending on the input.
+
+% ── Table: Memory hierarchy configuration ───────────────────────
+\begin{table}[htbp]
+  \centering
+  \caption{Default memory hierarchy configuration used in our experiments.
+    $n=4096$ is the maximum sequence length.}
+  \label{tab:memory-config}
+  \begin{tabularx}{0.75\linewidth}{@{}>{\color{edinburghblue}\bfseries}l@{\hspace{6mm}}>{\centering\arraybackslash}X>{\centering\arraybackslash}X@{}}
+    \toprule
+    \textbf{Level $\ell$} & \textbf{Segment size} & \textbf{Slots} \\
+    \midrule
+    1 & $2^1 = 2$    & 2048 \\
+    2 & $2^2 = 4$    & 1024 \\
+    3 & $2^3 = 8$    &  512 \\
+    4 & $2^4 = 16$   &  256 \\
+    5 & $2^5 = 32$   &  128 \\
+    \midrule
+    \multicolumn{2}{@{}>{\color{edinburghblue}\bfseries}l}{Total memory slots} & 3968 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+% ── Figure: Memory hierarchy ────────────────────────────────────
+\begin{figure}[htbp]
+  \centering
+\resizebox{\textwidth}{!}{%
+  \begin{tikzpicture}[
+    box/.style={
+      draw=edinburghblue!50, fill=edinburghblue!5, minimum width=10mm,
+      minimum height=6mm, font=\tiny
+    },
+    level/.style={font=\footnotesize\color{edinburghblue}, right=2mm}
+  ]
+    % Level 1
+    \foreach \x in {1,...,16} {
+      \node[box] at (\x*0.72, 0) {};
+    }
+    \node[level] at (12.5, 0) {$\ell = 1$ (2048 slots)};
+
+    % Level 2
+    \foreach \x in {1,...,8} {
+      \node[box, minimum width=20mm, fill=saltireblue!8, draw=saltireblue!50]
+        at (\x*1.44, -0.8) {};
+    }
+    \node[level] at (12.5, -0.8) {$\ell = 2$ (1024 slots)};
+
+    % Level 3
+    \foreach \x in {1,...,4} {
+      \node[box, minimum width=42mm, fill=edinburghblue!8, draw=edinburghblue!60]
+        at (\x*2.88, -1.6) {};
+    }
+    \node[level] at (12.5, -1.6) {$\ell = 3$ (512 slots)};
+
+    % Level 4
+    \foreach \x in {1,...,2} {
+      \node[box, minimum width=86mm, fill=saltireblue!12, draw=saltireblue!60]
+        at (\x*5.76, -2.4) {};
+    }
+    \node[level] at (12.5, -2.4) {$\ell = 4$ (256 slots)};
+
+    % Level 5
+    \node[box, minimum width=174mm, fill=edinburghblue!12, draw=edinburghblue!70]
+      at (5.8, -3.2) {};
+    \node[level] at (12.5, -3.2) {$\ell = 5$ (128 slots)};
+  \end{tikzpicture}}
+  \caption{Multi-resolution memory hierarchy. Higher levels aggregate
+    information from progressively larger token segments, providing
+    compressed representations at multiple temporal scales.}
+  \label{fig:memory-hierarchy}
+\end{figure}
+
+% ────────────────────────────────────────────────────────────────
+\chapter{Empirical Evaluation}
+\label{chap:evaluation}
+% ────────────────────────────────────────────────────────────────
+
+\section{Experimental Setup}
+
+We evaluate SCA and HMG on five benchmarks spanning text, image, and biological
+sequence modalities. All models are implemented in PyTorch and trained on 8$\times$
+NVIDIA A100-80GB GPUs using the AdamW optimiser \cite{loshchilov2019decoupled} with
+a cosine learning rate schedule and 5,000 warm-up steps. We compare against six
+baselines spanning the taxonomy of efficient attention described in
+\S\ref{sec:background-taxonomy}.
+
+\subsection{Benchmarks}
+
+\begin{itemize}
+  \item \textbf{Long Range Arena} (LRA) \cite{tay2021long}: Five tasks at
+    $n \in [1024, 4096]$.
+  \item \textbf{PG-19} \cite{rae2019compressive}: Language modelling on full-length
+    books ($n = 8192$).
+  \item \textbf{SCROLLS} \cite{shaham2022scrolls}: Seven long-document NLP tasks
+    ($n \leq 4096$).
+  \item \textbf{ProteinNet}: Custom benchmark for protein secondary structure prediction
+    ($n \leq 2048$).
+  \item \textbf{LongDiag}: A diagnostic suite of synthetic tasks probing specific
+    long-range reasoning capabilities.
+\end{itemize}
+
+\section{Main Results}
+
+Table~\ref{tab:main-results} presents the primary results on the Long Range Arena
+benchmark and PG-19.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Main results on the Long Range Arena benchmark and PG-19 language modelling.
+    LRA accuracy (\%); PG-19 perplexity (lower is better). Best results in \textbf{bold},
+    second-best underlined.}
+  \label{tab:main-results}
+  \begin{tabularx}{\linewidth}{@{}>{\color{edinburghblue}\bfseries}l@{\hspace{5mm}}>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X@{}}
+    \toprule
+    \textbf{Model} & \textbf{ListOps} & \textbf{Text} & \textbf{Retrieval} & \textbf{Image} & \textbf{Pathfinder} & \textbf{PG-19} \\
+    \midrule
+    Transformer    & 36.4 & 64.3 & 57.5 & 41.2 & 68.9 & 28.7 \\
+    Reformer       & 37.1 & 63.8 & 61.2 & 42.7 & 71.3 & 30.1 \\
+    Linformer      & 35.8 & 62.1 & 57.9 & 38.9 & 66.4 & 32.5 \\
+    Performer      & 36.2 & 65.0 & 60.7 & 40.1 & 69.8 & 29.8 \\
+    Longformer     & 37.9 & 64.7 & 63.1 & 41.8 & 72.0 & 27.9 \\
+    BigBird        & 38.3 & 65.2 & 63.8 & 42.5 & 73.1 & 26.4 \\
+    \midrule
+    SCA (ours)     & \underline{41.6} & \underline{67.4} & \underline{66.9} & 44.3 & \underline{75.2} & \underline{22.3} \\
+    HMG (ours)     & 40.2 & 66.5 & 65.7 & \underline{45.0} & 74.6 & 23.1 \\
+    \textbf{SCA+HMG} & \textbf{43.1} & \textbf{69.2} & \textbf{68.5} & \textbf{46.1} & \textbf{76.8} & \textbf{19.7} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Our joint SCA+HMG model establishes new state-of-the-art results across all six
+benchmarks, with particularly large gains on LRA ListOps ($+4.8$ points over BigBird)
+and PG-19 ($-6.7$ perplexity reduction). The complementary nature of the two mechanisms
+is evident: SCA contributes more to tasks requiring precise token-level reasoning
+(Text, Retrieval), while HMG's impact is most pronounced on long-horizon recall tasks
+(PG-19, Pathfinder).
+
+\section{Efficiency Analysis}
+
+Table~\ref{tab:efficiency} compares the computational efficiency of our models against
+the full-attention transformer baseline.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Computational efficiency at $n=4096$. Memory measured as peak GPU memory
+    during training (GB); throughput in tokens/second.}
+  \label{tab:efficiency}
+  \begin{tabularx}{0.8\linewidth}{@{}>{\color{edinburghblue}\bfseries}l@{\hspace{6mm}}>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X@{}}
+    \toprule
+    \textbf{Model} & \textbf{Memory (GB)} & \textbf{Throughput} & \textbf{Speedup} \\
+    \midrule
+    Transformer    & 72.4 & 1,240 & 1.00$\times$ \\
+    SCA            & 28.1 & 2,180 & 1.76$\times$ \\
+    HMG            & 31.5 & 1,950 & 1.57$\times$ \\
+    SCA+HMG        & 26.8 & 2,340 & 1.89$\times$ \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The joint model achieves a $63\%$ reduction in peak memory and $89\%$ increase in
+training throughput relative to the standard transformer, demonstrating that our
+mechanisms deliver substantial practical benefits beyond benchmark improvements.
+
+\section{Ablation Study}
+\label{sec:ablation}
+
+To isolate the contributions of individual design choices, we perform a systematic
+ablation study on LRA and PG-19. The results, presented in Figure~\ref{fig:ablation},
+show that both the context-dependent sparsity of SCA and the multi-resolution
+hierarchy of HMG are essential for the full performance gains.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      ybar,
+      bar width=8pt,
+      width=0.9\linewidth,
+      height=55mm,
+      ymin=35, ymax=82,
+      ylabel={LRA Avg. Accuracy (\%)},
+      ylabel style={font=\small, color=edinburghblue},
+      symbolic x coords={Transformer,SCA (random),SCA (local),SCA,HMG (flat),HMG,SCA+HMG},
+      xtick=data,
+      xticklabel style={font=\footnotesize, rotate=30, anchor=east, align=right},
+      nodes near coords,
+      nodes near coords style={font=\tiny, color=edinburghblue!80},
+      font=\small
+    ]
+      \addplot[fill=edinburghblue!20, draw=edinburghblue!40]  coordinates {(Transformer, 53.7)};
+      \addplot[fill=edinburghblue!30, draw=edinburghblue!50]  coordinates {(SCA (random), 55.1)};
+      \addplot[fill=edinburghblue!40, draw=edinburghblue!60]  coordinates {(SCA (local), 57.3)};
+      \addplot[fill=edinburghblue!60, draw=edinburghblue!80]  coordinates {(SCA, 59.1)};
+      \addplot[fill=saltireblue!30,  draw=saltireblue!50]   coordinates {(HMG (flat), 56.4)};
+      \addplot[fill=saltireblue!50,  draw=saltireblue!70]   coordinates {(HMG, 58.6)};
+      \addplot[fill=saltireblue!70,  draw=saltireblue!90]   coordinates {(SCA+HMG, 60.7)};
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Ablation study on LRA average accuracy. SCA~(random) uses a fixed random
+    sparsity pattern; SCA~(local) restricts sparsity to local windows; HMG~(flat)
+    uses a single-resolution memory bank. Both learned context dependence and
+    multi-resolution hierarchy contribute significantly.}
+  \label{fig:ablation}
+\end{figure}
+
+The gap between SCA with random/local sparsity and the full context-dependent SCA
+underscores the importance of learned, input-aware sparsity patterns. Similarly, the
+improvement from flat to hierarchical memory validates the multi-resolution design.
+
+% ────────────────────────────────────────────────────────────────
+\chapter{Conclusions and Future Work}
+\label{chap:conclusion}
+% ────────────────────────────────────────────────────────────────
+
+\section{Summary of Contributions}
+
+This thesis has addressed the challenge of scaling transformer architectures to long
+sequences through two complementary mechanisms. Sparse Contextual Attention reduces
+per-layer computation by learning input-dependent sparsity patterns that preserve the
+most salient token interactions. Hierarchical Memory Gating augments the transformer
+with a multi-resolution memory bank that decouples representational capacity from
+per-layer sequence length, enabling robust long-horizon recall.
+
+Together, SCA and HMG establish a new Pareto frontier for the accuracy--efficiency
+trade-off in long-range sequence modelling. Our empirical evaluation across five diverse
+benchmarks demonstrates consistent and substantial improvements over existing efficient
+attention methods, with gains of up to $4.8$ accuracy points on LRA and a $6.7$-point
+perplexity reduction on PG-19.
+
+\section{Limitations}
+
+Several limitations of this work merit acknowledgement. First, our experiments are
+limited to sequence lengths of up to $8{,}192$ tokens; scaling to truly long contexts
+($n > 100{,}000$) may require additional techniques such as activation checkpointing or
+further memory compression. Second, the sparsity controller in SCA introduces a modest
+routing overhead that partially offsets its efficiency gains for short sequences
+($n < 512$). Third, our evaluation focuses on supervised and self-supervised learning;
+the applicability of SCA and HMG to reinforcement learning and sequential
+decision-making remains unexplored.
+
+\section{Future Directions}
+
+We identify four promising directions for future work:
+
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=2em]
+  \item \textbf{Dynamic resolution allocation.} The memory hierarchy in HMG uses a fixed
+    resolution schedule. Learning to dynamically allocate capacity across resolutions
+    based on input complexity could yield further efficiency gains.
+  \item \textbf{Cross-modal long-range reasoning.} Extending SCA and HMG to
+    vision--language and multimodal architectures could address the growing demand for
+    models that reason over long interleaved sequences of text, images, and audio.
+  \item \textbf{Hardware-aware sparsity.} The top-$k$ selection in SCA is not
+    optimised for GPU tensor cores. Designing hardware-aligned sparsity patterns
+    (e.g., $2{:}4$ structured sparsity) could unlock an additional $2\times$ speedup.
+  \item \textbf{Theoretical foundations.} While Theorem~\ref{thm:sca-bound} provides a
+    basic approximation guarantee, a tighter analysis characterising the sample
+    complexity and generalisation properties of learned sparsity controllers remains an
+    open problem with significant practical implications.
+\end{enumerate}
+
+The field of efficient sequence modelling is advancing rapidly, driven by the
+ever-increasing scale of data and models. We hope that the mechanisms and analysis
+presented in this thesis contribute a useful step toward architectures that can reason
+over arbitrarily long sequences with the same fluency that transformers bring to
+short-context tasks.
+
+% ══════════════════════════════════════════════════════════════════
+\backmatter
+% ══════════════════════════════════════════════════════════════════
+
+\begin{thebibliography}{99}
+
+\bibitem{vaswani2017attention}
+A.~Vaswani, N.~Shazeer, N.~Parmar, J.~Uszkoreit, L.~Jones, A.~N.~Gomez, Ł.~Kaiser,
+  and I.~Polosukhin.
+``Attention Is All You Need.''
+In \textit{Advances in Neural Information Processing Systems 30 (NeurIPS)}, 2017.
+
+\bibitem{devlin2019bert}
+J.~Devlin, M.-W.~Chang, K.~Lee, and K.~Toutanova.
+``BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding.''
+In \textit{Proceedings of NAACL-HLT}, 2019.
+
+\bibitem{brown2020language}
+T.~B.~Brown, B.~Mann, N.~Ryder, M.~Subbiah, J.~Kaplan, P.~Dhariwal, A.~Neelakantan,
+  \textit{et~al.}
+``Language Models are Few-Shot Learners.''
+In \textit{Advances in Neural Information Processing Systems 33 (NeurIPS)}, 2020.
+
+\bibitem{tay2021long}
+Y.~Tay, M.~Dehghani, S.~Abnar, Y.~Shen, D.~Bahri, P.~Pham, J.~Rao, L.~Yang, S.~Ruder,
+  and D.~Metzler.
+``Long Range Arena: A Benchmark for Efficient Transformers.''
+In \textit{International Conference on Learning Representations (ICLR)}, 2021.
+
+\bibitem{choromanski2021rethinking}
+K.~Choromanski, V.~Likhosherstov, D.~Dohan, X.~Song, A.~Gane, T.~Sarlós, P.~Hawkins,
+  \textit{et~al.}
+``Rethinking Attention with Performers.''
+In \textit{International Conference on Learning Representations (ICLR)}, 2021.
+
+\bibitem{kitaev2020reformer}
+N.~Kitaev, Ł.~Kaiser, and A.~Levskaya.
+``Reformer: The Efficient Transformer.''
+In \textit{International Conference on Learning Representations (ICLR)}, 2020.
+
+\bibitem{beltagy2020longformer}
+I.~Beltagy, M.~E.~Peters, and A.~Cohan.
+``Longformer: The Long-Document Transformer.''
+\textit{arXiv preprint arXiv:2004.05150}, 2020.
+
+\bibitem{child2019generating}
+R.~Child, S.~Gray, A.~Radford, and I.~Sutskever.
+``Generating Long Sequences with Sparse Transformers.''
+\textit{arXiv preprint arXiv:1904.10509}, 2019.
+
+\bibitem{dai2019transformer}
+Z.~Dai, Z.~Yang, Y.~Yang, J.~G.~Carbonell, Q.~V.~Le, and R.~Salakhutdinov.
+``Transformer-XL: Attentive Language Models Beyond a Fixed-Length Context.''
+In \textit{Proceedings of ACL}, 2019.
+
+\bibitem{rae2019compressive}
+J.~W.~Rae, A.~Potapenko, S.~M.~Jayakumar, C.~Hillier, and T.~P.~Lillicrap.
+``Compressive Transformers for Long-Range Sequence Modelling.''
+In \textit{International Conference on Learning Representations (ICLR)}, 2020.
+
+\bibitem{katharopoulos2020transformers}
+A.~Katharopoulos, A.~Vyas, N.~Pappas, and F.~Fleuret.
+``Transformers are RNNs: Fast Autoregressive Transformers with Linear Attention.''
+In \textit{Proceedings of ICML}, 2020.
+
+\bibitem{roy2021efficient}
+A.~Roy, M.~Saffar, A.~Vaswani, and D.~Grangier.
+``Efficient Content-Based Sparse Attention with Routing Transformers.''
+\textit{Transactions of the ACL}, 9, 2021.
+
+\bibitem{clark2019does}
+K.~Clark, U.~Khandelwal, O.~Levy, and C.~D.~Manning.
+``What Does BERT Look At? An Analysis of BERT's Attention.''
+In \textit{Proceedings of the ACL Workshop BlackboxNLP}, 2019.
+
+\bibitem{kovaleva2019revealing}
+O.~Kovaleva, A.~Romanov, A.~Rogers, and A.~Rumshisky.
+``Revealing the Dark Secrets of BERT.''
+In \textit{Proceedings of EMNLP-IJCNLP}, 2019.
+
+\bibitem{shaw2018self}
+P.~Shaw, J.~Uszkoreit, and A.~Vaswani.
+``Self-Attention with Relative Position Representations.''
+In \textit{Proceedings of NAACL-HLT}, 2018.
+
+\bibitem{voita2019analyzing}
+E.~Voita, D.~Talbot, F.~Moiseev, R.~Sennrich, and I.~Titov.
+``Analyzing Multi-Head Self-Attention: Specialized Heads Do the Heavy Lifting,
+  the Rest Can Be Pruned.''
+In \textit{Proceedings of ACL}, 2019.
+
+\bibitem{bengio2013estimating}
+Y.~Bengio, N.~Léonard, and A.~Courville.
+``Estimating or Propagating Gradients Through Stochastic Neurons for Conditional
+  Computation.''
+\textit{arXiv preprint arXiv:1308.3432}, 2013.
+
+\bibitem{loshchilov2019decoupled}
+I.~Loshchilov and F.~Hutter.
+``Decoupled Weight Decay Regularization.''
+In \textit{International Conference on Learning Representations (ICLR)}, 2019.
+
+\bibitem{shaham2022scrolls}
+U.~Shaham, E.~Segal, M.~Ivgi, A.~Liu, Y.~Belinkov, and J.~Berant.
+``SCROLLS: Standardized CompaRison Over Long Language Sequences.''
+In \textit{Proceedings of EMNLP}, 2022.
+
+\end{thebibliography}
+
+\end{document}

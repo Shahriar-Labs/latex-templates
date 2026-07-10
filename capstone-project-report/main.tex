@@ -1,0 +1,150 @@
+% Capstone Project Report — editable & compilable online at https://letx.app
+% Compiles with pdflatex. A clean multi-section capstone report with a title
+% block, abstract, figures, a results table, an equation, and references.
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2.4cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+
+\definecolor{ink}{HTML}{1F2A44}
+\definecolor{accent}{HTML}{2F6FED}
+\definecolor{mist}{HTML}{5B6472}
+\definecolor{soft}{HTML}{EEF3FE}
+
+\titleformat{\section}{\Large\bfseries\color{ink}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\color{accent}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small\color{mist}Capstone Project Report}
+\rhead{\small\color{mist}Northbridge University}
+\cfoot{\small\color{mist}\thepage\ \textbullet\ Made with \href{https://letx.app}{letx.app}}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\begin{document}
+% ---- title block ----
+\begin{tikzpicture}
+  \fill[soft,rounded corners=6pt] (0,0) rectangle (16.2,3.5);
+  \fill[accent,rounded corners=6pt] (0,0) rectangle (0.22,3.5);
+  \node[anchor=north west,align=left,text=ink] at (0.7,3.15)
+    {\small\color{accent}\textbf{B.S.\ CAPSTONE PROJECT}\\[6pt]
+     \fontsize{20}{23}\selectfont\bfseries A Machine-Learning Approach to\\
+     \fontsize{20}{23}\selectfont\bfseries Urban Traffic-Flow Prediction};
+  \node[anchor=south west,align=left,text=mist] at (0.7,0.35)
+    {\small Priya Nair \textbullet\ Dept.\ of Computer Science \textbullet\ Advisor: Dr.\ A.\ Whitfield
+     \textbullet\ May 2026};
+\end{tikzpicture}
+
+\vspace{4pt}
+\section*{\normalsize\color{ink}Abstract}
+\vspace{-4pt}
+\noindent\textit{This capstone investigates short-horizon traffic-flow prediction for
+mid-sized cities using a spatiotemporal graph neural network. Trained on twelve months of
+loop-detector data across 214 intersections, the model reduces mean absolute error by 23\%
+over an ARIMA baseline while remaining lightweight enough for edge deployment. We describe
+the data pipeline, model design, evaluation, and a pilot integration with a signal-timing
+simulator.}
+
+\section{Introduction}
+Congestion imposes real economic and environmental costs on growing cities. Accurate
+short-term flow prediction enables adaptive signal timing and better routing. Prior work
+favors statistical models (ARIMA, Kalman filters) that struggle with the nonlinear,
+network-structured nature of road traffic. This project asks whether a compact graph
+neural network can deliver accurate 15-minute-ahead predictions on commodity hardware.
+
+\textbf{Objectives.}
+\begin{enumerate}[leftmargin=1.4em,itemsep=2pt]
+  \item Build a reproducible pipeline from raw detector feeds to model-ready tensors.
+  \item Design and train a spatiotemporal model that beats a strong statistical baseline.
+  \item Validate the model in a signal-timing simulator and report practical impact.
+\end{enumerate}
+
+\section{Methodology}
+The road network is modeled as a graph $G=(V,E)$ where nodes are intersections and edges
+encode adjacency. Each node carries a window of historical flow. The predictor combines a
+graph-convolution over $V$ with a temporal gated unit; the one-step loss is
+
+\begin{equation}
+\mathcal{L}=\frac{1}{|V|}\sum_{v\in V}\bigl\lVert \hat{y}_v - y_v\bigr\rVert_2^2
+           +\lambda\lVert\Theta\rVert_2^2,
+\end{equation}
+
+with $\Theta$ the trainable parameters and $\lambda$ a regularization weight. Data were
+split 70/15/15 by time to avoid leakage.
+
+\subsection{Data Pipeline}
+Raw 30-second counts were cleaned (imputing gaps under 3 minutes), aggregated to 5-minute
+bins, and normalized per detector. Figure~\ref{fig:pipe} summarizes the flow.
+
+\begin{figure}[ht]\centering
+\begin{tikzpicture}[node distance=6mm,every node/.style={font=\small}]
+  \tikzstyle{b}=[draw=accent,fill=soft,rounded corners=3pt,minimum height=9mm,
+                 minimum width=26mm,align=center,text=ink]
+  \node[b](a){Loop\\detectors};
+  \node[b,right=of a](c){Clean \&\\impute};
+  \node[b,right=of c](d){Aggregate\\5-min bins};
+  \node[b,right=of d](e){Normalize\\\& window};
+  \node[b,right=of e](f){Model\\tensors};
+  \foreach \x/\y in {a/c,c/d,d/e,e/f}{\draw[->,accent,thick](\x)--(\y);}
+\end{tikzpicture}
+\caption{End-to-end data pipeline from raw detectors to model-ready tensors.}
+\label{fig:pipe}
+\end{figure}
+
+\section{Results}
+The spatiotemporal model outperforms both baselines on all reported metrics
+(Table~\ref{tab:res}). Gains are largest during peak transitions, where nonlinear dynamics
+dominate.
+
+\begin{table}[ht]\centering
+\caption{15-minute-ahead prediction accuracy on the held-out test set.}
+\label{tab:res}
+\begin{tabularx}{\linewidth}{@{}X r r r@{}}
+\toprule
+\textbf{Model} & \textbf{MAE} & \textbf{RMSE} & \textbf{MAPE}\\
+\midrule
+Historical average & 41.7 & 58.2 & 19.4\%\\
+ARIMA              & 33.9 & 47.1 & 15.8\%\\
+LSTM               & 29.2 & 40.5 & 13.1\%\\
+\textbf{Ours (ST-GNN)} & \textbf{26.1} & \textbf{36.8} & \textbf{11.6\%}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Discussion \& Future Work}
+The model's edge footprint (4.2\,MB, 8\,ms inference) makes on-site deployment feasible.
+Limitations include sensitivity to detector outages and a single-city training set. Future
+work will add weather covariates, test cross-city transfer, and close the loop with live
+signal control.
+
+\section{Conclusion}
+A compact graph neural network delivers accurate, deployable short-horizon traffic
+prediction, improving MAE by 23\% over ARIMA. The approach is reproducible and practical
+for mid-sized municipal deployments.
+
+\begin{thebibliography}{9}
+\setlength{\itemsep}{2pt}
+\bibitem{li2018} Li, Y.\ et al. \textit{Diffusion Convolutional Recurrent Neural Network:
+  Data-Driven Traffic Forecasting.} ICLR, 2018.
+\bibitem{box2015} Box, G.\ E.\ P.\ et al. \textit{Time Series Analysis: Forecasting and
+  Control.} Wiley, 5th ed., 2015.
+\bibitem{yu2018} Yu, B.\ et al. \textit{Spatio-Temporal Graph Convolutional Networks.}
+  IJCAI, 2018.
+\bibitem{hochreiter1997} Hochreiter, S.\ \& Schmidhuber, J. \textit{Long Short-Term
+  Memory.} Neural Computation, 1997.
+\end{thebibliography}
+\end{document}

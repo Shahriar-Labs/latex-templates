@@ -1,0 +1,535 @@
+% !TEX program = pdflatex
+% Scientific Monograph Template — compile and edit online at https://letx.app
+% Engine: pdflatex (latexmk -pdf main.tex)
+% Class: book (a4paper, twoside, 11pt)
+
+\documentclass[a4paper,twoside,11pt]{book}
+\usepackage{amsmath}
+
+% ---------- Geometry ----------
+\usepackage[tmargin=25mm,bmargin=30mm,inner=28mm,outer=22mm,
+            marginparwidth=40mm,marginparsep=5mm,
+            headheight=14pt,headsep=8mm]{geometry}
+
+% ---------- Fonts ----------
+\usepackage[T1]{fontenc}
+\usepackage{tgpagella}
+\usepackage{newpxmath}
+\let\Bbbk\relax
+\let\openbox\relax
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+% ---------- Colors ----------
+\usepackage[table]{xcolor}
+\definecolor{accent}{HTML}{2B4A6F}
+\definecolor{accentlight}{HTML}{6B8EB5}
+\definecolor{accentwarm}{HTML}{8B5E3C}
+\definecolor{accentgreen}{HTML}{4A7C59}
+\definecolor{bg}{HTML}{FFFCF7}
+\definecolor{textdark}{HTML}{2D2D2D}
+\definecolor{grayrule}{HTML}{C5C0B8}
+\definecolor{captionfg}{HTML}{3A5A7F}
+
+% ---------- Page background ----------
+\pagecolor{bg}
+\color{textdark}
+
+% ---------- TikZ ----------
+\usepackage{tikz}
+\usetikzlibrary{shadows,positioning,calc,fit,backgrounds,arrows.meta}
+
+% ---------- tcolorbox ----------
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usetikzlibrary{shadows}
+
+% ---------- Section styling ----------
+\usepackage{titlesec}
+
+\titleformat{\part}[display]
+  {\centering\normalfont\Huge\bfseries\color{accent}}
+  {\partname\ \thepart}{20pt}{}
+
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{accent}}
+  {\chaptertitlename\ \thechapter}{20pt}{\Huge}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{accent!90!black}}
+  {\thesection}{1em}{}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{accent!85!black}}
+  {\thesubsection}{1em}{}
+
+% ---------- Headers and footers ----------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE]{\small\itshape\color{accent!70!black}\leftmark}
+\fancyhead[RO]{\small\itshape\color{accent!70!black}\rightmark}
+\fancyfoot[LE,RO]{\small\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{grayrule}\leaders\hrule height\headrulewidth\hfill}}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[LE,RO]{\small\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+% ---------- Spacing ----------
+\usepackage{setspace}
+\onehalfspacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% ---------- Tables ----------
+\usepackage{booktabs}
+\usepackage{tabularx}
+
+% ---------- Lists ----------
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=*}
+
+% ---------- Drop caps ----------
+\usepackage{lettrine}
+\renewcommand{\LettrineFontHook}{\color{accent}\bfseries}
+\setcounter{DefaultLines}{3}
+
+% ---------- Epigraph ----------
+\usepackage{epigraph}
+\setlength{\epigraphwidth}{0.65\textwidth}
+
+% ---------- Captions ----------
+\usepackage{caption}
+\captionsetup{font={small,color=captionfg},labelfont={bf,color=accent}}
+
+% ---------- Margin notes ----------
+\usepackage{marginnote}
+
+% ---------- Microtype ----------
+\usepackage{microtype}
+
+% ---------- Icons ----------
+\usepackage{fontawesome5}
+
+% ---------- Index ----------
+\usepackage{imakeidx}
+\makeindex[intoc]
+
+% ---------- Hyperlinks ----------
+\usepackage[hidelinks]{hyperref}
+
+% ========== Custom Commands & Environments ==========
+
+% Pull quote environment
+\newtcolorbox{pullquote}{
+  enhanced,
+  colback=accent!4,
+  colframe=accent!30,
+  left=18pt,
+  right=18pt,
+  top=12pt,
+  bottom=12pt,
+  fontupper=\itshape\large,
+  borderline west={3pt}{0pt}{accent!50},
+  before skip=18pt,
+  after skip=18pt,
+  breakable
+}
+
+% Side note command
+\newcommand{\sidenote}[1]{%
+  \marginnote{%
+    \vspace{2pt}%
+    \footnotesize\raggedright\color{accent!75!black}%
+    {\color{accent!30}\rule{\marginparwidth}{0.4pt}}\\[2pt]%
+    #1%
+  }%
+}
+
+% Index term convenience
+\newcommand{\idxterm}[1]{#1\index{#1}}
+\newcommand{\idxsub}[2]{#1\index{#2!#1}}
+
+% Metadata block (DOI, ISBN, etc.)
+\newcommand{\metadatablock}[5]{%
+  \begin{tcolorbox}[
+    enhanced,
+    colback=accent!6,
+    colframe=accent!25,
+    sharp corners,
+    boxrule=0.5pt,
+    width=\textwidth,
+    before skip=24pt,
+    after skip=0pt
+  ]
+  \footnotesize\sffamily
+  \begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{6mm}}>{\raggedright\arraybackslash}X@{}}
+  DOI       & #1 \\
+  ISBN      & #2 \\
+  LCCN      & #3 \\
+  Subjects  & #4 \\
+  Edition   & #5 \\
+  \end{tabularx}
+  \end{tcolorbox}
+}
+
+% Color plate environment
+\newcounter{plate}
+\newtcolorbox{colorplate}[1]{
+  enhanced,
+  colback=#1!10,
+  colframe=#1!50,
+  sharp corners,
+  boxrule=0.6pt,
+  code={\refstepcounter{plate}},
+  title={Plate \theplate},
+  fonttitle=\color{#1!80!black}\bfseries,
+  before skip=14pt,
+  after skip=14pt,
+  attach boxed title to top left={xshift=6mm,yshift=-3mm},
+  boxed title style={colback=bg,colframe=#1!50,boxrule=0.5pt,sharp corners}
+}
+
+% Decorative horizontal rule
+\newcommand{\decorule}{%
+  \par\vspace{6pt}%
+  \begin{center}
+  {\color{grayrule}\rule{0.4\textwidth}{0.3pt}}
+  \end{center}
+  \vspace{6pt}\par
+}
+
+% ========== Theorem Styles ==========
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[chapter]
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}[chapter]
+\newtheorem{example}{Example}[chapter]
+
+\begin{document}
+
+% ========== TITLE PAGE ==========
+\thispagestyle{empty}
+\begin{titlepage}
+  \vspace*{30mm}
+
+  {\large\scshape\color{accent!80!black} Elena V.\ Marchetti}\\[6mm]
+
+  {\Huge\bfseries\color{accent} Statistical Physics\\[4pt] of Complex Networks}\\[8mm]
+
+  {\Large\itshape\color{accent!70!black} From Graph Ensembles to Emergent Phenomena}\\[16mm]
+
+  \decorule
+
+  \vspace{16mm}
+
+  {\large\scshape\color{accent!70!black} Monographs in Theoretical Physics\\[4pt] Volume 42}\\[20mm]
+
+  {\normalsize\color{textdark!70!black}
+  Institute for Advanced Study \quad\textbullet\quad Princeton}\\[20mm]
+
+  \vfill
+
+  {\normalsize\color{accent!60!black} Springer International Publishing\\
+  Cham \textbullet{} Heidelberg \textbullet{} New York \textbullet{} London}
+
+  \vspace{14mm}
+
+  \metadatablock
+    {10.1007/978-3-031-48921-7}
+    {978-3-031-48921-7\\ (eBook: 978-3-031-48922-4)}
+    {2024938271}
+    {Statistical Physics; Complex Networks; Network Science; Graph Theory}
+    {First Edition, 2025}
+\end{titlepage}
+
+% ========== COPYRIGHT PAGE ==========
+\newpage
+\thispagestyle{empty}
+\vspace*{50mm}
+
+\begin{center}
+{\large\bfseries\color{accent} Statistical Physics of Complex Networks}
+
+\vspace{8mm}
+{\normalsize\color{textdark!70!black}
+Elena V.\ Marchetti\\
+Institute for Advanced Study\\
+Princeton, New Jersey, USA}
+
+\vspace{8mm}
+{\small\color{textdark!60!black}
+\copyright\ 2025 Springer International Publishing AG\\[4pt]
+All rights reserved. No part of this publication may be reproduced,\\
+stored in a retrieval system, or transmitted in any form or by any means\\
+without the prior written permission of the publisher.\\[4pt]
+Printed on acid-free paper. Typeset in \TeX\ Gyre Pagella by the author.}
+
+\vspace{12mm}
+{\footnotesize\sffamily\color{accent!50!black}
+\faIcon{globe}\ \href{https://letx.app}{Compile and edit this template online at letx.app}}
+\end{center}
+
+\newpage
+\thispagestyle{empty}
+\ 
+
+% ========== DEDICATION ==========
+\newpage
+\thispagestyle{empty}
+\vspace*{60mm}
+\begin{flushright}
+{\large\itshape\color{textdark!70!black}
+To Marco and Sofia,\\[4pt]
+who taught me that every connection matters.}
+\end{flushright}
+
+% ========== TABLE OF CONTENTS ==========
+\frontmatter
+\tableofcontents
+
+\mainmatter
+
+% ========== PREFACE ==========
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+
+\lettrine{T}{his} monograph grew out of a series of graduate lectures I delivered at the Institute for Advanced Study between 2019 and 2023. The central premise is deceptively simple: many of the most challenging problems in modern physics --- from the glass transition to quantum decoherence --- can be reframed as questions about the structure and dynamics of complex networks.
+
+The approach taken here is deliberately interdisciplinary. Readers will encounter ideas drawn from statistical mechanics, graph theory, information geometry, and the theory of disordered systems. Each chapter begins with the necessary background and builds toward results at the research frontier. I have aimed for a self-contained treatment that serves both as a graduate-level textbook and as a reference for active researchers.
+
+\vspace{8pt}
+{\small\itshape\color{textdark!60!black}
+Princeton, New Jersey\\
+January 2025}
+
+\decorule
+
+% ========== PART I ==========
+\part{Foundations}
+\epigraph{The most exciting phrase to hear in science, the one that heralds new discoveries, is not ``Eureka!'' but ``That's funny \dots''}{Isaac Asimov}
+
+% ========== CHAPTER 1 ==========
+\chapter{The Landscape of Network Science}
+
+\lettrine{T}{he} study of networks has undergone a remarkable transformation over the past two decades. What began as a modest offshoot of graph theory has grown into a unifying framework that cuts across physics, biology, computer science, and the social sciences. This chapter surveys the intellectual landscape and establishes the notation and conceptual vocabulary that will be used throughout the monograph.\sidenote{For an accessible historical overview, see \idxterm{Newman} (2018), \textit{Networks}, 2nd ed., Oxford University Press.}
+
+\section{Historical Background}
+
+The mathematical study of networks traces its lineage to Leonhard Euler's 1736 solution of the K\"{o}nigsberg bridge problem, often cited as the birth of graph theory. Euler showed that it was impossible to traverse all seven bridges of K\"{o}nigsberg exactly once, a result that inaugurated the abstract treatment of connectivity \sidenote{Euler's proof is a landmark of early topology: it reduces a geometric problem to a purely combinatorial one, prefiguring the modern \idxterm{graph-theoretic} approach to networks.}.
+
+The field remained largely the province of pure mathematics until the mid-twentieth century, when two developments reshaped its trajectory. First, Paul Erd\H{o}s and Alfr\'{e}d R\'{e}nyi introduced their eponymous random graph model in 1959, providing a probabilistic framework that was immediately congenial to the statistical-mechanics tradition. Second, the rise of digital computing made it possible to collect and analyze network data at unprecedented scales.
+
+\section{Basic Definitions}
+
+A \textbf{network} (or \textbf{graph}) $G = (V, E)$ consists of a set of \textit{vertices} (or \textit{nodes}) $V = \{v_1, v_2, \dots, v_N\}$ and a set of \textit{edges} $E \subseteq V \times V$. Throughout this monograph, $N = |V|$ denotes the number of vertices and $M = |E|$ the number of edges.
+
+\begin{definition}[Adjacency Matrix]\label{def:adjacency}
+The \textbf{adjacency matrix} of a simple graph on $N$ vertices is the $N \times N$ matrix with entries
+\[
+A_{ij} = 
+\begin{cases}
+1 & \text{if } (i,j) \in E,\\[2pt]
+0 & \text{otherwise}.
+\end{cases}
+\]
+For undirected graphs, $A$ is symmetric: $A_{ij} = A_{ji}$.
+\end{definition}
+
+The degree $k_i$ of vertex $i$ is the number of edges incident to it:
+\[
+k_i = \sum_{j=1}^{N} A_{ij}.
+\]
+The \textbf{degree distribution} $P(k)$ --- the probability that a randomly chosen vertex has degree $k$ --- is one of the most fundamental characterizations of a \idxterm{network ensemble}.
+
+\subsection{Degree Correlations and Assortativity}
+
+Networks are not fully described by their degree distribution alone. The \textbf{joint degree distribution} $P(k, k')$, which gives the probability that an edge chosen uniformly at random connects vertices of degrees $k$ and $k'$, captures two-point correlations. A particularly useful scalar summary is the \textbf{assortativity coefficient} $r$, defined as the Pearson correlation coefficient between the degrees of adjacent vertices \sidenote{Networks with $r > 0$ are \textit{assortative} (hubs connect to hubs); those with $r < 0$ are \textit{disassortative} (hubs connect to low-degree nodes). Social networks tend to be assortative; technological networks are typically disassortative.}.
+
+\subsection{Clustering and Transitivity}
+
+The \textbf{clustering coefficient} $C_i$ of vertex $i$ measures the density of connections among its neighbors:
+\[
+C_i = \frac{2\,T_i}{k_i(k_i - 1)},
+\]
+where $T_i$ is the number of triangles that include vertex $i$. The network-wide average $\langle C \rangle$ is a standard measure of local structure.
+
+\begin{example}[Social vs.\ Biological Networks]
+Social networks typically exhibit high clustering ($\langle C \rangle \approx 0.3$ to $0.5$), reflecting the tendency of ``friends of friends'' to become friends. In contrast, biological regulatory networks often show low clustering but high modularity, with dense connections within functional modules and sparse connections between them.
+\end{example}
+
+% ========== CHAPTER 2 ==========
+\chapter{Statistical Mechanics of Graph Ensembles}
+
+The central insight that animates this monograph is that a network ensemble can be treated as a \textbf{statistical-mechanical system}. Just as the microcanonical ensemble describes an isolated gas in terms of its accessible microstates, a \textbf{graph ensemble} describes the set of all graphs that satisfy specified macroscopic constraints.\sidenote{The analogy is more than heuristic: the partition function, free energy, and Legendre-transform structure all carry over, enabling the application of powerful tools from equilibrium \idxterm{statistical mechanics}.}
+
+\section{The Microcanonical Ensemble of Graphs}
+
+Consider the set $\mathcal{G}_{N,M}$ of all simple graphs with $N$ vertices and exactly $M$ edges. The total number of such graphs is
+\[
+|\mathcal{G}_{N,M}| = \binom{\binom{N}{2}}{M}.
+\]
+In the microcanonical formulation, each graph $G \in \mathcal{G}_{N,M}$ is assigned equal probability:
+\[
+P(G) = \frac{1}{|\mathcal{G}_{N,M}|}.
+\]
+This is precisely the Erd\H{o}s--R\'{e}nyi model $G(N,M)$.
+
+\begin{pullquote}
+The equivalence, in the thermodynamic limit, of the microcanonical ensemble $G(N,M)$ and the canonical ensemble $G(N,p)$ with $p = M / \binom{N}{2}$ is a direct analogue of the equivalence of ensembles in classical statistical mechanics.
+\end{pullquote}
+
+\section{The Canonical Ensemble: Exponential Random Graphs}
+
+The canonical formulation is considerably more flexible. Given a set of graph observables $\{X_\mu(G)\}_{\mu=1}^{K}$ and their prescribed expected values $\{\langle X_\mu \rangle\}$, the maximum-\idxterm{entropy} distribution takes the exponential form
+\[
+P(G) = \frac{1}{Z} \exp\!\left( -\sum_{\mu=1}^{K} \theta_\mu\, X_\mu(G) \right),
+\]
+where $Z = \sum_G \exp(-\sum_\mu \theta_\mu X_\mu(G))$ is the partition function and the Lagrange multipliers $\{\theta_\mu\}$ are determined by the constraint equations $\langle X_\mu \rangle = -\partial \log Z / \partial \theta_\mu$.
+
+\begin{definition}[Hamiltonian of a Graph Ensemble]
+The quantity
+\[
+\mathcal{H}(G) = \sum_{\mu=1}^{K} \theta_\mu\, X_\mu(G)
+\]
+is called the \textbf{graph Hamiltonian}. It assigns an ``energy'' to each graph, with lower-energy graphs being more probable under the ensemble.
+\end{definition}
+
+\subsection{The Configuration Model}
+
+The most important special case is the \idxterm{configuration model}, where the prescribed observables are the degree sequence $\{k_i\}_{i=1}^{N}$ \sidenote{The configuration model serves as the null model for virtually all community-detection and motif-analysis algorithms in use today.}. The Hamiltonian becomes
+\[
+\mathcal{H}(G) = \sum_{i=1}^{N} \theta_i\, k_i(G) = \sum_{i<j} (\theta_i + \theta_j)\, A_{ij},
+\]
+and the probability factorizes over edge variables:
+\[
+P(G) = \prod_{i<j} p_{ij}^{A_{ij}} (1 - p_{ij})^{1 - A_{ij}}, \qquad
+p_{ij} = \frac{e^{-(\theta_i + \theta_j)}}{1 + e^{-(\theta_i + \theta_j)}}.
+\]
+
+\begin{theorem}[Existence of the MaxEnt Ensemble]\label{thm:existence}
+For any sequence of real numbers $\{\langle k_i \rangle\}_{i=1}^{N}$ satisfying $0 < \langle k_i \rangle < N-1$ for all $i$, there exists a unique set of Lagrange multipliers $\{\theta_i\}$ such that the canonical ensemble reproduces the prescribed expected degrees.
+\end{theorem}
+
+\begin{proof}
+The log-likelihood $\mathcal{L}(\boldsymbol{\theta}) = -\log Z + \sum_i \theta_i \langle k_i \rangle$ is strictly convex in $\boldsymbol{\theta}$, since its Hessian $\partial^2 \mathcal{L}/\partial\theta_i\partial\theta_j = \operatorname{Cov}(A_{ij})$ is positive-definite on the interior of the feasible region. Its gradient $\nabla_{\theta_i} \mathcal{L} = \langle k_i \rangle - \sum_{j \neq i} p_{ij}$ therefore vanishes at a unique point, and the map $\boldsymbol{\theta} \mapsto \{\langle k_i \rangle\}$ is a diffeomorphism onto the space of feasible degree sequences.
+\end{proof}
+
+\section{Phase Transitions in Network Ensembles}
+
+\begin{theorem}[Percolation Transition]\label{thm:percolation}
+In the Erd\H{o}s--R\'{e}nyi ensemble $G(N,p)$ with $p = c/N$, the expected size of the largest connected component undergoes a second-order phase transition at $c = 1$. For $c < 1$, the largest component has size $O(\log N)$; for $c > 1$, a \textbf{giant component} emerges that contains a finite fraction of all vertices.
+\end{theorem}
+
+The analogy with equilibrium critical phenomena runs deep. The order parameter $m(c) = S/N$, where $S$ is the size of the giant component, scales as $m \sim (c - 1)^{\beta}$ with $\beta = 1$ near the critical point --- precisely the mean-field exponent \sidenote{This is not accidental: the Erd\H{o}s--R\'{e}nyi model lives on a fully connected underlying geometry, and mean-field theory is exact for it.}.
+
+\subsection{Beyond the Configuration Model}
+
+While the configuration model captures arbitrary degree distributions, it ignores higher-order correlations. The \textbf{stochastic block model} (SBM) introduces community structure by partitioning vertices into $Q$ blocks and assigning connection probabilities $p_{qr}$ between blocks $q$ and $r$. The SBM Hamiltonian is
+\[
+\mathcal{H}(G) = \sum_{q,r=1}^{Q} \theta_{qr}\, e_{qr}(G),
+\]
+where $e_{qr}$ counts edges between blocks $q$ and $r$.
+
+\begin{remark}[Identifiability]
+A recurring theme in the statistical mechanics of networks is the tension between model richness and parameter identifiability. The SBM with $O(Q^2)$ free parameters is unidentifiable when the block structure is unknown, motivating the extensive literature on community detection and model selection in networks.
+\end{remark}
+
+\begin{corollary}
+Under mild regularity conditions, the maximum-likelihood estimate of the SBM parameters is consistent as $N \to \infty$ provided that the average degree diverges no faster than $\log N$.
+\end{corollary}
+
+% ========== PART II ==========
+\part{Applications and Case Studies}
+\epigraph{All models are wrong, but some are useful.}{George E.\ P.\ Box}
+
+% ========== COLOR PLATES ==========
+\chapter*{Color Plates}
+\addcontentsline{toc}{chapter}{Color Plates}
+
+\vspace{-16pt}
+
+\begin{center}
+{\large\itshape\color{textdark!70!black}
+  Selected illustrations referenced throughout the text.\\[4pt]
+  Color versions are available in the electronic edition.}
+\end{center}
+
+\vspace{8pt}
+
+\begin{colorplate}{accent}
+{\bfseries Power-law degree distributions.} Empirical degree distributions for three real-world networks, plotted on double-logarithmic axes. Left: the Internet at the autonomous-system level ($N \approx 25{,}000$, estimated exponent $\gamma = 2.1$). Center: a co-authorship network in condensed-matter physics ($N \approx 40{,}000$, $\gamma = 2.4$). Right: word co-occurrence in \textit{Moby Dick} ($N \approx 17{,}000$, $\gamma = 2.8$). The dashed lines show maximum-likelihood power-law fits; shaded regions indicate 95\% confidence intervals obtained via parametric bootstrap with $B = 10{,}000$ resamples.
+\end{colorplate}
+
+\bigskip
+
+\begin{colorplate}{accentwarm}
+{\bfseries Phase diagram of the correlated Erd\H{o}s--R\'{e}nyi ensemble.} The axes represent the average degree $c$ and the assortativity strength $\alpha$. Region I (blue): subcritical regime with no giant component and exponentially decaying component-size distribution. Region II (green): a single giant component spanning approximately $m(c) \cdot N$ vertices. Region III (orange): a \textit{bimodal} phase in which two giant components coexist, stabilized by strong degree--degree correlations. The critical line separating Regions I and II is second-order; the transition between II and III is first-order. The tricritical point at $(c, \alpha) \approx (2.4, 0.62)$ marks the meeting of the two phase boundaries.
+\end{colorplate}
+
+\bigskip
+
+\begin{colorplate}{accentgreen}
+{\bfseries Community detection via belief propagation.} Application of the degree-corrected stochastic block model to a friendship network of $N = 1{,}034$ students at a U.S.\ high school. Left panel: the adjacency matrix reordered according to the inferred block assignment, revealing five distinct communities that correspond closely to self-reported social groups. Right panel: the same matrix randomized while preserving the degree sequence, demonstrating that the block structure is statistically significant ($p < 10^{-4}$ under a parametric bootstrap test). Colors indicate edge density within and between blocks, normalized by the expected density under the configuration-model null.
+\end{colorplate}
+
+% ========== BIBLIOGRAPHY ==========
+\begin{thebibliography}{99}
+
+\bibitem{barabasi2016}
+A.-L.\ Barab\'{a}si,
+\textit{Network Science},
+Cambridge University Press, 2016.
+
+\bibitem{bollobas2001}
+B.\ Bollob\'{a}s,
+\textit{Random Graphs}, 2nd ed.,
+Cambridge University Press, 2001.
+
+\bibitem{errenyi1959}
+P.\ Erd\H{o}s and A.\ R\'{e}nyi,
+``On random graphs I,''
+\index{Erd\H{o}s--R\'{e}nyi model|textit}
+\textit{Publ.\ Math.\ Debrecen} \textbf{6}, 290--297 (1959).
+
+\bibitem{garlaschelli2008}
+D.\ Garlaschelli and M.\ I.\ Loffredo,
+``Maximum likelihood: extracting unbiased information from complex networks,''
+\textit{Phys.\ Rev.\ E} \textbf{78}, 015101 (2008).
+
+\bibitem{newman2018a}
+M.\ E.\ J.\ Newman,
+\textit{Networks}, 2nd ed.,
+Oxford University Press, 2018.
+
+\bibitem{park2004}
+J.\ Park and M.\ E.\ J.\ Newman,
+``Statistical mechanics of networks,''
+\textit{Phys.\ Rev.\ E} \textbf{70}, 066117 (2004).
+
+\bibitem{squartini2018}
+T.\ Squartini, G.\ Caldarelli, G.\ Cimini, A.\ Gabrielli, and D.\ Garlaschelli,
+``Reconstruction methods for networks: a survey,''
+\textit{Phys.\ Rep.} \textbf{757}, 1--47 (2018).
+
+\bibitem{wasserman1994}
+S.\ Wasserman and K.\ Faust,
+\textit{Social Network Analysis: Methods and Applications},
+Cambridge University Press, 1994.
+
+\end{thebibliography}
+
+% ========== INDEX ==========
+\printindex
+
+\end{document}

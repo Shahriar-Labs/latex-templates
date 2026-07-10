@@ -1,0 +1,225 @@
+% Compile with pdflatex
+% Online editing/compilation: https://letx.app
+\documentclass[10pt,letterpaper]{article}
+
+% --- Packages ---
+\usepackage[table]{xcolor}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[defaultsans]{lato}
+\renewcommand{\familydefault}{\sfdefault}
+
+\usepackage[letterpaper, margin=0.6in]{geometry}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usetikzlibrary{shadows}
+\usepackage{tikz}
+\usetikzlibrary{calc, positioning, backgrounds}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage{amsmath}
+\usepackage{microtype}
+\usepackage{hyperref}
+
+\hypersetup{
+  hidelinks,
+  pdftitle={Printable Event Ticket Template},
+  pdfauthor={LetX}
+}
+
+% --- Page Style & Layout ---
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% --- Color Palette ---
+\definecolor{neutraldark}{HTML}{1E293B}   % Slate 800
+\definecolor{neutralgray}{HTML}{64748B}   % Slate 500
+\definecolor{neutralbg}{HTML}{F8FAFC}     % Slate 50
+
+\definecolor{accentvip}{HTML}{0F4C81}     % Classic Blue (VIP)
+\definecolor{accentga}{HTML}{0D9488}      % Teal (General Admission)
+\definecolor{accentearly}{HTML}{B91C1C}   % Crimson (Early Bird / Sponsor)
+
+% Apply page background tint
+\pagecolor{neutralbg}
+
+% --- Ticket Macro ---
+% #1: Accent color name
+% #2: Ticket Type Name (e.g. VIP PASS)
+% #3: Ticket Number (e.g. 000412)
+% #4: Price (e.g. $125.00)
+% #5: Seat / Row Details
+% #6: Perks / Sub-details
+\newcommand{\eventticket}[6]{%
+\noindent
+\begin{tikzpicture}[x=1cm, y=1cm]
+  % 1. Outer Clip & Border
+  \begin{scope}
+    % Ticket outer path
+    \clip (0.4, 0) 
+      -- (11.2, 0) 
+      arc(180:0:0.3) 
+      -- (15.6, 0) 
+      arc(270:360:0.4) 
+      -- (16, 0.4) 
+      -- (16, 5.6) 
+      arc(0:90:0.4) 
+      -- (15.6, 6) 
+      -- (11.8, 6) 
+      arc(0:-180:0.3) 
+      -- (0.4, 6) 
+      arc(90:180:0.4) 
+      -- (0, 5.6) 
+      -- (0, 0.4) 
+      arc(180:270:0.4) 
+      -- cycle;
+    
+    % Fills
+    \fill[white] (0,0) rectangle (16,6);
+    \fill[neutralbg!60!white] (11.5,0) rectangle (16,6);
+    \fill[#1] (0,0) rectangle (0.6,6);
+    
+    % Subtle watermark patterns in main section
+    \foreach \i in {1,...,12} {
+      \draw[#1!7, line width=1pt] (0.6 + \i*0.8, 0) -- (0.6 + \i*0.8 + 2.5, 6);
+    }
+
+    % 2. Main Ticket Body (Left Side)
+    % Presenter
+    \node[anchor=north west] at (1.0, 5.5) {%
+      {\color{neutralgray}\fontsize{7.5}{9.5}\selectfont\bfseries THE METROPOLITAN SYMPHONY ORCHESTRA PRESENTS}%
+    };
+    
+    % Event Title
+    \node[anchor=north west, text width=9.8cm] at (1.0, 5.1) {%
+      {\color{neutraldark}\fontsize{18}{22}\selectfont\bfseries Classical Gala Evening}\\[-0.1em]
+      {\color{#1}\fontsize{9.5}{11.5}\selectfont\bfseries MASTERWORKS OF BEETHOVEN \& MOZART}%
+    };
+    
+    % Separator line
+    \draw[neutralgray!20, line width=0.5pt] (1.1, 3.4) -- (11.0, 3.4);
+    
+    % Ticket Info Grid (Key-Value style using tabularx inside node)
+    \node[anchor=north west, text width=9.8cm] at (1.0, 3.2) {%
+      \renewcommand{\arraystretch}{1.2}%
+      \begin{tabularx}{\linewidth}{@{}>{\color{neutralgray}\fontsize{7.5}{9.5}\selectfont\bfseries}l@{\hspace{4mm}}>{\color{neutraldark}\fontsize{9}{11}\selectfont\bfseries\raggedright\arraybackslash}X@{}}
+        \makebox[1.2em][l]{\faCalendar*} DATE  & Saturday, October 24, 2026 \\
+        \makebox[1.2em][l]{\faClock} TIME      & 7:30 PM \hfill {\color{neutralgray}\normalfont (Doors open at 6:45 PM)} \\
+        \makebox[1.2em][l]{\faMapMarker*} VENUE & Symphony Hall, Grand Concert Hall \\
+        \makebox[1.2em][l]{\faChair} SEAT      & #5 \\
+        \makebox[1.2em][l]{\faTag} PRICE        & #4 \hfill {\color{neutralgray}\normalfont (#6)} \\
+      \end{tabularx}%
+    };
+    
+    % 3. Tear Stub (Right Side)
+    % Divider line (Perforation)
+    \draw[dashed, line width=1.2pt, draw=neutralgray!40] (11.5, 0.2) -- (11.5, 5.8);
+    
+    % Stub Event Title
+    \node[anchor=north west, text width=3.8cm] at (11.9, 5.5) {%
+      {\color{neutraldark}\fontsize{10}{12}\selectfont\bfseries CLASSICAL GALA}\\[0.15em]
+      {\color{#1}\fontsize{8}{10}\selectfont\bfseries #2}%
+    };
+    
+    % Stub Ticket Number
+    \node[anchor=north east] at (15.5, 5.5) {%
+      {\color{#1}\fontsize{10}{12}\selectfont\bfseries No. #3}%
+    };
+    
+    % Stub Info
+    \node[anchor=north west, text width=3.8cm] at (11.9, 4.4) {%
+      \renewcommand{\arraystretch}{1.1}%
+      \begin{tabularx}{\linewidth}{@{}l@{\hspace{3mm}}X@{}}
+        {\color{neutralgray}\fontsize{6.5}{8.5}\selectfont\bfseries DATE} & {\color{neutraldark}\fontsize{7.5}{9.5}\selectfont\bfseries Oct 24, 2026} \\
+        {\color{neutralgray}\fontsize{6.5}{8.5}\selectfont\bfseries TIME} & {\color{neutraldark}\fontsize{7.5}{9.5}\selectfont\bfseries 7:30 PM} \\
+        {\color{neutralgray}\fontsize{6.5}{8.5}\selectfont\bfseries SEAT} & {\color{neutraldark}\fontsize{7.5}{9.5}\selectfont\bfseries #5} \\
+      \end{tabularx}%
+    };
+    
+    % Stub Barcode
+    \begin{scope}[shift={(12.0, 0.65)}]
+      \foreach \x/\w in {
+        0.0/0.03, 0.08/0.06, 0.18/0.02, 0.22/0.05, 0.32/0.03, 
+        0.40/0.09, 0.54/0.02, 0.62/0.03, 0.70/0.06, 0.82/0.02, 
+        0.90/0.05, 1.00/0.08, 1.14/0.03, 1.22/0.02, 1.30/0.06,
+        1.42/0.05, 1.54/0.02, 1.62/0.08, 1.76/0.03, 1.84/0.02,
+        1.92/0.06, 2.04/0.03, 2.14/0.05, 2.26/0.09, 2.42/0.02,
+        2.48/0.05, 2.58/0.03, 2.66/0.06, 2.78/0.02, 2.84/0.08,
+        2.98/0.03
+      } {
+        \fill[neutraldark] (\x, 0) rectangle (\x+\w, 0.95);
+      }
+      \node[anchor=north, text=neutralgray] at (1.5, -0.05) {\fontsize{6.5}{8.5}\selectfont *TX-#3*};
+    \end{scope}
+    
+  \end{scope}
+  
+  % 4. Outer Boundary Stroke (drawn on top of the clipped elements)
+  \draw[line width=1.0pt, draw=neutralgray!40] 
+    (0.4, 0) 
+    -- (11.2, 0) 
+    arc(180:0:0.3) 
+    -- (15.6, 0) 
+    arc(270:360:0.4) 
+    -- (16, 0.4) 
+    -- (16, 5.6) 
+    arc(0:90:0.4) 
+    -- (15.6, 6) 
+    -- (11.8, 6) 
+    arc(0:-180:0.3) 
+    -- (0.4, 6) 
+    arc(90:180:0.4) 
+    -- (0, 5.6) 
+    -- (0, 0.4) 
+    arc(180:270:0.4) 
+    -- cycle;
+
+\end{tikzpicture}
+}
+
+\begin{document}
+
+\begin{center}
+  % Header
+  {\fontsize{22}{26}\selectfont\bfseries\color{neutraldark} Symphony Gala Concert Tickets}\\[0.3em]
+  {\fontsize{9.5}{11.5}\selectfont\color{neutralgray}\bfseries PRINTABLE TICKET SHEET --- 3 TIER SPECIMENS}
+\end{center}
+
+\vspace{0.4cm}
+
+% Instruction box
+\begin{center}
+\begin{tcolorbox}[
+  enhanced,
+  colback=white,
+  colframe=neutralgray!20,
+  arc=2mm,
+  boxrule=1pt,
+  left=5mm, right=5mm, top=3.5mm, bottom=3.5mm,
+  width=16cm
+]
+  \fontsize{8.5}{11.5}\selectfont\color{neutraldark}
+  \textbf{\color{accentvip}\faInfoCircle\ Printing \& Handling Instructions:}\\
+  For an authentic and durable feel, print this document on heavy cardstock paper (200--250 gsm). Cut precisely along the outer gray solid borders. The vertical dashed line indicates the perforation for the tear-off stub.
+\end{tcolorbox}
+\end{center}
+
+\vspace{0.4cm}
+
+\begin{center}
+  % VIP Ticket
+  \eventticket{accentvip}{VIP PASS}{000412}{\$125.00}{Section A, Row 3, Seat 12}{Complimentary drinks \& VIP lounge access}
+  
+  \vspace{0.6cm}
+  
+  % General Admission Ticket
+  \eventticket{accentga}{GENERAL ADMISSION}{000413}{\$75.00}{General Admission (Standing)}{Main floor entry, doors open at 6:45 PM}
+  
+  \vspace{0.6cm}
+  
+  % Sponsor Ticket
+  \eventticket{accentearly}{SPONSOR PASS}{000414}{\$250.00}{VIP Box B, Seat 4}{Includes pre-concert reception \& artist meet-and-greet}
+\end{center}
+
+\end{document}

@@ -1,0 +1,300 @@
+% Quant Research Note — elegant, modern, compile-clean with pdflatex
+% Edit and compile online at https://letx.app
+% Target: Two Sigma / Citadel / Point72 / AQR
+\documentclass[10pt]{article}
+\usepackage{amsmath}
+
+% ── Encoding & Geometry ──────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=0.50in, top=0.45in, bottom=0.40in, headheight=14pt]{geometry}
+
+% ── Colors (restrained navy / finance palette) ───────────────────
+\usepackage[table]{xcolor}
+\definecolor{navy}{HTML}{1A2744}
+\definecolor{gold}{HTML}{B8944C}
+\definecolor{bg}{HTML}{F8F6F0}
+\definecolor{dark}{HTML}{2C3E50}
+\definecolor{lightrule}{HTML}{C8BFB0}
+\definecolor{posgreen}{HTML}{1F7A4C}
+\definecolor{negred}{HTML}{C0392B}
+\definecolor{softblue}{HTML}{E8EDF4}
+\definecolor{midgray}{HTML}{7F8C8D}
+\pagecolor{bg}
+
+% ── Fonts ────────────────────────────────────────────────────────
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+
+% ── Packages ─────────────────────────────────────────────────────
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{fontawesome5}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+% ── Paragraph spacing (hard rule: both 0 to avoid table misalignment)
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\abovedisplayskip}{4pt}
+\setlength{\belowdisplayskip}{4pt}
+
+% ── Hyperref ─────────────────────────────────────────────────────
+\hypersetup{colorlinks=true, linkcolor=navy, urlcolor=navy!80!black,
+  pdfauthor={A. Chen, PhD}, pdftitle={Quantitative Research Note — Mean-Reversion Strategy}}
+
+% ── Section formatting ───────────────────────────────────────────
+\titleformat{\section}
+  {\normalsize\bfseries\color{navy}}
+  {}
+  {0pt}
+  {}
+  [\vspace{-0.6\baselineskip}\rule{\linewidth}{0.4pt}\vspace{-0.2\baselineskip}]
+\titlespacing{\section}{0pt}{8pt}{4pt}
+
+% ── Custom boxes ─────────────────────────────────────────────────
+\newtcolorbox{metricbox}{
+  enhanced, sharp corners, boxrule=0pt, left=8pt, right=8pt, top=6pt, bottom=6pt,
+  colback=navy, coltext=white, fontupper=\sffamily\small
+}
+\newtcolorbox{alertbox}{
+  enhanced, sharp corners, boxrule=0.6pt, left=8pt, right=8pt, top=5pt, bottom=5pt,
+  colback=softblue, colframe=navy!30, fontupper=\sffamily\footnotesize
+}
+
+% ── Helper commands ──────────────────────────────────────────────
+\newcommand{\metarow}[2]{#1 & {\color{white!85!bg}\hfill#2} \\[1.2pt]}
+\newcommand{\headitem}[1]{\vspace{3pt}{\footnotesize\color{midgray}\bfseries\MakeUppercase{#1}}\vspace{1pt}}
+
+\begin{document}
+
+% ══════════════════════════════════════════════════════════════════
+% HEADER
+% ══════════════════════════════════════════════════════════════════
+{\huge\bfseries\color{navy}Quantitative Research Note}
+
+\vspace{4pt}
+{\large\color{gold}\bfseries Mean-Reversion Alpha in US Large-Cap Equities}
+\hfill
+{\footnotesize\color{midgray}\faCalendar\ \ 15 January 2024\quad
+ \faUser\ \ A.\ Chen, PhD\quad
+ \faHashtag\ STR-2024-017}
+
+\vspace{6pt}
+{\color{lightrule}\rule{\linewidth}{1.2pt}}
+\vspace{8pt}
+
+% ══════════════════════════════════════════════════════════════════
+% TWO-COLUMN BODY
+% ══════════════════════════════════════════════════════════════════
+\begin{minipage}[t]{0.615\linewidth}
+
+\section{Executive Summary}
+
+We propose a systematic mean-reversion strategy in the S\&P 500 universe,
+exploiting short-term price overreaction. The signal composites normalized
+1-day and 5-day reversals with volatility-adjusted entry thresholds. Over a
+3-year backtest (Jan 2021--Dec 2023), the strategy delivers a Sharpe of
+\textbf{2.31} with zero market beta after hedging. Capacity estimates
+suggest scalability to \$800M AUM before slippage exceeds 15\,bp per trade.
+
+\section{Signal Construction}
+
+The alpha signal is a rank-weighted composite of three sub-signals,
+recalibrated monthly:
+
+\vspace{2pt}
+{\footnotesize
+\begin{tabularx}{\linewidth}{@{}>{\color{navy}\bfseries}l@{\hspace{5mm}}>{\raggedright\arraybackslash}X@{}}
+$R_{1d}$   & Normalized 1-day return reversal ($t-1$ close to $t$ close),\\
+           & cross-sectionally z-scored within GICS sector.\\
+$R_{5d}$   & Normalized 5-day return reversal, winsorized at $\pm 3\sigma$.\\
+$V_{adj}$  & Volatility adjustment factor: $1/\sigma_{20d}$, dampened below\\
+           & the 10th percentile to avoid micro-cap noise.\\
+\end{tabularx}
+}
+
+\vspace{4pt}
+The composite score is $S = 0.45\,R_{1d} + 0.35\,R_{5d} + 0.20\,V_{adj}$.
+We take long positions in the top decile and short the bottom decile,
+rebalancing daily with a \$1 notional per side, market-neutral.
+
+\section{Backtest Results}
+
+The strategy exhibits consistent performance across regimes (Table~\ref{tab:perf}).
+Notably, it performed strongly during the 2022 rate-hiking cycle, where
+trend-following strategies struggled, confirming the diversifying nature
+of the reversal premium.
+
+\vspace{3pt}
+{\footnotesize
+\rowcolors{2}{white}{softblue!40}
+\begin{tabularx}{\linewidth}{@{}l@{\hspace{4mm}}>{\raggedleft\arraybackslash}X@{\hspace{2mm}}>{\raggedleft\arraybackslash}X@{\hspace{2mm}}>{\raggedleft\arraybackslash}X@{}}
+\toprule
+\rowcolor{navy}
+\color{white}\textbf{Year} & \color{white}\textbf{Return} & \color{white}\textbf{Volatility} & \color{white}\textbf{Sharpe} \\
+\midrule
+2021 & 14.7\% & 7.2\% & 2.04 \\
+2022 & 22.3\% & 8.5\% & 2.62 \\
+2023 & 17.8\% & 7.9\% & 2.25 \\
+\midrule
+\textbf{Full} & \textbf{18.2\%} & \textbf{7.9\%} & \textbf{2.31} \\
+\bottomrule
+\end{tabularx}
+\label{tab:perf}
+}
+
+\vspace{6pt}
+
+\section{Risk \& Implementation}
+
+\begin{alertbox}
+\textbf{Key Risks:} (i)~Crowding in the reversal factor may compress
+spreads if AUM in similar strategies grows beyond \$5B. (ii)~Tail events
+during liquidity crises (Mar~2020-style) require a volatility-scaled
+leverage overlay. (iii)~Short-selling costs in the lowest-decile names
+average 35\,bp annually; included in net PnL above.
+\end{alertbox}
+
+\vspace{3pt}
+Execution via a single-queue TWAP algorithm minimizes market impact.
+Turnover averages 18\% per day (both legs), implying 46$\times$ annualized;
+commissions and slippage total 22\,bp, already netted from reported returns.
+We recommend a 200\,bp stop-loss at the portfolio level with a 3-day
+cooling-off period after a trigger.
+
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.355\linewidth}
+
+% ── Key Metrics Callout Box ────────────────────────────────────
+\begin{metricbox}
+\headitem{Key Metrics}\vspace{2pt}
+\begin{tabularx}{\linewidth}{@{}>{\color{gold!90!white}\bfseries}l@{\hspace{3mm}}>{\raggedleft\arraybackslash}X@{}}
+\metarow{Sharpe Ratio}{2.31}
+\metarow{Sortino Ratio}{3.15}
+\metarow{Max Drawdown}{$-$4.8\%}
+\metarow{Ann.\ Return}{18.2\%}
+\metarow{Ann.\ Volatility}{7.9\%}
+\metarow{Calmar Ratio}{3.79}
+\metarow{Win Rate (daily)}{58.3\%}
+\metarow{Avg.\ Hold (days)}{3.2}
+\metarow{Turnover (ann.)}{46$\times$}
+\end{tabularx}
+\end{metricbox}
+
+\vspace{8pt}
+
+% ── Factor Exposure Table ─────────────────────────────────────
+{\footnotesize\bfseries\color{navy}Factor Exposures}\\[3pt]
+{\footnotesize\textit{OLS regression of daily strategy returns on Fama--French~6 factors.}}\\[4pt]
+{\footnotesize
+\rowcolors{2}{white}{softblue!40}
+\begin{tabular}{@{}l@{\hspace{3mm}}r@{\hspace{2mm}}r@{}}
+\toprule
+\rowcolor{navy}
+\color{white}\textbf{Factor} & \color{white}\textbf{$\beta$} & \color{white}\textbf{$t$-stat} \\
+\midrule
+Market (Mkt$-$RF)   &  0.05 &  1.21 \\
+Size (SMB)          & $-$0.12 & $-$2.84 \\
+Value (HML)         &  0.08 &  1.93 \\
+Momentum (WML)      & $-$0.35 & $-$8.72 \\
+Quality (QMJ)       &  0.15 &  3.61 \\
+Low Vol (VOL)       & $-$0.22 & $-$5.43 \\
+\midrule
+$R^2$ (adj.)        & \multicolumn{2}{r}{0.19} \\
+\bottomrule
+\end{tabular}
+}
+
+\vspace{8pt}
+
+% ── Cumulative PnL Chart ──────────────────────────────────────
+{\footnotesize\bfseries\color{navy}Cumulative PnL}\\[2pt]
+{\tiny\color{midgray}Jan 2021 -- Dec 2023, gross of fees}\\[4pt]
+\begin{tikzpicture}[scale=0.92]
+  \begin{axis}[
+    width=\linewidth,
+    height=4.8cm,
+    xmin=0, xmax=36,
+    ymin=-5, ymax=65,
+    xtick={0,6,12,18,24,30,36},
+    xticklabels={Jan'21,Jul,Jan'22,Jul,Jan'23,Jul,Dec'23},
+    ytick={0,15,30,45,60},
+    yticklabel={\pgfmathprintnumber{\tick}\%},
+    grid=major,
+    grid style={lightrule!50, thin, dashed},
+    axis line style={lightrule},
+    tick style={lightrule},
+    tick label style={font=\tiny, color=dark},
+    ymajorgrids=true,
+    xmajorgrids=true,
+    enlargelimits=false,
+    clip=false,
+    every axis plot/.append style={line width=1.2pt},
+  ]
+  \addplot[draw=none, fill=navy, fill opacity=0.08] coordinates {
+    (0,0)   (1,2.8)  (2,5.3)  (3,3.9)  (4,8.7)  (5,12.1)
+    (6,10.5) (7,15.2) (8,19.4) (9,16.8) (10,21.6)(11,25.0)
+    (12,22.3)(13,27.5)(14,31.8)(15,28.9)(16,34.2)(17,37.6)
+    (18,34.9)(19,39.8)(20,43.2)(21,40.5)(22,45.3)(23,49.1)
+    (24,46.2)(25,51.0)(26,54.8)(27,52.1)(28,56.7)(29,60.3)
+    (30,57.4)(31,61.2)(32,63.9)(33,60.8)(34,64.5)(35,67.1)
+    (36,63.8)
+  } \closedcycle;
+  \addplot[smooth, thick, draw=navy] coordinates {
+    (0,0)   (1,2.8)  (2,5.3)  (3,3.9)  (4,8.7)  (5,12.1)
+    (6,10.5) (7,15.2) (8,19.4) (9,16.8) (10,21.6)(11,25.0)
+    (12,22.3)(13,27.5)(14,31.8)(15,28.9)(16,34.2)(17,37.6)
+    (18,34.9)(19,39.8)(20,43.2)(21,40.5)(22,45.3)(23,49.1)
+    (24,46.2)(25,51.0)(26,54.8)(27,52.1)(28,56.7)(29,60.3)
+    (30,57.4)(31,61.2)(32,63.9)(33,60.8)(34,64.5)(35,67.1)
+    (36,63.8)
+  };
+  \draw[negred, densely dotted, thick] (axis cs:22,49.1) -- (axis cs:24,46.2)
+    node[pos=0.55, above left, font=\tiny\color{negred}] {$-2.9\%$};
+  \end{axis}
+\end{tikzpicture}
+
+\vspace{6pt}
+
+% ── Monthly Top/Bottom Performers ─────────────────────────────
+{\footnotesize\bfseries\color{navy}Top Contributors (Dec 2023)}\\[3pt]
+{\footnotesize
+\rowcolors{2}{white}{softblue!40}
+\begin{tabular}{@{}l@{\hspace{3mm}}r@{\hspace{2mm}}r@{}}
+\toprule
+\rowcolor{navy}
+\color{white}\textbf{Ticker} & \color{white}\textbf{PnL (bp)} & \color{white}\textbf{Weight} \\
+\midrule
+NVDA  & +42 & 3.8\% \\
+AMD   & +31 & 2.9\% \\
+TSLA  & +27 & 3.1\% \\
+META  & +24 & 2.7\% \\
+AVGO  & +19 & 2.4\% \\
+\bottomrule
+\end{tabular}
+}
+
+\end{minipage}
+
+% ══════════════════════════════════════════════════════════════════
+% FOOTER
+% ══════════════════════════════════════════════════════════════════
+\vspace{8pt}
+{\color{lightrule}\rule{\linewidth}{0.4pt}}
+\vspace{4pt}
+{\tiny\color{midgray}
+\textbf{Disclaimer:} This document is prepared for internal quantitative research purposes only.
+It does not constitute investment advice or an offer to sell securities. Past performance is not
+indicative of future results. All PnL figures are gross of management fees and assume \$1 notional
+per leg. Factor exposures computed via OLS on daily returns; $t$-statistics use Newey--West
+standard errors with 5 lags. \copyright\ 2024 Quantitative Strategies Group. All rights reserved.}
+
+\end{document}

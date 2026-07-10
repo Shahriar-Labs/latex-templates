@@ -1,0 +1,512 @@
+% Engineering Specification Document — LaTeX Template
+% Compile with: latexmk -pdf main.tex  (pdflatex, zero errors)
+% Edit & compile online at: https://letx.app
+%-----------------------------------------------------------------------
+\documentclass[11pt,a4paper]{article}
+\usepackage{gensymb}
+
+% --- Fonts & Encoding ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Page Geometry ---
+\usepackage[top=20mm,bottom=22mm,left=22mm,right=20mm,headheight=16pt]{geometry}
+
+% --- Colors ---
+\usepackage[table]{xcolor}
+\definecolor{accent}{HTML}{1B3A5C}
+\definecolor{accentlight}{HTML}{3A5F80}
+\definecolor{graydark}{HTML}{5A6A7A}
+\definecolor{grayrule}{HTML}{B0BAC5}
+\definecolor{tableheadbg}{HTML}{DCE4EC}
+\definecolor{pagebg}{HTML}{F9FAFB}
+\definecolor{revodd}{HTML}{F4F6F8}
+
+% --- Graphics ---
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning,calc,fit,backgrounds}
+
+% --- Coloured Boxes ---
+\usepackage[skins,breakable]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usetikzlibrary{shadows}
+
+% --- Tables ---
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+
+% --- Headers / Footers ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{grayrule}\leaders\hrule height\headrulewidth\hfill}}
+\fancyhead[L]{\footnotesize\color{graydark}ENG-SPEC-2026-0147\,--\,Rev.\ B}
+\fancyhead[R]{\footnotesize\color{graydark}\today}
+\fancyfoot[C]{\footnotesize\color{graydark}\thepage}
+\fancyfoot[L]{\footnotesize\color{graydark}I-5 Columbia River Crossing}
+\setlength{\footskip}{14pt}
+
+% --- Section Formatting ---
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries\color{accent}}
+  {\thesection}{1em}{}[\vspace{-0.4em}\titlerule\vspace{0.6em}]
+\titleformat{\subsection}
+  {\large\bfseries\color{accentlight}}
+  {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{graydark}}
+  {\thesubsubsection}{1em}{}
+
+% --- Lists ---
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=*,itemsep=2pt,topsep=4pt}
+
+% --- Math ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% --- Captions ---
+\usepackage[font={footnotesize,color=graydark},labelfont={bf,color=accent}]{caption}
+
+% --- Icons ---
+\usepackage{fontawesome5}
+
+% --- Hyperlinks (load last) ---
+\usepackage[hidelinks]{hyperref}
+
+% --- Paragraph Spacing ---
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt plus 1pt minus 1pt}
+
+%=======================================================================
+% HELPER MACROS
+%=======================================================================
+\newcommand{\docctrl}[5]{%
+  \noindent%
+  \begin{tcolorbox}[
+    enhanced,
+    sharp corners,
+    colback=accent,
+    colframe=accent,
+    boxrule=0pt,
+    left=0pt,right=0pt,top=0pt,bottom=0pt,
+    before skip=0pt,after skip=14pt,
+  ]%
+  \begin{tikzpicture}
+    \node[inner sep=0pt,outer sep=0pt,anchor=north west] (box) at (0,0) {%
+      \begin{minipage}{\dimexpr\linewidth-10pt\relax}
+        \vspace{10pt}
+        \begin{minipage}{0.62\linewidth}
+          \color{white}\LARGE\bfseries #1
+          \par\vspace{2pt}
+          \color{accentlight!50!white}\normalsize #2
+        \end{minipage}%
+        \hfill%
+        \begin{minipage}{0.34\linewidth}
+          \raggedleft
+          \color{white}\footnotesize
+          \textbf{Document:} #3\\[1pt]
+          \textbf{Revision:} #4\\[1pt]
+          \textbf{Date:} #5
+        \end{minipage}
+        \vspace{10pt}
+      \end{minipage}%
+    };
+    \draw[accentlight,line width=4pt] (box.south west) -- (box.south east);
+  \end{tikzpicture}
+  \end{tcolorbox}%
+}
+
+\newcommand{\doctitleblock}[3]{%
+  \noindent%
+  \begin{tcolorbox}[
+    enhanced,
+    sharp corners,
+    colback=white,
+    colframe=grayrule,
+    boxrule=0.5pt,
+    left=12pt,right=12pt,top=10pt,bottom=10pt,
+    before skip=0pt,after skip=14pt,
+  ]%
+  \begin{minipage}{0.45\linewidth}
+    \footnotesize\color{graydark}
+    \faUser\ \textbf{Originator:} #1\\[2pt]
+    \faBuilding\ \textbf{Discipline:} #2
+  \end{minipage}%
+  \hfill%
+  \begin{minipage}{0.50\linewidth}
+    \raggedleft\footnotesize\color{graydark}
+    \faCheckCircle\ \textbf{Status:} #3\\[2pt]
+    \faLock\ \textbf{Classification:} Proprietary
+  \end{minipage}
+  \end{tcolorbox}%
+}
+
+\newcommand{\revheader}{%
+  \toprule
+  \rowcolor{accent}%
+  \color{white}\bfseries Rev. & \color{white}\bfseries Date & \color{white}\bfseries Author & \color{white}\bfseries Description & \color{white}\bfseries Approved \\
+  \midrule
+}
+
+\newcommand{\reventry}[5]{%
+  #1 & #2 & #3 & #4 & #5 \\
+  \midrule
+}
+
+\newcommand{\reqrow}[4]{%
+  \texttt{\small #1} & #2 & #3 & #4 \\
+}
+
+\newcommand{\vermethod}[1]{%
+  \textsf{\footnotesize #1}%
+}
+
+%=======================================================================
+\begin{document}
+
+\pagecolor{pagebg}
+
+% --- Document Control Header ---
+\docctrl
+  {Engineering Specification}
+  {I-5 Columbia River Crossing\,--\,Steel Bridge Superstructure}
+  {ENG-SPEC-2026-0147}
+  {B}
+  {09 July 2026}
+
+\doctitleblock
+  {AECOM / Jacobs Joint Venture}
+  {Structural Engineering}
+  {Issued for Construction}
+
+%-----------------------------------------------------------------------
+\section{Revision History}
+%-----------------------------------------------------------------------
+
+\noindent
+\rowcolors{2}{white}{revodd}
+\begin{tabularx}{\linewidth}{@{}cclXl@{}}
+\revheader
+\reventry{A}{15 Mar 2026}{R.\ Chen}{Initial issue for internal review. Scope and material requirements established.}{J.\ Torres}
+\reventry{B}{09 Jul 2026}{R.\ Chen}{Incorporated client review comments. Revised fatigue provisions per AASHTO\ 9th Ed. Updated verification matrix. Issued for construction.}{J.\ Torres}
+\end{tabularx}
+
+%-----------------------------------------------------------------------
+\section{Purpose}
+%-----------------------------------------------------------------------
+
+This Engineering Specification defines the technical requirements for the design, materials,
+fabrication, inspection, and erection of the steel plate-girder superstructure for the
+I-5 Columbia River Crossing (CRC) replacement bridge, Contract\ C-2026-0147. The document
+serves as the governing technical baseline against which all deliverables, shop drawings,
+test reports, and field inspections are verified.
+
+%-----------------------------------------------------------------------
+\section{Scope}
+%-----------------------------------------------------------------------
+
+The scope of this specification encompasses:
+
+\begin{itemize}
+  \item Four continuous welded steel plate girders per span, spanning four segments of
+        45\,m--60\,m--60\,m--45\,m (total bridge length\ 210\,m).
+  \item Cross-frames, lateral bracing, stiffeners, bearing assemblies, and deck shear
+        connectors.
+  \item Structural steel conforming to ASTM\ A709\ Grade\ 50W (weathering steel).
+  \item Bolted field splices, shop-welded stiffeners, and high-strength bolted connections
+        per RCSC\ Specification\ (2020).
+  \item Quality assurance and non-destructive examination (NDE) protocols.
+\end{itemize}
+
+Excluded from this specification: substructure components (piers, abutments, foundations),
+concrete deck slab design (see\ ENG-SPEC-2026-0152), and temporary works.
+
+%-----------------------------------------------------------------------
+\section{Applicable Documents}
+%-----------------------------------------------------------------------
+
+The following codes, standards, and specifications form part of this document to the extent
+specified herein. The edition in effect at the date of contract award shall apply unless
+otherwise noted.
+
+\begin{tabbing}
+  \hspace*{14mm}\=\hspace*{24mm}\=\hspace*{68mm}\=\kill
+  \textbf{\small Ref.\ ID}\> \textbf{\small Issuing Body}\> \textbf{\small Title}\> \textbf{\small Edition}\\[2pt]
+  AASHTO\ LRFD\> AASHTO\> LRFD Bridge Design Specifications\> 9th Ed.,\ 2020\\
+  AASHTO\ LTS\> AASHTO\> LRFD Bridge Construction Specifications\> 4th Ed.,\ 2017\\
+  ASTM\ A709\> ASTM\> Standard Specification for Structural Steel\> 2020\\
+  ASTM\ A325\> ASTM\> High-Strength Bolts for Structural Joints\> 2020\\
+  ASTM\ E165\> ASTM\> Standard Practice for Liquid Penetrant Testing\> 2020\\
+  AWS\ D1.5\> AWS\> Bridge Welding Code\> 2020\\
+  RCSC\> RCSC\> Specification for Structural Joints Using\\ \> \> High-Strength Bolts\> 2020\\
+  AISC\ 360\> AISC\> Specification for Structural Steel Buildings\> 2016
+\end{tabbing}
+
+%-----------------------------------------------------------------------
+\section{Symbols \& Abbreviations}
+%-----------------------------------------------------------------------
+
+\noindent
+\rowcolors{2}{white}{revodd}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{accent}}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{accent}\color{white}\bfseries Symbol & \color{white}\bfseries Definition \\
+\midrule
+AASHTO & American Association of State Highway and Transportation Officials \\
+AISC   & American Institute of Steel Construction \\
+ASTM   & ASTM International (formerly American Society for Testing and Materials) \\
+AWS    & American Welding Society \\
+CJP    & Complete Joint Penetration (weld) \\
+CRC    & Columbia River Crossing \\
+$F_y$  & Specified minimum yield strength of steel (MPa) \\
+$F_u$  & Specified minimum tensile strength of steel (MPa) \\
+HAZ    & Heat-Affected Zone \\
+HL-93  & AASHTO notional design live-load model \\
+MPT    & Magnetic Particle Testing \\
+NDE    & Non-Destructive Examination \\
+PJP    & Partial Joint Penetration (weld) \\
+RCSC   & Research Council on Structural Connections \\
+UT     & Ultrasonic Testing \\
+VT     & Visual Testing \\
+\bottomrule
+\end{tabularx}
+
+%-----------------------------------------------------------------------
+\section{Technical Requirements}
+%-----------------------------------------------------------------------
+
+\subsection{General Requirements}
+
+\noindent
+\rowcolors{2}{white}{revodd}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\ttfamily\footnotesize\color{accent}}l@{\hspace{5mm}}>{\raggedright\arraybackslash}X@{\hspace{4mm}}c@{\hspace{4mm}}l@{}}
+\toprule
+\rowcolor{accent}\color{white}\bfseries ID & \color{white}\bfseries Requirement Description & \color{white}\bfseries Verif. & \color{white}\bfseries Traceability \\
+\midrule
+\reqrow{REQ-GEN-001}{All structural steelwork shall be designed in accordance with AASHTO LRFD Bridge Design Specifications, 9th Edition.}{A}{AASHTO LRFD\ \S1.1}
+\reqrow{REQ-GEN-002}{Design service life of the superstructure shall be not less than 100\ years for all primary load-carrying members.}{A}{Owner's RFP\ \S2.3}
+\reqrow{REQ-GEN-003}{The structure shall be classified as a Redundancy\ Level\ 1 (redundant) system per AASHTO LRFD\ \S1.3.4.}{A}{AASHTO LRFD}
+\reqrow{REQ-GEN-004}{All welders and welding operators shall be certified per AWS\ D1.5, Clause\ 5.}{I+D}{AWS\ D1.5}
+\reqrow{REQ-GEN-005}{A project-specific Quality Assurance Plan (QAP) shall be submitted and approved prior to commencement of fabrication.}{D}{ENG-SPEC-2026-0147\ \S5}
+\bottomrule
+\end{tabularx}
+
+\subsection{Structural Design Requirements}
+
+\noindent
+\rowcolors{2}{white}{revodd}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\ttfamily\footnotesize\color{accent}}l@{\hspace{5mm}}>{\raggedright\arraybackslash}X@{\hspace{4mm}}c@{\hspace{4mm}}l@{}}
+\toprule
+\rowcolor{accent}\color{white}\bfseries ID & \color{white}\bfseries Requirement Description & \color{white}\bfseries Verif. & \color{white}\bfseries Traceability \\
+\midrule
+\reqrow{REQ-STR-001}{Design live load shall be HL-93 in accordance with AASHTO LRFD\ \S3.6.1.2. A live-load deflection limit of $L/800$ shall apply.}{A+T}{AASHTO LRFD}
+\reqrow{REQ-STR-002}{Fatigue design shall comply with AASHTO LRFD\ \S6.6.1 for Fatigue\ Category\ II (infinite life) for all welded details in tension zones.}{A}{AASHTO LRFD\ \S6.6}
+\reqrow{REQ-STR-003}{Seismic design shall conform to AASHTO Guide Specifications for LRFD Seismic Bridge Design, Seismic Design Category\ C, 1000-year return period.}{A}{AASHTO Seismic}
+\reqrow{REQ-STR-004}{Cross-frame spacing shall not exceed 7.5\ m centre-to-centre. End cross-frames shall be provided at all bearing locations.}{A}{REQ-STR-001}
+\reqrow{REQ-STR-005}{All bolted field splices shall develop 100\% of the lesser connected flange capacity in tension.}{A+T}{RCSC\ \S5.1}
+\reqrow{REQ-STR-006}{Web stiffeners shall be provided at all bearing and cross-frame locations. Intermediate transverse stiffeners shall satisfy AASHTO LRFD\ \S6.10.11.1.}{A}{AASHTO LRFD}
+\reqrow{REQ-STR-007}{Camber diagrams shall account for dead-load deflection, superimposed dead load, and 60\% of live-load deflection, all computed at 20\degree C.}{A+I}{AASHTO LTS}
+\bottomrule
+\end{tabularx}
+
+\subsection{Material Requirements}
+
+\noindent
+\rowcolors{2}{white}{revodd}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\ttfamily\footnotesize\color{accent}}l@{\hspace{5mm}}>{\raggedright\arraybackslash}X@{\hspace{4mm}}c@{\hspace{4mm}}l@{}}
+\toprule
+\rowcolor{accent}\color{white}\bfseries ID & \color{white}\bfseries Requirement Description & \color{white}\bfseries Verif. & \color{white}\bfseries Traceability \\
+\midrule
+\reqrow{REQ-MAT-001}{All primary structural steel (girders, cross-frames, stiffeners) shall be ASTM\ A709\ Grade\ 50W with a Charpy\ V-notch toughness of 34\ J at\ $-18\degree$C (Zone\ 2).}{I+T}{ASTM\ A709}
+\reqrow{REQ-MAT-002}{High-strength bolts shall be ASTM\ A325\ Type\ 1, heavy-hex structural bolts with mechanical galvanising per ASTM\ B695\ Class\ 50.}{I+T}{ASTM\ A325}
+\reqrow{REQ-MAT-003}{Welding consumables shall be matched to the base metal: E70T-1 or E71T-1 for flux-cored arc welding (FCAW) of Grade\ 50W steel.}{I}{AWS\ D1.5}
+\reqrow{REQ-MAT-004}{Mill test reports (MTRs) shall be provided for each heat of steel and each lot of bolts, certifying chemical composition and mechanical properties.}{I}{ASTM\ A709\ \S9}
+\reqrow{REQ-MAT-005}{Shear connector studs shall be ASTM\ A108\ Grade\ 1015, 22\ mm\ diameter\ $\times$\ 150\ mm\ long, with a minimum tensile strength of 415\ MPa.}{I+T}{AWS\ D1.5}
+\bottomrule
+\end{tabularx}
+
+\subsection{Fabrication Requirements}
+
+\noindent
+\rowcolors{2}{white}{revodd}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\ttfamily\footnotesize\color{accent}}l@{\hspace{5mm}}>{\raggedright\arraybackslash}X@{\hspace{4mm}}c@{\hspace{4mm}}l@{}}
+\toprule
+\rowcolor{accent}\color{white}\bfseries ID & \color{white}\bfseries Requirement Description & \color{white}\bfseries Verif. & \color{white}\bfseries Traceability \\
+\midrule
+\reqrow{REQ-FAB-001}{All flange-to-web welds shall be CJP groove welds with UT inspection of 100\% of the weld length.}{I+T}{AWS\ D1.5\ \S6}
+\reqrow{REQ-FAB-002}{Stiffener-to-web and stiffener-to-flange welds shall be PJP or fillet welds, minimum 8\ mm\ leg size, with MPT inspection of 25\% of weld length.}{I+T}{AWS\ D1.5}
+\reqrow{REQ-FAB-003}{Bolted holes shall be sub-punched and reamed, or drilled full-size. Standard holes shall be 2\ mm\ oversize relative to the nominal bolt diameter.}{I}{RCSC\ \S3.2}
+\reqrow{REQ-FAB-004}{Faying surfaces of all slip-critical bolted connections shall be blast-cleaned to Class\ B surface condition (slip coefficient\ $\mu = 0.50$).}{I+T}{RCSC\ \S5.2}
+\bottomrule
+\end{tabularx}
+
+\subsection{Erection Requirements}
+
+\noindent
+\rowcolors{2}{white}{revodd}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\ttfamily\footnotesize\color{accent}}l@{\hspace{5mm}}>{\raggedright\arraybackslash}X@{\hspace{4mm}}c@{\hspace{4mm}}l@{}}
+\toprule
+\rowcolor{accent}\color{white}\bfseries ID & \color{white}\bfseries Requirement Description & \color{white}\bfseries Verif. & \color{white}\bfseries Traceability \\
+\midrule
+\reqrow{REQ-ERC-001}{An erection engineering plan, including stability analysis for each stage of girder erection, shall be submitted 60\ days prior to commencement of steel erection.}{A+I}{AASHTO LTS}
+\reqrow{REQ-ERC-002}{Temporary bracing shall remain in place until all permanent cross-frames and lateral bracing in the affected bay are fully bolted.}{I}{REQ-ERC-001}
+\reqrow{REQ-ERC-003}{Field-bolted connections shall be tensioned using the turn-of-nut method per RCSC\ \S8.2. A minimum of 10\% of bolts per connection shall be verified with a calibrated torque wrench.}{I+T}{RCSC\ \S8}
+\bottomrule
+\end{tabularx}
+
+%-----------------------------------------------------------------------
+\section{Verification Methods}
+%-----------------------------------------------------------------------
+
+Verification activities are classified per the following taxonomy:
+
+\vspace{6pt}
+\noindent
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{accent}}c@{\hspace{6mm}}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{accent}\color{white}\bfseries Code & \color{white}\bfseries Description \\
+\midrule
+A & \textbf{Analysis}\,---\,Verification by calculation, modelling, simulation, or engineering assessment. Includes finite-element analysis, section-capacity checks, and fatigue-life prediction. \\[3pt]
+I & \textbf{Inspection}\,---\,Verification by visual examination, measurement, or review of documentation. Includes mill-certificate review, dimensional checks, and weld-profile gauging. \\[3pt]
+D & \textbf{Demonstration}\,---\,Verification by witnessing an operational activity or procedural execution. Includes welder qualification tests, trial erection, and bolt-tensioning procedure demonstrations. \\[3pt]
+T & \textbf{Test}\,---\,Verification by quantitative measurement using calibrated instruments. Includes UT, MPT, radiographic testing, torque verification, and load testing. \\
+\bottomrule
+\end{tabularx}
+
+%-----------------------------------------------------------------------
+\section{Verification Cross-Reference Matrix}
+%-----------------------------------------------------------------------
+
+\vspace{4pt}
+\noindent
+\rowcolors{2}{white}{revodd}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\ttfamily\footnotesize\color{accent}}l@{\hspace{5mm}}>{\raggedright\arraybackslash}X@{\hspace{4mm}}*{4}{>{\centering\arraybackslash}X}@{}}
+\toprule
+\rowcolor{accent}\color{white}\bfseries ID & \color{white}\bfseries Requirement Summary & \color{white}\bfseries A & \color{white}\bfseries I & \color{white}\bfseries D & \color{white}\bfseries T \\
+\midrule
+REQ-GEN-001 & Design per AASHTO LRFD 9th Ed.       & \checkmark &            &            &            \\
+REQ-GEN-002 & 100-year design service life         & \checkmark &            &            &            \\
+REQ-GEN-003 & Redundancy Level\ 1 classification   & \checkmark &            &            &            \\
+REQ-GEN-004 & Welder certification per AWS\ D1.5   &            & \checkmark & \checkmark &            \\
+REQ-GEN-005 & Quality Assurance Plan submission    &            &            & \checkmark &            \\
+REQ-STR-001 & HL-93 live load,\ $L/800$ deflection & \checkmark &            &            & \checkmark \\
+REQ-STR-002 & Fatigue Category\ II (infinite life) & \checkmark &            &            &            \\
+REQ-STR-003 & Seismic Design Category\ C           & \checkmark &            &            &            \\
+REQ-STR-004 & Cross-frame spacing\ $\le$ 7.5\ m    & \checkmark & \checkmark &            &            \\
+REQ-STR-005 & Flange splice\ $\ge$\ 100\% capacity  & \checkmark &            &            & \checkmark \\
+REQ-STR-006 & Web stiffener provisions             & \checkmark & \checkmark &            &            \\
+REQ-STR-007 & Camber diagram computation           & \checkmark & \checkmark &            &            \\
+REQ-MAT-001 & ASTM\ A709\ Gr.\ 50W,\ CVN\ 34\ J    &            & \checkmark &            & \checkmark \\
+REQ-MAT-002 & ASTM\ A325\ Type\ 1 bolts            &            & \checkmark &            & \checkmark \\
+REQ-MAT-003 & Welding consumables E70T-1/E71T-1    &            & \checkmark &            &            \\
+REQ-MAT-004 & Mill test reports for each heat      &            & \checkmark &            &            \\
+REQ-MAT-005 & Shear connector stud properties      &            & \checkmark &            & \checkmark \\
+REQ-FAB-001 & CJP welds\,--\,100\%\ UT              &            &            &            & \checkmark \\
+REQ-FAB-002 & Stiffener welds\,--\,MPT\ 25\%        &            &            &            & \checkmark \\
+REQ-FAB-003 & Bolted-hole tolerances               &            & \checkmark &            &            \\
+REQ-FAB-004 & Class\ B faying surface               &            & \checkmark &            & \checkmark \\
+REQ-ERC-001 & Erection engineering plan            & \checkmark & \checkmark &            &            \\
+REQ-ERC-002 & Temporary bracing sequencing         &            & \checkmark &            &            \\
+REQ-ERC-003 & Turn-of-nut tensioning verification  &            & \checkmark & \checkmark & \checkmark \\
+\bottomrule
+\end{tabularx}
+
+\vspace{8pt}
+\noindent
+{\footnotesize\color{graydark}\textbf{Note:}\ A\ =\ Analysis,\ \ I\ =\ Inspection,\ \ D\ =\ Demonstration,\ \ T\ =\ Test. \checkmark\ indicates the primary verification method(s) assigned.}
+
+%-----------------------------------------------------------------------
+\section{Appendices}
+%-----------------------------------------------------------------------
+
+\subsection*{Appendix A\,---\,Structural System Block Diagram}
+
+\vspace{4pt}
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[
+  node distance=8mm and 14mm,
+  block/.style={
+    rectangle, draw=accent, fill=white, line width=1pt,
+    minimum width=36mm, minimum height=10mm, align=center,
+    font=\footnotesize\bfseries\color{accent},
+    rounded corners=2pt,
+  },
+  subblock/.style={
+    rectangle, draw=grayrule, fill=revodd, line width=0.6pt,
+    minimum width=30mm, minimum height=8mm, align=center,
+    font=\footnotesize\color{graydark},
+    rounded corners=1pt,
+  },
+  arrow/.style={-{Stealth[length=5pt,width=4pt]}, line width=1pt, color=accentlight},
+  dasharrow/.style={->,dashed,line width=0.8pt,color=grayrule},
+  label/.style={font=\scriptsize\color{graydark}},
+]
+
+% --- Top row: Design inputs ---
+\node[block,fill=accent!8] (loads) {Design Loads\\[-1pt]{\footnotesize\color{graydark}HL-93\,/\,Seismic\,/\,Wind}};
+\node[block,fill=accent!8,right=of loads,xshift=8mm] (codes) {Design Codes\\[-1pt]{\footnotesize\color{graydark}AASHTO\,LRFD\,/\,AISC\,360}};
+
+% --- Middle row: Primary structural system ---
+\node[block,below=18mm of $(loads.south)!0.5!(codes.south)$,minimum width=92mm,minimum height=12mm,fill=accent!5] (supers) {Steel Plate-Girder Superstructure};
+
+% --- Bottom row: Subsystems ---
+\node[subblock,below=14mm of supers,xshift=-34mm] (girders) {Steel Girders\\[-1pt]{\scriptsize ASTM\ A709\ Gr.\,50W}};
+\node[subblock,below=14mm of supers] (frames) {Cross-Frames \&\\[-1pt] Bracing};
+\node[subblock,below=14mm of supers,xshift=34mm] (deck) {Deck Interface\\[-1pt]{\scriptsize Shear Connectors}};
+
+\node[subblock,below=12mm of frames] (bearings) {Bearing\\[-1pt] Assemblies};
+\node[subblock,left=10mm of bearings] (splices) {Field\\[-1pt] Splices};
+\node[subblock,right=10mm of bearings] (joints) {Expansion\\[-1pt] Joints};
+
+% --- Arrows: inputs to superstructure ---
+\draw[arrow] (loads.south) -- ++(0,-7mm) -| (supers.north);
+\draw[arrow] (codes.south) -- ++(0,-7mm) -| (supers.north);
+
+% --- Arrows: superstructure to subsystems ---
+\draw[arrow] (supers.south) -- ++(0,-4mm) -| (girders.north);
+\draw[arrow] (supers.south) -- ++(0,-4mm) -| (frames.north);
+\draw[arrow] (supers.south) -- ++(0,-4mm) -| (deck.north);
+
+% --- Arrows: frames to bearings/splices/joints ---
+\draw[dasharrow] (frames.south) -- (bearings.north);
+\draw[dasharrow] (frames.south) -- (splices.north);
+\draw[dasharrow] (frames.south) -- (joints.north);
+
+% --- Labels ---
+\node[label,below=2mm of girders.south] {\faCheck\ \ Structure checked per REQ-STR-001};
+\node[label,below=2mm of bearings.south] {\faCheck\ \ Verified per REQ-STR-004..007};
+
+% --- Legend box ---
+\node[draw=grayrule,fill=white,rounded corners=2pt,inner sep=6pt,
+      below=4mm of $(splices.south)!0.5!(joints.south)$,yshift=-12mm,
+      align=left,font=\scriptsize\color{graydark}] (legend) {
+  \textbf{Legend}\\[1pt]
+  \tikz\draw[arrow] (0,0) -- (6mm,0);\enspace Load / Design transfer\\[1pt]
+  \tikz\draw[dasharrow] (0,0) -- (6mm,0);\enspace Structural dependency
+};
+
+\end{tikzpicture}
+\caption{Structural system block diagram\,---\,load path and subsystem hierarchy for the I-5\ CRC steel superstructure.}
+\end{figure}
+
+% =====================================================================
+\vspace{10pt}
+\begin{tcolorbox}[
+  enhanced,
+  sharp corners,
+  colback=accent!8,
+  colframe=accent!30,
+  boxrule=0.5pt,
+  left=12pt,right=12pt,top=8pt,bottom=8pt,
+]
+{\footnotesize\color{accent}\faInfoCircle\enspace\textbf{End of Specification\ ENG-SPEC-2026-0147\ Rev.\ B}\hfill\emph{Issued for Construction}\hspace{4pt}}
+\end{tcolorbox}
+
+\end{document}

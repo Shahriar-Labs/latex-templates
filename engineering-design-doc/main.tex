@@ -1,0 +1,713 @@
+% ============================================================
+%  Engineering Design Doc — LetX Template
+%  Edit & compile online at https://letx.app
+%  Compile locally:  latexmk -pdf main.tex
+% ============================================================
+
+\documentclass[11pt, a4paper]{article}
+
+% ── Core layout ─────────────────────────────────────────────
+\usepackage[
+  top=22mm, bottom=24mm,
+  left=22mm, right=22mm,
+  headheight=15pt
+]{geometry}
+
+% ── Fonts ───────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{inconsolata}   % monospace for code
+
+% ── Math ────────────────────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ── Color ───────────────────────────────────────────────────
+\usepackage[dvipsnames,svgnames,table]{xcolor}
+\definecolor{accent}{HTML}{1A56DB}      % deep blue
+\definecolor{accentlt}{HTML}{EBF2FF}    % pale-blue tint
+\definecolor{neutral}{HTML}{374151}     % near-black text
+\definecolor{muted}{HTML}{6B7280}       % grey label
+\definecolor{rulecolor}{HTML}{D1D5DB}   % rule / border
+\definecolor{warnbg}{HTML}{FFFBEB}      % amber callout bg
+\definecolor{warnborder}{HTML}{F59E0B}  % amber border
+\definecolor{infobg}{HTML}{F0FDF4}      % green callout bg
+\definecolor{infoborder}{HTML}{22C55E}  % green border
+\definecolor{dangerbg}{HTML}{FEF2F2}    % red callout bg
+\definecolor{dangerborder}{HTML}{EF4444}% red border
+\definecolor{codebg}{HTML}{F8FAFC}      % code listing bg
+\definecolor{pagetint}{HTML}{FAFAFA}    % very subtle page tint
+
+\pagecolor{pagetint}
+
+% ── Spacing / para ──────────────────────────────────────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\usepackage{setspace}
+\setstretch{1.15}
+
+% ── Headers / footers ───────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\footnotesize\color{muted}Unified Payments Ledger v2 — Design Doc}
+\fancyhead[R]{\footnotesize\color{muted}Confidential · Internal Only}
+\fancyfoot[C]{\footnotesize\color{muted}\thepage}
+
+% ── Section titles ──────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\section}
+  {\color{accent}\large\bfseries}
+  {}
+  {0em}
+  {}
+  [\vspace{1pt}\color{rulecolor}\rule{\linewidth}{0.6pt}\vspace{2pt}]
+
+\titleformat{\subsection}
+  {\color{neutral}\normalsize\bfseries}
+  {}
+  {0em}
+  {}
+
+\titleformat{\subsubsection}
+  {\color{muted}\small\bfseries\itshape}
+  {}
+  {0em}
+  {}
+
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+\titlespacing*{\subsubsection}{0pt}{7pt}{3pt}
+
+% ── Tables ──────────────────────────────────────────────────
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\setlength{\tabcolsep}{7pt}
+\renewcommand{\arraystretch}{1.28}
+
+% New column type for left-aligned bold accent key
+\newcolumntype{K}{>{\color{accent}\bfseries\raggedright\arraybackslash}l}
+\newcolumntype{V}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+\newcolumntype{R}{>{\raggedleft\arraybackslash}X}
+
+% ── Lists ───────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist{nosep, leftmargin=1.4em, itemsep=2pt}
+\setlist[itemize]{label=\textcolor{accent}{\textbullet}}
+\setlist[enumerate]{label=\textcolor{accent}{\arabic*.}}
+
+% ── tcolorbox (basic options only) ──────────────────────────
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+
+% Context/scope box
+\newtcolorbox{contextbox}{
+  enhanced,
+  breakable,
+  colback=accentlt,
+  colframe=accent,
+  boxrule=0.7pt,
+  arc=3pt,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+  fonttitle=\bfseries\color{accent},
+  title=Context \& Scope
+}
+
+% Warning callout
+\newtcolorbox{warnbox}[1][Note]{
+  enhanced,
+  breakable,
+  colback=warnbg,
+  colframe=warnborder,
+  boxrule=0.7pt,
+  arc=3pt,
+  left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fonttitle=\bfseries\color{warnborder},
+  title=#1
+}
+
+% Success / green callout
+\newtcolorbox{infobox}[1][Info]{
+  enhanced,
+  breakable,
+  colback=infobg,
+  colframe=infoborder,
+  boxrule=0.7pt,
+  arc=3pt,
+  left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fonttitle=\bfseries\color{infoborder},
+  title=#1
+}
+
+% Danger / red callout
+\newtcolorbox{dangerbox}[1][Caution]{
+  enhanced,
+  breakable,
+  colback=dangerbg,
+  colframe=dangerborder,
+  boxrule=0.7pt,
+  arc=3pt,
+  left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fonttitle=\bfseries\color{dangerborder},
+  title=#1
+}
+
+% Architecture diagram placeholder box
+\newtcolorbox{archbox}{
+  enhanced,
+  breakable,
+  colback=white,
+  colframe=rulecolor,
+  boxrule=0.6pt,
+  arc=3pt,
+  left=6pt, right=6pt, top=6pt, bottom=6pt,
+}
+
+% ── Code listings ───────────────────────────────────────────
+\usepackage{listings}
+\lstset{
+  basicstyle=\small\ttfamily\color{neutral},
+  backgroundcolor=\color{codebg},
+  frame=single,
+  framerule=0.5pt,
+  rulecolor=\color{rulecolor},
+  framesep=4pt,
+  xleftmargin=8pt,
+  xrightmargin=8pt,
+  breaklines=true,
+  breakatwhitespace=true,
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  tabsize=2,
+  keywordstyle=\bfseries\color{accent},
+  stringstyle=\color{infoborder},
+  commentstyle=\itshape\color{muted},
+  numbers=left,
+  numberstyle=\tiny\color{muted},
+  numbersep=6pt,
+  aboveskip=6pt,
+  belowskip=4pt,
+}
+\lstdefinelanguage{proto}{
+  morekeywords={syntax,service,rpc,returns,message,repeated,optional,required,string,int32,int64,bool,bytes,enum,import,package,option},
+  morestring=[b]",
+  morecomment=[l]{//},
+}
+
+% ── Icons ───────────────────────────────────────────────────
+\usepackage{fontawesome5}
+
+% ── Hyperref ────────────────────────────────────────────────
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  urlcolor=accent,
+  linkcolor=accent,
+  citecolor=accent,
+  pdftitle={Unified Payments Ledger v2 — Design Doc},
+  pdfauthor={Platform Infrastructure Team},
+}
+
+% ── Misc ────────────────────────────────────────────────────
+\usepackage{microtype}
+\usepackage{graphicx}
+
+% ── Helper macros ───────────────────────────────────────────
+% Status badge
+\newcommand{\statusbadge}[2]{%
+  \fcolorbox{#1}{#1}{\,\,}%
+  \ {\bfseries\color{#1}#2}%
+}
+
+% Pill-style metadata field
+\newcommand{\metafield}[2]{%
+  {\small\color{muted}#1:}\ {\small\color{neutral}\textbf{#2}}%
+}
+
+% Inline code
+\newcommand{\icode}[1]{%
+  {\ttfamily\small\colorbox{codebg}{\,#1\,}}%
+}
+
+% Section-level horizontal divider (lighter than section rule)
+\newcommand{\hdivider}{%
+  \vspace{4pt}\color{rulecolor}\rule{\linewidth}{0.4pt}\vspace{4pt}%
+}
+
+% Checklist item — open
+\newcommand{\copen}{\item[\textcolor{muted}{$\square$}]}
+% Checklist item — done
+\newcommand{\cdone}{\item[\textcolor{infoborder}{$\checkmark$}]}
+% Checklist item — blocked
+\newcommand{\cblock}{\item[\textcolor{dangerborder}{$\times$}]}
+
+% ============================================================
+%  DOCUMENT
+% ============================================================
+\begin{document}
+
+% ── Title block ─────────────────────────────────────────────
+\thispagestyle{fancy}
+
+{\fontsize{22}{26}\selectfont\bfseries\color{neutral}
+  Unified Payments Ledger v2}
+
+\vspace{4pt}
+{\large\color{accent} Engineering Design Document}
+
+\vspace{8pt}
+\color{rulecolor}\rule{\linewidth}{1pt}
+\vspace{6pt}
+
+% Metadata strip
+\begin{tabularx}{\linewidth}{@{}p{0.24\linewidth}p{0.24\linewidth}p{0.24\linewidth}>{\raggedright\arraybackslash}p{0.20\linewidth}@{}}
+  \metafield{Status}{\statusbadge{accent}{In Review}} &
+  \metafield{Version}{2.4.0} &
+  \metafield{Team}{Payments Infra} &
+  \metafield{Squad}{Ledger Core} \\[4pt]
+  \metafield{Authors}{S.\ Mehta, J.\ Park, L.\ Oduya} &
+  \metafield{Reviewers}{R.\ Chen (Staff), K.\ Narayanan (Sec)} &
+  \metafield{Created}{2025-09-12} &
+  \metafield{Updated}{2026-01-08}
+\end{tabularx}
+
+\vspace{6pt}
+\color{rulecolor}\rule{\linewidth}{0.5pt}
+\vspace{8pt}
+
+% ── Table of contents (compact) ─────────────────────────────
+{\small\color{muted}
+\begin{tabular}{@{}l@{\hspace{6mm}}l@{\hspace{10mm}}l@{\hspace{6mm}}l@{}}
+  \S1 Context \& Scope &
+  \S2 Goals \& Non-Goals &
+  \S3 Architecture &
+  \S4 API Contract \\
+  \S5 Data Model &
+  \S6 Migration Plan &
+  \S7 Observability &
+  \S8 Launch Checklist \\
+  \S9 Risks &
+  \S10 Open Questions &
+  \S11 Alternatives &
+  \S12 References \\
+\end{tabular}}
+
+\vspace{10pt}
+
+% ============================================================
+\section{Context \& Scope}
+% ============================================================
+
+\begin{contextbox}
+\textbf{Problem.}\ The current single-ledger Postgres monolith cannot sustain
+the projected 40$\times$ write throughput required for the 2026 Stripe-level
+merchant-acquiring rollout. P99 write latency breached 800\,ms during the Q3
+Black Friday stress test. This document proposes replacing the hot-path write
+layer with a partitioned, event-sourced ledger backed by Apache Kafka and a
+TiDB-distributed storage tier.
+
+\vspace{4pt}
+\textbf{Scope.}\ Covers the \icode{ledger-write-service}, \icode{ledger-query-service},
+Kafka topic schema, TiDB shard strategy, and the zero-downtime migration plan.
+Out of scope: fraud-scoring pipeline, merchant portal UI, settlement batch jobs.
+\end{contextbox}
+
+\vspace{6pt}
+
+\textbf{Background.}\ Stripe's public post-mortem (2024) attributes 68\,\% of
+payment-latency incidents to single-region database serialisation under high
+concurrency. Our current architecture mirrors this fragility:\ one
+\icode{payments\_ledger} table with 3.2\,B rows, 14 secondary indexes, and
+no horizontal sharding. The re-architecture targets:
+
+\begin{itemize}
+  \item Sub-50\,ms P99 write latency at 50\,k TPS sustained.
+  \item Idempotent, exactly-once debit/credit semantics via outbox pattern.
+  \item GDPR-compliant PII isolation per merchant shard.
+  \item RPO $\leq$ 1\,s, RTO $\leq$ 30\,s in a region failover.
+\end{itemize}
+
+\vspace{4pt}
+
+\begin{warnbox}[Decision Required by 2026-01-20]
+TiDB vs.\ CockroachDB vendor choice is not yet final.
+This doc assumes TiDB; \S11 covers CockroachDB as the primary alternative.
+The infra cost delta is \$180k/yr. Pending CFO sign-off.
+\end{warnbox}
+
+% ============================================================
+\section{Goals \& Non-Goals}
+% ============================================================
+
+\subsection{Goals}
+\begin{enumerate}
+  \item \textbf{Throughput.}\ Handle 50\,k TPS peak write load with P99 $\leq$ 50\,ms.
+  \item \textbf{Durability.}\ Zero data loss on single-node failure; 3-way
+        replication across AZs.
+  \item \textbf{Idempotency.}\ Duplicate payment events must be deduplicated
+        within a 24\,h window using \icode{idempotency\_key}.
+  \item \textbf{Zero-downtime migration.}\ Dual-write bridge with read-traffic
+        cut-over under feature flag; full cut-over in $\leq$ 4\,h maintenance window.
+  \item \textbf{Observability.}\ Every write emits a structured OpenTelemetry span;
+        Datadog dashboard auto-provisioned via Terraform.
+\end{enumerate}
+
+\subsection{Non-Goals}
+\begin{itemize}
+  \item Real-time fraud inference — remains in the existing ML scoring service.
+  \item Re-architecture of the settlement or reconciliation batch tier.
+  \item Support for non-USD currency ledgers (planned for Q3 2026, separate RFC).
+\end{itemize}
+
+% ============================================================
+\section{Architecture}
+% ============================================================
+
+\subsection{System Diagram}
+
+\begin{archbox}
+\begin{center}
+\vspace{2pt}
+\small
+\begin{tabular}{@{}c@{}}
+{\color{accent}\faServer}\ \textbf{API Gateway (Envoy)} \\
+\texttt{POST /v2/payments/charge} \\
+$\downarrow$ \\[2pt]
+{\color{accent}\faCodeBranch}\ \textbf{ledger-write-service} (Go 1.23, 12 replicas) \\
+Validate $\to$ Idempotency check $\to$ Outbox insert \\
+$\downarrow$ \\[2pt]
+{\color{accent}\faStream}\ \textbf{Kafka} — topic \texttt{ledger.events.v2} (128 partitions, 7d retention) \\
+$\downarrow$\hspace{10mm}$\downarrow$ \\[2pt]
+\begin{tabular}{cc}
+{\color{accent}\faDatabase}\ \textbf{TiDB Cluster} &
+{\color{accent}\faSearch}\ \textbf{ledger-query-service} \\
+(3 TiKV nodes $\times$ 3 AZ) & (Elasticsearch 8 read replicas) \\
+\end{tabular} \\[4pt]
+$\downarrow$ \\[2pt]
+{\color{accent}\faChartBar}\ \textbf{Datadog} — SLO dashboards, alerting
+\end{tabular}
+\vspace{2pt}
+\end{center}
+\end{archbox}
+
+\vspace{6pt}
+
+\subsection{Key Design Decisions}
+
+\begin{tabularx}{\linewidth}{@{}K@{\hspace{8mm}}V@{}}
+\toprule
+\textbf{Concern} & \textbf{Decision} \\
+\midrule
+Write path & Outbox pattern: write to \icode{ledger\_outbox} in same TiDB txn, Kafka relay picks up async. Guarantees atomicity without distributed 2PC. \\
+Partition key & \icode{merchant\_id \% 128} — keeps all events for a merchant on one partition (ordering guarantee). \\
+Idempotency & \icode{idempotency\_key} stored in Redis (TTL 24\,h); checked before outbox insert. \\
+Schema evolution & Protobuf v3 with mandatory \icode{schema\_version} field; backward-compat enforced by schema registry. \\
+Fan-out reads & CQRS: query service consumes Kafka and projects into Elasticsearch for merchant-facing queries; TiDB for internal accounting. \\
+\bottomrule
+\end{tabularx}
+
+\vspace{6pt}
+
+\subsection{Outbox Relay}
+
+The relay is a single Go goroutine per TiDB shard using \icode{SELECT FOR UPDATE
+SKIP LOCKED} on the \icode{ledger\_outbox} table. Batch size: 500 rows, flush
+interval: 50\,ms. On Kafka producer ACK the rows are deleted. Relay lag is
+exposed via \icode{ledger\_outbox\_depth\_gauge} (alert if $>$ 10\,k).
+
+% ============================================================
+\section{API Contract}
+% ============================================================
+
+\subsection{REST Endpoints}
+
+\begin{tabularx}{\linewidth}{@{}l@{\hspace{4mm}}l@{\hspace{4mm}}V@{}}
+\toprule
+\textbf{Method} & \textbf{Path} & \textbf{Description} \\
+\midrule
+\texttt{POST}   & \texttt{/v2/payments/charge}     & Initiate debit from merchant wallet \\
+\texttt{POST}   & \texttt{/v2/payments/refund}      & Reverse a prior charge \\
+\texttt{GET}    & \texttt{/v2/ledger/balance/\{mid\}} & Current balance for merchant ID \\
+\texttt{GET}    & \texttt{/v2/ledger/events}        & Paginated event log (cursor-based) \\
+\texttt{POST}   & \texttt{/v2/payouts/schedule}     & Enqueue a payout to bank account \\
+\bottomrule
+\end{tabularx}
+
+\vspace{6pt}
+
+\subsection{Protobuf Schema — \texttt{ChargeRequest}}
+
+\begin{lstlisting}[language=proto]
+syntax = "proto3";
+package payments.ledger.v2;
+
+message ChargeRequest {
+  string  idempotency_key  = 1;  // UUID v4, required
+  string  merchant_id      = 2;  // e.g. "mid_4xR9a..."
+  int64   amount_cents      = 3;  // positive, USD cents
+  string  currency          = 4;  // ISO 4217 ("USD")
+  string  description       = 5;  // max 255 chars
+  map<string, string> metadata = 6;
+  int32   schema_version    = 7;  // must == 2
+}
+
+message ChargeResponse {
+  string  charge_id     = 1;  // "chg_..." globally unique
+  string  status        = 2;  // PENDING | COMPLETED | FAILED
+  int64   balance_cents  = 3;
+  int64   created_at_us  = 4;  // Unix microseconds
+}
+
+service LedgerService {
+  rpc Charge  (ChargeRequest)  returns (ChargeResponse);
+  rpc Refund  (RefundRequest)  returns (RefundResponse);
+  rpc Balance (BalanceRequest) returns (BalanceResponse);
+}
+\end{lstlisting}
+
+\subsection{Error Codes}
+
+\begin{tabularx}{\linewidth}{@{}l@{\hspace{4mm}}l@{\hspace{4mm}}V@{}}
+\toprule
+\textbf{HTTP} & \textbf{gRPC Code} & \textbf{Meaning} \\
+\midrule
+400 & INVALID\_ARGUMENT   & Missing/malformed field \\
+409 & ALREADY\_EXISTS     & Duplicate \icode{idempotency\_key} (safe to retry) \\
+422 & FAILED\_PRECONDITION & Insufficient balance \\
+429 & RESOURCE\_EXHAUSTED & Rate limit exceeded (50 rps per merchant) \\
+500 & INTERNAL            & Unexpected server error \\
+503 & UNAVAILABLE         & Kafka relay lag $>$ 60s or TiDB unavailable \\
+\bottomrule
+\end{tabularx}
+
+% ============================================================
+\section{Data Model}
+% ============================================================
+
+\subsection{TiDB Schema}
+
+\begin{lstlisting}[language=SQL]
+CREATE TABLE ledger_events (
+    event_id        CHAR(36)      NOT NULL,
+    merchant_id     VARCHAR(64)   NOT NULL,
+    amount_cents    BIGINT        NOT NULL,
+    currency        CHAR(3)       NOT NULL DEFAULT 'USD',
+    event_type      ENUM('CHARGE','REFUND','PAYOUT') NOT NULL,
+    idempotency_key CHAR(36)      NOT NULL,
+    created_at      DATETIME(6)   NOT NULL,
+    metadata        JSON,
+    PRIMARY KEY (merchant_id, created_at, event_id)  -- composite PK = shard key
+) PARTITION BY HASH(merchant_id) PARTITIONS 128;
+
+CREATE TABLE ledger_outbox (
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    event_id    CHAR(36)    NOT NULL,
+    payload     BLOB        NOT NULL,  -- serialised proto
+    created_at  DATETIME(6) NOT NULL,
+    published   TINYINT(1)  NOT NULL DEFAULT 0,
+    INDEX idx_unpublished (published, created_at)
+);
+\end{lstlisting}
+
+% ============================================================
+\section{Migration Plan}
+% ============================================================
+
+\begin{warnbox}[Migration Risk: HIGH]
+The existing ledger table has 3.2\,B rows and 14 live consumer services.
+A phased cut-over with automated rollback is mandatory.
+\end{warnbox}
+
+\subsection{Phases}
+
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{accent}}l@{\hspace{6mm}}l@{\hspace{4mm}}V@{}}
+\toprule
+Phase & Window & Description \\
+\midrule
+0 & Week 0 & Provision TiDB cluster; schema DDL; seed with last 90d of history via Spark job. Shadow-write mode (writes go to both old DB and TiDB, reads from old). \\
+1 & Week 1--2 & Enable dual-write via feature flag \icode{ledger\_dual\_write}. Monitor TiDB lag vs.\ Postgres baseline. Alert on $>$ 0.1\,\% divergence. \\
+2 & Week 3 & Shift 10\,\% of read traffic to TiDB (canary). Validate P99 latency and correctness via checksum comparison job. \\
+3 & Week 4 & Ramp reads to 100\,\% TiDB. Keep Postgres in standby for 48\,h rollback window. \\
+4 & Week 5 & Disable Postgres writes. Decommission old DB after 30-day hold for audit. \\
+\bottomrule
+\end{tabularx}
+
+\vspace{6pt}
+
+\subsection{Rollback Procedure}
+
+In Phase 1--3, flip \icode{ledger\_dual\_write=false} in LaunchDarkly. Traffic
+immediately reverts to Postgres. Estimated rollback time: $<$ 30\,s (flag
+propagation SLA). Phase 4 rollback requires point-in-time recovery from Postgres
+daily snapshot — RTO $\approx$ 4\,h.
+
+\begin{infobox}[Automated Divergence Check]
+  A nightly reconciliation job (\icode{ledger-recon-job}) runs a row-count and
+  checksum comparison between Postgres and TiDB for the previous 24\,h window.
+  Any delta $>$ 0.01\,\% pages the on-call via PagerDuty and halts Phase advancement.
+\end{infobox}
+
+% ============================================================
+\section{Observability}
+% ============================================================
+
+\subsection{SLOs}
+
+\begin{tabularx}{\linewidth}{@{}K@{\hspace{8mm}}l@{\hspace{4mm}}V@{}}
+\toprule
+SLO & Target & Measurement \\
+\midrule
+Write latency P99 & $\leq$ 50\,ms & \icode{ledger\_write\_duration\_ms} histogram (Datadog) \\
+Write availability & 99.99\,\% & 1 -- (5xx / total) over 28-day rolling window \\
+Outbox relay lag & $\leq$ 10k rows & \icode{ledger\_outbox\_depth\_gauge} \\
+Idempotency hit rate & $<$ 0.5\,\% & \icode{ledger\_idempotency\_hit\_total} \\
+Recon divergence & 0\,\% & Nightly batch, alert on any mismatch \\
+\bottomrule
+\end{tabularx}
+
+\vspace{6pt}
+
+\subsection{Key Metrics Emitted}
+
+\begin{lstlisting}[language=Go]
+// Example OpenTelemetry span in ledger-write-service (Go)
+ctx, span := tracer.Start(ctx, "ledger.charge",
+    trace.WithAttributes(
+        attribute.String("merchant_id", req.MerchantId),
+        attribute.Int64("amount_cents",  req.AmountCents),
+        attribute.String("schema_version", strconv.Itoa(int(req.SchemaVersion))),
+    ),
+)
+defer span.End()
+\end{lstlisting}
+
+% ============================================================
+\section{Launch Checklist}
+% ============================================================
+
+\subsection*{\faRocket\ Pre-Launch (Engineering)}
+\begin{itemize}
+  \cdone Unit tests: $\geq$ 90\,\% coverage on \icode{ledger-write-service} (currently 93\,\%).
+  \cdone Integration tests pass against TiDB staging cluster.
+  \cdone Load test: 55\,k TPS for 30\,min in staging (P99 = 38\,ms achieved).
+  \cdone Schema registry: \icode{ChargeRequest v2} registered, backward-compat verified.
+  \copen Chaos test: kill one TiKV node under 30\,k TPS — verify no data loss.
+  \copen Runbook published to Confluence and linked in PagerDuty service.
+  \cblock \textbf{BLOCKED:} TiDB vendor contract not yet signed — see \S1 decision.
+\end{itemize}
+
+\subsection*{\faLock\ Security Review}
+\begin{itemize}
+  \cdone PII fields (\icode{metadata.card\_last4}) encrypted at rest (TiDB TDE enabled).
+  \cdone mTLS between \icode{ledger-write-service} and TiDB cluster.
+  \cdone Rate-limiting enforced at Envoy layer (50 rps / merchant).
+  \copen GDPR data-deletion flow for merchant-shard drop verified with Legal.
+  \copen Pen-test scheduled: 2026-02-03 (external vendor — NCC Group).
+\end{itemize}
+
+\subsection*{\faChartBar\ Observability \& On-Call}
+\begin{itemize}
+  \cdone Datadog dashboard \texttt{ledger-v2-prod} provisioned via Terraform.
+  \cdone PagerDuty rotation updated; on-call rotation covers 3 engineers.
+  \copen Synthetic monitors for \icode{/v2/payments/charge} (every 60\,s) configured.
+  \copen Runbook walkthrough session scheduled with on-call team (2026-01-22).
+\end{itemize}
+
+\subsection*{\faFlag\ Go/No-Go Gate}
+
+\begin{dangerbox}[Hard Gate — All items must be green before Phase 3]
+  \begin{itemize}
+    \item Chaos test (above) passes with zero data loss.
+    \item TiDB contract signed.
+    \item GDPR deletion flow approved by Legal.
+    \item Security pen-test findings rated $\leq$ Medium severity.
+  \end{itemize}
+\end{dangerbox}
+
+% ============================================================
+\section{Risks}
+% ============================================================
+
+\begin{tabularx}{\linewidth}{@{}K@{\hspace{6mm}}l@{\hspace{4mm}}l@{\hspace{4mm}}V@{}}
+\toprule
+Risk & Likelihood & Severity & Mitigation \\
+\midrule
+TiDB write-stall under GC pressure & Medium & High & Tune \icode{gc\_life\_time} to 10\,min; pre-warm GC worker thread pool. \\
+Kafka consumer lag spike & Low & Medium & Auto-scaling consumer group (KEDA); dead-letter queue for retries. \\
+Redis idempotency store OOM & Low & High & TTL = 24\,h; eviction policy \icode{allkeys-lru}; cluster sharding by \icode{merchant\_id}. \\
+Dual-write divergence (Phase 1) & Medium & Critical & Nightly recon job halts Phase on $>$ 0.01\,\% delta; automatic rollback flag. \\
+Vendor lock-in (TiDB) & Low & Medium & Protobuf schema + CQRS read tier decoupled; CockroachDB migration path documented. \\
+\bottomrule
+\end{tabularx}
+
+% ============================================================
+\section{Open Questions}
+% ============================================================
+
+\begin{enumerate}
+  \item \textbf{[Infra]} Should the Kafka relay run as a sidecar to \icode{ledger-write-service}
+        or as a standalone \icode{ledger-relay-service}? Sidecar reduces network hops;
+        standalone allows independent scaling. Decision needed by 2026-01-25.
+
+  \item \textbf{[Product]} Do we need sub-second balance reads during Phase 1 dual-write,
+        or is eventual consistency (100\,ms lag from Kafka) acceptable for merchant dashboards?
+
+  \item \textbf{[Legal]} GDPR merchant data deletion — is a 30-day TiDB shard tombstone
+        compliant, or must deletion be synchronous?
+
+  \item \textbf{[Security]} Should \icode{idempotency\_key} be stored in plaintext in Redis,
+        or HMAC'd with merchant secret? K.\ Narayanan to advise by 2026-01-18.
+\end{enumerate}
+
+% ============================================================
+\section{Alternatives Considered}
+% ============================================================
+
+\begin{tabularx}{\linewidth}{@{}K@{\hspace{6mm}}V@{}}
+\toprule
+Alternative & Verdict \\
+\midrule
+CockroachDB & Comparable feature set, 22\,\% higher p99 in our benchmark at 50\,k TPS (see attached Notion doc). Cockroach charges per vCPU; \$180k/yr delta vs TiDB. Keep as fallback if TiDB contract fails. \\
+Postgres + Citus & Evaluated Q2 2025. Citus shard rebalancing caused 4-min read unavailability in staging under 30\,k TPS. Disqualified. \\
+PlanetScale (Vitess) & No multi-statement transactions — incompatible with outbox pattern. Disqualified. \\
+Event sourcing on DynamoDB & Single-region without Global Tables; 10$\times$ cost at our volume. Disqualified. \\
+\bottomrule
+\end{tabularx}
+
+% ============================================================
+\section{References}
+% ============================================================
+
+\begin{tabularx}{\linewidth}{@{}K@{\hspace{8mm}}V@{}}
+\toprule
+Ref & Link / Description \\
+\midrule
+{}[1] TiDB Docs & \href{https://docs.pingcap.com/tidb/stable}{docs.pingcap.com/tidb/stable} \\
+{}[2] Outbox Pattern & Microservices.io — Transactional Outbox (\href{https://microservices.io/patterns/data/transactional-outbox.html}{microservices.io}) \\
+{}[3] Proto Schema Reg. & Internal Confluence: \texttt{/Payments/SchemaRegistry/LedgerV2} \\
+{}[4] Stripe Post-mortem & Stripe Engineering Blog, Oct 2024 — Ledger Latency Incident \\
+{}[5] Load Test Results & Notion: \texttt{Ledger v2 Load Test — 2025-12-14} \\
+{}[6] Datadog Dashboard & \texttt{letx-datadog.internal/ledger-v2-prod} \\
+{}[7] Chaos Eng. Runbook & Confluence: \texttt{/Infra/ChaosEngineering/LedgerV2} \\
+\bottomrule
+\end{tabularx}
+
+\vspace{12pt}
+\color{rulecolor}\rule{\linewidth}{0.6pt}
+\vspace{4pt}
+
+{\footnotesize\color{muted}
+\faLock\ This document is confidential and intended for internal use only.
+Please do not distribute externally without approval from the Payments Infra leadership.
+\hfill
+\faEdit\ Template by \href{https://letx.app}{letx.app}
+}
+
+\end{document}

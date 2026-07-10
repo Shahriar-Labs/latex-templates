@@ -1,0 +1,881 @@
+% ============================================================
+% DISCLAIMER: Unofficial template. Not affiliated with, endorsed by, or an official
+% publication of any named institution or venue. All names/data are fictional samples.
+%  Delhi University PhD Thesis Template
+%  Designed for University of Delhi, North Campus, India
+%  Compile: latexmk -pdf main.tex  (pdflatex)
+%  Edit & compile online: https://letx.app
+% ============================================================
+
+\documentclass[12pt, a4paper, oneside]{report}
+
+% ── Core geometry & spacing ──────────────────────────────────
+\usepackage[top=1in, bottom=1in, left=1.25in, right=1in]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+
+% ── Typography ───────────────────────────────────────────────
+\usepackage{mathpazo}          % Palatino for body + math
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+
+% ── Maths ────────────────────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+
+% ── Colour ───────────────────────────────────────────────────
+\usepackage{xcolor}
+\definecolor{dupurple}{HTML}{4B0082}   % DU heritage purple (accent)
+\definecolor{dugold}{HTML}{B8860B}     % muted gold (secondary)
+\definecolor{neutralgrey}{HTML}{4A4A4A}
+\definecolor{lightgrey}{HTML}{F4F2F7}  % faint tint for boxes
+
+% ── Tables ───────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% ── Graphics & Figures ───────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows.meta, positioning}
+\usepackage{float}
+\usepackage{caption}
+\captionsetup{
+  font=small,
+  labelfont={bf, color=dupurple},
+  labelsep=period,
+  skip=6pt
+}
+
+% ── Chapter / section headings ───────────────────────────────
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\LARGE\bfseries\color{dupurple}}
+  {\normalfont\large\color{dupurple}\MakeUppercase{\chaptertitlename}\ \thechapter}
+  {6pt}
+  {\rule{\linewidth}{1.5pt}\vspace{4pt}\\}
+  [\vspace{4pt}\rule{\linewidth}{0.4pt}]
+
+\titleformat{\section}
+  {\normalfont\large\bfseries\color{dupurple}}
+  {\thesection}
+  {0.8em}{}
+
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries\color{neutralgrey}}
+  {\thesubsection}
+  {0.6em}{}
+
+\titlespacing*{\chapter}{0pt}{10pt}{20pt}
+\titlespacing*{\section}{0pt}{12pt}{6pt}
+\titlespacing*{\subsection}{0pt}{8pt}{4pt}
+
+% ── Enumitem & lists ─────────────────────────────────────────
+\usepackage{enumitem}
+\setlist{noitemsep, topsep=4pt}
+
+% ── Headers & footers ────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{dupurple}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[L]{\small\color{neutralgrey}\leftmark}
+\fancyhead[R]{\small\color{neutralgrey}University of Delhi}
+\fancyfoot[C]{\small\thepage}
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \fancyfoot[C]{\small\thepage}
+}
+
+% ── Hyperref (last, mostly) ───────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=dupurple,
+  citecolor=dugold,
+  urlcolor=dupurple,
+  pdfauthor={Priya Rajan},
+  pdftitle={Cognitive Architectures and Adaptive Learning in Neural Systems},
+  pdfsubject={PhD Thesis, University of Delhi}
+]{hyperref}
+
+% ── Custom theorem-like environments ─────────────────────────
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[chapter]
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{proposition}{Proposition}[chapter]
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}[chapter]
+
+% ── Handy macros ─────────────────────────────────────────────
+\newcommand{\thesistitle}{Cognitive Architectures and Adaptive Learning\\[4pt]in Neural Systems: A Computational Perspective}
+\newcommand{\thesisshorttitle}{Cognitive Architectures and Adaptive Learning}
+\newcommand{\thesisauthor}{Priya Rajan}
+\newcommand{\thesisrollno}{2019DCS0042}
+\newcommand{\thesissupervisor}{Prof.\ Arun Kumar Verma}
+\newcommand{\thesiscosupervisor}{Dr.\ Sunita Mehta}
+\newcommand{\thesisdept}{Department of Computer Science}
+\newcommand{\thesisuniversity}{University of Delhi}
+\newcommand{\thesiscity}{Delhi -- 110007, India}
+\newcommand{\thesisyear}{2025}
+\newcommand{\thesisdegree}{Doctor of Philosophy}
+\newcommand{\submissionmonth}{May \thesisyear}
+
+% ── Framed information box ────────────────────────────────────
+\newcommand{\infobox}[2]{%
+  \vspace{6pt}
+  \noindent
+  \begin{tabular}{@{}>{\color{dupurple}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}p{0.68\linewidth}@{}}
+    #1 & #2
+  \end{tabular}
+  \vspace{6pt}
+}
+
+% ── Light highlight box (plain tikz rectangle) ────────────────
+\newcommand{\highlightbox}[1]{%
+  \vspace{8pt}
+  \noindent
+  \begin{tikzpicture}
+    \node[
+      fill=lightgrey,
+      draw=dupurple,
+      line width=0.6pt,
+      rounded corners=3pt,
+      inner sep=10pt,
+      text width=\dimexpr\linewidth-22pt\relax
+    ]{#1};
+  \end{tikzpicture}
+  \vspace{8pt}
+}
+
+% ─────────────────────────────────────────────────────────────
+\providecommand{\doi}[1]{doi:#1}
+\begin{document}
+
+% ── TITLE PAGE ───────────────────────────────────────────────
+\begin{titlepage}
+\begin{center}
+\vspace*{0.4cm}
+
+% University emblem (drawn in TikZ — no external file needed)
+\begin{tikzpicture}
+  \draw[dupurple, line width=2pt] (0,0) circle (1.1cm);
+  \draw[dupurple, line width=0.6pt] (0,0) circle (0.95cm);
+  \node[dupurple, font=\bfseries\small] at (0, 0.45) {University};
+  \node[dupurple, font=\bfseries\small] at (0, 0.1) {of};
+  \node[dupurple, font=\bfseries\small] at (0,-0.25) {Delhi};
+  \draw[dugold, line width=1pt] (-0.55,-0.6) -- (0.55,-0.6);
+  \node[dugold, font=\scriptsize\itshape] at (0,-0.82) {Est.\ 1922};
+\end{tikzpicture}
+
+\vspace{0.5cm}
+{\color{dupurple}\rule{\linewidth}{2pt}}
+\vspace{0.3cm}
+
+{\color{dupurple}\Large\bfseries UNIVERSITY OF DELHI}\\[2pt]
+{\color{neutralgrey}\normalsize\thesisdept}\\[2pt]
+{\color{neutralgrey}\small\thesiscity}
+
+\vspace{0.7cm}
+
+{\color{dupurple}\rule{\linewidth}{0.4pt}}
+\vspace{0.5cm}
+
+{\Large\bfseries\color{dupurple} THESIS}\\[6pt]
+{\normalsize\itshape Submitted in partial fulfilment of the requirements for the degree of}\\[6pt]
+{\large\bfseries\color{dupurple}\thesisdegree}\\[4pt]
+{\normalsize\itshape in}\\[4pt]
+{\large\bfseries Computer Science}
+
+\vspace{0.7cm}
+{\color{dupurple}\rule{0.6\linewidth}{0.4pt}}
+\vspace{0.5cm}
+
+{\LARGE\bfseries\color{black}\thesistitle}
+
+\vspace{0.7cm}
+
+{\normalsize\itshape Submitted by}\\[4pt]
+{\Large\bfseries\thesisauthor}\\[2pt]
+{\normalsize Roll No.:\ \thesisrollno}
+
+\vspace{0.6cm}
+{\color{dupurple}\rule{0.6\linewidth}{0.4pt}}
+\vspace{0.4cm}
+
+\begin{tabular}{@{}rl@{}}
+  {\small\bfseries\color{dupurple}Supervisor:} & {\small\thesissupervisor} \\[4pt]
+  {\small\bfseries\color{dupurple}Co-supervisor:} & {\small\thesiscosupervisor}
+\end{tabular}
+
+\vfill
+
+{\color{dupurple}\rule{\linewidth}{0.4pt}}\\[4pt]
+{\normalsize\submissionmonth}\\[2pt]
+{\small\itshape\color{neutralgrey}
+  Submitted for the degree of \thesisdegree{} to \thesisuniversity{} in \thesisyear.}
+\vfill
+{\footnotesize\itshape Unofficial template --- not affiliated with, endorsed by, or an official publication of the named institution. Sample content only.}
+\end{center}
+\end{titlepage}
+
+% ── DECLARATION ──────────────────────────────────────────────
+\chapter*{Declaration}
+\addcontentsline{toc}{chapter}{Declaration}
+\thispagestyle{plain}
+
+I, \textbf{\thesisauthor}, Roll No.\ \thesisrollno, hereby declare that the thesis entitled
+\textbf{\textit{\thesisshorttitle}} submitted to the \thesisdept, \thesisuniversity, in
+partial fulfilment of the requirements for the degree of \textbf{\thesisdegree{} in Computer
+Science}, is an original work carried out by me under the supervision of \thesissupervisor{}
+and co-supervision of \thesiscosupervisor.
+
+\medskip
+I further declare that:
+\begin{enumerate}[label=(\alph*)]
+  \item The work contained in this thesis has not been submitted for any other degree or
+        diploma, in this or any other university.
+  \item Whenever I have used materials (text, data, figures, or tables) from other sources,
+        these have been duly acknowledged in the text.
+  \item This thesis has been checked for plagiarism and is within the permissible limit as per
+        the University of Delhi norms.
+\end{enumerate}
+
+\vspace{1.8cm}
+\noindent
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+  \rule{5cm}{0.4pt} & \rule{5cm}{0.4pt} \\[2pt]
+  \textbf{\thesisauthor} & \textbf{\thesissupervisor} \\
+  \small Roll No.:\ \thesisrollno & \small Supervisor \\
+  \small \thesisdept & \small \thesisdept \\
+  \small \thesisuniversity & \small \thesisuniversity \\[1.2cm]
+  \multicolumn{2}{l}{\textbf{Place:} New Delhi} \\
+  \multicolumn{2}{l}{\textbf{Date:} \today}
+\end{tabularx}
+
+% ── COPYRIGHT ────────────────────────────────────────────────
+\chapter*{Certificate by the Supervisor}
+\addcontentsline{toc}{chapter}{Certificate by the Supervisor}
+\thispagestyle{plain}
+
+This is to certify that the thesis entitled \textbf{\textit{\thesisshorttitle}} submitted by
+\textbf{\thesisauthor} (Roll No.\ \thesisrollno) for the degree of \textbf{\thesisdegree{} in
+Computer Science} at the \thesisdept, \thesisuniversity, is a record of bonafide research
+work carried out by her under our supervision.
+
+\medskip
+In our opinion, the thesis is worthy of consideration for the award of the degree of Doctor
+of Philosophy in Computer Science in accordance with the regulations of this University.
+
+\vspace{2cm}
+\noindent
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+  \rule{5cm}{0.4pt} & \rule{5cm}{0.4pt} \\[2pt]
+  \textbf{\thesissupervisor} & \textbf{\thesiscosupervisor} \\
+  \small Professor & \small Associate Professor \\
+  \small \thesisdept & \small \thesisdept \\
+  \small \thesisuniversity & \small \thesisuniversity
+\end{tabularx}
+
+% ── ACKNOWLEDGEMENTS ─────────────────────────────────────────
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+\thispagestyle{plain}
+
+I express my deepest gratitude to my supervisor, \thesissupervisor, for his unwavering
+guidance, scholarly insight, and encouragement throughout this doctoral journey. His
+passion for rigorous science has been a constant source of inspiration.
+
+\medskip
+I am equally thankful to my co-supervisor, \thesiscosupervisor, for her perceptive
+feedback and her willingness to engage with both the technical and conceptual dimensions
+of this work.
+
+\medskip
+I acknowledge the Department of Computer Science, University of Delhi, for providing
+access to the High-Performance Computing Cluster and an intellectually stimulating
+research environment. The University Research Scholar Fellowship (URS/2019--25) provided
+financial support, for which I am grateful.
+
+\medskip
+I thank my colleagues at the Neural and Cognitive Systems Lab --- especially
+Rohit Bhatnagar and Shreya Pillai --- for countless discussions that sharpened my thinking.
+
+\medskip
+My heartfelt thanks go to my family. To my parents, Ramesh and Kavitha Rajan, for their
+unconditional support; to my sister Divya for always believing in me.
+
+\vspace{1cm}
+\begin{flushright}
+  \textit{Priya Rajan}\\
+  \textit{New Delhi, \submissionmonth}
+\end{flushright}
+
+% ── ABSTRACT ─────────────────────────────────────────────────
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\thispagestyle{plain}
+
+\noindent\textbf{Keywords:} cognitive architecture, adaptive learning, neural networks,
+Hebbian plasticity, predictive coding, working memory, computational neuroscience.
+
+\bigskip
+Understanding how biological neural systems achieve robust, flexible cognition remains one
+of the central problems at the intersection of neuroscience and artificial intelligence.
+This thesis presents a unified computational framework --- the \textit{Adaptive Predictive
+Cognitive Architecture} (APCA) --- that bridges classical symbolic representations with
+modern deep neural-network learning.
+
+\medskip
+Three interlocking contributions are reported. First, we extend Hebbian plasticity rules
+with a temporally smoothed reward signal to yield stable, biologically plausible weight
+updates even under non-stationary input statistics (Chapter~\ref{ch:hebbian}). We
+demonstrate that the resulting rule generalises the standard BCM model
+\cite{bienenstock1982} under mild assumptions, and prove convergence for linear networks.
+
+\medskip
+Second, we propose a hierarchical predictive-coding module that propagates top-down
+predictions alongside bottom-up error signals using a differentiable message-passing
+scheme (Chapter~\ref{ch:predictive}). Experiments on the NSD-DU benchmark, collected
+from EEG recordings of 24 healthy volunteers at AIIMS Delhi, show a 14.3\% reduction in
+mean prediction error relative to the classical Rao--Ballard model \cite{rao1999}.
+
+\medskip
+Third, the APCA working-memory subsystem is evaluated on three dual-task paradigms drawn
+from the neuropsychology literature (Chapter~\ref{ch:memory}). Performance matches or
+exceeds both human normative data and two competing computational accounts across all
+three tasks ($p < 0.01$, Wilcoxon signed-rank test).
+
+\medskip
+Taken together, these results suggest that integrating predictive-coding priors with
+reward-modulated Hebbian learning provides a principled route towards neuromorphic
+computing systems capable of continual, few-shot adaptation.
+
+\medskip
+\textit{Thesis pages:} approximately 180 \quad
+\textit{Figures:} 42 \quad
+\textit{Tables:} 18 \quad
+\textit{References:} 214
+
+% ── FRONT MATTER LISTS ───────────────────────────────────────
+\tableofcontents
+
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+
+% ─────────────────────────────────────────────────────────────
+%  MAIN MATTER
+% ─────────────────────────────────────────────────────────────
+\setcounter{page}{1}
+\pagenumbering{arabic}
+
+% ═══════════════════════════════════════════════════════════════
+\chapter{Introduction}
+\label{ch:intro}
+% ═══════════════════════════════════════════════════════════════
+
+\section{Motivation and Context}
+
+The question of how the brain constructs and maintains internal models of the external
+world has occupied researchers for well over a century.  With the advent of large-scale
+neural recording and the success of deep learning, we now possess both the empirical
+data and the computational tools to revisit classical theories of cognition with renewed
+precision.  Yet a significant gap remains: most artificial neural architectures are
+trained in a fixed, offline regime, whereas biological systems adapt continuously and
+efficiently throughout a lifetime.
+
+\medskip
+The present thesis is motivated by three converging observations from the literature:
+\begin{enumerate}
+  \item \textbf{Biological plausibility matters.} Gradient-based backpropagation, while
+        highly effective in practice, is considered biologically implausible because it
+        requires a global error signal and symmetric synaptic weights~\cite{crick1989}.
+  \item \textbf{Predictive coding provides a unifying framework.} The brain may be best
+        understood as a Bayesian inference engine that continuously minimises a free-energy
+        functional~\cite{friston2010}.
+  \item \textbf{Working memory is the bottleneck.} Cognitive capacity limits observed
+        across species are well-explained by the bounded capacity of working
+        memory~\cite{cowan2001}.
+\end{enumerate}
+
+\section{Research Objectives}
+
+This thesis pursues the following specific objectives:
+\begin{description}[leftmargin=2.5em, style=nextline]
+  \item[Objective 1] Derive a biologically plausible local learning rule that integrates
+        Hebbian associativity with a temporally smoothed reward signal and prove its
+        convergence properties for linear networks.
+  \item[Objective 2] Develop a hierarchical predictive-coding module with differentiable
+        message passing and evaluate it on a novel EEG-based prediction benchmark
+        (NSD-DU).
+  \item[Objective 3] Embed the learning rule and predictive-coding module within a unified
+        working-memory architecture (APCA) and validate it against established
+        neuropsychological paradigms.
+\end{description}
+
+\section{Scope and Limitations}
+
+The theoretical development is restricted to rate-coded neural networks; spiking network
+dynamics, while closely related, are treated as future work.  All human-subject EEG data
+were collected under protocols approved by the Institutional Ethics Committee of AIIMS
+Delhi (Approval No.\ IEC/2021/NP-048).  The computational experiments were conducted on
+the DU-HPC Cluster (2$\times$ Intel Xeon Gold 6338, 512 GB RAM, 4$\times$ NVIDIA A100 GPUs).
+
+\section{Thesis Organisation}
+
+\begin{itemize}
+  \item Chapter~\ref{ch:hebbian} --- Reward-Modulated Hebbian Plasticity
+  \item Chapter~\ref{ch:predictive} --- Hierarchical Predictive Coding
+  \item Chapter~\ref{ch:memory} --- The APCA Working-Memory Subsystem
+  \item Chapter~5 (not included in this excerpt) --- General Discussion and Conclusions
+\end{itemize}
+
+% ── Sample figure: flowchart ─────────────────────────────────
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance = 1.2cm and 2.2cm,
+  every node/.style = {font=\small},
+  block/.style = {
+    rectangle, rounded corners=4pt,
+    draw=dupurple, line width=0.8pt,
+    fill=lightgrey,
+    minimum width=3.2cm, minimum height=0.75cm,
+    align=center
+  },
+  arrow/.style = {-Stealth, dupurple, line width=0.7pt}
+]
+  \node[block] (input) {Sensory Input};
+  \node[block, right=of input] (encode) {Encoding Layer};
+  \node[block, right=of encode] (pred) {Predictive\\Coding Module};
+  \node[block, below=of pred] (memory) {Working Memory\\(APCA)};
+  \node[block, left=of memory] (action) {Action / Output};
+
+  \draw[arrow] (input) -- (encode);
+  \draw[arrow] (encode) -- (pred);
+  \draw[arrow] (pred) -- (memory);
+  \draw[arrow] (memory) -- (action);
+  \draw[arrow] (action.west) -- ++(-0.5,0) |- (input.south)
+      node[midway, below, font=\scriptsize, color=neutralgrey]{Feedback loop};
+\end{tikzpicture}
+\caption{High-level information flow in the Adaptive Predictive Cognitive Architecture
+  (APCA).  Solid arrows denote forward information flow; the dashed feedback path closes
+  the predictive loop.}
+\label{fig:apca-overview}
+\end{figure}
+
+% ═══════════════════════════════════════════════════════════════
+\chapter{Reward-Modulated Hebbian Plasticity}
+\label{ch:hebbian}
+% ═══════════════════════════════════════════════════════════════
+
+\section{Background}
+
+Hebbian learning \cite{bienenstock1982} postulates that the synaptic weight $w_{ij}$
+between a pre-synaptic neuron $j$ and a post-synaptic neuron $i$ is strengthened when
+both fire together.  The canonical BCM rule adds a sliding threshold $\theta$ that
+prevents runaway potentiation:
+\begin{equation}
+  \tau_w\,\dot{w}_{ij} = x_i\bigl(x_i - \theta\bigr)x_j - \epsilon\,w_{ij},
+  \label{eq:bcm}
+\end{equation}
+where $x_i,x_j$ are post- and pre-synaptic firing rates, $\theta$ is the sliding
+modification threshold, and $\epsilon$ controls weight decay.
+
+\section{The Reward-Modulated Update Rule}
+
+We extend Equation~\eqref{eq:bcm} by multiplying the Hebbian term with a temporally
+smoothed reward signal $\bar{r}(t)$:
+\begin{equation}
+  \tau_w\,\dot{w}_{ij}
+  = \bar{r}(t)\cdot x_i\bigl(x_i - \theta\bigr)x_j
+    - \epsilon\,w_{ij},
+  \label{eq:rmhebb}
+\end{equation}
+\begin{equation}
+  \tau_r\,\dot{\bar{r}} = r(t) - \bar{r}(t),
+  \label{eq:rewardfilter}
+\end{equation}
+where $r(t) \in [-1, 1]$ is the instantaneous reward and $\tau_r$ is the reward
+integration time constant.
+
+\begin{theorem}[Convergence of RM-Hebbian for linear networks]
+\label{thm:convergence}
+Let $\mathbf{W}(t)$ evolve according to Equation~\eqref{eq:rmhebb} with $\bar{r}(t) > 0$
+for all $t \geq 0$.  If the input covariance matrix $\mathbf{C} = \mathbb{E}[\mathbf{x}\mathbf{x}^{\top}]$
+is positive definite, then $\mathbf{W}(t)$ converges to a fixed point $\mathbf{W}^*$
+satisfying $\mathbf{C}\mathbf{W}^{*\top} = \theta\mathbf{I}$.
+\end{theorem}
+
+\begin{proof}
+Define the Lyapunov function $V = \tfrac{1}{2}\,\lVert \mathbf{W} - \mathbf{W}^* \rVert_F^2$.
+A standard calculation using the positive definiteness of $\mathbf{C}$ and the
+positivity of $\bar{r}$ shows $\dot{V} \leq -\kappa V$ for some $\kappa > 0$, giving
+exponential convergence.
+\end{proof}
+
+\section{Simulation Results}
+
+We simulated a 100-neuron linear network trained on 20 synthetic input patterns drawn
+from a mixture of four Gaussians in $\mathbb{R}^{100}$.  Table~\ref{tab:hebbian-results}
+reports the mean squared weight error (MSWE) at convergence and the number of epochs
+required.
+
+\begin{table}[H]
+\centering
+\caption{Convergence of the Reward-Modulated Hebbian rule under varying reward time
+  constants $\tau_r$ and weight decay $\epsilon$.}
+\label{tab:hebbian-results}
+\setlength{\arrayrulewidth}{0.5pt}
+\begin{tabularx}{0.86\linewidth}{@{}lllcc@{}}
+\toprule
+\textbf{Rule} & $\boldsymbol{\tau_r}$ (ms) & $\boldsymbol{\epsilon}$
+  & \textbf{MSWE} & \textbf{Epochs} \\
+\midrule
+BCM (baseline)         & ---    & 0.01  & $0.142 \pm 0.018$ & 380 \\
+RM-Hebbian             & 20     & 0.01  & $0.083 \pm 0.011$ & 290 \\
+RM-Hebbian             & 50     & 0.01  & $0.071 \pm 0.009$ & 310 \\
+RM-Hebbian             & 100    & 0.01  & $0.069 \pm 0.012$ & 330 \\
+RM-Hebbian             & 50     & 0.005 & $0.065 \pm 0.008$ & 345 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1]
+  % Axes
+  \draw[-Stealth, line width=0.7pt, dupurple] (0,0) -- (7.2,0)
+      node[right, font=\small]{Epochs};
+  \draw[-Stealth, line width=0.7pt, dupurple] (0,0) -- (0,4.2)
+      node[above, font=\small]{MSWE};
+  % Y tick labels
+  \foreach \y/\lab in {0/0, 1/0.04, 2/0.08, 3/0.12, 4/0.16}{
+    \draw[dupurple!40, line width=0.3pt] (0.05,\y) -- (7.0,\y);
+    \node[left, font=\scriptsize, color=neutralgrey] at (0,\y) {\lab};
+  }
+  % X tick labels
+  \foreach \x/\lab in {0/0, 1.75/100, 3.5/200, 5.25/300, 7.0/400}{
+    \node[below, font=\scriptsize, color=neutralgrey] at (\x,0) {\lab};
+  }
+  % BCM curve (piecewise linear approximation)
+  \draw[neutralgrey, line width=1.2pt, dashed]
+    (0,3.55) -- (0.87,3.2) -- (1.75,2.6) -- (2.62,2.1) -- (3.5,1.8)
+    -- (4.38,1.7) -- (5.25,1.62) -- (6.12,1.57) -- (7.0,1.55);
+  % RM-Hebbian curve
+  \draw[dupurple, line width=1.4pt]
+    (0,3.55) -- (0.87,2.8) -- (1.75,2.0) -- (2.62,1.4) -- (3.5,0.95)
+    -- (4.38,0.80) -- (5.25,0.73) -- (6.12,0.69) -- (7.0,0.68);
+  % Legend
+  \draw[dupurple, line width=1.4pt] (4.6,3.8) -- (5.3,3.8);
+  \node[right, font=\scriptsize] at (5.35,3.8) {RM-Hebbian ($\tau_r{=}50$ ms)};
+  \draw[neutralgrey, line width=1.2pt, dashed] (4.6,3.4) -- (5.3,3.4);
+  \node[right, font=\scriptsize] at (5.35,3.4) {BCM baseline};
+\end{tikzpicture}
+\caption{Learning curves for the BCM baseline and the Reward-Modulated Hebbian rule
+  ($\tau_r = 50$~ms) averaged over 10 independent runs.  Shaded error bands are omitted
+  for clarity.}
+\label{fig:learning-curves}
+\end{figure}
+
+\section{Chapter Summary}
+
+This chapter introduced the Reward-Modulated Hebbian (RM-Hebbian) update rule, proved
+its convergence for linear networks (Theorem~\ref{thm:convergence}), and demonstrated
+through simulation that it achieves lower final weight error and faster convergence than
+the BCM baseline.  The RM-Hebbian rule forms the synaptic update backbone of the APCA
+framework described in subsequent chapters.
+
+% ═══════════════════════════════════════════════════════════════
+\chapter{Hierarchical Predictive Coding}
+\label{ch:predictive}
+% ═══════════════════════════════════════════════════════════════
+
+\section{The Rao--Ballard Model and Its Extensions}
+
+The classical Rao--Ballard predictive-coding network \cite{rao1999} formulates visual
+processing as Bayesian inference over a hierarchical generative model.  At each level
+$\ell$, a representation $\mathbf{r}^{(\ell)}$ is updated to minimise the prediction
+error $\boldsymbol{\varepsilon}^{(\ell)}$:
+\begin{equation}
+  \boldsymbol{\varepsilon}^{(\ell)} = \mathbf{x}^{(\ell)}
+    - \mathbf{U}^{(\ell)}\mathbf{r}^{(\ell)},
+  \label{eq:pred-error}
+\end{equation}
+where $\mathbf{U}^{(\ell)}$ is a generative weight matrix and $\mathbf{x}^{(\ell)}$ is
+the input at level $\ell$ (which equals the prediction error from level $\ell-1$).
+
+\section{Differentiable Message Passing Extension}
+
+Our extension replaces the fixed generative weights with a graph neural network (GNN)
+that learns the message-passing schedule jointly with the prediction weights.  The
+update for level $\ell$ becomes:
+\begin{equation}
+  \dot{\mathbf{r}}^{(\ell)} = -\mathbf{r}^{(\ell)}
+    + f_\phi\!\bigl(\boldsymbol{\varepsilon}^{(\ell)},\,\boldsymbol{\varepsilon}^{(\ell+1)}\bigr),
+  \label{eq:dmp}
+\end{equation}
+where $f_\phi$ is a two-layer MLP with parameters $\phi$ learned end-to-end via
+backpropagation through time.  This is the only module in APCA that uses
+gradient-based training; all synaptic weights within the RM-Hebbian pathway are
+updated locally.
+
+\section{NSD-DU Benchmark}
+
+\highlightbox{%
+\textbf{NSD-DU Dataset.} The Neural Scene Decoding -- Delhi University (NSD-DU) benchmark
+comprises 64-channel EEG recordings from 24 healthy adult volunteers (12 female, mean
+age $27.4 \pm 3.1$ years) while they viewed 2400 natural scene images.
+Each image was presented for 500~ms with a 1000~ms inter-stimulus interval.
+The dataset is available for research use through the DU Open Neuroscience Repository
+(DONR-2023-001).%
+}
+
+Table~\ref{tab:nsd-results} summarises prediction-error results on NSD-DU compared with
+the classical Rao--Ballard model.
+
+\begin{table}[H]
+\centering
+\caption{Prediction error (mean $\pm$ SD across 24 participants, lower is better) on the
+  NSD-DU benchmark.  All differences vs.\ Rao--Ballard are significant at $p < 0.001$
+  (paired $t$-test, Holm--Bonferroni corrected).}
+\label{tab:nsd-results}
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}Xccc@{}}
+\toprule
+\textbf{Model} & \textbf{Param.\ count} & \textbf{Mean error} & \textbf{\% reduction} \\
+\midrule
+Rao--Ballard (1999)           & 12,800  & $0.386 \pm 0.041$ & ---      \\
+Rao--Ballard + GRU top level  & 24,600  & $0.352 \pm 0.038$ & 8.8\%   \\
+APCA (ours, fixed schedule)   & 31,200  & $0.341 \pm 0.035$ & 11.7\%  \\
+APCA (ours, learned schedule) & 38,500  & $\mathbf{0.331 \pm 0.033}$ & \textbf{14.3\%} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  level/.style={
+    rectangle, draw=dupurple, line width=0.7pt, fill=lightgrey,
+    minimum width=2.8cm, minimum height=0.65cm, align=center, font=\small
+  },
+  arrow/.style={-Stealth, dupurple, line width=0.6pt}
+]
+  % Hierarchy levels (right side = higher)
+  \node[level] (L1) at (0,0)   {Level 1\\(V1-like)};
+  \node[level] (L2) at (3.2,0) {Level 2\\(V2/V4-like)};
+  \node[level] (L3) at (6.4,0) {Level 3\\(IT-like)};
+
+  % Top-down predictions
+  \draw[arrow, bend left=25] (L2) to node[above, font=\scriptsize]{prediction} (L1);
+  \draw[arrow, bend left=25] (L3) to node[above, font=\scriptsize]{prediction} (L2);
+
+  % Bottom-up errors
+  \draw[arrow, bend left=25] (L1) to node[below, font=\scriptsize]{error} (L2);
+  \draw[arrow, bend left=25] (L2) to node[below, font=\scriptsize]{error} (L3);
+
+  % Input
+  \node[font=\small] (inp) at (-2.0,0) {Stimulus};
+  \draw[arrow] (inp) -- (L1);
+\end{tikzpicture}
+\caption{Three-level hierarchical predictive-coding network used in the APCA.  Top-down
+  prediction signals (upper arrows) and bottom-up error signals (lower arrows) are
+  computed simultaneously at each time step.}
+\label{fig:pred-coding}
+\end{figure}
+
+\section{Chapter Summary}
+
+We presented a differentiable message-passing extension to the Rao--Ballard predictive-
+coding model and validated it on the NSD-DU benchmark, achieving a 14.3\% reduction in
+mean prediction error relative to the classical baseline.  The learned message-passing
+schedule is the key innovation, allowing the network to adapt the timing of top-down
+predictions to the statistics of the input.
+
+% ═══════════════════════════════════════════════════════════════
+\chapter{The APCA Working-Memory Subsystem}
+\label{ch:memory}
+% ═══════════════════════════════════════════════════════════════
+
+\section{Overview of the Subsystem}
+
+Working memory (WM) is the cognitive system responsible for maintaining and manipulating
+a limited amount of information over short periods.  In the APCA framework, WM is
+modelled as a gated recurrent module $\mathcal{M}$ that interfaces with both the
+RM-Hebbian pathway and the predictive-coding hierarchy.  The capacity limit of
+$\mathcal{M}$ is implemented via a soft-max attention bottleneck with $K = 4$ slots,
+consistent with the ``magical number four'' of Cowan \cite{cowan2001}.
+
+\section{Mathematical Formulation}
+
+Let $\mathbf{h}_t \in \mathbb{R}^{d}$ denote the WM state at time $t$.  The update rule is:
+\begin{equation}
+  \mathbf{h}_{t+1}
+    = \mathbf{g}_t \odot \tanh\!\Bigl(\mathbf{W}_h\,\mathbf{h}_t
+        + \mathbf{W}_e\,\boldsymbol{\varepsilon}^{(1)}_t\Bigr)
+      + \bigl(1 - \mathbf{g}_t\bigr) \odot \mathbf{h}_t,
+  \label{eq:wm}
+\end{equation}
+where $\mathbf{g}_t \in (0,1)^d$ is a gating vector produced by a sigmoid network and
+$\odot$ denotes elementwise multiplication.  The gating vector regulates how much of the
+current input error $\boldsymbol{\varepsilon}^{(1)}_t$ is written into memory.
+
+\begin{definition}[Working-memory capacity]
+The effective capacity $C$ of $\mathcal{M}$ is defined as the maximum number of distinct
+input patterns $\{\mathbf{s}_k\}_{k=1}^{C}$ that can be recovered from $\mathbf{h}_T$
+with reconstruction error below a threshold $\delta$, after a delay of $T$ time steps.
+\end{definition}
+
+\section{Evaluation on Dual-Task Paradigms}
+
+We evaluated APCA-WM on three dual-task paradigms:
+
+\begin{description}[leftmargin=2em, style=nextline]
+  \item[Task A (N-back + tracking)] Participants (or the model) performed a 2-back letter
+        task concurrently with a visual tracking task.
+  \item[Task B (Mental arithmetic + listening)] Participants added sequences of
+        single-digit numbers while monitoring a spoken narrative for target words.
+  \item[Task C (Spatial planning + categorisation)] A Tower-of-Hanoi variant was
+        interleaved with picture categorisation.
+\end{description}
+
+Table~\ref{tab:wm-results} shows accuracy on the primary (WM) component of each task.
+
+\begin{table}[H]
+\centering
+\caption{Dual-task WM accuracy (\% correct, higher is better).  Human norms are from
+  the DU Cognitive Battery (DUCB-2022, $n = 148$).  $p$-values from Wilcoxon signed-rank
+  tests comparing APCA with each baseline.}
+\label{tab:wm-results}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}Xcccc@{}}
+\toprule
+\textbf{Paradigm} & \textbf{Human norm} & \textbf{ACT-R\,5.0}
+  & \textbf{GRU baseline} & \textbf{APCA (ours)} \\
+\midrule
+Task A (N-back)          & $81.3 \pm 6.1$ & $74.2$ & $76.8$ & $\mathbf{80.1}$ \\
+Task B (Arithmetic)      & $77.6 \pm 7.4$ & $69.5$ & $72.3$ & $\mathbf{76.2}$ \\
+Task C (Spatial)         & $72.4 \pm 8.3$ & $65.1$ & $68.9$ & $\mathbf{71.8}$ \\
+\midrule
+\textbf{Mean}            & $77.1$         & $69.6$ & $72.7$ & $\mathbf{76.0}$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.92]
+  % Radar / bar chart approximated as grouped bars in TikZ
+  % Simple grouped bar chart: 3 tasks, 3 models
+  \pgfmathsetmacro{\W}{0.55}   % bar width
+
+  % Axes
+  \draw[-Stealth, line width=0.7pt, dupurple] (0,0) -- (10.5,0)
+    node[right, font=\small]{Paradigm};
+  \draw[-Stealth, line width=0.7pt, dupurple] (0,0) -- (0,5.2)
+    node[above, font=\small]{Accuracy (\%)};
+
+  % Y gridlines and labels
+  \foreach \y/\lab in {0/60, 1/65, 2/70, 3/75, 4/80, 5/85}{
+    \draw[dupurple!25, line width=0.3pt] (0.05,\y) -- (10.2,\y);
+    \node[left, font=\scriptsize, color=neutralgrey] at (0,\y) {\lab};
+  }
+
+  % Task labels
+  \foreach \x/\lbl in {2.0/Task A, 5.4/Task B, 8.8/Task C}{
+    \node[below=6pt, font=\small] at (\x,0) {\lbl};
+  }
+
+  % Bars: ACT-R (neutralgrey), GRU (dugold!60), APCA (dupurple)
+  % Task A: ACT-R=74.2->2.84, GRU=76.8->3.36, APCA=80.1->4.02, Human=81.3->4.26
+  \fill[neutralgrey!60] (0.8,0) rectangle ++(0.5, 2.84);
+  \fill[dugold!70]      (1.35,0) rectangle ++(0.5, 3.36);
+  \fill[dupurple!80]    (1.90,0) rectangle ++(0.5, 4.02);
+  \draw[black, dashed, line width=0.6pt] (0.75,4.26) -- (2.45,4.26)
+    node[right, font=\scriptsize]{human};
+
+  % Task B: ACT-R=69.5->1.9, GRU=72.3->2.46, APCA=76.2->3.24, Human=77.6->3.52
+  \fill[neutralgrey!60] (4.2,0) rectangle ++(0.5, 1.90);
+  \fill[dugold!70]      (4.75,0) rectangle ++(0.5, 2.46);
+  \fill[dupurple!80]    (5.30,0) rectangle ++(0.5, 3.24);
+  \draw[black, dashed, line width=0.6pt] (4.15,3.52) -- (5.85,3.52)
+    node[right, font=\scriptsize]{human};
+
+  % Task C: ACT-R=65.1->1.02, GRU=68.9->1.78, APCA=71.8->2.36, Human=72.4->2.48
+  \fill[neutralgrey!60] (7.6,0) rectangle ++(0.5, 1.02);
+  \fill[dugold!70]      (8.15,0) rectangle ++(0.5, 1.78);
+  \fill[dupurple!80]    (8.70,0) rectangle ++(0.5, 2.36);
+  \draw[black, dashed, line width=0.6pt] (7.55,2.48) -- (9.25,2.48)
+    node[right, font=\scriptsize]{human};
+
+  % Legend
+  \fill[neutralgrey!60] (0.2,4.8) rectangle ++(0.4,0.3);
+  \node[right, font=\scriptsize] at (0.65,4.95) {ACT-R 5.0};
+  \fill[dugold!70] (2.3,4.8) rectangle ++(0.4,0.3);
+  \node[right, font=\scriptsize] at (2.75,4.95) {GRU baseline};
+  \fill[dupurple!80] (4.4,4.8) rectangle ++(0.4,0.3);
+  \node[right, font=\scriptsize] at (4.85,4.95) {APCA (ours)};
+\end{tikzpicture}
+\caption{Working-memory accuracy on three dual-task paradigms.  Dashed horizontal lines
+  indicate human normative accuracy from the DUCB-2022 dataset.  APCA most closely
+  matches human performance across all tasks.}
+\label{fig:wm-bars}
+\end{figure}
+
+\section{Chapter Summary}
+
+The APCA working-memory subsystem, with its soft-attention capacity bottleneck and
+gated recurrent dynamics, achieves WM accuracy within 1--1.5 percentage points of human
+norms on all three dual-task paradigms evaluated.  These results substantially improve
+upon both the ACT-R 5.0 cognitive architecture and a GRU-only baseline.
+
+% ═══════════════════════════════════════════════════════════════
+%  BIBLIOGRAPHY
+% ═══════════════════════════════════════════════════════════════
+\begin{thebibliography}{99}
+\addcontentsline{toc}{chapter}{Bibliography}
+
+\bibitem{bienenstock1982}
+Bienenstock, E.~L., Cooper, L.~N., \& Munro, P.~W.\ (1982).
+Theory for the development of neuron selectivity: orientation specificity and binocular
+interaction in visual cortex.
+\textit{Journal of Neuroscience}, \textbf{2}(1), 32--48.
+\doi{10.1523/JNEUROSCI.02-01-00032.1982}
+
+\bibitem{rao1999}
+Rao, R.~P.~N., \& Ballard, D.~H.\ (1999).
+Predictive coding in the visual cortex: a functional interpretation of some extra-classical
+receptive-field effects.
+\textit{Nature Neuroscience}, \textbf{2}(1), 79--87.
+\doi{10.1038/4580}
+
+\bibitem{friston2010}
+Friston, K.\ (2010).
+The free-energy principle: a unified brain theory?
+\textit{Nature Reviews Neuroscience}, \textbf{11}(2), 127--138.
+\doi{10.1038/nrn2787}
+
+\bibitem{crick1989}
+Crick, F.\ (1989).
+The recent excitement about neural networks.
+\textit{Nature}, \textbf{337}(6203), 129--132.
+\doi{10.1038/337129a0}
+
+\bibitem{cowan2001}
+Cowan, N.\ (2001).
+The magical number 4 in short-term memory: a reconsideration of mental storage capacity.
+\textit{Behavioral and Brain Sciences}, \textbf{24}(1), 87--114.
+\doi{10.1017/S0140525X01003922}
+
+\end{thebibliography}
+
+\end{document}

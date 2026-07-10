@@ -1,0 +1,717 @@
+% ============================================================
+% DISCLAIMER: Unofficial template. Not affiliated with, endorsed by, or an official
+% publication of any named institution or venue. All names/data are fictional samples.
+%  ICML-Stylized Paper Template
+%  Edit and compile online at https://letx.app
+%  Compile: latexmk -pdf main.tex   (pdflatex)
+%  Packages: TeX Live full (standard CTAN only)
+% ============================================================
+
+\documentclass[10pt,twocolumn]{article}
+\usepackage{colortbl}
+
+% ── Core geometry ───────────────────────────────────────────
+\usepackage[
+  paperwidth=8.5in, paperheight=11in,
+  top=1in, bottom=1in,
+  left=0.75in, right=0.75in,
+  columnsep=0.25in,
+  headheight=14pt
+]{geometry}
+
+% ── Font stack (pdflatex-safe) ───────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{microtype}
+
+% ── Maths ────────────────────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+
+% ── Colour palette ───────────────────────────────────────────
+\usepackage[dvipsnames,table]{xcolor}
+\definecolor{accent}{HTML}{1A6BB5}      % deep science blue
+\definecolor{accentlt}{HTML}{D6E8F7}    % pale blue tint
+\definecolor{rule}{HTML}{9DB8D2}        % mid blue-grey rule
+\definecolor{headbg}{HTML}{1A3A5C}      % dark header
+\definecolor{neutraldark}{HTML}{2C2C2C}
+\definecolor{neutralmid}{HTML}{555555}
+\definecolor{pagebg}{HTML}{FAFCFF}      % very soft blue-white page
+
+% ── Page tint ────────────────────────────────────────────────
+\usepackage{pagecolor}
+\pagecolor{pagebg}
+
+% ── Headers / footers ────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\footnotesize\color{neutralmid}%
+  \textit{Advances in Neural Information Processing Systems 37 (ICML 2026)}}
+\fancyfoot[C]{\footnotesize\color{neutralmid}\thepage}
+
+% ── Section styling ──────────────────────────────────────────
+\usepackage{titlesec}
+\titleformat{\section}
+  {\color{headbg}\normalfont\large\bfseries}
+  {\color{accent}\thesection}{0.5em}{}[
+    \vspace{-4pt}\color{rule}\rule{\linewidth}{0.6pt}]
+\titlespacing*{\section}{0pt}{10pt}{5pt}
+
+\titleformat{\subsection}
+  {\color{neutraldark}\normalfont\normalsize\bfseries}
+  {\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{8pt}{3pt}
+
+\titleformat{\subsubsection}[runin]
+  {\normalfont\normalsize\bfseries\color{accent}}
+  {\thesubsubsection}{0.4em}{}[.\enspace]
+\titlespacing*{\subsubsection}{0pt}{5pt}{0pt}
+
+% ── Lists ────────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist{noitemsep, topsep=3pt, leftmargin=1.4em}
+\setlist[itemize]{label={\small\color{accent}$\blacktriangleright$}}
+
+% ── Tables ───────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{array}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% ── Graphics ─────────────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, shapes.geometric, arrows.meta, calc}
+\usepackage{pgf}
+
+% ── Captions ─────────────────────────────────────────────────
+\usepackage[
+  font={small,color=neutralmid},
+  labelfont={bf,color=accent},
+  format=plain,
+  labelsep=period,
+  skip=4pt
+]{caption}
+
+% ── Floats ───────────────────────────────────────────────────
+\usepackage{float}
+\usepackage{placeins}
+
+% ── Algorithms ───────────────────────────────────────────────
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\SetAlgoLined
+\SetKwComment{Comment}{\color{neutralmid}\# }{}
+\SetAlFnt{\small\sffamily}
+\SetAlCapFnt{\small\bfseries\color{accent}}
+\setlength{\algomargin}{1em}
+
+% ── Hyperref (last before custom macros) ─────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=accent,
+  citecolor=accent,
+  urlcolor=accent,
+  pdfauthor={Chen et al.},
+  pdftitle={Efficient Diffusion Models via for Transformer-Based
+            Sequence Modelling}
+]{hyperref}
+
+% ── Theorems ─────────────────────────────────────────────────
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}{Remark}
+
+% ── Custom macros ────────────────────────────────────────────
+\newcommand{\modelname}{\textsc{ContextFlow}}
+\newcommand{\eg}{\textit{e.g.},\ }
+\newcommand{\ie}{\textit{i.e.},\ }
+\newcommand{\etal}{\textit{et al.}}
+
+% Inline accent badge
+\newcommand{\badge}[1]{{\setlength{\fboxsep}{2.5pt}%
+  \fcolorbox{accent}{accentlt}{\color{accent}\footnotesize\bfseries #1}}}
+
+% Horizontal accent rule shorthand
+\newcommand{\accentrule}{%
+  {\color{rule}\rule{\linewidth}{0.5pt}}}
+
+% Coloured math operators
+\DeclareMathOperator{\softmax}{softmax}
+\DeclareMathOperator{\LayerNorm}{LayerNorm}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+% ── Fake figure helper (TikZ placeholder) ────────────────────
+% Draws a labelled placeholder box so the doc is self-contained.
+\newcommand{\figplaceholder}[3][accentlt]{%
+  % #1=fill colour, #2=width, #3=height
+  \begin{tikzpicture}
+    \fill[#1] (0,0) rectangle (#2,#3);
+    \draw[accent, line width=0.8pt] (0,0) rectangle (#2,#3);
+    \node[font=\small\color{neutralmid}] at ({#2/2},{#3/2})
+      {[Figure placeholder]};
+  \end{tikzpicture}}
+
+% ── Two-panel figure macro ───────────────────────────────────
+% Usage: \twopanelfig{leftTikZ-or-graphic}{rightTikZ-or-graphic}{caption}
+\newcommand{\twopanelfig}[3]{%
+  \begin{figure}[!t]
+    \centering
+    #1\hfill#2
+    \caption{#3}
+  \end{figure}}
+
+% ============================================================
+%  TITLE BLOCK (onecolumn override)
+% ============================================================
+\usepackage{authblk}
+\renewcommand{\Authfont}{\normalsize\bfseries\color{neutraldark}}
+\renewcommand{\Affilfont}{\small\color{neutralmid}}
+\renewcommand{\Authands}{,\ }
+\setlength{\affilsep}{0.4em}
+
+% ── Spacing helpers ──────────────────────────────────────────
+\usepackage{setspace}
+
+% ============================================================
+\begin{document}
+
+% ── Full-width title block ───────────────────────────────────
+\twocolumn[{%
+\begin{@twocolumnfalse}
+
+  % Top accent bar
+  \noindent\color{headbg}\rule{\linewidth}{3pt}\par\vspace{4pt}
+
+  % Conference badge row
+  \noindent
+  \hfill\badge{ICML 2026}\hspace{0.5em}\badge{Spotlight}\par
+  \vspace{8pt}
+
+  % Title
+  {\fontsize{17}{21}\selectfont\bfseries\color{headbg}%
+    Efficient Diffusion Models via\\[2pt]
+    Latent Score Distillation\par}
+
+  \vspace{10pt}
+
+  % Authors
+  \author[1]{Wei Chen}
+  \author[1,2]{Priya Raghavan}
+  \author[3]{Jonas M\"{u}ller}
+  \author[2]{Aisha Okonkwo}
+
+  \affil[1]{Department of Computer Science, MIT}
+  \affil[2]{Nexa DeepMind, London}
+  \affil[3]{ETH Z\"{u}rich, Department of Information Technology and Electrical Engineering}
+
+  \title{}
+\date{}
+  \maketitle
+  \thispagestyle{fancy}
+
+  \vspace{-8pt}
+  \noindent\color{rule}\rule{\linewidth}{0.8pt}
+
+  % Abstract
+  \vspace{8pt}
+  \begin{center}
+    {\small\bfseries\color{accent} Abstract}
+  \end{center}
+  \begin{small}
+  \noindent
+  Transformer architectures struggle to efficiently aggregate long-range context
+  because self-attention scales quadratically with sequence length. We introduce
+  \modelname{}, a lightweight module that learns a sparse, dynamic routing of
+  contextual information across arbitrary sequence lengths. \modelname{} inserts
+  a learnable \emph{context gateway} between every pair of encoder layers,
+  gating each token's receptive field via a differentiable top-$k$ selection
+  mechanism. On eight long-document benchmarks---including \textsc{ScrollS},
+  \textsc{QuALITY}, and \textsc{QASPER}---\modelname{} improves over the
+  baseline Longformer by \textbf{3.1 F\textsubscript{1}} points on average while
+  reducing FLOPs by 18\%. We release code and pretrained checkpoints at
+  \url{https://github.com/contextflow/contextflow}.
+  \end{small}
+
+  \vspace{10pt}
+  \noindent\color{rule}\rule{\linewidth}{0.8pt}
+  \vspace{12pt}
+
+\end{@twocolumnfalse}%
+}]
+
+% ============================================================
+\section{Introduction}
+\label{sec:intro}
+
+Long-range dependency modelling lies at the heart of tasks ranging from
+scientific document understanding~\cite{lo2020s2orc} to genomic sequence
+analysis~\cite{ji2021dnabert}. While the Transformer~\cite{vaswani2017attention}
+has become the dominant architecture, its self-attention mechanism incurs
+$\mathcal{O}(n^2)$ time and memory complexity with respect to sequence length $n$.
+
+Recent efforts to mitigate this bottleneck fall into three camps:
+\begin{itemize}
+  \item \emph{Sparse attention patterns} (\eg~Longformer~\cite{beltagy2020longformer},
+        BigBird~\cite{zaheer2020bigbird}) restrict attention to local windows plus
+        global tokens.
+  \item \emph{Linear attention approximations} (\eg~Performer~\cite{choromanski2020rethinking})
+        replace the softmax kernel with low-rank feature maps.
+  \item \emph{Recurrent hybrids} (\eg~RWKV~\cite{peng2023rwkv}) blend attention
+        with recurrent dynamics.
+\end{itemize}
+
+Each strategy trades off expressiveness, hardware efficiency, or training
+stability. \modelname{} takes a complementary approach: rather than altering the
+attention kernel itself, we impose a \emph{dynamic information bottleneck} at the
+inter-layer boundary, enabling each token to selectively draw from a compressed
+but globally informed context buffer.
+
+\subsection{Contributions}
+
+Our main contributions are:
+
+\begin{enumerate}[label=\textbf{\arabic*.}]
+  \item We propose the \textbf{Context Gateway (CG)} layer, a differentiable
+        module that routes token representations to a fixed-size context bank via
+        top-$k$ selection (\S\ref{sec:method}).
+  \item We provide a theoretical analysis showing that \modelname{} with $k$
+        selected contexts achieves an effective attention span of
+        $\mathcal{O}(kn)$ with $\mathcal{O}(kn)$ complexity (\S\ref{sec:theory}).
+  \item We demonstrate consistent improvements across eight benchmarks with a
+        single set of hyperparameters (\S\ref{sec:experiments}).
+\end{enumerate}
+
+% ── Architecture diagram (TikZ, self-contained) ─────────────
+\begin{figure}[!t]
+\centering
+\begin{tikzpicture}[
+    font=\small\sffamily,
+    box/.style={draw=accent, fill=accentlt, rounded corners=3pt,
+                minimum width=2.0cm, minimum height=0.55cm,
+                align=center, text=neutraldark, line width=0.7pt},
+    gate/.style={draw=headbg, fill=headbg!15, rounded corners=3pt,
+                 minimum width=2.2cm, minimum height=0.55cm,
+                 align=center, text=neutraldark, line width=0.7pt},
+    arr/.style={-{Stealth[length=5pt]}, color=accent, line width=0.8pt},
+    every node/.style={font=\small\sffamily}
+  ]
+
+  % Nodes
+  \node[box] (tok)  at (0, 0)    {Token Embed.};
+  \node[box] (enc1) at (0, 1.1)  {Encoder $\ell$};
+  \node[gate](cg)   at (0, 2.2)  {Context Gateway};
+  \node[box] (enc2) at (0, 3.3)  {Encoder $\ell{+}1$};
+  \node[box] (out)  at (0, 4.4)  {Output};
+
+  % Context bank on the right
+  \node[draw=rule, fill=white, rounded corners=3pt,
+        minimum width=1.4cm, minimum height=1.6cm,
+        align=center, text=neutralmid, line width=0.7pt]
+       (bank) at (2.6, 2.2) {Context\\Bank\\$C \in \mathbb{R}^{k \times d}$};
+
+  % Arrows (main path)
+  \draw[arr] (tok)  -- (enc1);
+  \draw[arr] (enc1) -- (cg);
+  \draw[arr] (cg)   -- (enc2);
+  \draw[arr] (enc2) -- (out);
+
+  % Arrows (gateway <-> bank)
+  \draw[arr, dashed, color=rule]
+    (cg.east) -- ++(0.4,0) |- (bank.west);
+  \draw[arr, dashed, color=accent]
+    (bank.west) -- ++(-0.4,0) |- (cg.east);
+
+  % Label on dashed arrows
+  \node[font=\tiny\sffamily, color=neutralmid, align=center]
+    at (1.8, 2.8) {write};
+  \node[font=\tiny\sffamily, color=neutralmid, align=center]
+    at (1.8, 1.65) {read};
+
+\end{tikzpicture}
+\caption{\textbf{\modelname{} architecture.} A Context Gateway sits between
+         consecutive encoder layers, reading from and writing to a compact
+         Context Bank via differentiable top-$k$ routing.}
+\label{fig:arch}
+\end{figure}
+
+% ============================================================
+\section{Related Work}
+\label{sec:related}
+
+\subsubsection{Sparse Transformers}
+Correia~\etal~\cite{correia2019adaptively} propose $\alpha$-entmax, which
+induces sparse attention patterns. Our gating is related but operates at the
+\emph{inter-layer} level rather than within the attention head.
+
+\subsubsection{Conditional Computation}
+Mixture-of-Experts (MoE)~\cite{shazeer2017outrageously} routes tokens to
+specialised feed-forward modules. \modelname{} similarly exploits conditional
+computation but routes \emph{context}, not parameters.
+
+\subsubsection{Memory-Augmented Transformers}
+Memformer~\cite{wu2020memformer} and Compressive Transformer~\cite{rae2020compressive}
+maintain external memory banks. Unlike these, our context bank is entirely
+\emph{within-sequence} and requires no segment-level recurrence.
+
+% ============================================================
+\section{Method}
+\label{sec:method}
+
+\subsection{Notation}
+
+Let $\mathbf{X}^{(\ell)} \in \mathbb{R}^{n \times d}$ denote the token
+representations output by encoder layer $\ell$, where $n$ is sequence length
+and $d$ is the model dimension.
+
+\subsection{Context Gateway}
+
+The Context Gateway maps $\mathbf{X}^{(\ell)}$ to an updated representation
+$\hat{\mathbf{X}}^{(\ell)}$ via three sub-operations.
+
+\subsubsection{Context-Bank Write}
+A learned linear projection $W_w \in \mathbb{R}^{d \times d_c}$ maps each token
+to a candidate context vector. We then select the top-$k$ tokens by a learned
+scalar score $s_i = \mathbf{w}_s^\top \mathbf{x}_i^{(\ell)}$ and write their
+projections to the bank:
+\begin{equation}
+  C = \softmax\!\left(\frac{s_{\pi}}{\sqrt{d_c}}\right)
+      \mathbf{X}^{(\ell)}_\pi W_w,
+  \label{eq:write}
+\end{equation}
+where $\pi$ denotes the indices of the top-$k$ scoring tokens and
+$C \in \mathbb{R}^{k \times d_c}$ is the context bank.
+
+\subsubsection{Context-Bank Read}
+Every token reads from the bank via scaled dot-product attention with a single
+head:
+\begin{equation}
+  \hat{\mathbf{x}}_i^{(\ell)} =
+    \mathbf{x}_i^{(\ell)} +
+    \softmax\!\!\left(\frac{\mathbf{x}_i^{(\ell)} W_q\, C^\top}{\sqrt{d_c}}\right)
+    C\, W_v,
+  \label{eq:read}
+\end{equation}
+where $W_q, W_v \in \mathbb{R}^{d \times d_c}$ are query and value projections.
+
+\subsubsection{Complexity}
+Writing costs $\mathcal{O}(n)$ to compute scores and $\mathcal{O}(kd)$ to
+populate the bank. Reading costs $\mathcal{O}(nk)$ per layer. Thus the
+\emph{total} inter-layer overhead is $\mathcal{O}(nk + kd)$, linear in both $n$
+and $k$.
+
+\subsection{Training Objective}
+
+We augment the task loss $\mathcal{L}_{\text{task}}$ with a sparsity regulariser
+that encourages few writes without collapsing to a trivial solution:
+\begin{equation}
+  \mathcal{L} = \mathcal{L}_{\text{task}} +
+                \lambda \sum_\ell \frac{1}{n}\sum_{i=1}^n
+                \log\bigl(1 + e^{-s_i^{(\ell)}}\bigr).
+  \label{eq:loss}
+\end{equation}
+
+% ============================================================
+\section{Theoretical Analysis}
+\label{sec:theory}
+
+\begin{theorem}
+  \label{thm:span}
+  For a \modelname{} model with $L$ encoder layers and context bank size $k$,
+  each output token has an \emph{effective attention span} of at least
+  $\min(n,\, k \cdot \lfloor L/2 \rfloor)$ tokens.
+\end{theorem}
+
+\begin{proof}
+  By induction on layer depth. At layer $\ell=1$ each token can attend to at
+  most $k$ context tokens via the bank. At layer $\ell+1$ those $k$ bank
+  entries each carry information from up to $k$ distinct tokens; the bank can
+  therefore represent up to $k^2$ tokens in principle, but because the bank has
+  capacity $k$ entries, the span grows linearly as $k\ell$. A formal argument
+  by induction over $\ell = 1, \ldots, \lfloor L/2 \rfloor$ yields the bound.
+\end{proof}
+
+\begin{corollary}
+  With $k = \sqrt{n}$ and $L = \mathcal{O}(\log n)$ layers, \modelname{}
+  achieves full-sequence span in $\mathcal{O}(n \log n)$ total complexity.
+\end{corollary}
+
+% ── Algorithm box ────────────────────────────────────────────
+\begin{algorithm}[!t]
+\DontPrintSemicolon
+\SetAlgoLined
+\KwIn{Token representations $\mathbf{X}^{(\ell)}$, bank size $k$}
+\KwOut{Updated representations $\hat{\mathbf{X}}^{(\ell)}$}
+\BlankLine
+Compute scores $s_i \leftarrow \mathbf{w}_s^\top \mathbf{x}_i^{(\ell)}$, $\forall i$\;
+Select top-$k$ indices $\pi \leftarrow \mathrm{argtopk}(s, k)$\;
+Write bank: $C \leftarrow \softmax(s_\pi / \sqrt{d_c})\, \mathbf{X}_\pi^{(\ell)} W_w$\;
+\BlankLine
+\For{$i \leftarrow 1$ \KwTo $n$}{
+  $a_i \leftarrow \softmax\!\!\left(\mathbf{x}_i^{(\ell)} W_q\, C^\top / \sqrt{d_c}\right)$\;
+  $\hat{\mathbf{x}}_i^{(\ell)} \leftarrow \mathbf{x}_i^{(\ell)} + a_i\, C\, W_v$\;
+}
+\Return $\hat{\mathbf{X}}^{(\ell)}$\;
+\caption{Context Gateway Forward Pass}
+\label{alg:cg}
+\end{algorithm}
+
+% ============================================================
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Datasets and Baselines}
+
+We evaluate on eight tasks from the SCROLLS benchmark~\cite{shaham2022scrolls}:
+\textsc{QuALITY}, \textsc{QASPER}, \textsc{NarrativeQA}, \textsc{SQuALITY},
+\textsc{Qasper-Abstract}, \textsc{GovReport}, \textsc{SumSCROLLS}, and
+\textsc{ContractNLI}.
+Baselines include Longformer-Base (4k tokens), BigBird-RoBERTa, LED, and PRIMERA.
+All models are fine-tuned for 3 epochs on 4$\times$A100 GPUs with a batch size of 16.
+
+\subsection{Main Results}
+
+Table~\ref{tab:main} reports F\textsubscript{1} / ROUGE-L on the SCROLLS dev
+split. \modelname{}-Base consistently improves over Longformer-Base by
+\textbf{3.1 avg.\ F\textsubscript{1}} while reducing FLOPs per forward pass
+by 18\%.
+
+\begin{table}[!t]
+\centering
+\caption{\textbf{SCROLLS dev results.}
+         F\textsubscript{1} (QA tasks) and ROUGE-L (summarisation tasks).
+         $\Delta$ is the gap vs.\ Longformer-Base.
+         \badge{Best} highlights top scores.}
+\label{tab:main}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}l*{4}{>{\centering\arraybackslash}X}@{}}
+\toprule
+\rowcolor{headbg!8}
+\textbf{Model} & \textbf{QuALITY} & \textbf{QASPER} & \textbf{GovRpt.} & \textbf{Avg.} \\
+\midrule
+Longformer-B    & 56.3 & 41.8 & 29.1 & 42.4 \\
+BigBird-R       & 57.1 & 42.4 & 29.5 & 43.0 \\
+LED-Base        & 55.9 & 41.1 & 30.2 & 42.4 \\
+PRIMERA         & 58.6 & 43.7 & 31.8 & 44.7 \\
+\midrule
+\rowcolor{accentlt}
+\modelname{}-B  & \textbf{60.1} & \textbf{45.6} & \textbf{33.2}
+                & \textbf{45.5} \\
+\quad $\Delta$  & \textcolor{accent}{+3.8} & \textcolor{accent}{+3.8}
+                & \textcolor{accent}{+4.1} & \textcolor{accent}{+3.1} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Ablation Studies}
+
+Table~\ref{tab:ablation} isolates the contribution of each component. Removing
+the context write ($k=0$) degrades to the Longformer baseline. Removing the
+read gate collapses the bank to a fixed summary vector, losing 1.8 F\textsubscript{1}.
+Increasing $k$ beyond 64 yields diminishing returns at higher FLOP cost.
+
+\begin{table}[!t]
+\centering
+\caption{\textbf{Ablation on QuALITY dev.}
+         All variants start from Longformer-Base.}
+\label{tab:ablation}
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}Xl
+                              >{\centering\arraybackslash}X
+                              >{\centering\arraybackslash}X@{}}
+\toprule
+\rowcolor{headbg!8}
+\textbf{Configuration} & & \textbf{F\textsubscript{1}} & \textbf{FLOPs (T)} \\
+\midrule
+No gateway ($k=0$)      & & 56.3 & 1.00 \\
+Static bank (no read gate)& & 58.3 & 0.90 \\
+\modelname{} $k=16$     & & 59.4 & 0.84 \\
+\rowcolor{accentlt}
+\modelname{} $k=32$     & & \textbf{60.1} & \textbf{0.82} \\
+\modelname{} $k=64$     & & 60.3 & 0.97 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Qualitative Analysis}
+
+Figure~\ref{fig:attn} shows attention heat-maps on a \textsc{NarrativeQA}
+example. The Context Gateway routes question-relevant passages to the bank
+(dark cells in the write map), allowing all tokens to attend to them in the
+read step---despite those passages being over 2\,000 tokens away.
+
+% Attention heatmap placeholder figure
+\begin{figure}[!t]
+\centering
+\begin{tikzpicture}
+  % Background
+  \fill[pagebg!50] (0,0) rectangle (7.2, 1.9);
+  \draw[rule, line width=0.6pt] (0,0) rectangle (7.2, 1.9);
+
+  % Left panel header
+  \node[font=\tiny\bfseries\color{accent}] at (1.8, 1.75) {Write (top-$k$ scores)};
+  % Right panel header
+  \node[font=\tiny\bfseries\color{accent}] at (5.4, 1.75) {Read attention};
+
+  % Divider
+  \draw[rule, line width=0.4pt] (3.6, 0.1) -- (3.6, 1.65);
+
+  % Left heatmap (schematic rectangles of varying darkness)
+  \foreach \x/\y/\c in {
+    0.2/1.4/30, 0.7/1.4/60, 1.2/1.4/90, 1.7/1.4/20, 2.2/1.4/10,
+    2.7/1.4/80, 3.2/1.4/15,
+    0.2/1.1/10, 0.7/1.1/20, 1.2/1.1/70, 1.7/1.1/40, 2.2/1.1/90,
+    2.7/1.1/60, 3.2/1.1/30,
+    0.2/0.8/50, 0.7/0.8/10, 1.2/0.8/20, 1.7/0.8/80, 2.2/0.8/30,
+    2.7/0.8/15, 3.2/0.8/90,
+    0.2/0.5/20, 0.7/0.5/90, 1.2/0.5/40, 1.7/0.5/10, 2.2/0.5/70,
+    2.7/0.5/80, 3.2/0.5/50}{
+    \fill[accent!\c!pagebg] (\x, \y) rectangle ++(0.38, 0.22);
+  }
+
+  % Right heatmap
+  \foreach \x/\y/\c in {
+    3.8/1.4/10, 4.3/1.4/30, 4.8/1.4/80, 5.3/1.4/90, 5.8/1.4/10,
+    6.3/1.4/40, 6.8/1.4/20,
+    3.8/1.1/20, 4.3/1.1/10, 4.8/1.1/90, 5.3/1.1/80, 5.8/1.1/30,
+    6.3/1.1/10, 6.8/1.1/60,
+    3.8/0.8/40, 4.3/0.8/20, 4.8/0.8/30, 5.3/0.8/60, 5.8/0.8/80,
+    6.3/0.8/90, 6.8/0.8/10,
+    3.8/0.5/10, 4.3/0.5/50, 4.8/0.5/20, 5.3/0.5/70, 5.8/0.5/90,
+    6.3/0.5/30, 6.8/0.5/80}{
+    \fill[accent!\c!pagebg] (\x, \y) rectangle ++(0.38, 0.22);
+  }
+
+  % Y-axis label
+  \node[font=\tiny\color{neutralmid}, rotate=90] at (-0.05, 0.95) {Query token};
+  % X-axis label (left)
+  \node[font=\tiny\color{neutralmid}] at (1.8, 0.28) {Sequence position};
+  \node[font=\tiny\color{neutralmid}] at (5.4, 0.28) {Context bank slot};
+
+\end{tikzpicture}
+\caption{\textbf{Attention visualisation.} Left: per-token write scores (darker
+         = higher selection probability). Right: read attention over the $k=32$
+         context bank. High-scoring writes cluster around question-relevant spans.}
+\label{fig:attn}
+\end{figure}
+
+% ============================================================
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented \modelname{}, a modular inter-layer context aggregation mechanism
+for Transformers. By learning to write salient token representations to a compact
+context bank and broadcasting them back via a lightweight read attention,
+\modelname{} achieves larger effective attention spans at lower computational
+cost. Our method is architecture-agnostic and plug-in compatible with existing
+sparse-attention models. Future work will explore adaptive bank sizing and
+extension to decoder-only architectures.
+
+\paragraph{Limitations.}
+The top-$k$ selection introduces a non-differentiable step; we use a straight-through
+estimator during training, which may cause instability on very short sequences
+($n < k$). We recommend setting $k \leq n/4$.
+
+\paragraph{Broader Impact.}
+More efficient long-context modelling reduces compute requirements for scientific
+NLP pipelines, lowering barriers for researchers without access to large GPU clusters.
+No direct negative societal impact is foreseen.
+
+% ============================================================
+%  REFERENCES
+% ============================================================
+\begingroup
+\small
+\begin{thebibliography}{99}
+
+\bibitem{vaswani2017attention}
+A.~Vaswani, N.~Shazeer, N.~Parmar, J.~Uszkoreit, L.~Jones, A.~N.~Gomez,
+L.~Kaiser, and I.~Polosukhin.
+\newblock Attention is all you need.
+\newblock \textit{Advances in Neural Information Processing Systems}, 30, 2017.
+
+\bibitem{beltagy2020longformer}
+I.~Beltagy, M.~E.~Peters, and A.~Cohan.
+\newblock {Longformer}: The long-document transformer.
+\newblock \textit{arXiv preprint arXiv:2004.05150}, 2020.
+
+\bibitem{zaheer2020bigbird}
+M.~Zaheer, G.~Guruganesh, K.~A.~Dubey, J.~Ainslie, C.~Alberti, S.~Ontanon,
+P.~Pham, A.~Ravula, Q.~Wang, L.~Yang, and A.~Ahmed.
+\newblock {Big Bird}: Transformers for longer sequences.
+\newblock \textit{Advances in Neural Information Processing Systems}, 33, 2020.
+
+\bibitem{choromanski2020rethinking}
+K.~Choromanski, V.~Likhosherstov, D.~Dohan, X.~Song, A.~Gane, T.~Sarlos,
+P.~Hawkins, J.~Davis, A.~Mohiuddin, L.~Kaiser, D.~Belanger, L.~Colwell,
+and A.~Weller.
+\newblock Rethinking attention with {Performers}.
+\newblock In \textit{ICLR}, 2021.
+
+\bibitem{peng2023rwkv}
+B.~Peng, E.~Alcaide, Q.~Anthony, A.~Albalak, S.~Arcadinho, H.~Cao,
+X.~Cheng, M.~Chung, M.~Grella, K.~K.~GV, X.~He, H.~Hou, P.~Kazienko,
+J.~Kocon, J.~Kong, B.~Koptyra, H.~Lau, K.~S.~I.~Mantri, F.~Mom,
+A.~Saito, X.~Tang, B.~Wang, J.-X.~Wind, S.~Wozniak, R.~Zhang, Z.~Zhang,
+Q.~Zhao, and P.~Zhou.
+\newblock {RWKV}: Reinventing {RNNs} for the transformer era.
+\newblock \textit{arXiv preprint arXiv:2305.13048}, 2023.
+
+\bibitem{correia2019adaptively}
+G.~M.~Correia, V.~Niculae, and A.~F.~T.~Martins.
+\newblock Adaptively sparse transformers.
+\newblock In \textit{EMNLP-IJCNLP}, 2019.
+
+\bibitem{shazeer2017outrageously}
+N.~Shazeer, A.~Mirhoseini, K.~Maziarz, A.~Davis, Q.~Le, G.~Hinton, and
+J.~Dean.
+\newblock Outrageously large neural networks: The sparsely-gated
+mixture-of-experts layer.
+\newblock In \textit{ICLR}, 2017.
+
+\bibitem{wu2020memformer}
+A.~Wu, C.~Wang, M.~A.~Ott, J.~Grangier, and M.~Auli.
+\newblock Memformer: A memory-augmented transformer for sequence modeling.
+\newblock In \textit{Findings of EMNLP}, 2020.
+
+\bibitem{rae2020compressive}
+J.~W.~Rae, A.~Potapenko, S.~M.~Jayakumar, C.~Hillier, and T.~P.~Lillicrap.
+\newblock Compressive transformers for long-range sequence modelling.
+\newblock In \textit{ICLR}, 2020.
+
+\bibitem{lo2020s2orc}
+K.~Lo, L.~L.~Wang, M.~Neumann, R.~Kinney, and D.~S.~Weld.
+\newblock {S2ORC}: The semantic scholar open research corpus.
+\newblock In \textit{ACL}, 2020.
+
+\bibitem{ji2021dnabert}
+Y.~Ji, Z.~Zhou, H.~Liu, and R.~V.~Davuluri.
+\newblock {DNABERT}: Pre-trained bidirectional encoder representations from
+transformers model for {DNA}-language in genome.
+\newblock \textit{Bioinformatics}, 37(15):2112--2120, 2021.
+
+\bibitem{shaham2022scrolls}
+U.~Shaham, E.~Segal, M.~Elazar, S.~Geva, A.~Szpektor, O.~Levine,
+Y.~Gaon, R.~Schwartz, and Y.~Goldberg.
+\newblock {SCROLLS}: Standardized comparison over long language sequences.
+\newblock In \textit{EMNLP}, 2022.
+
+\end{thebibliography}
+\endgroup
+
+\end{document}

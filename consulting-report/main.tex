@@ -1,0 +1,643 @@
+% Management Consulting Report -- LaTeX Template
+% Edit and compile online at https://letx.app
+% Compile with: latexmk -pdf main.tex   (pdflatex engine)
+%
+\documentclass[11pt,a4paper]{article}
+
+% ---------- Geometry ----------
+\usepackage[a4paper,top=2.3cm,bottom=2.4cm,left=2cm,right=2cm,headheight=14pt,headsep=10pt,footskip=1.1cm]{geometry}
+
+% ---------- Encoding / Fonts ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{microtype}
+
+% ---------- Math ----------
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ---------- Color (load with [table] BEFORE tikz) ----------
+\usepackage[table]{xcolor}
+
+\definecolor{navy}{HTML}{0B2545}
+\definecolor{steel}{HTML}{1B4F72}
+\definecolor{gold}{HTML}{A9812F}
+\definecolor{lightgrey}{HTML}{F2F4F7}
+\definecolor{midgrey}{HTML}{6B7280}
+\definecolor{rulegrey}{HTML}{D8DCE3}
+\definecolor{posgreen}{HTML}{1E7145}
+\definecolor{negred}{HTML}{A32638}
+
+% ---------- Graphics ----------
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,backgrounds,shadows}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% ---------- Boxes ----------
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins}
+
+% ---------- Tables ----------
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{booktabs}
+\renewcommand{\arraystretch}{1.25}
+
+% ---------- Lists / headings ----------
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.15em,label=\textcolor{gold}{$\bullet$},itemsep=3pt,topsep=4pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=1.4em,itemsep=3pt,topsep=4pt,parsep=0pt}
+\usepackage{titlesec}
+
+% ---------- Header / footer ----------
+\usepackage{fancyhdr}
+
+% ---------- Icons ----------
+\usepackage{fontawesome5}
+
+% ---------- Captions ----------
+\usepackage{caption}
+\captionsetup{font=small,labelfont={bf,color=navy},skip=5pt,justification=raggedright,singlelinecheck=false}
+
+% ---------- Hyperref (load near end) ----------
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=steel,
+  citecolor=steel,
+  urlcolor=steel,
+  pdftitle={Operational Excellence and Margin Recovery Program},
+  pdfauthor={Beacon Ridge Consulting},
+  pdfsubject={Management Consulting Report},
+}
+
+\setlength{\parindent}{0pt}
+
+% =====================================================================
+% Custom commands
+% =====================================================================
+
+% Section styling
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{navy}}{\thesection}{0.6em}{}[{\color{gold}\titlerule[1.1pt]}]
+\titlespacing*{\section}{0pt}{18pt plus 2pt minus 2pt}{9pt}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{steel}}{\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{12pt plus 1pt}{5pt}
+
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\color{midgrey}}{\thesubsubsection}{0.5em}{}
+\titlespacing*{\subsubsection}{0pt}{8pt}{3pt}
+
+% Header / footer style
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\headrule}{\color{rulegrey}\hrule height\headrulewidth}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\footnotesize\color{midgrey}\textsc{Beacon Ridge Consulting}}
+\fancyhead[R]{\footnotesize\color{midgrey}\textsc{Strictly Confidential}}
+\fancyfoot[L]{\footnotesize\color{midgrey}Meridian Industrial Group}
+\fancyfoot[C]{\footnotesize\color{midgrey}\thepage}
+\fancyfoot[R]{\footnotesize\color{midgrey}Operational Excellence Program}
+
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \fancyfoot[C]{\footnotesize\color{midgrey}\thepage}
+}
+
+% Lead paragraph box (exec summary opener)
+\newtcolorbox{leadbox}{%
+  colback=lightgrey, colframe=lightgrey, boxrule=0pt,
+  borderline west={3pt}{0pt}{navy}, sharp corners,
+  left=12pt, right=12pt, top=9pt, bottom=9pt
+}
+
+% Callout box: usage \begin{calloutbox}[color]{Title} ... \end{calloutbox}
+\newtcolorbox{calloutbox}[2][navy]{%
+  colback=white, colframe=#1, boxrule=0.7pt, sharp corners, arc=0.5pt,
+  left=9pt, right=9pt, top=6pt, bottom=6pt,
+  title={#2}, fonttitle=\bfseries\small\color{white}, colbacktitle=#1, coltitle=white
+}
+
+% Single stat cell for the takeaway bar
+\newcommand{\statcell}[2]{%
+  \begin{minipage}[c][2.1cm][c]{3.6cm}
+    \centering
+    {\color{gold}\Large\bfseries #1}\\[5pt]
+    {\color{white}\scriptsize #2}
+  \end{minipage}%
+}
+
+% Key-value info table wrapper (cover page)
+\newcommand{\infotable}[1]{%
+  {\setlength{\parindent}{0pt}\setlength{\parskip}{0pt}
+  \begin{tabularx}{0.82\linewidth}{@{}>{\color{gold}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash\color{white}}X@{}}
+  #1
+  \end{tabularx}}%
+}
+
+% Exhibit source line
+\newcommand{\source}[1]{\vspace{2pt}\noindent{\scriptsize\color{midgrey} Source: #1}}
+
+\begin{document}
+
+% =====================================================================
+% COVER PAGE
+% =====================================================================
+\thispagestyle{empty}
+
+\begin{tikzpicture}[remember picture,overlay]
+  % top navy banner
+  \fill[navy] (current page.north west) rectangle ([yshift=-2.3cm]current page.north east);
+  \draw[gold,line width=1.2pt] ([yshift=-2.3cm]current page.north west) -- ([yshift=-2.3cm]current page.north east);
+  % bottom navy banner
+  \fill[navy] (current page.south west) rectangle ([yshift=1.9cm]current page.south east);
+  \draw[gold,line width=1.2pt] ([yshift=1.9cm]current page.south west) -- ([yshift=1.9cm]current page.south east);
+  % top banner text
+  \node[anchor=north west, xshift=1.4cm, yshift=-1.15cm, text=white, font=\bfseries\Large] at (current page.north west) {BEACON RIDGE};
+  \node[anchor=north west, xshift=1.4cm, yshift=-1.75cm, text=gold, font=\small] at (current page.north west) {\textsc{Consulting}};
+  \node[anchor=north east, xshift=-1.4cm, yshift=-1.45cm, text=white, font=\small] at (current page.north east) {\textsc{Strategy \& Operations Practice}};
+  % bottom banner text
+  \node[anchor=south west, xshift=1.4cm, yshift=0.75cm, text=white, font=\scriptsize] at (current page.south west) {\faGlobe\ www.beaconridgeconsulting.com \quad$\vert$\quad \faMapMarker\ Chicago -- London -- Singapore};
+  \node[anchor=south east, xshift=-1.4cm, yshift=0.75cm, text=gold, font=\scriptsize\bfseries] at (current page.south east) {STRICTLY PRIVATE AND CONFIDENTIAL};
+  % ghosted watermark logo mark
+  \node[opacity=0.05, text=navy] at (current page.center) {\fontsize{280}{280}\selectfont\bfseries BR};
+\end{tikzpicture}
+
+\vspace*{3.6cm}
+
+\begin{center}
+  {\color{gold}\rule{4.2cm}{1.2pt}}\\[20pt]
+  {\fontsize{27}{33}\selectfont\bfseries\color{navy} Operational Excellence \&\\[2pt] Margin Recovery Program}\\[16pt]
+  {\Large\color{steel} A Diagnostic and Strategic Roadmap for\\[2pt] Meridian Industrial Group}\\[26pt]
+  {\color{navy}\rule{4.2cm}{1.2pt}}
+\end{center}
+
+\vspace{1.6cm}
+
+\begin{center}
+\begin{tcolorbox}[colback=navy,colframe=navy,arc=1pt,left=14pt,right=14pt,top=12pt,bottom=12pt,width=0.86\linewidth]
+\infotable{
+Prepared for & Meridian Industrial Group --- Office of the Chief Executive Officer \\[5pt]
+Prepared by & Beacon Ridge Consulting --- Operations \& Performance Practice \\[5pt]
+Engagement Lead & J.\ Alvarez, Partner \quad$\vert$\quad K.\ Whitfield, Engagement Manager \\[5pt]
+Date & July 10, 2026 \\[5pt]
+Classification & Strictly Private and Confidential -- Board Distribution Only \\
+}
+\end{tcolorbox}
+\end{center}
+
+\vfill
+\thispagestyle{empty}
+\clearpage
+
+% =====================================================================
+% TABLE OF CONTENTS
+% =====================================================================
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\setcounter{tocdepth}{2}
+{\hypersetup{linkcolor=navy}
+\tableofcontents}
+\clearpage
+
+% =====================================================================
+% EXECUTIVE SUMMARY
+% =====================================================================
+\section{Executive Summary}
+
+\begin{leadbox}
+Meridian Industrial Group engaged Beacon Ridge Consulting to diagnose the root causes of margin erosion across its three operating segments and to design an actionable program to restore EBITDA margin to a sustainable double-digit trajectory. Over an eight-week diagnostic, we analyzed five years of financial performance, benchmarked cost structure against four industrial peers, and conducted 34 stakeholder interviews across procurement, operations, and commercial functions. This report presents our findings and a prioritized, sequenced roadmap to deliver \textbf{\$10.7M} in net annualized EBITDA impact by the end of FY2027.
+\end{leadbox}
+
+\vspace{10pt}
+
+\begin{tcolorbox}[colback=navy,colframe=navy,arc=1pt,left=10pt,right=10pt,top=11pt,bottom=11pt]
+{\setlength{\parindent}{0pt}\setlength{\parskip}{0pt}
+\begin{tabularx}{\linewidth}{@{}>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X@{}}
+\statcell{\$50.6M}{Target EBITDA, FY2026E} &
+\statcell{+1.3\,pts}{EBITDA Margin Uplift} &
+\statcell{\$10.7M}{Net Annualized Savings} &
+\statcell{4}{Priority Initiatives} \\
+\end{tabularx}}
+\end{tcolorbox}
+
+\vspace{12pt}
+
+\subsection{Situation, Complication, Resolution}
+
+\noindent
+\begin{minipage}[t]{0.315\linewidth}
+\textbf{\color{navy}Situation}\\[4pt]
+\small Meridian has grown revenue at a 6.4\% CAGR since FY2022, driven by strong Aftermarket Services demand and two bolt-on acquisitions in Precision Fabrication.
+\end{minipage}\hfill
+\begin{minipage}[t]{0.315\linewidth}
+\textbf{\color{navy}Complication}\\[4pt]
+\small EBITDA margin has compounded downward for three consecutive years as input costs, freight, and SG\&A have outpaced pricing action and productivity gains.
+\end{minipage}\hfill
+\begin{minipage}[t]{0.315\linewidth}
+\textbf{\color{navy}Resolution}\\[4pt]
+\small A four-initiative program spanning procurement, pricing, maintenance, and corporate overhead can recover 1.3 points of margin within two fiscal quarters.
+\end{minipage}
+
+\vspace{14pt}
+
+\begin{calloutbox}[navy]{Key Takeaway}
+Two-thirds of the identified margin opportunity is addressable within 12 months without incremental capital investment, primarily through procurement renegotiation and pricing discipline in the Industrial Components segment.
+\end{calloutbox}
+
+\clearpage
+
+% =====================================================================
+% SITUATION OVERVIEW
+% =====================================================================
+\section{Situation Overview}
+
+Meridian Industrial Group is a diversified manufacturer of industrial components, precision-fabricated assemblies, and aftermarket maintenance services, headquartered in Dayton, Ohio, with four manufacturing sites across the U.S. Midwest. FY2025 revenue reached \$486.2M, up 7.4\% year-over-year, yet EBITDA margin contracted from 9.1\% in FY2023 to 8.6\% in FY2025 despite the top-line growth.
+
+\subsection{Key Financial Metrics}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Metric} & \textbf{FY2024A} & \textbf{FY2025A} & \textbf{FY2026E} & \textbf{$\Delta$ vs.\ FY25A} \\
+\midrule
+Revenue (\$M)          & 452.7 & 486.2 & 512.9 & +5.5\% \\
+Gross Margin (\%)      & 31.2  & 32.0  & 33.8  & +1.8 pts \\
+EBITDA (\$M)           & 38.1  & 42.0  & 50.6  & +20.5\% \\
+EBITDA Margin (\%)     & 8.4   & 8.6   & 9.9   & +1.3 pts \\
+Net Income (\$M)       & 14.2  & 16.8  & 21.5  & +28.0\% \\
+Free Cash Flow (\$M)   & 9.6   & 11.3  & 16.0  & +41.6\% \\
+Net Debt / EBITDA (x)  & 2.4x  & 2.1x  & 1.6x  & --0.5x \\
+\bottomrule
+\end{tabular}
+\caption{Exhibit 1: Consolidated Financial Metrics}
+\source{Meridian FY2025 audited financials; Beacon Ridge analysis and FY2026 program projections.}
+\end{table}
+
+\subsection{Revenue Trend}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.92\linewidth, height=6cm,
+  ybar, bar width=15pt,
+  axis lines=left,
+  axis line style={draw=midgrey},
+  symbolic x coords={Q1-25,Q2-25,Q3-25,Q4-25,Q1-26},
+  xtick=data,
+  x tick label style={font=\small},
+  ymin=0, ymax=32,
+  ylabel={Revenue (\$M)},
+  ylabel style={font=\small},
+  ytick={0,8,16,24,32},
+  ymajorgrids, grid style={gray!20},
+  nodes near coords,
+  nodes near coords style={font=\scriptsize,text=navy,yshift=1pt},
+  every axis plot/.append style={fill=steel,draw=none},
+]
+\addplot coordinates {(Q1-25,21.4) (Q2-25,22.8) (Q3-25,24.1) (Q4-25,25.6) (Q1-26,27.3)};
+\end{axis}
+\end{tikzpicture}
+\caption{Exhibit 2: Quarterly Revenue, Q1 FY2025 -- Q1 FY2026}
+\source{Meridian management accounts.}
+\end{figure}
+
+\begin{calloutbox}[steel]{Key Insight}
+Revenue growth has been consistently positive for five straight quarters, confirming the margin issue is a cost and pricing problem, not a demand problem. This materially de-risks the recommended program: no volume assumptions are required to hit the savings target.
+\end{calloutbox}
+
+\clearpage
+
+% =====================================================================
+% DIAGNOSTIC FINDINGS
+% =====================================================================
+\section{Diagnostic Findings}
+
+Our diagnostic identified five root causes of margin compression, of which four are directly addressable by the operating leadership team within the next two fiscal quarters. Findings were triangulated across financial data, plant-level interviews, and a procurement spend-cube analysis covering \$470M of annualized cost.
+
+\begin{itemize}
+\item Direct material costs have risen 340 bps as a share of revenue since FY2023, driven by unconsolidated steel and resin purchasing across four plants.
+\item Freight and logistics spend grew 22\% faster than volume, reflecting a lack of carrier consolidation and spot-market exposure.
+\item List pricing has not been revisited in the Industrial Components segment since Q3 FY2023, despite input cost inflation.
+\item Unplanned maintenance downtime across two plants consumed an estimated 6,100 production hours in FY2025.
+\item Corporate SG\&A has grown 1.4x revenue growth over the trailing two years, largely in duplicated regional support functions.
+\end{itemize}
+
+\begin{calloutbox}[negred]{Risk Flag}
+Continued deferral of pricing action in Industrial Components is estimated to cost Meridian approximately \$0.5M in forgone EBITDA per month of delay, based on current input cost trends and competitor price movements observed in the peer benchmark.
+\end{calloutbox}
+
+\subsection{Initiative Prioritization Matrix}
+
+Each opportunity was scored on projected business impact and estimated implementation effort by the joint Meridian-Beacon Ridge working team. The matrix below sequences the portfolio into four priority tiers.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=0.98]
+  \def\w{8.4}
+  \def\h{7.2}
+  % quadrant fills
+  \fill[navy!10] (0,\h/2) rectangle (\w/2,\h);      % quick wins
+  \fill[navy!20] (\w/2,\h/2) rectangle (\w,\h);     % major projects
+  \fill[gray!6]  (0,0) rectangle (\w/2,\h/2);       % fill-ins
+  \fill[gray!14] (\w/2,0) rectangle (\w,\h/2);      % reconsider
+  % gridlines
+  \draw[navy,thick] (0,0) rectangle (\w,\h);
+  \draw[navy!50] (\w/2,0) -- (\w/2,\h);
+  \draw[navy!50] (0,\h/2) -- (\w,\h/2);
+  % quadrant labels
+  \node[font=\scriptsize\bfseries,navy,anchor=north west] at (0.12,\h-0.1) {QUICK WINS};
+  \node[font=\scriptsize\bfseries,navy,anchor=north east] at (\w-0.12,\h-0.1) {MAJOR PROJECTS};
+  \node[font=\scriptsize,midgrey,anchor=south west] at (0.12,0.12) {FILL-INS};
+  \node[font=\scriptsize,midgrey,anchor=south east] at (\w-0.12,0.12) {RECONSIDER};
+  % axes
+  \draw[-{Latex[length=2.2mm]},navy,thick] (0,-0.35) -- (\w,-0.35);
+  \node[navy,font=\small\bfseries] at (\w/2,-0.85) {Implementation Effort};
+  \draw[-{Latex[length=2.2mm]},navy,thick] (-0.35,0) -- (-0.35,\h);
+  \node[navy,font=\small\bfseries,rotate=90] at (-0.9,\h/2) {Business Impact};
+  % initiatives
+  \foreach \x/\y/\n in {1.8/5.6/1, 2.6/4.4/2, 5.6/6.1/3, 6.6/2.0/4, 3.1/1.4/5}{
+    \node[circle,draw=navy,fill=gold,minimum size=15pt,inner sep=0pt,font=\tiny\bfseries\color{white}] at (\x,\y) {\n};
+  }
+\end{tikzpicture}
+\caption{Exhibit 3: Impact--Effort Prioritization Matrix}
+
+\vspace{6pt}
+\small
+\begin{tabular}{@{}cl@{}}
+\textbf{1} & Direct material procurement optimization \\
+\textbf{2} & Dynamic pricing and mix optimization \\
+\textbf{3} & Predictive maintenance rollout \\
+\textbf{4} & ERP and systems consolidation \\
+\textbf{5} & SG\&A delayering \\
+\end{tabular}
+\source{Joint prioritization workshop, June 2026.}
+\end{figure}
+
+\clearpage
+
+% =====================================================================
+% FINANCIAL ANALYSIS
+% =====================================================================
+\section{Financial Analysis}
+
+\subsection{Segment Performance}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Segment} & \textbf{Revenue} & \textbf{EBITDA} & \textbf{Margin} & \textbf{YoY Growth} \\
+\midrule
+Industrial Components     & 218.4 & 24.6 & 11.3\% & +6.1\% \\
+Precision Fabrication     & 164.3 & 15.8 & 9.6\%  & +4.8\% \\
+Aftermarket Services      & 98.7  & 13.9 & 14.1\% & +9.2\% \\
+Corporate / Unallocated   & 31.5  & --3.7 & n/m   & +2.0\% \\
+\midrule
+\rowcolor{lightgrey}
+\textbf{Total}             & \textbf{512.9} & \textbf{50.6} & \textbf{9.9\%} & \textbf{+5.5\%} \\
+\bottomrule
+\end{tabular}
+\caption{Exhibit 4: Business Unit P\&L Summary, FY2026E (\$M)}
+\source{Meridian segment reporting; Beacon Ridge normalization for corporate allocations.}
+\end{table}
+
+\subsection{EBITDA Bridge to Target}
+
+The waterfall below reconciles current-run-rate EBITDA to the FY2026E target following full implementation of the two highest-priority initiatives, net of one-time implementation costs.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.94\linewidth, height=6.6cm,
+  xmin=0, xmax=5, ymin=0, ymax=62,
+  axis lines=left,
+  axis line style={draw=midgrey},
+  ytick={0,10,20,30,40,50,60},
+  ylabel={EBITDA (\$M)},
+  ylabel style={font=\small},
+  ymajorgrids, grid style={gray!20},
+  xtick={0.5,1.5,2.5,3.5,4.5},
+  xticklabels={Baseline\\EBITDA,Procurement\\Savings,Pricing\\Optimization,Implementation\\Costs,Target\\EBITDA},
+  x tick label style={font=\scriptsize,align=center,text width=1.9cm,yshift=-2pt},
+  clip=false,
+]
+\draw[fill=navy,draw=none] (axis cs:0.12,0) rectangle (axis cs:0.88,42.0);
+\node[above,font=\scriptsize\bfseries,navy] at (axis cs:0.5,42.0) {\$42.0};
+\draw[fill=posgreen,draw=none] (axis cs:1.12,42.0) rectangle (axis cs:1.88,48.5);
+\node[above,font=\scriptsize\bfseries,posgreen] at (axis cs:1.5,48.5) {+\$6.5};
+\draw[fill=posgreen,draw=none] (axis cs:2.12,48.5) rectangle (axis cs:2.88,52.7);
+\node[above,font=\scriptsize\bfseries,posgreen] at (axis cs:2.5,52.7) {+\$4.2};
+\draw[fill=negred,draw=none] (axis cs:3.12,50.6) rectangle (axis cs:3.88,52.7);
+\node[above,font=\scriptsize\bfseries,negred] at (axis cs:3.5,52.7) {--\$2.1};
+\draw[fill=navy,draw=none] (axis cs:4.12,0) rectangle (axis cs:4.88,50.6);
+\node[above,font=\scriptsize\bfseries,navy] at (axis cs:4.5,50.6) {\$50.6};
+\draw[dashed,gray!55] (axis cs:0.88,42.0) -- (axis cs:1.12,42.0);
+\draw[dashed,gray!55] (axis cs:1.88,48.5) -- (axis cs:2.12,48.5);
+\draw[dashed,gray!55] (axis cs:2.88,52.7) -- (axis cs:3.12,52.7);
+\draw[dashed,gray!55] (axis cs:3.88,50.6) -- (axis cs:4.12,50.6);
+\end{axis}
+\end{tikzpicture}
+\caption{Exhibit 5: FY2026E Annualized EBITDA Bridge (\$M)}
+\source{Beacon Ridge financial model; initiative business cases (Section 4).}
+\end{figure}
+
+\clearpage
+
+% =====================================================================
+% STRATEGIC RECOMMENDATIONS
+% =====================================================================
+\section{Strategic Recommendations}
+
+We recommend Meridian sequence four initiatives into a single integrated program, governed by a joint steering committee reporting to the CFO.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{2.6cm}r@{}}
+\toprule
+\textbf{Initiative} & \textbf{Owner} & \textbf{Timeline} & \textbf{Annualized Impact} \\
+\midrule
+Direct material procurement optimization & Supply Chain & Q3 2026 -- Q1 2027 & \$6.5M \\
+Dynamic pricing and mix optimization & Commercial & Q3 2026 -- Q4 2026 & \$4.2M \\
+Predictive maintenance rollout & Operations & Q4 2026 -- Q2 2027 & \$2.8M \\
+SG\&A delayering & Corporate & Q1 2027 -- Q2 2027 & \$1.9M \\
+\bottomrule
+\end{tabularx}
+\caption{Exhibit 6: Recommended Initiative Portfolio}
+\source{Beacon Ridge business case analysis; figures reflect steady-state run rate.}
+\end{table}
+
+\begin{calloutbox}[gold]{Recommendation}
+Sequence procurement and pricing initiatives first: together they represent 61\% of total program value, require no capital outlay, and can be substantially implemented using the existing commercial and sourcing organization.
+\end{calloutbox}
+
+\subsection{Cost Base Addressability}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrrl@{}}
+\toprule
+\textbf{Category} & \textbf{Annual Spend (\$M)} & \textbf{\% of Total} & \textbf{Addressability} \\
+\midrule
+Direct Materials          & 186.4 & 39.6\%  & Medium \\
+Direct Labor              & 98.2  & 20.9\%  & Low \\
+Logistics \& Freight      & 52.7  & 11.2\%  & High \\
+SG\&A                     & 71.3  & 15.2\%  & High \\
+Facilities \& Overhead    & 61.8  & 13.1\%  & Medium \\
+\midrule
+\rowcolor{lightgrey}
+\textbf{Total}             & \textbf{470.4} & \textbf{100.0\%} & -- \\
+\bottomrule
+\end{tabular}
+\caption{Exhibit 7: Annualized Cost Base by Category}
+\source{Meridian general ledger, FY2025; Beacon Ridge spend-cube analysis.}
+\end{table}
+
+\clearpage
+
+% =====================================================================
+% IMPLEMENTATION ROADMAP
+% =====================================================================
+\section{Implementation Roadmap}
+
+\subsection{Program Timeline}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=1]
+\draw[navy,thick] (0,0) -- (15.2,0);
+
+% Phase 1
+\draw[navy!45] (1.6,0) -- (1.6,0.9);
+\fill[gold] (1.6,0) circle (4.2pt);
+\node[anchor=south,align=center,font=\small\bfseries,navy] at (1.6,1.0) {Mobilize \&\\Diagnose};
+\node[anchor=north,align=center,font=\scriptsize,midgrey] at (1.6,-0.25) {Aug -- Sep 2026};
+
+% Phase 2
+\draw[navy!45] (5.5,0) -- (5.5,-0.9);
+\fill[gold] (5.5,0) circle (4.2pt);
+\node[anchor=north,align=center,font=\small\bfseries,navy] at (5.5,-1.0) {Design \& Pilot};
+\node[anchor=south,align=center,font=\scriptsize,midgrey] at (5.5,0.25) {Oct -- Dec 2026};
+
+% Phase 3
+\draw[navy!45] (9.7,0) -- (9.7,0.9);
+\fill[gold] (9.7,0) circle (4.2pt);
+\node[anchor=south,align=center,font=\small\bfseries,navy] at (9.7,1.0) {Rollout};
+\node[anchor=north,align=center,font=\scriptsize,midgrey] at (9.7,-0.25) {Jan -- Apr 2027};
+
+% Phase 4
+\draw[navy!45] (13.6,0) -- (13.6,-0.9);
+\fill[gold] (13.6,0) circle (4.2pt);
+\node[anchor=north,align=center,font=\small\bfseries,navy] at (13.6,-1.0) {Sustain \& Scale};
+\node[anchor=south,align=center,font=\scriptsize,midgrey] at (13.6,0.25) {May 2027 onward};
+
+\end{tikzpicture}
+\caption{Exhibit 8: Program Roadmap, August 2026 -- May 2027}
+\end{figure}
+
+\vspace{10pt}
+
+\subsection{Governance}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}p{3.4cm}>{\raggedright\arraybackslash}p{3.4cm}r@{}}
+\toprule
+\textbf{Workstream} & \textbf{Executive Sponsor} & \textbf{Program Lead} & \textbf{Target} \\
+\midrule
+Procurement Optimization & Chief Financial Officer & VP, Supply Chain & Q1 2027 \\
+Pricing \& Mix & Chief Commercial Officer & Director of Pricing & Q4 2026 \\
+Predictive Maintenance & Chief Operating Officer & VP, Operations & Q2 2027 \\
+SG\&A Delayering & Chief Financial Officer & Head of Corporate Services & Q2 2027 \\
+\bottomrule
+\end{tabularx}
+\caption{Exhibit 9: Workstream Governance and Accountability}
+\end{table}
+
+\begin{calloutbox}[steel]{Next Steps}
+A joint steering committee should convene by August 3, 2026 to ratify workstream charters, confirm baseline metrics, and approve the Phase 1 diagnostic scope for the two remaining plants not covered in this engagement.
+\end{calloutbox}
+
+\clearpage
+
+% =====================================================================
+% APPENDIX
+% =====================================================================
+\appendix
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{navy}}{Appendix~\thesection}{0.6em}{}[{\color{gold}\titlerule[1.1pt]}]
+\setcounter{section}{0}
+
+\section{Supporting Data}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Plant} & \textbf{FY2025 Output (units)} & \textbf{OEE (\%)} & \textbf{Unplanned Downtime (hrs)} \\
+\midrule
+Dayton, OH (HQ)     & 1,284,600 & 78.4\% & 1,920 \\
+Elkhart, IN         & 962,300   & 74.1\% & 2,410 \\
+Rockford, IL        & 1,047,800 & 81.2\% & 1,140 \\
+Springfield, MO     & 715,200   & 69.7\% & 2,650 \\
+\midrule
+\rowcolor{lightgrey}
+\textbf{Total / Average} & \textbf{4,009,900} & \textbf{75.9\%} & \textbf{8,120} \\
+\bottomrule
+\end{tabular}
+\caption{Exhibit A1: Plant-Level Operating Metrics, FY2025}
+\source{Meridian plant operations reporting.}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Peer (Anonymized)} & \textbf{Revenue (\$M)} & \textbf{EBITDA Margin} & \textbf{SG\&A / Revenue} \\
+\midrule
+Peer A & 610.4 & 12.8\% & 9.1\% \\
+Peer B & 398.2 & 11.4\% & 10.3\% \\
+Peer C & 725.9 & 13.6\% & 8.4\% \\
+Peer D & 441.0 & 10.9\% & 11.0\% \\
+\midrule
+\rowcolor{lightgrey}
+\textbf{Meridian (FY2025A)} & \textbf{486.2} & \textbf{8.6\%} & \textbf{14.7\%} \\
+\bottomrule
+\end{tabular}
+\caption{Exhibit A2: Industrial Peer Benchmark, FY2025}
+\source{Public filings; Beacon Ridge proprietary industrial benchmark database.}
+\end{table}
+
+\section{Methodology and Data Sources}
+
+This analysis draws on the following primary data sources:
+
+\begin{itemize}
+\item Five years of Meridian audited and management financial statements (FY2021--FY2025).
+\item A procurement spend-cube covering \$470.4M of annualized addressable cost, categorized by vendor, plant, and commodity.
+\item 34 structured interviews with plant managers, functional leaders, and members of the executive committee, conducted May--June 2026.
+\item Plant-level operating data extracted from Meridian's MES and CMMS systems for FY2025.
+\item A four-company anonymized peer benchmark compiled from public filings and Beacon Ridge's proprietary industrial database.
+\end{itemize}
+
+All financial projections in this report are illustrative estimates prepared for internal planning purposes and are subject to the assumptions, limitations, and qualifications described in the engagement letter dated May 4, 2026. Beacon Ridge Consulting has not independently audited the financial information provided by Meridian Industrial Group and assumes no responsibility for its accuracy.
+
+\end{document}

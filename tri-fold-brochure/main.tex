@@ -1,0 +1,246 @@
+% Tri-Fold Brochure Template
+% Edit and compile online at https://letx.app
+% Compiles with: latexmk -pdf main.tex  (pdflatex)
+% Two landscape A4 pages = the two printed sides of one tri-fold sheet
+% (3 panels per side, 99mm each, folded at the two dashed guide lines).
+
+\documentclass[10pt]{article}
+\usepackage{amsmath}
+\usepackage[a4paper,landscape,margin=0mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{fontawesome5}
+\usepackage{enumitem}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\usepackage{microtype}
+\usepackage{hyperref}
+\hypersetup{hidelinks,pdftitle={Bright Path Youth Mentorship -- Tri-Fold Brochure},pdfauthor={Bright Path Youth Mentorship}}
+
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlist{nosep,leftmargin=4.2mm,itemsep=1.6mm}
+
+% ---------- palette ----------
+\definecolor{forest}{HTML}{2E6B4F}
+\definecolor{forestdark}{HTML}{1B4433}
+\definecolor{gold}{HTML}{C9A227}
+\definecolor{cream}{HTML}{F7F2E7}
+\definecolor{ink}{HTML}{2B2B28}
+\definecolor{graytext}{HTML}{6C6A62}
+
+\color{ink}
+
+% ---------- helper macros ----------
+\newcommand{\panelw}{83}% text width (mm) used inside every 99mm panel
+\newcommand{\heading}[1]{{\color{forest}\fontsize{14}{15}\selectfont\bfseries #1}\par
+  \vspace{1mm}{\color{gold}\rule{13mm}{0.7mm}}\par\vspace{2.8mm}}
+\newcommand{\subhead}[1]{{\color{forestdark}\bfseries\fontsize{9.5}{11}\selectfont #1}\par\vspace{1mm}}
+\newcommand{\ctabutton}[1]{\colorbox{gold}{\parbox[c][9mm][c]{\panelw mm}{\centering\color{forestdark}\bfseries\fontsize{9.5}{11}\selectfont #1}}}
+\newcommand{\statcard}[2]{\colorbox{cream}{\parbox[c][19mm][c]{24mm}{\centering{\color{forest}\bfseries\fontsize{15}{16}\selectfont #1}\\[1.4mm]{\color{ink}\fontsize{7.3}{8.4}\selectfont #2}}}}
+
+\begin{document}
+\RaggedRight
+\small
+
+% =====================================================================
+% PAGE 1 -- OUTSIDE PANELS : Back Panel | Giving / CTA Panel | Front Cover
+% =====================================================================
+\noindent
+\begin{tikzpicture}[x=1mm,y=1mm]
+
+  % ---- panel backgrounds ----
+  \fill[cream] (0,0) rectangle (99,210);
+  \fill[white] (99,0) rectangle (198,210);
+  \fill[forestdark] (198,0) rectangle (297,210);
+
+  % ---- hero image zone (cover) ----
+  \begin{scope}
+    \clip (198,120) rectangle (297,210);
+    \shade[top color=forest,bottom color=forestdark] (198,120) rectangle (297,210);
+    \fill[white,opacity=0.06] (222,205) circle (26);
+    \fill[white,opacity=0.05] (270,135) circle (20);
+    \fill[gold,opacity=0.14]  (285,205) circle (16);
+  \end{scope}
+  \draw[gold,line width=0.6mm] (198,120) -- (297,120);
+
+  % ---- cover logo mark: circle + rising path + destination dot ----
+  \draw[gold,line width=0.6mm] (247.5,163) circle (13.5);
+  \draw[white,line width=0.9mm,line cap=round,line join=round]
+       (240.5,157.5) -- (244,163.5) -- (250.5,161) -- (253.5,169.5);
+  \fill[gold] (253.5,169.5) circle (1.5);
+
+  % ---- fold guide lines ----
+  \draw[dashed,gray!55,line width=0.25mm] (99,0) -- (99,210);
+  \draw[dashed,gray!55,line width=0.25mm] (198,0) -- (198,210);
+
+  % =============== PANEL 1 : BACK / CONTACT PANEL ===============
+  \node[anchor=north west,align=left,text width=\panelw mm] at (8,197) {%
+    \heading{Visit \& Contact Us}
+    {\color{forest}\faMapMarker}~~482 Maple Street, Suite 200\par
+    \hspace{5.4mm}Columbus, OH 43215\par\vspace{3mm}
+    {\color{forest}\faPhone}~~(614) 555-0142\par\vspace{3mm}
+    {\color{forest}\faEnvelope}~~info@brightpathmentors.org\par\vspace{3mm}
+    {\color{forest}\faGlobe}~~www.brightpathmentors.org\par
+    \vspace{8mm}
+    \subhead{Office Hours}
+    \begin{tabularx}{\panelw mm}{@{}>{\color{forest}\bfseries}l@{\hspace{4mm}}>{\raggedright\arraybackslash}X@{}}
+      Mon--Thu & 9:00 AM -- 6:00 PM \\[1.2mm]
+      Friday   & 9:00 AM -- 4:00 PM \\[1.2mm]
+      Sat--Sun & Closed \\
+    \end{tabularx}
+    \vspace{8mm}
+    \subhead{Follow Our Journey}
+    {\color{forest}\faFacebookF}~~{\color{forest}\faInstagram}~~{\color{forest}\faTwitter}~~\,@BrightPathMentors\par
+    \vspace{10mm}
+    {\color{gold}\rule{\panelw mm}{0.3mm}}\par\vspace{3mm}
+    {\itshape\fontsize{9}{11}\selectfont\color{forestdark}``Every child deserves a guide, a champion, and a friend.''}\par
+    \vspace{8mm}
+    {\fontsize{7}{8.4}\selectfont\color{graytext}
+    Bright Path Youth Mentorship is a 501(c)(3) nonprofit. EIN 47-3392110. Gifts are tax-deductible.\par\vspace{1.5mm}
+    {\color{forest}\faLeaf}~~Printed on 100\% recycled paper.}
+  };
+
+  % =============== PANEL 2 : GIVING / CTA PANEL ===============
+  \node[anchor=north west,align=left,text width=\panelw mm] at (107,197) {%
+    \heading{Ways to Give}
+    Every dollar you give helps a young person in our community access mentorship, tutoring, and a safe place to grow. Your generosity turns potential into achievement.
+    \vspace{4mm}
+    \begin{itemize}
+      \item \textbf{\$25} sponsors one month of after-school tutoring for a student.
+      \item \textbf{\$50} provides school supplies and a mentor care package.
+      \item \textbf{\$100} funds a full week of Summer Leadership Camp.
+      \item \textbf{\$250} sponsors a student for an entire semester.
+    \end{itemize}
+    \vspace{6mm}
+    \begin{center}\ctabutton{Give Online -- brightpathmentors.org/give}\end{center}
+    \vspace{7mm}
+    \begin{center}
+      {\color{gold}\fboxrule 0.5mm\fboxsep 2.6mm\fbox{\parbox[c][26mm][c]{26mm}{\centering{\fontsize{32}{32}\selectfont\color{forestdark}\faQrcode}\\[1.6mm]{\fontsize{7.5}{9}\selectfont\color{graytext}Scan to Donate}}}}
+    \end{center}
+    \vspace{7mm}
+    {\fontsize{8.5}{10.2}\selectfont\color{forestdark}\itshape Prefer to mail a gift? Send checks payable to ``Bright Path Youth Mentorship'' to the address on the back panel.}\par
+    \vspace{5mm}
+    {\centering\fontsize{9}{11}\selectfont\color{forest}\bfseries Thank you for believing in our students.\par}
+  };
+
+  % =============== PANEL 3 : FRONT COVER ===============
+  \node[anchor=north,align=center,text width=90mm] at (247.5,105) {%
+    {\color{white}\fontsize{23}{26}\selectfont\bfseries Bright Path\\[0.5mm]Youth Mentorship}%
+  };
+  \node[anchor=north,align=center] at (247.5,66) {%
+    {\color{gold}\itshape\fontsize{12}{14}\selectfont Guiding Tomorrow's Leaders, Today}%
+  };
+  \draw[gold,line width=0.5mm] (219,53) -- (276,53);
+  \node[anchor=north,align=center,text width=72mm] at (247.5,47) {%
+    {\color{white!85!black}\fontsize{8.5}{10.5}\selectfont A community nonprofit serving Franklin County since 2011}%
+  };
+  \node[anchor=south,align=center,text width=80mm] at (247.5,16) {%
+    {\color{white}\fontsize{9}{11}\selectfont \faArrowRight~~Programs, impact \& ways to give inside}%
+  };
+  \node[anchor=south,align=center] at (247.5,6) {%
+    {\fontsize{6.3}{7.6}\selectfont\color{white!60!black}501(c)(3) Nonprofit~~\textbullet~~EIN 47-3392110}%
+  };
+
+\end{tikzpicture}
+
+\newpage
+
+% =====================================================================
+% PAGE 2 -- INSIDE PANELS : Who We Are | Our Programs | Get Involved
+% =====================================================================
+\noindent
+\begin{tikzpicture}[x=1mm,y=1mm]
+
+  % ---- panel backgrounds ----
+  \fill[white] (0,0) rectangle (99,210);
+  \fill[cream] (99,0) rectangle (198,210);
+  \fill[white] (198,0) rectangle (297,210);
+
+  % ---- fold guide lines ----
+  \draw[dashed,gray!55,line width=0.25mm] (99,0) -- (99,210);
+  \draw[dashed,gray!55,line width=0.25mm] (198,0) -- (198,210);
+
+  % ---- running brand bar ----
+  \fill[forestdark] (0,198) rectangle (297,210);
+  \draw[gold,line width=0.4mm] (0,198) -- (297,198);
+  \node[anchor=west,align=left] at (8,204) {%
+    {\color{white}\bfseries\fontsize{10}{12}\selectfont Bright Path Youth Mentorship}%
+  };
+  \node[anchor=east,align=right] at (289,204) {%
+    {\color{gold}\itshape\fontsize{8}{10}\selectfont Guiding Tomorrow's Leaders, Today}%
+  };
+
+  % =============== PANEL 4 : WHO WE ARE ===============
+  \node[anchor=north west,align=left,text width=\panelw mm] at (8,192) {%
+    \heading{Who We Are}
+    Founded in 2011, Bright Path Youth Mentorship pairs caring adult volunteers with young people ages 10--18 across Franklin County. We believe every student deserves a champion in their corner -- someone who shows up, listens, and helps them see a future worth working toward.
+    \vspace{5mm}
+    \subhead{Our Mission}
+    To inspire confidence, build life skills, and open doors to opportunity through consistent, caring mentorship relationships.
+    \vspace{7mm}
+    \begin{center}
+      \statcard{15+}{Years of\\Service}\hspace{2mm}\statcard{620}{Students\\Mentored}\hspace{2mm}\statcard{94\%}{On-Time\\Graduation}
+    \end{center}
+    \vspace{7mm}
+    \subhead{Our Values}
+    \begin{itemize}
+      \item[\color{forest}\faCheckCircle] Consistency and follow-through
+      \item[\color{forest}\faCheckCircle] Respect for every family's story
+      \item[\color{forest}\faCheckCircle] Community-driven partnerships
+    \end{itemize}
+  };
+
+  % =============== PANEL 5 : OUR PROGRAMS ===============
+  \node[anchor=north west,align=left,text width=\panelw mm] at (107,192) {%
+    \heading{Our Programs}
+    {\color{forest}\faUsers}~~\textbf{After-School Mentoring}\par
+    \vspace{1mm}One-on-one weekly mentoring pairs students with trained volunteers for academic support and friendship.
+    \vspace{4mm}{\color{gold!70!white}\rule{\panelw mm}{0.25mm}}\vspace{4mm}
+
+    {\color{forest}\faSeedling}~~\textbf{Summer Leadership Camp}\par
+    \vspace{1mm}A four-week day camp building teamwork, confidence, and outdoor skills every July.
+    \vspace{4mm}{\color{gold!70!white}\rule{\panelw mm}{0.25mm}}\vspace{4mm}
+
+    {\color{forest}\faGraduationCap}~~\textbf{College \& Career Prep}\par
+    \vspace{1mm}Workshops on applications, financial aid, resumes, and job-shadow days for teens.
+    \vspace{4mm}{\color{gold!70!white}\rule{\panelw mm}{0.25mm}}\vspace{4mm}
+
+    {\color{forest}\faHandHoldingHeart}~~\textbf{Family Support Services}\par
+    \vspace{1mm}Case management, food-assistance referrals, and parent workshops for the whole family.
+  };
+
+  % =============== PANEL 6 : GET INVOLVED ===============
+  \node[anchor=north west,align=left,text width=\panelw mm] at (206,192) {%
+    \heading{Get Involved}
+    {\color{forest}\faHandsHelping}~~\textbf{Volunteer}\par
+    \vspace{1mm}Become a mentor in as little as two hours a week. Training and ongoing support provided.
+    \vspace{4mm}
+    {\color{forest}\faHandHoldingHeart}~~\textbf{Donate}\par
+    \vspace{1mm}Fund programs directly -- see giving levels on the back panel.
+    \vspace{4mm}
+    {\color{forest}\faUsers}~~\textbf{Partner}\par
+    \vspace{1mm}Businesses and congregations can adopt a program or host an event.
+    \vspace{6mm}
+    \colorbox{cream}{\parbox[t][22mm][t]{\panelw mm}{
+      \subhead{\faCalendar~~Upcoming Event}
+      \textbf{Fall Fundraiser Gala}\par
+      Thursday, September 18, 2026\par
+      The Riverside Pavilion, Columbus\par
+      Tickets: brightpathmentors.org/gala
+    }}
+    \vspace{7mm}
+    {\color{forest}\fontsize{14}{14}\selectfont\faQuoteLeft}\par
+    \vspace{1mm}{\itshape\fontsize{9}{11}\selectfont Bright Path didn't just tutor my son -- they believed in him when he had stopped believing in himself. He starts community college this fall.}\par
+    \vspace{2mm}{\fontsize{8.5}{10}\selectfont\color{forestdark}\bfseries -- Denise R., Parent}
+  };
+
+\end{tikzpicture}
+
+\end{document}

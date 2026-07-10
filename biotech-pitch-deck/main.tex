@@ -1,0 +1,1058 @@
+% ============================================================
+%  NovaBio Therapeutics — Investor Pitch Deck
+%  Compile:  latexmk -pdf main.tex
+%  Edit & compile online at https://letx.app
+% ============================================================
+\documentclass[aspectratio=169,10pt]{beamer}
+
+% ── Core packages ────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fontawesome5}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable,fitting}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,shapes.geometric,decorations.pathreplacing,shadows.blur}
+\usepackage{microtype}
+\usepackage{hyperref}
+\hypersetup{colorlinks=false,pdfborder={0 0 0}}
+
+% ── Palette ──────────────────────────────────────────────────
+\definecolor{NavyDeep}{HTML}{0A1628}
+\definecolor{NavyMid}{HTML}{112244}
+\definecolor{NavyLight}{HTML}{1E3A6E}
+\definecolor{TealAccent}{HTML}{00C2A8}
+\definecolor{TealMid}{HTML}{00897B}
+\definecolor{SkyBlue}{HTML}{4FC3F7}
+\definecolor{SlateGray}{HTML}{78909C}
+\definecolor{PaperWhite}{HTML}{F4F7FA}
+\definecolor{GoldAccent}{HTML}{FFB300}
+\definecolor{AlertRed}{HTML}{E53935}
+\definecolor{PhaseI}{HTML}{90CAF9}
+\definecolor{PhaseII}{HTML}{42A5F5}
+\definecolor{PhaseIII}{HTML}{1565C0}
+\definecolor{Preclin}{HTML}{B0BEC5}
+\definecolor{Discovery}{HTML}{CFD8DC}
+
+% ── Beamer theme (manual, no metropolis) ─────────────────────
+\setbeamercolor{normal text}{fg=NavyDeep,bg=PaperWhite}
+\setbeamercolor{structure}{fg=NavyMid}
+\setbeamercolor{frametitle}{fg=white,bg=NavyDeep}
+\setbeamercolor{framesubtitle}{fg=TealAccent}
+\setbeamercolor{title}{fg=white}
+\setbeamercolor{subtitle}{fg=TealAccent}
+\setbeamercolor{author}{fg=PaperWhite}
+\setbeamercolor{date}{fg=SlateGray}
+\setbeamercolor{block title}{fg=white,bg=NavyLight}
+\setbeamercolor{block body}{fg=NavyDeep,bg=PaperWhite}
+\setbeamercolor{itemize item}{fg=TealAccent}
+\setbeamercolor{itemize subitem}{fg=SlateGray}
+\setbeamercolor{footline}{fg=SlateGray,bg=NavyDeep}
+\setbeamercolor{headline}{bg=NavyDeep}
+
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamerfont{framesubtitle}{size=\small,series=\normalfont}
+\setbeamerfont{title}{size=\LARGE,series=\bfseries}
+\setbeamerfont{subtitle}{size=\normalsize}
+\setbeamerfont{block title}{size=\small,series=\bfseries}
+\setbeamerfont{footline}{size=\tiny}
+
+% Remove navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+% Frametitle template
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=2.2em,dp=0.6em,leftskip=1.2em]{frametitle}%
+    \usebeamerfont{frametitle}\insertframetitle\hfill
+    \begin{tikzpicture}[remember picture,overlay]
+      \fill[TealAccent] (0,0) rectangle (0.28em,2.8em);
+    \end{tikzpicture}
+  \end{beamercolorbox}%
+  \ifx\insertframesubtitle\empty\else
+    \nointerlineskip
+    \begin{beamercolorbox}[wd=\paperwidth,ht=1.2em,dp=0.3em,leftskip=1.2em]{frametitle}%
+      \usebeamerfont{framesubtitle}\color{TealAccent}\insertframesubtitle
+    \end{beamercolorbox}%
+  \fi
+}
+
+% Footline
+\setbeamertemplate{footline}{%
+  \begin{beamercolorbox}[wd=\paperwidth,ht=1.8em,dp=0.4em]{footline}%
+    \hspace{1.2em}%
+    \raisebox{0.4em}{%
+      \color{TealAccent}\textbf{NovaBio Therapeutics}%
+      \color{SlateGray}\ \textbar\ Confidential \& Proprietary%
+      \hfill%
+      \color{SlateGray}\insertframenumber\,/\,\inserttotalframenumber%
+      \hspace{1.2em}%
+    }%
+  \end{beamercolorbox}%
+}
+
+% Bullet style
+\setbeamertemplate{itemize item}{\textcolor{TealAccent}{\rule{0.5em}{0.5em}}}
+\setbeamertemplate{itemize subitem}{\textcolor{SlateGray}{\small$\triangleright$}}
+
+% ── Helper macros ─────────────────────────────────────────────
+\newcommand{\kpi}[2]{%
+  \begin{tcolorbox}[
+    enhanced,colback=NavyDeep,colframe=TealAccent,arc=4pt,
+    boxrule=0.5pt,left=4pt,right=4pt,top=4pt,bottom=4pt,
+    shadow={2pt}{-2pt}{0pt}{black!30}
+  ]%
+    \centering
+    {\color{TealAccent}\fontsize{22}{24}\selectfont\bfseries #1}\\[2pt]
+    {\color{PaperWhite}\tiny\MakeUppercase{#2}}
+  \end{tcolorbox}%
+}
+
+\newcommand{\phasebadge}[2]{%
+  \begin{tikzpicture}[baseline=(t.base)]
+    \node[fill=#1,text=white,rounded corners=2pt,
+          inner xsep=4pt,inner ysep=2pt,font=\tiny\bfseries] (t) {#2};
+  \end{tikzpicture}%
+}
+
+\newcommand{\highlight}[1]{\textcolor{TealAccent}{\textbf{#1}}}
+\newcommand{\namedcolor}[2]{\textcolor{#1}{\textbf{#2}}}
+
+\newcommand{\statbox}[3]{%
+  % #1 value  #2 label  #3 color
+  \begin{tikzpicture}
+    \node[fill=#3,text=white,rounded corners=3pt,
+          minimum width=2.8cm,minimum height=1.6cm,align=center,
+          font=\bfseries] {{\fontsize{18}{20}\selectfont #1}\\[2pt]{\tiny\MakeUppercase{#2}}};
+  \end{tikzpicture}%
+}
+
+% ── Title page background ─────────────────────────────────────
+\newcommand{\titlebackground}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[NavyDeep] (current page.south west) rectangle (current page.north east);
+    % Gradient band
+    \shade[left color=NavyLight,right color=NavyDeep]
+      (current page.south west) rectangle +(\paperwidth,\paperheight*0.45);
+    % Teal accent bar left
+    \fill[TealAccent] (current page.south west) rectangle ++(0.35em,\paperheight);
+    % Decorative arcs
+    \draw[TealAccent!30,line width=0.6pt]
+      ($(current page.north east)+(-3cm,-3cm)$) arc(0:180:3.5cm and 2cm);
+    \draw[TealAccent!15,line width=0.4pt]
+      ($(current page.north east)+(-1.5cm,-1.5cm)$) arc(0:180:5cm and 3cm);
+    % molecule-like decoration top-right
+    \foreach \a in {0,60,...,300}{
+      \fill[TealAccent!25] ($(current page.north east)+(-2cm,-2cm)$)
+        ++(\a:1.2cm) circle(3pt);
+    }
+    \foreach \a in {0,60,...,300}{
+      \draw[TealAccent!20,line width=0.5pt]
+        ($(current page.north east)+(-2cm,-2cm)$)
+        -- +(\a:1.2cm);
+    }
+  \end{tikzpicture}%
+}
+
+% ── Document ─────────────────────────────────────────────────
+\title{\texorpdfstring{NovaBio Therapeutics}{NovaBio Therapeutics}}
+\subtitle{Precision Oncology \textbar{} Series B Financing}
+\author{Dr.\ Elena Marchetti, CEO \quad Marcus Chen, CFO}
+\date{July 2026}
+\institute{Confidential Investor Presentation}
+
+% ─────────────────────────────────────────────────────────────
+\begin{document}
+% ─────────────────────────────────────────────────────────────
+
+% ── SLIDE 1: Title ───────────────────────────────────────────
+{
+\setbeamertemplate{footline}{}
+\begin{frame}[plain]
+  \titlebackground
+  \vspace*{2.2cm}
+  \hspace*{1.2em}%
+  \begin{minipage}{0.72\textwidth}
+    {\color{TealAccent}\tiny\MakeUppercase{Series B Investor Presentation\ |\ July 2026}}\\[6pt]
+    {\color{white}\fontsize{26}{30}\selectfont\bfseries NovaBio Therapeutics}\\[4pt]
+    {\color{PaperWhite}\fontsize{13}{16}\selectfont
+      Precision Oncology via Targeted RNA-Editing\\Therapy}\\[12pt]
+    \begin{tikzpicture}
+      \fill[TealAccent] (0,0) rectangle (3.5cm,2pt);
+    \end{tikzpicture}\\[10pt]
+    {\color{SlateGray}\small Dr.\ Elena Marchetti, CEO\quad
+      \textbar\quad Marcus Chen, CFO\quad
+      \textbar\quad Dr.\ Ravi Kapoor, CSO}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.22\textwidth}
+    \begin{tikzpicture}
+      % Stylized double-helix icon (fixed colors to avoid pgfmath catcode issues)
+      \foreach \i/\ya/\xla/\xra/\ca/\cb in {
+        0/0.00/-0.35/0.85/TealAccent!90/SkyBlue!90,
+        1/0.35/0.35/1.55/TealAccent!80/SkyBlue!80,
+        2/0.70/0.50/1.20/TealAccent!70/SkyBlue!70,
+        3/1.05/0.00/1.20/TealAccent!85/SkyBlue!85,
+        4/1.40/-0.35/0.85/TealAccent!75/SkyBlue!75,
+        5/1.75/0.35/1.55/TealAccent!65/SkyBlue!65,
+        6/2.10/0.50/1.20/TealAccent!80/SkyBlue!80,
+        7/2.45/0.00/1.20/TealAccent!90/SkyBlue!90
+      }{
+        \fill[\ca] (\xla,\ya) circle (3.5pt);
+        \fill[\cb] (\xra,\ya) circle (3.5pt);
+        \draw[white!20,thin] (\xla,\ya) -- (\xra,\ya);
+      }
+    \end{tikzpicture}
+  \end{minipage}
+  \hspace{0.5em}
+\end{frame}
+}
+
+% ── SLIDE 2: Executive Summary ───────────────────────────────
+\begin{frame}{Executive Summary}
+  \framesubtitle{The Opportunity in Brief}
+  \begin{columns}[T]
+    \column{0.56\textwidth}
+    \small
+    \begin{itemize}\setlength\itemsep{5pt}
+      \item[\textcolor{TealAccent}{\faFlask}]
+        \textbf{Disease focus:} KRAS-mutant non-small cell lung cancer
+        (NSCLC) and colorectal cancer (CRC) --- combined addressable
+        population $>$180{,}000 patients/year (US + EU5)
+      \item[\textcolor{TealAccent}{\faDna}]
+        \textbf{Platform:} Site-directed RNA editing (ADAR-mediated
+        A-to-I) --- \highlight{first-in-class}, no permanent genome
+        change, re-dosable
+      \item[\textcolor{TealAccent}{\faChartBar}]
+        \textbf{Lead asset NB-401:} Phase II-ready; Phase Ib ORR
+        \highlight{44\%} in KRAS\textsuperscript{G12D} NSCLC (n=27)
+      \item[\textcolor{TealAccent}{\faBriefcase}]
+        \textbf{IP estate:} 34 granted patents across US, EU, CN;
+        composition-of-matter exclusivity to 2041
+      \item[\textcolor{TealAccent}{\faDollarSign}]
+        \textbf{Raise:} \highlight{\$120M} Series B to fund Phase II/III
+        and IND filing for NB-402 (CRC)
+    \end{itemize}
+
+    \column{0.42\textwidth}
+    \vspace{-0.2cm}
+    \begin{tcolorbox}[enhanced,colback=NavyDeep,colframe=TealAccent,
+      arc=5pt,boxrule=0.6pt,left=6pt,right=6pt,top=6pt,bottom=6pt]
+      \centering
+      {\color{TealAccent}\small\bfseries Series B at a Glance}\\[6pt]
+      \small
+      \begin{tabularx}{\linewidth}{@{}>{\color{TealAccent}\bfseries}l@{\hspace{5mm}}>{\raggedright\arraybackslash\color{white}}X@{}}
+        Raise   & \$120M \\[3pt]
+        Use     & Ph.\,II (NB-401), IND (NB-402), Mfg.\,scale-up \\[3pt]
+        Pre-\$  & \$480M \\[3pt]
+        Lead    & Arch Venture Partners \\[3pt]
+        Close   & Q4 2026 \\[3pt]
+        Runway  & 36 months to Ph.\,II readout \\
+      \end{tabularx}
+    \end{tcolorbox}
+    \vspace{4pt}
+    \begin{tcolorbox}[enhanced,colback=NavyLight!60,colframe=TealAccent!50,
+      arc=4pt,boxrule=0.4pt,left=5pt,right=5pt,top=4pt,bottom=4pt]
+      \centering
+      {\color{TealAccent}\tiny\bfseries PROJECTED PEAK SALES (NB-401)}\\[4pt]
+      {\color{white}\fontsize{20}{22}\selectfont\bfseries \$4.8B}\\
+      {\color{SlateGray}\tiny 2035 consensus model (30\% penetration)}
+    \end{tcolorbox}
+  \end{columns}
+\end{frame}
+
+% ── SLIDE 3: The Problem ─────────────────────────────────────
+\begin{frame}{The Unmet Medical Need}
+  \framesubtitle{KRAS: The ``Undruggable'' Oncogene is Still Killing Patients}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \small
+    {\color{NavyLight}\bfseries KRAS Mutations Drive 25\% of All Cancers}
+    \vspace{6pt}
+
+    \begin{tabularx}{\linewidth}{@{}>{\bfseries\color{NavyLight}}l@{\hspace{4mm}}>{\raggedright\arraybackslash}X@{}}
+      \toprule
+      Cancer & KRAS mut.\ freq. \\
+      \midrule
+      Pancreatic & 95\% \\
+      CRC        & 45\% \\
+      NSCLC      & 30\% \\
+      \bottomrule
+    \end{tabularx}
+    \vspace{8pt}
+
+    {\color{NavyLight}\bfseries Limitations of Existing Approaches}
+    \vspace{4pt}
+    \begin{itemize}\setlength\itemsep{4pt}
+      \item Sotorasib/adagrasib: allele-specific (G12C only, $\sim$13\% of KRAS)
+      \item Rapid acquired resistance at 6--12 months
+      \item No approved therapies for G12D (35\% of KRAS mut.)
+      \item mOS in KRAS-mut NSCLC: \highlight{10.6 months} (2L setting)
+    \end{itemize}
+
+    \column{0.50\textwidth}
+    \vspace{-0.3cm}
+    \begin{tikzpicture}[scale=0.82]
+      % Bar chart: KRAS allele distribution
+      \begin{axis}[
+        ybar, bar width=14pt,
+        width=7.5cm, height=5.5cm,
+        ylabel={\small\% of KRAS-mut tumors},
+        ylabel style={font=\small,color=SlateGray},
+        symbolic x coords={G12D,G12V,G12C,G12R,Other},
+        xtick=data,
+        xticklabel style={font=\tiny,color=NavyDeep,rotate=20,anchor=east},
+        ymin=0,ymax=45,
+        ytick={0,10,20,30,40},
+        yticklabel style={font=\tiny,color=SlateGray},
+        axis line style={color=SlateGray!50},
+        tick style={color=SlateGray!50},
+        ymajorgrids=true, grid style={color=SlateGray!20,dashed},
+        legend style={at={(0.98,0.97)},anchor=north east,
+                      font=\tiny,draw=none,fill=PaperWhite},
+      ]
+        \addplot[fill=TealAccent,draw=none] coordinates {
+          (G12D,35) (G12V,22) (G12C,13) (G12R,10) (Other,20)};
+        \addplot[fill=PhaseI!60,draw=none] coordinates {
+          (G12D,0) (G12V,0) (G12C,13) (G12R,0) (Other,0)};
+        \legend{KRAS alleles,Approved target}
+      \end{axis}
+      % Annotation
+      \node[font=\tiny,color=TealAccent,align=center] at (1.05,3.7)
+        {\textbf{NovaBio}\\target};
+      \draw[->,TealAccent,thin] (1.3,3.5) -- (0.62,2.5);
+    \end{tikzpicture}
+  \end{columns}
+\end{frame}
+
+% ── SLIDE 4: Mechanism of Action ─────────────────────────────
+\begin{frame}{Mechanism of Action}
+  \framesubtitle{Site-Directed RNA Editing --- Reversible, Precise, Re-Dosable}
+  \begin{center}
+  \begin{tikzpicture}[
+    node distance=1.1cm and 1.5cm,
+    box/.style={draw=NavyLight,fill=white,rounded corners=4pt,
+                minimum width=2.2cm,minimum height=0.9cm,
+                align=center,font=\tiny\bfseries,text=NavyDeep,
+                drop shadow={shadow blur radius=3pt,shadow xshift=1pt,shadow yshift=-1pt,
+                             opacity=0.15,fill=black}},
+    bigbox/.style={draw=TealAccent,fill=NavyDeep!5,rounded corners=5pt,
+                   minimum width=2.6cm,minimum height=1.1cm,
+                   align=center,font=\tiny\bfseries,text=NavyDeep},
+    arr/.style={-{Stealth[length=5pt,width=3pt]},TealAccent,thick},
+    label/.style={font=\tiny,color=SlateGray}
+    ]
+    % Step nodes
+    \node[bigbox,fill=TealAccent!15,draw=TealAccent] (A)
+      {\faFlask\\[2pt]NB-401 AON\\Delivered IV};
+    \node[box,right=of A] (B)
+      {\faDna\\[2pt]Hybridizes to\\KRAS G12D\\pre-mRNA};
+    \node[box,right=of B] (C)
+      {Recruits\\Endogenous\\ADAR2};
+    \node[box,right=of C] (D)
+      {A-to-I Edit\\at codon 12\\(G12D\,$\to$\,G12)};
+    \node[bigbox,right=of D,fill=TealAccent!20,draw=TealAccent] (E)
+      {\faCheck\\[2pt]Restored\\WT KRAS\\Function};
+    % arrows
+    \draw[arr] (A) -- (B);
+    \draw[arr] (B) -- (C);
+    \draw[arr] (C) -- (D);
+    \draw[arr] (D) -- (E);
+    % labels below
+    \node[label,below=0.18cm of A] {Step 1};
+    \node[label,below=0.18cm of B] {Step 2};
+    \node[label,below=0.18cm of C] {Step 3};
+    \node[label,below=0.18cm of D] {Step 4};
+    \node[label,below=0.18cm of E] {Outcome};
+  \end{tikzpicture}
+  \end{center}
+  \vspace{-0.15cm}
+  \begin{columns}[T]
+    \column{0.32\textwidth}
+    \begin{tcolorbox}[colback=PaperWhite,colframe=TealAccent,arc=3pt,
+      boxrule=0.5pt,left=4pt,right=4pt,top=3pt,bottom=3pt]
+      {\color{NavyDeep}\tiny\bfseries\faLock\ SAFETY PROFILE}\\[3pt]
+      {\tiny No off-target genome edits (WGS confirmed). mRNA editing is
+      transient and self-limiting within 5--7 days.}
+    \end{tcolorbox}
+    \column{0.32\textwidth}
+    \begin{tcolorbox}[colback=PaperWhite,colframe=TealAccent,arc=3pt,
+      boxrule=0.5pt,left=4pt,right=4pt,top=3pt,bottom=3pt]
+      {\color{NavyDeep}\tiny\bfseries\faCog\ DELIVERY}\\[3pt]
+      {\tiny Lipid nanoparticle (LNP) optimized for IV \& IT administration.
+      Selective tumor uptake via EPR + EGFR-targeting ligand.}
+    \end{tcolorbox}
+    \column{0.32\textwidth}
+    \begin{tcolorbox}[colback=PaperWhite,colframe=TealAccent,arc=3pt,
+      boxrule=0.5pt,left=4pt,right=4pt,top=3pt,bottom=3pt]
+      {\color{NavyDeep}\tiny\bfseries\faChartBar\ DIFFERENTIATION}\\[3pt]
+      {\tiny Allele-agnostic platform; covers G12D, G12V, G12R simultaneously
+      with a single compound class.}
+    \end{tcolorbox}
+  \end{columns}
+\end{frame}
+
+% ── SLIDE 5: Clinical Pipeline ───────────────────────────────
+\begin{frame}{Clinical Pipeline}
+  \framesubtitle{Four Assets Across KRAS-Driven Solid Tumors}
+  \setlength{\parindent}{0pt}
+  \setlength{\parskip}{0pt}
+  \renewcommand{\arraystretch}{1.5}
+  \small
+  \begin{tabularx}{\linewidth}{@{}
+    >{\bfseries\color{NavyLight}}l
+    @{\hspace{3mm}}>{\raggedright\arraybackslash}X
+    @{\hspace{3mm}}l
+    @{\hspace{3mm}}>{\centering\arraybackslash}p{3.5cm}
+    @{\hspace{3mm}}>{\raggedright\arraybackslash}p{2.2cm}
+    @{}}
+    \arrayrulecolor{SlateGray!30}
+    \toprule
+    \color{SlateGray}Asset &
+    \color{SlateGray}Indication &
+    \color{SlateGray}Line &
+    \color{SlateGray}Stage &
+    \color{SlateGray}Next Milestone \\
+    \midrule
+    NB-401 & KRAS\textsuperscript{G12D} NSCLC & 2L &
+      \begin{tikzpicture}[baseline=-0.5ex]
+        % progress bar
+        \fill[SlateGray!20] (0,0) rectangle (3.4,0.3);
+        \fill[PhaseII] (0,0) rectangle (2.38,0.3); % 70% of 3.4
+        \node[font=\tiny,white,right] at (2.38,0.15) {};
+        \node[font=\tiny\bfseries,color=PhaseII] at (1.2,0.15) {Phase Ib/II};
+        \node[font=\tiny,color=SlateGray] at (3.0,0.15) {III};
+      \end{tikzpicture}
+      & Ph.\,II enrollment (Q1 2027) \\[2pt]
+    NB-402 & KRAS\textsuperscript{G12D} CRC & 2L &
+      \begin{tikzpicture}[baseline=-0.5ex]
+        \fill[SlateGray!20] (0,0) rectangle (3.4,0.3);
+        \fill[PhaseI] (0,0) rectangle (1.13,0.3);
+        \node[font=\tiny\bfseries,color=PhaseI] at (0.56,0.15) {Phase I};
+        \node[font=\tiny,color=SlateGray] at (2.27,0.15) {II};
+        \node[font=\tiny,color=SlateGray] at (3.1,0.15) {III};
+      \end{tikzpicture}
+      & Ph.\,I data (Q3 2027) \\[2pt]
+    NB-403 & KRAS-mut PDAC & 1L &
+      \begin{tikzpicture}[baseline=-0.5ex]
+        \fill[SlateGray!20] (0,0) rectangle (3.4,0.3);
+        \fill[Preclin] (0,0) rectangle (0.57,0.3);
+        \node[font=\tiny\bfseries,color=SlateGray] at (1.1,0.15) {Pre-clinical};
+        \node[font=\tiny,color=SlateGray] at (2.27,0.15) {I};
+      \end{tikzpicture}
+      & IND filing (Q4 2027) \\[2pt]
+    NB-404 & Pan-KRAS solid tumors & 1L &
+      \begin{tikzpicture}[baseline=-0.5ex]
+        \fill[SlateGray!20] (0,0) rectangle (3.4,0.3);
+        \fill[Discovery] (0,0) rectangle (0.28,0.3);
+        \node[font=\tiny,color=SlateGray] at (1.4,0.15) {Discovery};
+      \end{tikzpicture}
+      & Lead cand.\ (Q2 2028) \\
+    \bottomrule
+  \end{tabularx}
+  \vspace{6pt}
+  \begin{columns}[T]
+    \column{0.32\textwidth}
+    \kpi{44\%}{Ph.\,Ib ORR (NB-401)}
+    \column{0.32\textwidth}
+    \kpi{10.8mo}{Median PFS (NB-401 Ph.\,Ib)}
+    \column{0.32\textwidth}
+    \kpi{n=27}{Evaluable Patients}
+  \end{columns}
+\end{frame}
+
+% ── SLIDE 6: Clinical Data ───────────────────────────────────
+\begin{frame}{Phase Ib Data --- NB-401 in KRAS\textsuperscript{G12D} NSCLC}
+  \framesubtitle{Compelling Early Efficacy Signal; Manageable Safety}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \small
+    {\color{NavyLight}\bfseries Best Overall Response (n=27)}
+    \vspace{4pt}
+
+    \renewcommand{\arraystretch}{1.25}
+    \setlength{\parindent}{0pt}\setlength{\parskip}{0pt}
+    \begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X@{\hspace{4mm}}>{\centering\arraybackslash}p{1.5cm}@{}}
+      \arrayrulecolor{SlateGray!30}\toprule
+      \color{SlateGray}Response & \color{SlateGray}n (\%) \\\midrule
+      Complete Response (CR)   & 3 (11\%)  \\
+      Partial Response (PR)    & 9 (33\%)  \\
+      \rowcolor{TealAccent!10}
+      \textbf{ORR (CR+PR)}     & \textbf{12 (44\%)} \\
+      Stable Disease (SD)      & 8 (30\%)  \\
+      \rowcolor{TealAccent!5}
+      Disease Control Rate     & 20 (74\%)  \\
+      Progressive Disease (PD) & 7 (26\%)  \\\bottomrule
+    \end{tabularx}
+
+    \vspace{8pt}
+    {\color{NavyLight}\bfseries Safety (Grade 3/4 AEs $>$5\%)}
+    \vspace{4pt}
+
+    \begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}X@{\hspace{4mm}}>{\centering\arraybackslash}p{1.5cm}@{}}
+      \arrayrulecolor{SlateGray!30}\toprule
+      \color{SlateGray}AE & \color{SlateGray}n (\%) \\\midrule
+      Fatigue          & 4 (15\%) \\
+      Nausea           & 3 (11\%) \\
+      Infusion rxn.    & 2 (7\%)  \\
+      No DLTs observed & ---      \\\bottomrule
+    \end{tabularx}
+
+    \column{0.50\textwidth}
+    \vspace{-0.4cm}
+    \begin{tikzpicture}
+      % Waterfall plot
+      \begin{axis}[
+        ybar, bar width=5.8pt,
+        width=7.8cm, height=5.8cm,
+        ylabel={\small\% Change from baseline},
+        ylabel style={font=\small,color=SlateGray},
+        xlabel={\small Patient (ordered by response)},
+        xlabel style={font=\small,color=SlateGray},
+        ymin=-105,ymax=50,
+        xmin=0,xmax=28,
+        ytick={-100,-80,-60,-40,-20,0,20},
+        yticklabel style={font=\tiny,color=SlateGray},
+        xticklabel style={font=\tiny,color=SlateGray},
+        xtick=\empty,
+        axis line style={color=SlateGray!50},
+        tick style={color=SlateGray!50},
+        ymajorgrids=true, grid style={color=SlateGray!20,dashed},
+        extra y ticks={20},
+        extra y tick labels={},
+        extra y tick style={grid=major,grid style={AlertRed!50,dashed}},
+      ]
+        % CR patients (deep responses)
+        \addplot[fill=TealMid,draw=none] coordinates {
+          (1,-95)(2,-88)(3,-82)};
+        % PR patients
+        \addplot[fill=TealAccent,draw=none] coordinates {
+          (4,-72)(5,-65)(6,-58)(7,-51)(8,-45)(9,-42)(10,-38)(11,-35)(12,-31)};
+        % SD patients
+        \addplot[fill=PhaseI!70,draw=none] coordinates {
+          (13,-18)(14,-12)(15,-8)(16,-5)(17,-3)(18,0)(19,5)(20,8)};
+        % PD patients
+        \addplot[fill=AlertRed!70,draw=none] coordinates {
+          (21,12)(22,17)(23,22)(24,28)(25,33)(26,37)(27,42)};
+        \addlegendentry[fill=TealMid,draw=none]{\tiny CR}
+        \addlegendentry[fill=TealAccent,draw=none]{\tiny PR}
+        \addlegendentry[fill=PhaseI!70,draw=none]{\tiny SD}
+        \addlegendentry[fill=AlertRed!70,draw=none]{\tiny PD}
+      \end{axis}
+      \node[font=\tiny,color=AlertRed] at (4.2,0.25) {20\% threshold};
+    \end{tikzpicture}
+  \end{columns}
+\end{frame}
+
+% ── SLIDE 7: Competitive Landscape ───────────────────────────
+\begin{frame}{Competitive Landscape}
+  \framesubtitle{NovaBio Leads in Allele-Agnostic KRAS RNA Editing}
+  \setlength{\parindent}{0pt}\setlength{\parskip}{0pt}
+  \renewcommand{\arraystretch}{1.3}
+  \small
+  \begin{tabularx}{\linewidth}{@{}
+    >{\bfseries}p{2.3cm}
+    @{\hspace{2mm}}>{\centering\arraybackslash}p{1.5cm}
+    @{\hspace{2mm}}>{\centering\arraybackslash}p{2.0cm}
+    @{\hspace{2mm}}>{\centering\arraybackslash}p{1.7cm}
+    @{\hspace{2mm}}>{\centering\arraybackslash}p{1.7cm}
+    @{\hspace{2mm}}>{\centering\arraybackslash}p{1.5cm}
+    @{\hspace{2mm}}>{\centering\arraybackslash}X
+    @{}}
+    \arrayrulecolor{SlateGray!30}
+    \toprule
+    \color{SlateGray}Company &
+    \color{SlateGray}Modality &
+    \color{SlateGray}KRAS target &
+    \color{SlateGray}Stage &
+    \color{SlateGray}Allele cover. &
+    \color{SlateGray}Reversible &
+    \color{SlateGray}GS / Listed \\
+    \midrule
+    \rowcolor{TealAccent!12}
+    \color{TealMid}\textbf{NovaBio (us)} &
+    RNA editing & G12D/V/R & Ph.\,I/II &
+    \textcolor{TealAccent}{\bfseries Broad} &
+    \textcolor{TealAccent}{\bfseries Yes} &
+    Private \\
+    Amgen (AMG-510) &
+    Small mol.\ cov.\ inhib. & G12C only & Approved &
+    Narrow & No & NASDAQ \\
+    Mirati (MRTX849) &
+    Small mol.\ cov.\ inhib. & G12C only & Approved &
+    Narrow & No & NASDAQ \\
+    Relay Therapeutics &
+    Small molecule & G12C & Ph.\,II &
+    Narrow & No & NASDAQ \\
+    Arrowhead Pharma &
+    siRNA & Pan-KRAS & Ph.\,I &
+    Broad & No & NASDAQ \\
+    BioNTech RNA Edit &
+    RNA editing & G12D & Pre-clin &
+    Narrow & Yes & NASDAQ \\
+    \bottomrule
+  \end{tabularx}
+  \vspace{4pt}
+  \begin{tcolorbox}[enhanced,colback=TealAccent!8,colframe=TealAccent,
+    arc=4pt,boxrule=0.5pt,left=6pt,right=6pt,top=3pt,bottom=3pt]
+    {\color{NavyDeep}\small\bfseries\faLightbulb\ NovaBio Competitive Moat: }
+    {\small The only clinical-stage ADAR-mediated RNA editing platform targeting
+    multiple KRAS alleles simultaneously. Reversible modality de-risks chronic
+    dosing safety. \highlight{34 granted patents} create a defensible IP perimeter
+    against both small-molecule and nucleic-acid competitors.}
+  \end{tcolorbox}
+\end{frame}
+
+% ── SLIDE 8: IP Estate & Timeline ────────────────────────────
+\begin{frame}{Intellectual Property Estate}
+  \framesubtitle{Deep, Layered Protection Through 2041+}
+  \begin{columns}[T]
+    \column{0.44\textwidth}
+    \small
+    \renewcommand{\arraystretch}{1.25}
+    \setlength{\parindent}{0pt}\setlength{\parskip}{0pt}
+    \begin{tabularx}{\linewidth}{@{}>{\color{NavyLight}\bfseries}l@{\hspace{5mm}}>{\raggedright\arraybackslash}X@{}}
+      \arrayrulecolor{SlateGray!30}\toprule
+      \color{SlateGray}Category & \color{SlateGray}Details \\\midrule
+      Granted     & 34 patents (US 18, EU 9, CN 7) \\
+      Pending     & 21 applications (PCT stage) \\
+      CoM         & NB-401/402 composition granted \\
+      Platform    & ADAR guide design (7 families) \\
+      Mfg.        & LNP formulation process (4 patents) \\
+      Data exclus.& Orphan drug designation (PDAC) \\\bottomrule
+    \end{tabularx}
+
+    \vspace{8pt}
+    \begin{tabularx}{\linewidth}{@{}>{\color{NavyLight}\bfseries}l@{\hspace{5mm}}>{\raggedright\arraybackslash}X@{}}
+      \arrayrulecolor{SlateGray!30}\toprule
+      \color{SlateGray}Geography & \color{SlateGray}Exclusivity ends \\\midrule
+      United States   & 2041 (CoM) / 2043 (formulation) \\
+      European Union  & 2040 + SPC potential \\
+      China           & 2039 \\
+      Japan           & 2040 \\\bottomrule
+    \end{tabularx}
+
+    \column{0.54\textwidth}
+    \vspace{-0.2cm}
+    \begin{center}
+    {\color{NavyLight}\small\bfseries IP Lifecycle Timeline}
+    \end{center}
+    \vspace{2pt}
+    \begin{tikzpicture}[scale=0.9]
+      % Timeline axis
+      \draw[SlateGray!50,line width=0.5pt] (0,0) -- (8.5,0);
+      % Year labels
+      \foreach \x/\yr in {0/2020,1.5/2024,3/2028,4.5/2032,6/2036,7.5/2040,8.5/2043}{
+        \draw[SlateGray!50,thin] (\x,-0.08) -- (\x,0.08);
+        \node[font=\tiny,color=SlateGray,below=2pt] at (\x,0) {\yr};
+      }
+      % Bars
+      % CoM NB-401 (filed 2021, expires 2041)
+      \fill[TealAccent] (0.75,0.25) rectangle (7.65,0.65);
+      \node[font=\tiny\bfseries,white,right] at (0.8,0.45) {CoM NB-401/402 (to 2041)};
+      % Platform ADAR
+      \fill[TealMid!80] (0,0.8) rectangle (7.2,1.2);
+      \node[font=\tiny\bfseries,white,right] at (0.05,1.0) {Platform: ADAR guide design (to 2039)};
+      % LNP formulation
+      \fill[PhaseII!80] (1.5,1.35) rectangle (8.5,1.75);
+      \node[font=\tiny\bfseries,white,right] at (1.55,1.55) {LNP formulation (to 2043)};
+      % Data exclusivity
+      \fill[GoldAccent!80] (3,1.9) rectangle (5.25,2.3);
+      \node[font=\tiny\bfseries,NavyDeep,right] at (3.05,2.1) {Orphan exclusivity (7yr)};
+      % Current year marker
+      \draw[AlertRed,thick] (2.25,-0.2) -- (2.25,2.5);
+      \node[font=\tiny\bfseries,AlertRed,above] at (2.25,2.5) {2026};
+    \end{tikzpicture}
+  \end{columns}
+\end{frame}
+
+% ── SLIDE 9: Market Opportunity ──────────────────────────────
+\begin{frame}{Market Opportunity}
+  \framesubtitle{Large, Growing TAM in KRAS-Driven Oncology}
+  \begin{columns}[T]
+    \column{0.38\textwidth}
+    \small
+    \begin{itemize}\setlength\itemsep{6pt}
+      \item[\textcolor{TealAccent}{\faGlobeAmericas}]
+        KRAS oncology market projected to reach \highlight{\$14.2B} by 2031
+        (CAGR 27\%)
+      \item[\textcolor{TealAccent}{\faUsers}]
+        NB-401 initial label targets \highlight{42{,}000} US patients/year
+        (KRAS\textsuperscript{G12D} NSCLC, 2L)
+      \item[\textcolor{TealAccent}{\faPills}]
+        Premium pricing supported: comparable to Sotorasib at
+        \$\,21{,}000/month. NovaBio target ASP:
+        \highlight{\$\,19{,}500}/month
+      \item[\textcolor{TealAccent}{\faChartBar}]
+        Probability-adjusted peak revenue at 30\% US market share:
+        \highlight{\$4.8B} (2035)
+    \end{itemize}
+
+    \column{0.60\textwidth}
+    \vspace{-0.4cm}
+    \begin{tikzpicture}
+      \begin{axis}[
+        width=9.2cm, height=5.5cm,
+        xlabel={\small Year},
+        ylabel={\small Market Size (USD Billions)},
+        xlabel style={font=\small,color=SlateGray},
+        ylabel style={font=\small,color=SlateGray},
+        xmin=2024,xmax=2032,
+        ymin=0,ymax=16,
+        xtick={2024,2025,2026,2027,2028,2029,2030,2031,2032},
+        xticklabel style={font=\tiny,color=SlateGray,rotate=30,anchor=east},
+        yticklabel style={font=\tiny,color=SlateGray},
+        axis line style={color=SlateGray!50},
+        tick style={color=SlateGray!50},
+        ymajorgrids=true, grid style={color=SlateGray!20,dashed},
+        legend style={at={(0.05,0.95)},anchor=north west,font=\tiny,
+                      draw=SlateGray!30,fill=PaperWhite},
+      ]
+        \addplot[smooth,TealAccent,line width=1.8pt,mark=*,
+                 mark options={fill=TealAccent,scale=0.7}]
+          coordinates {
+            (2024,3.2)(2025,4.1)(2026,5.1)(2027,6.4)(2028,7.9)
+            (2029,9.6)(2030,11.4)(2031,13.2)(2032,15.1)};
+        \addlegendentry{Total KRAS oncology}
+        \addplot[smooth,NavyLight,line width=1.4pt,dashed,mark=square*,
+                 mark options={fill=NavyLight,scale=0.6}]
+          coordinates {
+            (2024,0.0)(2025,0.0)(2026,0.0)(2027,0.2)(2028,0.6)
+            (2029,1.3)(2030,2.4)(2031,3.6)(2032,4.9)};
+        \addlegendentry{NovaBio addressable}
+      \end{axis}
+    \end{tikzpicture}
+  \end{columns}
+\end{frame}
+
+% ── SLIDE 10: Go-to-Market & Regulatory ──────────────────────
+\begin{frame}{Regulatory \& Commercial Strategy}
+  \framesubtitle{Accelerated Approval Pathway; Partner-Enabled Launch}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \small
+    {\color{NavyLight}\bfseries Regulatory Designations Secured}
+    \vspace{4pt}
+    \begin{itemize}\setlength\itemsep{4pt}
+      \item[\textcolor{GoldAccent}{\faStar}]
+        \textbf{Breakthrough Therapy Designation} --- FDA (NB-401, June 2025)
+      \item[\textcolor{GoldAccent}{\faStar}]
+        \textbf{PRIME Designation} --- EMA (NB-401, Sept 2025)
+      \item[\textcolor{TealAccent}{\faCheck}]
+        \textbf{Orphan Drug} --- FDA \& EMA (NB-403, PDAC)
+      \item[\textcolor{TealAccent}{\faCheck}]
+        \textbf{Fast Track} --- FDA (NB-402, CRC)
+    \end{itemize}
+    \vspace{8pt}
+    {\color{NavyLight}\bfseries Commercial Model}
+    \vspace{4pt}
+    \begin{itemize}\setlength\itemsep{4pt}
+      \item Build focused US oncology sales force (60 reps; top 200 cancer centers)
+      \item European commercial via pharma partnership (term sheet signed)
+      \item Asia-Pacific license to Zymeworks Asia (royalty 12--15\%)
+      \item Specialty distributor model; hub \& spoke patient support
+    \end{itemize}
+
+    \column{0.50\textwidth}
+    \vspace{-0.2cm}
+    {\color{NavyLight}\small\bfseries Regulatory Milestones}
+    \vspace{4pt}
+    \begin{tikzpicture}[scale=0.95]
+      % Regulatory milestone dots and labels (explicit to avoid foreach color-name parsing)
+      \fill[TealMid]    (0,0.00) circle (4pt);
+      \fill[TealAccent] (0,0.75) circle (4pt);
+      \fill[NavyLight]  (0,1.50) circle (4pt);
+      \fill[GoldAccent] (0,2.25) circle (4pt);
+      \fill[TealAccent] (0,3.00) circle (4pt);
+      \fill[TealMid]    (0,3.75) circle (4pt);
+      \foreach \yy in {0.00,0.75,1.50,2.25,3.00,3.75}{
+        \draw[SlateGray!40,thin] (0.15,\yy) -- (0.30,\yy);
+      }
+      \node[font=\tiny\bfseries,color=TealMid,right]    at (0.35,0.10) {2024};
+      \node[font=\tiny,color=NavyDeep,right,align=left,text width=5.6cm] at (0.35,-0.10) {Phase Ib data (n=27); BTD granted};
+      \node[font=\tiny\bfseries,color=TealAccent,right] at (0.35,0.85) {2025};
+      \node[font=\tiny,color=NavyDeep,right,align=left,text width=5.6cm] at (0.35,0.65) {Phase II SPA agreed; PRIME designation};
+      \node[font=\tiny\bfseries,color=NavyLight,right]  at (0.35,1.60) {2026};
+      \node[font=\tiny,color=NavyDeep,right,align=left,text width=5.6cm] at (0.35,1.40) {Phase II enrollment complete (n=180)};
+      \node[font=\tiny\bfseries,color=GoldAccent,right] at (0.35,2.35) {2027};
+      \node[font=\tiny,color=NavyDeep,right,align=left,text width=5.6cm] at (0.35,2.15) {Phase II interim readout (ORR primary)};
+      \node[font=\tiny\bfseries,color=TealAccent,right] at (0.35,3.10) {2028};
+      \node[font=\tiny,color=NavyDeep,right,align=left,text width=5.6cm] at (0.35,2.90) {Phase III SPA; NDA rolling submission begins};
+      \node[font=\tiny\bfseries,color=TealMid,right]    at (0.35,3.85) {2030};
+      \node[font=\tiny,color=NavyDeep,right,align=left,text width=5.6cm] at (0.35,3.65) {FDA approval target; EU MAA};
+      \draw[SlateGray!40,line width=0.5pt] (0,-0.3) -- (0,4.1);
+    \end{tikzpicture}
+  \end{columns}
+\end{frame}
+
+% ── SLIDE 11: Financial Projections ──────────────────────────
+\begin{frame}{Financial Projections (2026--2031)}
+  \framesubtitle{Path to Profitability by 2030; Strong Return Profile}
+  \begin{columns}[T]
+    \column{0.50\textwidth}
+    \small
+    \renewcommand{\arraystretch}{1.25}
+    \setlength{\parindent}{0pt}\setlength{\parskip}{0pt}
+    \begin{tabularx}{\linewidth}{@{}>{\bfseries\color{NavyLight}\small}l
+      @{\hspace{2mm}}>{\centering\arraybackslash\small}p{1.1cm}
+      @{\hspace{1mm}}>{\centering\arraybackslash\small}p{1.1cm}
+      @{\hspace{1mm}}>{\centering\arraybackslash\small}p{1.1cm}
+      @{\hspace{1mm}}>{\centering\arraybackslash\small}p{1.1cm}
+      @{}}
+      \arrayrulecolor{SlateGray!30}\toprule
+      \small\color{SlateGray}(\$M) &
+      \color{SlateGray}'27 & \color{SlateGray}'28 &
+      \color{SlateGray}'29 & \color{SlateGray}'30 \\\midrule
+      Revenue     & -- & -- & 180 & 680 \\
+      \rowcolor{SlateGray!8}
+      R\&D Opex   & (95) & (110) & (90) & (85) \\
+      G\&A        & (18) & (22) & (28) & (35) \\
+      COGS        & -- & -- & (36) & (102) \\
+      \rowcolor{TealAccent!10}
+      \textbf{EBITDA} & (113) & (132) & 26 & \textbf{458} \\
+      Cash / EoP  & 105 & 45 & 165 & 598 \\\bottomrule
+    \end{tabularx}
+    \vspace{6pt}
+    \begin{tcolorbox}[colback=NavyDeep,colframe=TealAccent,arc=3pt,
+      boxrule=0.5pt,left=5pt,right=5pt,top=4pt,bottom=4pt]
+      \setlength{\parindent}{0pt}\setlength{\parskip}{0pt}
+      \color{PaperWhite}\tiny
+      \textbf{Key Assumptions:} NB-401 FDA approval Q4 2029.
+      US ramp: 5\% (2029), 18\% (2030) market share.
+      ASP \$19{,}500/mo. Gross margin 80\% at scale.
+      No additional dilutive financing assumed post-Series B.
+    \end{tcolorbox}
+
+    \column{0.48\textwidth}
+    \vspace{-0.4cm}
+    \begin{tikzpicture}
+      \begin{axis}[
+        ybar stacked,
+        bar width=16pt,
+        width=7.4cm, height=5.8cm,
+        ylabel={\small USD Millions},
+        ylabel style={font=\small,color=SlateGray},
+        symbolic x coords={2027,2028,2029,2030,2031},
+        xtick=data,
+        xticklabel style={font=\small,color=SlateGray},
+        ymin=-200,ymax=1200,
+        ytick={-200,-100,0,200,400,600,800,1000,1200},
+        yticklabel style={font=\tiny,color=SlateGray},
+        axis line style={color=SlateGray!50},
+        tick style={color=SlateGray!50},
+        ymajorgrids=true, grid style={color=SlateGray!20,dashed},
+        legend style={at={(0.5,-0.18)},anchor=north,font=\tiny,
+                      draw=none,fill=none,legend columns=3},
+      ]
+        % Opex (negative)
+        \addplot[fill=AlertRed!60,draw=none] coordinates {
+          (2027,-113)(2028,-132)(2029,-154)(2030,-222)(2031,-235)};
+        % Revenue
+        \addplot[fill=TealAccent,draw=none] coordinates {
+          (2027,0)(2028,0)(2029,180)(2030,680)(2031,1150)};
+        \addlegendentry{Opex}
+        \addlegendentry{Revenue}
+      \end{axis}
+      % EBITDA labels
+      \node[font=\tiny\bfseries,color=AlertRed] at (1.35,1.7) {(113)};
+      \node[font=\tiny\bfseries,color=AlertRed] at (2.8,1.6) {(132)};
+      \node[font=\tiny\bfseries,color=TealAccent] at (4.2,3.2) {+26};
+      \node[font=\tiny\bfseries,color=TealMid] at (5.65,4.4) {+458};
+      \node[font=\tiny\bfseries,color=TealMid] at (7.1,5.6) {+915};
+    \end{tikzpicture}
+  \end{columns}
+\end{frame}
+
+% ── SLIDE 12: Use of Proceeds ────────────────────────────────
+\begin{frame}{Use of Series B Proceeds (\$120M)}
+  \framesubtitle{Capital Efficiently Deployed Across Clinical \& Operational Milestones}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \vspace{0.2cm}
+    \begin{tikzpicture}
+      % Waterfall chart
+      \begin{axis}[
+        ybar,
+        bar width=22pt,
+        width=7.5cm, height=5.8cm,
+        ylabel={\small USD Millions},
+        ylabel style={font=\small,color=SlateGray},
+        symbolic x coords={Total,Ph.\,II NB-401,Mfg.,IND NB-402,G\&A,Buffer},
+        xtick=data,
+        xticklabel style={font=\tiny,color=SlateGray,rotate=25,anchor=east},
+        ymin=0,ymax=130,
+        ytick={0,20,40,60,80,100,120},
+        yticklabel style={font=\tiny,color=SlateGray},
+        axis line style={color=SlateGray!50},
+        tick style={color=SlateGray!50},
+        ymajorgrids=true, grid style={color=SlateGray!20,dashed},
+        nodes near coords,
+        nodes near coords style={font=\tiny\bfseries,color=NavyDeep,
+                                  anchor=south},
+        every node near coord/.append style={inner sep=2pt},
+      ]
+        \addplot[fill=TealAccent,draw=none] coordinates {
+          (Total,120)};
+        \addplot[fill=PhaseII,draw=none] coordinates {
+          (Ph.\,II NB-401,58)};
+        \addplot[fill=TealMid!70,draw=none] coordinates {
+          (Mfg.,22)};
+        \addplot[fill=PhaseI,draw=none] coordinates {
+          (IND NB-402,18)};
+        \addplot[fill=SlateGray!60,draw=none] coordinates {
+          (G\&A,12)};
+        \addplot[fill=GoldAccent!80,draw=none] coordinates {
+          (Buffer,10)};
+        \legend{}
+      \end{axis}
+    \end{tikzpicture}
+
+    \column{0.50\textwidth}
+    \small
+    \setlength{\parindent}{0pt}\setlength{\parskip}{0pt}
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabularx}{\linewidth}{@{}>{\color{TealAccent}\bfseries}l@{\hspace{5mm}}>{\raggedright\arraybackslash}X@{}}
+      \arrayrulecolor{SlateGray!30}\toprule
+      \color{SlateGray}Item & \color{SlateGray}Allocation \\\midrule
+      \$58M & Ph.\,II trial (NB-401); 18 sites, 180 patients, 30 months \\[3pt]
+      \$22M & Manufacturing scale-up; GMP suite buildout (CDMO) \\[3pt]
+      \$18M & IND-enabling studies for NB-402 (CRC); Ph.\,I start \\[3pt]
+      \$12M & G\&A, regulatory, legal, IP prosecution \\[3pt]
+      \$10M & Strategic reserve \& partnership diligence \\[3pt]
+      \multicolumn{2}{l}{\color{SlateGray}\small\textbf{Total: \$120M | 36-month runway to Phase II readout}}\\\bottomrule
+    \end{tabularx}
+    \vspace{8pt}
+    \begin{tcolorbox}[colback=TealAccent!8,colframe=TealAccent,arc=3pt,
+      boxrule=0.5pt,left=5pt,right=5pt,top=3pt,bottom=3pt]
+      \setlength{\parindent}{0pt}\setlength{\parskip}{0pt}
+      {\color{NavyDeep}\small\bfseries\faCheckCircle\ Value Inflection:}
+      {\small\ Phase II ORR readout in Q1 2028 represents the primary
+      de-risking event and licensing / M\&A catalyst.}
+    \end{tcolorbox}
+  \end{columns}
+\end{frame}
+
+% ── SLIDE 13: Team ───────────────────────────────────────────
+\begin{frame}{Leadership Team}
+  \framesubtitle{Seasoned Operators with Proven Track Records in RNA \& Oncology}
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \setlength{\parindent}{0pt}\setlength{\parskip}{0pt}
+    \begin{tcolorbox}[enhanced,colback=PaperWhite,colframe=NavyLight,
+      arc=4pt,boxrule=0.5pt,left=6pt,right=6pt,top=5pt,bottom=5pt,
+      shadow={2pt}{-2pt}{0pt}{black!15}]
+      {\color{NavyLight}\small\bfseries Dr.\ Elena Marchetti --- CEO}\\[2pt]
+      {\tiny Former SVP Oncology, Genentech (10 yrs).
+      Led approval of 3 oncology products (FDA/EMA).
+      Co-founder, Radius Bio (acq.\ Roche \$1.8B, 2021).
+      MD/PhD Harvard; Boards: AACR, BIO.}
+    \end{tcolorbox}
+    \vspace{5pt}
+    \begin{tcolorbox}[enhanced,colback=PaperWhite,colframe=NavyLight,
+      arc=4pt,boxrule=0.5pt,left=6pt,right=6pt,top=5pt,bottom=5pt,
+      shadow={2pt}{-2pt}{0pt}{black!15}]
+      {\color{NavyLight}\small\bfseries Dr.\ Ravi Kapoor --- CSO}\\[2pt]
+      {\tiny Pioneer in site-directed RNA editing; 140+ publications;
+      h-index 62. Former Broad Institute/MIT faculty.
+      Inventor on 28 of NovaBio's granted patents.}
+    \end{tcolorbox}
+    \vspace{5pt}
+    \begin{tcolorbox}[enhanced,colback=PaperWhite,colframe=NavyLight,
+      arc=4pt,boxrule=0.5pt,left=6pt,right=6pt,top=5pt,bottom=5pt,
+      shadow={2pt}{-2pt}{0pt}{black!15}]
+      {\color{NavyLight}\small\bfseries Marcus Chen --- CFO}\\[2pt]
+      {\tiny Former CFO, Relay Therapeutics (NASDAQ: RLAY).
+      Led \$285M IPO and two follow-on offerings.
+      CPA; MBA Wharton; 20 years biotech finance.}
+    \end{tcolorbox}
+
+    \column{0.50\textwidth}
+    \setlength{\parindent}{0pt}\setlength{\parskip}{0pt}
+    \begin{tcolorbox}[colback=NavyDeep,colframe=TealAccent,arc=4pt,
+      boxrule=0.5pt,left=6pt,right=6pt,top=6pt,bottom=6pt]
+      {\color{TealAccent}\small\bfseries Board \& Scientific Advisors}
+      \vspace{4pt}
+      \begin{tabularx}{\linewidth}{@{}>{\color{TealAccent}\bfseries\tiny}l@{\hspace{3mm}}>{\raggedright\arraybackslash\color{white}\tiny}X@{}}
+        Dr.\ Anne Wilson   & Nobel Laureate, RNA Biology; Stanford \\[2pt]
+        James Park         & GP, Arch Venture Partners \\[2pt]
+        Dr.\ Carlos Ruiz   & Former FDA CDER Director; Regulatory \\[2pt]
+        Sarah L.\ Kim      & Commercial; former CCO, Blueprint Medicines \\[2pt]
+        Dr.\ Priya Sharma  & CMO; Oncology KOL, MD Anderson \\
+      \end{tabularx}
+    \end{tcolorbox}
+    \vspace{6pt}
+    \begin{tcolorbox}[colback=TealAccent!8,colframe=TealAccent,arc=4pt,
+      boxrule=0.5pt,left=6pt,right=6pt,top=4pt,bottom=4pt]
+      \setlength{\parindent}{0pt}\setlength{\parskip}{0pt}
+      {\color{NavyLight}\small\bfseries Existing Investors}\\[4pt]
+      {\small Arch Venture Partners (Lead A)\quad
+      Flagship Pioneering\quad
+      RA Capital Management\quad
+      OrbiMed Advisors}\\[4pt]
+      {\color{SlateGray}\tiny Total raised to date: \$68M across Seed + Series A}
+    \end{tcolorbox}
+  \end{columns}
+\end{frame}
+
+% ── SLIDE 14: Closing / Ask ───────────────────────────────────
+{
+\setbeamertemplate{footline}{}
+\begin{frame}[plain]
+  \titlebackground
+  \begin{center}
+    \vspace*{1.4cm}
+    {\color{TealAccent}\small\bfseries\MakeUppercase{The Ask}}\\[6pt]
+    {\color{white}\fontsize{28}{32}\selectfont\bfseries \$120M Series B}\\[4pt]
+    \begin{tikzpicture}
+      \fill[TealAccent] (0,0) rectangle (4cm,2pt);
+    \end{tikzpicture}\\[12pt]
+    {\color{PaperWhite}\normalsize
+      To advance NB-401 through Phase II, file IND for NB-402,\\[2pt]
+      and position NovaBio for a 2028--2029 licensing event or IPO.}\\[16pt]
+
+    \begin{tikzpicture}
+      \node[fill=TealAccent!15,draw=TealAccent,rounded corners=5pt,
+            minimum width=10cm,minimum height=2.2cm,align=center,
+            font=\small\bfseries,text=white] {
+        \begin{minipage}{9.5cm}
+          \centering\color{white}
+          \small
+          \begin{tabular}{@{}ccccc@{}}
+            \highlight{\$120M} &
+            \highlight{36 mo} &
+            \highlight{Ph.\,II ORR} &
+            \highlight{2028--29} &
+            \highlight{\$4.8B} \\[2pt]
+            \tiny Series B & \tiny Runway & \tiny Primary endpoint &
+            \tiny Catalyst window & \tiny Peak revenue\\
+          \end{tabular}
+        \end{minipage}
+      };
+    \end{tikzpicture}\\[14pt]
+
+    {\color{SlateGray}\small
+      \faEnvelope\ \texttt{bd@novabiotx.com}\quad
+      \faPhone\ \texttt{+1 (617) 555-0142}\quad
+      \faGlobe\ \texttt{www.novabiotx.com}}\\[6pt]
+    {\color{SlateGray}\tiny
+      Confidential \& Proprietary. For discussion purposes only.
+      Not an offer to sell or solicitation of an offer to buy securities.}
+  \end{center}
+\end{frame}
+}
+
+\end{document}

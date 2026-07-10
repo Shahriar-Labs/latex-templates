@@ -1,0 +1,146 @@
+% Data Science Project Report — editable & compilable online at https://letx.app
+% Compiles with pdflatex. A clean applied-DS report: exec summary, metric cards,
+% methodology, a simple pgfplots chart, a results table, and recommendations.
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{amsmath}
+\usepackage[table]{xcolor}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+
+\definecolor{navy}{HTML}{1B2A4A}
+\definecolor{accent}{HTML}{2F6FED}
+\definecolor{good}{HTML}{16A34A}
+\definecolor{bad}{HTML}{DC2626}
+\definecolor{light}{HTML}{EEF3FB}
+\definecolor{mist}{HTML}{5B6472}
+
+\titleformat{\section}{\Large\bfseries\color{navy}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\large\bfseries\color{accent}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{13pt}{5pt}
+
+\pagestyle{fancy}\fancyhf{}
+\lhead{\small\color{mist}Data Science Project Report}
+\rhead{\small\color{mist}Customer Churn Prediction}
+\cfoot{\small\color{mist}\thepage\ \textbullet\ Made with \href{https://letx.app}{letx.app}}
+\renewcommand{\headrulewidth}{0.3pt}
+
+% metric card
+\newcommand{\metric}[4]{%
+\begin{minipage}[t]{0.31\linewidth}
+\begin{tcolorbox}[colback=light,colframe=light,boxrule=0pt,arc=2mm,left=3mm,right=3mm,
+  top=3mm,bottom=3mm,borderline west={2.5pt}{0pt}{#1},halign=center,height=2.1cm,valign=center]
+{\LARGE\bfseries\color{navy}#2}\\[2pt]{\scriptsize\color{mist}#3}
+\end{tcolorbox}
+\end{minipage}}
+
+\begin{document}
+% ---- title ----
+\begin{tcolorbox}[colback=navy,colframe=navy,arc=3mm,left=12pt,top=9pt,bottom=9pt]
+{\color{white}\fontsize{20}{22}\selectfont\bfseries Predicting Customer Churn for a\\ Subscription Streaming Service}\\[3pt]
+{\color{accent!50}\small Applied Data Science Project \textbullet\ Priya Nair \textbullet\ June 2026}
+\end{tcolorbox}
+
+\vspace{2pt}
+% ---- metric row ----
+\noindent
+\metric{accent}{0.891}{AUC--ROC (held-out test)}{}\hfill
+\metric{good}{\$1.11M}{Projected annual net ROI}{}\hfill
+\metric{bad}{9.8\%$\to$7.1\%}{Churn, pilot cohort}{}
+
+\section{Executive Summary}
+This project builds a supervised model to identify subscribers at high risk of cancelling
+within the next 30 days, enabling proactive retention. Using twelve months of behavioral and
+billing data for 84,000 subscribers, a gradient-boosted model achieves an AUC--ROC of 0.891
+and, in a six-week pilot, reduced monthly churn in the treated cohort from 9.8\% to 7.1\%.
+
+\section{Data \& Features}
+The dataset joins subscription records, usage logs, and support interactions. After cleaning
+and de-duplication, 84,012 active subscribers remained, with a 30-day forward churn label.
+
+\begin{table}[ht]\centering
+\caption{Selected engineered features and their importance.}
+\begin{tabularx}{\linewidth}{@{}X r r@{}}
+\toprule
+\textbf{Feature} & \textbf{Importance} & \textbf{Corr.\ w/ churn}\\
+\midrule
+Tenure (months)              & 0.24 & $-0.61$\\
+Weekly active days           & 0.19 & $-0.58$\\
+Support tickets, last 90 days & 0.16 & $+0.47$\\
+Monthly charges              & 0.12 & $-0.29$\\
+Month-to-month contract flag & 0.11 & $+0.42$\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Methodology}
+We compared logistic regression, random forest, and gradient boosting under 5-fold
+time-aware cross-validation, tuning with Bayesian optimization. The decision threshold was
+chosen to maximize expected retention value, not raw accuracy:
+\begin{equation}
+\text{EV}(\tau)=\sum_{i:\,\hat p_i\ge\tau}\bigl(p_i\cdot v_{\text{save}}-c_{\text{offer}}\bigr),
+\end{equation}
+where $v_{\text{save}}$ is the retained lifetime value and $c_{\text{offer}}$ the incentive cost.
+
+\subsection{Model Comparison}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.86\linewidth, height=5.2cm, ybar, bar width=16pt,
+  symbolic x coords={Logistic,RandomForest,GradBoosting},
+  xtick=data, ymin=0.7, ymax=0.95, ylabel={AUC--ROC},
+  nodes near coords, every node near coord/.append style={font=\footnotesize},
+  tick label style={font=\small}, ylabel style={font=\small},
+  ymajorgrids, grid style={light}, axis line style={navy!40}, enlarge x limits=0.3]
+\addplot[fill=accent!75,draw=accent] coordinates {(Logistic,0.812) (RandomForest,0.864) (GradBoosting,0.891)};
+\end{axis}
+\end{tikzpicture}
+\end{center}
+
+\section{Results}
+Gradient boosting was selected for deployment. Beyond ranking accuracy, it produced
+well-calibrated probabilities suitable for value-based thresholding.
+
+\begin{table}[ht]\centering
+\caption{Held-out test performance by model.}
+\begin{tabularx}{\linewidth}{@{}X r r r r@{}}
+\toprule
+\textbf{Model} & \textbf{AUC} & \textbf{Precision} & \textbf{Recall} & \textbf{F1}\\
+\midrule
+Logistic Regression & 0.812 & 0.61 & 0.58 & 0.59\\
+Random Forest       & 0.864 & 0.69 & 0.64 & 0.66\\
+\textbf{Gradient Boosting} & \textbf{0.891} & \textbf{0.74} & \textbf{0.70} & \textbf{0.72}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Deployment \& Recommendations}
+\begin{enumerate}[leftmargin=1.4em,itemsep=3pt]
+  \item \textbf{Shadow (weeks 1--2):} score the base weekly; validate live vs.\ holdout.
+  \item \textbf{Pilot (weeks 3--6):} trigger retention offers for 20\% of the at-risk segment,
+        A/B tested against a control to confirm causal lift.
+  \item \textbf{Rollout (weeks 7--12):} automate weekly batch scoring; add drift monitoring
+        (PSI, calibration, performance-decay alerts).
+\end{enumerate}
+
+\section{Limitations}
+The label horizon is fixed at 30 days; longer horizons need re-labeling. The pilot ran on a
+single market, and seasonal effects were not fully controlled. Ongoing monitoring for
+feature drift is required to sustain performance.
+\end{document}
