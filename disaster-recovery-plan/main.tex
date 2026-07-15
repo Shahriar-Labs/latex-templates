@@ -1,0 +1,424 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, shapes.geometric, backgrounds, patterns}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+\usepackage{fontawesome5}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{lastpage}
+\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{parskip}
+
+\definecolor{primary}{HTML}{1B2A3B}
+\definecolor{secondary}{HTML}{2E4057}
+\definecolor{accent}{HTML}{178F7E}
+\definecolor{alert}{HTML}{D4822A}
+\definecolor{lightgray}{HTML}{F2F4F6}
+\definecolor{mediumgray}{HTML}{D5DCE4}
+\definecolor{tablehead}{HTML}{1B2A3B}
+\definecolor{tablerow}{HTML}{F7F9FB}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent,
+  citecolor=accent
+}
+
+\fancypagestyle{drp}{
+  \fancyhf{}
+  \fancyhead[L]{\small\textcolor{primary}{\textbf{Nexa Financial Services} \textbar{} Disaster Recovery Plan}}
+  \fancyhead[R]{\small\textcolor{secondary}{Confidential}}
+  \fancyfoot[L]{\small\textcolor{secondary}{DRP-NEXA-2026-001}}
+  \fancyfoot[C]{\small\textcolor{secondary}{Page \thepage\ of \pageref{LastPage}}}
+  \fancyfoot[R]{\small\textcolor{secondary}{\today}}
+  \renewcommand{\headrulewidth}{0.4pt}
+  \renewcommand{\footrulewidth}{0.4pt}
+}
+\pagestyle{drp}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{primary}}
+  {\thesection}{1em}{}
+  [{\vspace{-0.3cm}\textcolor{accent}{\rule{\textwidth}{1.5pt}}}]
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{secondary}}
+  {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\color{accent}}
+  {\thesubsubsection}{1em}{}
+
+\newtcolorbox{infobox}{
+  colback=lightgray,
+  colframe=accent,
+  boxrule=0.5pt,
+  arc=3pt,
+  left=12pt,
+  right=12pt,
+  top=8pt,
+  bottom=8pt
+}
+
+\newtcolorbox{alertbox}{
+  colback=alert!8,
+  colframe=alert,
+  boxrule=0.5pt,
+  arc=3pt,
+  left=12pt,
+  right=12pt,
+  top=8pt,
+  bottom=8pt,
+  before upper={\textcolor{alert!80!black}{\faExclamationTriangle}\quad}
+}
+
+\newcommand{\rpo}[1]{\textcolor{accent}{\textbf{#1}}}
+\newcommand{\rto}[1]{\textcolor{alert}{\textbf{#1}}}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+\begin{document}
+
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[primary] (current page.north west) rectangle ([yshift=-5cm]current page.north east);
+  \node[anchor=north west, text=white] at ([xshift=1in, yshift=-1.2cm]current page.north west) {%
+    \begin{minipage}{\dimexpr\paperwidth-2in\relax}
+      {\Huge\bfseries Disaster Recovery Plan}\\[4pt]
+      {\LARGE Nexa Financial Services}\\[8pt]
+      {\large Document Reference: DRP-NEXA-2026-001}
+    \end{minipage}
+  };
+  \fill[accent] (current page.north west) rectangle ([yshift=-5.15cm]current page.north east);
+  \fill[primary] (current page.north west) rectangle ([yshift=-5cm]current page.north east);
+\end{tikzpicture}
+
+\vspace{5.5cm}
+
+\begin{flushleft}
+{\large\bfseries\color{primary} Document Control}
+
+\vspace{0.5cm}
+\begin{tabularx}{\textwidth}{@{}l L{3cm} l X@{}}
+  \textbf{Document Owner:} & \multicolumn{3}{l}{Sarah Chen, Chief Information Security Officer}\\
+  \textbf{Classification:} & \multicolumn{3}{l}{\textcolor{alert}{\faExclamationTriangle}\ \textbf{CONFIDENTIAL --- Restricted Distribution}}\\[4pt]
+  \textbf{Version:} & 2.1 & \textbf{Date:} & 15 July 2026\\
+  \textbf{Status:} & Approved & \textbf{Review Cycle:} & Quarterly\\
+  \textbf{Distribution:} & \multicolumn{3}{l}{Executive Team, IT Operations, Business Continuity Steering Committee}\\
+\end{tabularx}
+
+\vspace{1cm}
+{\large\bfseries\color{primary} Approval Signatures}
+
+\vspace{0.4cm}
+\begin{tabularx}{\textwidth}{@{}l C{2.5cm} l C{2.5cm} l@{}}
+  \toprule
+  \textbf{Role} & \textbf{Name} & \textbf{Signature} & \textbf{Date}\\
+  \midrule
+  CISO & Sarah Chen & \emph{S. Chen} & 12 Jul 2026\\
+  CIO & Marcus Reed & \emph{M. Reed} & 13 Jul 2026\\
+  CEO & David Park & \emph{D. Park} & 14 Jul 2026\\
+  Head of IT Ops & Priya Nair & \emph{P. Nair} & 11 Jul 2026\\
+  \bottomrule
+\end{tabularx}
+\end{flushleft}
+
+\clearpage
+
+\section{Version History}
+
+\begin{tcolorbox}[colback=lightgray, colframe=primary, boxrule=0.5pt, arc=3pt, left=10pt, right=10pt, top=8pt, bottom=8pt]
+\begin{tabularx}{\textwidth}{@{}c c X c c@{}}
+  \toprule
+  \rowcolor{tablehead}
+  \textcolor{white}{\textbf{Version}} & \textcolor{white}{\textbf{Date}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Author}} & \textcolor{white}{\textbf{Approved}}\\
+  \midrule
+  \rowcolor{tablerow}
+  2.1 & 15 Jul 2026 & Updated RTO values for Core Banking System; added new DR site location in Phoenix, AZ & S. Chen & D. Park\\
+  2.0 & 03 Mar 2026 & Full revision post-annual audit; restructured recovery tiers; added cloud failover procedures & S. Chen & D. Park\\
+  \rowcolor{tablerow}
+  1.3 & 14 Nov 2025 & Added third-party vendor recovery contacts; updated network topology appendix & M. Torres & S. Chen\\
+  1.2 & 08 Aug 2025 & Incorporated lessons learned from July tabletop exercise; revised communication tree & S. Chen & M. Reed\\
+  \rowcolor{tablerow}
+  1.1 & 22 May 2025 & Minor corrections to server inventory and RPO targets & M. Torres & S. Chen\\
+  1.0 & 10 Jan 2025 & Initial release of the Disaster Recovery Plan & S. Chen & M. Reed\\
+  \bottomrule
+\end{tabularx}
+\end{tcolorbox}
+
+\section{Introduction}
+
+\subsection{Purpose and Scope}
+
+This Disaster Recovery Plan (DRP) establishes the procedures, roles, and technical requirements for recovering critical IT systems and infrastructure operated by Nexa Financial Services. The plan covers the primary data centre located in Chicago, IL, and the secondary disaster recovery site in Phoenix, AZ.
+
+The DRP applies to all production systems supporting the following business functions:
+\begin{itemize}[nosep, leftmargin=*]
+  \item Core banking and transaction processing
+  \item Customer-facing digital platforms (web and mobile)
+  \item Internal corporate systems (email, ERP, HRIS)
+  \item Data warehousing and business intelligence
+  \item Payment gateway and settlement services
+\end{itemize}
+
+\begin{infobox}
+\textbf{\faInfoCircle\ Plan Activation Criteria}\\[4pt]
+This plan is activated when the Chief Information Security Officer (CISO), in consultation with the Crisis Management Team, declares a disaster event. A disaster is defined as any unplanned event that results in the loss of critical IT services for more than \textbf{4 hours} or poses an imminent risk of extended service disruption.
+\end{infobox}
+
+\subsection{Definitions}
+
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+  \textbf{RTO} & \textbf{Recovery Time Objective} --- the maximum acceptable duration of service interruption before recovery must be complete.\\
+  \textbf{RPO} & \textbf{Recovery Point Objective} --- the maximum acceptable age of data that can be lost, measured from the point of failure.\\
+  \textbf{BCP} & Business Continuity Plan.\\
+  \textbf{DR Site} & The secondary facility in Phoenix, AZ, designated for disaster recovery operations.\\
+  \textbf{MAAO} & Maximum Allowable Acceptable Outage --- the absolute ceiling on downtime beyond which the organisation faces existential harm.\\
+\end{tabularx}
+
+\clearpage
+
+\section{Recovery Objectives}
+
+\subsection{Recovery Time and Point Objectives}
+
+The following table defines the recovery objectives for each tier of service. Systems are classified into three tiers based on business impact analysis (BIA) conducted in January 2026.
+
+\begin{tcolorbox}[colback=lightgray, colframe=primary, boxrule=0.5pt, arc=3pt, left=10pt, right=10pt, top=8pt, bottom=8pt]
+\begin{tabularx}{\textwidth}{@{}l c c c X@{}}
+  \toprule
+  \rowcolor{tablehead}
+  \textcolor{white}{\textbf{System Tier}} & \textcolor{white}{\textbf{RTO}} & \textcolor{white}{\textbf{RPO}} & \textcolor{white}{\textbf{MAAO}} & \textcolor{white}{\textbf{Critical Systems}}\\
+  \midrule
+  \rowcolor{tablerow}
+  \textbf{Tier 1} --- Mission Critical & \rto{$\leqslant$ 1 hr} & \rpo{$\leqslant$ 5 min} & 2 hrs & Core Banking, Payment Gateway, Customer Auth\\
+  \textbf{Tier 2} --- Business Critical & \rto{$\leqslant$ 4 hrs} & \rpo{$\leqslant$ 1 hr} & 8 hrs & Digital Banking Platform, CRM, Data Warehouse\\
+  \rowcolor{tablerow}
+  \textbf{Tier 3} --- Operational Support & \rto{$\leqslant$ 24 hrs} & \rpo{$\leqslant$ 24 hrs} & 48 hrs & Internal Wiki, Training Systems, Dev Environments\\
+  \bottomrule
+\end{tabularx}
+\end{tcolorbox}
+
+\subsection{Tier 1 --- Detailed Recovery Targets}
+
+\begin{tabularx}{\textwidth}{@{}l c c X c@{}}
+  \toprule
+  \rowcolor{tablehead}
+  \textcolor{white}{\textbf{System}} & \textcolor{white}{\textbf{RTO}} & \textcolor{white}{\textbf{RPO}} & \textcolor{white}{\textbf{DR Strategy}} & \textcolor{white}{\textbf{Priority}}\\
+  \midrule
+  Core Banking (NexaCore) & 45 min & 0 min & Hot standby --- synchronous replication & 1\\
+  \rowcolor{tablerow}
+  Payment Gateway (PayFlow) & 1 hr & 5 min & Warm standby --- async replication, 5-min sync & 2\\
+  Customer Identity \& Auth (ApexID) & 30 min & 0 min & Active-active across both sites & 1\\
+  \rowcolor{tablerow}
+  Settlement Engine & 1 hr & 5 min & Warm standby --- async replication & 3\\
+  Transaction Ledger (LedgerDB) & 40 min & 0 min & Hot standby --- synchronous replication & 1\\
+  \bottomrule
+\end{tabularx}
+
+\clearpage
+
+\section{Recovery Team Structure}
+
+\subsection{Incident Response Team}
+
+\begin{tcolorbox}[colback=lightgray, colframe=primary, boxrule=0.5pt, arc=3pt, left=10pt, right=10pt, top=8pt, bottom=8pt]
+\begin{tabularx}{\textwidth}{@{}l X c l@{}}
+  \toprule
+  \rowcolor{tablehead}
+  \textcolor{white}{\textbf{Role}} & \textcolor{white}{\textbf{Name}} & \textcolor{white}{\textbf{Contact}} & \textcolor{white}{\textbf{Deputy}}\\
+  \midrule
+  \rowcolor{tablerow}
+  Crisis Manager & Sarah Chen, CISO & \faPhone\ +1-312-555-0101 & Marcus Reed\\
+  IT Recovery Lead & Priya Nair, Head of IT Ops & \faPhone\ +1-312-555-0102 & Tom\'{a}s Reyes\\
+  \rowcolor{tablerow}
+  Network Lead & James Okonkwo, Sr. Network Eng. & \faPhone\ +1-312-555-0103 & Lena Bergstr\"{o}m\\
+  Database Lead & Dr.\ Arjun Mehta, Principal DBA & \faPhone\ +1-312-555-0104 & Yuki Tanaka\\
+  \rowcolor{tablerow}
+  Application Lead & Olivia Fischer, VP Engineering & \faPhone\ +1-312-555-0105 & Raj Patel\\
+  Security Lead & Kevin Park, Head of InfoSec & \faPhone\ +1-312-555-0106 & Amara Osei\\
+  \rowcolor{tablerow}
+  Communications Lead & Natalia Gomez, VP Corp Comms & \faPhone\ +1-312-555-0107 & \textemdash\\
+  \bottomrule
+\end{tabularx}
+\end{tcolorbox}
+
+\subsection{Escalation Procedure}
+
+\begin{enumerate}[nosep, leftmargin=*]
+  \item \textbf{Incident detected} --- Any team member or monitoring system identifies a potential disaster event.
+  \item \textbf{Initial assessment} --- IT Recovery Lead assesses scope and impact within \textbf{15 minutes}.
+  \item \textbf{Crisis Manager notification} --- If incident meets activation criteria, CISO is notified immediately.
+  \item \textbf{Plan activation} --- CISO declares a disaster and activates this DRP.
+  \item \textbf{Team assembly} --- All recovery team members report to the designated war room (physical: Chicago HQ, Conference Room B; virtual: secured bridge line).
+  \item \textbf{Status updates} --- Communications Lead issues updates every \textbf{2 hours} to stakeholders.
+\end{enumerate}
+
+\begin{alertbox}
+\textbf{Critical: War Room Access}\\[4pt]
+In the event the Chicago HQ is inaccessible, the secondary war room is located at \textbf{Nexa DR Facility, 7400 E Tierra Buena Lane, Phoenix, AZ 85260}. Virtual war room bridge: \textbf{+1-312-555-0200}, Participant Code: \textbf{482937\#}.
+\end{alertbox}
+
+\clearpage
+
+\section{Recovery Procedures}
+
+\subsection{Phase 1: Declaration and Mobilisation (0--30 minutes)}
+
+\begin{tabularx}{\textwidth}{@{}c X l@{}}
+  \toprule
+  \rowcolor{tablehead}
+  \textcolor{white}{\textbf{Step}} & \textcolor{white}{\textbf{Action}} & \textcolor{white}{\textbf{Responsible}}\\
+  \midrule
+  1.1 & Confirm disaster event via monitoring dashboards and on-call engineer verification. & IT Recovery Lead\\
+  \rowcolor{tablerow}
+  1.2 & Notify Crisis Manager with initial impact assessment. & IT Recovery Lead\\
+  1.3 & Crisis Manager convenes the Crisis Management Team within 15 minutes. & Crisis Manager\\
+  \rowcolor{tablerow}
+  1.4 & Declare disaster and activate this DRP. Log activation time in incident management system (NimbusIMS). & Crisis Manager\\
+  1.5 & Send initial stakeholder notification via all communication channels. & Communications Lead\\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Phase 2: Infrastructure Failover (30 minutes--2 hours)}
+
+\begin{tabularx}{\textwidth}{@{}c X l@{}}
+  \toprule
+  \rowcolor{tablehead}
+  \textcolor{white}{\textbf{Step}} & \textcolor{white}{\textbf{Action}} & \textcolor{white}{\textbf{Responsible}}\\
+  \midrule
+  2.1 & Initiate DNS failover to DR site --- update A records for \texttt{*.nexafinancial.com} to Phoenix IP range. TTL: 60 seconds. & Network Lead\\
+  \rowcolor{tablerow}
+  2.2 & Promote DR database replicas to primary. Verify data consistency against last sync timestamp. & Database Lead\\
+  2.3 & Activate DR application servers and validate health checks across all Tier 1 services. & Application Lead\\
+  \rowcolor{tablerow}
+  2.4 & Re-establish VPN tunnels and configure firewall rules at DR site. & Network Lead\\
+  2.5 & Run integration smoke tests on Core Banking and Payment Gateway endpoints. & Application Lead\\
+  \rowcolor{tablerow}
+  2.6 & Confirm external connectivity --- validate that partner banks (Synapse Trust, Meridian Holdings) can reach DR endpoints. & Network Lead\\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Phase 3: Service Restoration and Validation (2--4 hours)}
+
+\begin{tabularx}{\textwidth}{@{}c X l@{}}
+  \toprule
+  \rowcolor{tablehead}
+  \textcolor{white}{\textbf{Step}} & \textcolor{white}{\textbf{Action}} & \textcolor{white}{\textbf{Responsible}}\\
+  \midrule
+  3.1 & Restore Tier 2 systems (Digital Banking Platform, CRM, Data Warehouse). & Application Lead\\
+  \rowcolor{tablerow}
+  3.2 & Execute end-to-end transaction test: deposit, transfer, withdrawal via PayFlow. & QA Lead\\
+  3.3 & Validate customer authentication flows through ApexID. & Security Lead\\
+  \rowcolor{tablerow}
+  3.4 & Reconcile transaction ledger: compare Chicago ledger snapshot with Phoenix replica. Maximum acceptable discrepancy: \textbf{0 transactions}. & Database Lead\\
+  3.5 & Enable customer-facing services and monitor error rates for \textbf{30 minutes} before declaring stable. & Application Lead\\
+  \rowcolor{tablerow}
+  3.6 & Issue status update to all stakeholders confirming service restoration status. & Communications Lead\\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Phase 4: Stabilisation and Return to Normal Operations}
+
+\begin{infobox}
+\textbf{\faClock\ Return to Primary Site}\\[4pt]
+Once the primary Chicago data centre is fully restored and validated, a controlled failback is executed during a pre-scheduled maintenance window. The failback procedure mirrors the failover steps in reverse order, with an additional \textbf{2-hour} data synchronisation window between site deactivation at Phoenix and activation at Chicago.
+\end{infobox}
+
+\clearpage
+
+\section{Communication Plan}
+
+\subsection{Stakeholder Notification Matrix}
+
+\begin{tcolorbox}[colback=lightgray, colframe=primary, boxrule=0.5pt, arc=3pt, left=10pt, right=10pt, top=8pt, bottom=8pt]
+\begin{tabularx}{\textwidth}{@{}l c c X@{}}
+  \toprule
+  \rowcolor{tablehead}
+  \textcolor{white}{\textbf{Stakeholder Group}} & \textcolor{white}{\textbf{Initial}} & \textcolor{white}{\textbf{Ongoing}} & \textcolor{white}{\textbf{Channel}}\\
+  \midrule
+  \rowcolor{tablerow}
+  Executive Leadership & $\leqslant$ 15 min & Every 2 hrs & Secure SMS + Conference Call\\
+  Board of Directors & $\leqslant$ 30 min & Every 4 hrs & Email (encrypted) + Call\\
+  \rowcolor{tablerow}
+  All Employees & $\leqslant$ 1 hr & Every 4 hrs & Internal Portal + Email\\
+  Customers & $\leqslant$ 2 hrs & Every 6 hrs & Status Page + Email + App Push\\
+  \rowcolor{tablerow}
+  Regulators (OCC, CFPB) & $\leqslant$ 1 hr & As required & Formal filing + Designated Liaison\\
+  Partner Banks & $\leqslant$ 30 min & Every 2 hrs & Direct call to relationship manager\\
+  \rowcolor{tablerow}
+  Media \& Public & $\leqslant$ 3 hrs & As required & Press release + Social Media\\
+  \bottomrule
+\end{tabularx}
+\end{tcolorbox}
+
+\subsection{Communication Templates}
+
+\begin{infobox}
+\textbf{\faBullhorn\ Initial Stakeholder Notification (Template)}\\[4pt]
+\textit{Subject:} \textbf{URGENT --- Nexa Financial Services Service Disruption}\\[4pt]
+\textit{Body:} Nexa Financial Services is currently experiencing a service disruption affecting [\textit{list affected systems}]. Our Disaster Recovery Plan has been activated at [TIME] on [DATE]. The recovery team is working to restore services within the defined recovery time objectives. The next update will be provided by [TIME]. For urgent matters, please contact [CONTACT NAME] at [PHONE].\\[4pt]
+\textit{Sender:} Natalia Gomez, VP Corporate Communications
+\end{infobox}
+
+\section{Testing and Maintenance}
+
+\subsection{Annual Testing Schedule}
+
+\begin{tabularx}{\textwidth}{@{}l c c X@{}}
+  \toprule
+  \rowcolor{tablehead}
+  \textcolor{white}{\textbf{Test Type}} & \textcolor{white}{\textbf{Frequency}} & \textcolor{white}{\textbf{Next Date}} & \textcolor{white}{\textbf{Scope}}\\
+  \midrule
+  Tabletop Exercise & Quarterly & 15 Oct 2026 & All recovery team members --- scenario-based walkthrough\\
+  \rowcolor{tablerow}
+  Tier 1 Failover Drill & Semi-Annual & 01 Sep 2026 & Full Core Banking and Payment Gateway failover\\
+  Tier 2 Recovery Test & Semi-Annual & 15 Sep 2026 & Digital Banking Platform and CRM restoration\\
+  \rowcolor{tablerow}
+  Full-Scale Simulation & Annual & 15 Mar 2027 & All-hands exercise covering all three tiers\\
+  Third-Party Integration Test & Annual & 01 Apr 2027 & Connectivity testing with Synapse Trust and Meridian Holdings\\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Plan Maintenance}
+
+This document is reviewed and updated:
+\begin{itemize}[nosep, leftmargin=*]
+  \item \textbf{Quarterly} --- by the Disaster Recovery Coordinator
+  \item \textbf{After every test} --- incorporating lessons learned and identified gaps
+  \item \textbf{After any significant infrastructure change} --- including new system deployments, architecture changes, or vendor transitions
+  \item \textbf{After any actual disaster event} --- capturing post-incident review findings
+\end{itemize}
+
+\vspace{0.5cm}
+\begin{center}
+\begin{tikzpicture}
+  \node[draw=accent, fill=lightgray, rounded corners=4pt, inner sep=12pt, text width=0.85\textwidth, align=center] {%
+    \textbf{\textcolor{primary}{\Large Document Control}}\\[6pt]
+    \textcolor{secondary}{This document is maintained in Nexa Financial Services' controlled document repository.}\\[4pt]
+    \textcolor{secondary}{All printed copies are uncontrolled and valid only on the date of printing.}\\[4pt]
+    \textcolor{secondary}{Refer to NimbusDocs (Ref: DRP-NEXA-2026-001) for the current approved version.}
+  };
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.5cm}
+\begin{flushright}
+\textit{\textcolor{secondary}{--- End of Disaster Recovery Plan ---}}
+\end{flushright}
+
+\end{document}

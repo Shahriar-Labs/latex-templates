@@ -1,0 +1,543 @@
+\documentclass[12pt,a4paper]{report}
+
+% ---------- Geometry ----------
+\usepackage[left=4cm,right=2.5cm,top=2.8cm,bottom=2.8cm]{geometry}
+
+% ---------- Core packages ----------
+\usepackage[table]{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds}
+\usepackage[most]{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage[hidelinks]{hyperref}
+
+% ---------- Colour palette ----------
+\definecolor{uctblue}{HTML}{163A5F}
+\definecolor{uctgold}{HTML}{C9A227}
+\definecolor{uctslate}{HTML}{4A5A6A}
+\definecolor{uctpale}{HTML}{F4F1E8}
+
+% ---------- Section styling ----------
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{uctblue}}
+  {\filright\Large\scshape\color{uctgold} Chapter \thechapter}
+  {6pt}
+  {\Huge}
+\titlespacing*{\chapter}{0pt}{0pt}{28pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{uctblue}}{\thesection}{0.7em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{uctslate}}{\thesubsection}{0.7em}{}
+
+% ---------- Headers/footers ----------
+\setlength{\headheight}{14pt}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\color{uctslate}\leftmark}
+\fancyhead[R]{\small\color{uctslate}\thepage}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyhead[L]{\small\color{uctslate}\leftmark}
+  \fancyhead[R]{\small\color{uctslate}\thepage}
+  \renewcommand{\headrulewidth}{0.4pt}
+}
+
+\setstretch{1.25}
+\setlength{\parskip}{4pt}
+
+% ---------- tcolorbox styles ----------
+\newtcolorbox{keybox}[1]{
+  colback=uctpale,
+  colframe=uctblue,
+  colbacktitle=uctblue,
+  coltitle=white,
+  fonttitle=\bfseries,
+  title=#1,
+  boxrule=0.6pt,
+  arc=2pt,
+  left=6pt,right=6pt,top=4pt,bottom=4pt
+}
+
+\newtcolorbox{contribbox}[1]{
+  colback=white,
+  colframe=uctgold,
+  boxrule=0.8pt,
+  arc=2pt,
+  left=6pt,right=6pt,top=5pt,bottom=5pt,
+  title=#1,
+  colbacktitle=uctgold,
+  coltitle=uctblue,
+  fonttitle=\bfseries\small
+}
+
+\begin{document}
+
+% ============================================================
+% TITLE PAGE
+% ============================================================
+\begin{titlepage}
+\begin{center}
+
+\vspace*{0.4cm}
+{\small\color{uctslate}\scshape University of Cape Town}\\[2pt]
+{\small\color{uctslate} Faculty of Engineering \& the Built Environment}\\
+{\small\color{uctslate} Department of Electrical Engineering}
+
+\vspace{1.4cm}
+{\color{uctgold}\rule{0.5\textwidth}{1pt}}
+\vspace{1.2cm}
+
+{\Large\bfseries\color{uctblue}
+Optimising Load-Balancing Strategies for\\
+Solar--Diesel Hybrid Microgrids in\\
+Rural Southern Africa
+\par}
+
+\vspace{1.2cm}
+{\color{uctgold}\rule{0.5\textwidth}{1pt}}
+\vspace{1.6cm}
+
+{\normalsize\itshape A thesis submitted in fulfilment of the requirements\\
+for the degree of}
+
+\vspace{0.4cm}
+{\large\bfseries\color{uctslate} Master of Science in Electrical Engineering}
+
+\vspace{1.6cm}
+
+\begin{tabular}{rl}
+\textbf{Author:} & Lindiwe M.\ Dlamini \\[4pt]
+\textbf{Student Number:} & DLNLIN004 \\[4pt]
+\textbf{Supervisor:} & Prof.\ T.\ K.\ Okafor \\[4pt]
+\textbf{Co-Supervisor:} & Dr.\ S.\ van der Merwe \\
+\end{tabular}
+
+\vspace{2.0cm}
+{\normalsize Cape Town, South Africa}\\
+{\normalsize February 2026}
+
+\vfill
+\begin{center}
+\footnotesize\color{uctslate}
+\textit{Unofficial template --- not affiliated with or endorsed by the university.\\
+Sample content only.}
+\end{center}
+
+\end{center}
+\end{titlepage}
+
+% ============================================================
+% FRONT MATTER
+% ============================================================
+\pagenumbering{roman}
+
+\chapter*{Plagiarism Declaration}
+\addcontentsline{toc}{chapter}{Plagiarism Declaration}
+\begin{enumerate}[label=\arabic*.]
+  \item I know that plagiarism is wrong. Plagiarism is to use another's work and pretend that
+        it is one's own.
+  \item I have used a recognised referencing convention for citation and quotation. Each
+        contribution to, and quotation from, the work of others has been attributed and cited
+        in this dissertation.
+  \item This dissertation is my own original work, prepared for the degree of Master of
+        Science in Electrical Engineering at the University of Cape Town. Neither the whole
+        work, nor any part of it, has been submitted for a degree at any other university.
+  \item I have not allowed, and will not allow, anyone to copy this work with the intention
+        of passing it off as their own work.
+\end{enumerate}
+
+\vspace{1.2cm}
+\noindent
+\begin{tabular}{@{}ll}
+Signature: & \makebox[5cm]{\hrulefill} \\[10pt]
+Date: & \makebox[5cm]{\hrulefill} \\
+\end{tabular}
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+Rural electrification schemes across Southern Africa increasingly rely on solar--diesel hybrid
+microgrids to provide reliable power where national grid extension is not economically viable.
+A recurring operational weakness in deployed systems is the load-balancing controller: fixed
+rule-based dispatch logic frequently under-utilises photovoltaic (PV) generation during
+transient cloud cover and over-dispatches the diesel generator, eroding the fuel-cost savings
+that justify the hybrid design in the first place. This dissertation develops and evaluates a
+predictive load-balancing strategy for solar--diesel hybrid microgrids, combining short-horizon
+irradiance forecasting with a model predictive control (MPC) dispatch layer. The proposed
+controller is benchmarked in simulation against conventional rule-based and fuzzy-logic
+dispatch strategies using twelve months of irradiance and load data drawn from three
+pseudonymised microgrid sites operated by the fictional rural utility partner Meridian Power.
+Results show a mean diesel fuel-consumption reduction of 18.4\% and a 27\% reduction in
+generator start--stop cycling relative to the incumbent rule-based controller, at the cost of a
+modest increase in computational load that remains within the budget of a low-power embedded
+controller. The findings suggest that predictive dispatch is a practical, near-term upgrade
+path for existing microgrid fleets rather than a design consideration restricted to new-build
+sites.
+
+\vspace{0.6cm}
+\noindent\textbf{Keywords:} hybrid microgrid, model predictive control, rural electrification,
+load balancing, photovoltaic forecasting, diesel displacement
+
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+I am grateful to my supervisor, Prof.\ T.\ K.\ Okafor, for his patient guidance through several
+false starts in the controller design, and to my co-supervisor, Dr.\ S.\ van der Merwe, for
+her sharp questions during our weekly reviews, which repeatedly sent me back to first
+principles. Thanks are due to the postgraduate research group in the Power \& Energy Systems
+Laboratory for the many whiteboard debates that shaped Chapter~3, and to the (fictional)
+operations team at Meridian Power for making anonymised site telemetry available for this
+study. Finally, I thank my family for their support throughout this degree.
+
+This work is dedicated to the memory of long evenings in the Menzies Building computer lab.
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\chapter*{List of Abbreviations}
+\addcontentsline{toc}{chapter}{List of Abbreviations}
+\begin{tabbing}
+\hspace{2.6cm}\= \kill
+\textbf{DoD} \> Depth of Discharge \\
+\textbf{MPC} \> Model Predictive Control \\
+\textbf{PV} \> Photovoltaic \\
+\textbf{SoC} \> State of Charge \\
+\textbf{SOGI} \> Second-Order Generalised Integrator \\
+\textbf{UCT} \> University of Cape Town \\
+\end{tabbing}
+
+\pagenumbering{arabic}
+
+% ============================================================
+% CHAPTER 1
+% ============================================================
+\chapter{Introduction}
+
+\section{Background}
+Grid extension to sparsely populated rural areas remains capital-intensive relative to the
+electricity demand it serves, which has made solar--diesel hybrid microgrids a common
+intermediate solution across Southern Africa. A typical installation pairs a PV array with
+battery storage and a diesel generator sized to cover shortfalls during extended low-irradiance
+periods. The economic case for the hybrid configuration rests almost entirely on the fraction
+of load served by PV and battery storage rather than by diesel; every additional litre of fuel
+displaced by solar generation is what separates the hybrid system from a diesel-only
+mini-grid in lifetime cost terms.
+
+In practice, the controller that arbitrates between PV, battery, and diesel dispatch is the
+component that determines whether this economic case is realised. Many deployed systems still
+use static rule-based dispatch --- for example, "run the generator whenever battery state of
+charge (SoC) falls below 40\%" --- which is simple to implement and verify, but reacts to
+conditions only after they occur rather than anticipating them.
+
+\section{Problem Statement}
+Field data collected from three Meridian Power microgrid sites over a twelve-month period shows
+that rule-based controllers dispatch the diesel generator during short-lived cloud transients
+that a forecast-aware controller could plausibly ride through using battery reserve alone. This
+behaviour has two costs: direct fuel expenditure, and accelerated generator wear from frequent
+start--stop cycling, which increases maintenance visits to sites that are, by definition,
+difficult to reach.
+
+\section{Research Objectives}
+This dissertation addresses the following objectives:
+
+\begin{enumerate}[label=O\arabic*.,leftmargin=2.2cm]
+  \item Characterise the dispatch inefficiencies of incumbent rule-based and fuzzy-logic
+        controllers using historical telemetry from three operating microgrid sites.
+  \item Design a short-horizon irradiance forecasting module suitable for a low-power embedded
+        controller.
+  \item Develop a model predictive dispatch controller that consumes the forecasting module's
+        output to schedule PV, battery, and diesel generation.
+  \item Evaluate the proposed controller against incumbent strategies on fuel consumption,
+        generator cycling, and unmet-load frequency.
+\end{enumerate}
+
+\noindent
+\begin{minipage}{0.48\textwidth}
+\begin{contribbox}{Contribution A}
+A forecast-aware dispatch controller that reduces diesel start--stop cycling without
+requiring additional site hardware beyond the existing telemetry unit.
+\end{contribbox}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+\begin{contribbox}{Contribution B}
+An open evaluation framework using twelve months of anonymised multi-site data, enabling
+like-for-like comparison of dispatch strategies.
+\end{contribbox}
+\end{minipage}
+\par
+
+\section{Thesis Outline}
+Chapter~2 reviews existing dispatch strategies for hybrid microgrids and situates the proposed
+approach within that literature. Chapter~3 describes the system architecture, the forecasting
+module, and the MPC formulation. Chapter~4 presents the evaluation methodology and simulation
+results. Chapter~5 concludes with limitations and directions for future work.
+
+% ============================================================
+% CHAPTER 2
+% ============================================================
+\chapter{Literature Review}
+
+\section{Dispatch Strategies for Hybrid Microgrids}
+Dispatch strategies for solar--diesel hybrid microgrids fall broadly into three families:
+rule-based (threshold) control, fuzzy-logic control, and optimisation-based control such as
+model predictive control. Table~\ref{tab:strategies} summarises their comparative properties
+as reported across the reviewed literature.
+
+\begin{table}[h]
+\centering
+\caption{Comparison of dispatch strategy families for hybrid microgrids}
+\label{tab:strategies}
+\begin{tabularx}{\textwidth}{@{}l X c c@{}}
+\toprule
+\rowcolor{uctblue}
+\textcolor{white}{\textbf{Strategy}} & \textcolor{white}{\textbf{Description}} &
+\textcolor{white}{\textbf{Forecast Use}} & \textcolor{white}{\textbf{Typical Fuel Saving}} \\
+\midrule
+Rule-based & Threshold triggers on SoC and load & None & Baseline \\
+Fuzzy logic & Smoothed threshold response using membership functions & Limited & 6--10\% \\
+MPC (this work) & Receding-horizon optimisation over forecast state & Full & 15--20\% \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Rule-based controllers remain the incumbent choice in the majority of deployed systems because
+they can be verified exhaustively and require no telemetry beyond instantaneous
+measurements. Fuzzy-logic controllers improve on hard thresholds by smoothing the transition
+between dispatch states, reducing but not eliminating unnecessary generator cycling. Neither
+family anticipates near-term irradiance change.
+
+\section{Forecasting for Microgrid Control}
+Short-horizon (15--90 minute) irradiance forecasting is typically approached either through
+sky-imaging techniques or through statistical time-series models applied to historical
+irradiance and cloud-cover proxies. Sky-imaging offers higher accuracy but requires dedicated
+camera hardware at each site, which is difficult to justify economically for small rural
+installations. Statistical approaches trade some accuracy for deployability on the low-power
+controllers already installed at existing sites, which motivates their use in this work.
+
+\section{Gap in the Literature}
+While MPC-based dispatch has been studied extensively for grid-connected and large-scale
+off-grid systems, comparatively little published work evaluates predictive dispatch on the
+class of low-cost embedded controllers actually deployed in rural Southern African microgrids,
+or benchmarks it against field telemetry rather than synthetic load profiles. This
+dissertation addresses that gap directly.
+
+% ============================================================
+% CHAPTER 3
+% ============================================================
+\chapter{System Design and Methodology}
+
+\section{System Architecture}
+Figure~\ref{fig:architecture} shows the high-level architecture of the proposed controller as
+integrated into an existing hybrid microgrid installation. The forecasting module and MPC
+dispatch layer run on the site's existing embedded controller; no additional field hardware is
+required.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=0.9cm and 1.4cm,
+    block/.style={rectangle, rounded corners=2pt, draw=uctblue, fill=uctpale,
+                  minimum width=2.6cm, minimum height=1.1cm, align=center,
+                  font=\small},
+    ctrl/.style={rectangle, rounded corners=2pt, draw=uctgold, fill=white,
+                 line width=1pt, minimum width=3.0cm, minimum height=1.1cm,
+                 align=center, font=\small\bfseries},
+    decision/.style={diamond, draw=uctslate, fill=white, aspect=2,
+                      minimum width=2.2cm, align=center, font=\small},
+    every path/.style={-, thick, color=uctslate}
+]
+
+\node[block] (pv) {PV Array};
+\node[block, below=of pv] (batt) {Battery\\Bank};
+\node[block, below=of batt] (diesel) {Diesel\\Generator};
+
+\node[ctrl, right=2.0cm of batt] (mpc) {MPC Dispatch\\Controller};
+
+\node[block, above=of mpc] (forecast) {Irradiance\\Forecast Module};
+\node[block, below=of mpc] (load) {Village\\Load};
+
+\begin{scope}[on background layer]
+\draw[draw=uctslate, dashed, rounded corners=4pt, fill=white]
+  ($(forecast.north west)+(-0.35,0.35)$) rectangle ($(mpc.south east)+(0.35,-0.35)$);
+\end{scope}
+
+\draw[->] (pv.east) -- ++(0.6,0) |- (mpc.west);
+\draw[->] (batt.east) -- (mpc.west);
+\draw[->] (diesel.east) -- ++(0.6,0) |- (mpc.west);
+\draw[->] (forecast.south) -- (mpc.north);
+\draw[->] (mpc.south) -- (load.north);
+\draw[->] (mpc.west) ++(-0.05,0.35) -- ++(-1.9,0) |- (batt.east);
+
+\end{tikzpicture}
+\caption{High-level architecture: the MPC dispatch controller consumes forecast, battery,
+and load state to schedule PV, battery, and diesel generation.}
+\label{fig:architecture}
+\end{figure}
+
+\section{Forecasting Module}
+The forecasting module produces a 90-minute-ahead irradiance estimate in 15-minute steps using
+an autoregressive model fitted on each site's historical irradiance series, corrected by a
+cloud-cover proxy derived from short-term irradiance variability. Let $G_t$ denote measured
+global horizontal irradiance at time $t$ and $\hat{G}_{t+k}$ the forecast $k$ steps ahead; the
+module estimates
+
+\begin{equation}
+\hat{G}_{t+k} = \sum_{i=1}^{p} \phi_i\, G_{t-i} \;+\; \beta \, C_t \;+\; \varepsilon_t,
+\label{eq:forecast}
+\end{equation}
+
+\noindent
+where $\phi_i$ are autoregressive coefficients fitted per site, $C_t$ is a normalised
+cloud-cover proxy, $\beta$ its regression weight, and $\varepsilon_t$ residual error.
+
+\begin{keybox}{Definition: Forecast Horizon}
+The forecast horizon $H$ is the number of future 15-minute steps over which the MPC layer
+optimises dispatch at each control step. This work uses $H = 6$ (90 minutes), chosen as the
+shortest horizon that still captures typical cloud-transient duration at the evaluated sites.
+\end{keybox}
+
+\section{Model Predictive Dispatch Formulation}
+At each control step, the MPC layer solves a finite-horizon optimisation that minimises diesel
+fuel consumption and generator switching, subject to battery SoC and load-service constraints:
+
+\begin{equation}
+\min_{\{u_t\}} \; \sum_{k=0}^{H-1} \Big( c_f \, P^{\text{diesel}}_{t+k} +
+c_s \, \left| \Delta u_{t+k} \right| \Big)
+\label{eq:objective}
+\end{equation}
+
+\begin{align}
+\text{s.t.} \quad
+& \text{SoC}_{\min} \le \text{SoC}_{t+k} \le \text{SoC}_{\max}, & \forall k \label{eq:soc} \\
+& P^{\text{PV}}_{t+k} + P^{\text{batt}}_{t+k} + P^{\text{diesel}}_{t+k} \ge P^{\text{load}}_{t+k},
+  & \forall k \label{eq:balance} \\
+& 0 \le P^{\text{diesel}}_{t+k} \le P^{\text{diesel}}_{\max}, & \forall k \label{eq:dieselcap}
+\end{align}
+
+\noindent
+where $c_f$ and $c_s$ weight fuel cost and switching penalty respectively, and $\Delta
+u_{t+k}$ is the change in diesel generator on/off state between consecutive steps. The
+switching penalty term $c_s$ directly targets the generator-cycling problem identified in
+Chapter~1.
+
+\section{Evaluation Sites}
+The controller is evaluated in simulation against twelve months of telemetry from three
+pseudonymised Meridian Power microgrid sites, summarised in Table~\ref{tab:sites}.
+
+\begin{table}[h]
+\centering
+\caption{Evaluation sites and installed capacity}
+\label{tab:sites}
+\begin{tabularx}{\textwidth}{@{}l X c c@{}}
+\toprule
+\rowcolor{uctblue}
+\textcolor{white}{\textbf{Site}} & \textcolor{white}{\textbf{Region}} &
+\textcolor{white}{\textbf{PV (kWp)}} & \textcolor{white}{\textbf{Diesel (kVA)}} \\
+\midrule
+Site A -- Nimbus Valley & Eastern Cape & 42 & 30 \\
+Site B -- Apex Flats & Northern Cape & 38 & 25 \\
+Site C -- Meridian Ridge & Limpopo & 55 & 40 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Simulation Environment}
+All three dispatch strategies were re-implemented in a discrete-event simulator operating at
+5-minute resolution, driven by each site's measured irradiance and load traces. Battery
+dynamics were modelled with a first-order equivalent-circuit model calibrated against
+manufacturer datasheet parameters; generator fuel consumption used a linear fuel curve fitted
+to each site's rated generator.
+
+% ============================================================
+% CHAPTER 4
+% ============================================================
+\chapter{Results and Discussion}
+
+\section{Fuel Consumption}
+Across the three evaluation sites, the MPC controller reduced mean diesel fuel consumption by
+18.4\% relative to the incumbent rule-based controller and by 9.7\% relative to the fuzzy-logic
+controller, averaged over the twelve-month evaluation window. The largest improvement was
+observed at Site C, attributed to its comparatively larger PV array giving the forecasting
+module more usable signal during partly-cloudy conditions.
+
+\section{Generator Cycling}
+Generator start--stop events fell by 27\% under the MPC controller relative to rule-based
+dispatch, consistent with the switching-penalty term in Equation~\eqref{eq:objective}. This is
+operationally significant: each avoided start--stop cycle reduces both fuel wasted on
+generator warm-up and the wear that drives unscheduled maintenance visits to these
+difficult-to-access sites.
+
+\section{Computational Load}
+The MPC solve step added a mean 340\,ms of computation per 5-minute control interval on the
+reference embedded controller, well within the available budget and without requiring hardware
+upgrades at any of the three sites.
+
+\section{Limitations}
+The evaluation relies on historical telemetry replayed through simulation rather than a live
+field trial, so real-world controller interaction effects --- such as sensor drift or
+communication dropouts --- are not captured. The forecasting module was also tuned per site
+using the full available history, which may overstate accuracy relative to a genuinely
+unseen deployment site.
+
+% ============================================================
+% CHAPTER 5
+% ============================================================
+\chapter{Conclusion and Future Work}
+
+This dissertation presented a forecast-aware model predictive dispatch controller for
+solar--diesel hybrid microgrids and evaluated it against incumbent rule-based and fuzzy-logic
+strategies using twelve months of field telemetry from three sites. The proposed controller
+reduced diesel fuel consumption by 18.4\% and generator cycling by 27\%, while remaining within
+the computational budget of existing low-power site controllers.
+
+Future work should prioritise a live field trial to validate these simulation results under
+real communication and sensor conditions, and should investigate whether the forecasting
+module can be trained across sites to reduce the per-site tuning burden identified as a
+limitation in Chapter~4.
+
+% ============================================================
+% REFERENCES
+% ============================================================
+\begin{thebibliography}{99}
+
+\bibitem{okafor2023} T.~K.~Okafor and L.~Dube, ``Rule-based dispatch limitations in rural
+hybrid microgrids: a field study,'' \textit{Journal of Sustainable Energy Systems}, vol.~14,
+no.~2, pp.~112--128, 2023.
+
+\bibitem{vandermerwe2022} S.~van der Merwe, ``Fuzzy-logic dispatch for off-grid photovoltaic
+storage systems,'' \textit{Renewable Power Engineering Review}, vol.~9, no.~4, pp.~301--315,
+2022.
+
+\bibitem{ngozi2021} A.~Ngozi, R.~Patel, and M.~Chikafa, ``Short-horizon irradiance forecasting
+using autoregressive models on low-power hardware,'' in \textit{Proc.\ Southern African
+Conference on Renewable Energy}, Cape Town, South Africa, 2021, pp.~44--51.
+
+\bibitem{dlamini2020} K.~Dlamini, ``Model predictive control for isolated microgrids: a
+review,'' \textit{IEEE Transactions on Smart Grid Applications}, vol.~11, no.~6,
+pp.~4890--4902, 2020.
+
+\bibitem{meridian2024} Meridian Power Technical Report, ``Twelve-month site telemetry summary
+for rural hybrid installations (anonymised),'' internal report, 2024.
+
+\bibitem{sithole2019} P.~Sithole and J.~Botha, ``Generator wear and maintenance cost drivers
+in remote diesel-hybrid installations,'' \textit{Journal of Energy Systems Maintenance},
+vol.~6, no.~1, pp.~22--34, 2019.
+
+\end{thebibliography}
+
+\end{document}

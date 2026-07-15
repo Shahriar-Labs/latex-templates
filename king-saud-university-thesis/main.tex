@@ -1,0 +1,599 @@
+\documentclass[12pt]{report}
+
+% ---------------------------------------------------------------------------
+% King Saud University Thesis Template (UNOFFICIAL)
+% Bilingual Arabic/English front matter, English body.
+% Compiled with XeLaTeX (required for native Arabic script shaping).
+% ---------------------------------------------------------------------------
+
+\usepackage{fontspec}
+\usepackage{polyglossia}
+\setmainlanguage{english}
+\setotherlanguage{arabic}
+\setmainfont{Times New Roman}
+\setsansfont{Helvetica Neue}
+\newfontfamily\arabicfont[Script=Arabic,Scale=1.05]{Geeza Pro}
+\newfontfamily\arabicfontsf[Script=Arabic,Scale=1.05]{Geeza Pro}
+\newcommand{\lat}[1]{{\fontspec{Times New Roman}#1}}
+
+\usepackage[a4paper,top=1.1in,bottom=1.1in,left=1.5in,right=1in]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage[most]{tcolorbox}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{fontawesome5}
+\usepackage[hidelinks]{hyperref}
+
+% ---------------------------------------------------------------------------
+% Palette
+% ---------------------------------------------------------------------------
+\definecolor{ksuGreen}{RGB}{9,64,48}
+\definecolor{ksuGold}{RGB}{190,145,40}
+\definecolor{inkGray}{RGB}{40,40,42}
+\definecolor{paperCream}{RGB}{250,248,241}
+\definecolor{softGreen}{RGB}{224,233,228}
+
+\hypersetup{
+  pdftitle={Adaptive Resource Scheduling for Multi-Tenant Cloud Workloads},
+  pdfauthor={Faisal S. Al-Mutairi},
+  colorlinks=true,
+  linkcolor=ksuGreen,
+  citecolor=ksuGreen,
+  urlcolor=ksuGreen
+}
+
+% ---------------------------------------------------------------------------
+% Headings
+% ---------------------------------------------------------------------------
+\titleformat{\chapter}[display]
+  {\normalfont\Huge\bfseries\color{ksuGreen}}
+  {\raggedleft\Large\color{ksuGold}\chaptertitlename\ \thechapter}
+  {6pt}
+  {\raggedleft\huge}
+\titlespacing*{\chapter}{0pt}{-10pt}{28pt}
+
+\titleformat{\section}
+  {\normalfont\large\bfseries\color{ksuGreen}}{\thesection}{0.7em}{}
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries\color{inkGray}}{\thesubsection}{0.7em}{}
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[LE,RO]{\small\color{ksuGreen}\thepage}
+\fancyhead[RE]{\small\color{inkGray}\nouppercase{\leftmark}}
+\fancyhead[LO]{\small\color{inkGray}Adaptive Resource Scheduling}
+
+\newcommand{\sectionrule}{\vspace{2pt}{\color{ksuGold}\hrule height 1.2pt}\vspace{10pt}}
+
+\setlength{\parskip}{4pt}
+\onehalfspacing
+
+\begin{document}
+
+% ===========================================================================
+% ENGLISH TITLE PAGE
+% ===========================================================================
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+
+{\sffamily\small KINGDOM OF SAUDI ARABIA \\{}
+MINISTRY OF EDUCATION \\{}
+\textbf{KING SAUD UNIVERSITY} \\{}
+College of Computer and Information Sciences \\{}
+Department of Computer Science}
+
+\vspace{18pt}
+\begin{tikzpicture}
+  \draw[ksuGreen, line width=1.4pt] (0,0) rectangle (11.6,4.6);
+  \draw[ksuGold, line width=0.6pt] (0.14,0.14) rectangle (11.46,4.46);
+  \draw[ksuGreen, line width=1.4pt] (0.35,0.35) -- (1.15,0.35) -- (1.15,1.15);
+  \draw[ksuGreen, line width=1.4pt] (10.45,0.35) -- (11.25,0.35) -- (11.25,1.15);
+  \draw[ksuGreen, line width=1.4pt] (0.35,4.25) -- (1.15,4.25) -- (1.15,3.45);
+  \draw[ksuGreen, line width=1.4pt] (10.45,4.25) -- (11.25,4.25) -- (11.25,3.45);
+  \node[align=center, text width=10.4cm] at (5.8,2.85) {\Large\bfseries\color{ksuGreen}
+    Adaptive Resource Scheduling for\\{}
+    Multi-Tenant Cloud Workloads:\\{}
+    A Reinforcement Learning Approach};
+  \node[align=center, text width=10.4cm, font=\small\itshape\color{inkGray}] at (5.8,1.15)
+    {A Thesis Submitted to the Deanship of Graduate Studies\\{}
+     in Partial Fulfillment of the Requirements for the Degree of\\{}
+     Master of Science in Computer Science};
+\end{tikzpicture}
+
+\vspace{22pt}
+{\large\bfseries by} \\[4pt]
+{\Large Faisal S. Al-Mutairi}
+
+\vspace{16pt}
+{\small Supervised by} \\[2pt]
+{\large\bfseries Dr. Noura Al-Harbi}
+
+\vfill
+
+{\small \faCalendar\ Rabi' II 1447H --- October 2025G \\{}
+Riyadh, Kingdom of Saudi Arabia}
+
+\vspace{14pt}
+{\color{ksuGold}\rule{0.55\textwidth}{0.6pt}}\\[6pt]
+{\footnotesize\itshape\color{inkGray!80}
+Unofficial template --- not affiliated with or endorsed by the university.
+Sample content only.}
+\end{center}
+\end{titlepage}
+
+% ===========================================================================
+% ARABIC TITLE PAGE
+% ===========================================================================
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{Arabic}
+\begin{center}
+
+{\sffamily\small المملكة العربية السعودية \\{}
+وزارة التعليم \\{}
+\textbf{جامعة الملك سعود} \\{}
+كلية علوم الحاسب والمعلومات \\{}
+قسم علوم الحاسب}
+
+\vspace{18pt}
+\newsavebox{\arabtitlebox}
+\sbox{\arabtitlebox}{\begin{minipage}{10.2cm}\centering\Large\bfseries\color{ksuGreen}
+    جدولة الموارد التكيفية لأحمال العمل السحابية\\
+    متعددة المستأجرين{\fontspec{Times New Roman}:} نهج قائم على التعلم المعزز
+\end{minipage}}
+\newsavebox{\arabsubbox}
+\sbox{\arabsubbox}{\begin{minipage}{10.2cm}\centering\small\itshape\color{inkGray}
+    رسالة مقدمة إلى عمادة الدراسات العليا\\
+     استكمالاً لمتطلبات الحصول على درجة\\
+     الماجستير في علوم الحاسب
+\end{minipage}}
+\begin{tikzpicture}
+  \draw[ksuGreen, line width=1.4pt] (0,0) rectangle (11.6,4.6);
+  \draw[ksuGold, line width=0.6pt] (0.14,0.14) rectangle (11.46,4.46);
+  \node[align=center] at (5.8,2.85) {\usebox{\arabtitlebox}};
+  \node[align=center] at (5.8,1.15) {\usebox{\arabsubbox}};
+\end{tikzpicture}
+
+\vspace{22pt}
+{\large\bfseries إعداد} \\[4pt]
+{\Large فيصل بن سعد المطيري}
+
+\vspace{16pt}
+{\small إشراف} \\[2pt]
+{\large\bfseries د. نورة الحربي}
+
+\vfill
+
+{\small ربيع الآخر \lat{1447}هـ \lat{---} أكتوبر \lat{2025}م \\{}
+الرياض، المملكة العربية السعودية}
+
+\vspace{14pt}
+{\color{ksuGold}\rule{0.55\textwidth}{0.6pt}}\\[6pt]
+{\footnotesize\itshape\color{inkGray!80}
+نموذج غير رسمي \lat{---} لا يمثل جامعة الملك سعود ولا معتمد منها.
+محتوى توضيحي فقط.}
+\end{center}
+\end{Arabic}
+\end{titlepage}
+
+% ===========================================================================
+% CERTIFICATION / APPROVAL PAGE
+% ===========================================================================
+\chapter*{Examination Committee Approval}
+\addcontentsline{toc}{chapter}{Examination Committee Approval}
+\thispagestyle{empty}
+
+This thesis, prepared by \textbf{Faisal S. Al-Mutairi} under the title
+\textit{``Adaptive Resource Scheduling for Multi-Tenant Cloud Workloads: A
+Reinforcement Learning Approach''}, has been examined and is recommended for
+acceptance in partial fulfillment of the requirements for the degree of
+Master of Science in Computer Science, College of Computer and Information
+Sciences, King Saud University.
+
+\vspace{10pt}
+\begin{center}
+\renewcommand{\arraystretch}{1.7}
+\begin{tabularx}{\textwidth}{@{}X X X@{}}
+\toprule
+\textbf{Committee Role} & \textbf{Name} & \textbf{Signature / Date} \\
+\midrule
+Supervisor        & Dr. Noura Al-Harbi     & \rule{3.2cm}{0.4pt} \\
+Internal Examiner & Dr. Abdullah Al-Qahtani & \rule{3.2cm}{0.4pt} \\
+External Examiner & Dr. Sara Al-Otaibi      & \rule{3.2cm}{0.4pt} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{16pt}
+\noindent\faFile\ \textit{This form is a sample layout only and carries no
+administrative validity.}
+
+% ===========================================================================
+% DECLARATION
+% ===========================================================================
+\chapter*{Declaration}
+\addcontentsline{toc}{chapter}{Declaration}
+\thispagestyle{empty}
+
+\begin{tcolorbox}[colback=paperCream, colframe=ksuGreen, boxrule=0.8pt,
+  arc=2pt, left=12pt, right=12pt, top=10pt, bottom=10pt]
+I hereby declare that the work presented in this thesis is my own, carried
+out under the supervision of Dr.\ Noura Al-Harbi at King Saud University, and
+that it has not been submitted, in whole or in part, for any other degree or
+qualification at this or any other institution. All sources of information
+have been duly acknowledged.
+\end{tcolorbox}
+
+\vspace{28pt}
+\noindent\textbf{Faisal S. Al-Mutairi} \hfill \faPen\ Signature: \rule{3cm}{0.4pt}
+
+\noindent Date: \rule{4cm}{0.4pt}
+
+% ===========================================================================
+% DEDICATION
+% ===========================================================================
+\chapter*{Dedication}
+\addcontentsline{toc}{chapter}{Dedication}
+\thispagestyle{empty}
+\vspace{60pt}
+\begin{center}
+\itshape
+To my parents, whose patience outlasted every deadline,\\{}
+and to my brother Khalid, who never once let me quit.
+\end{center}
+
+% ===========================================================================
+% ACKNOWLEDGMENTS
+% ===========================================================================
+\chapter*{Acknowledgments}
+\addcontentsline{toc}{chapter}{Acknowledgments}
+\thispagestyle{empty}
+
+I would like to express my sincere gratitude to my supervisor, Dr.\ Noura
+Al-Harbi, for her guidance, patience, and the many long discussions that
+shaped this thesis. I am grateful to the faculty and staff of the College of
+Computer and Information Sciences for the resources and support that made
+this research possible. Finally, I thank my colleagues in the Distributed
+Systems Lab for their feedback on early drafts and countless cups of coffee.
+
+% ===========================================================================
+% ABSTRACT (ENGLISH)
+% ===========================================================================
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\thispagestyle{empty}
+
+Modern cloud platforms host thousands of tenants whose workloads compete for
+shared compute, memory, and network resources. Static or rule-based
+schedulers struggle to adapt to the volatility of multi-tenant demand,
+frequently leading to resource contention, degraded latency, and violated
+service-level agreements (SLAs). This thesis proposes an adaptive scheduling
+framework that formulates resource allocation as a sequential
+decision-making problem and solves it using deep reinforcement learning
+(RL). A scheduler agent observes cluster telemetry and per-tenant queue
+state, and learns a policy that balances utilization, latency, and SLA
+compliance through a composite reward signal. The proposed method is
+evaluated against round-robin and static-threshold baselines on a simulated
+multi-tenant cluster workload. Results show a 23\% reduction in average
+latency and a 41\% reduction in SLA violations relative to the strongest
+baseline, at a modest increase in scheduling overhead. These findings
+suggest that learning-based schedulers are a practical path toward
+self-adaptive resource management in multi-tenant cloud environments.
+
+\vspace{10pt}
+\noindent\textbf{Keywords:} cloud computing, resource scheduling,
+multi-tenancy, reinforcement learning, quality of service.
+
+% ===========================================================================
+% ABSTRACT (ARABIC)
+% ===========================================================================
+\chapter*{ملخص البحث}
+\addcontentsline{toc}{chapter}{Arabic Abstract}
+\thispagestyle{empty}
+\begin{Arabic}
+
+تستضيف المنصات السحابية الحديثة آلاف المستأجرين الذين تتنافس أحمال عملهم على
+موارد حوسبة وذاكرة وشبكة مشتركة. تعجز المجدولات الثابتة أو القائمة على قواعد
+جامدة عن التكيف مع تقلب الطلب متعدد المستأجرين، مما يؤدي غالباً إلى تنازع على
+الموارد وتدهور في زمن الاستجابة وخرق لاتفاقيات مستوى الخدمة. تقترح هذه الرسالة
+إطاراً تكيفياً للجدولة يصيغ تخصيص الموارد كمسألة قرار تسلسلي، ويحلّها باستخدام
+التعلم المعزز العميق. يراقب عميل الجدولة قياسات العنقود وحالة قوائم انتظار كل
+مستأجر، ويتعلم سياسة توازن بين الاستغلال وزمن الاستجابة والالتزام باتفاقيات
+مستوى الخدمة عبر إشارة مكافأة مركبة. جرى تقييم الطريقة المقترحة مقابل مجدولات
+مرجعية قائمة على التناوب والعتبات الثابتة، وأظهرت النتائج انخفاضاً في متوسط
+زمن الاستجابة بنسبة \lat{23\%} وانخفاضاً في خروقات اتفاقيات مستوى الخدمة بنسبة
+\lat{41\%} مقارنة بأفضل مجدول مرجعي.
+
+\vspace{10pt}
+\noindent\textbf{الكلمات المفتاحية\lat{:}} الحوسبة السحابية، جدولة الموارد، تعدد
+المستأجرين، التعلم المعزز، جودة الخدمة.
+\end{Arabic}
+
+% ===========================================================================
+% TOC / LOF / LOT
+% ===========================================================================
+\tableofcontents
+\listoffigures
+\listoftables
+
+\chapter*{List of Abbreviations}
+\addcontentsline{toc}{chapter}{List of Abbreviations}
+\begin{center}
+\begin{tabularx}{0.7\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Abbreviation} & \textbf{Meaning} \\
+\midrule
+RL  & Reinforcement Learning \\
+SLA & Service-Level Agreement \\
+VM  & Virtual Machine \\
+API & Application Programming Interface \\
+QoS & Quality of Service \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% ===========================================================================
+% MAIN MATTER
+% ===========================================================================
+\pagenumbering{arabic}
+
+\chapter{Introduction}
+
+\section{Background and Motivation}
+Public and private cloud platforms increasingly serve a multi-tenant model,
+where independent workloads from different customers share the same
+physical infrastructure. Efficient scheduling of compute, memory, and
+network bandwidth across tenants is central to both provider profitability
+and customer-facing performance guarantees. Traditional schedulers rely on
+static heuristics---round-robin, proportional-share, or fixed
+thresholds---that were designed for relatively predictable workloads. As
+tenant demand becomes bursty and heterogeneous, these heuristics leave
+performance on the table: resources sit idle while other tenants queue, or
+are over-committed until an SLA is breached.
+
+\section{Problem Statement}
+Given a shared cluster of $N$ compute nodes serving $M$ tenants with
+time-varying workloads, the scheduling problem is to assign incoming
+requests to nodes such that (i) overall resource utilization is maximized,
+(ii) per-tenant latency stays within contracted bounds, and (iii) SLA
+violations are minimized, all under incomplete knowledge of future demand.
+This is a sequential decision problem under uncertainty, which motivates a
+learning-based rather than a purely rule-based solution.
+
+\section{Research Objectives}
+This thesis pursues the following objectives:
+\begin{enumerate}[label=\textbf{O\arabic*.}, leftmargin=2.2em]
+  \item Formulate multi-tenant cloud scheduling as a Markov decision process
+        suitable for reinforcement learning.
+  \item Design a composite reward function that jointly captures
+        utilization, latency, and SLA compliance.
+  \item Implement and train a scheduling agent, and benchmark it against
+        established baseline policies.
+  \item Analyze the trade-off between scheduling quality and computational
+        overhead introduced by the learned policy.
+\end{enumerate}
+
+\section{Contributions}
+The main contributions of this work are: a reward formulation that unifies
+three competing scheduling objectives into a single tunable signal; a
+lightweight state representation that scales to clusters with hundreds of
+nodes; and an empirical evaluation showing consistent gains over
+non-adaptive baselines across three synthetic workload traces.
+
+\section{Thesis Organization}
+Chapter~2 reviews related work in cloud scheduling and learning-based
+systems control. Chapter~3 presents the proposed methodology, including
+system architecture and reward design. Chapter~4 reports experimental
+results. Chapter~5 concludes and outlines future work.
+
+\chapter{Related Work}
+
+\section{Cloud Resource Scheduling}
+Classical cluster schedulers such as proportional-share and
+constraint-based bin-packing allocate resources using fixed policies that
+do not adapt to observed outcomes. Table~\ref{tab:related} summarizes
+representative approaches along the dimensions most relevant to this
+thesis: adaptivity to workload shifts and runtime overhead.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparison of representative scheduling approaches.}
+\label{tab:related}
+\begin{tabularx}{\textwidth}{@{}l X c c@{}}
+\toprule
+\textbf{Approach} & \textbf{Technique} & \textbf{Adaptivity} & \textbf{Overhead} \\
+\midrule
+Round-Robin        & Fixed rotation across nodes            & Low    & Very Low \\
+\rowcolor{softGreen}
+Static Threshold    & Rule-based capacity cutoffs             & Low    & Low \\
+Heuristic Bin-Pack  & Greedy best-fit placement               & Medium & Medium \\
+\rowcolor{softGreen}
+Control-Theoretic   & Feedback controller on utilization       & Medium & Medium \\
+Proposed RL Agent   & Learned policy over cluster telemetry    & High   & Medium \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Reinforcement Learning for Systems Control}
+Reinforcement learning has been applied to a range of systems problems,
+from database index tuning to network congestion control, where the
+underlying decision process is sequential and the effect of an action is
+only observable after a delay. Applying RL to scheduling requires careful
+state and reward design so that the agent optimizes for outcomes that
+matter operationally, rather than proxy metrics that are easy to compute
+but weakly correlated with tenant-perceived quality.
+
+\chapter{Proposed Methodology}
+
+\section{System Architecture}
+Figure~\ref{fig:arch} shows the overall pipeline. Incoming tenant requests
+are summarized by a feature extractor into a fixed-length state vector,
+which is consumed by the RL scheduler agent. The agent's action is a
+placement decision handed to the cluster resource manager, which enacts it
+on the compute nodes. Utilization telemetry is fed back to the agent to
+close the control loop.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=1.05cm and 0.55cm,
+    box/.style={draw=ksuGreen, line width=1pt, fill=paperCream, rounded corners=2pt,
+                minimum height=1.3cm, minimum width=2.3cm, align=center, font=\small},
+    every node/.style={font=\small}
+  ]
+  \node[box] (req) {Tenant\\Requests};
+  \node[box, right=of req] (feat) {Feature\\Extractor};
+  \node[box, right=of feat, fill=softGreen] (agent) {RL Scheduler\\Agent};
+  \node[box, right=of agent] (mgr) {Cluster Resource\\Manager};
+  \node[box, right=of mgr] (nodes) {Compute\\Nodes};
+
+  \draw[->, line width=0.9pt, ksuGreen] (req) -- (feat);
+  \draw[->, line width=0.9pt, ksuGreen] (feat) -- (agent);
+  \draw[->, line width=0.9pt, ksuGreen] (agent) -- (mgr);
+  \draw[->, line width=0.9pt, ksuGreen] (mgr) -- (nodes);
+
+  \draw[dashed, ->, line width=0.9pt, ksuGold]
+    (nodes.south) -- ++(0,-0.9) -| node[below, pos=0.25, font=\footnotesize\itshape, text=inkGray]
+    {utilization telemetry} (agent.south);
+\end{tikzpicture}
+\caption{Scheduling pipeline: telemetry from compute nodes is fed back to the
+RL agent to close the control loop.}
+\label{fig:arch}
+\end{figure}
+
+\section{Reward Function}
+The agent optimizes a composite reward that balances three competing
+objectives: utilization $U_t$, normalized latency $L_t$, and an SLA
+violation indicator $V_t$, observed at each scheduling step $t$:
+\begin{equation}
+R_t = \alpha \, U_t \;-\; \beta \, L_t \;-\; \gamma \, V_t,
+\qquad \alpha + \beta + \gamma = 1,
+\label{eq:reward}
+\end{equation}
+where $\alpha$, $\beta$, and $\gamma$ are tunable weights. The agent is
+trained to maximize the discounted return
+\begin{equation}
+J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta}
+\left[ \sum_{t=0}^{T} \gamma_d^{\,t} R_t \right],
+\label{eq:objective}
+\end{equation}
+where $\pi_\theta$ is the policy parameterized by $\theta$ and $\gamma_d \in
+(0,1)$ is the discount factor.
+
+\section{Training Procedure}
+The agent is trained with a policy-gradient method using trajectories
+collected from a cluster simulator seeded with three synthetic workload
+traces (steady, bursty, and diurnal). Training proceeds in episodes of
+fixed length, with the reward weights in Equation~\ref{eq:reward} annealed
+from utilization-favoring to SLA-favoring over the first third of training
+to encourage early exploration.
+
+\chapter{Experimental Results}
+
+\section{Experimental Setup}
+All methods are evaluated on the same simulated 200-node cluster under
+identical tenant arrival traces. Each configuration is run for five trials;
+Table~\ref{tab:results} reports the mean across trials.
+
+\begin{table}[htbp]
+\centering
+\caption{Benchmark results across scheduling methods.}
+\label{tab:results}
+\begin{tabularx}{\textwidth}{@{}X c c c@{}}
+\toprule
+\textbf{Method} & \textbf{Avg.\ Latency (ms)} & \textbf{Utilization (\%)} & \textbf{SLA Violations (\%)} \\
+\midrule
+Round-Robin        & 184 & 61 & 12.4 \\
+\rowcolor{softGreen}
+Static Threshold    & 156 & 68 & 9.1  \\
+Control-Theoretic   & 141 & 71 & 7.6  \\
+\rowcolor{softGreen}
+Proposed RL Agent   & \textbf{109} & \textbf{79} & \textbf{4.5} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Discussion}
+The proposed agent reduces average latency by 23\% and SLA violations by
+41\% relative to the strongest baseline (control-theoretic), while also
+improving mean utilization by eight percentage points. The gain is largest
+under bursty and diurnal traces, where static policies cannot react quickly
+enough to shifting demand. The main cost is a modest increase in
+per-decision compute overhead, discussed further in Section~4.2 of the full
+thesis manuscript.
+
+\chapter{Conclusion and Future Work}
+
+This thesis presented a reinforcement-learning-based scheduler for
+multi-tenant cloud clusters, built around a composite reward that jointly
+targets utilization, latency, and SLA compliance. Experiments on simulated
+workloads show consistent improvements over round-robin, static-threshold,
+and control-theoretic baselines. Future work includes evaluating the
+approach on live cluster traces, extending the state representation to
+capture cross-tenant fairness constraints, and studying the stability of
+the learned policy under adversarial tenant behavior.
+
+% ===========================================================================
+% REFERENCES
+% ===========================================================================
+\begin{thebibliography}{9}
+\addcontentsline{toc}{chapter}{References}
+
+\bibitem{ref1}
+J. Whitfield and A. Mensah, ``Adaptive Scheduling in Multi-Tenant Clusters,''
+\textit{International Journal of Adaptive Systems}, vol.\ 12, no.\ 3, pp.\ 45--60, 2023.
+
+\bibitem{ref2}
+L. Fernström, ``Control-Theoretic Resource Management for Cloud Platforms,''
+\textit{Proceedings of the Symposium on Cloud Computing}, pp.\ 201--212, 2022.
+
+\bibitem{ref3}
+R. Okonkwo and T. Vance, ``Deep Reinforcement Learning for Systems Control: A Survey,''
+\textit{ACM Computing Surveys on Autonomic Systems}, vol.\ 8, no.\ 1, pp.\ 1--34, 2024.
+
+\bibitem{ref4}
+M. Sundqvist, ``Fairness-Aware Bin Packing for Shared Compute Clusters,''
+\textit{Journal of Parallel and Distributed Scheduling}, vol.\ 15, no.\ 2, pp.\ 88--104, 2021.
+
+\bibitem{ref5}
+H. Delacroix and S. Nakagawa, ``SLA-Aware Admission Control in Multi-Tenant Data Centers,''
+\textit{Transactions on Cloud Systems Engineering}, vol.\ 19, no.\ 4, pp.\ 310--327, 2023.
+
+\end{thebibliography}
+
+% ===========================================================================
+% APPENDIX
+% ===========================================================================
+\appendix
+\chapter{Training Hyperparameters}
+\addcontentsline{toc}{chapter}{Appendix A: Training Hyperparameters}
+
+\begin{center}
+\begin{tabularx}{0.75\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Discount factor $\gamma_d$      & 0.97 \\
+Learning rate                   & $3 \times 10^{-4}$ \\
+Batch size                      & 256 episodes \\
+Reward weights $(\alpha,\beta,\gamma)$ & $(0.5,\,0.3,\,0.2)$ initial \\
+Training episodes               & 50{,}000 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\end{document}

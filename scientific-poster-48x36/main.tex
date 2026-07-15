@@ -1,0 +1,323 @@
+\documentclass[14pt]{extarticle}
+
+\usepackage[paperwidth=36in, paperheight=48in, margin=0.75in, noheadfoot]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, shapes.geometric, decorations.pathmorphing, backgrounds, patterns}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{amsmath, amssymb}
+\usepackage{enumitem}
+\usepackage{fontawesome5}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{ragged2e}
+\usepackage{graphicx}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\definecolor{primary}{RGB}{13, 27, 67}
+\definecolor{secondary}{RGB}{20, 130, 120}
+\definecolor{accent}{RGB}{210, 68, 45}
+\definecolor{lightbg}{RGB}{242, 243, 248}
+\definecolor{darktext}{RGB}{28, 28, 32}
+\definecolor{grayrule}{RGB}{180, 180, 190}
+
+\hypersetup{colorlinks=true, linkcolor=secondary, urlcolor=secondary, citecolor=secondary}
+
+\newtcolorbox{posterblock}[1]{
+  colback=lightbg,
+  colframe=primary,
+  coltitle=white,
+  fonttitle=\bfseries\LARGE,
+  title={#1},
+  sharp corners,
+  boxrule=1.2pt,
+  titlerule=1pt,
+  top=14pt,
+  bottom=14pt,
+  left=16pt,
+  right=16pt,
+  before skip=18pt,
+  after skip=18pt
+}
+
+\newtcolorbox{accentblock}[1]{
+  colback=primary!4,
+  colframe=accent,
+  coltitle=white,
+  fonttitle=\bfseries\LARGE,
+  title={#1},
+  sharp corners,
+  boxrule=1.2pt,
+  titlerule=1pt,
+  top=14pt,
+  bottom=14pt,
+  left=16pt,
+  right=16pt,
+  before skip=18pt,
+  after skip=18pt
+}
+
+\newtcolorbox{refblock}{
+  colback=lightbg,
+  colframe=grayrule,
+  sharp corners,
+  boxrule=0.8pt,
+  top=10pt,
+  bottom=10pt,
+  left=14pt,
+  right=14pt,
+  before skip=12pt,
+  after skip=12pt
+}
+
+\AtBeginDocument{\large}
+
+\begin{document}
+\thispagestyle{empty}
+
+% ---- Title Section ----
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[primary] (current page.north west) rectangle ([yshift=-4.5in]current page.north east);
+  \fill[accent] (current page.north west) rectangle ([yshift=-4.6in]current page.north east);
+  \node[anchor=north west, text=white, xshift=1.5in, yshift=-0.7in] at (current page.north west)
+    {\fontsize{52}{62}\bfseries\selectfont A Graph Neural Network Framework};
+  \node[anchor=north west, text=white, xshift=1.5in, yshift=-1.5in] at (current page.north west)
+    {\fontsize{38}{46}\selectfont for Predicting Protein--Ligand Binding Affinities};
+  \node[anchor=north west, text=white!85, xshift=1.5in, yshift=-2.4in] at (current page.north west)
+    {\fontsize{22}{28}\selectfont Marcus Chen\textsuperscript{1,*}, Elena Vasquez\textsuperscript{1}, David Park\textsuperscript{2}, Sarah O'Brien\textsuperscript{3}};
+  \node[anchor=north west, text=white!70, xshift=1.5in, yshift=-3.0in] at (current page.north west)
+    {\fontsize{16}{20}\selectfont
+      \textsuperscript{1}Synapse Institute for Computational Biology, Cambridge, MA \quad
+      \textsuperscript{2}Nexa University, Palo Alto, CA \quad
+      \textsuperscript{3}Apex Research Labs, Seattle, WA};
+  \node[anchor=north west, text=white!60, xshift=1.5in, yshift=-3.5in] at (current page.north west)
+    {\fontsize{14}{18}\selectfont
+      \faEnvelope\ m.chen@synapse-inst.org \quad
+      \faCalendar\ July 15, 2026 \quad
+      \faFile\ Preprint \#NXA-2026-0731};
+  \node[anchor=north east, text=white!55, xshift=-1.5in, yshift=-3.5in] at (current page.north east)
+    {\fontsize{14}{18}\selectfont \faGlobe\ synapse-inst.org/graphbind};
+\end{tikzpicture}
+
+\vspace*{4.7in}
+
+% ---- Three-Column Body ----
+\noindent
+\begin{minipage}[t]{0.31\textwidth}
+\RaggedRight
+
+\begin{posterblock}{Background \& Motivation}
+Accurate prediction of protein--ligand binding affinity is a cornerstone of structure-based drug discovery.
+Traditional approaches such as molecular docking and free-energy perturbation remain computationally prohibitive for
+virtual screening campaigns exceeding $10^6$ compounds. Deep learning methods, particularly those operating on molecular
+graphs, offer a compelling alternative, yet existing architectures struggle to capture long-range electrostatic
+interactions and solvent effects at protein--ligand interfaces.
+
+We introduce \textbf{GraphBind}, a graph neural network that jointly encodes ligand topology, protein pocket geometry,
+and interfacial non-covalent interaction fingerprints within a unified message-passing scheme. GraphBind leverages
+hierarchical attention pooling to prioritize pharmacophoric contacts and achieves state-of-the-art accuracy on three
+benchmark datasets spanning kinases, proteases, and GPCRs.
+\end{posterblock}
+
+\begin{posterblock}{Dataset \& Preprocessing}
+We curated \textbf{BindBench-v2}, a non-redundant set of 14\,872 protein--ligand complexes drawn from the PDBbind
+refined set (v2024) and augmented with MD-refined decoy structures from the DUD-E+ benchmark.
+\begin{itemize}[leftmargin=*, itemsep=6pt, topsep=6pt]
+  \item Ligand graphs: nodes = heavy atoms (C, N, O, S, P, halogens); edges = covalent bonds plus
+        spatial edges ($d \leq 4.0\,\text{\AA}$, non-covalent).
+  \item Protein graphs: nodes = $C_\alpha$ atoms of pocket residues ($\leq 8\,\text{\AA}$ from any ligand atom);
+        edges = sequential neighbors ($|i-j| \leq 3$) and spatial proximity ($d_{C_\alpha} \leq 12\,\text{\AA}$).
+  \item Interface features: hydrogen-bond donor/acceptor flags, $\pi$--$\pi$ stacking indicators,
+        salt-bridge detection, hydrophobic contact area.
+  \item Affinity labels: $\mathrm{p}K_d = -\log_{10}(K_d)$; experimental $K_d$ from PDBbind, cross-checked
+        against Binding MOAD and ChEMBL~34.
+  \item Train/val/test split: 10\,420 / 2\,226 / 2\,226 complexes, stratified by protein family to prevent
+        homology leakage.
+\end{itemize}
+\end{posterblock}
+
+\begin{posterblock}{Model Architecture}
+GraphBind employs a three-stream encoder with cross-attention fusion (\textbf{Figure~1}).
+\begin{itemize}[leftmargin=*, itemsep=6pt, topsep=6pt]
+  \item \textbf{Ligand Encoder:} 6-layer GIN with edge-feature gates; initial node features from RDKit
+        (atom type, hybridization, chirality, partial charge).
+  \item \textbf{Protein Encoder:} 4-layer E(n)-equivariant GNN operating on $C_\alpha$ coordinates;
+        geometric message passing via vector features ensures SE(3) equivariance.
+  \item \textbf{Interface Module:} Pairwise attention between ligand and protein node sets;
+        distance-aware bias $b_{ij} = -\alpha \cdot |\mathbf{x}_i - \mathbf{x}_j|^2$ with learned $\alpha$.
+  \item \textbf{Global Readout:} Set2Set pooling followed by a 3-layer MLP predicting $\mathrm{p}K_d$
+        with heteroscedastic uncertainty via a dual-head output ($\mu, \sigma^2$).
+\end{itemize}
+Total parameters: 4.8M. Trained with AdamW, cosine annealing, batch size 64, for 300 epochs on 4$\times$A100 GPUs.
+\end{posterblock}
+
+\end{minipage}\hfill
+\begin{minipage}[t]{0.36\textwidth}
+\RaggedRight
+
+\begin{accentblock}{Key Results}
+\begin{center}
+\fontsize{16}{20}\selectfont
+\begin{tikzpicture}[scale=1.0]
+  \begin{axis}[
+    width=5.8in, height=4.2in,
+    ybar,
+    bar width=22pt,
+    ylabel={Pearson $R$},
+    ymin=0.50, ymax=0.92,
+    ytick={0.50,0.55,0.60,0.65,0.70,0.75,0.80,0.85,0.90},
+    yticklabel style={font=\normalsize},
+    xtick=data,
+    xticklabels={Random Forest, SchNet, DimeNet++, EGNN, PIGNet, \textbf{GraphBind}},
+    x tick label style={font=\footnotesize, rotate=30, anchor=east},
+    enlarge x limits=0.12,
+    legend style={at={(0.5,1.08)}, anchor=south, legend columns=-1, font=\footnotesize},
+    nodes near coords,
+    every node near coord/.append style={font=\footnotesize, rotate=90, anchor=west},
+    axis line style={grayrule},
+    tick style={grayrule},
+    major grid style={grayrule!30},
+    ymajorgrids=true
+  ]
+    \addplot[fill=grayrule!60] coordinates {(1,0.62) (2,0.71) (3,0.78) (4,0.76) (5,0.80) (6,0.87)};
+    \addplot[fill=secondary!70] coordinates {(1,0.58) (2,0.68) (3,0.74) (4,0.73) (5,0.76) (6,0.84)};
+    \legend{Kinase Set, Protease Set}
+  \end{axis}
+\end{tikzpicture}
+
+\vspace{6pt}
+\fontsize{14}{18}\selectfont
+\begin{tabularx}{\linewidth}{lcccc}
+\toprule
+\textbf{Method} & \textbf{Pearson $R$} & \textbf{RMSE} & \textbf{MAE} & \textbf{$\tau$}\\
+\midrule
+Random Forest (ECFP4)   & 0.597 & 1.48 & 1.16 & 0.42 \\{}
+\lbrack DimeNet++         & 0.761 & 1.11 & 0.86 & 0.61 \\{}
+\lbrack EGNN               & 0.745 & 1.14 & 0.89 & 0.59 \\{}
+\lbrack PIGNet              & 0.783 & 1.02 & 0.79 & 0.64 \\
+\textbf{GraphBind (ours)} & \textbf{0.862} & \textbf{0.83} & \textbf{0.64} & \textbf{0.73} \\
+\bottomrule
+\end{tabularx}
+
+\vspace{8pt}
+\fontsize{13}{17}\selectfont
+\textit{GraphBind achieves $\mathbf{+8.3\%}$ improvement in Pearson $R$ over the strongest baseline (PIGNet) on the
+held-out test set, with a statistically significant reduction in RMSE ($p<10^{-4}$, Wilcoxon signed-rank).}
+\end{center}
+\end{accentblock}
+
+\begin{posterblock}{Ablation Studies}
+\fontsize{15}{19}\selectfont
+\begin{center}
+\begin{tabularx}{\linewidth}{lcccc}
+\toprule
+\textbf{Model Variant} & \textbf{Pearson $R$} & \textbf{RMSE} & \textbf{$\Delta$}\\
+\midrule
+Full GraphBind             & 0.862 & 0.83 & --           \\{}
+\lbrack w/o Interface Module & 0.801 & 1.05 & $-$0.061    \\{}
+\lbrack w/o Equivariance     & 0.832 & 0.94 & $-$0.030    \\{}
+\lbrack w/o Uncertainty Head & 0.847 & 0.88 & $-$0.015    \\{}
+\lbrack GCN encoder (no GIN) & 0.815 & 1.00 & $-$0.047    \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{6pt}
+\fontsize{14}{18}\selectfont
+Removing the interface attention module causes the largest degradation, underscoring the importance of explicitly
+modeling protein--ligand contact fingerprints. Equivariance in the protein encoder contributes primarily to
+generalization across unseen protein folds.
+\end{posterblock}
+
+\begin{posterblock}{Computational Efficiency}
+\begin{itemize}[leftmargin=*, itemsep=6pt, topsep=6pt]
+  \item Inference time: $< 50$\,ms per complex on a single A100 GPU; scales linearly with pocket residue count.
+  \item GraphBind screens 1M compounds against a kinase target in $\sim$14 hours on an 8-GPU node,
+        versus $\sim$600K CPU-core-hours for Glide SP docking.
+  \item Model checkpoints and inference code released under Apache 2.0 at \texttt{github.com/synapse-inst/graphbind}.
+\end{itemize}
+\end{posterblock}
+
+\end{minipage}\hfill
+\begin{minipage}[t]{0.31\textwidth}
+\RaggedRight
+
+\begin{posterblock}{Discussion}
+GraphBind's strong performance stems from three design choices. First, the interface attention module explicitly
+encodes non-covalent interaction types, enabling the model to distinguish hydrogen bonds from hydrophobic contacts
+rather than treating all contacts uniformly. Second, SE(3)-equivariant protein encoding ensures that predictions are
+invariant to rigid-body transformations of the pocket, improving generalization to complexes crystallized in different
+space groups. Third, heteroscedastic uncertainty quantification allows practitioners to flag low-confidence predictions
+during virtual screening triage.
+
+Limitations include reliance on crystallographic pocket definitions (reducing applicability to apo structures) and a
+current inability to model covalent or metalloprotein ligands. We are extending the framework to handle induced-fit
+effects via docking-guided conformational sampling.
+\end{posterblock}
+
+\begin{posterblock}{Conclusions}
+\begin{enumerate}[leftmargin=*, itemsep=8pt, topsep=6pt]
+  \item GraphBind sets a new state of the art for structure-based binding affinity prediction, with
+        $\mathbf{R = 0.862}$ and $\mathbf{RMSE = 0.83}$ on BindBench-v2.
+  \item The interface attention module and SE(3)-equivariant protein encoder are both critical,
+        contributing $+0.061$ and $+0.030$ Pearson $R$ respectively.
+  \item GPU-accelerated inference enables million-scale virtual screening in under one day, positioning
+        GraphBind as a practical tool for early-stage hit discovery.
+  \item Uncertainty estimates correlate with prediction error (Spearman $\rho = 0.41$), providing a
+        calibratable confidence filter for experimental follow-up.
+\end{enumerate}
+\end{posterblock}
+
+\begin{accentblock}{Future Work}
+\begin{itemize}[leftmargin=*, itemsep=6pt, topsep=6pt]
+  \item Extend to covalent inhibitors and metalloenzyme targets via reaction-aware edge features.
+  \item Integrate with diffusion-based pocket-conditioned ligand generation (co-design with Vertex
+        Therapeutics generative chemistry platform).
+  \item Active-learning loop connecting GraphBind predictions to automated synthesis and SPR validation
+        at the Nimbus High-Throughput Screening Facility.
+  \item Multi-task extension to simultaneously predict ADMET endpoints alongside affinity.
+\end{itemize}
+\end{accentblock}
+
+\begin{refblock}
+\fontsize{11}{15}\selectfont
+\setlength{\parskip}{4pt}
+\noindent
+\lbrack1\rbrack\ Chen \textit{et al.} (2025). GraphBind: geometry-aware protein--ligand binding prediction.
+\textit{Nature Machine Intelligence}, in press.\\
+\lbrack2\rbrack\ Vasquez \& O'Brien (2024). Equivariant graph networks for molecular property prediction.
+\textit{NeurIPS} \textbf{37}, 12840--12855.\\
+\lbrack3\rbrack\ Park \textit{et al.} (2024). PIGNet: physics-informed graph networks for binding affinity.
+\textit{J. Chem. Inf. Model.} \textbf{64}(8), 3120--3134.\\
+\lbrack4\rbrack\ Liu \textit{et al.} (2023). PDBbind refined set v2024: updated benchmarks.
+\textit{J. Med. Chem.} \textbf{67}(3), 1402--1417.\\
+\lbrack5\rbrack\ Gasteiger \textit{et al.} (2021). DimeNet++: fast and accurate directional message passing.
+\textit{ICLR} 2021.\\
+\lbrack6\rbrack\ Satorras \textit{et al.} (2021). E(n)-equivariant graph neural networks.
+\textit{ICML} \textbf{139}, 9323--9332.
+\end{refblock}
+
+\vspace{14pt}
+\begin{center}
+\fontsize{13}{17}\selectfont\color{primary!70}
+\textbf{Acknowledgments}\\[4pt]
+Funded by the Synapse Innovation Grant (SIG-2025-0841) and the Meridian Foundation for Computational Drug Discovery.
+Computational resources provided by the Nimbus AI Compute Cluster. The authors thank the Vertex Therapeutics
+structural biology team for blind-test validation complexes.
+
+\vspace{8pt}
+\textit{Code \& data:} \texttt{github.com/synapse-inst/graphbind} \quad
+\textit{License:} Apache 2.0
+\end{center}
+
+\end{minipage}
+
+\end{document}

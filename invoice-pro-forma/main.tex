@@ -1,0 +1,640 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{eurosym}
+
+%% ─── Packages ────────────────────────────────────────────────────────────────
+\usepackage[a4paper, top=20mm, bottom=22mm, left=18mm, right=18mm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fontawesome5}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage[most]{tcolorbox}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{helvet}
+\usepackage{calc}
+\usepackage{ifthen}
+\usepackage{pgf}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{hyperref}
+
+\usetikzlibrary{positioning, calc, shapes.geometric, backgrounds, patterns}
+
+%% ─── Hyperref Setup ──────────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks=false,
+  pdfborder={0 0 0},
+  pdftitle={Pro Forma Invoice -- Nexa Solutions Ltd.},
+  pdfauthor={Nexa Solutions Ltd.},
+}
+
+%% ─── Colours ─────────────────────────────────────────────────────────────────
+\definecolor{NexaNavy}{RGB}{18, 38, 74}
+\definecolor{NexaTeal}{RGB}{0, 150, 166}
+\definecolor{NexaSlate}{RGB}{78, 96, 130}
+\definecolor{NexaLight}{RGB}{232, 240, 248}
+\definecolor{NexaMid}{RGB}{188, 210, 232}
+\definecolor{NexaAccent}{RGB}{255, 168, 50}
+\definecolor{TableStripe}{RGB}{245, 249, 253}
+\definecolor{TextDark}{RGB}{22, 28, 45}
+\definecolor{TextMid}{RGB}{88, 101, 128}
+\definecolor{TextLight}{RGB}{145, 158, 180}
+\definecolor{BorderLight}{RGB}{210, 222, 238}
+\definecolor{GreenOK}{RGB}{32, 168, 110}
+\definecolor{RedWarn}{RGB}{210, 58, 58}
+
+%% ─── Font setup ──────────────────────────────────────────────────────────────
+\renewcommand{\familydefault}{\sfdefault}
+
+%% ─── Column types ────────────────────────────────────────────────────────────
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+%% ─── Page style ──────────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{%
+  \color{TextLight}\footnotesize
+  Page \thepage\ of \pageref{LastPage}\enspace\textbullet\enspace
+  Pro Forma Invoice \textbullet\enspace
+  Nexa Solutions Ltd.\ -- Confidential
+}
+\fancyfoot[R]{\color{TextLight}\footnotesize Document Ref: NX-PFI-2024-0042}
+
+%% ─── Helpers ─────────────────────────────────────────────────────────────────
+\newcommand{\labeltext}[1]{\textcolor{TextLight}{\footnotesize\MakeUppercase{#1}}}
+\newcommand{\valuetext}[1]{\textcolor{TextDark}{\small\bfseries #1}}
+\newcommand{\sectionrule}{%
+  \noindent\textcolor{NexaTeal}{\rule{\linewidth}{1.5pt}}%
+}
+
+%% ─── tcolorbox styles ────────────────────────────────────────────────────────
+\tcbset{
+  infopanel/.style={
+    enhanced, boxrule=0pt, arc=4pt,
+    colback=NexaLight, colframe=NexaLight,
+    left=8pt, right=8pt, top=8pt, bottom=8pt,
+    drop shadow
+  },
+  accentpanel/.style={
+    enhanced, boxrule=0pt, arc=4pt,
+    colback=NexaNavy, colframe=NexaNavy,
+    left=8pt, right=8pt, top=8pt, bottom=8pt,
+  },
+  totalpanel/.style={
+    enhanced, boxrule=1.5pt, arc=5pt,
+    colback=NexaNavy, colframe=NexaTeal,
+    left=10pt, right=10pt, top=10pt, bottom=10pt,
+  },
+  notebox/.style={
+    enhanced, boxrule=0.8pt, arc=4pt,
+    colback=white, colframe=BorderLight,
+    left=8pt, right=8pt, top=8pt, bottom=8pt,
+  },
+  warnbox/.style={
+    enhanced, boxrule=0pt, arc=4pt,
+    colback=NexaAccent!15!white, colframe=NexaAccent,
+    borderline west={3pt}{0pt}{NexaAccent},
+    left=8pt, right=8pt, top=6pt, bottom=6pt,
+  },
+}
+
+%% ─── Document ────────────────────────────────────────────────────────────────
+\begin{document}
+\setlength{\parindent}{0pt}
+
+%% ══════════════════════════════════════════════════════════════════════════════
+%% PAGE 1  —  Header + Parties + Line-item table
+%% ══════════════════════════════════════════════════════════════════════════════
+
+%% ── Header bar ───────────────────────────────────────────────────────────────
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[NexaNavy]
+    (current page.north west)
+    rectangle
+    ([yshift=-38mm]current page.north east);
+  \fill[NexaTeal]
+    ([yshift=-38mm]current page.north west)
+    rectangle
+    ([yshift=-40mm]current page.north east);
+\end{tikzpicture}
+
+\vspace*{-12mm}
+\begin{minipage}[t]{0.55\linewidth}
+  \vspace{4mm}
+  {\color{white}\fontsize{24}{28}\selectfont\bfseries Nexa Solutions Ltd.}\\[3pt]
+  {\color{NexaMid}\small 14 Harbourview Business Park, Tower B}\\
+  {\color{NexaMid}\small Dublin 2, D02 XW34, Ireland}\\[2pt]
+  {\color{NexaTeal}\small\faPhone\enspace +353 1 900 4420}\enspace
+  {\color{NexaMid}\small\textbullet}\enspace
+  {\color{NexaTeal}\small\faEnvelope\enspace accounts@nexasolutions.ie}\\[1pt]
+  {\color{NexaMid}\small\faGlobe\enspace www.nexasolutions.ie}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.40\linewidth}
+  \vspace{4mm}
+  \raggedleft
+  {\color{white}\fontsize{28}{32}\selectfont\bfseries PRO FORMA}\\[2pt]
+  {\color{NexaTeal}\fontsize{13}{16}\selectfont INVOICE}\\[6pt]
+  \begin{tabular}{r l}
+    \color{NexaMid}\small Invoice No. & \color{white}\small\bfseries NX-PFI-2024-0042 \\[2pt]
+    \color{NexaMid}\small Issue Date  & \color{white}\small 14 November 2024 \\[2pt]
+    \color{NexaMid}\small Valid Until & \color{white}\small 14 December 2024 \\[2pt]
+    \color{NexaMid}\small Currency   & \color{white}\small EUR (\officialeuro) \\
+  \end{tabular}
+\end{minipage}
+
+\vspace{12mm}
+
+%% ── Parties row ──────────────────────────────────────────────────────────────
+\noindent
+\begin{minipage}[t]{0.47\linewidth}
+  \begin{tcolorbox}[infopanel, height=56mm]
+    \labeltext{Bill To}\\[5pt]
+    {\color{NexaNavy}\bfseries Meridian Dynamics GmbH}\\[2pt]
+    \textcolor{TextMid}{\small Attention: Ms.\ Clara Hoffmann}\\
+    \textcolor{TextMid}{\small Procurement Manager}\\[3pt]
+    \textcolor{TextMid}{\small Schillerstra{\ss}e 88, 4th Floor}\\
+    \textcolor{TextMid}{\small 60313 Frankfurt am Main, Germany}\\[3pt]
+    \textcolor{TextMid}{\small\faPhone\enspace +49 69 7190 5520}\\
+    \textcolor{TextMid}{\small\faEnvelope\enspace c.hoffmann@meridiandyn.de}\\[3pt]
+    \textcolor{TextMid}{\small VAT ID: DE\,307\,891\,245}
+  \end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.47\linewidth}
+  \begin{tcolorbox}[infopanel, height=56mm]
+    \labeltext{Issued By}\\[5pt]
+    {\color{NexaNavy}\bfseries Nexa Solutions Ltd.}\\[2pt]
+    \textcolor{TextMid}{\small Accounts Receivable Department}\\
+    \textcolor{TextMid}{\small Contact: Mr.\ Ethan Calloway}\\[3pt]
+    \textcolor{TextMid}{\small 14 Harbourview Business Park, Tower B}\\
+    \textcolor{TextMid}{\small Dublin 2, D02 XW34, Ireland}\\[3pt]
+    \textcolor{TextMid}{\small\faPhone\enspace +353 1 900 4420}\\
+    \textcolor{TextMid}{\small\faEnvelope\enspace e.calloway@nexasolutions.ie}\\[3pt]
+    \textcolor{TextMid}{\small VAT No.: IE\,8234567T\enspace\textbullet\enspace CRN: 654321}
+  \end{tcolorbox}
+\end{minipage}
+
+\par\vspace{6mm}
+
+%% ── Project / Order Reference row ────────────────────────────────────────────
+\noindent
+\begin{minipage}[t]{0.30\linewidth}
+  \begin{tcolorbox}[infopanel]
+    \labeltext{Purchase Order Ref.}\\[3pt]
+    \valuetext{MDG-PO-2024-8871}
+  \end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.30\linewidth}
+  \begin{tcolorbox}[infopanel]
+    \labeltext{Project / Contract}\\[3pt]
+    \valuetext{CloudSync Enterprise Suite}
+  \end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.30\linewidth}
+  \begin{tcolorbox}[infopanel]
+    \labeltext{Delivery Incoterm}\\[3pt]
+    \valuetext{DAP Frankfurt (DDP optional)}
+  \end{tcolorbox}
+\end{minipage}
+
+\par\vspace{8mm}
+
+%% ── Section heading ──────────────────────────────────────────────────────────
+{\color{NexaNavy}\large\bfseries Line Items}
+\par\vspace{2mm}
+\sectionrule
+\vspace{3mm}
+
+%% ── Line-item table ──────────────────────────────────────────────────────────
+\renewcommand{\arraystretch}{1.45}
+\setlength{\tabcolsep}{6pt}
+
+\noindent
+\begin{tabularx}{\linewidth}{%
+  C{6mm}%        #
+  L{0.26\linewidth}%  Description
+  C{14mm}%       Qty
+  C{18mm}%       Unit
+  R{24mm}%       Unit Price
+  R{20mm}%       Discount
+  R{26mm}%       Line Total
+}
+\rowcolor{NexaNavy}
+\color{white}\small\bfseries\# &
+\color{white}\small\bfseries Description &
+\color{white}\small\bfseries Qty &
+\color{white}\small\bfseries Unit &
+\color{white}\small\bfseries Unit Price &
+\color{white}\small\bfseries Disc.\ \% &
+\color{white}\small\bfseries Line Total \\
+%
+\rowcolor{white}
+1 &
+\begin{minipage}[t]{\linewidth}
+  \vspace{1pt}
+  {\bfseries\color{NexaNavy}CloudSync Core Platform Licence}\\
+  {\footnotesize\color{TextMid}Annual enterprise licence, unlimited users, multi-region deployment.
+  Includes 24/7 SLA (99.95\% uptime guarantee).}
+  \vspace{1pt}
+\end{minipage} &
+1 & Licence & \officialeuro\ 28{,}000.00 & 0.00\% & \officialeuro\ 28{,}000.00 \\
+%
+\rowcolor{TableStripe}
+2 &
+\begin{minipage}[t]{\linewidth}
+  \vspace{1pt}
+  {\bfseries\color{NexaNavy}Implementation \& Onboarding Services}\\
+  {\footnotesize\color{TextMid}Dedicated project manager, solution architect (8 weeks),
+  data migration up to 500 GB, custom SSO integration.}
+  \vspace{1pt}
+\end{minipage} &
+80 & Hours & \officialeuro\ 185.00 & 5.00\% & \officialeuro\ 14{,}060.00 \\
+%
+\rowcolor{white}
+3 &
+\begin{minipage}[t]{\linewidth}
+  \vspace{1pt}
+  {\bfseries\color{NexaNavy}Advanced Analytics Module}\\
+  {\footnotesize\color{TextMid}AI-powered dashboards, predictive reporting, custom KPI builder,
+  export to Power BI / Tableau. One-time add-on fee.}
+  \vspace{1pt}
+\end{minipage} &
+1 & Module & \officialeuro\ 6{,}500.00 & 10.00\% & \officialeuro\ 5{,}850.00 \\
+%
+\rowcolor{TableStripe}
+4 &
+\begin{minipage}[t]{\linewidth}
+  \vspace{1pt}
+  {\bfseries\color{NexaNavy}Managed Cloud Infrastructure (AWS eu-west-1)}\\
+  {\footnotesize\color{TextMid}Dedicated compute cluster, 4 TB storage, CDN, daily snapshots,
+  security patching. Priced per month; 12-month prepay shown.}
+  \vspace{1pt}
+\end{minipage} &
+12 & Months & \officialeuro\ 1{,}200.00 & 0.00\% & \officialeuro\ 14{,}400.00 \\
+%
+\rowcolor{white}
+5 &
+\begin{minipage}[t]{\linewidth}
+  \vspace{1pt}
+  {\bfseries\color{NexaNavy}Priority Support \& SLA Uplift Package}\\
+  {\footnotesize\color{TextMid}Dedicated support engineer, 1-hour P1 response SLA,
+  quarterly health reviews. Annual subscription.}
+  \vspace{1pt}
+\end{minipage} &
+1 & Annual & \officialeuro\ 4{,}800.00 & 0.00\% & \officialeuro\ 4{,}800.00 \\
+%
+\rowcolor{TableStripe}
+6 &
+\begin{minipage}[t]{\linewidth}
+  \vspace{1pt}
+  {\bfseries\color{NexaNavy}Staff Training Workshop (Remote)}\\
+  {\footnotesize\color{TextMid}Live instructor-led sessions, up to 40 participants per session,
+  recorded for internal reuse. 3 sessions included.}
+  \vspace{1pt}
+\end{minipage} &
+3 & Sessions & \officialeuro\ 950.00 & 5.00\% & \officialeuro\ 2{,}707.50 \\
+%
+\rowcolor{white}
+7 &
+\begin{minipage}[t]{\linewidth}
+  \vspace{1pt}
+  {\bfseries\color{NexaNavy}API Integration Connectors (Custom)}\\
+  {\footnotesize\color{TextMid}Bespoke REST connectors for SAP S/4HANA and Salesforce CRM.
+  Includes 60-day warranty period post go-live.}
+  \vspace{1pt}
+\end{minipage} &
+2 & Units & \officialeuro\ 3{,}250.00 & 0.00\% & \officialeuro\ 6{,}500.00 \\
+\end{tabularx}
+
+\vspace{4mm}
+
+%% ══════════════════════════════════════════════════════════════════════════════
+%% PAGE 2  —  Summary totals + Payment terms + Notes
+%% ══════════════════════════════════════════════════════════════════════════════
+\newpage
+
+%% Continuation header ─────────────────────────────────────────────────────────
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[NexaNavy]
+    (current page.north west)
+    rectangle
+    ([yshift=-14mm]current page.north east);
+  \fill[NexaTeal]
+    ([yshift=-14mm]current page.north west)
+    rectangle
+    ([yshift=-15.5mm]current page.north east);
+\end{tikzpicture}
+
+\vspace*{-10mm}
+\noindent
+{\color{white}\bfseries Nexa Solutions Ltd.\ \textcolor{NexaTeal}{\textbar}\ Pro Forma Invoice}
+\hfill
+{\color{NexaMid}\small NX-PFI-2024-0042\enspace\textbullet\enspace Continued}
+
+\vspace{9mm}
+
+%% ── Calculation summary ───────────────────────────────────────────────────────
+{\color{NexaNavy}\large\bfseries Financial Summary}
+\par\vspace{2mm}
+\sectionrule
+\par\vspace{5mm}
+
+\noindent
+\begin{minipage}[t]{0.52\linewidth}
+
+  % ── Discount breakdown ───────────────────────────────────────────────────
+  \begin{tcolorbox}[notebox]
+    {\color{NexaNavy}\small\bfseries\faTag\enspace Discount Breakdown}
+    \par\vspace{4pt}
+    \renewcommand{\arraystretch}{1.35}
+    \begin{tabularx}{\linewidth}{L{0.58\linewidth} R{0.35\linewidth}}
+      \small Impl.\ \& Onboarding (5\% of \officialeuro\ 14{,}800.00) &
+        \small\color{RedWarn}\textemdash\,\officialeuro\ 740.00 \\
+      \small Analytics Module (10\% of \officialeuro\ 6{,}500.00) &
+        \small\color{RedWarn}\textemdash\,\officialeuro\ 650.00 \\
+      \small Training Sessions (5\% of \officialeuro\ 2{,}850.00) &
+        \small\color{RedWarn}\textemdash\,\officialeuro\ 142.50 \\
+      \midrule
+      \small\bfseries Total Discounts &
+        \small\bfseries\color{RedWarn}\textemdash\,\officialeuro\ 1{,}532.50 \\
+    \end{tabularx}
+  \end{tcolorbox}
+
+  \vspace{5pt}
+
+  % ── Tax breakdown ────────────────────────────────────────────────────────
+  \begin{tcolorbox}[notebox]
+    {\color{NexaNavy}\small\bfseries\faReceipt\enspace Tax Breakdown}
+    \par\vspace{4pt}
+    \renewcommand{\arraystretch}{1.35}
+    \begin{tabularx}{\linewidth}{L{0.58\linewidth} R{0.35\linewidth}}
+      \small Software Licences (VAT 23\%) &
+        \small \officialeuro\ 6{,}440.00 \\
+      \small Professional Services (VAT 23\%) &
+        \small \officialeuro\ 3{,}233.80 \\
+      \small Cloud Infrastructure (VAT 23\%) &
+        \small \officialeuro\ 3{,}312.00 \\
+      \small Training (VAT 23\%) &
+        \small \officialeuro\ 622.73 \\
+      \midrule
+      \small\bfseries Total VAT (23\%) &
+        \small\bfseries \officialeuro\ 13{,}608.53 \\
+    \end{tabularx}
+    \par\vspace{3pt}
+    {\footnotesize\color{TextMid}Reverse-charge may apply if the recipient is a
+     VAT-registered entity in an EU member state (Art.\ 44 EU VAT Directive).
+     Please confirm applicability with your tax adviser.}
+  \end{tcolorbox}
+
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.44\linewidth}
+
+  % ── Totals panel ─────────────────────────────────────────────────────────
+  \begin{tcolorbox}[totalpanel]
+    \renewcommand{\arraystretch}{1.5}
+    \begin{tabularx}{\linewidth}{L{0.58\linewidth} R{0.36\linewidth}}
+      \color{NexaMid}\small Gross Subtotal &
+        \color{white}\small \officialeuro\ 78{,}017.50 \\
+      \color{NexaMid}\small Total Discounts &
+        \color{NexaAccent}\small \textemdash\,\officialeuro\ 1{,}532.50 \\
+      \midrule[0.5pt]
+      \color{NexaMid}\small Net Subtotal &
+        \color{white}\small \officialeuro\ 76{,}485.00 \\[1pt]
+      \color{NexaMid}\small VAT (23\%) &
+        \color{white}\small \officialeuro\ 13{,}608.53 \\
+      \midrule[0.5pt]
+      \color{white}\bfseries TOTAL DUE &
+        \color{NexaTeal}\bfseries \officialeuro\ 90{,}093.53 \\
+    \end{tabularx}
+    \par\vspace{6pt}
+    \begin{center}
+      \begin{tikzpicture}
+        \draw[NexaTeal, line width=0.8pt, rounded corners=3pt]
+          (0,0) rectangle (5.5cm, 0.75cm);
+        \node[text=white, font=\small\bfseries] at (2.75cm, 0.375cm)
+          {EUR Ninety Thousand, Ninety-Three \& 53/100};
+      \end{tikzpicture}
+    \end{center}
+    \par\vspace{2pt}
+    {\color{NexaMid}\footnotesize
+     Amount in words for banking purposes only.}
+  \end{tcolorbox}
+
+  \vspace{5pt}
+
+  % ── Status badge ─────────────────────────────────────────────────────────
+  \begin{tcolorbox}[warnbox]
+    {\small\faExclamationTriangle\enspace\color{NexaAccent!60!black}\bfseries
+     Pro Forma Notice}\\[3pt]
+    {\footnotesize\color{TextDark}This document is issued for customs clearance
+     and advance payment purposes only. It does not constitute a formal tax
+     invoice. A VAT invoice (NX-VI series) will be issued upon shipment
+     confirmation and payment receipt.}
+  \end{tcolorbox}
+
+\end{minipage}
+
+\par\vspace{7mm}
+
+%% ── Payment terms ─────────────────────────────────────────────────────────────
+{\color{NexaNavy}\large\bfseries Payment Terms \& Banking Details}
+\par\vspace{2mm}
+\sectionrule
+\par\vspace{5mm}
+
+\noindent
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[infopanel, height=70mm]
+    \labeltext{Payment Schedule}
+    \par\vspace{5pt}
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabular}{@{} p{28mm} p{20mm} r @{}}
+      \small\bfseries Milestone & \small\bfseries Due Date & \small\bfseries Amount \\
+      \midrule
+      \small Advance (40\%) & \small 30 Nov 2024 & \small \officialeuro\ 36{,}037.41 \\
+      \small Delivery (40\%) & \small 31 Jan 2025 & \small \officialeuro\ 36{,}037.41 \\
+      \small Go-live (20\%) & \small 28 Feb 2025 & \small \officialeuro\ 18{,}018.71 \\
+      \midrule
+      \small\bfseries Total & & \small\bfseries \officialeuro\ 90{,}093.53 \\
+    \end{tabular}
+    \par\vspace{5pt}
+    {\footnotesize\color{TextMid}Late payment interest: ECB base rate + 8\%\ p.a.\ (EU Late
+     Payment Directive 2011/7/EU).}
+  \end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[infopanel, height=70mm]
+    \labeltext{Banking Details}
+    \par\vspace{5pt}
+    \renewcommand{\arraystretch}{1.4}
+    \begin{tabular}{@{} p{32mm} p{42mm} @{}}
+      \small Beneficiary: & \small\bfseries Nexa Solutions Ltd. \\
+      \small Bank: & \small\bfseries Atlantic Commerce Bank \\
+      \small Branch: & \small Grand Canal Dock, Dublin \\
+      \small IBAN: & \small\bfseries IE29 ATCB 9310 0012 3456 78 \\
+      \small BIC/SWIFT: & \small\bfseries ATCBIEDD \\
+      \small Reference: & \small\bfseries NX-PFI-2024-0042 \\
+    \end{tabular}
+    \par\vspace{5pt}
+    {\footnotesize\color{TextMid}Please include the invoice reference in all
+     transfer descriptions to ensure prompt allocation.}
+  \end{tcolorbox}
+\end{minipage}
+
+\par\vspace{7mm}
+
+%% ── Delivery details ──────────────────────────────────────────────────────────
+{\color{NexaNavy}\large\bfseries Delivery \& Compliance Details}
+\par\vspace{2mm}
+\sectionrule
+\par\vspace{5mm}
+
+\noindent
+\begin{minipage}[t]{0.31\linewidth}
+  \begin{tcolorbox}[infopanel]
+    \labeltext{Delivery Address}
+    \par\vspace{4pt}
+    {\small\bfseries\color{NexaNavy}Meridian Dynamics GmbH}\\
+    {\small\color{TextMid}IT Receiving Department}\\
+    {\small\color{TextMid}Schillerstra{\ss}e 88}\\
+    {\small\color{TextMid}60313 Frankfurt am Main}\\
+    {\small\color{TextMid}Germany}
+  \end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.31\linewidth}
+  \begin{tcolorbox}[infopanel]
+    \labeltext{Expected Delivery}
+    \par\vspace{4pt}
+    {\small\bfseries\color{NexaNavy}Phase 1 (Licences)}\\
+    {\small\color{TextMid}Upon advance payment receipt}\\[4pt]
+    {\small\bfseries\color{NexaNavy}Phase 2 (Implementation)}\\
+    {\small\color{TextMid}Commencing 6 Jan 2025}\\[4pt]
+    {\small\bfseries\color{NexaNavy}Full Go-Live}\\
+    {\small\color{TextMid}Target: 28 February 2025}
+  \end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.31\linewidth}
+  \begin{tcolorbox}[infopanel]
+    \labeltext{Export / HS Codes}
+    \par\vspace{4pt}
+    {\small\bfseries\color{NexaNavy}Software Licences}\\
+    {\small\color{TextMid}HS 8523.49 (Intangible)}\\[4pt]
+    {\small\bfseries\color{NexaNavy}Services}\\
+    {\small\color{TextMid}Service contract, non-physical}\\[4pt]
+    {\small\bfseries\color{NexaNavy}Country of Origin}\\
+    {\small\color{TextMid}Ireland (EU)}
+  \end{tcolorbox}
+\end{minipage}
+
+\par\vspace{7mm}
+
+%% ── Terms and conditions ──────────────────────────────────────────────────────
+{\color{NexaNavy}\large\bfseries Terms \& Conditions}
+\par\vspace{2mm}
+\sectionrule
+\par\vspace{4mm}
+
+\begin{enumerate}[leftmargin=*, label=\textbf{\arabic{enumi}.}, itemsep=3pt]
+  \item \textbf{Validity.} This pro forma invoice is valid for 30 days from the issue date stated
+    above. Prices are subject to change after the validity period expires.
+
+  \item \textbf{Acceptance.} Issuance of the advance payment specified in the payment schedule
+    constitutes formal acceptance of this pro forma. A signed purchase order confirmation
+    (\textit{Auftragsbestätigung}) may be requested by Nexa Solutions Ltd.\ prior to commencing
+    any delivery activities.
+
+  \item \textbf{Currency Risk.} All amounts are denominated in Euro (EUR). Where the buyer's
+    functional currency differs, the exchange rate applied shall be the ECB reference rate on
+    the date of receipt of cleared funds. Currency fluctuation risk is borne by the buyer.
+
+  \item \textbf{Intellectual Property.} Software licences are granted on a subscription basis
+    and remain the exclusive property of Nexa Solutions Ltd. Reverse engineering, sub-licensing,
+    or redistribution without written consent is strictly prohibited.
+
+  \item \textbf{Confidentiality.} This document and all pricing information contained herein
+    are commercially sensitive and are shared with the named recipient in strict confidence.
+    Disclosure to third parties requires prior written authorisation from Nexa Solutions Ltd.
+
+  \item \textbf{Governing Law.} This pro forma invoice and any resulting contract shall be
+    governed by the laws of Ireland. Any dispute shall be subject to the exclusive jurisdiction
+    of the courts of Dublin, Ireland, without prejudice to Nexa's right to seek injunctive
+    relief in any competent jurisdiction.
+
+  \item \textbf{Force Majeure.} Nexa Solutions Ltd.\ shall not be liable for delays caused by
+    circumstances beyond its reasonable control, including but not limited to natural disasters,
+    cyberattacks, pandemic restrictions, or supply chain disruptions.
+\end{enumerate}
+
+\par\vspace{6mm}
+
+%% ── Signatory section ────────────────────────────────────────────────────────
+{\color{NexaNavy}\large\bfseries Authorisation}
+\par\vspace{2mm}
+\sectionrule
+\par\vspace{5mm}
+
+\noindent
+\begin{minipage}[t]{0.45\linewidth}
+  \begin{tcolorbox}[notebox, height=40mm]
+    \labeltext{Issued \& Authorised by}
+    \par\vspace{10mm}
+    \noindent\textcolor{BorderLight}{\rule{0.8\linewidth}{0.5pt}}
+    \par\vspace{3pt}
+    {\small\bfseries\color{NexaNavy}Ethan Calloway}\\
+    {\footnotesize\color{TextMid}Head of Finance, Nexa Solutions Ltd.}\\
+    {\footnotesize\color{TextMid}Date: \underline{\hspace{30mm}}}
+  \end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.45\linewidth}
+  \begin{tcolorbox}[notebox, height=40mm]
+    \labeltext{Accepted by (Buyer Representative)}
+    \par\vspace{10mm}
+    \noindent\textcolor{BorderLight}{\rule{0.8\linewidth}{0.5pt}}
+    \par\vspace{3pt}
+    {\small\bfseries\color{TextMid}Name \& Title:\ \underline{\hspace{32mm}}}\\[2pt]
+    {\footnotesize\color{TextMid}Company Stamp \& Date:\ \underline{\hspace{18mm}}}
+  \end{tcolorbox}
+\end{minipage}
+
+\par\vspace{5mm}
+
+%% ── Footer note ───────────────────────────────────────────────────────────────
+\begin{tcolorbox}[
+  enhanced, boxrule=0pt, arc=0pt,
+  colback=NexaNavy, colframe=NexaNavy,
+  left=10pt, right=10pt, top=6pt, bottom=6pt
+]
+  \centering
+  {\color{NexaMid}\footnotesize
+   Nexa Solutions Ltd.\ is registered in Ireland under company number 654321.\ \textbullet\
+   VAT No.\ IE\,8234567T.\ \textbullet\
+   Registered office: 14 Harbourview Business Park, Tower B, Dublin 2, D02 XW34.}\\[2pt]
+  {\color{TextLight}\scriptsize
+   This is a pro forma document only and does not create a legal obligation to pay VAT until
+   a formal tax invoice is issued. Document generated: 14 November 2024.}
+\end{tcolorbox}
+
+\end{document}

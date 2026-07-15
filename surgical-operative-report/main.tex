@@ -1,0 +1,242 @@
+\documentclass[10pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[scaled=0.92]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+\usepackage[top=0.8in, bottom=0.8in, left=0.8in, right=0.8in]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\usepackage{microtype}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{calc, positioning}
+
+% Custom Colors (Fictional Clinical/Medical Palette)
+\definecolor{primarycolor}{HTML}{0B2545}
+\definecolor{secondarycolor}{HTML}{134074}
+\definecolor{accentcolor}{HTML}{8DA9C4}
+\definecolor{lightbg}{HTML}{F0F4F8}
+\definecolor{darktext}{HTML}{1D2A44}
+\definecolor{bordercolor}{HTML}{D0DCE5}
+
+% Custom Page Styles
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\fancyhead[L]{\fontsize{8.5}{10}\selectfont\sffamily\color{secondarycolor}\textbf{MERIDIAN SURGICAL CLINIC} \ \textbullet\ \ CLINICAL RECORD}
+\fancyhead[R]{\fontsize{8.5}{10}\selectfont\sffamily\color{secondarycolor}\textbf{SURGICAL OPERATIVE REPORT}}
+\fancyfoot[L]{\fontsize{8}{10}\selectfont\sffamily\color{accentcolor}Confidential Medical Record --- For Professional Use Only}
+\fancyfoot[R]{\fontsize{8}{10}\selectfont\sffamily\color{secondarycolor}Page \thepage\ of \pageref{LastPage}}
+
+% Custom first page style
+\fancypagestyle{firstpage}{
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0.5pt}
+  \fancyfoot[L]{\fontsize{8}{10}\selectfont\sffamily\color{accentcolor}Confidential Medical Record --- For Professional Use Only}
+  \fancyfoot[R]{\fontsize{8}{10}\selectfont\sffamily\color{secondarycolor}Page \thepage\ of \pageref{LastPage}}
+}
+
+% Section Header Command
+\newcommand{\opsection}[1]{%
+  \vspace{1.2em}%
+  \begin{tcolorbox}[
+    colback=secondarycolor,
+    colframe=secondarycolor,
+    arc=1mm,
+    left=8pt, right=8pt, top=4pt, bottom=4pt,
+    boxrule=0pt,
+    grow to left by=0pt,
+    grow to right by=0pt
+  ]
+    \color{white}\bfseries\sffamily\fontsize{10}{12}\selectfont #1
+  \end{tcolorbox}%
+  \vspace{0.4em}%
+}
+
+\newcommand{\reporttext}[1]{{\fontsize{9.5}{13.5}\selectfont\sffamily\color{darktext} #1\par}}
+
+\begin{document}
+\thispagestyle{firstpage}
+\color{darktext}
+
+% Title Block
+\begin{tcolorbox}[
+  colback=primarycolor,
+  colframe=primarycolor,
+  arc=1.5mm,
+  left=15pt, right=15pt, top=12pt, bottom=12pt,
+  boxrule=0pt
+]
+  \begin{minipage}[c]{0.60\textwidth}
+    \color{white}\sffamily
+    {\fontsize{18}{22}\selectfont\bfseries MERIDIAN SURGICAL CLINIC} \\[0.3em]
+    {\fontsize{9}{11}\selectfont\color{accentcolor}\textbf{DEPARTMENT OF SURGERY \ \textbullet\ \ CLINICAL RECORD}}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[c]{0.35\textwidth}
+    \color{white}\sffamily\raggedleft
+    {\fontsize{11}{13}\selectfont\bfseries OPERATIVE REPORT} \\[0.3em]
+    {\fontsize{8.5}{10.5}\selectfont\color{accentcolor}MRN: 948-204-11A \ \textbullet\ \ July 15, 2026}
+  \end{minipage}
+\end{tcolorbox}
+
+\vspace{0.5em}
+
+% Status/Timeline Tracker
+\begin{center}
+\begin{tikzpicture}[node distance=0.6cm, every node/.style={font=\sffamily\fontsize{7.5}{9}\selectfont}]
+  % Nodes
+  \node[draw=secondarycolor, fill=lightbg, rounded corners=3pt, inner sep=4pt] (pre) {\textbf{1. PRE-OP} (Done)};
+  \node[draw=secondarycolor, fill=secondarycolor, text=white, rounded corners=3pt, inner sep=4pt, right=of pre] (intra) {\textbf{2. INTRA-OP} (Active)};
+  \node[draw=bordercolor, fill=white, text=gray, rounded corners=3pt, inner sep=4pt, right=of intra] (pacu) {3. PACU (Pending)};
+  \node[draw=bordercolor, fill=white, text=gray, rounded corners=3pt, inner sep=4pt, right=of pacu] (discharge) {4. DISCHARGE (Pending)};
+  
+  % Arrows
+  \draw[->, >=stealth, thick, secondarycolor] (pre) -- (intra);
+  \draw[->, >=stealth, thick, bordercolor] (intra) -- (pacu);
+  \draw[->, >=stealth, thick, bordercolor] (pacu) -- (discharge);
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.5em}
+
+% Demographic Information Boxes
+\noindent
+\begin{minipage}[t]{0.49\textwidth}
+  \begin{tcolorbox}[
+    colback=lightbg,
+    colframe=secondarycolor,
+    coltitle=white,
+    title={\bfseries\sffamily PATIENT DEMOGRAPHICS},
+    arc=1.5mm,
+    boxrule=1pt,
+    valign=top,
+    height=4.2cm,
+    left=8pt, right=8pt, top=6pt, bottom=6pt
+  ]
+    \fontsize{8.5}{12}\selectfont\sffamily
+    \begin{tabular}{@{}ll@{}}
+      \textbf{Patient Name:} & Robert J. Harrison \\{}
+      \textbf{Date of Birth:} & October 14, 1974 (51 Y/O) \\{}
+      \textbf{MRN:} & 948-204-11A \\{}
+      \textbf{Gender:} & Male \\{}
+      \textbf{Admission Date:} & July 15, 2026 \\{}
+      \textbf{Attending MD:} & Dr. Evelyn Vance, MD \\{}
+    \end{tabular}
+  \end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.49\textwidth}
+  \begin{tcolorbox}[
+    colback=lightbg,
+    colframe=secondarycolor,
+    coltitle=white,
+    title={\bfseries\sffamily SURGICAL ENCOUNTER},
+    arc=1.5mm,
+    boxrule=1pt,
+    valign=top,
+    height=4.2cm,
+    left=8pt, right=8pt, top=6pt, bottom=6pt
+  ]
+    \fontsize{8.5}{12}\selectfont\sffamily
+    \begin{tabular}{@{}ll@{}}
+      \textbf{Primary Surgeon:} & Dr. Marcus Sterling, MD, FACS \\{}
+      \textbf{Assistant Surgeon:} & Dr. Sarah Jenkins, MD \\{}
+      \textbf{Anesthesiologist:} & Dr. David Cho, MD \\{}
+      \textbf{Anesthesia Type:} & General Endotracheal \\{}
+      \textbf{Date of Surgery:} & July 15, 2026 \\{}
+      \textbf{Procedure Time:} & 07:30 -- 09:45 (135 mins) \\{}
+    \end{tabular}
+  \end{tcolorbox}
+\end{minipage}
+
+\vspace{0.8em}
+
+% Quick Summary of diagnoses and procedures
+\begin{tcolorbox}[
+  colback=white,
+  colframe=bordercolor,
+  arc=1.5mm,
+  boxrule=1pt,
+  left=12pt, right=12pt, top=10pt, bottom=10pt
+]
+  \fontsize{9}{13}\selectfont\sffamily
+  \begin{tabularx}{\textwidth}{@{} >{\color{secondarycolor}\bfseries}l X @{}}
+    Preoperative Diagnosis: & Left inguinal hernia, reducible \\[0.3em]
+    Postoperative Diagnosis: & Left indirect inguinal hernia with sliding component (sigmoid colon) \\[0.3em]
+    Procedures Performed: & Open left inguinal herniorrhaphy with Apex polypropylene mesh repair (Lichtenstein technique) \\[0.3em]
+    Specimens Removed: & Hernia sac (sent to pathology) \\[0.3em]
+    Estimated Blood Loss: & less than 10~mL \\[0.3em]
+    Complications: & None \\[0.3em]
+    Postoperative Status: & Stable, extubated, transferred to PACU \\{}
+  \end{tabularx}
+\end{tcolorbox}
+
+\opsection{INDICATIONS FOR SURGERY}
+\reporttext{The patient is a 51-year-old male with a history of a progressive, symptomatic left groin hernia. Over the past six months, he has reported increasing discomfort and a persistent dull ache, exacerbated by physical exertion and prolonged standing. The hernia is clinically reducible but has become increasingly difficult to manage conservatively.}
+
+\reporttext{On physical examination, a distinct bulge was palpable in the left inguinal region, which easily reduced with manual pressure. The risks of surgery, including bleeding, infection, damage to surrounding structures (vessels, nerves, vas deferens), hernia recurrence, chronic pain, and risks associated with general anesthesia, were discussed in detail with the patient. The patient expressed understanding of these risks and elected to proceed with elective surgical repair.}
+
+\clearpage
+
+\opsection{PREOPERATIVE PREPARATION \& ANESTHESIA}
+\reporttext{The patient was evaluated by anesthesia and cleared for surgery. In the preoperative holding area, the surgical site was confirmed and marked. Intravenous access was established, and active sequential compression devices were applied to the lower extremities for deep vein thrombosis prophylaxis.}
+
+\reporttext{The patient was transported to the operating room and placed in the supine position on the operating table. General endotracheal anesthesia was induced without complication. Ancef 2 grams was administered intravenously 45 minutes prior to the skin incision. The left groin area was prepped using ChloraPrep and draped in the standard sterile fashion. A surgical time-out was performed immediately prior to the incision to confirm patient identity, surgical site, and planned procedure.}
+
+\opsection{OPERATIVE TECHNIQUE (DETAILED NARRATIVE)}
+\reporttext{\textbf{Incision and Exposure:} A 6 cm oblique incision was made in the left lower quadrant, approximately 2 cm superior and parallel to the inguinal ligament. The incision was carried down through the subcutaneous tissues using electrocautery. The Scarpa's fascia was identified and incised. The external oblique aponeurosis was identified, and an incision was made along the line of its fibers, extending through the external inguinal ring. Care was taken to identify and protect the ilioinguinal nerve, which was gently mobilized and retracted.}
+
+\reporttext{\textbf{Dissection of Cord and Hernia Sac:} The superior and inferior flaps of the external oblique aponeurosis were mobilized to expose the inguinal ligament and the conjoined tendon. The spermatic cord was circumferentialized at the pubic tubercle and elevated using a Penrose drain. A thorough dissection of the cord structures was performed. A large indirect hernia sac was identified anterolaterally. The sac was dissected free from the cord structures up to the level of the internal ring.}
+
+\reporttext{\textbf{Management of Hernia Sac:} The hernia sac was opened, and its contents were inspected. A small sliding component consisting of sigmoid colon was noted. The colon was viable, pink, and well-perfused. It was gently reduced back into the peritoneal cavity. The hernia sac was then high-ligated at the neck using a 2-0 Vicryl purse-string suture. The excess sac was excised and sent to pathology as a specimen.}
+
+\reporttext{\textbf{Mesh Placement and Fixation:} The posterior wall of the inguinal canal was inspected and found to have mild attenuation but no direct hernia defect. An Apex polypropylene mesh, measuring approximately 6 x 10 cm, was tailored to fit the inguinal floor. The mesh was secured to the pubic tubercle using a 2-0 Prolene suture, ensuring a secure anchor. The inferior edge of the mesh was sutured to the shelving edge of the inguinal ligament up to the internal ring using a running 2-0 Prolene suture. The superior edge of the mesh was secured to the conjoined tendon and internal oblique muscle using interrupted 2-0 Prolene sutures. A slit was made in the lateral aspect of the mesh to accommodate the spermatic cord, and the tails were recreated and sutured together behind the cord using a 2-0 Prolene suture to reconstruct the internal ring.}
+
+\reporttext{\textbf{Closure and Dressing:} The spermatic cord was placed back in its anatomical position over the mesh. The external oblique aponeurosis was closed over the cord using a running 2-0 Vicryl suture, reconstituting the external ring. The subcutaneous tissue was irrigated with normal saline. Hemostasis was verified and found to be excellent. The Scarpa's fascia was closed with interrupted 3-0 Vicryl sutures. The skin was closed using a running subcuticular 4-0 Monocryl suture. Steri-Strips and a sterile dry dressing were applied.}
+
+\opsection{OPERATIVE FINDINGS \& POSTOPERATIVE PLAN}
+\begin{tcolorbox}[
+  colback=white,
+  colframe=bordercolor,
+  arc=1.5mm,
+  boxrule=1pt,
+  left=10pt, right=10pt, top=8pt, bottom=8pt
+]
+  \fontsize{9}{12.5}\selectfont\sffamily
+  \begin{tabularx}{\textwidth}{@{}l X@{}}
+    \textbf{Operative Findings:} & Large indirect inguinal hernia sac containing viable sigmoid colon (sliding hernia). Inguinal floor showed no direct defect. Spermatic cord and surrounding structures were normal. \\[0.4em]
+    \textbf{Postoperative Plan:} & Transfer to PACU. Monitor vitals, check surgical site for bleeding/hematoma. Discharge home when stable with pain management instructions and activity restrictions. \\{}
+  \end{tabularx}
+\end{tcolorbox}
+
+\vspace{2.5em}
+
+\noindent
+\begin{minipage}[t]{0.48\textwidth}
+  \fontsize{9}{12}\selectfont\sffamily
+  \rule{\textwidth}{0.6pt} \\{}
+  \textbf{Dr. Marcus Sterling, MD, FACS} \\{}
+  Primary Surgeon \\{}
+  Credential Number: MD-84920-FL
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+  \fontsize{9}{12}\selectfont\sffamily
+  \rule{\textwidth}{0.6pt} \\{}
+  \textbf{Dr. Evelyn Vance, MD} \\{}
+  Attending / Co-Signer \\{}
+  Credential Number: MD-77401-FL
+\end{minipage}
+
+\end{document}

@@ -1,0 +1,588 @@
+\documentclass[10pt]{article}
+\usepackage[a4paper, landscape, left=25mm, right=15mm, top=15mm, bottom=55mm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{colortbl}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{lastpage}
+\usepackage{tikz}
+\usepackage{eso-pic}
+\usepackage{enumitem}
+
+\usetikzlibrary{calc, positioning, shapes.geometric}
+
+% Define custom CAD colors
+\definecolor{CADBlue}{RGB}{20,50,90}
+\definecolor{CADGrey}{RGB}{100,110,120}
+\definecolor{CADRed}{RGB}{180,40,40}
+\definecolor{CADText}{RGB}{30,30,30}
+
+% Use Helvetica font as default (clean sans-serif for drawings)
+\usepackage[scaled=0.92]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+% Reset paragraph spacing for layout control
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% Dynamic title block variables
+\newcommand{\dwgtitle}{CHASSIS ASSEMBLY \& WELDMENT}
+\newcommand{\dwgno}{VAS-MRD-001}
+\newcommand{\dwgrev}{C}
+\newcommand{\dwgscale}{1:5}
+
+% Background border and title block drawer
+\newcommand{\drawborderandtitleblock}{%
+  \begin{tikzpicture}[remember picture, overlay]
+    % Outer border line
+    \draw[line width=0.5mm, draw=CADBlue] (2.0cm, 1.0cm) rectangle (28.7cm, 20.0cm);
+    
+    % Inner border line (drawing frame)
+    \draw[line width=0.3mm, draw=CADBlue] (2.5cm, 1.5cm) rectangle (28.2cm, 19.5cm);
+    
+    % Grid Ticks - Horizontal (columns 1 to 6)
+    \foreach \x in {6.78, 11.07, 15.35, 19.63, 23.92} {
+      \draw[line width=0.2mm, draw=CADBlue] (\x cm, 1.0cm) -- (\x cm, 1.5cm);
+      \draw[line width=0.2mm, draw=CADBlue] (\x cm, 19.0cm) -- (\x cm, 19.5cm);
+    }
+    
+    % Grid Labels - Horizontal (numbers)
+    \foreach \x/\label in {4.64/1, 8.92/2, 13.21/3, 17.49/4, 21.78/5, 26.06/6} {
+      \node[text=CADBlue, font=\fontsize{7}{8}\selectfont\sffamily\bfseries] at (\x cm, 1.25cm) {\label};
+      \node[text=CADBlue, font=\fontsize{7}{8}\selectfont\sffamily\bfseries] at (\x cm, 19.75cm) {\label};
+    }
+    
+    % Grid Ticks - Vertical (rows A to D)
+    \foreach \y in {6.0, 10.5, 15.0} {
+      \draw[line width=0.2mm, draw=CADBlue] (2.0cm, \y cm) -- (2.5cm, \y cm);
+      \draw[line width=0.2mm, draw=CADBlue] (28.2cm, \y cm) -- (28.7cm, \y cm);
+    }
+    
+    % Grid Labels - Vertical (letters)
+    \foreach \y/\label in {17.25/A, 12.75/B, 8.25/C, 3.75/D} {
+      \node[text=CADBlue, font=\fontsize{7}{8}\selectfont\sffamily\bfseries] at (2.25cm, \y cm) {\label};
+      \node[text=CADBlue, font=\fontsize{7}{8}\selectfont\sffamily\bfseries] at (28.45cm, \y cm) {\label};
+    }
+
+    % TITLE BLOCK BOUNDARY (bottom right corner, sits inside the inner border)
+    \draw[line width=0.5mm, draw=CADBlue, fill=white] (11.2cm, 1.5cm) rectangle (28.2cm, 5.5cm);
+    
+    % Vertical division lines
+    \draw[line width=0.3mm, draw=CADBlue] (16.2cm, 1.5cm) -- (16.2cm, 5.5cm);
+    \draw[line width=0.3mm, draw=CADBlue] (23.2cm, 1.5cm) -- (23.2cm, 5.5cm);
+    
+    % Horizontal division lines - Left column
+    \draw[line width=0.3mm, draw=CADBlue] (11.2cm, 2.7cm) -- (16.2cm, 2.7cm);
+    
+    % Horizontal division lines - Middle column
+    \draw[line width=0.3mm, draw=CADBlue] (16.2cm, 4.3cm) -- (23.2cm, 4.3cm);
+    \draw[line width=0.3mm, draw=CADBlue] (16.2cm, 2.7cm) -- (23.2cm, 2.7cm);
+    
+    % Horizontal division lines - Right column
+    \draw[line width=0.3mm, draw=CADBlue] (23.2cm, 4.5cm) -- (28.2cm, 4.5cm);
+    \draw[line width=0.3mm, draw=CADBlue] (23.2cm, 3.5cm) -- (28.2cm, 3.5cm);
+    \draw[line width=0.3mm, draw=CADBlue] (23.2cm, 2.5cm) -- (28.2cm, 2.5cm);
+    
+    % Vertical subdivision lines - Right column
+    \draw[line width=0.3mm, draw=CADBlue] (25.7cm, 3.5cm) -- (25.7cm, 5.5cm);
+    \draw[line width=0.3mm, draw=CADBlue] (25.7cm, 1.5cm) -- (25.7cm, 2.5cm);
+
+    % TEXT LABELS AND VALUE INSERTS
+    % Left Column: Company & Department Details
+    \node[anchor=west, text=CADBlue, align=left] at (11.4cm, 4.3cm) {
+      {\fontsize{13}{15}\selectfont\bfseries VERTEX} \\[1.2mm]
+      {\fontsize{7}{8}\selectfont\sffamily\bfseries AUTONOMOUS SYSTEMS}
+    };
+    \node[anchor=west, text=CADText, align=left] at (11.4cm, 2.1cm) {
+      {\fontsize{5}{6}\selectfont\sffamily DEPT:}\\[0.5mm]
+      {\fontsize{7}{8}\selectfont\sffamily\bfseries AEROSPACE R\&D}
+    };
+    
+    % Middle Column: Project, Title, and Technical Standards Notes
+    \node[anchor=west, text=CADText, align=left] at (16.4cm, 4.9cm) {
+      {\fontsize{5}{6}\selectfont\sffamily PROJECT:}\\[0.5mm]
+      {\fontsize{8}{9}\selectfont\sffamily\bfseries MERIDIAN AUTONOMOUS ROVER}
+    };
+    \node[anchor=west, text=CADBlue, align=left] at (16.4cm, 3.5cm) {
+      {\fontsize{5}{6}\selectfont\sffamily DRAWING TITLE:}\\[0.8mm]
+      {\fontsize{10}{12}\selectfont\sffamily\bfseries \dwgtitle}
+    };
+    \node[anchor=west, text=CADText, align=left] at (16.4cm, 2.1cm) {
+      {\fontsize{4.5}{5}\selectfont\sffamily UNLESS OTHERWISE SPECIFIED:}\\[0.5mm]
+      {\fontsize{5.5}{6.5}\selectfont\sffamily ALL DIMENSIONS IN MILLIMETERS. ANGLES $\pm$0.5$^\circ$. SURFACE FINISH 3.2 $\mu$m.}
+    };
+
+    % Right Column: Engineering Release Information
+    \node[anchor=west, text=CADText, align=left] at (23.4cm, 5.0cm) {
+      {\fontsize{5}{6}\selectfont\sffamily DRAWN BY:}\\[0.5mm]
+      {\fontsize{7}{8}\selectfont\sffamily\bfseries A. VALDEZ}
+    };
+    \node[anchor=west, text=CADText, align=left] at (25.9cm, 5.0cm) {
+      {\fontsize{5}{6}\selectfont\sffamily APPROVED BY:}\\[0.5mm]
+      {\fontsize{7}{8}\selectfont\sffamily\bfseries M. STERLING}
+    };
+    \node[anchor=west, text=CADText, align=left] at (23.4cm, 4.0cm) {
+      {\fontsize{5}{6}\selectfont\sffamily DATE:}\\[0.5mm]
+      {\fontsize{7}{8}\selectfont\sffamily\bfseries 15-JUL-2026}
+    };
+    \node[anchor=west, text=CADText, align=left] at (25.9cm, 4.0cm) {
+      {\fontsize{5}{6}\selectfont\sffamily SCALE:}\\[0.5mm]
+      {\fontsize{7}{8}\selectfont\sffamily\bfseries \dwgscale}
+    };
+    \node[anchor=west, text=CADBlue, align=left] at (23.4cm, 3.0cm) {
+      {\fontsize{5}{6}\selectfont\sffamily DRAWING NUMBER:}\\[0.5mm]
+      {\fontsize{9}{10}\selectfont\sffamily\bfseries \dwgno}
+    };
+    \node[anchor=west, text=CADText, align=left] at (23.4cm, 2.0cm) {
+      {\fontsize{5}{6}\selectfont\sffamily SHEET:}\\[0.5mm]
+      {\fontsize{8}{9}\selectfont\sffamily\bfseries \thepage\ OF \pageref{LastPage}}
+    };
+    \node[anchor=west, text=CADText, align=left] at (25.9cm, 2.0cm) {
+      {\fontsize{5}{6}\selectfont\sffamily REV:}\\[0.5mm]
+      {\fontsize{8}{9}\selectfont\sffamily\bfseries \dwgrev}
+    };
+  \end{tikzpicture}
+}
+
+% Attach background drawing hook
+\AddToShipoutPictureBG{\drawborderandtitleblock}
+
+% Set drawing page style
+\pagestyle{empty}
+
+\begin{document}
+% ==========================================
+% SHEET 1: GENERAL ASSEMBLY & ORTHOGONAL VIEWS
+% ==========================================
+\gdef\dwgtitle{CHASSIS ASSEMBLY \& WELDMENT}%
+\gdef\dwgno{VAS-MRD-001}%
+\gdef\dwgrev{C}%
+\gdef\dwgscale{1:5}%
+\noindent
+\begin{minipage}[t]{18.0cm}
+  \begin{tikzpicture}[x=1cm, y=1cm, scale=0.74, every node/.style={scale=0.74}]
+    % Global CAD Styles
+    \tikzset{
+      fillline/.style={line width=0.4mm, draw=CADBlue, fill=CADBlue!5},
+      hidden/.style={dashed, thin, draw=CADGrey},
+      centerline/.style={dashdotted, thin, draw=CADRed},
+      dimension/.style={<->, >=latex, thin, draw=CADGrey, every node/.style={fill=white, inner sep=1pt, font=\fontsize{6}{7}\selectfont\sffamily}},
+      balloon/.style={circle, draw=CADBlue, fill=white, inner sep=1.2pt, font=\fontsize{6.5}{7.5}\selectfont\sffamily\bfseries}
+    }
+
+    % ----------------------------------------
+    % TOP VIEW (Plan View) - Shifted to (5.0, 8.5)
+    % ----------------------------------------
+    \begin{scope}[shift={(5.0, 8.5)}]
+      % Centerlines
+      \draw[centerline] (-4.5, 0) -- (4.5, 0);
+      \draw[centerline] (0, -2.5) -- (0, 2.5);
+      \draw[centerline] (-3.0, -2.5) -- (-3.0, 2.5);
+      \draw[centerline] (3.0, -2.5) -- (3.0, 2.5);
+
+      % Main longitudinal frame tubes (50x50 profile)
+      \draw[fillline] (-4.0, 1.6) rectangle (4.0, 2.0);
+      \draw[fillline] (-4.0, -2.0) rectangle (4.0, -1.6);
+
+      % Transverse cross-members (Front, Rear, Center)
+      \draw[fillline] (-4.0, -1.6) rectangle (-3.6, 1.6);
+      \draw[fillline] (3.6, -1.6) rectangle (4.0, 1.6);
+      \draw[fillline] (-0.2, -1.6) rectangle (0.2, 1.6);
+
+      % Electronics Mounting Plate
+      \draw[line width=0.3mm, draw=CADBlue, fill=CADGrey!10] (-1.8, -1.6) rectangle (1.8, 1.6);
+      % Mounting Plate Bolt Holes
+      \foreach \hx/\hy in {-1.2/1.0, -1.2/-1.0, 1.2/1.0, 1.2/-1.0} {
+        \draw[line width=0.2mm, draw=CADBlue] (\hx, \hy) circle (0.12cm);
+        \draw[centerline] (\hx-0.3, \hy) -- (\hx+0.3, \hy);
+        \draw[centerline] (\hx, \hy-0.3) -- (\hx, \hy+0.3);
+      }
+
+      % Front Protective Bumper
+      \draw[fillline] (-4.8, -2.2) -- (-4.5, -2.2) -- (-4.5, 2.2) -- (-4.8, 2.2) -- cycle;
+      % Bumper mounts
+      \draw[fillline] (-4.5, 1.0) rectangle (-4.0, 1.3);
+      \draw[fillline] (-4.5, -1.3) rectangle (-4.0, -1.0);
+
+      % Wheels & Axles
+      % Axles
+      \foreach \wx/\wy in {-3.0/2.1, 3.0/2.1, -3.0/-2.1, 3.0/-2.1} {
+        \draw[line width=0.6mm, draw=CADBlue] (\wx, \wy) -- (\wx, \wy/2.1*1.6);
+      }
+      % Wheels
+      \draw[line width=0.4mm, draw=CADBlue, fill=CADText!80] (-3.8, 2.2) rectangle (-2.2, 2.8);
+      \draw[line width=0.4mm, draw=CADBlue, fill=CADText!80] (2.2, 2.2) rectangle (3.8, 2.8);
+      \draw[line width=0.4mm, draw=CADBlue, fill=CADText!80] (-3.8, -2.8) rectangle (-2.2, -2.2);
+      \draw[line width=0.4mm, draw=CADBlue, fill=CADText!80] (2.2, -2.8) rectangle (3.8, -2.2);
+
+      % Plan View Text Label
+      \node[anchor=south, font=\fontsize{8}{9}\selectfont\sffamily\bfseries, text=CADBlue] at (0, 2.9) {PLAN VIEW (TOP)};
+    \end{scope}
+
+    % ----------------------------------------
+    % FRONT VIEW (Elevation) - Shifted to (5.0, 3.0)
+    % ----------------------------------------
+    \begin{scope}[shift={(5.0, 3.0)}]
+      % Ground level boundary
+      \draw[thin, draw=CADGrey] (-5.5, -1.2) -- (5.5, -1.2);
+      \foreach \gx in {-5.0, -4.5, ..., 5.0} {
+        \draw[thin, draw=CADGrey] (\gx, -1.2) -- (\gx-0.12, -1.4);
+      }
+
+      % Centerlines
+      \draw[centerline] (-4.5, 0.2) -- (4.5, 0.2);
+      \draw[centerline] (-3.0, -1.2) -- (-3.0, 1.2);
+      \draw[centerline] (3.0, -1.2) -- (3.0, 1.2);
+
+      % Frame side profile
+      \draw[fillline] (-4.0, 0.0) rectangle (4.0, 0.4);
+
+      % Bumper side profile
+      \draw[fillline] (-4.8, -0.3) rectangle (-4.5, 0.8);
+      \draw[fillline] (-4.5, 0.1) rectangle (-4.0, 0.3);
+
+      % Wheel side circles
+      \draw[line width=0.4mm, draw=CADBlue, fill=CADText!80] (-3.0, -0.2) circle (1.0cm);
+      \draw[line width=0.4mm, draw=CADBlue, fill=CADText!80] (3.0, -0.2) circle (1.0cm);
+      \draw[line width=0.2mm, draw=CADBlue, fill=white] (-3.0, -0.2) circle (0.3cm);
+      \draw[line width=0.2mm, draw=CADBlue, fill=white] (3.0, -0.2) circle (0.3cm);
+
+      % Shock linkage layout
+      \draw[line width=0.4mm, draw=CADBlue] (-3.4, 0.0) -- (-3.0, -0.2) -- (-2.6, 0.0);
+      \draw[line width=0.4mm, draw=CADBlue] (2.6, 0.0) -- (3.0, -0.2) -- (3.4, 0.0);
+      \draw[line width=0.5mm, draw=CADRed] (-3.0, -0.2) -- (-3.0, 0.4);
+      \draw[line width=0.5mm, draw=CADRed] (3.0, -0.2) -- (3.0, 0.4);
+
+      % Elevation Label
+      \node[anchor=south, font=\fontsize{8}{9}\selectfont\sffamily\bfseries, text=CADBlue] at (0, 0.9) {ELEVATION VIEW (FRONT)};
+    \end{scope}
+
+    % ----------------------------------------
+    % SIDE VIEW (End Projection) - Shifted to (13.5, 5.8)
+    % ----------------------------------------
+    \begin{scope}[shift={(13.5, 5.8)}]
+      % Ground level boundary
+      \draw[thin, draw=CADGrey] (-2.5, -4.0) -- (2.5, -4.0);
+      \foreach \gx in {-2.0, -1.5, ..., 2.0} {
+        \draw[thin, draw=CADGrey] (\gx, -4.0) -- (\gx-0.12, -4.2);
+      }
+
+      % Centerlines
+      \draw[centerline] (0, -4.0) -- (0, 0.5);
+      \draw[centerline] (-2.0, -3.0) -- (2.0, -3.0);
+
+      % Frame cross member profile
+      \draw[fillline] (-2.0, -2.6) rectangle (2.0, -2.2);
+      \draw[line width=0.4mm, draw=CADBlue] (-2.0, -2.6) rectangle (-1.6, -2.2);
+      \draw[line width=0.4mm, draw=CADBlue] (1.6, -2.6) rectangle (2.0, -2.2);
+
+      % Wheel end profiles
+      \draw[line width=0.4mm, draw=CADBlue, fill=CADText!80] (-2.5, -4.0) rectangle (-2.0, -3.0);
+      \draw[line width=0.4mm, draw=CADBlue, fill=CADText!80] (2.0, -4.0) rectangle (2.5, -3.0);
+
+      % Wheel axles connection
+      \draw[line width=0.6mm, draw=CADBlue] (-2.0, -3.5) -- (-1.6, -3.5);
+      \draw[line width=0.6mm, draw=CADBlue] (1.6, -3.5) -- (2.0, -3.5);
+
+      % Suspensions support plates
+      \draw[line width=0.3mm, draw=CADBlue] (-1.8, -2.6) -- (-1.8, -3.0);
+      \draw[line width=0.3mm, draw=CADBlue] (1.8, -2.6) -- (1.8, -3.0);
+
+      % End View Label
+      \node[anchor=south, font=\fontsize{8}{9}\selectfont\sffamily\bfseries, text=CADBlue] at (0, -1.7) {END VIEW (RIGHT)};
+    \end{scope}
+
+    % ----------------------------------------
+    % THIRD ANGLE PROJECTION METRIC SYMBOL
+    % ----------------------------------------
+    \begin{scope}[shift={(1.0, 0.5)}]
+      \draw[thin, draw=CADGrey] (0.2, 0.4) circle (0.15cm);
+      \draw[thin, draw=CADGrey] (0.2, 0.4) circle (0.3cm);
+      \draw[centerline] (0.2, 0.0) -- (0.2, 0.8);
+      \draw[centerline] (-0.2, 0.4) -- (1.8, 0.4);
+      \draw[thin, draw=CADGrey] (0.8, 0.25) -- (1.5, 0.1) -- (1.5, 0.7) -- (0.8, 0.55) -- cycle;
+      \draw[centerline] (1.15, 0.0) -- (1.15, 0.8);
+      \node[anchor=south, font=\fontsize{4}{5}\selectfont\sffamily, text=CADGrey] at (0.8, -0.1) {THIRD ANGLE PROJECTION};
+    \end{scope}
+
+    % ----------------------------------------
+    % DIMENSIONING CALLOUTS
+    % ----------------------------------------
+    % Top View Dimensions
+    \begin{scope}[shift={(5.0, 8.5)}]
+      % Frame Length Dimension
+      \draw[thin, draw=CADGrey] (-4.0, 2.05) -- (-4.0, 2.7);
+      \draw[thin, draw=CADGrey] (4.0, 2.05) -- (4.0, 2.7);
+      \draw[dimension] (-4.0, 2.5) -- (4.0, 2.5) node[midway] {800.0};
+
+      % Front Overhang Dimension
+      \draw[thin, draw=CADGrey] (-4.8, 2.25) -- (-4.8, 2.7);
+      \draw[dimension] (-4.8, 2.5) -- (-4.0, 2.5) node[midway] {80.0};
+
+      % Frame Width Dimension
+      \draw[thin, draw=CADGrey] (4.05, 2.0) -- (4.7, 2.0);
+      \draw[thin, draw=CADGrey] (4.05, -2.0) -- (4.7, -2.0);
+      \draw[dimension] (4.5, -2.0) -- (4.5, 2.0) node[midway, rotate=90] {400.0};
+    \end{scope}
+
+    % Front View Dimensions
+    \begin{scope}[shift={(5.0, 3.0)}]
+      % Wheelbase Dimension
+      \draw[thin, draw=CADGrey] (-3.0, -0.3) -- (-3.0, -1.0);
+      \draw[thin, draw=CADGrey] (3.0, -0.3) -- (3.0, -1.0);
+      \draw[dimension] (-3.0, -0.8) -- (3.0, -0.8) node[midway] {600.0};
+
+      % Total Height Dimension
+      \draw[thin, draw=CADGrey] (4.05, 0.4) -- (4.8, 0.4);
+      \draw[thin, draw=CADGrey] (4.05, -1.2) -- (4.8, -1.2);
+      \draw[dimension] (4.6, -1.2) -- (4.6, 0.4) node[midway, rotate=90] {190.0};
+    \end{scope}
+
+    % ----------------------------------------
+    % LEADER LINES & ITEM BALLOONS
+    % ----------------------------------------
+    % Item 1: Bumper
+    \draw[thin, draw=CADGrey] (0.3, 9.3) -- (1.5, 10.2);
+    \fill[CADGrey] (0.3, 9.3) circle (0.04);
+    \node[balloon] at (1.5, 10.2) {1};
+
+    % Item 2: Heavy Duty Wheel
+    \draw[thin, draw=CADGrey] (2.0, 10.9) -- (1.2, 11.6);
+    \fill[CADGrey] (2.0, 10.9) circle (0.04);
+    \node[balloon] at (1.2, 11.6) {2};
+
+    % Item 3: Longitudinal Rail
+    \draw[thin, draw=CADGrey] (4.2, 10.3) -- (5.0, 11.6);
+    \fill[CADGrey] (4.2, 10.3) circle (0.04);
+    \node[balloon] at (5.0, 11.6) {3};
+
+    % Item 4: Center Mounting Plate
+    \draw[thin, draw=CADGrey] (5.8, 8.7) -- (6.6, 11.6);
+    \fill[CADGrey] (5.8, 8.7) circle (0.04);
+    \node[balloon] at (6.6, 11.6) {4};
+
+    % Item 5: Suspension Bracket
+    \draw[thin, draw=CADGrey] (1.8, 2.7) -- (0.8, 1.7);
+    \fill[CADGrey] (1.8, 2.7) circle (0.04);
+    \node[balloon] at (0.8, 1.7) {5};
+  \end{tikzpicture}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{6.8cm}
+  \vspace{1.2mm}
+  {\fontsize{9}{11}\selectfont\sffamily\bfseries\color{CADBlue} GENERAL DRAWING NOTES}
+  
+  \vspace{3mm}
+  {\fontsize{7}{8.5}\selectfont\sffamily
+  \begin{enumerate}[noitemsep, topsep=0pt, parsep=0pt, partopsep=0pt, leftmargin=12pt]
+    \setlength{\itemsep}{3.5pt}
+    \item ALL WELDING SHALL BE CONDUCTED IN ACCORDANCE WITH AWS D1.1 PROCEDURES.
+    \item BRACKETS MUST BE WELDED PRE-ALIGNMENT TO ASSURE ACCURACY OF WHEEL SPINDLE AXES.
+    \item SHARP EDGES OF HOLES TO BE BROKEN 0.5mm MAXIMUM.
+    \item COAT ENTIRE FRAME STRUCTURE WITH BLACK SAND-TEXTURE POWDER COAT TO SPECIFICATION PL-24B.
+    \item STRUCTURAL TESTING REQUIRED FOR PROTOTYPE PHASES. STATIC payload capacity rating: 120 kg.
+    \item TOLERANCES UNLESS OTHERWISE SPECIFIED:\\[1mm]
+      1 PLACE DECIMAL: $\pm$0.2 mm\\
+      2 PLACE DECIMAL: $\pm$0.05 mm\\
+      ANGULAR TOLERANCE: $\pm$0.5$^\circ$
+  \end{enumerate}
+  }
+\end{minipage}
+
+\clearpage
+% ==========================================
+% SHEET 2: BILL OF MATERIALS & BRACKET DETAIL
+% ==========================================
+\gdef\dwgtitle{SUSPENSION DETAIL \& BOM}%
+\gdef\dwgno{VAS-MRD-002}%
+\gdef\dwgrev{B}%
+\gdef\dwgscale{1:2}%
+\noindent
+\begin{minipage}[t]{11.0cm}
+  \begin{tikzpicture}[x=1cm, y=1cm, scale=0.88, every node/.style={scale=0.88}]
+    % CAD Styles
+    \tikzset{
+      fillline/.style={line width=0.45mm, draw=CADBlue, fill=CADBlue!5},
+      hidden/.style={dashed, thin, draw=CADGrey},
+      centerline/.style={dashdotted, thin, draw=CADRed},
+      dimension/.style={<->, >=latex, thin, draw=CADGrey, every node/.style={fill=white, inner sep=1pt, font=\fontsize{6}{7}\selectfont\sffamily}},
+      leader/.style={->, >=latex, thin, draw=CADGrey}
+    }
+
+    % Drawing Title
+    \node[anchor=north west, font=\fontsize{9}{11}\selectfont\sffamily\bfseries, text=CADBlue] at (0.5, 13.0) {ITEM 5: SUSPENSION BRACKET DETAIL};
+
+    % ----------------------------------------
+    % SIDE ELEVATION OF BRACKET (L-Shape) - Shifted to (3.0, 7.5)
+    % ----------------------------------------
+    \begin{scope}[shift={(3.0, 7.5)}]
+      % Hole center lines
+      \draw[centerline] (-0.8, 3.0) -- (1.5, 3.0);
+      \draw[centerline] (0.0, 1.8) -- (0.0, 3.8);
+
+      % Bracket L-Shape base profile
+      \draw[fillline] (0,0) -- (0,3.4) [rounded corners=0.2cm] -- (0,3.6) -- (0.6,3.6) [sharp corners] -- (0.6,0.6) -- (2.4,0.6) [rounded corners=0.2cm] -- (2.6,0.6) -- (2.6,0) [sharp corners] -- cycle;
+
+      % Internal Pivot Hole (12.0mm)
+      \draw[line width=0.3mm, draw=CADBlue, fill=white] (0.0, 3.0) circle (0.25cm);
+
+      % Gusset reinforcement plate
+      \draw[line width=0.3mm, draw=CADBlue, fill=CADBlue!15] (0.6, 0.6) -- (0.6, 2.0) -- (1.8, 0.6) -- cycle;
+
+      % Welding symbol pointers
+      \draw[leader] (1.2, 1.3) -- (2.0, 2.2) -- (3.0, 2.2) node[above, font=\fontsize{5.5}{6.5}\selectfont\sffamily] {AWS: F 4mm (TYP)};
+      \fill[CADGrey] (1.2, 1.3) circle (0.04);
+
+      % Dimension details
+      % Overall Bracket Height (80mm)
+      \draw[thin, draw=CADGrey] (-0.1, 3.6) -- (-0.8, 3.6);
+      \draw[thin, draw=CADGrey] (-0.1, 0.0) -- (-0.8, 0.0);
+      \draw[dimension] (-0.6, 0.0) -- (-0.6, 3.6) node[midway, rotate=90] {80.0};
+
+      % Hole Pitch Height (60mm)
+      \draw[dimension] (-0.3, 0.0) -- (-0.3, 3.0) node[midway, rotate=90] {60.0};
+
+      % Overall Bracket Base (60mm)
+      \draw[thin, draw=CADGrey] (2.6, -0.1) -- (2.6, -0.8);
+      \draw[thin, draw=CADGrey] (0.0, -0.1) -- (0.0, -0.8);
+      \draw[dimension] (0.0, -0.6) -- (2.6, -0.6) node[midway] {60.0};
+
+      % Material Thickness (12mm)
+      \draw[thin, draw=CADGrey] (0.6, 3.7) -- (0.6, 4.2);
+      \draw[thin, draw=CADGrey] (0.0, 3.7) -- (0.0, 4.2);
+      \draw[dimension] (0.0, 4.0) -- (0.6, 4.0) node[midway] {12.0};
+
+      % Hole diameter spec
+      \draw[leader] (0.15, 3.15) -- (0.8, 3.8) -- (1.8, 3.8) node[above, font=\fontsize{5.5}{6.5}\selectfont\sffamily] {$\varnothing$12.0 THRU};
+      \fill[CADGrey] (0.15, 3.15) circle (0.04);
+
+      \node[anchor=north, font=\fontsize{7}{8}\selectfont\sffamily\bfseries, text=CADBlue] at (1.3, -1.0) {SIDE ELEVATION};
+    \end{scope}
+
+    % ----------------------------------------
+    % FRONT ELEVATION OF BRACKET - Shifted to (7.8, 7.5)
+    % ----------------------------------------
+    \begin{scope}[shift={(7.8, 7.5)}]
+      % Centerlines
+      \draw[centerline] (0.0, -0.5) -- (0.0, 4.2);
+      \draw[centerline] (-1.0, 3.0) -- (1.0, 3.0);
+
+      % Bracket main front profile
+      \draw[fillline] (-0.8, 0.0) rectangle (0.8, 3.6);
+
+      % Hidden lines representing internal hole
+      \draw[hidden] (-0.25, 2.75) -- (-0.25, 3.25);
+      \draw[hidden] (0.25, 2.75) -- (0.25, 3.25);
+
+      % Hidden lines representing flat plate bend
+      \draw[hidden] (-0.8, 0.6) -- (0.8, 0.6);
+
+      % Flange base
+      \draw[fillline] (-0.8, 0.0) rectangle (0.8, 0.6);
+
+      % Width dimension
+      \draw[thin, draw=CADGrey] (-0.8, -0.1) -- (-0.8, -0.8);
+      \draw[thin, draw=CADGrey] (0.8, -0.1) -- (0.8, -0.8);
+      \draw[dimension] (-0.8, -0.6) -- (0.8, -0.6) node[midway] {40.0};
+
+      % Correct baseline end profile to ground connection
+      \draw[line width=0.4mm, draw=CADBlue] (-0.8, -0.1) -- (0.8, -0.1);
+
+      \node[anchor=north, font=\fontsize{7}{8}\selectfont\sffamily\bfseries, text=CADBlue] at (0, -1.0) {FRONT ELEVATION};
+    \end{scope}
+  \end{tikzpicture}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{14.0cm}
+  \vspace{0.8cm}
+  {\fontsize{10}{12}\selectfont\sffamily\bfseries\color{CADBlue} BILL OF MATERIALS (BOM)}\\[3mm]
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabularx}{\textwidth}{c l X l c r}
+    \toprule
+    \rowcolor{CADBlue!5}
+    \textbf{ITEM} & \textbf{PART NO.} & \textbf{DESCRIPTION} & \textbf{MATERIAL} & \textbf{QTY} & \textbf{MASS (g)} \\
+    \midrule
+    1 & VAS-MRD-002 & Front Bumper Assembly & ASTM A36 Steel & 1 & 1420 \\
+    2 & VAS-MRD-005 & HD All-Terrain Wheel & Composite / Rubber & 4 & 850 \\
+    3 & VAS-MRD-010 & Side Frame Rail & AISI 1020 Steel & 2 & 3200 \\
+    4 & VAS-MRD-012 & Center Mount Plate & Aluminum 6061-T6 & 1 & 1150 \\
+    5 & VAS-MRD-018 & Suspension Bracket & AISI 1020 Steel & 4 & 420 \\
+    6 & VAS-MRD-022 & Rear Cross-Member & AISI 1020 Steel & 1 & 1650 \\
+    7 & VAS-MRD-024 & Front Cross-Member & AISI 1020 Steel & 1 & 1650 \\
+    \bottomrule
+  \end{tabularx}
+  \par\vspace{5mm}
+  {\fontsize{8.5}{10.5}\selectfont\sffamily\bfseries\color{CADBlue} STRUCTURAL MANUFACTURING REQUIREMENTS}
+  
+  \vspace{1.5mm}
+  {\fontsize{7.5}{9.5}\selectfont\sffamily
+  \begin{itemize}[noitemsep, topsep=0pt, parsep=0pt, partopsep=0pt, leftmargin=12pt]
+    \setlength{\itemsep}{3pt}
+    \item Total dry weight: 17.63 kg.
+    \item Fasteners: ISO 4762 M8 Grade 10.9 cap screws. Torque to 28 N$\cdot$m.
+    \item Alignment: Wheel axes parallel within 0.15mm, coplanar within 0.25mm.
+    \item Weld Inspection: 100\% visual inspection; MPI on 10\% sample.
+  \end{itemize}
+  }
+\end{minipage}
+
+\clearpage
+% ==========================================
+% SHEET 3: REVISIONS & SPECIFICATIONS
+% ==========================================
+\gdef\dwgtitle{REVISIONS \& TECHNICAL SPECS}%
+\gdef\dwgno{VAS-MRD-003}%
+\gdef\dwgrev{A}%
+\gdef\dwgscale{NTS}%
+\noindent
+{\fontsize{10}{12}\selectfont\sffamily\bfseries\color{CADBlue} REVISION HISTORY}
+
+\vspace{1.5mm}
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\textwidth}{c X l l c}
+  \toprule
+  \rowcolor{CADBlue!5}
+  \textbf{REV} & \textbf{DESCRIPTION} & \textbf{DATE} & \textbf{DRAWN BY} & \textbf{APPROVED BY} \\
+  \midrule
+  A & Initial Release for Prototype Build & 10-MAY-2026 & A. VALDEZ & M. STERLING \\
+  B & Relocated suspension points 15mm forward for CG optimization & 02-JUN-2026 & A. VALDEZ & M. STERLING \\
+  C & Front bumper mount plate thickness changed from 4mm to 6mm & 15-JUL-2026 & A. VALDEZ & M. STERLING \\
+  \bottomrule
+\end{tabularx}
+
+\par\vspace{0.5mm}
+
+\noindent
+\begin{minipage}[t]{11.5cm}
+  {\fontsize{9}{11}\selectfont\sffamily\bfseries\color{CADBlue} 1.0 MANUFACTURING AND MATERIAL SPECIFICATIONS}
+  
+  \vspace{1.0mm}
+  {\fontsize{7.0}{8.5}\selectfont\sffamily
+  \textbf{1.1 Tubing:} ASTM A513 DOM square steel tubing, min yield 310 MPa. Wall tolerance: $\pm$0.15 mm. Deburred.
+  
+  \vspace{1.0mm}
+  \textbf{1.2 Plates:} Laser cut from ASTM A36 carbon steel plate, min yield 250 MPa. Remove laser dross.
+  
+  \vspace{1.0mm}
+  \textbf{1.3 Machined Parts:} Axle shafts machined from AISI 4140 steel (HRC 28-32). Journal finish: 0.8 $\mu$m Ra max.
+  }
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{11.5cm}
+  {\fontsize{9}{11}\selectfont\sffamily\bfseries\color{CADBlue} 2.0 WELDING AND FINISHING SPECIFICATIONS}
+  
+  \vspace{1.0mm}
+  {\fontsize{7.0}{8.5}\selectfont\sffamily
+  \textbf{2.1 Welding:} GMAW per AWS D1.1. Filler ER70S-6. Gas: 75\% Ar / 25\% CO$_2$ mix. AWS certified welders.
+  
+  \vspace{1.0mm}
+  \textbf{2.2 Joint Prep:} Clean joints of oil, rust, and water. Tack welds must be slag-free.
+  
+  \vspace{1.0mm}
+  \textbf{2.3 Coatings:} SSPC-SP6 blast cleaning. Apply zinc primer (50 $\mu$m) and matte black powder coat (80 $\mu$m).
+  }
+\end{minipage}
+
+\end{document}

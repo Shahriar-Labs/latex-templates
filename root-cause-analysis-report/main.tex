@@ -1,0 +1,277 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\geometry{a4paper, margin=0.75in, top=0.8in, bottom=0.8in, headheight=15pt}
+
+% Fonts
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+% Packages
+\usepackage{microtype}
+\usepackage[table]{xcolor}
+\usepackage{colortbl}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{fontawesome5}
+\usepackage{titlesec}
+\usepackage{multicol}
+
+% Colors (Slate & Blue Modern Palette)
+\definecolor{PrimaryColor}{HTML}{0F172A}    % Slate 900
+\definecolor{SecondaryColor}{HTML}{2563EB}  % Blue 600
+\definecolor{AccentColor}{HTML}{EA580C}     % Orange 600
+\definecolor{DarkNeutral}{HTML}{334155}     % Slate 700
+\definecolor{LightNeutral}{HTML}{F8FAFC}    % Slate 50
+\definecolor{BorderColor}{HTML}{E2E8F0}    % Slate 200
+\definecolor{SuccessColor}{HTML}{16A34A}   % Green 600
+\definecolor{WarningColor}{HTML}{DC2626}   % Red 600
+
+% Setup Hyperref
+\hypersetup{
+    colorlinks=true,
+    linkcolor=SecondaryColor,
+    filecolor=SecondaryColor,      
+    urlcolor=SecondaryColor,
+    pdftitle={Root Cause Analysis Report - Vertex DB Outage},
+    pdfpagemode=FullScreen,
+}
+
+% Headers and Footers
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\fancyhead[L]{\textcolor{DarkNeutral}{\small\textbf{Vertex Corp. | Root Cause Analysis}}}
+\fancyhead[R]{\textcolor{DarkNeutral}{\small Incident: INC-2026-8941}}
+\fancyfoot[L]{\textcolor{DarkNeutral}{\small Confidential -- Internal Use Only}}
+\fancyfoot[R]{\textcolor{DarkNeutral}{\small Page \thepage}}
+
+% Section Formatting
+\titleformat{\section}
+  {\color{PrimaryColor}\normalfont\large\bfseries}
+  {\thesection}{1em}{}[{\color{SecondaryColor}\titlerule}]
+\titleformat{\subsection}
+  {\color{SecondaryColor}\normalfont\normalsize\bfseries}
+  {\thesubsection}{1em}{}
+
+\titlespacing*{\section}{0pt}{1.8ex plus .2ex minus .1ex}{1.0ex plus .1ex}
+\titlespacing*{\subsection}{0pt}{1.2ex plus .1ex minus .1ex}{0.8ex plus .1ex}
+
+\setlength{\parskip}{0.4em}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+% --- TITLE BLOCK ---
+\noindent
+\begin{minipage}[t]{0.62\textwidth}
+  \vspace{0pt}
+  {\Huge\bfseries\color{PrimaryColor} Root Cause Analysis} \\
+  {\large\bfseries\color{SecondaryColor} Incident Report: Vertex Database Outage}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.35\textwidth}
+  \vspace{0pt}
+  \raggedleft
+  \begin{tcolorbox}[colback=WarningColor!10, colframe=WarningColor, arc=4pt, width=\textwidth, boxrule=1.5pt, halign=center, valign=center, top=6pt, bottom=6pt]
+    \textcolor{WarningColor}{\textbf{\large\faExclamationTriangle~SEVERITY: CRITICAL}} \\
+    \vspace{1pt}
+    \textcolor{PrimaryColor}{\small Incident ID: \textbf{INC-2026-8941}}
+  \end{tcolorbox}
+\end{minipage}
+
+\vspace{0.3cm}
+
+% --- METADATA TABLE ---
+\noindent
+\begin{tabularx}{\textwidth}{@{} X X X X @{}}
+  \toprule
+  \textbf{\small Date of Incident} & \textbf{\small Incident Lead} & \textbf{\small Impacted Service} & \textbf{\small Document Version} \\
+  \midrule
+  July 14, 2026 & Dr. Marcus Chen & Vertex Core API / DB & v1.2 (Final) \\
+  \bottomrule
+\end{tabularx}
+
+\vspace{0.4cm}
+
+% --- SECTION 1: EXECUTIVE SUMMARY ---
+\section{Executive Summary}
+On July 14, 2026, at 08:15 UTC, the Vertex core database platform experienced a critical resource exhaustion failure, resulting in 45 minutes of complete API service degradation and timeout issues for end users. The incident was triggered by a rapid, compounding memory leak in the primary database server's buffer cache. The root cause was traced to a newly deployed analytics query that executed a full-table scan without appropriate database indexing. The incident was resolved at 09:00 UTC after database promotion of a read-only replica and temporary isolation of the offending query.
+
+\subsection{Key Metrics}
+\begin{itemize}[label=\textcolor{SecondaryColor}{\tiny\faCircle}, leftmargin=15pt, nosep]
+  \item \textbf{Total Downtime:} 45 minutes (08:15 UTC -- 09:00 UTC)
+  \item \textbf{Impacted Users:} Approximately 12,000 active customer sessions on Vertex Cloud
+  \item \textbf{Financial SLA Impact:} Estimated \$35,000 USD in SLA credit obligations
+  \item \textbf{Recovery Time Objective (RTO) Status:} Exceeded target of 15 minutes by 30 minutes
+\end{itemize}
+
+\vspace{0.3cm}
+
+% --- SECTION 2: INCIDENT TIMELINE ---
+\section{Incident Timeline}
+The timeline below details the chronological sequence of events, from initial system warnings to final recovery verification and incident sign-off.
+
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash\small}p{2.2cm} X >{\raggedright\arraybackslash\small}p{3.2cm}}
+  \hline
+  \rowcolor{PrimaryColor}
+  \textcolor{white}{\textbf{Time (UTC)}} & \textcolor{white}{\textbf{Incident Event / Observation}} & \textcolor{white}{\textbf{Logged By}} \\
+  \hline
+  08:15 & Automated health check fails on DB-Primary. Latency spike $>$ 5,000ms. & Nagios Monitoring Agent \\
+  \rowcolor{LightNeutral}
+  08:18 & PagerDuty alerts database reliability engineer (DBRE) on duty. & PagerDuty Automation \\
+  08:22 & Sarah Jenkins (Senior DBRE) logs into console. Memory utilization at 98\%. & Operations Console \\
+  \rowcolor{LightNeutral}
+  08:28 & System memory exhausted. Kernel OOM-killer terminates the PostgreSQL service. & Linux Syslog Daemon \\
+  08:35 & DB fails to restart automatically due to lock file corruption. Active failover initiated. & Dr. Marcus Chen (Lead) \\
+  \rowcolor{LightNeutral}
+  08:42 & Read-only replica promoted to Primary. API services resume partial read function. & Sarah Jenkins \\
+  08:50 & Offending query isolated and blocked at API gateway layer. Write functions restored. & David Vance (Core Dev) \\
+  \rowcolor{LightNeutral}
+  09:00 & Core database fully online. Latency returns to normal ($<$ 50ms). Incident resolved. & Sarah Jenkins \\
+  \hline
+\end{tabularx}
+
+\newpage
+
+% --- SECTION 3: PROBLEM INVESTIGATION ---
+\section{Problem Investigation}
+Post-incident analysis revealed that the crash occurred due to memory starvation (Out-Of-Memory) on the primary database host. The profiling data collected during the outage showed that the active memory pool was consumed entirely by query execution plans associated with the \texttt{/v2/\allowbreak analytics/\allowbreak transactions} endpoint. 
+
+A newly deployed backend service update included a reporting query that attempted to aggregate transaction histories by customer ID and creation timestamp. However, because the database migration script did not apply a composite index across the \texttt{customer\_id} and \texttt{created\_at} columns, PostgreSQL was forced to execute a sequential scan of 45 million rows. This query, executed concurrently by hundreds of active sessions, led to severe thrashing and eventual system shutdown.
+
+\subsection{Ishikawa (Fishbone) Diagram}
+The Ishikawa diagram below categorizes the contributing factors that led to this critical database outage, highlighting technical deficiencies, process gaps, and organizational constraints.
+
+\vspace{0.2cm}
+\begin{center}
+\resizebox{0.95\textwidth}{!}{%
+\begin{tikzpicture}[
+    >=stealth,
+    node distance=1.5cm,
+    every node/.style={font=\sffamily\small},
+    category/.style={draw, rectangle, fill=PrimaryColor, text=white, rounded corners, minimum width=2.8cm, minimum height=0.9cm, font=\sffamily\bfseries\small},
+    effect/.style={draw, rectangle, fill=WarningColor, text=white, rounded corners, minimum width=3.8cm, minimum height=1.3cm, font=\sffamily\bfseries\large, align=center},
+    cause/.style={font=\sffamily\scriptsize, align=left}
+]
+    % Central spine
+    \draw[ultra thick, PrimaryColor, ->] (0,0) -- (11.8,0);
+    \node[effect] at (14,0) {Database\\Service Outage\\(INC-2026-8941)};
+    
+    % Upper branches
+    \draw[thick, PrimaryColor] (3,0) -- (4.5,2.5) node[above, category] {Technology};
+    \draw[thick, PrimaryColor] (8,0) -- (9.5,2.5) node[above, category] {Process};
+    
+    % Lower branches
+    \draw[thick, PrimaryColor] (3,0) -- (1.5,-2.5) node[below, category] {People};
+    \draw[thick, PrimaryColor] (8,0) -- (6.5,-2.5) node[below, category] {Environment};
+    
+    % Sub-branches - Technology
+    \draw[->, DarkNeutral!80, thick] (1.6, 1.0) node[left, cause] {Missing database indexes\\on transactions table} -- (3.6, 1.0);
+    \draw[->, DarkNeutral!80, thick] (2.2, 2.0) node[left, cause] {Lack of connection pooling\\limits in analytics service} -- (4.2, 2.0);
+    
+    % Sub-branches - Process
+    \draw[->, DarkNeutral!80, thick] (6.6, 1.0) node[left, cause] {No automated migration test\\on large dataset schema} -- (8.6, 1.0);
+    \draw[->, DarkNeutral!80, thick] (7.2, 2.0) node[left, cause] {Manual deployment checklist\\lacked DBRE sign-off} -- (9.2, 2.0);
+    
+    % Sub-branches - People
+    \draw[->, DarkNeutral!80, thick] (4.4, -1.0) node[right, cause] {Lack of SQL optimization\\training for developers} -- (2.4, -1.0);
+    \draw[->, DarkNeutral!80, thick] (3.8, -2.0) node[right, cause] {Overworked database admin\\team handling migrations} -- (1.8, -2.0);
+
+    % Sub-branches - Environment
+    \draw[->, DarkNeutral!80, thick] (9.4, -1.0) node[right, cause] {Sudden customer traffic spike\\post-market release} -- (7.4, -1.0);
+    \draw[->, DarkNeutral!80, thick] (8.8, -2.0) node[right, cause] {Staging vs production scale\\gap in test environment} -- (6.8, -2.0);
+
+\end{tikzpicture}
+}
+\end{center}
+
+\vspace{0.2cm}
+
+% --- SECTION 6: LESSONS LEARNED ---
+\section{Lessons Learned}
+This incident highlights the risk of scaling database operations without formal governance and automated enforcement. Key lessons include:
+\begin{enumerate}[label=\textbf{\arabic*.}, leftmargin=15pt, nosep]
+  \item Relying on manual checklists for schema changes is insufficient at our current scale.
+  \item Query profiling must be integrated into pre-production environments to catch full-table scans.
+  \item High-severity alerts should trigger automated failover systems faster than the manual intervention timeframe.
+\end{enumerate}
+
+\newpage
+
+% --- SECTION 4: 5-WHYS ANALYSIS ---
+\section{Root Cause Analysis (5-Whys)}
+To determine the systemic root cause of the database failure, the engineering team performed a structured 5-Whys analysis:
+
+\begin{tcolorbox}[colback=LightNeutral, colframe=PrimaryColor, arc=4pt, title=\textbf{5-Whys Analysis}, fonttitle=\large\bfseries, boxrule=1.5pt]
+  \textbf{Problem Statement:} The production database host crashed under load, resulting in 45 minutes of complete service disruption.
+  
+  \vspace{0.2cm}
+  \begin{itemize}[label=\textcolor{AccentColor}{\small\faArrowRight}, leftmargin=15pt, itemsep=4pt]
+    \item \textbf{Why 1? } Why did the database server crash? \\
+      \textit{Answer: } System memory was exhausted, triggering the Linux Kernel's Out-Of-Memory (OOM) killer.
+    \item \textbf{Why 2? } Why was the system memory exhausted? \\
+      \textit{Answer: } A single query scanning the large \texttt{transactions} table grew exponentially in memory under concurrent requests.
+    \item \textbf{Why 3? } Why did the query require so much memory? \\
+      \textit{Answer: } The query lacked a composite index, forcing PostgreSQL to perform sequential full-table scans.
+    \item \textbf{Why 4? } Why was there no index on these columns? \\
+      \textit{Answer: } The backend feature was deployed without a database migration review by a Database Reliability Engineer.
+    \item \textbf{Why 5? } Why was the database migration review bypassed? \\
+      \textit{Answer: } Our CI/CD deployment pipeline did not enforce automated checks for database migrations, and the development sprint checklist lacked a mandatory sign-off block for schema changes. \textbf{[Root Cause]}
+  \end{itemize}
+\end{tcolorbox}
+
+\vspace{0.4cm}
+
+% --- SECTION 5: CORRECTIVE ACTIONS ---
+\section{Corrective \& Preventative Actions}
+The following action plan outlines the specific steps required to resolve the immediate issues and prevent recurrence in the future.
+
+\begin{tabularx}{\textwidth}{X >{\raggedright\arraybackslash\small}p{2.8cm} >{\raggedright\arraybackslash\small}p{2.2cm} >{\centering\arraybackslash\small}p{2.5cm}}
+  \hline
+  \rowcolor{PrimaryColor}
+  \textcolor{white}{\textbf{Corrective Action Item}} & \textcolor{white}{\textbf{Owner}} & \textcolor{white}{\textbf{Target Date}} & \textcolor{white}{\textbf{Status}} \\
+  \hline
+  Deploy index for \texttt{customer\_id} and \texttt{created\_at}. & Sarah Jenkins & July 15, 2026 & \textcolor{SuccessColor}{\textbf{Completed}} \\
+  \rowcolor{LightNeutral}
+  Configure connection pool memory limits at gateway. & David Vance & July 18, 2026 & \textcolor{SuccessColor}{\textbf{Completed}} \\
+  Implement automated query plan validation in CI/CD pipeline. & David Vance & July 25, 2026 & \textcolor{AccentColor}{\textbf{In Progress}} \\
+  \rowcolor{LightNeutral}
+  Conduct training on SQL execution plans and indexing. & Elena Rostova & August 10, 2026 & \textbf{Scheduled} \\
+  Establish DBRE review guidelines for all schema changes. & Dr. Marcus Chen & July 30, 2026 & \textcolor{AccentColor}{\textbf{In Progress}} \\
+  \hline
+\end{tabularx}
+
+\vspace{0.5cm}
+
+% --- SIGN-OFF ---
+\section{Incident Report Sign-Off}
+By signing below, the stakeholders acknowledge the root causes identified and commit to the execution of the corrective action plan.
+
+\vspace{0.2cm}
+\begin{center}
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X >{\raggedright\arraybackslash}X}
+  \toprule
+  \textbf{Role} & \textbf{Name / Signature} & \textbf{Date} \\
+  \midrule
+  Incident Lead & Dr. Marcus Chen / \rule{3.2cm}{0.5pt} & \rule{3.2cm}{0.5pt} \\
+  \rowcolor{LightNeutral}
+  Engineering VP & Elena Rostova / \rule{3.2cm}{0.5pt} & \rule{3.2cm}{0.5pt} \\
+  DBRE Lead & Sarah Jenkins / \rule{3.2cm}{0.5pt} & \rule{3.2cm}{0.5pt} \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\end{document}

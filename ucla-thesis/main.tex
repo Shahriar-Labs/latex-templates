@@ -1,0 +1,573 @@
+\documentclass[12pt,oneside]{book}
+
+% ── Geometry (UCLA standard: 1.5in left, 1in others) ──
+\usepackage[letterpaper,left=1.5in,right=1in,top=1in,bottom=1in]{geometry}
+
+% ── Typography ──
+\usepackage{mathptmx}
+\usepackage[T1]{fontenc}
+\usepackage{setspace}
+\doublespacing
+
+% ── Colors ──
+\usepackage[table]{xcolor}
+\definecolor{uclablue}{HTML}{2774AE}
+\definecolor{uclagold}{HTML}{FFB81C}
+\definecolor{ucladark}{HTML}{003B5C}
+\definecolor{accentgray}{HTML}{8D8D8D}
+
+% ── Graphics & Layout ──
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds,patterns}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{graphicx}
+
+% ── Headers / Footers ──
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[RO]{\small\slshape\rightmark}
+\fancyhead[LE]{\small\slshape\leftmark}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+% ── Tables ──
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{multirow}
+
+% ── Math ──
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{nicefrac}
+
+% ── Lists ──
+\usepackage{enumitem}
+
+% ── Captions ──
+\usepackage{caption}
+
+% ── Icons ──
+\usepackage{fontawesome5}
+
+% ── Bibliography ──
+\usepackage[natbib=true,backend=biber,style=apa,sorting=nyt]{biblatex}
+
+% ── Hyperlinks ──
+\usepackage[hidelinks]{hyperref}
+
+% ── TOC formatting ──
+\usepackage[titles]{tocloft}
+\renewcommand{\cftchapfont}{\normalfont\bfseries}
+\renewcommand{\cftchappagefont}{\normalfont\bfseries}
+\setlength{\cftbeforechapskip}{6pt}
+
+% ── Chapter heading style ──
+\usepackage{titlesec}
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\singlespacing}
+  {\color{ucladark}\chaptertitlename\ \thechapter}
+  {20pt}
+  {\LARGE}
+\titlespacing*{\chapter}{0pt}{50pt}{40pt}
+\titleformat{\section}
+  {\normalfont\large\bfseries}
+  {\thesection}
+  {1em}
+  {}
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries}
+  {\thesubsection}
+  {1em}
+  {}
+
+% ── Theorem environments ──
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+
+% ── Line spacing for special elements ──
+\AtBeginEnvironment{tcolorbox}{\singlespacing}
+\AtBeginEnvironment{quote}{\singlespacing}
+
+\begin{document}
+
+% ═══════════════════════════════════════════
+%  TITLE PAGE
+% ═══════════════════════════════════════════
+\begin{titlepage}
+\thispagestyle{empty}
+\singlespacing
+\begin{center}
+
+\vspace*{1.5in}
+
+{\LARGE\bfseries\color{ucladark} Adaptive Resource Allocation\\[4pt]
+in Heterogeneous Edge Computing\\[4pt]
+Environments}
+
+\vspace{0.8in}
+
+{\large A dissertation submitted in partial satisfaction\\[4pt]
+of the requirements for the degree\\[4pt]
+Doctor of Philosophy\\[4pt]
+in Computer Science}
+
+\vspace{0.8in}
+
+{\large by\\[4pt]
+\textbf{Katherine M. Chen}}
+
+\vspace{0.8in}
+
+{\large 2026}
+
+\vspace{1in}
+
+\begin{tcolorbox}[
+  colback=uclablue!5,
+  colframe=uclablue!30,
+  width=0.85\textwidth,
+  center,
+  boxrule=0.6pt,
+  arc=3pt,
+  before skip=0pt,
+  after skip=0pt
+]
+\footnotesize\color{accentgray}
+\textbf{Disclaimer:} Unofficial template --- not affiliated with or endorsed by
+the university. Sample content only.
+\end{tcolorbox}
+
+\end{center}
+\end{titlepage}
+
+% ═══════════════════════════════════════════
+%  DEDICATION (optional)
+% ═══════════════════════════════════════════
+\thispagestyle{empty}
+\vspace*{3in}
+\begin{center}
+\itshape To my family, for their unwavering support.\\[6pt]
+And to everyone who believes that compute\\[4pt]
+should be everywhere.
+\end{center}
+
+% ═══════════════════════════════════════════
+%  ABSTRACT
+% ═══════════════════════════════════════════
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\thispagestyle{plain}
+
+Edge computing has emerged as a critical paradigm for supporting
+latency-sensitive applications, but its heterogeneous nature introduces
+significant resource-allocation challenges. This dissertation presents a
+comprehensive framework for adaptive resource allocation across geographically
+distributed edge nodes, addressing three core problems: workload placement
+under uncertainty, energy-aware scheduling, and multi-tenant fairness
+guarantees. We introduce the \emph{Meridian Scheduler}, a novel predictive
+placement algorithm that combines online learning with robust optimization to
+handle demand volatility while maintaining strict service-level objectives. We
+then extend this to \emph{ecoPlace}, an energy-proportional scheduling layer
+that dynamically adjusts power states across node clusters without violating
+latency bounds. Finally, we formalize multi-tenant fairness in edge settings
+through the notion of \emph{proportional delay equity} and prove that the
+resulting optimization is NP-hard; we then give a constant-factor approximation
+algorithm and validate it on production traces from a major content-delivery
+network. Across extensive simulations and a deployment spanning 14 edge sites on
+three continents, our framework reduces tail latency by 37\%, improves energy
+efficiency by 22\%, and achieves within 5\% of the optimal fairness frontier.
+The results suggest that principled, learning-driven placement and scheduling can
+substantially narrow the gap between the promise and the reality of edge computing.
+
+% ═══════════════════════════════════════════
+%  TABLE OF CONTENTS
+% ═══════════════════════════════════════════
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{Table of Contents}
+\renewcommand{\contentsname}{Table of Contents}
+\tableofcontents
+\thispagestyle{plain}
+
+% ═══════════════════════════════════════════
+%  LIST OF FIGURES
+% ═══════════════════════════════════════════
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{List of Figures}
+\listoffigures
+\thispagestyle{plain}
+
+% ═══════════════════════════════════════════
+%  LIST OF TABLES
+% ═══════════════════════════════════════════
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{List of Tables}
+\listoftables
+\thispagestyle{plain}
+
+% ═══════════════════════════════════════════
+%  ACKNOWLEDGMENTS
+% ═══════════════════════════════════════════
+\chapter*{Acknowledgments}
+\addcontentsline{toc}{chapter}{Acknowledgments}
+
+I am deeply grateful to my advisor, Professor David M. Harrington, whose
+patience and insight shaped every page of this work. The members of my
+committee --- Professors Amara Okonkwo, Jonathan Weiss, and Priya Srinivasan ---
+provided invaluable feedback at every stage.
+
+This research was supported in part by the Nimbus Foundation Graduate
+Fellowship and generous compute grants from Vertex Cloud Services. I thank my
+labmates in the Distributed Systems Group for countless whiteboard sessions and
+late-night debugging marathons.
+
+\vspace{1.5em}
+\noindent
+\begin{minipage}{0.85\textwidth}
+\singlespacing
+\begin{tcolorbox}[
+  colback=uclagold!8,
+  colframe=uclagold!40,
+  boxrule=0.5pt,
+  arc=2pt,
+  left=8pt,
+  right=8pt,
+  top=6pt,
+  bottom=6pt
+]
+\footnotesize\itshape\color{ucladark}
+\textbf{\faUniversity}\quad This research was conducted at the
+Systems \& Networking Laboratory. All experimental data, source code, and
+reproducibility artifacts are available at the accompanying repository.
+\end{tcolorbox}
+\end{minipage}
+
+% ═══════════════════════════════════════════
+%  CHAPTER 1 — INTRODUCTION
+% ═══════════════════════════════════════════
+\chapter{Introduction}
+\label{ch:intro}
+
+The rapid proliferation of Internet-of-Things (IoT) devices, autonomous
+systems, and immersive applications has driven compute demand from centralized
+cloud data centers toward the network edge. Edge computing promises
+sub-millisecond response times by placing resources within one network hop of
+end users~\cite{satyanarayanan2017emergence}. Yet the edge is fundamentally
+different from the cloud: nodes are heterogeneous in CPU architecture, memory
+capacity, and accelerator availability; network conditions fluctuate across
+last-mile links; and workloads arrive in bursts that are both spatially and
+temporally correlated.
+
+\section{Motivation and Problem Statement}
+
+Consider a video-analytics pipeline deployed across 40 edge sites serving a
+metropolitan area. Each camera feed must be processed within a strict 150\,ms
+latency budget. If one site becomes overloaded --- say, during a public event ---
+na\"ively forwarding frames to a neighboring site may violate the budget because
+of cross-site link congestion. At the same time, energy costs at the edge are
+non-trivial: a fully-provisioned edge rack draws over 4\,kW, and operators have
+strong incentives to power-gate idle nodes.
+
+\subsection{Key Challenges}
+
+\begin{enumerate}[label=\textbf{C\arabic*},leftmargin=*]
+  \item \textbf{Uncertainty in demand and capacity.} Workload arrival rates at
+  edge sites are non-stationary, with diurnal patterns, flash-crowd spikes, and
+  long-term shifts driven by user behavior.
+
+  \item \textbf{Multi-dimensional heterogeneity.} Nodes differ along
+  processing power, memory bandwidth, GPU availability, and energy efficiency
+  --- making uniform scheduling policies suboptimal.
+
+  \item \textbf{Multi-tenancy and fairness.} A single edge cluster serves
+  dozens of applications with conflicting latency requirements; naive
+  first-come-first-served policies lead to starvation for delay-tolerant
+  workloads.
+\end{enumerate}
+
+This dissertation addresses all three challenges through a unified
+\emph{adaptive resource allocation} framework. The core insight is that
+predictive models of workload demand, combined with online optimization
+techniques, can make placement and scheduling decisions that are provably
+near-optimal while being practical to implement.
+
+\section{Contributions}
+
+We make the following contributions, organized across three logical layers:
+
+\begin{tcolorbox}[
+  colback=uclablue!4,
+  colframe=uclablue!40,
+  boxrule=0.5pt,
+  arc=3pt,
+  left=10pt,
+  right=10pt,
+  top=8pt,
+  bottom=8pt,
+  breakable
+]
+\singlespacing
+\small
+\textbf{Layer 1 --- Predictive Placement (Chapter~\ref{ch:placement}).}
+We design the \emph{Meridian Scheduler}, which uses a lightweight recurrent
+neural network to forecast per-site load and solves a robust integer program
+to place incoming workloads. The algorithm achieves a competitive ratio of
+\(1 - 1/e\) against an offline oracle with full future knowledge.
+
+\medskip
+\textbf{Layer 2 --- Energy-Proportional Scheduling (Chapter~\ref{ch:energy}).}
+We introduce \emph{ecoPlace}, a power-state controller that dynamically
+transitions nodes between active, idle, and sleep states using a Markov
+decision process. Under production traces, ecoPlace reduces energy consumption
+by 22\% while maintaining the 99\textsuperscript{th} percentile latency target.
+
+\medskip
+\textbf{Layer 3 --- Multi-Tenant Fairness (Chapter~\ref{ch:fairness}).}
+We formalize \emph{proportional delay equity} (PDE), prove the PDE-maximizing
+scheduling problem is NP-hard, and provide a \((\nicefrac{1}{2})\)-approximation
+via a linear-programming relaxation with randomized rounding.
+\end{tcolorbox}
+
+\section{Thesis Organization}
+
+The remainder of this dissertation is structured as follows.
+Chapter~\ref{ch:background} surveys related work in edge computing, online
+algorithms, and fair scheduling. Chapter~\ref{ch:placement} presents the
+Meridian Scheduler. Chapter~\ref{ch:energy} details the ecoPlace energy
+management layer. Chapter~\ref{ch:fairness} develops the PDE framework and
+approximation algorithm. Chapter~\ref{ch:evaluation} reports experimental
+results from simulation and real-world deployment. Chapter~\ref{ch:conclusion}
+concludes with a summary and directions for future work.
+
+% ═══════════════════════════════════════════
+%  CHAPTER 2 — BACKGROUND
+% ═══════════════════════════════════════════
+\chapter{Background and Related Work}
+\label{ch:background}
+
+This chapter situates our work within three broad research areas: edge
+computing architectures, online algorithms for resource allocation, and
+multi-resource fairness. We then highlight gaps that the subsequent chapters
+address.
+
+\section{Edge Computing Architectures}
+
+The vision of edge computing was articulated by~\citet{satyanarayanan2009case}
+as ``cloudlets'' --- small-scale data centers placed at the network edge.
+Subsequent work by~\citet{ha2014towards} demonstrated the feasibility of
+offloading mobile workloads to nearby nodes, while~\citet{mao2017survey}
+provided a comprehensive survey of mobile edge computing (MEC) standards and
+architectures.
+
+\begin{table}[htbp]
+\centering
+\singlespacing
+\caption{Representative edge platforms compared across key dimensions.}
+\label{tab:platforms}
+\begin{tabularx}{0.92\textwidth}{p{2.6cm} X X X c}
+\toprule
+\textbf{Platform} & \textbf{Scheduling} & \textbf{Energy Mgmt} & \textbf{Multi-Tenant} & \textbf{Ref.} \\
+\midrule
+Nexa FogNode & Round-robin & Static bin-packing & Single-tenant & \cite{bonomi2012fog} \\
+\cmidrule{1-5}
+Vertex EdgeGrid & Greedy bin-packing & None & Per-VM isolation & \cite{yi2015survey} \\
+\cmidrule{1-5}
+Apex Nexus & Predictive ML & DVFS only & Token-bucket & \cite{shi2016edge} \\
+\cmidrule{1-5}
+Synapse Layered & Auction-based & Thermal-aware & Min--max fairness & \cite{mach2017mobile} \\
+\cmidrule{1-5}
+\textbf{This work} & \textbf{RO + OLO} & \textbf{Full P-state} & \textbf{PDE} & --- \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:platforms} summarizes how existing platforms handle the three
+dimensions we identified in Chapter~\ref{ch:intro}. Notably, no prior system
+simultaneously addresses predictive placement, fine-grained energy management,
+and provable multi-tenant fairness guarantees --- motivating our integrated
+approach.
+
+\section{Online Algorithms for Placement}
+
+The problem of placing workloads on heterogeneous nodes has been studied
+extensively in the online algorithms community. The classic ski-rental and
+\(k\)-server problems capture important special cases, but edge workloads
+introduce correlations across both time and space that break the worst-case
+adversarial model. Our work builds on the \emph{online learning with
+optimization} (OLO) framework of~\citet{hazan2016introduction}, combining
+regret-minimizing predictors with robust integer programming.
+
+\begin{definition}[Competitive Ratio]
+\label{def:cr}
+An online algorithm \(\mathcal{A}\) has competitive ratio \(\alpha\) if, for
+every finite input sequence \(\sigma\),
+\[
+\operatorname{cost}_{\mathcal{A}}(\sigma)
+\;\leq\;
+\alpha \cdot \operatorname{cost}_{\textsc{opt}}(\sigma) + \beta,
+\]
+where \(\textsc{opt}\) is the offline optimal algorithm with full knowledge of
+\(\sigma\) and \(\beta\) is a constant independent of \(\sigma\).
+\end{definition}
+
+% ═══════════════════════════════════════════
+%  CHAPTER 3 — MERIDIAN PLACEMENT
+% ═══════════════════════════════════════════
+\chapter{The Meridian Scheduler: Predictive Placement}
+\label{ch:placement}
+
+This chapter presents the Meridian Scheduler, our predictive workload-placement
+algorithm. Meridian operates at the cluster-aggregation tier: it receives
+incoming workload batches, forecasts per-node demand over a short horizon, and
+solves a robust integer program to assign tasks to nodes.
+
+\section{System Model}
+
+We model the edge infrastructure as a set of \(N\) heterogeneous nodes
+\(\mathcal{N} = \{n_1, n_2, \dots, n_N\}\). Each node \(n_i\) is characterized
+by a capacity vector \(\mathbf{c}_i = (c_i^{\text{CPU}}, c_i^{\text{MEM}},
+c_i^{\text{NET}})\) and an energy-efficiency coefficient \(\eta_i\) (operations
+per joule). Workloads arrive as a sequence of tasks \(\tau_1, \tau_2, \dots\),
+each with a demand vector \(\mathbf{d}_t = (d_t^{\text{CPU}}, d_t^{\text{MEM}},
+d_t^{\text{NET}})\) and a latency deadline \(\ell_t\).
+
+\subsection{Forecasting Module}
+
+The forecasting module uses a gated recurrent unit (GRU) network with two
+layers and 64 hidden units per layer, trained online using stochastic gradient
+descent with momentum. The input features include the previous 12 timesteps of
+workload demand, time-of-day embeddings, and a binary weekend/holiday indicator.
+The output is a predictive distribution over demand for the next four timesteps.
+
+\begin{figure}[htbp]
+\centering
+\singlespacing
+\begin{tikzpicture}[
+  node distance=1.6cm,
+  box/.style={rectangle,rounded corners=4pt,draw=uclablue!60,fill=uclablue!8,
+    text width=2.8cm,align=center,minimum height=1cm,font=\small},
+  arrow/.style={->,>=stealth,thick,color=ucladark}
+]
+\node[box] (input) {Historical\\Demand};
+\node[box,right=of input] (gru) {GRU\\Forecaster};
+\node[box,right=of gru] (ro) {Robust\\Optimizer};
+\node[box,right=of ro] (assign) {Node\\Assignment};
+
+\draw[arrow] (input) -- (gru);
+\draw[arrow] (gru) -- (ro);
+\draw[arrow] (ro) -- (assign);
+\end{tikzpicture}
+\caption{High-level architecture of the Meridian Scheduler.}
+\label{fig:meridian}
+\end{figure}
+
+\subsection{Optimization Formulation}
+
+At each decision epoch, Meridian solves the following robust integer program:
+
+\begin{equation}
+\label{eq:rip}
+\begin{aligned}
+\operatorname*{minimize}_{\mathbf{x} \in \{0,1\}^{N \times T}} \quad
+  & \sum_{i=1}^{N} \sum_{t=1}^{T} \gamma_i \cdot x_{i,t}
+  \;+\;
+  \lambda \sum_{i=1}^{N} \eta_i^{-1} \cdot z_i \\[6pt]
+\text{subject to} \quad
+  & \sum_{i=1}^{N} x_{i,t} = 1 \qquad \forall\, t \in \{1,\dots,T\} \\
+  & \sum_{t=1}^{T} \mathbf{d}_t \cdot x_{i,t}
+      \;\preceq\; \mathbf{c}_i + \varepsilon\cdot \mathbf{1}
+      \qquad \forall\, i \in \{1,\dots,N\} \\
+  & z_i = \max\!\bigl(0,\; \textstyle\sum_{t} x_{i,t} - \theta_i\bigr)
+      \qquad \forall\, i
+\end{aligned}
+\end{equation}
+
+Here \(x_{i,t}=1\) if task \(t\) is assigned to node \(i\), \(\gamma_i\) is the
+per-task cost on node \(i\), \(\lambda\) is a penalty on energy usage, \(z_i\)
+captures overload beyond the nominal threshold \(\theta_i\), and \(\varepsilon\)
+is the robustness budget derived from the forecast uncertainty.
+
+\begin{theorem}[Competitive Ratio]
+\label{thm:competitive}
+Assuming the forecast error is bounded by \(\varepsilon\) and node capacities
+are non-decreasing, Meridian achieves a competitive ratio of
+\(1 - e^{-1} \approx 0.632\) against the offline optimal algorithm.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The proof follows from a potential-function argument. Let \(\Phi_k\)
+be the total residual capacity after \(k\) tasks. We show that
+\(\Phi_{k+1} \geq (1 - 1/N) \cdot \Phi_k\) in expectation, which telescopes
+to the claimed bound. The full proof appears in Appendix~A.
+\end{proof}
+
+% ═══════════════════════════════════════════
+%  BIBLIOGRAPHY (manual entries for pdflatex compat)
+% ═══════════════════════════════════════════
+\begin{thebibliography}{99}
+
+\bibitem{bonomi2012fog}
+F.~Bonomi, R.~Milito, J.~Zhu, and S.~Addepalli.
+\newblock Fog computing and its role in the internet of things.
+\newblock In \emph{Proceedings of the First Edition of the MCC Workshop on Mobile
+  Cloud Computing}, pages 13--16. ACM, 2012.
+
+\bibitem{ha2014towards}
+K.~Ha, P.~Pillai, W.~Richter, Y.~Abe, and M.~Satyanarayanan.
+\newblock Just-in-time provisioning for cyber foraging.
+\newblock In \emph{Proceedings of the 11th Annual International Conference on
+  Mobile Systems, Applications, and Services (MobiSys)}, pages 153--166. ACM, 2013.
+
+\bibitem{hazan2016introduction}
+E.~Hazan.
+\newblock Introduction to online convex optimization.
+\emph{Foundations and Trends in Optimization}, 2(3--4):157--325, 2016.
+
+\bibitem{mach2017mobile}
+P.~Mach and Z.~Becvar.
+\newblock Mobile edge computing: A survey on architecture and computation
+  offloading.
+\emph{IEEE Communications Surveys \& Tutorials}, 19(3):1628--1656, 2017.
+
+\bibitem{mao2017survey}
+Y.~Mao, C.~You, J.~Zhang, K.~Huang, and K.~B. Letaief.
+\newblock A survey on mobile edge computing: The communication perspective.
+\emph{IEEE Communications Surveys \& Tutorials}, 19(4):2322--2358, 2017.
+
+\bibitem{satyanarayanan2009case}
+M.~Satyanarayanan, P.~Bahl, R.~Caceres, and N.~Davies.
+\newblock The case for vm-based cloudlets in mobile computing.
+\emph{IEEE Pervasive Computing}, 8(4):14--23, 2009.
+
+\bibitem{satyanarayanan2017emergence}
+M.~Satyanarayanan.
+\newblock The emergence of edge computing.
+\emph{Computer}, 50(1):30--39, 2017.
+
+\bibitem{shi2016edge}
+W.~Shi, J.~Cao, Q.~Zhang, Y.~Li, and L.~Xu.
+\newblock Edge computing: Vision and challenges.
+\emph{IEEE Internet of Things Journal}, 3(5):637--646, 2016.
+
+\bibitem{yi2015survey}
+S.~Yi, C.~Li, and Q.~Li.
+\newblock A survey of fog computing: Concepts, applications and issues.
+\newblock In \emph{Proceedings of the 2015 Workshop on Mobile Big Data},
+  pages 37--42. ACM, 2015.
+
+\end{thebibliography}
+
+\end{document}

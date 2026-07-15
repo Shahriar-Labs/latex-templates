@@ -1,0 +1,608 @@
+\documentclass[12pt,twoside]{report}
+
+% ---------- Packages ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,left=3.8cm,right=2.5cm,top=2.8cm,bottom=2.8cm]{geometry}
+\usepackage{mathpazo}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns,arrows.meta}
+\usepackage[most]{tcolorbox}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{caption}
+\usepackage{fontawesome5}
+\usepackage[hidelinks,colorlinks=false]{hyperref}
+
+% ---------- Custom colours ----------
+\definecolor{kfupmgreen}{RGB}{0,74,60}
+\definecolor{kfupmgold}{RGB}{175,141,60}
+\definecolor{kfupmslate}{RGB}{55,60,63}
+\definecolor{kfupmsand}{RGB}{248,246,239}
+
+% ---------- Chapter / section styling ----------
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{kfupmgreen}}
+  {\filright\Large\color{kfupmgold}\chaptertitlename\ \thechapter}
+  {8pt}
+  {\titlerule[1pt]\vspace{6pt}\Huge}
+\titlespacing*{\chapter}{0pt}{0pt}{28pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{kfupmgreen}}{\thesection}{10pt}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{kfupmslate}}{\thesubsection}{10pt}{}
+
+% ---------- Headers / footers ----------
+\setlength{\headheight}{24.02pt}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{kfupmgold}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[LE,RO]{\small\color{kfupmslate}\thepage}
+\fancyhead[RE]{\small\color{kfupmslate}\nouppercase{\leftmark}}
+\fancyhead[LO]{\small\color{kfupmslate}\nouppercase{\rightmark}}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyhead[LE,RO]{\small\color{kfupmslate}\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+\setstretch{1.30}
+\captionsetup{font=small,labelfont={bf,color=kfupmgreen},margin=1cm}
+
+\newcommand{\ttitle}{Optimal Scheduling of Electric Vehicle Charging Loads in Distribution Networks Using Model Predictive Control}
+\newcommand{\tauthor}{Faisal Al-Otaibi}
+\newcommand{\tdegree}{Master of Science}
+\newcommand{\tmajor}{Electrical Engineering}
+\newcommand{\tmonth}{May}
+\newcommand{\tyear}{2026}
+
+\begin{document}
+
+% =====================================================
+% TITLE PAGE
+% =====================================================
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[kfupmgreen] ([yshift=0pt]current page.north west) rectangle ++(\paperwidth,0.9cm);
+  \fill[kfupmgold] ([yshift=-0.9cm]current page.north west) rectangle ++(\paperwidth,0.12cm);
+  \fill[kfupmgreen] (current page.south west) rectangle ++(\paperwidth,0.6cm);
+\end{tikzpicture}
+
+\vspace*{1.6cm}
+\begin{center}
+\begin{tikzpicture}
+  \draw[kfupmgreen,line width=1.6pt] (0,0) circle (1.35cm);
+  \draw[kfupmgold,line width=0.8pt] (0,0) circle (1.15cm);
+  \node[align=center,text width=2.1cm,font=\bfseries\small,color=kfupmgreen] at (0,0) {KFUPM\\[2pt]\tiny 1963};
+\end{tikzpicture}
+
+\vspace{0.6cm}
+{\Large\bfseries\color{kfupmgreen} KING FAHD UNIVERSITY OF PETROLEUM \& MINERALS}\\[4pt]
+{\normalsize\color{kfupmslate} Dhahran 31261, Kingdom of Saudi Arabia}\\[2pt]
+{\small\itshape\color{kfupmgold} Deanship of Graduate and Professional Studies}
+
+\vspace{1.4cm}
+{\color{kfupmgold}\rule{0.55\textwidth}{0.8pt}}
+\vspace{1.0cm}
+
+{\Large\bfseries\color{kfupmslate} \ttitle}
+
+\vspace{1.6cm}
+{\normalsize A Thesis Presented to\\
+the Deanship of Graduate and Professional Studies\\[4pt]
+in Partial Fulfillment of the Requirements\\
+for the Degree of}
+
+\vspace{0.5cm}
+{\large\bfseries\color{kfupmgreen} \tdegree\ in \tmajor}
+
+\vspace{1.6cm}
+{\color{kfupmgold}\rule{0.35\textwidth}{0.8pt}}
+\vspace{0.9cm}
+
+{\normalsize \textbf{By}}\\[6pt]
+{\large\bfseries\color{kfupmslate} \tauthor}
+
+\vspace{1.4cm}
+{\normalsize \tmonth\ \tyear}
+\end{center}
+
+\vfill
+\begin{center}
+{\footnotesize\itshape\color{kfupmslate}
+Unofficial template --- not affiliated with or endorsed by King Fahd University of\\
+Petroleum \& Minerals. Sample content only.}
+\end{center}
+\vspace{1.2cm}
+\end{titlepage}
+
+% =====================================================
+% APPROVAL / SIGNATURE PAGE
+% =====================================================
+\newpage
+\thispagestyle{empty}
+\begin{center}
+{\Large\bfseries\color{kfupmgreen} KING FAHD UNIVERSITY OF PETROLEUM \& MINERALS}\\[4pt]
+{\small\color{kfupmslate} Dhahran, Kingdom of Saudi Arabia}
+
+\vspace{0.9cm}
+{\large\bfseries\color{kfupmslate} DEANSHIP OF GRADUATE AND PROFESSIONAL STUDIES}
+
+\vspace{0.9cm}
+This thesis, written by \textbf{\tauthor} under the direction of his thesis advisor and
+approved by his thesis committee, has been presented and accepted in partial fulfillment
+of the requirements for the degree of \textbf{\tdegree\ in \tmajor}.
+\end{center}
+
+\vspace{1.6cm}
+
+\begin{tabular}{@{}p{9cm}p{5cm}@{}}
+\multicolumn{2}{@{}l}{\textbf{Thesis Committee:}}\\[10pt]
+\dotfill & \dotfill \\
+Dr.\ Hassan Al-Mutairi (Advisor) & Date \\[18pt]
+\dotfill & \dotfill \\
+Dr.\ Nadia Al-Ghamdi (Member) & Date \\[18pt]
+\dotfill & \dotfill \\
+Dr.\ Rami Al-Zahrani (Member) & Date \\[18pt]
+\dotfill & \dotfill \\
+Dr.\ Yasir Al-Harbi (Department Chairman) & Date \\[18pt]
+\dotfill & \dotfill \\
+Dr.\ Salem Al-Dosari (Dean of Graduate Studies) & Date \\
+\end{tabular}
+
+% =====================================================
+% FRONT MATTER
+% =====================================================
+\newpage
+\pagenumbering{roman}
+\setcounter{page}{3}
+
+\chapter*{Dedication}
+\addcontentsline{toc}{chapter}{Dedication}
+\vspace{2cm}
+\begin{center}
+\textit{To my parents, whose sacrifices made this work possible, and to my wife,\\
+whose patience and encouragement carried me through every long night in the lab.}
+\end{center}
+
+\chapter*{Acknowledgment}
+\addcontentsline{toc}{chapter}{Acknowledgment}
+I would like to express my sincere gratitude to my thesis advisor, Dr.\ Hassan Al-Mutairi, for
+his invaluable guidance, patience, and continuous support throughout this research. His insight
+into power systems control shaped every stage of this work.
+
+I am also thankful to my committee members, Dr.\ Nadia Al-Ghamdi and Dr.\ Rami Al-Zahrani, for
+their constructive feedback that greatly improved the quality of this thesis. Special
+acknowledgment goes to the Department of Electrical Engineering at King Fahd University of
+Petroleum \& Minerals for providing the computational resources and laboratory facilities
+required for this study, and to Nexa Grid Solutions for supplying anonymized feeder-load data
+used in the simulation studies of Chapter~4.
+
+Finally, I thank my colleagues at the Power Systems Research Group for countless discussions
+that refined the ideas presented here.
+
+\begingroup
+\hypersetup{linkcolor=kfupmslate}
+\tableofcontents
+\newpage
+\listoftables
+\newpage
+\listoffigures
+\endgroup
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\noindent
+\textbf{Full Name:} \tauthor\\
+\textbf{Thesis Title:} \ttitle\\
+\textbf{Major Field:} \tmajor\\
+\textbf{Date of Degree:} \tmonth\ \tyear
+
+\vspace{0.5cm}
+The rapid adoption of electric vehicles (EVs) in urban distribution networks introduces
+significant uncoordinated charging loads that can cause transformer overloading, voltage
+excursions, and increased peak demand. This thesis develops a model predictive control (MPC)
+framework for coordinated scheduling of residential and workplace EV charging loads at the
+feeder level. The proposed controller formulates a receding-horizon optimization problem that
+minimizes a weighted combination of transformer loss-of-life, voltage deviation, and total
+energy cost, subject to charger power limits, state-of-charge targets, and network operating
+constraints. A reduced-order distribution feeder model calibrated against a 400-node test
+network is used to evaluate controller performance under three charging-demand scenarios
+representative of the Dhahran residential grid. Simulation results, benchmarked against
+uncoordinated and rule-based charging baselines, show that the MPC scheme reduces peak
+transformer loading by 27.4\%, improves worst-case bus voltage deviation by 41.8\%, and lowers
+aggregate energy cost by 12.6\%, while meeting 98.7\% of driver departure state-of-charge
+requirements. Sensitivity analysis further indicates that the controller remains robust to
+forecast errors of up to 15\% in aggregate charging demand. The results suggest that
+feeder-level MPC scheduling is a practical and scalable alternative to costly infrastructure
+upgrades for accommodating growing EV penetration in constrained distribution networks.
+
+\newpage
+\pagenumbering{arabic}
+
+% =====================================================
+% CHAPTER 1
+% =====================================================
+\chapter{Introduction}
+\label{ch:intro}
+
+\section{Background and Motivation}
+The Kingdom's National Transport Strategy targets significant electric vehicle (EV) market
+penetration by 2035, a shift that will place unprecedented stress on distribution feeders
+originally sized for conventional residential and commercial loads. Unlike traditional
+appliances, EV chargers draw sustained power over multi-hour windows and, when uncoordinated,
+tend to cluster around evening arrival times -- precisely when feeders are already near peak
+loading. Left unmanaged, this coincidence can accelerate transformer aging, cause under-voltage
+conditions at the ends of long feeders, and force costly, reactive infrastructure upgrades.
+
+\begin{tcolorbox}[colback=kfupmsand,colframe=kfupmgreen,boxrule=0.6pt,arc=2pt,left=8pt,right=8pt,top=6pt,bottom=6pt]
+\small\textbf{Key challenge.} Distribution utilities must accommodate rapidly growing EV
+charging demand without proportional investment in feeder and transformer capacity, motivating
+software-based load coordination as a near-term mitigation strategy.
+\end{tcolorbox}
+
+Model predictive control (MPC) is a natural candidate for this coordination problem: it
+explicitly handles constraints, incorporates forecasts of driver behavior and electricity
+price, and re-optimizes at each control step to correct for prediction error. This thesis
+investigates whether a feeder-level MPC scheduler can deliver measurable reductions in peak
+loading and voltage stress while preserving an acceptable quality of service for EV drivers.
+
+\section{Problem Statement}
+Given a distribution feeder serving $N$ EV chargers with stochastic driver arrival and
+departure times, the scheduling problem is to determine, at each control interval, the charging
+power set-point for every connected vehicle such that:
+\begin{enumerate}[leftmargin=1.4cm]
+  \item transformer and conductor thermal limits are respected at all times,
+  \item bus voltages remain within the $\pm 5\%$ statutory band,
+  \item each vehicle reaches its driver-specified departure state-of-charge (SoC) target, and
+  \item total energy procurement cost is minimized under time-of-use tariffs.
+\end{enumerate}
+
+\section{Research Objectives}
+\begin{enumerate}[leftmargin=1.4cm]
+  \item Formulate a receding-horizon MPC problem for coordinated EV charging at feeder scale.
+  \item Develop a reduced-order feeder model suitable for real-time optimization.
+  \item Benchmark the proposed controller against uncoordinated and rule-based baselines.
+  \item Evaluate robustness to demand-forecast uncertainty through sensitivity analysis.
+\end{enumerate}
+
+\section{Thesis Organization}
+Chapter~\ref{ch:lit} reviews prior work on EV charging coordination and MPC applications in
+distribution systems. Chapter~\ref{ch:method} presents the feeder model, MPC formulation, and
+solution methodology. Chapter~\ref{ch:results} reports simulation results and comparative
+evaluation. Chapter~\ref{ch:conclusion} concludes with a summary of contributions, limitations,
+and directions for future work.
+
+% =====================================================
+% CHAPTER 2
+% =====================================================
+\chapter{Literature Review}
+\label{ch:lit}
+
+\section{Uncoordinated and Rule-Based Charging}
+Early studies of EV integration assumed uncoordinated, arrival-triggered charging and
+quantified its impact on transformer loading and feeder losses. Subsequent work introduced
+simple rule-based mitigations, such as staggered start times or price-triggered delays, which
+reduce peak coincidence but do not explicitly account for network constraints or optimize a
+cost objective.
+
+\section{Optimization-Based Scheduling}
+A substantial body of work formulates EV scheduling as a centralized optimization problem,
+typically minimizing energy cost or peak demand subject to charger and network constraints.
+Mixed-integer linear programming and convex relaxations of the AC power flow equations have
+both been applied, with the latter offering tractability at the expense of some model fidelity.
+Table~\ref{tab:litsummary} summarizes representative approaches.
+
+\begin{table}[htbp]
+\centering
+\caption{Summary of representative EV scheduling approaches}
+\label{tab:litsummary}
+\small
+\begin{tabular}{@{}p{3.0cm}p{4.4cm}p{3.0cm}p{3.0cm}@{}}
+\toprule
+\textbf{Approach} & \textbf{Objective} & \textbf{Network Model} & \textbf{Horizon} \\
+\midrule
+Rule-based staggering & Peak reduction & None & Reactive \\
+Centralized LP & Cost minimization & Copper-plate & Day-ahead \\
+Convex OPF relaxation & Cost + voltage & Linearized & Day-ahead \\
+Distributed ADMM & Cost + fairness & Radial approx. & Day-ahead \\
+Receding-horizon MPC & Cost + voltage + thermal & Reduced-order & Real-time \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Model Predictive Control for Distribution Systems}
+MPC has been applied to voltage regulation, battery dispatch, and demand response in
+distribution feeders, exploiting its ability to handle multi-period constraints and reject
+forecast disturbances through re-planning. Applications specific to EV charging remain
+comparatively sparse and are typically evaluated on synthetic feeders rather than networks
+calibrated to a specific regional load profile.
+
+\section{Research Gap}
+Prior optimization-based methods largely address either network constraints or cost objectives
+in isolation, and few studies jointly evaluate transformer thermal stress alongside voltage
+regulation under a receding-horizon framework calibrated to a realistic residential feeder.
+This thesis addresses that gap by combining a reduced-order thermal-voltage feeder model with
+an MPC scheduler evaluated against multiple demand scenarios and forecast-error conditions.
+
+% =====================================================
+% CHAPTER 3
+% =====================================================
+\chapter{Methodology}
+\label{ch:method}
+
+\section{System Overview}
+Figure~\ref{fig:arch} illustrates the overall control architecture. The MPC scheduler receives
+forecasted driver arrival/departure data, real-time feeder telemetry, and time-of-use price
+signals, and outputs per-charger power set-points at each 15-minute control interval.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  block/.style={rectangle,rounded corners=3pt,draw=kfupmgreen,thick,fill=kfupmsand,
+                minimum width=3.1cm,minimum height=1.1cm,align=center,font=\small},
+  arr/.style={-Latex,thick,color=kfupmslate}
+]
+\node[block] (fc) {Demand \&\\ Price Forecast};
+\node[block, right=1.6cm of fc] (mpc) {MPC\\ Optimizer};
+\node[block, right=1.6cm of mpc] (chg) {Charger\\ Set-points};
+\node[block, below=1.1cm of mpc] (feed) {Feeder State\\ Estimator};
+\draw[arr] (fc) -- (mpc);
+\draw[arr] (mpc) -- (chg);
+\draw[arr] (feed) -- (mpc);
+\draw[arr] (chg.south) |- ++(0,-0.7) -| (feed.south);
+\end{tikzpicture}
+\caption{Closed-loop MPC scheduling architecture}
+\label{fig:arch}
+\end{figure}
+
+\section{Reduced-Order Feeder Model}
+The distribution feeder is represented as a radial network of $M$ buses using a linearized
+DistFlow approximation, which relates bus voltage magnitude to active and reactive power
+injections:
+\begin{equation}
+V_i \approx V_0 - \sum_{j \in \mathcal{A}(i)} \left( r_j P_j + x_j Q_j \right) / V_0,
+\label{eq:distflow}
+\end{equation}
+where $V_i$ is the voltage magnitude at bus $i$, $V_0$ is the substation reference voltage,
+$\mathcal{A}(i)$ is the set of line segments on the path from the substation to bus $i$, and
+$r_j$, $x_j$ are the resistance and reactance of segment $j$. Transformer loading is tracked via
+an aggregate thermal model with time constant $\tau$:
+\begin{equation}
+\tau \frac{d\theta}{dt} = -\theta + K \left( \frac{S(t)}{S_{\text{rated}}} \right)^2,
+\label{eq:thermal}
+\end{equation}
+where $\theta$ is per-unit hot-spot temperature rise, $S(t)$ is instantaneous apparent power,
+and $K$ is a calibration constant fitted to manufacturer loss-of-life curves.
+
+\section{MPC Formulation}
+At each control step $k$, the scheduler solves, over horizon $H$:
+\begin{equation}
+\min_{\{P_{i,t}\}} \; \sum_{t=k}^{k+H} \left[ \alpha \, c_t \sum_i P_{i,t} + \beta \, \theta_t^2 +
+\gamma \sum_i (V_i - V_{\text{nom}})^2 \right]
+\label{eq:objective}
+\end{equation}
+subject to charger power limits $0 \le P_{i,t} \le P_i^{\max}$, SoC dynamics
+$\mathrm{SoC}_{i,t+1} = \mathrm{SoC}_{i,t} + \eta_i P_{i,t} \Delta t / E_i^{\text{cap}}$, terminal
+SoC targets at each vehicle's departure time, voltage limits from Eq.~\eqref{eq:distflow}, and
+thermal limits from Eq.~\eqref{eq:thermal}. Weights $\alpha$, $\beta$, $\gamma$ trade off cost,
+thermal stress, and voltage quality; values used in this study are given in
+Table~\ref{tab:params}.
+
+\begin{table}[htbp]
+\centering
+\caption{MPC controller parameters}
+\label{tab:params}
+\begin{tabular}{@{}llc@{}}
+\toprule
+\textbf{Parameter} & \textbf{Description} & \textbf{Value} \\
+\midrule
+$H$ & Prediction horizon & 24 steps (6 h) \\
+$\Delta t$ & Control interval & 15 min \\
+$\alpha$ & Cost weight & 1.0 \\
+$\beta$ & Thermal weight & 0.6 \\
+$\gamma$ & Voltage weight & 0.8 \\
+$\tau$ & Transformer thermal constant & 45 min \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Solution Method and Test Network}
+The optimization in Eq.~\eqref{eq:objective} is convex given the linearized network model and
+is solved at each control step using an interior-point QP solver, re-planning with updated
+telemetry every 15 minutes in a standard receding-horizon loop. The controller is evaluated on
+a synthetic 400-node radial feeder calibrated to residential loading patterns in Dhahran, with
+120 Level-2 chargers distributed across the network and driver arrival/departure/SoC data drawn
+from a synthesized commuting-behavior distribution.
+
+% =====================================================
+% CHAPTER 4
+% =====================================================
+\chapter{Results and Discussion}
+\label{ch:results}
+
+\section{Baseline Comparison}
+Three charging strategies are compared over a representative summer weekday: uncoordinated
+(charge-on-arrival), rule-based staggering, and the proposed MPC scheduler. Table~\ref{tab:results}
+summarizes performance across the three evaluation metrics.
+
+\begin{table}[htbp]
+\centering
+\caption{Performance comparison across charging strategies}
+\label{tab:results}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Metric} & \textbf{Uncoordinated} & \textbf{Rule-Based} & \textbf{MPC (Proposed)} \\
+\midrule
+Peak transformer loading (\%) & 118.6 & 102.3 & \textbf{86.1} \\
+Worst-case voltage dev.\ (\%) & 6.9 & 5.1 & \textbf{4.0} \\
+Energy cost (SAR/day) & 1{,}842 & 1{,}705 & \textbf{1{,}610} \\
+Departure SoC target met (\%) & 94.1 & 96.4 & \textbf{98.7} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Relative to the uncoordinated baseline, the MPC scheduler reduces peak transformer loading by
+27.4\% and improves worst-case voltage deviation by 41.8\%, while simultaneously lowering
+energy cost by 12.6\% and improving SoC target satisfaction. This confirms that thermal,
+voltage, and cost objectives can be jointly improved rather than traded off, primarily because
+the receding-horizon formulation shifts flexible load away from the evening peak without
+delaying vehicles past their required departure times.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{scope}
+  \draw[-Latex,thick] (0,0) -- (9.4,0) node[right,font=\small] {Hour of day};
+  \draw[-Latex,thick] (0,0) -- (0,4.4) node[above,font=\small] {Aggregate load (MW)};
+  \foreach \x/\lab in {0/0,2/4,4/8,6/12,8/16,9.4/20} \draw (\x,0) -- (\x,-0.08) node[below,font=\tiny] {\lab};
+  \draw[kfupmslate,thick] plot[smooth] coordinates {(0,0.6)(1.5,0.5)(3,0.4)(4.5,1.6)(5.5,3.9)(6.5,3.6)(7.5,1.2)(9.4,0.7)};
+  \draw[kfupmgold,thick,dashed] plot[smooth] coordinates {(0,0.6)(1.5,0.6)(3,0.7)(4.5,1.4)(5.5,2.5)(6.5,2.7)(7.5,1.6)(9.4,0.9)};
+  \draw[kfupmgreen,thick] plot[smooth] coordinates {(0,0.6)(1.5,0.9)(3,1.3)(4.5,1.7)(5.5,1.9)(6.5,2.0)(7.5,1.8)(9.4,1.1)};
+  \draw[dashed,color=black!40] (0,3.4) -- (9.4,3.4) node[right,font=\tiny,color=black!60] {Transformer rating};
+\end{scope}
+\node[draw=kfupmslate,fill=white,align=left,font=\tiny,inner sep=4pt] at (2.1,3.9)
+  {\textcolor{kfupmslate}{\rule{1em}{1pt}} Uncoordinated\\
+   \textcolor{kfupmgold}{\rule{1em}{1pt}} Rule-based\\
+   \textcolor{kfupmgreen}{\rule{1em}{1pt}} MPC (proposed)};
+\end{tikzpicture}
+\caption{Aggregate feeder loading profile under the three charging strategies}
+\label{fig:loadprofile}
+\end{figure}
+
+\section{Sensitivity to Forecast Error}
+Because the MPC scheduler depends on forecasts of aggregate demand, its robustness to forecast
+error was tested by injecting zero-mean Gaussian noise of increasing standard deviation into the
+predicted arrival load. Table~\ref{tab:sensitivity} shows that performance degrades gracefully:
+even at 15\% forecast error, peak loading remains below the uncoordinated baseline, and SoC
+satisfaction stays above 96\%.
+
+\begin{table}[htbp]
+\centering
+\caption{Controller robustness under forecast error}
+\label{tab:sensitivity}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Forecast error (\%)} & \textbf{Peak loading (\%)} & \textbf{Voltage dev.\ (\%)} & \textbf{SoC met (\%)} \\
+\midrule
+0  & 86.1 & 4.0 & 98.7 \\
+5  & 87.4 & 4.2 & 98.3 \\
+10 & 89.8 & 4.5 & 97.5 \\
+15 & 93.2 & 4.9 & 96.1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Discussion}
+The results indicate that a feeder-level MPC scheduler can deliver simultaneous improvements
+in thermal loading, voltage quality, and energy cost relative to both uncoordinated and
+rule-based baselines, without materially compromising driver convenience. The controller's
+graceful degradation under forecast error suggests it is viable even with the moderate-accuracy
+demand forecasts typically available to distribution utilities. The main limitation is
+computational: the QP re-solve at each 15-minute step scales with the number of chargers, and
+very large feeders (\(>\)1000 chargers) may require a decomposition scheme such as distributed
+ADMM, which is left to future work.
+
+% =====================================================
+% CHAPTER 5
+% =====================================================
+\chapter{Conclusion and Future Work}
+\label{ch:conclusion}
+
+\section{Summary of Contributions}
+This thesis proposed and evaluated a receding-horizon model predictive control framework for
+coordinating electric vehicle charging loads at the distribution feeder level. Key
+contributions include: (1) a reduced-order thermal-voltage feeder model suitable for real-time
+optimization, (2) a joint cost-thermal-voltage MPC formulation for EV charging scheduling, and
+(3) a simulation-based evaluation on a 400-node feeder demonstrating simultaneous improvements
+of 27.4\% in peak transformer loading, 41.8\% in worst-case voltage deviation, and 12.6\% in
+energy cost relative to uncoordinated charging.
+
+\section{Limitations}
+The evaluation relies on a synthetic feeder and synthesized driver-behavior data rather than
+field-metered data from an operating utility; the linearized DistFlow model, while accurate for
+lightly to moderately loaded radial feeders, may lose fidelity under heavy reactive loading; and
+the centralized QP formulation does not scale indefinitely without decomposition.
+
+\section{Future Work}
+Future work should validate the controller against field data from a pilot feeder, extend the
+formulation to a distributed or hierarchical architecture for scalability to city-scale
+deployments, and incorporate vehicle-to-grid (V2G) discharge as an additional control variable
+to further flatten peak demand.
+
+% =====================================================
+% BACK MATTER
+% =====================================================
+\begingroup
+\renewcommand{\chapter}[2][]{\vspace{0.6cm}}
+\phantomsection
+\addcontentsline{toc}{chapter}{References}
+\endgroup
+
+\chapter*{References}
+\addcontentsline{toc}{chapter}{References}
+\begin{enumerate}[leftmargin=1.4cm,itemsep=6pt]
+\item M.\ Rawashdeh and S.\ Al-Amri, ``Coordinated charging of electric vehicles in
+  residential distribution feeders: A review,'' \textit{Journal of Power Systems Engineering},
+  vol.\ 41, no.\ 3, pp.\ 210--227, 2023.
+\item T.\ Nakamura, F.\ Oduya, and L.\ Chen, ``Model predictive control for demand response in
+  low-voltage networks,'' \textit{IEEE Transactions on Smart Grid}, vol.\ 15, no.\ 2,
+  pp.\ 1188--1199, 2024.
+\item R.\ Baraka and H.\ Qassim, ``Linearized DistFlow models for real-time distribution
+  optimization,'' \textit{Electric Power Systems Research}, vol.\ 198, art.\ 107345, 2021.
+\item A.\ Meridian and D.\ Osei, ``Transformer loss-of-life estimation under electric vehicle
+  charging loads,'' in \textit{Proc.\ IEEE PES General Meeting}, pp.\ 1--5, 2022.
+\item S.\ Al-Rashid, ``Distributed optimization for large-scale EV charging coordination,''
+  Ph.D.\ dissertation, Dept.\ Electrical Engineering, KFUPM, 2023.
+\end{enumerate}
+
+\chapter*{Appendix A: Feeder Model Parameters}
+\addcontentsline{toc}{chapter}{Appendix A: Feeder Model Parameters}
+Table~\ref{tab:appendix} lists the calibrated parameters of the 400-node test feeder used
+throughout Chapter~\ref{ch:results}.
+
+\begin{table}[htbp]
+\centering
+\caption{Test feeder calibration summary}
+\label{tab:appendix}
+\begin{tabular}{@{}lc@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Number of buses & 400 \\
+Feeder rated voltage & 13.8 kV \\
+Substation transformer rating & 5 MVA \\
+Number of Level-2 chargers & 120 \\
+Per-charger rated power & 7.2 kW \\
+Simulation horizon & 24 h \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\chapter*{Vitae}
+\addcontentsline{toc}{chapter}{Vitae}
+\noindent
+\textbf{Name:} \tauthor\\
+\textbf{Nationality:} Saudi Arabian\\
+\textbf{Date of Birth:} March 1999\\
+\textbf{Email:} faisal.alotaibi@kfupm-example.edu.sa\\[6pt]
+\textbf{Education:}
+\begin{itemize}[leftmargin=1.4cm]
+  \item M.S.\ Electrical Engineering, King Fahd University of Petroleum \& Minerals, \tyear\ (expected)
+  \item B.S.\ Electrical Engineering, King Fahd University of Petroleum \& Minerals, 2023
+\end{itemize}
+
+\end{document}

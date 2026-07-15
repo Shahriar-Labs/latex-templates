@@ -1,0 +1,291 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,letterpaper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=0.85in,headheight=18pt]{geometry}
+\usepackage{charter}
+\usepackage[scaled=0.92]{helvet}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds}
+\usepackage{fancyhdr}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{lastpage}
+\usepackage{hyperref}
+\usepackage{fontawesome5}
+
+% Define Custom Color Palette
+\definecolor{NavyBlue}{HTML}{0F172A}
+\definecolor{SteelBlue}{HTML}{1E40AF}
+\definecolor{OrangeAccent}{HTML}{D97706}
+\definecolor{WarmBg}{HTML}{F8FAFC}
+\definecolor{BorderColor}{HTML}{E2E8F0}
+\definecolor{LightGray}{HTML}{F1F5F9}
+
+% Setup Hyperref
+\hypersetup{
+    colorlinks=true,
+    linkcolor=SteelBlue,
+    filecolor=SteelBlue,      
+    urlcolor=SteelBlue,
+    citecolor=SteelBlue,
+}
+
+% Style Section Headers
+\titleformat{\section}
+  {\normalfont\large\bfseries\sffamily\color{NavyBlue}}{\thesection}{1em}{}
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries\sffamily\color{SteelBlue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\itshape\sffamily\color{NavyBlue}}{\thesubsubsection}{1em}{}
+
+% Setup Headers & Footers
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\fancyhead[L]{\sffamily\footnotesize\color{NavyBlue}M-ARS Systems Engineering Plan}
+\fancyhead[R]{\sffamily\footnotesize\color{NavyBlue}Doc ID: NX-SEP-2026-042 | Rev 2.0}
+\fancyfoot[L]{\sffamily\footnotesize\color{NavyBlue}Nexa Defense Systems -- Proprietary}
+\fancyfoot[R]{\sffamily\footnotesize\color{NavyBlue}Page \thepage\ of \pageref{LastPage}}
+
+% Define Custom Info Box
+\newtcolorbox{infobox}[1]{
+  colback=WarmBg,
+  colframe=SteelBlue,
+  fonttitle=\bfseries\sffamily\color{white},
+  colbacktitle=SteelBlue,
+  title={#1},
+  arc=3pt,
+  boxrule=1pt,
+  left=10pt,
+  right=10pt,
+  top=8pt,
+  bottom=8pt
+}
+
+\begin{document}
+
+% --- COVER PAGE ---
+\thispagestyle{empty}
+
+\begin{tikzpicture}[remember picture, overlay]
+  % Top decorative banner
+  \fill[NavyBlue] (current page.north west) rectangle ([yshift=-1.5cm]current page.north east);
+  \fill[SteelBlue] ([yshift=-1.5cm]current page.north west) rectangle ([yshift=-1.7cm]current page.north east);
+  \fill[OrangeAccent] ([yshift=-1.7cm]current page.north west) rectangle ([yshift=-1.75cm]current page.north east);
+\end{tikzpicture}
+
+\vspace{1cm}
+
+\begin{flushleft}
+  {\large\sffamily\bfseries\color{SteelBlue}NEXA DEFENSE SYSTEMS} \\
+  {\small\sffamily\color{NavyBlue}Space \& Intelligence Sector}
+\end{flushleft}
+
+\vspace{2.5cm}
+
+\begin{flushleft}
+  {\Huge\sffamily\bfseries\color{NavyBlue}SYSTEMS ENGINEERING\par PLAN (SEP)\par}
+  \vspace{0.6cm}
+  {\Large\sffamily\bfseries\color{OrangeAccent}Meridian Next-Generation Autonomous\\ Reconnaissance System (M-ARS)\par}
+  \vspace{0.4cm}
+  \noindent\rule{\textwidth}{1.5pt}
+\end{flushleft}
+
+\vspace{1.5cm}
+
+% Cover page graphic - abstract system architecture diagram
+\begin{center}
+\begin{tikzpicture}[scale=0.9, every node/.style={font=\sffamily\scriptsize}]
+  \draw[dashed, color=BorderColor, step=0.5cm] (-3,-3) grid (3,3);
+  \draw[thick, NavyBlue] (0,0) circle (2.2cm);
+  \draw[thick, SteelBlue] (0,0) circle (1.5cm);
+  
+  \node (core) [circle, fill=NavyBlue, text=white, inner sep=6pt, font=\sffamily\bfseries\footnotesize] at (0,0) {M-ARS};
+  
+  \node (sens) [rectangle, draw=SteelBlue, fill=WarmBg, rounded corners=2pt, minimum width=1.6cm, minimum height=0.6cm] at (0,2.5) {Sensors};
+  \node (comm) [rectangle, draw=SteelBlue, fill=WarmBg, rounded corners=2pt, minimum width=1.6cm, minimum height=0.6cm] at (2.2,0.8) {Comms};
+  \node (ctrl) [rectangle, draw=SteelBlue, fill=WarmBg, rounded corners=2pt, minimum width=1.6cm, minimum height=0.6cm] at (1.4,-1.8) {Control};
+  \node (comp) [rectangle, draw=SteelBlue, fill=WarmBg, rounded corners=2pt, minimum width=1.6cm, minimum height=0.6cm] at (-1.4,-1.8) {Compute};
+  \node (nav)  [rectangle, draw=SteelBlue, fill=WarmBg, rounded corners=2pt, minimum width=1.6cm, minimum height=0.6cm] at (-2.2,0.8) {Navigation};
+  
+  \draw[->, thick, NavyBlue] (core) -- (sens);
+  \draw[->, thick, NavyBlue] (core) -- (comm);
+  \draw[->, thick, NavyBlue] (core) -- (ctrl);
+  \draw[->, thick, NavyBlue] (core) -- (comp);
+  \draw[->, thick, NavyBlue] (core) -- (nav);
+\end{tikzpicture}
+\end{center}
+
+\vspace{2.5cm}
+
+\begin{tcolorbox}[
+  colback=WarmBg,
+  colframe=BorderColor,
+  arc=4pt,
+  boxrule=1pt,
+  width=\textwidth
+]
+  \sffamily
+  \begin{tabularx}{\textwidth}{@{}l X l X@{}}
+    \textbf{Doc Identifier:} & NX-SEP-2026-042 & \textbf{Release Date:} & July 15, 2026 \\
+    \textbf{Version:}        & Rev 2.0 & \textbf{Status:}       & Approved \\
+    \textbf{Security Class:} & Nexa Proprietary & \textbf{Authority:}    & Systems Review Board
+  \end{tabularx}
+\end{tcolorbox}
+
+\newpage
+
+% --- TABLE OF CONTENTS ---
+\tableofcontents
+\vspace{1cm}
+
+
+% --- SECTION 1 ---
+\section{Introduction}
+
+\subsection{Document Purpose}
+This Systems Engineering Plan (SEP) defines the technical engineering approach, processes, tools, and reviews for the development of the Meridian Next-Generation Autonomous Reconnaissance System (M-ARS). This document establishes the authoritative framework for coordinating the multidisciplinary engineering teams across Nexa Defense Systems, Vertex Aerospace, and Synapse Technologies. It ensures compliance with rigorous aerospace development lifecycles and provides a roadmap from initial requirements validation to system qualification.
+
+\subsection{System Scope}
+The M-ARS is a long-range tactical surveillance platform deployed for unmanned perimeter protection, search-and-rescue support, and real-time multi-spectral target tracking. The system integrates advanced propulsion, dynamic obstacle avoidance, satellite-backed mesh telecommunication networks, and high-performance edge compute platforms capable of processing onboard computer vision pipelines.
+
+\begin{table}[htbp]
+\centering
+\caption{M-ARS Subsystem Overview and Interfaces}
+\label{tab:system_chars}
+\small
+\begin{tabularx}{\textwidth}{l p{5cm} X}
+\toprule
+\textbf{Subsystem} & \textbf{Component Specifications} & \textbf{Key Integration Interface} \\
+\midrule
+Airframe \& Propulsion & Hybrid electric quad-rotor with vertical takeoff and carbon fiber body & Nexa Core Flight Controller \\
+Sensor Payload & Multi-spectral thermal, lidar, and high-definition electro-optical gimbal & Synapse Image Processing Unit \\
+Communications & Secured tactical satellite uplink and peer-to-peer RF mesh & Vertex Unified Encryption Module \\
+Onboard Compute & Dual-redundant low-latency tensor processing unit & Meridian Data Integration Bus \\
+Power Subsystem & 48V Solid-state high-density lithium polymer battery cells & Nimbus Power Management System \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Program Organization}
+The M-ARS engineering team is structured to support concurrent engineering practices. Nexa Defense Systems leads the overall systems integration and flight control software, while Vertex Aerospace manages airframe manufacturing and aeromechanics. Synapse Technologies delivers the advanced sensor payload and onboard machine learning models.
+
+% --- SECTION 2 ---
+\section{Systems Engineering Process}
+
+\subsection{Engineering Lifecycle Model}
+The M-ARS program utilizes a tailored systems engineering V-model (Figure 1). This structure guarantees that validation criteria are established early during requirements analysis and verification activities are planned in parallel with detailed design, minimizing integration risks.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    scale=0.8,
+    every node/.style={font=\sffamily\scriptsize, align=center},
+    phase/.style={rectangle, draw=SteelBlue, fill=WarmBg, rounded corners=3pt, thick, minimum width=2.5cm, minimum height=1cm, text=NavyBlue},
+    arrow/.style={-latex, thick, NavyBlue},
+    dashedarrow/.style={-latex, dashed, thick, OrangeAccent}
+]
+    % Left side of V
+    \node (n1) [phase] at (0,4) {1. Mission Needs\\ \& Concept};
+    \node (n2) [phase] at (1.5,2.5) {2. Requirements\\ Analysis};
+    \node (n3) [phase] at (3.0,1.0) {3. Architectural\\ Design};
+    
+    % Bottom of V
+    \node (n4) [phase] at (4.5,-0.5) {4. HW/SW\\ Implementation};
+    
+    % Right side of V
+    \node (n5) [phase] at (6.0,1.0) {5. Component\\ Verification};
+    \node (n6) [phase] at (7.5,2.5) {6. System\\ Integration \& Test};
+    \node (n7) [phase] at (9.0,4) {7. Operations\\ \& Maintenance};
+    
+    % V arrows
+    \draw [arrow] (n1) -- (n2);
+    \draw [arrow] (n2) -- (n3);
+    \draw [arrow] (n3) -- (n4);
+    \draw [arrow] (n4) -- (n5);
+    \draw [arrow] (n5) -- (n6);
+    \draw [arrow] (n6) -- (n7);
+    
+    % Horizontal verification arrows
+    \draw [dashedarrow] (n3) -- (n5) node[midway, above] {Integration Plan};
+    \draw [dashedarrow] (n2) -- (n6) node[midway, above] {Verification Criteria};
+    \draw [dashedarrow] (n1) -- (n7) node[midway, above] {Validation Plan};
+\end{tikzpicture}
+\caption{M-ARS Systems Engineering Lifecycle V-Model}
+\label{fig:vmodel}
+\end{figure}
+
+\subsection{Requirements Management \& Traceability}
+All system and subsystem requirements are captured and managed within the Vertex Traceability Database. To ensure successful execution, requirements must be traced bidirectionally from user needs to physical architectures and verify that each requirement maps to at least one system verification test procedure.
+
+Key system requirements include:
+\begin{enumerate}[label=\lbrack REQ-\arabic*\rbrack, noitemsep, topsep=3pt]
+  \item The M-ARS platform shall operate autonomously for a minimum duration of 180 minutes under nominal payload load.
+  \item The onboard compute suite shall process sensor feeds with target detection latency not exceeding 50 milliseconds.
+  \item All external communications shall be encrypted using the AES-256 standard via the Vertex module.
+\end{enumerate}
+
+\subsection{Technical Reviews and Milestones}
+A series of formal technical reviews will be conducted to assess design maturity and mitigate development risk:
+\begin{itemize}[noitemsep, topsep=3pt]
+  \item \textbf{System Requirements Review (SRR):} Validates that user needs are properly translated into engineering requirements and that the project scope is baselined.
+  \item \textbf{Preliminary Design Review (PDR):} Verifies that the allocated baseline is mature enough to proceed with detailed subsystem designs and interface controls.
+  \item \textbf{Critical Design Review (CDR):} Determines if the detailed design satisfies performance metrics and establishes the product baseline for manufacturing.
+  \item \textbf{Test Readiness Review (TRR):} Assesses the completeness of test procedures, test environments, and calibration rigs prior to formal verification.
+\end{itemize}
+
+% --- SECTION 3 ---
+\section{Technical Planning and Controls}
+
+\subsection{Technical Risk Management}
+Technical risks are identified, analyzed, and mitigated continuously. The Systems Engineering Review Board maintains a risk register, prioritizing items based on their likelihood and impact on program cost, schedule, or safety.
+
+\begin{table}[htbp]
+\centering
+\caption{Key Technical Risks and Mitigation Strategies}
+\label{tab:risk_matrix}
+\small
+\begin{tabularx}{\textwidth}{l c c X}
+\toprule
+\textbf{Risk Description} & \textbf{Likelihood} & \textbf{Impact} & \textbf{Mitigation Strategy} \\
+\midrule
+Power budget exceedance & Medium & High & Utilize Nimbus dynamic power gating and solid-state cell testing. \\
+Thermal dissipation of GPU & High & Medium & Design optimized active airflow ducting in the airframe canopy. \\
+Satellite link latency drift & Low & High & Implement dual-satellite mesh transceiver routing with automatic fallback. \\
+Sensor sync drift under vibration & Medium & Medium & Install active dampening mounts and hardware-level time synchronization. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Configuration Management}
+The program operates under strict Configuration Management (CM) guidelines. Baselines are established at the conclusion of each major review (SRR, PDR, CDR). Any change to an established baseline requires a formal Engineering Change Proposal (ECP) approved by the Joint Configuration Control Board (CCB), which is chaired by the Lead Systems Engineer.
+
+\subsection{Interface Management}
+With components divided among Nexa, Vertex, and Synapse, interface management is a critical technical control. All physical, electrical, and data interfaces are documented in official Interface Control Documents (ICDs). Interface status is tracked weekly, and any modification to an ICD requires joint approval from all three lead engineering organizations.
+
+\section{Approval and Sign-off}
+This document has been reviewed and approved by the key technical stakeholders:
+
+\vspace{0.4cm}
+\noindent
+\begin{tabularx}{\textwidth}{X X l}
+\toprule
+\textbf{Role \& Organization} & \textbf{Signature} & \textbf{Date} \\
+\midrule
+Dr. Helen Vance \newline Chief Systems Engineer, Nexa & & \\
+\midrule
+Marcus Sterling \newline Program Director, Vertex & & \\
+\midrule
+Sarah Chen \newline QA Director, Synapse & & \\
+\bottomrule
+\end{tabularx}
+
+\end{document}

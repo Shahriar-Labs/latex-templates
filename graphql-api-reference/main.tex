@@ -1,0 +1,379 @@
+\documentclass[10pt]{article}
+
+\usepackage[paperwidth=210mm,paperheight=297mm,top=20mm,bottom=22mm,left=20mm,right=20mm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usepackage{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{ragged2e}
+
+\tcbuselibrary{skins,breakable}
+
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds}
+
+\definecolor{primary}{HTML}{1B1B3A}
+\definecolor{accent}{HTML}{E63946}
+\definecolor{secondary}{HTML}{2B4C7E}
+\definecolor{codebg}{HTML}{F0F0F5}
+\definecolor{codelight}{HTML}{FAFAFD}
+\definecolor{textgray}{HTML}{555566}
+\definecolor{tablehead}{HTML}{1B1B3A}
+\definecolor{rulecolor}{HTML}{CCCCDD}
+
+\hypersetup{colorlinks=true,linkcolor=secondary,urlcolor=accent}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\color{primary}\bfseries NEXA API~~\textbar~~GraphQL Reference v2.4.1}
+\fancyhead[R]{\footnotesize\color{textgray}\faGlobe\;\;api.nexaplatform.com/docs}
+\fancyfoot[C]{\footnotesize\color{textgray}\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\headrule}{\vskip 2pt\hrule width\headwidth height\headrulewidth\color{rulecolor}}
+\setlength{\footskip}{14pt}
+\setlength{\headheight}{16pt}
+
+\newtcolorbox{schemabox}{
+  colback=codelight,colframe=secondary,boxrule=0.5pt,arc=2pt,
+  left=6pt,right=6pt,top=6pt,bottom=6pt,
+  fontupper=\ttfamily\scriptsize,breakable,enhanced,
+  colbacktitle=secondary,
+  title style={fontupper=\bfseries\small\color{white}},
+}
+
+\newtcolorbox{querybox}{
+  colback=codelight,colframe=accent,boxrule=0.5pt,arc=2pt,
+  left=6pt,right=6pt,top=6pt,bottom=6pt,
+  fontupper=\ttfamily\scriptsize,breakable,enhanced,
+  colbacktitle=accent,
+  title style={fontupper=\bfseries\small\color{white}},
+}
+
+\newtcolorbox{responsebox}{
+  colback=codelight,colframe=textgray,boxrule=0.5pt,arc=2pt,
+  left=6pt,right=6pt,top=6pt,bottom=6pt,
+  fontupper=\ttfamily\scriptsize,breakable,enhanced,
+  colbacktitle=textgray,
+  title style={fontupper=\bfseries\small\color{white}},
+}
+
+\newtcolorbox{notebox}{
+  colback=codebg,colframe=accent,boxrule=0.3pt,arc=2pt,
+  left=8pt,right=8pt,top=5pt,bottom=5pt,
+  fontupper=\small,breakable,enhanced,
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlist[itemize]{leftmargin=*,nosep}
+\setlist[description]{leftmargin=*,nosep,font=\bfseries\color{primary}}
+
+\begin{document}
+
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[primary] (current page.north west) rectangle ([yshift=-54pt]current page.north east);
+  \node[anchor=north west,text=white] at ([xshift=20mm,yshift=-16pt]current page.north west) {%
+    {\Large\bfseries Nexa Platform API}\\[1pt]
+    {\footnotesize GraphQL Reference~~\textbar~~v2.4.1}
+  };
+\end{tikzpicture}
+
+\vspace*{48pt}
+
+\section*{Overview}
+
+The Nexa Platform API is a read-only GraphQL endpoint for querying projects, teams, tasks, and workspace metadata. All requests are served over HTTPS from a single endpoint. Authentication uses bearer tokens scoped to a workspace with the permissions of the issuing user.
+
+\vspace{4pt}
+\begin{schemabox}[title=Endpoint]
+POST  https://api.nexaplatform.com/v2/graphql
+\end{schemabox}
+
+\vspace{6pt}
+
+\begin{minipage}{0.48\textwidth}
+  \begin{notebox}
+  {\faLock\;\small\textbf{Authorization}}\\
+  \texttt{\footnotesize Bearer nx\_pat\_a1b2c3d4e5f6g7h8i9j0}
+  \end{notebox}
+\end{minipage}%
+\hfill%
+\begin{minipage}{0.48\textwidth}
+  \begin{notebox}
+  {\faExclamationTriangle\;\small\textbf{Rate Limit}}\\
+  \texttt{\footnotesize 2000\ points/hour per token}
+  \end{notebox}
+\end{minipage}
+\par
+
+\section*{Core Types}
+
+\subsection*{Project and Task}
+
+\begin{schemabox}[title=Project \& Task Type Definitions]
+type Project \{\\
+\quad id:           ID!\\
+\quad name:         String!\\
+\quad slug:         String!\\
+\quad description:  String\\
+\quad team:         Team!\\
+\quad tasks(\\
+\qquad first:   Int\\
+\qquad after:   String\\
+\qquad status:  TaskStatus\\
+\quad ):            TaskConnection!\\
+\quad createdAt:    DateTime!\\
+\quad updatedAt:    DateTime!\\
+\quad archivedAt:   DateTime\\
+\}\\[2pt]
+enum TaskStatus \{ BACKLOG, TODO, IN\_PROGRESS, IN\_REVIEW, DONE, CANCELLED \}\\[2pt]
+enum TaskPriority \{ P0, P1, P2, P3 \}\\[2pt]
+type Task \{\\
+\quad id:            ID!\\
+\quad title:         String!\\
+\quad description:   String\\
+\quad status:        TaskStatus!\\
+\quad priority:      TaskPriority!\\
+\quad assignee:      User\\
+\quad project:       Project!\\
+\quad labels:        [String!]!\\
+\quad dueDate:       Date\\
+\quad createdAt:     DateTime!\\
+\quad updatedAt:     DateTime!\\
+\}
+\end{schemabox}
+
+\subsection*{User, Team, and Connections}
+
+\begin{schemabox}[title=Supporting Types]
+type User \{ id: ID!,  username: String!,  email: String!,  avatarUrl: String,  role: Role! \}\\[1pt]
+enum Role \{ ADMIN, MEMBER, VIEWER \}\\[1pt]
+type Team \{ id: ID!, name: String!, description: String, members(first: Int, after: String): UserConnection!, projects(first: Int, after: String): ProjectConnection!, createdAt: DateTime! \}\\[1pt]
+type PageInfo \{ endCursor: String, hasNextPage: Boolean!, hasPreviousPage: Boolean!, startCursor: String \}\\[1pt]
+type TaskConnection     \{ edges: [TaskEdge!]!,     pageInfo: PageInfo!, totalCount: Int! \}\\[1pt]
+type TaskEdge           \{ node: Task!,     cursor: String! \}\\[1pt]
+type UserConnection     \{ edges: [UserEdge!]!,     pageInfo: PageInfo!, totalCount: Int! \}\\[1pt]
+type UserEdge           \{ node: User!,     cursor: String! \}\\[1pt]
+type ProjectConnection  \{ edges: [ProjectEdge!]!,  pageInfo: PageInfo!, totalCount: Int! \}\\[1pt]
+type ProjectEdge        \{ node: Project!,  cursor: String! \}
+\end{schemabox}
+
+\section*{Queries}
+
+\begin{schemabox}[title=Root Query Fields]
+type Query \{\\
+\quad project(slug: String!): Project\\
+\quad projects(first: Int, after: String, teamId: ID, query: String): ProjectConnection!\\
+\quad task(id: ID!): Task\\
+\quad tasks(first: Int, after: String, projectId: ID, status: TaskStatus, priority: TaskPriority, assigneeId: ID, query: String): TaskConnection!\\
+\quad team(id: ID!): Team\\
+\quad teams(first: Int, after: String, query: String): TeamConnection!\\
+\quad viewer: User!\\
+\}
+\end{schemabox}
+
+\subsection*{Fetch a Project by Slug}
+
+Retrieve a project with its team name and the first five in-progress tasks.
+
+\vspace{2pt}
+\begin{querybox}[title=Query: Get Project]
+query GetProject(\$slug: String!) \{\\
+\quad project(slug: \$slug) \{\\
+\qquad id\\
+\qquad name\\
+\qquad description\\
+\qquad team \{ name \}\\
+\qquad tasks(first: 5, status: IN\_PROGRESS) \{\\
+\qquad\quad edges \{ node \{ id, title, priority, assignee \{ username \}, dueDate \} \}\\
+\qquad\quad pageInfo \{ endCursor, hasNextPage \}\\
+\qquad\quad totalCount\\
+\qquad \}\\
+\qquad createdAt\\
+\quad \}\\
+\}\\[2pt]
+Variables: \{ "slug": "meridian-migration" \}
+\end{querybox}
+
+\vspace{4pt}
+
+\begin{responsebox}[title=Response]
+\{\\
+\quad "data": \{\\
+\qquad "project": \{\\
+\qquad\quad "id": "UHJvamVjdC04MjE=",\\
+\qquad\quad "name": "Meridian Migration",\\
+\qquad\quad "description": "Migrate legacy Meridian services to Nimbus infra.",\\
+\qquad\quad "team": \{ "name": "Platform Engineering" \},\\
+\qquad\quad "tasks": \{\\
+\qquad\qquad "edges": [\\
+\qquad\qquad\quad \{ "node": \{ "id": "VGFzay0zMDE=", "title": "Provision Nimbus staging cluster", "priority": "P0", "assignee": \{ "username": "clara.zhou" \}, "dueDate": "2026-08-14" \} \},\\
+\qquad\qquad\quad \{ "node": \{ "id": "VGFzay0zMDI=", "title": "Drain Meridian ingress routes", "priority": "P1", "assignee": \{ "username": "david.park" \}, "dueDate": "2026-08-21" \} \}\\
+\qquad\qquad ],\\
+\qquad\qquad "pageInfo": \{ "endCursor": "Y3Vyc29yOjMwMg==", "hasNextPage": true \},\\
+\qquad\qquad "totalCount": 8\\
+\qquad\quad \},\\
+\qquad\quad "createdAt": "2026-07-01T09:15:00Z"\\
+\qquad \}\\
+\quad \}\\
+\}
+\end{responsebox}
+
+\subsection*{List Teams and Viewer}
+
+\vspace{2pt}
+
+\begin{minipage}{0.48\textwidth}
+  \begin{querybox}[title=Query: List Teams]
+query ListTeams \{\\
+\quad teams(first: 20) \{\\
+\qquad edges \{ node \{\\
+\qquad\quad id\\
+\qquad\quad name\\
+\qquad\quad members(first: 5) \{\\
+\qquad\qquad edges \{ node \{ username, role \} \}\\
+\qquad\qquad totalCount\\
+\qquad\quad \}\\
+\qquad \} \}\\
+\qquad pageInfo \{ endCursor, hasNextPage \}\\
+\quad \}\\
+\}
+  \end{querybox}
+\end{minipage}%
+\hfill%
+\begin{minipage}{0.48\textwidth}
+  \begin{querybox}[title=Query: Current User]
+query Viewer \{\\
+\quad viewer \{\\
+\qquad id\\
+\qquad username\\
+\qquad email\\
+\qquad role\\
+\qquad avatarUrl\\
+\quad \}\\
+\}\\[2pt]
+Response:\\
+\{ "viewer": \{\\
+\quad "id": "VXNlci00Mg==",\\
+\quad "username": "elena.voss",\\
+\quad "email": "elena@vertexlabs.io",\\
+\quad "role": "ADMIN",\\
+\quad "avatarUrl": null \}\\
+\}
+  \end{querybox}
+\end{minipage}
+\par
+
+\section*{Mutations}
+
+Every mutation returns the affected object for single-round-trip reads. Input types follow the naming convention \texttt{*Input} with a corresponding \texttt{*Payload} return type.
+
+\vspace{2pt}
+\begin{schemabox}[title=Mutation Root \& Input Types (Partial)]
+type Mutation \{\\
+\quad createProject(input: CreateProjectInput!): CreateProjectPayload!\\
+\quad updateProject(input: UpdateProjectInput!): UpdateProjectPayload!\\
+\quad archiveProject(id: ID!): ArchiveProjectPayload!\\
+\quad createTask(input: CreateTaskInput!): CreateTaskPayload!\\
+\quad updateTask(input: UpdateTaskInput!): UpdateTaskPayload!\\
+\quad setTaskStatus(id: ID!, status: TaskStatus!): SetTaskStatusPayload!\\
+\}\\[2pt]
+input CreateProjectInput \{ name: String!, teamId: ID!, description: String \}\\
+type CreateProjectPayload \{ project: Project!, clientMutationId: String \}\\[2pt]
+input CreateTaskInput \{ title: String!, projectId: ID!, status: TaskStatus, priority: TaskPriority, assigneeId: ID, labels: [String!], dueDate: Date \}\\
+type CreateTaskPayload \{ task: Task!, clientMutationId: String \}\\[2pt]
+input UpdateTaskInput \{ id: ID!, title: String, description: String, status: TaskStatus, priority: TaskPriority, assigneeId: ID, labels: [String!], dueDate: Date \}\\
+type UpdateTaskPayload \{ task: Task!, clientMutationId: String \}
+\end{schemabox}
+
+\subsection*{Create a Task}
+
+\vspace{2pt}
+\begin{querybox}[title=Mutation: Create Task]
+mutation CreateTask(\$input: CreateTaskInput!) \{\\
+\quad createTask(input: \$input) \{\\
+\qquad task \{ id, title, status, priority, project \{ slug \}, assignee \{ username \} \}\\
+\qquad clientMutationId\\
+\quad \}\\
+\}\\[2pt]
+Variables: \{ "input": \{ "title": "Deploy Vertex auth service to staging", "projectId": "UHJvamVjdC04MjE=", "priority": "P0", "labels": ["infra","auth"], "dueDate": "2026-08-04" \} \}
+\end{querybox}
+
+\vspace{4pt}
+
+\begin{responsebox}[title=Response]
+\{ "data": \{ "createTask": \{ "task": \{ "id": "VGFzay0zMTk=", "title": "Deploy Vertex auth service to staging", "status": "TODO", "priority": "P0", "project": \{ "slug": "meridian-migration" \}, "assignee": null \}, "clientMutationId": null \} \} \}
+\end{responsebox}
+
+\subsection*{Bulk Status Update with Aliases}
+
+Use GraphQL aliases to run multiple mutations in one request.
+
+\vspace{2pt}
+\begin{querybox}[title=Mutation: Bulk Status Update via Aliases]
+mutation BulkStatusUpdate \{\\
+\quad t301: setTaskStatus(id: "VGFzay0zMDE=", status: DONE)       \{ task \{ id, status \} \}\\
+\quad t302: setTaskStatus(id: "VGFzay0zMDI=", status: IN\_REVIEW)  \{ task \{ id, status \} \}\\
+\quad t303: setTaskStatus(id: "VGFzay0zMDM=", status: IN\_PROGRESS) \{ task \{ id, status \} \}\\
+\}
+\end{querybox}
+
+\section*{Scalars and Errors}
+
+\vspace{2pt}
+\renewcommand{\arraystretch}{1.15}
+{\footnotesize
+\begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{0.22\textwidth}>{\RaggedRight\arraybackslash}p{0.30\textwidth}>{\RaggedRight\arraybackslash}X}
+\toprule
+\rowcolor{tablehead}
+\textcolor{white}{\bfseries Scalar} & \textcolor{white}{\bfseries Format} & \textcolor{white}{\bfseries Description} \\
+\midrule
+\texttt{DateTime} & ISO 8601 & UTC timestamp: \texttt{"2026-07-15T14:30:00Z"}\\
+\texttt{Date} & ISO 8601 & Calendar date: \texttt{"2026-08-14"}\\
+\texttt{URL} & String & Absolute URL with scheme\\
+\texttt{JSON} & Object & Arbitrary JSON, validated server-side\\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{8pt}
+\renewcommand{\arraystretch}{1.15}
+{\footnotesize
+\begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{0.26\textwidth}>{\RaggedRight\arraybackslash}p{0.16\textwidth}>{\RaggedRight\arraybackslash}X}
+\toprule
+\rowcolor{tablehead}
+\textcolor{white}{\bfseries Error Code} & \textcolor{white}{\bfseries HTTP} & \textcolor{white}{\bfseries Meaning} \\
+\midrule
+\texttt{UNAUTHENTICATED} & 401 & Missing or invalid bearer token\\
+\texttt{FORBIDDEN} & 403 & Token lacks required scope\\
+\texttt{NOT\_FOUND} & 404 & Resource does not exist\\
+\texttt{VALIDATION\_ERROR} & 400 & Input failed server-side validation\\
+\texttt{RATE\_LIMITED} & 429 & Hourly point budget exceeded\\
+\texttt{INTERNAL} & 500 & Unexpected server error; Nexa on-call alerted\\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{8pt}
+\begin{notebox}
+{\small\textbf{Retry:} For \texttt{RATE\_LIMITED} and \texttt{INTERNAL}, use exponential backoff starting at 1\,s (max 32\,s). All other errors are non-retryable without modifying the request.}
+\end{notebox}
+
+\vfill
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[primary] (current page.south west) rectangle ([yshift=30pt]current page.south east);
+  \node[anchor=south,text=white,font=\footnotesize] at ([yshift=8pt]current page.south) {%
+    Nexa Platform API~~\textbar~~GraphQL v2.4.1~~\textbar~~\faBook\;\;api.nexaplatform.com/docs
+  };
+\end{tikzpicture}
+
+\end{document}

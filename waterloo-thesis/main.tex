@@ -1,0 +1,475 @@
+\documentclass[12pt,letterpaper,twoside]{report}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage[margin=1in,bindingoffset=0.25in]{geometry}
+\usepackage{xcolor}
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{tcolorbox}
+\usepackage{tikz}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{fontawesome5}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{titletoc}
+\usepackage{setspace}
+\usepackage{caption}
+\usepackage[hidelinks]{hyperref}
+\usepackage{parskip}
+
+\definecolor{uwaterlooGold}{RGB}{255,213,79}
+\definecolor{uwaterlooNavy}{RGB}{20,40,80}
+\definecolor{accentBurgundy}{RGB}{128,0,40}
+\definecolor{accentSlate}{RGB}{80,80,100}
+
+\emergencystretch=1em
+\onehalfspacing
+
+\tcbset{
+    colback=accentSlate!5,
+    colframe=uwaterlooNavy,
+    arc=4pt,
+    boxrule=0.8pt,
+    left=12pt,
+    right=12pt,
+    top=10pt,
+    bottom=10pt
+}
+
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+\pagestyle{plain}
+
+\makeatletter
+\renewcommand{\@chapapp}{CHAPTER}
+\makeatother
+
+\titleformat{\chapter}[hang]
+    {\normalfont\LARGE\bfseries\color{uwaterlooNavy}}
+    {\thechapter.\quad}
+    {0pt}
+    {}
+\titlespacing*{\chapter}{0pt}{40pt}{24pt}
+
+\titleformat{\section}
+    {\normalfont\Large\bfseries\color{uwaterlooNavy}}
+    {\thesection\quad}
+    {0pt}
+    {}
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+
+\titleformat{\subsection}
+    {\normalfont\large\bfseries}
+    {\thesubsection\quad}
+    {0pt}
+    {}
+\titlespacing*{\subsection}{0pt}{14pt}{6pt}
+
+\setcounter{tocdepth}{2}
+\dottedcontents{section}[2.5em]{\vspace{4pt}}{2.3em}{4pt}
+\dottedcontents{subsection}[5em]{\small}{2.3em}{4pt}
+
+\newcommand{\tbd}{{\color{red!60!black}\textbf{TBD}}}
+
+\begin{document}
+
+\thispagestyle{empty}
+\begin{center}
+
+\vspace*{36pt}
+
+{\Huge\bfseries\color{uwaterlooNavy} Efficient Resource Allocation in\\[6pt]
+Multi-Tenant Edge Computing\\[6pt]
+Clusters}
+
+\vspace{24pt}
+
+{\Large by}\\[12pt]
+{\Large\bfseries Daniel K. Harrington}
+
+\vspace{36pt}
+
+\begin{tikzpicture}
+    \fill[uwaterlooGold] (0,0) rectangle (\textwidth,1.2pt);
+    \fill[uwaterlooNavy] (0,-3pt) rectangle (\textwidth,1.2pt);
+\end{tikzpicture}
+
+\vspace{28pt}
+
+{\large A thesis}\\[6pt]
+{\large presented to the University of Waterloo}\\[6pt]
+{\large in fulfillment of the}\\[6pt]
+{\large thesis requirement for the degree of}\\[6pt]
+{\large Doctor of Philosophy}\\[6pt]
+{\large in}\\[6pt]
+{\large Computer Science}
+
+\vspace{28pt}
+
+{\large Waterloo, Ontario, Canada, 2026}
+
+\vspace{28pt}
+
+{\raggedright\footnotesize\color{accentSlate}%
+\copyright\ Daniel K. Harrington 2026}
+
+\vspace{16pt}
+
+{\tiny\color{accentSlate}\itshape
+Unofficial template --- not affiliated with or endorsed by the university.%
+\ Sample content only.}
+
+\end{center}
+
+\newpage
+\thispagestyle{empty}
+\vspace*{\fill}
+\begin{center}
+{\large\itshape To my parents, who taught me to ask why.}
+\end{center}
+\vspace*{\fill}
+\newpage
+
+\pagenumbering{roman}
+
+\chapter*{Declaration}
+\addcontentsline{toc}{chapter}{Declaration}
+
+I hereby declare that I am the sole author of this thesis. This is a true copy of the thesis, including any required final revisions, as accepted by my examiners.
+
+I understand that my thesis may be made electronically available to the public.
+
+\vspace{2\baselineskip}
+\noindent This work was carried out under the supervision of\\[6pt]
+\textbf{Dr.~Amara Osei}, Professor of Computer Science,\\[2pt]
+University of Waterloo.
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+The rapid proliferation of edge computing has introduced significant challenges in resource allocation across geographically distributed, multi-tenant clusters. This thesis presents \textbf{EdgeSched}, a novel scheduling framework that combines predictive workload modeling with latency-aware bin packing to achieve efficient resource utilization across heterogeneous edge nodes.
+
+We formulate the multi-tenant edge allocation problem as a constrained optimization in which latency service-level agreements (SLAs), node capacity, and workload colocation interference are jointly modeled. Drawing on techniques from stochastic optimization and online algorithms, we prove that EdgeSched achieves a competitive ratio of \(O(\log n)\) under adversarial workloads, while maintaining sub-millisecond scheduling latency on commodity hardware.
+
+The framework is evaluated on a 64-node edge cluster running representative workloads drawn from video analytics, IoT stream processing, and inference serving. EdgeSched reduces tail latency by up to 42\% and improves aggregate node utilization by 31\% compared to state-of-the-art schedulers, all while respecting per-tenant isolation guarantees. We further demonstrate the system's robustness under node failures and dynamic workload reshuffling.
+
+These results establish EdgeSched as a practical foundation for resource management in next-generation edge infrastructure, with implications for 5G services, autonomous systems, and large-scale IoT deployments.
+
+\vspace{\baselineskip}
+\noindent\textbf{Keywords:} edge computing, resource allocation, scheduling, multi-tenancy, optimization
+
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+
+I am deeply grateful to my supervisor, Dr.~Amara Osei, whose patience, insight, and unwavering belief in this work made it possible. Her ability to see the forest when I was lost among the trees is a gift I will carry with me.
+
+I thank the members of my examining committee --- Dr.~Priya Malhotra, Dr.~James Whitfield, Dr.~Lena Kovacs, and Dr.~Toshiro Yamamoto --- for their thoughtful questions and generous engagement with this research.
+
+My colleagues in the Distributed Systems Lab at Waterloo transformed the long hours into something approaching joy. Special thanks to Sarah Chen for the late-night debugging sessions that sometimes produced code and always produced friendship.
+
+Funding for this research was provided by the Natural Sciences and Engineering Research Council of Canada (NSERC), the Ontario Graduate Scholarship program, and a research grant from Nimbus Computing. The compute infrastructure was generously provided by Vertex Cloud Services.
+
+Finally, my family. Thank you for everything.
+
+\newpage
+
+\tableofcontents
+\newpage
+\listoffigures
+\newpage
+\listoftables
+\newpage
+
+\pagenumbering{arabic}
+
+\chapter{Introduction}
+
+\section{Motivation and Problem Statement}
+
+The shift toward edge computing represents one of the most significant architectural transitions in distributed systems since the advent of cloud computing \cite{talwar2019}. By moving computation closer to data sources, edge architectures promise reduced latency, decreased bandwidth costs, and improved privacy guarantees. However, these benefits come at a cost: edge nodes are resource-constrained, heterogeneous, and geographically dispersed, making efficient resource allocation a fundamentally harder problem than in centralized cloud environments.
+
+Consider a representative deployment scenario: a metropolitan 5G network operator deploys 64 edge nodes across 12 locations to serve video analytics, IoT stream processing, and inference workloads from multiple tenants. Each tenant specifies latency SLAs, throughput requirements, and isolation constraints. The operator's objective is to maximize aggregate utilization while satisfying all tenant contracts --- a problem we call \textit{multi-tenant edge-aware placement} (MTEAP).
+
+\begin{tcolorbox}[colback=uwaterlooGold!10,colframe=uwaterlooGold!60,title=\textbf{Key Insight}]
+Existing schedulers treat edge nodes as interchangeable commodity units. In practice, edge heterogeneity --- differences in GPU availability, memory bandwidth, and network topology --- creates placement asymmetries that, when exploited correctly, unlock substantial efficiency gains.
+\end{tcolorbox}
+
+\section{Thesis Contributions}
+
+This thesis makes the following contributions:
+
+\begin{enumerate}[leftmargin=*,itemsep=6pt]
+    \item \textbf{EdgeSched Framework.} We design and implement a modular scheduling architecture that separates workload characterization, node profiling, and placement optimization into independent, composable stages.
+
+    \item \textbf{Competitive Analysis.} We provide the first formal competitive analysis of multi-tenant edge scheduling, proving an \(O(\log n)\) competitive ratio for the EdgeSched online algorithm under adversarial workload sequences.
+
+    \item \textbf{Colocation-Aware Packing.} We introduce \textit{interference affinity matrices}, a lightweight method for predicting performance degradation when workloads share compute and memory resources on a single edge node.
+
+    \item \textbf{System Evaluation.} We evaluate EdgeSched on a 64-node physical testbed using production-derived workload traces, demonstrating significant improvements over Kubernetes default scheduler, FIRMAMENT~\cite{gog2016}, and Poseidon~\cite{gupta2021}.
+
+\end{enumerate}
+
+\section{Thesis Organization}
+
+The remainder of this thesis is organized as follows. Chapter~\ref{ch:background} surveys background and related work in scheduling, edge computing, and resource allocation. Chapter~\ref{ch:model} develops the formal model for MTEAP and proves key structural properties. Chapter~\ref{ch:edgesched} presents the EdgeSched architecture and algorithms in detail. Chapter~\ref{ch:eval} describes the evaluation methodology and results. Chapter~\ref{ch:conclusion} concludes with a summary of contributions and directions for future work.
+
+\chapter{Background and Related Work}\label{ch:background}
+
+\section{Edge Computing Landscape}
+
+Edge computing sits between the device layer (sensors, mobile phones, IoT endpoints) and the cloud layer (centralized data centers). Edge nodes in a production environment are heterogeneous: a roadside unit might have a single x86 CPU and no GPU, while an edge micro-datacenter might feature multiple GPUs and terabytes of NVMe storage. Designing schedulers that work across this heterogeneity spectrum is the central challenge addressed in this thesis.
+
+\section{Resource Allocation in Distributed Systems}
+
+\begin{table}[htbp]
+\centering
+\caption{Comparison of resource allocation strategies across deployment tiers.}
+\label{tab:comparison}
+\begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Strategy} & \textbf{Cloud} & \textbf{Edge} & \textbf{This Work} \\
+\midrule
+Scheduling Granularity & VM / Container & Pod / Function & Pod + Colocation Group \\
+Heterogeneity Handling & None assumed & Ad-hoc & First-class, profiled \\
+Latency Target & \textless 100 ms & \textless 10 ms & \textless 1 ms scheduling overhead \\
+Colocation Model & Bin-packing & Not modeled & Interference affinity matrix \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:comparison} positions this work relative to cloud and existing edge allocation strategies. The key differentiator is the \textit{interference affinity matrix}, which we introduce in Chapter~\ref{ch:model}.
+
+\section{Limitations of Prior Approaches}
+
+Kubernetes, the dominant container orchestration platform, provides a default scheduler that scores nodes via a weighted sum of resource availability predicates. This approach struggles with edge deployments for three reasons: it assumes homogeneous nodes, it ignores workload colocation effects, and its scheduling overhead becomes significant at the sub-millisecond latency targets required by edge applications.
+
+\begin{tcolorbox}[colback=accentBurgundy!5,colframe=accentBurgundy!50,title=\textbf{Limitation}]
+The Kubernetes default scheduler makes placement decisions node-by-node, evaluating every candidate. For a cluster with \(n\) nodes and \(m\) pending pods, this yields \(O(n m)\) complexity --- acceptable in cloud datacenters, prohibitive at edge scale where \(n\) can reach thousands across metro deployments.
+\end{tcolorbox}
+
+Recent academic schedulers --- FIRMAMENT~\cite{gog2016}, YARN~\cite{vavilapalli2013}, and Apollo~\cite{boutin2014} --- address some of these issues but still operate under cloud-scale assumptions. None model multi-tenant isolation as a first-class constraint, and none account for interference between colocated workloads on resource-constrained edge hardware.
+
+\chapter{Formal Model}\label{ch:model}
+
+\section{System Model}
+
+We model an edge cluster as a set of \(M\) heterogeneous nodes
+\(\mathcal{N} = \{n_1, n_2, \ldots, n_M\}\),
+each characterized by a capacity vector
+\(\mathbf{c}_i \in \mathbb{R}^d\) where \(d\) denotes the number of resource dimensions
+(CPU cores, memory GiB, GPU fraction, network bandwidth Mbps).
+
+\vspace{6pt}
+A workload \(W\) is defined by a tuple
+\((\mathbf{r}, \ell, \tau, \sigma)\) where:
+\begin{itemize}[leftmargin=2em,itemsep=2pt]
+    \item \(\mathbf{r} \in \mathbb{R}^d\) is the resource demand vector.
+    \item \(\ell\) is the maximum tolerable latency (SLA), in milliseconds.
+    \item \(\tau\) is the workload type (video analytics, stream processing, inference, batch).
+    \item \(\sigma\) is the estimated throughput, in requests per second.
+\end{itemize}
+
+\section{Interference Affinity Matrices}
+
+A core contribution of this work is the \textit{interference affinity matrix} (IAM), which quantifies the performance degradation experienced when two workloads are colocated on the same node.
+
+\vspace{6pt}
+For workload types \(\tau_i, \tau_j\), the affinity coefficient
+\(a_{ij} \in [0, 1]\) represents the fraction of peak throughput retained when both run on a single node:
+
+\[
+a_{ij} = \frac{\text{Throughput}_{\tau_i}^{\text{colocated}}}
+               {\text{Throughput}_{\tau_i}^{\text{dedicated}}}
+\]
+
+\begin{table}[htbp]
+\centering
+\caption{Measured interference affinity coefficients (mean across 64 edge nodes). Lower values indicate stronger interference.}
+\label{tab:iam}
+\begin{tabularx}{\textwidth}{l*{4}{>{\centering\arraybackslash}X}}
+\toprule
+& \textbf{Video} & \textbf{Stream} & \textbf{Inference} & \textbf{Batch} \\
+\midrule
+\textbf{Video Analytics}  & 0.92 & 0.71 & 0.63 & 0.88 \\{}
+\textbf{Stream Processing} & 0.71 & 0.95 & 0.58 & 0.91 \\{}
+\textbf{Inference Serving} & 0.63 & 0.58 & 0.89 & 0.52 \\{}
+\textbf{Batch Processing}  & 0.88 & 0.91 & 0.52 & 0.96 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The IAM values in Table~\ref{tab:iam} reveal a key insight: \textbf{inference workloads} suffer the most from colocation, particularly when paired with batch processing (affinity 0.52). This finding motivates dedicated inference partitions, a design choice we implement in Chapter~\ref{ch:edgesched}.
+
+\chapter{EdgeSched Architecture}\label{ch:edgesched}
+
+\section{System Overview}
+
+EdgeSched is organized as a pipeline of three stages:
+
+\begin{tcolorbox}[colback=accentSlate!8,colframe=accentSlate!50,title=\textbf{Stage 1: Profiling},coltitle=white,colbacktitle=accentSlate]
+Lightweight agents on each edge node periodically measure resource availability (CPU, memory, GPU, network) and report a compact \textbf{NodeCapability} vector to the scheduler. This profiling runs with \textless 0.1\% CPU overhead on production nodes.
+\end{tcolorbox}
+
+\vspace{8pt}
+\begin{tcolorbox}[colback=accentSlate!8,colframe=accentSlate!50,title=\textbf{Stage 2: Workload Classification},coltitle=white,colbacktitle=accentSlate]
+Incoming workloads are classified by type using a lightweight classifier trained on historical traces. The classifier outputs a resource demand vector \(\mathbf{r}\) and a type label \(\tau\) used for IAM lookup.
+\end{tcolorbox}
+
+\vspace{8pt}
+\begin{tcolorbox}[colback=accentSlate!8,colframe=accentSlate!50,title=\textbf{Stage 3: Placement Optimization},coltitle=white,colbacktitle=accentSlate]
+A constraint-solving layer assigns workloads to nodes, maximizing utilization while respecting capacity limits, SLA constraints, and IAM-based colocation penalties. The solver uses an online greedy algorithm with worst-case guarantee \(O(\log n)\).
+\end{tcolorbox}
+
+\section{Placement Algorithm}
+
+\vspace{6pt}
+Algorithm~\ref{alg:placement} describes the core online scheduling loop.
+
+\begin{tcolorbox}[colback=white,colframe=uwaterlooNavy,title={\textbf{Algorithm 1:} EdgeSched Online Placement}]
+\label{alg:placement}
+\textbf{Input:} Pending workload \(W = (\mathbf{r}, \ell, \tau, \sigma)\)\\
+\textbf{Input:} Node set \(\mathcal{N}\) with current allocations \(\mathcal{A}\)\\
+\textbf{Output:} Target node \(n^*\) or reject
+\vspace{4pt}
+\begin{enumerate}[leftmargin=*,nosep]
+    \item Candidate set \(\mathcal{C} \leftarrow \{n \in \mathcal{N} \mid \mathbf{c}_n - \sum_{w \in \mathcal{A}_n} \mathbf{r}_w \geq \mathbf{r}\}\)
+    \item \textbf{if} \(\mathcal{C} = \emptyset\) \textbf{then return} reject
+    \item For each \(n \in \mathcal{C}\), compute score
+          \(s_n = \text{util}(n) + \lambda \cdot \text{colocatePenalty}(n, W)\)
+    \item Select \(n^* = \arg\min_{n \in \mathcal{C}} \, s_n\)
+    \item \textbf{return} \(n^*\)
+\end{enumerate}
+\vspace{4pt}
+{\small The parameter \(\lambda \in [0, 1]\) trades off utilization against colocation penalty. Higher \(\lambda\) favors dedicated nodes for sensitive workloads.}
+\end{tcolorbox}
+
+\vspace{6pt}
+The colocation penalty function uses the IAM:
+
+\[
+\text{colocatePenalty}(n, W) =
+\frac{1}{|\mathcal{A}_n|} \sum_{w \in \mathcal{A}_n} (1 - a_{\tau_w, \tau})
+\]
+
+This formulation penalizes nodes that already host workloads with high interference affinity against the incoming workload --- effectively implementing soft anti-affinity without the rigidity of hard constraints.
+
+\chapter{Evaluation}\label{ch:eval}
+
+\section{Experimental Setup}
+
+\subsection{Hardware Configuration}
+
+The testbed consists of 64 heterogeneous edge nodes distributed across four racks, summarized in Table~\ref{tab:nodes}. All nodes run Ubuntu 22.04 LTS with kernel 6.5 and Docker 24.0.
+
+\begin{table}[htbp]
+\centering
+\caption{Edge cluster node configuration.}
+\label{tab:nodes}
+\begin{tabularx}{\textwidth}{l*{3}{>{\centering\arraybackslash}X}}
+\toprule
+\textbf{Tier} & \textbf{Count} & \textbf{CPU} & \textbf{Memory} \\
+\midrule
+Standard & 36 & 8-core x86 & 32 GB \\{}
+GPU-Enhanced & 16 & 12-core + NVIDIA T4 & 64 GB \\{}
+High-Memory & 12 & 16-core & 128 GB \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Workload Traces}
+
+We use three workload profiles derived from production traces at Vertex Cloud Services, sanitized and released for academic use:
+
+\begin{itemize}[leftmargin=*,itemsep=4pt]
+    \item \textbf{Video Analytics Pipeline.} 480p and 720p streams processed through object detection (YOLO-style) and frame differencing. Target latency: 50~ms per frame.
+    \item \textbf{IoT Stream Aggregation.} Time-series window aggregation (median, percentile, anomaly score) over sensor streams at ingress rates up to 10\,000 events per second per node.
+    \item \textbf{Inference Serving.} Bert-medium and ResNet-50 serving behind a load balancer, with Poisson arrival at mean 200 queries per second.
+\end{itemize}
+
+\section{Results}
+
+\subsection{Tail Latency Reduction}
+
+Figure~\ref{fig:latency} would show the cumulative distribution of end-to-end request latency across all workloads. EdgeSched reduces the 99th-percentile latency by 42\% compared to the Kubernetes default scheduler and by 27\% compared to FIRMAMENT.
+
+\subsection{Node Utilization}
+
+\begin{table}[htbp]
+\centering
+\caption{Aggregate node utilization across schedulers (mean over 24-hour traces).}
+\label{tab:util}
+\begin{tabularx}{\textwidth}{l*{3}{>{\centering\arraybackslash}X}}
+\toprule
+\textbf{Scheduler} & \textbf{CPU Util.} & \textbf{Mem Util.} & \textbf{GPU Util.} \\
+\midrule
+Kubernetes Default & 47.2\% & 52.8\% & 31.4\% \\{}
+FIRMAMENT \cite{gog2016} & 58.9\% & 61.5\% & 44.7\% \\{}
+EdgeSched            & \textbf{73.4\%} & \textbf{78.1\%} & \textbf{67.2\%} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:util} confirms that EdgeSched achieves the highest utilization across all resource dimensions. The GPU utilization improvement is particularly significant --- a 2.14$\times$ increase over the Kubernetes baseline --- because the IAM-aware placement avoids colocating GPU-sensitive workloads.
+
+\begin{tcolorbox}[colback=accentBurgundy!8,colframe=accentBurgundy!60,title=\textbf{Statistical Significance}]
+All reported improvements are statistically significant at \(p < 0.01\) using a two-tailed Student's \(t\)-test over 10 independent 24-hour trial runs, each with randomized workload arrival order.
+\end{tcolorbox}
+
+\chapter{Conclusion and Future Work}\label{ch:conclusion}
+
+\section{Summary of Contributions}
+
+This thesis introduced EdgeSched, a resource allocation framework for multi-tenant edge computing clusters that addresses the fundamental tension between utilization, latency, and isolation. We formalized the multi-tenant edge-aware placement problem (MTEAP), introduced the interference affinity matrix as a lightweight mechanism for modeling colocation effects, and provided competitive analysis proving an \(O(\log n)\) guarantee for the online scheduling algorithm. Evaluation on a 64-node physical testbed demonstrated tail-latency reductions of up to 42\% and utilization improvements of up to 31\% over state-of-the-art alternatives.
+
+\section{Future Directions}
+
+Several avenues remain open for investigation:
+
+\begin{enumerate}[leftmargin=*,itemsep=6pt]
+    \item \textbf{Learned IAM.} The interference affinity matrix is currently profiled offline. Online learning of IAM coefficients from production traces would enable adaptation to workload drift and novel workload types.
+
+    \item \textbf{Federated Edge Scheduling.} This work assumes a single scheduling domain. Hierarchical and federated scheduling across multiple edge domains (e.g., across cell towers owned by different operators) requires distributed consensus mechanisms.
+
+    \item \textbf{Integration with Serverless.} Serverless edge platforms such as Cloudflare Workers and AWS Lambda@Edge introduce cold-start and invocation-pattern considerations that the current model does not capture.
+
+    \item \textbf{Sustainability-Aware Placement.} Incorporating carbon intensity signals into scheduling decisions would allow edge operators to shift workloads temporally and spatially toward cleaner energy sources.
+\end{enumerate}
+
+The journey from cloud to edge is accelerating. Efficient scheduling is the quiet infrastructure that determines whether that journey succeeds. This thesis offers one piece of that foundation.
+
+\begin{thebibliography}{99}
+
+\bibitem{talwar2019}
+K.~Talwar, M.~Patel, and R.~Iyer,
+``Edge computing: A taxonomy and survey,''
+\textit{IEEE Communications Surveys \& Tutorials}, vol.~21, no.~4, pp.~3496--3537, 2019.
+
+\bibitem{gog2016}
+I.~Gog, M.~Schwarzkopf, A.~Gleave, R.~N.~M.~Watson, and S.~Hand,
+``Firmament: Fast, centralized cluster scheduling at scale,''
+in \textit{Proc. USENIX OSDI}, 2016, pp.~99--115.
+
+\bibitem{gupta2021}
+A.~Gupta, N.~Sharma, and P.~Kumar,
+``Poseidon: Latency-aware scheduling for geo-distributed edge clusters,''
+in \textit{Proc. ACM SoCC}, 2021, pp.~201--215.
+
+\bibitem{vavilapalli2013}
+V.~K.~Vavilapalli \textit{et al.},
+``Apache Hadoop YARN: Yet another resource negotiator,''
+in \textit{Proc. ACM SoCC}, 2013, pp.~1--16.
+
+\bibitem{boutin2014}
+E.~Boutin \textit{et al.},
+``Apollo: Scalable and coordinated scheduling for cloud-scale computing,''
+in \textit{Proc. USENIX OSDI}, 2014, pp.~285--300.
+
+\end{thebibliography}
+
+\end{document}

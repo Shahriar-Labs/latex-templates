@@ -1,0 +1,321 @@
+\documentclass[11pt,a4paper]{article}
+
+% Core Packages
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[most]{tcolorbox}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{fontawesome5}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{microtype}
+
+% Font Setup: Charter for body, Helvetica for headings, Inconsolata for code
+\usepackage{charter}
+\usepackage[scaled=0.92]{helvet}
+\usepackage{inconsolata}
+
+% TikZ Libraries
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds,patterns}
+
+% Document Geometry
+\geometry{
+  left=2.2cm,
+  right=2.2cm,
+  top=2.5cm,
+  bottom=2.5cm,
+  headheight=15pt,
+  headsep=20pt,
+  footskip=20pt
+}
+
+% Color Definitions (No trailing spaces inside braces)
+\definecolor{primary}{HTML}{0F172A}
+\definecolor{secondary}{HTML}{2563EB}
+\definecolor{accent}{HTML}{0D9488}
+\definecolor{darkbg}{HTML}{1E293B}
+\definecolor{lightbg}{HTML}{F8FAFC}
+\definecolor{bordercolor}{HTML}{E2E8F0}
+\definecolor{warningcolor}{HTML}{EA580C}
+
+% Headers & Footers
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\sffamily\small\color{secondary}\textbf{NIMBUS PLATFORM GROUP} \textbar\ System Architecture}
+\fancyhead[R]{\sffamily\small\color{gray}Page \thepage}
+\fancyfoot[L]{\sffamily\tiny\color{gray}CONFIDENTIAL --- INTERNAL SYSTEMS ENGINEERING}
+\fancyfoot[R]{\sffamily\tiny\color{gray}\today}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Section Titles Styling
+\titleformat{\section}
+  {\normalfont\sffamily\Large\bfseries\color{primary}}
+  {\thesection}{1em}{}[{\color{secondary}\titlerule[1.5pt]}]
+\titleformat{\subsection}
+  {\normalfont\sffamily\large\bfseries\color{secondary}}
+  {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\sffamily\normalsize\bfseries\color{accent}}
+  {\thesubsubsection}{1em}{}
+
+% Listings Styling
+\lstset{
+  basicstyle=\ttfamily\small,
+  backgroundcolor=\color{lightbg},
+  frame=single,
+  rulecolor=\color{bordercolor},
+  keywordstyle=\color{secondary}\bfseries,
+  stringstyle=\color{accent},
+  commentstyle=\color{gray},
+  numbers=none,
+  breaklines=true,
+  showstringspaces=false
+}
+
+% TColorBox Custom Callouts
+\newtcolorbox{decision}[1]{
+  colback=lightbg,
+  colframe=secondary,
+  title={\sffamily\bfseries\faCogs\quad #1},
+  arc=4pt,
+  left=12pt,
+  right=12pt,
+  top=10pt,
+  bottom=10pt,
+  boxrule=1.5pt,
+  coltitle=white,
+  fonttitle=\sffamily\bfseries
+}
+
+\newtcolorbox{securityrisk}[1]{
+  colback=lightbg,
+  colframe=warningcolor,
+  title={\sffamily\bfseries\faLock\quad #1},
+  arc=4pt,
+  left=12pt,
+  right=12pt,
+  top=10pt,
+  bottom=10pt,
+  boxrule=1.5pt,
+  coltitle=white,
+  fonttitle=\sffamily\bfseries
+}
+
+% Hyperref (Loaded last)
+\usepackage[hidelinks]{hyperref}
+
+\begin{document}
+
+% Modern Header Banner (No full cover page for compact 3-page tech spec)
+\begin{center}
+  \sffamily
+  \color{primary}
+  {\Huge\bfseries Software Architecture Document}\\[0.3cm]
+  {\large\color{secondary}Nimbus Cloud Platform: Core Service Mesh \& Data Flow Specification}\\[0.6cm]
+\end{center}
+
+% Metadata Block (Exactly 3 & per row for 4 columns)
+\begin{table}[h]
+\centering
+\sffamily\small
+\begin{tabularx}{\linewidth}{|l|X|l|X|}
+\hline
+\rowcolor{lightbg}\textbf{Document ID} & ARCH-VERT-2026 & \textbf{Version} & 2.4.0 \\
+\hline
+\textbf{Classification} & Confidential & \textbf{Status} & Approved \\
+\hline
+\rowcolor{lightbg}\textbf{Author} & Sarah Jenkins & \textbf{Lead Architect} & Marcus Thorne \\
+\hline
+\textbf{Company} & Nimbus Platform Group & \textbf{Date} & July 15, 2026 \\
+\hline
+\end{tabularx}
+\end{table}
+
+\begin{table}[h]
+\centering
+\sffamily\small
+\begin{tabularx}{\linewidth}{|l|X|l|X|}
+\hline
+\rowcolor{lightbg}\textbf{Role} & \textbf{Name} & \textbf{Signature} & \textbf{Date} \\
+\hline
+Reviewer & Elena Rostova (VP Eng) & Approved (E-Sign) & July 12, 2026 \\
+\hline
+\rowcolor{lightbg}Reviewer & David Vance (Sec Ops) & Approved (E-Sign) & July 14, 2026 \\
+\hline
+\end{tabularx}
+\end{table}
+
+\vspace{0.4cm}
+\begin{abstract}
+This document outlines the system architecture for the core service mesh of the Nimbus Cloud Platform. It provides a detailed blueprint of the services managed under the Vertex Engine, detailing routing boundaries, internal state machine flows via the Nexa Gateway, telemetry streaming boundaries, and secure transactional databases managed via Meridian DB. The goal of this architecture is to provide high availability, fault tolerance, and absolute separation of concerns between our data ingress and analytical processing workloads.
+\end{abstract}
+
+\newpage
+
+\section{System Overview \& Architecture Goals}
+The Nimbus Cloud Platform is designed to handle high-throughput, low-latency API transactions. To ensure system resilience under heavy loads, the architecture prioritizes decoupling client-facing boundaries from long-running data analytics pipelines.
+
+\subsection{Key Design Objectives}
+The core engineering team has established three main architectural pillars for this revision:
+\begin{enumerate}[label=\textbf{\lbrack R\arabic*\rbrack}]
+  \item \textbf{Secure Perimeter Isolation}: External API interactions are mediated exclusively through the Nexa Gateway.
+  \item \textbf{Decoupled Event Streaming}: Inter-service operations rely on Nimbus Queue, an active-passive AMQP cluster, avoiding direct REST dependencies for background jobs.
+  \item \textbf{Highly Consistent Transaction State}: Transaction records are handled in Meridian DB using primary write and secondary replication configurations to prevent analytical locks.
+\end{enumerate}
+
+\begin{decision}{AD-01: Architectural Decoupling via Message Broker}
+To maintain a high-performing user experience, the Vertex Core engine publishes events directly to Nimbus Queue instead of invoking Vertex Analytics synchronously. This reduces API response times by up to 85\% and protects transactional workloads from analytical query spikes.
+\end{decision}
+
+\section{Component Architecture}
+The system layout features segregated zones. The DMZ manages public client requests, whereas the Internal VPC handles core business logic and database states.
+
+\subsection{Deployment Topology Diagram}
+The diagram below shows the physical deployment boundaries, protocol layers, and component interconnections:
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=1.6cm and 1.8cm,
+  >=stealth,
+  thick,
+  align=center,
+  client/.style={rectangle, draw=primary, fill=primary!5, minimum width=2.2cm, minimum height=1.1cm, rounded corners=2pt, font=\sffamily\small\bfseries},
+  gateway/.style={rectangle, draw=secondary, fill=secondary!5, minimum width=2.5cm, minimum height=1.1cm, rounded corners=2pt, font=\sffamily\small\bfseries},
+  service/.style={rectangle, draw=accent, fill=accent!5, minimum width=2.5cm, minimum height=1.1cm, rounded corners=2pt, font=\sffamily\small\bfseries},
+  auth/.style={rectangle, draw=warningcolor, fill=warningcolor!5, minimum width=2.5cm, minimum height=1.1cm, rounded corners=2pt, font=\sffamily\small\bfseries},
+  queue/.style={rectangle, draw=darkbg, fill=darkbg!5, minimum width=2.5cm, minimum height=1.1cm, rounded corners=2pt, font=\sffamily\small\bfseries},
+  database/.style={cylinder, draw=primary, fill=primary!10, shape border rotate=90, minimum width=1.6cm, minimum height=1.2cm, font=\sffamily\small\bfseries}
+]
+
+  % Nodes Placement
+  \node (user) [client] {Web / Mobile\\Clients};
+  \node (gate) [gateway, right=of user] {Nexa Gateway\\(API Edge)};
+  \node (auth) [auth, above=of gate] {Synapse Auth\\(IAM / OAuth2)};
+  \node (core) [service, right=of gate] {Vertex Core\\(Transaction)};
+  \node (db) [database, below=of core] {Meridian DB\\(PostgreSQL)};
+  \node (queue) [queue, right=of core] {Nimbus Queue\\(Event Broker)};
+  \node (analytics) [service, below=of queue] {Vertex Analytics\\(Reporting)};
+
+  % Node Connections
+  \draw[->] (user) -- node[above, font=\sffamily\tiny] {HTTPS} (gate);
+  \draw[<->] (gate) -- node[right, font=\sffamily\tiny] {gRPC Auth} (auth);
+  \draw[->] (gate) -- node[above, font=\sffamily\tiny] {gRPC Proxy} (core);
+  \draw[<->] (core) -- node[left, font=\sffamily\tiny] {SQL Write} (db);
+  \draw[->] (core) -- node[above, font=\sffamily\tiny] {AMQP Publish} (queue);
+  \draw[->] (queue) -- node[right, font=\sffamily\tiny] {Consume} (analytics);
+  \draw[->] (analytics) -- node[below, font=\sffamily\tiny] {SQL Read} (db);
+
+  % Visual Boundaries
+  \begin{scope}[on background layer]
+    \draw[draw=gray!30, fill=gray!5, dashed, rounded corners]
+      ($(user.south west)+(-0.3,-0.3)$) rectangle ($(gate.north east)+(0.3,0.3)$);
+    \node[font=\sffamily\tiny\bfseries\color{gray}, anchor=south] at ($(user.north)!0.5!(gate.north)+(0,0.3)$) {DMZ ZONE};
+
+    \draw[draw=secondary!30, fill=secondary!5!white, dashed, rounded corners]
+      ($(auth.north west)+(-0.3,0.3)$) rectangle ($(analytics.south east)+(0.3,-0.3)$);
+    \node[font=\sffamily\tiny\bfseries\color{secondary}, anchor=south] at ($(auth.north east)!0.5!(queue.north)+(0,0.3)$) {SECURE VPC SYSTEMS MESH};
+  \end{scope}
+
+\end{tikzpicture}
+\end{center}
+
+\newpage
+
+\subsection{Service Descriptions}
+The detailed architectural properties, framework frameworks, and scaling methodologies are defined below:
+
+% Table: Component Responsibilities (Exactly 2 & per row for 3 columns)
+\begin{table}[h]
+\centering
+\sffamily\small
+\begin{tabularx}{\linewidth}{|l|p{3.5cm}|X|}
+\hline
+\rowcolor{primary}
+\textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{Fictional Service}} & \textcolor{white}{\textbf{Responsibility \& Scaling Strategy}} \\
+\hline
+API Gateway & Nexa Gateway & Handles ingress traffic, SSL termination, and rate-limiting. Scaled horizontally via auto-scaling groups. \\
+\hline
+\rowcolor{lightbg}
+Auth Provider & Synapse Auth & Validates client credentials and issues tokens. Uses Redis caching for rapid session verification. \\
+\hline
+Core Engine & Vertex Core & Processes transaction logic and coordinates with backends. Uses thread-pool scaling for high throughput. \\
+\hline
+\rowcolor{lightbg}
+Message Broker & Nimbus Queue & Asynchronously broadcasts tasks to background workers. Configured with clustered active-passive failover. \\
+\hline
+Database & Meridian DB & Primary PostgreSQL instance for transactional state persistence. Configured with a hot-standby read replica. \\
+\hline
+\end{tabularx}
+\caption{System Component Matrix}
+\end{table}
+
+\section{Interface Specification (API Endpoints)}
+The system exposes external rest endpoints through Nexa Gateway. The primary endpoints for handling requests are structured as follows:
+
+% Table: API Specification (Exactly 3 & per row for 4 columns)
+\begin{table}[h]
+\centering
+\sffamily\small
+\begin{tabularx}{\linewidth}{|l|l|l|X|}
+\hline
+\rowcolor{primary}
+\textcolor{white}{\textbf{Method}} & \textcolor{white}{\textbf{Endpoint}} & \textcolor{white}{\textbf{Auth}} & \textcolor{white}{\textbf{Description / Response}} \\
+\hline
+\texttt{POST} & \texttt{/v1/auth/token} & None & Authenticates clients via Synapse Auth, issuing short-lived JWT. Returns \texttt{200 OK} with payload. \\
+\hline
+\rowcolor{lightbg}
+\texttt{GET} & \texttt{/v1/telemetry/nodes} & JWT & Fetches node status metrics from Vertex Core. Returns \texttt{200 OK} with JSON node list. \\
+\hline
+\texttt{POST} & \texttt{/v1/jobs/submit} & JWT & Submits process payload to Vertex Core, publishing event to Nimbus Queue. Returns \texttt{202 Accepted}. \\
+\hline
+\rowcolor{lightbg}
+\texttt{GET} & \texttt{/v1/reports/summary} & API Key & Queries Meridian DB via Vertex Analytics for data aggregation. Returns \texttt{200 OK} with report URL. \\
+\hline
+\end{tabularx}
+\caption{Nexa Gateway API Definition}
+\end{table}
+
+\subsection{Sample Transaction Payload}
+Below is the default JSON payload structure submitted to the \texttt{/v1/jobs/submit} endpoint:
+
+\begin{lstlisting}[caption=Transaction Request JSON Payload]
+{
+  "transaction_id": "tx-8890214-vtx",
+  "client_origin": "nexa-web-portal",
+  "timestamp": 1781512080,
+  "payload": {
+    "module": "vertex_billing_engine",
+    "action": "process_invoice",
+    "details": {
+      "account_id": "acc-meridian-9901",
+      "amount_usd": 12450.00,
+      "currency": "USD"
+    }
+  }
+}
+\end{lstlisting}
+
+\section{Security Architecture \& Infrastructure}
+The security structure relies on a zero-trust model internally. Network paths from outer edges to core engines are systematically verified.
+
+\begin{securityrisk}{SEC-02: Rate Limiting \& Session Caching}
+A potential vulnerability exists if Synapse Auth is saturated by rapid token validation calls. To address this, Nexa Gateway caches cryptographic token signatures locally using a secure memory segment with a sliding window of 30 seconds, preventing Auth layer exhaustion.
+\end{securityrisk}
+
+\subsection{Encryption and Protection Standards}
+All system traffic conforms to standard security baselines:
+\begin{itemize}
+  \item \textbf{Data in Transit}: TLS 1.3 is enforced for all external ingress at the Nexa Gateway. Internal gRPC links are secured using mutual TLS (mTLS).
+  \item \textbf{Data at Rest}: Tables within Meridian DB use AES-256 transparent database encryption, with keys rotated monthly via a centralized key manager.
+\end{itemize}
+
+\end{document}

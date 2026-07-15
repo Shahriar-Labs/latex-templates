@@ -1,0 +1,731 @@
+\documentclass[11pt,a4paper]{article}
+
+%% ─── Core packages ──────────────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[UKenglish]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+%% ─── Page geometry ───────────────────────────────────────────────────────────
+\usepackage[
+  a4paper,
+  top=25mm, bottom=25mm,
+  left=25mm, right=25mm,
+  headheight=14pt
+]{geometry}
+
+%% ─── Colour ──────────────────────────────────────────────────────────────────
+\usepackage[table]{xcolor}
+\definecolor{ukriblue}{HTML}{002147}
+\definecolor{ukripink}{HTML}{C8097A}
+\definecolor{ukricyan}{HTML}{00AEEF}
+\definecolor{ukrigray}{HTML}{F4F5F7}
+\definecolor{textgray}{HTML}{4A4A4A}
+\definecolor{rulegray}{HTML}{CCCCCC}
+
+%% ─── Typography ──────────────────────────────────────────────────────────────
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{setspace}
+\setstretch{1.15}
+
+%% ─── Math ────────────────────────────────────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+%% ─── Tables ──────────────────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage{longtable}
+
+%% ─── Lists ───────────────────────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.4em, topsep=3pt, itemsep=2pt, parsep=0pt}
+\setlist[enumerate]{leftmargin=1.6em, topsep=3pt, itemsep=2pt, parsep=0pt}
+
+%% ─── Graphics & TikZ ─────────────────────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, shapes.geometric, decorations.pathmorphing, backgrounds, patterns}
+
+%% ─── tcolorbox ───────────────────────────────────────────────────────────────
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable, most}
+
+%% ─── Headers / footers ───────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{%
+  \textcolor{ukriblue}{\footnotesize\textbf{UKRI Grant Proposal}} \textcolor{rulegray}{|}
+  \textcolor{textgray}{\footnotesize\ Synapse Biomedical Technologies Ltd}
+}
+\fancyhead[R]{%
+  \textcolor{textgray}{\footnotesize Application Ref:\ \textbf{MR/X0042187/1}}
+}
+\fancyfoot[C]{%
+  \textcolor{rulegray}{\small\thepage\ of \pageref{LastPage}}
+}
+
+%% ─── Hyperref ────────────────────────────────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=ukriblue,
+  urlcolor=ukripink,
+  citecolor=ukricyan,
+  pdftitle={UKRI Grant Proposal -- Neural Scaffold Regeneration},
+  pdfauthor={Dr Eleanor Hartley},
+  pdfsubject={MRC Biomedical Research},
+  pdfkeywords={neural regeneration, biomaterials, UKRI, MRC}
+]{hyperref}
+
+%% ─── Misc ────────────────────────────────────────────────────────────────────
+\usepackage{parskip}
+\setlength{\parskip}{6pt}
+\usepackage{calc}
+\usepackage{ifthen}
+\usepackage{float}
+\usepackage{caption}
+\captionsetup{font=small, labelfont={bf,color=ukriblue}, textfont={color=textgray}}
+
+%% ─── Custom tcolorbox styles ─────────────────────────────────────────────────
+\tcbset{
+  sectionbox/.style={
+    enhanced,
+    colback=ukrigray,
+    colframe=ukriblue,
+    fonttitle=\bfseries\color{white},
+    coltitle=white,
+    attach boxed title to top left={xshift=8mm, yshift=-3mm},
+    boxed title style={
+      colback=ukriblue,
+      colframe=ukriblue,
+      sharp corners,
+      left=4pt, right=4pt, top=2pt, bottom=2pt
+    },
+    sharp corners,
+    left=8pt, right=8pt, top=10pt, bottom=8pt,
+    boxrule=0.5pt,
+    breakable
+  },
+  infobox/.style={
+    enhanced,
+    colback=white,
+    colframe=ukripink,
+    left=6pt, right=6pt, top=6pt, bottom=6pt,
+    boxrule=1.5pt,
+    sharp corners,
+    breakable
+  },
+  highlightbox/.style={
+    enhanced,
+    colback=ukriblue!8,
+    colframe=ukricyan,
+    left=6pt, right=6pt, top=6pt, bottom=6pt,
+    boxrule=1pt,
+    sharp corners,
+    breakable
+  }
+}
+
+%% ─── Section formatting ──────────────────────────────────────────────────────
+\usepackage[explicit]{titlesec}
+\titleformat{\section}
+  {\color{ukriblue}\large\bfseries}
+  {}
+  {0pt}
+  {\colorbox{ukriblue}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}%
+    {\color{white}\thesection\quad #1}}}
+  [\vspace{2pt}]
+
+\titleformat{\subsection}
+  {\color{ukriblue}\normalsize\bfseries}
+  {\color{ukripink}\thesubsection.}
+  {0.5em}
+  {}
+  [\color{ukripink}\hrule height 0.8pt\vspace{2pt}]
+
+\titleformat{\subsubsection}
+  {\color{textgray}\normalsize\bfseries\itshape}
+  {}
+  {0pt}
+  {}
+
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+\titlespacing*{\subsubsection}{0pt}{8pt}{2pt}
+
+%% ─── Convenience macros ──────────────────────────────────────────────────────
+\newcommand{\pinkbullet}{\textcolor{ukripink}{\textbullet}\enspace}
+\newcommand{\bluebullet}{\textcolor{ukricyan}{\textbullet}\enspace}
+\newcommand{\fieldlabel}[1]{\textcolor{ukriblue}{\textbf{#1}}}
+\newcommand{\pinktag}[1]{%
+  \begin{tikzpicture}[baseline=-0.5ex]
+    \node[fill=ukripink, text=white, font=\scriptsize\bfseries,
+          inner xsep=4pt, inner ysep=2pt, rounded corners=2pt] {#1};
+  \end{tikzpicture}%
+}
+\newcommand{\cyantag}[1]{%
+  \begin{tikzpicture}[baseline=-0.5ex]
+    \node[fill=ukricyan, text=white, font=\scriptsize\bfseries,
+          inner xsep=4pt, inner ysep=2pt, rounded corners=2pt] {#1};
+  \end{tikzpicture}%
+}
+
+%% ═══════════════════════════════════════════════════════════════════════════
+\begin{document}
+
+%% ─── Cover Banner ────────────────────────────────────────────────────────────
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[ukriblue]
+    (current page.north west) rectangle
+    ([yshift=-52mm] current page.north east);
+  \fill[ukripink]
+    ([yshift=-52mm] current page.north west) rectangle
+    ([yshift=-55mm] current page.north east);
+  \node[anchor=north west, text=white, font=\small\bfseries,
+        inner sep=0pt]
+    at ([xshift=25mm, yshift=-10mm] current page.north west)
+    {UK RESEARCH AND INNOVATION \quad\textbar\quad MEDICAL RESEARCH COUNCIL};
+  \node[anchor=north west, text=white, font=\LARGE\bfseries,
+        inner sep=0pt, text width=140mm]
+    at ([xshift=25mm, yshift=-22mm] current page.north west)
+    {Neural Scaffold Regeneration via Programmable\\Biomaterial Matrices};
+  \node[anchor=north west, text=white!80, font=\normalsize,
+        inner sep=0pt]
+    at ([xshift=25mm, yshift=-42mm] current page.north west)
+    {Full Economic Cost Application \quad\textbar\quad MRC New Investigator Research Grant};
+  \node[anchor=north east, text=white, font=\scriptsize,
+        inner sep=0pt, align=right]
+    at ([xshift=-25mm, yshift=-42mm] current page.north east)
+    {Ref: MR/X0042187/1\\Round: 2026 Cohort 1};
+\end{tikzpicture}
+
+\vspace*{58mm}
+
+%% ─── Administrative Summary Box ──────────────────────────────────────────────
+\begin{tcolorbox}[
+  enhanced, sharp corners,
+  colback=ukrigray, colframe=rulegray,
+  left=8pt, right=8pt, top=8pt, bottom=8pt,
+  boxrule=0.5pt
+]
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{@{}p{38mm}p{68mm}p{38mm}p{30mm}@{}}
+\fieldlabel{Lead Applicant} & Dr Eleanor Hartley & \fieldlabel{Application Ref} & MR/X0042187/1 \\[4pt]
+\fieldlabel{Host Institution} & University of Meridian & \fieldlabel{Scheme} & NIRG \\[4pt]
+\fieldlabel{Partner Org.} & Synapse Biomedical Technologies Ltd & \fieldlabel{Start Date} & 01 Sep 2026 \\[4pt]
+\fieldlabel{Duration} & 36 months & \fieldlabel{End Date} & 31 Aug 2029 \\[4pt]
+\fieldlabel{Total FEC} & \pounds 842,450 & \fieldlabel{UKRI Contribution} & \pounds 673,960 \\[4pt]
+\fieldlabel{Research Area} & Regenerative Medicine / Neuroscience & \fieldlabel{Confidence} & Standard \\
+\end{tabular}}
+\end{tcolorbox}
+
+\vspace{6pt}
+
+%% ─── Co-Investigators ────────────────────────────────────────────────────────
+\noindent\fieldlabel{Co-Investigators:}\quad
+Prof.\ James Caldwell (University of Meridian)\enspace\textcolor{rulegray}{|}\enspace
+Dr Priya Nair (Synapse Biomedical Technologies Ltd)\enspace\textcolor{rulegray}{|}\enspace
+Dr Samuel Okafor (Apex Neuroscience Institute)
+
+\bigskip
+\noindent\pinktag{Regenerative Medicine}\quad
+\pinktag{Biomaterials}\quad
+\pinktag{Neural Engineering}\quad
+\cyantag{HEIF Aligned}\quad
+\cyantag{Industry Partner}
+
+\newpage
+\setcounter{page}{1}
+
+%% ═══════════════════════════════════════════════════════════════════════════
+\section{Executive Summary}
+
+\begin{tcolorbox}[infobox]
+\textbf{Research Question:} Can programmable hydrogel scaffolds---engineered with
+spatiotemporally controlled bioactive gradients---restore axonal connectivity in
+traumatic spinal cord injury (tSCI) models, and what are the underpinning
+mechanotransductive signalling mechanisms?
+\end{tcolorbox}
+
+\vspace{4pt}
+
+Traumatic spinal cord injury affects an estimated 2.5 million people worldwide, imposing
+severe functional deficits and significant economic burden exceeding \pounds 1.8 billion
+annually in the UK alone. Current clinical approaches---including surgical decompression
+and pharmacological neuroprotection---address secondary injury cascades but fail to
+reconstitute severed axonal tracts. A transformative solution demands materials that
+actively guide regeneration rather than passively fill lesion cavities.
+
+This proposal, led by Dr Eleanor Hartley at the University of Meridian in collaboration
+with Synapse Biomedical Technologies Ltd, advances a next-generation platform: the
+\textbf{NeuraLattice} system---injectable, self-assembling hydrogel matrices
+functionalised with peptide gradients, optogenetically controlled growth factor release,
+and tunable mechanical compliance. We will use \textit{in vitro} dorsal root ganglion
+co-culture, rodent hemisection tSCI models, and advanced multiscale imaging to
+interrogate scaffold--neuron interactions from molecular to whole-organ scale.
+
+\medskip
+\noindent\fieldlabel{Expected Impact:} Mechanistic insight into scaffold-guided regeneration;
+two provisional patents; an SME-ready prototype; and a framework for a subsequent Phase II
+clinical trial application.
+
+%% ═══════════════════════════════════════════════════════════════════════════
+\section{Vision and Importance}
+
+\subsection{Scientific Background and Rationale}
+
+The central nervous system (CNS) presents a uniquely hostile environment for axonal
+regeneration. Following tSCI, the glial scar---dominated by reactive astrocytes,
+chondroitin sulphate proteoglycans (CSPGs), and pro-apoptotic cytokines---constitutes
+both a physical and biochemical barrier. Canonical inhibitory signalling via NgR1/RhoA
+suppresses growth cone motility, while deficient neurotrophic support starves surviving
+neurons of pro-survival BDNF and NT-3 signals \textbf{\lbrack{}1, 2\rbrack}.
+
+Biomaterial scaffolds have emerged as compelling candidates to bridge lesion sites and
+provide permissive substrates. However, first-generation scaffolds relied on passive
+architectures that failed to recapitulate the \emph{dynamic}, \emph{anisotropic} nature
+of native neural extracellular matrix. The critical innovation in the NeuraLattice platform
+is fourfold:
+
+\begin{enumerate}
+  \item \textbf{Mechanically tuneable backbones:} Polyethylene glycol--heparin
+    interpenetrating networks allow elastic moduli to be dialled from 0.1 to 5~kPa,
+    matching regional CNS stiffness.
+  \item \textbf{Photo-responsive growth factor release:} LOVTRAP-fused BDNF domains
+    enable millisecond optogenetic control of neurotrophin gradients without exogenous
+    viral vectors.
+  \item \textbf{CSPG enzymatic pre-treatment:} Chondroitinase ABC (ChABC) encapsulated
+    in thermosensitive microspheres provides sustained local CSPG digestion.
+  \item \textbf{Conductive nano-fibres:} Polypyrrole-coated cellulose nanocrystals
+    facilitate electrical stimulation-enhanced axonal elongation.
+\end{enumerate}
+
+\subsection{Alignment with UKRI and MRC Priorities}
+
+This project directly addresses MRC's \emph{Brain Science and Mental Health} strategic
+priority and the cross-council \emph{Neuroscience and Mental Health} theme, contributing
+to the UK Government's \emph{Life Sciences Vision 2031}. The industry partnership with
+Synapse Biomedical Technologies Ltd---an Edinburgh-based SME with clinical-grade GMP
+manufacturing capabilities---ensures a credible translational pathway. Alignment with
+the HEIF strategic framework is evidenced by a formal Letter of Support committing
+in-kind resources of \pounds 168,490.
+
+%% ═══════════════════════════════════════════════════════════════════════════
+\section{Programme of Work}
+
+\subsection{Work Package Overview}
+
+The project is structured across three interconnected work packages spanning 36 months.
+
+\vspace{4pt}
+
+\noindent
+\begin{minipage}[t]{0.32\textwidth}
+\begin{tcolorbox}[
+  enhanced, sharp corners,
+  colback=ukriblue, colframe=ukriblue,
+  colupper=white, left=6pt, right=6pt, top=6pt, bottom=4pt,
+  height=22mm
+]
+\centering
+\textbf{WP1}\\[2pt]
+\small Scaffold Design \&\\Characterisation
+\end{tcolorbox}
+\begin{tcolorbox}[highlightbox, top=4pt, bottom=4pt]
+\scriptsize
+\textbf{Lead:} Dr Hartley\\
+\textbf{Months:} 1--18\\
+\textbf{FEC:} \pounds 284,200
+\end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.32\textwidth}
+\begin{tcolorbox}[
+  enhanced, sharp corners,
+  colback=ukripink, colframe=ukripink,
+  colupper=white, left=6pt, right=6pt, top=6pt, bottom=4pt,
+  height=22mm
+]
+\centering
+\textbf{WP2}\\[2pt]
+\small In Vitro Neural\\Integration
+\end{tcolorbox}
+\begin{tcolorbox}[highlightbox, top=4pt, bottom=4pt]
+\scriptsize
+\textbf{Lead:} Prof.\ Caldwell\\
+\textbf{Months:} 6--24\\
+\textbf{FEC:} \pounds 231,850
+\end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.32\textwidth}
+\begin{tcolorbox}[
+  enhanced, sharp corners,
+  colback=ukricyan, colframe=ukricyan,
+  colupper=white, left=6pt, right=6pt, top=6pt, bottom=4pt,
+  height=22mm
+]
+\centering
+\textbf{WP3}\\[2pt]
+\small In Vivo Efficacy \&\\Mechanistic Studies
+\end{tcolorbox}
+\begin{tcolorbox}[highlightbox, top=4pt, bottom=4pt]
+\scriptsize
+\textbf{Lead:} Dr Okafor\\
+\textbf{Months:} 18--36\\
+\textbf{FEC:} \pounds 326,400
+\end{tcolorbox}
+\end{minipage}
+
+\par
+\vspace{8pt}
+
+\subsection{WP1 -- Scaffold Design and Characterisation (Months 1--18)}
+
+\subsubsection{Objectives}
+Synthesise and fully characterise NeuraLattice hydrogel matrices; validate mechanical,
+optical, and biochemical properties against predefined design criteria.
+
+\subsubsection{Key Activities}
+\begin{itemize}
+  \item Synthesis of PEG--heparin interpenetrating networks at three crosslink densities
+    (0.5, 2, and 5~kPa target moduli) using Michael-addition thiol-ene chemistry.
+  \item Functionalisation with laminin-derived IKVAV and YIGSR peptide sequences via
+    maleimide coupling; quantification by BCA and XPS.
+  \item LOVTRAP-BDNF domain expression in HEK293T cells; LOV2 photocycle
+    characterisation by circular dichroism and SPR.
+  \item Electrospinning of polypyrrole-cellulose composite fibres; conductivity measured
+    by four-probe resistivity at 37\textsuperscript{o}C.
+  \item Rheological profiling (oscillatory shear, 0.1--100 rad/s) to confirm injectability
+    and gelation kinetics (\(<\)90~s at 37\textsuperscript{o}C).
+\end{itemize}
+
+\subsubsection{Deliverables}
+D1.1 Optimised hydrogel synthesis protocol (M6); D1.2 Characterisation data package for
+Synapse Biomedical regulatory dossier (M12); D1.3 Provisional patent application
+(M18).
+
+\subsection{WP2 -- In Vitro Neural Integration (Months 6--24)}
+
+\subsubsection{Objectives}
+Establish that NeuraLattice scaffolds promote directed neurite outgrowth, reduce CSPG
+inhibition, and enhance synaptogenesis in primary neuronal and co-culture models.
+
+\subsubsection{Key Activities}
+\begin{itemize}
+  \item Rat embryonic DRG isolation and seeding onto scaffolds at three moduli;
+    neurite length quantified by automated ImageJ macro at 24, 72, and 168~h.
+  \item Optogenetic BDNF release (5~mW/cm\textsuperscript{2}, 488~nm, 10~ms pulses)
+    tested against slow-release PLGA microsphere controls and vehicle.
+  \item Live calcium imaging (GCaMP6f lentiviral transduction) to assess network
+    activity under electrical stimulation (50~mV/cm, 20~Hz biphasic pulses).
+  \item Transcriptomic profiling (bulk RNA-seq, $n = 4$ per condition) to identify
+    mechanotransductive gene signatures (YAP/TAZ, Piezo1).
+\end{itemize}
+
+\subsubsection{Deliverables}
+D2.1 Dose--response neurite outgrowth dataset (M15); D2.2 RNA-seq data deposited in
+ArrayExpress (M20); D2.3 Co-authored manuscript submitted to \textit{Nature Biomedical
+Engineering} (M24).
+
+\subsection{WP3 -- In Vivo Efficacy and Mechanistic Studies (Months 18--36)}
+
+\subsubsection{Objectives}
+Validate NeuraLattice efficacy in a rat thoracic hemisection model (T9 level);
+delineate mechanotransductive signalling cascades mediating functional recovery.
+
+\subsubsection{Key Activities}
+\begin{itemize}
+  \item Home Office PPL held by Dr Okafor (Apex Neuroscience Institute); 60 Sprague
+    Dawley rats allocated across sham, acellular hydrogel, NeuraLattice, and positive
+    control (Matrigel) cohorts (\(n = 15\) per group; power calculated at 80\% for
+    BBB locomotion score difference of 3 points, \(\alpha = 0.05\)).
+  \item Functional assessment: Basso, Beattie, Bresnahan (BBB) scale at weekly
+    intervals; ladder rung walk; von Frey sensory thresholds.
+  \item Light sheet fluorescence microscopy (LaVision BioTec UltraMicroscope II) of
+    cleared tissue; 3D axonal tract reconstruction.
+  \item Phosphoproteomics (TMT-10plex, Orbitrap Eclipse) at M24 and M30 to map
+    RhoA/ROCK and mTOR pathway activation dynamics.
+\end{itemize}
+
+\subsubsection{Deliverables}
+D3.1 BBB functional dataset with statistical analysis (M30); D3.2 3D atlas of scaffold
+integration deposited as open dataset (M33); D3.3 Second provisional patent for
+ChABC-microsphere system (M34); D3.4 Final project report and data management plan
+update (M36).
+
+%% ═══════════════════════════════════════════════════════════════════════════
+\section{Project Timeline}
+
+\vspace{4pt}
+
+\noindent
+\begin{tabular}{@{}lcccccccccccc@{}}
+\toprule
+\rowcolor{ukriblue}
+\color{white}\textbf{Work Package / Milestone} &
+\multicolumn{4}{c}{\color{white}\textbf{Year 1}} &
+\multicolumn{4}{c}{\color{white}\textbf{Year 2}} &
+\multicolumn{4}{c}{\color{white}\textbf{Year 3}} \\
+\rowcolor{ukriblue}
+\color{white} &
+\color{white}Q1 & \color{white}Q2 & \color{white}Q3 & \color{white}Q4 &
+\color{white}Q1 & \color{white}Q2 & \color{white}Q3 & \color{white}Q4 &
+\color{white}Q1 & \color{white}Q2 & \color{white}Q3 & \color{white}Q4 \\
+\midrule
+\rowcolor{ukrigray}
+WP1 Scaffold synthesis &
+\cellcolor{ukriblue!60} & \cellcolor{ukriblue!60} & \cellcolor{ukriblue!60} &
+\cellcolor{ukriblue!60} & \cellcolor{ukriblue!60} & \cellcolor{ukriblue!60} &
+ &  &  &  &  &  \\
+\rowcolor{white}
+WP1 Characterisation &
+ & \cellcolor{ukriblue!40} & \cellcolor{ukriblue!40} & \cellcolor{ukriblue!40} &
+\cellcolor{ukriblue!40} & \cellcolor{ukriblue!40} & \cellcolor{ukriblue!40} &
+ &  &  &  &  \\
+\rowcolor{ukrigray}
+WP2 DRG culture &
+ & \cellcolor{ukripink!50} & \cellcolor{ukripink!50} & \cellcolor{ukripink!50} &
+\cellcolor{ukripink!50} & \cellcolor{ukripink!50} & \cellcolor{ukripink!50} &
+\cellcolor{ukripink!50} &  &  &  &  \\
+\rowcolor{white}
+WP2 Transcriptomics &
+ &  &  & \cellcolor{ukripink!40} & \cellcolor{ukripink!40} &
+\cellcolor{ukripink!40} & \cellcolor{ukripink!40} & \cellcolor{ukripink!40} &
+ &  &  &  \\
+\rowcolor{ukrigray}
+WP3 Animal experiments &
+ &  &  &  &  &  & \cellcolor{ukricyan!60} & \cellcolor{ukricyan!60} &
+\cellcolor{ukricyan!60} & \cellcolor{ukricyan!60} & \cellcolor{ukricyan!60} & \\
+\rowcolor{white}
+WP3 Phosphoproteomics &
+ &  &  &  &  &  &  &  &
+\cellcolor{ukricyan!40} & \cellcolor{ukricyan!40} & \cellcolor{ukricyan!40} & \\
+\rowcolor{ukrigray}
+Patent filings &
+ &  &  &  &  & \cellcolor{ukripink!70} &  &  &  &  &
+\cellcolor{ukripink!70} &  \\
+\rowcolor{white}
+Dissemination &
+ &  &  &  &  &  &  & \cellcolor{ukriblue!30} &
+\cellcolor{ukriblue!30} & \cellcolor{ukriblue!30} & \cellcolor{ukriblue!30} &
+\cellcolor{ukriblue!30} \\
+\bottomrule
+\end{tabular}
+
+\bigskip
+
+%% ═══════════════════════════════════════════════════════════════════════════
+\section{Team and Resources}
+
+\subsection{Research Team}
+
+\vspace{4pt}
+
+\begin{minipage}[t]{0.48\textwidth}
+\begin{tcolorbox}[sectionbox, title=Lead Applicant]
+\textbf{Dr Eleanor Hartley}, PhD\\
+\textit{Senior Lecturer, Biomaterials Engineering}\\
+University of Meridian, School of Life Sciences
+
+\vspace{4pt}
+\pinkbullet 12 years post-doctoral experience in scaffold design\\
+\pinkbullet 45 peer-reviewed publications; h-index 22\\
+\pinkbullet Holds EPSRC Fellowship (EP/T00421X/1)\\
+\pinkbullet Responsible for WP1 \& overall project management
+\end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{tcolorbox}[sectionbox, title=Co-Investigator]
+\textbf{Prof.\ James Caldwell}, DPhil\\
+\textit{Professor of Translational Neuroscience}\\
+University of Meridian, Department of Neuroscience
+
+\vspace{4pt}
+\pinkbullet Expert in spinal cord injury models (20+ years)\\
+\pinkbullet 97 publications; h-index 41\\
+\pinkbullet Co-director, Meridian Neuroscience Institute\\
+\pinkbullet Responsible for WP2 design \& delivery
+\end{tcolorbox}
+\end{minipage}
+
+\par
+\vspace{6pt}
+
+\begin{minipage}[t]{0.48\textwidth}
+\begin{tcolorbox}[sectionbox, title=Industry Co-Investigator]
+\textbf{Dr Priya Nair}, PhD\\
+\textit{Head of Translational Research}\\
+Synapse Biomedical Technologies Ltd, Edinburgh
+
+\vspace{4pt}
+\bluebullet GMP biologics formulation expertise\\
+\bluebullet Leads IP and regulatory strategy for Synapse\\
+\bluebullet Provides \pounds 168,490 in-kind contribution\\
+\bluebullet Responsible for IP, scale-up, and TRL advancement
+\end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{tcolorbox}[sectionbox, title=External Collaborator]
+\textbf{Dr Samuel Okafor}, PhD\\
+\textit{Principal Research Scientist}\\
+Apex Neuroscience Institute, London
+
+\vspace{4pt}
+\bluebullet PPL holder for rodent spinal cord models\\
+\bluebullet Specialist in light-sheet imaging \& 3D reconstruction\\
+\bluebullet Access to LaVision UltraMicroscope II facility\\
+\bluebullet Responsible for WP3 \emph{in vivo} studies
+\end{tcolorbox}
+\end{minipage}
+
+\par
+\vspace{6pt}
+
+\begin{minipage}[t]{\textwidth}
+\begin{tcolorbox}[highlightbox]
+\textbf{Postdoctoral Researchers:}
+2.0 FTE postdoctoral research associates (PDRA) are budgeted---one specialist in
+hydrogel synthesis (Grade 7, University of Meridian), and one in animal behaviour
+assessment (Grade 7, Apex Neuroscience Institute). Both will be recruited via open
+competition in Month 1.\\[4pt]
+\textbf{PhD Student:} 1.0 FTE fully funded PhD studentship for transcriptomic and
+bioinformatic analysis, supervised jointly by Dr Hartley and Prof.\ Caldwell.
+\end{tcolorbox}
+\end{minipage}
+
+\par
+
+%% ═══════════════════════════════════════════════════════════════════════════
+\section{Budget Summary}
+
+\vspace{4pt}
+
+\begin{tabularx}{\linewidth}{@{} X r r r @{}}
+\toprule
+\rowcolor{ukriblue}
+\color{white}\textbf{Budget Heading} &
+\color{white}\textbf{FEC (\pounds)} &
+\color{white}\textbf{UKRI (\pounds)} &
+\color{white}\textbf{Partner (\pounds)} \\
+\midrule
+\rowcolor{ukrigray}
+Directly Incurred -- Staff (PDRAs \texttimes{} 2, PhD) & 421,200 & 421,200 & 0 \\
+\rowcolor{white}
+Directly Incurred -- Travel \& Subsistence & 18,400 & 18,400 & 0 \\
+\rowcolor{ukrigray}
+Directly Incurred -- Equipment (rheometer, electrospinning) & 62,500 & 62,500 & 0 \\
+\rowcolor{white}
+Directly Incurred -- Consumables & 78,360 & 78,360 & 0 \\
+\rowcolor{ukrigray}
+Directly Incurred -- Animal Costs (PPL, husbandry) & 54,200 & 54,200 & 0 \\
+\rowcolor{white}
+Directly Incurred -- Publication \& Dissemination & 12,000 & 12,000 & 0 \\
+\rowcolor{ukrigray}
+Directly Allocated -- Principal Investigator (20\% FTE) & 48,300 & 0 & 48,300 \\
+\rowcolor{white}
+Directly Allocated -- Co-I Caldwell (10\% FTE) & 22,000 & 0 & 22,000 \\
+\rowcolor{ukrigray}
+Directly Allocated -- Estates \& Indirects & 57,000 & 27,300 & 29,700 \\
+\rowcolor{white}
+Synapse Biomedical In-Kind (GMP formulation support) & 68,490 & 0 & 68,490 \\
+\midrule
+\rowcolor{ukriblue!15}
+\textbf{Total} & \textbf{842,450} & \textbf{673,960} & \textbf{168,490} \\
+\bottomrule
+\end{tabularx}
+
+\vspace{6pt}
+\noindent\textcolor{textgray}{\small UKRI contribution is 80\% FEC; partner contribution
+covers 20\% FEC for directly allocated staff costs and in-kind GMP resources.}
+
+%% ═══════════════════════════════════════════════════════════════════════════
+\section{Pathways to Impact}
+
+\begin{tcolorbox}[sectionbox, title=Impact Summary]
+This research targets three pathways to impact spanning academic, clinical, and
+commercial dimensions.
+
+\vspace{6pt}
+\begin{tabular}{@{}p{32mm}p{120mm}@{}}
+\textcolor{ukripink}{\textbf{Academic}} &
+Publication of \(\geq\)4 high-impact papers (target journals: \textit{Nature
+Biomedical Engineering}, \textit{Advanced Materials}, \textit{Biomaterials}); open
+data deposition; international conference keynotes (SFN, TERMIS). \\[6pt]
+\textcolor{ukripink}{\textbf{Clinical}} &
+Mechanistic insights will directly inform a \pounds 3.2M NIHR Invention for Innovation
+(i4i) application targeting first-in-human feasibility (planned 2030); Dr Hartley has
+a confirmed Letter of Support from Meridian University Hospitals NHS Trust. \\[6pt]
+\textcolor{ukripink}{\textbf{Commercial}} &
+Two provisional patents will be filed (M18, M34). Synapse Biomedical Technologies Ltd
+will lead commercial development; Technology Transfer Office agreement in place. A
+technology readiness level (TRL) advance from 3 to 5 is projected within the grant
+period. \\
+\end{tabular}
+\end{tcolorbox}
+
+\subsection{Public Engagement}
+
+Dr Hartley will deliver two public lectures per annum through the University of Meridian
+\emph{Science in Society} programme and contribute to the MRC-funded \emph{Brain
+Awareness Week} outreach campaign. A dedicated project website will be maintained with
+lay summaries, data visualisations, and video explainers accessible to people living
+with spinal cord injury and patient advocacy groups including the Spinal Injuries
+Association (SIA). Social media engagement (\texttt{\#NeuraLattice}) will amplify reach
+across X and LinkedIn.
+
+%% ═══════════════════════════════════════════════════════════════════════════
+\section{Ethical Considerations}
+
+All animal work is governed by the Animals (Scientific Procedures) Act 1986 (ASPA) under
+a Home Office Project Licence held by Dr Samuel Okafor. The 3Rs (Replacement, Reduction,
+Refinement) principles are strictly observed: sample sizes are minimised consistent with
+statistical power (\(n = 15\) per group); validated humane endpoints are defined; animals
+are housed in enriched environments with ad libitum food and water. No human tissue or
+participants are involved. Data management complies with GDPR and the University of
+Meridian Research Data Policy (v3.2, 2024); all raw data will be FAIR-archived in the
+UK Data Service within six months of acquisition.
+
+%% ═══════════════════════════════════════════════════════════════════════════
+\section{References}
+
+\vspace{4pt}
+\begin{enumerate}[label=\lbrack\arabic*\rbrack, leftmargin=2em, itemsep=2pt]
+  \item GrandPre T, Li S, Bhathagar R. Nogo-A signalling restricts axon regeneration
+    in the adult CNS. \textit{Nature Neuroscience}. 2022;25(4):410--421.
+  \item Bradbury EJ, Burnside ER. Moving beyond the glial scar for spinal cord repair.
+    \textit{Nature Communications}. 2019;10:3879.
+  \item Courtine G, Sofroniew MV. Spinal cord repair: advances in biology and technology.
+    \textit{Nature Medicine}. 2019;25:898--908.
+  \item Lutolf MP, Hubbell JA. Synthetic biomaterials as instructive extracellular
+    microenvironments for morphogenesis in tissue engineering.
+    \textit{Nature Biotechnology}. 2005;23:47--55.
+  \item Bhattacharya D, Rogerson PJ. Mechanotransduction in neural regeneration:
+    from biophysics to clinical translation. \textit{Advanced Materials}.
+    2024;36:2309841.
+\end{enumerate}
+
+%% ─── Footer declaration ──────────────────────────────────────────────────────
+\vspace{10pt}
+\noindent\rule{\linewidth}{0.5pt}
+\vspace{2pt}
+
+\noindent{\footnotesize\color{textgray}
+This application was prepared in accordance with UKRI guidance on Full Economic Costing
+(fEC) and the MRC New Investigator Research Grant guidelines (version April 2026).
+All budgetary figures are in GBP at 2026 prices. Indirect costs calculated at the
+University of Meridian's TRAC-agreed rate of 46.2\%. For queries contact the Research
+Office: \texttt{grants@meridian.ac.uk} \quad|\quad Tel: +44 (0)1234 567 890.}
+
+\end{document}

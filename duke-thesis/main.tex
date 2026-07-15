@@ -1,0 +1,420 @@
+\documentclass[12pt,oneside]{book}
+
+% ── Packages ──────────────────────────────────────────────────────────────────
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,backgrounds,patterns}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{titletoc}
+\usepackage{setspace}
+\usepackage[nottoc]{tocbibind}
+\usepackage[none]{hyphenat}
+\usepackage{fontawesome5}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{caption}
+\usepackage{float}
+
+% ── Colors ────────────────────────────────────────────────────────────────────
+\definecolor{DukeBlue}{HTML}{012169}
+\definecolor{DukeGold}{HTML}{C49A00}
+\definecolor{DukeGray}{HTML}{4A4A4A}
+\definecolor{DukeLight}{HTML}{F5F3EF}
+
+% ── Spacing ───────────────────────────────────────────────────────────────────
+\doublespacing
+\setlength{\parindent}{0.5in}
+\setlength{\parskip}{0pt}
+
+% ── Headers / Footers ────────────────────────────────────────────────────────
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[C]{\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+\pagestyle{plain}
+
+% ── Title Formatting ─────────────────────────────────────────────────────────
+\titleformat{\chapter}[display]
+  {\normalfont\large\bfseries\color{DukeBlue}}
+  {\chaptertitlename\ \thechapter}{12pt}{\LARGE}
+\titlespacing*{\chapter}{0pt}{50pt}{20pt}
+
+\titleformat{\section}
+  {\normalfont\large\bfseries\color{DukeBlue}}
+  {\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{18pt}{6pt}
+
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries\color{DukeGray}}
+  {\thesubsection}{1em}{}
+\titlespacing*{\subsection}{0pt}{12pt}{3pt}
+
+% ── Fancy Boxes ──────────────────────────────────────────────────────────────
+\newtcolorbox{dukebox}[1][]{
+  colback=DukeLight,
+  colframe=DukeBlue,
+  boxrule=0.5pt,
+  arc=3pt,
+  left=12pt,
+  right=12pt,
+  top=10pt,
+  bottom=10pt,
+  fontupper=\small,
+  #1
+}
+
+\newtcolorbox{definitionbox}{
+  colback=white,
+  colframe=DukeGold,
+  boxrule=0.5pt,
+  arc=3pt,
+  left=14pt,
+  right=14pt,
+  top=10pt,
+  bottom=10pt,
+  fontupper=\small,
+  before skip=12pt,
+  after skip=12pt
+}
+
+% ── Hyperref Setup ───────────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks=true,
+  linkcolor=DukeBlue,
+  citecolor=DukeGold,
+  urlcolor=DukeBlue
+}
+
+% ── Document ─────────────────────────────────────────────────────────────────
+\begin{document}
+
+% ── Title Page ───────────────────────────────────────────────────────────────
+\thispagestyle{empty}
+\begin{center}
+
+\vspace*{1.2in}
+
+{\LARGE\bfseries\color{DukeBlue} Computational Approaches to\\[6pt]
+Stochastic Portfolio Optimization\\[6pt]
+Under Regime-Switching Dynamics}
+
+\vspace{0.6in}
+
+{\large by}
+
+\vspace{0.4in}
+
+{\large\textbf{Elena Marchetti}}
+
+\vspace{0.5in}
+
+\begin{minipage}{0.8\textwidth}
+\centering
+\singlespacing
+\small
+Department of Statistical Science\\
+in the Graduate School of\\
+Duke University
+\end{minipage}
+
+\vspace{0.6in}
+
+{\normalsize Date: \rule{1.2in}{0.4pt}}
+
+\vspace{0.4in}
+
+\begin{minipage}{0.8\textwidth}
+\centering
+\singlespacing
+\small
+Approved by:\\[10pt]
+\rule{2.5in}{0.4pt}\\[4pt]
+Dr.\ Jonathan Whitfield, Supervisor\\[14pt]
+\rule{2.5in}{0.4pt}\\[4pt]
+Dr.\ Priya Nair\\[14pt]
+\rule{2.5in}{0.4pt}\\[4pt]
+Dr.\ Marcus Chen
+\end{minipage}
+
+\vspace{0.4in}
+
+{\small Dissertation submitted in partial fulfillment of\\
+the requirements for the degree of Doctor of Philosophy\\
+in the Department of Statistical Science\\
+in the Graduate School of Duke University}
+
+\vspace{0.8in}
+
+{\small 2026}
+
+\vfill
+
+{\footnotesize\textit{Unofficial template --- not affiliated with or endorsed by the university. Sample content only.}}
+
+\end{center}
+\newpage
+
+% ── Abstract ─────────────────────────────────────────────────────────────────
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+This dissertation develops computational frameworks for optimizing investment portfolios when financial markets exhibit abrupt shifts in volatility and correlation structure --- a phenomenon known as regime switching. Traditional mean-variance optimization, rooted in Gaussian and stationary assumptions, systematically underestimates tail risk during turbulent regimes and over-allocates to assets whose correlations converge in downturns. We propose a class of hidden Markov regime-switching models coupled with stochastic gradient-based solvers that jointly estimate latent regimes and construct forward-looking efficient frontiers.
+
+The core contribution is a two-stage procedure: first, a Bayesian changepoint detection algorithm segments historical returns into distinct volatility regimes using reversible-jump Markov chain Monte Carlo; second, a scenario-based convex optimizer --- implemented via the alternating direction method of multipliers --- solves the resulting non-Gaussian portfolio problem. We prove that the optimizer converges to the true conditional value-at-risk frontier under mild regularity conditions on the regime process.
+
+Empirical evaluation uses synthetic data calibrated to the post-2008 regulatory environment and backtests on a 30-year panel of equity, fixed-income, and commodity indices. The regime-aware portfolios reduce maximum drawdown by 18--24\% relative to static Markowitz benchmarks during stress periods while maintaining comparable Sharpe ratios in calm markets. We extend the framework to incorporate transaction costs, short-sale constraints, and ESG tilts, demonstrating its flexibility for institutional asset allocators. The methods are packaged as an open-source \texttt{R} library, \texttt{regimePort}, with bindings to \texttt{Stan} for posterior sampling and \texttt{CVXR} for disciplined convex programming.
+
+\vspace{12pt}
+\begin{dukebox}
+\textbf{Keywords:} portfolio optimization, regime switching, hidden Markov models, convex optimization, conditional value-at-risk, Bayesian changepoint detection, ADMM, risk management.
+\end{dukebox}
+
+\newpage
+
+% ── Dedication ───────────────────────────────────────────────────────────────
+\chapter*{Dedication}
+\addcontentsline{toc}{chapter}{Dedication}
+
+\begin{center}
+\itshape
+To my parents, who taught me that curiosity\\
+is the only compass worth following.
+\end{center}
+
+\newpage
+
+% ── Table of Contents ────────────────────────────────────────────────────────
+\setcounter{page}{1}
+\renewcommand{\contentsname}{Table of Contents}
+\tableofcontents
+\newpage
+
+% ── List of Tables ───────────────────────────────────────────────────────────
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+\newpage
+
+% ── List of Figures ──────────────────────────────────────────────────────────
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════════
+%  CHAPTER 1
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Introduction}
+
+\section{Motivation}
+
+Modern portfolio theory, as formalized by Markowitz~\cite{markowitz1952}, remains the dominant paradigm for institutional asset allocation. Its elegance --- distill risk into a covariance matrix, maximize expected return per unit of variance --- has proven remarkably durable across seven decades of practice. Yet the 2008 financial crisis, the COVID-19 volatility spike of 2020, and the rate-hiking cycle of 2022--2023 each exposed the same structural vulnerability: correlations that appear modest in calm regimes collapse toward unity precisely when diversification is most needed.
+
+This dissertation addresses a concrete question: can we build portfolio optimizers that are \textit{regime-aware} --- that anticipate shifts in the return-generating process rather than treating history as a single stationary draw? We answer affirmatively by combining tools from Bayesian time-series modeling and convex optimization into a unified computational pipeline.
+
+\section{The Regime-Switching Perspective}
+
+Financial returns exhibit well-documented stylized facts that violate the i.i.d.\ Gaussian benchmark: volatility clustering, fat tails, leverage effects, and time-varying correlations~\cite{cont2001}. Hidden Markov models (HMMs) provide a parsimonious framework for capturing these features. A $K$-state HMM posits that returns $\mathbf{r}_t \in \mathbb{R}^p$ are drawn from:
+\begin{equation}
+\mathbf{r}_t \mid s_t = k \;\sim\; \mathcal{N}_p\!\left(\boldsymbol{\mu}_k,\; \boldsymbol{\Sigma}_k\right), \qquad k \in \{1,\dots,K\},
+\label{eq:hmm}
+\end{equation}
+where the latent state $s_t$ evolves according to a first-order Markov chain with transition matrix $\mathbf{Q} = (q_{ij})$, and $q_{ij} = \Pr(s_t = j \mid s_{t-1} = i)$.
+
+\begin{definitionbox}
+\textbf{Definition 1 (Regime).} A \textit{regime} is a persistent state of the return-generating process characterized by a distinct pair $(\boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k)$. Regimes typically correspond to macroeconomic environments: expansion (low volatility, positive drift), contraction (elevated volatility, negative drift), and crisis (extreme volatility, correlation breakdown).
+\end{definitionbox}
+
+The critical insight for portfolio construction is that the forward-looking distribution of returns is a \textit{mixture}:
+\begin{equation}
+\Pr(\mathbf{r}_{T+1} \mid \mathcal{F}_T) = \sum_{k=1}^{K} \xi_{T}(k) \;\cdot\; \mathcal{N}_p(\boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k),
+\label{eq:mixture}
+\end{equation}
+where $\xi_T(k) = \Pr(s_{T+1}=k \mid \mathcal{F}_T)$ is the filtered state probability given information up to time $T$. When regimes are persistent, $\xi_T$ concentrates mass on a single component, but the \textit{possibility} of transition fattens the tails.
+
+\section{Contributions}
+
+This dissertation makes four principal contributions:
+
+\begin{enumerate}[leftmargin=*,itemsep=4pt]
+  \item \textbf{Changepoint-regularized HMM estimation.} We introduce a reversible-jump MCMC sampler that jointly infers the number of regimes $K$ and their parameters, penalizing superfluous states through a birth--death process on the transition matrix. This avoids the ad-hoc information-criterion selection common in the literature.
+
+  \item \textbf{Regime-conditional CVaR optimization.} We formulate the portfolio problem as minimizing conditional value-at-risk under a mixture-of-Gaussians return model, transforming a non-convex objective into a second-order cone program solvable via ADMM. Convergence guarantees are established under $\alpha$-mixing conditions on the regime chain.
+
+  \item \textbf{Empirical calibration and backtesting.} Using a synthetic data engine calibrated to post-2008 market structure and out-of-sample tests on a multi-asset panel spanning 1994--2024, we document consistent improvements in downside-risk metrics without sacrificing upside capture.
+
+  \item \textbf{Open-source software.} The \texttt{regimePort} package for \texttt{R} provides a modular implementation interfacing with \texttt{Stan} for Bayesian computation and \texttt{CVXR} for convex optimization, lowering the barrier for practitioners.
+
+\end{enumerate}
+
+\section{Thesis Outline}
+
+Chapter~2 surveys the literature on regime-switching models in finance, convex risk measures, and computational Bayesian methods. Chapter~3 develops the changepoint-regularized HMM estimator with full algorithmic details and convergence diagnostics. Chapter~4 formulates the regime-conditional CVaR portfolio problem and derives the ADMM algorithm. Chapter~5 presents the simulation study and empirical backtests. Chapter~6 discusses extensions to transaction costs, ESG constraints, and multi-period rebalancing. Chapter~7 concludes with limitations and directions for future work.
+
+% ══════════════════════════════════════════════════════════════════════════════
+%  CHAPTER 2
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Literature Review}
+
+\section{Markowitz and Its Discontents}
+
+Markowitz~\cite{markowitz1952} framed portfolio selection as a quadratic program: choose weights $\mathbf{w} \in \mathbb{R}^p$ to
+\begin{equation}
+\min_{\mathbf{w}}\; \mathbf{w}^{\!\top}\boldsymbol{\Sigma}\mathbf{w} \quad \text{s.t.} \quad \mathbf{w}^{\!\top}\boldsymbol{\mu} \geq \mu_0,\;\; \mathbf{w}^{\!\top}\mathbf{1} = 1.
+\label{eq:markowitz}
+\end{equation}
+The solution delivers the familiar efficient frontier --- a parabola in mean-variance space. Its weaknesses are equally familiar: $\boldsymbol{\mu}$ and $\boldsymbol{\Sigma}$ are notoriously difficult to estimate (the ``Markowitz error-maximization'' problem~\cite{michaud1989}), and the Gaussian assumption ignores tail dependence.
+
+Subsequent decades produced a rich literature on robust optimization~\cite{fabozzi2007}, shrinkage estimation~\cite{ledoit2004}, and Black--Litterman blending~\cite{black1992}. These refinements improve \textit{static} estimates but do not address the core problem: the data-generating process itself is non-stationary.
+
+\section{Hidden Markov Models in Finance}
+
+Hamilton~\cite{hamilton1989} introduced regime-switching to economics, modeling GDP growth as alternating between expansion and recession states. The framework migrated to finance through applications in volatility modeling~\cite{timmermann2000}, interest rate dynamics~\cite{ang2002}, and tactical asset allocation~\cite{guidolin2007}.
+
+Estimation is typically performed via the expectation-maximization (EM) algorithm or Bayesian MCMC. The EM approach is fast but provides only point estimates; MCMC yields full posterior distributions but scales poorly with the number of assets $p$. A key open problem --- which Chapter~3 addresses --- is determining $K$, the number of regimes, without resorting to information criteria that penalize complexity in an ad-hoc manner.
+
+\begin{table}[H]
+\centering
+\caption{Comparison of regime-switching estimation methods.}
+\label{tab:methods}
+\begin{tabularx}{0.92\textwidth}{@{}l c c c X@{}}
+\toprule
+\textbf{Method} & \textbf{Selects $K$?} & \textbf{Uncertainty} & \textbf{Scalability} \\
+\midrule
+EM + BIC           & Yes (criterion) & Point estimate only         & $\mathcal{O}(T K p^2)$                  \\{}
+Hamilton filter     & No              & Filtered probabilities      & $\mathcal{O}(T K^2)$                    \\{}
+Gibbs sampler       & No              & Full posterior              & $\mathcal{O}(T K^2 p^2)$ per iteration  \\{}
+RJ-MCMC (this work) & Yes (inference) & Full posterior incl.\ $K$   & $\mathcal{O}(T K_{\max}^2 p^2)$ per iter. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Convex Risk Measures}
+
+Value-at-Risk (VaR) --- the $\alpha$-quantile of the loss distribution --- became the regulatory standard through the Basel Accords. Its theoretical deficiencies are well documented: VaR is not a coherent risk measure~\cite{artzner1999} because it fails the sub-additivity axiom. Conditional Value-at-Risk (CVaR), defined as the expected loss exceeding VaR,
+\begin{equation}
+\operatorname{CVaR}_\alpha(L) = \mathbb{E}\!\left[L \mid L \geq \operatorname{VaR}_\alpha(L)\right],
+\label{eq:cvar}
+\end{equation}
+is coherent and convex~\cite{rockafellar2000}. Rockafellar and Uryasev~\cite{rockafellar2002} showed that CVaR minimization can be cast as a linear program when the return distribution is represented by scenarios --- an insight we exploit in Chapter~4, extending it to mixture-of-Gaussians representations.
+
+\begin{definitionbox}
+\textbf{Definition 2 (Coherent Risk Measure).} A risk measure $\rho: \mathcal{X} \to \mathbb{R}$ is \textit{coherent} if it satisfies (i)~monotonicity: $X \leq Y \Rightarrow \rho(X) \geq \rho(Y)$, (ii)~sub-additivity: $\rho(X+Y) \leq \rho(X) + \rho(Y)$, (iii)~positive homogeneity: $\rho(\lambda X) = \lambda\rho(X)$ for $\lambda \geq 0$, and (iv)~translational invariance: $\rho(X + c) = \rho(X) - c$.
+\end{definitionbox}
+
+% ══════════════════════════════════════════════════════════════════════════════
+%  CHAPTER 3 (sample)
+% ══════════════════════════════════════════════════════════════════════════════
+\chapter{Bayesian Changepoint-Regularized HMM}
+
+\section{Model Specification}
+
+We observe a $p$-dimensional return series $\{\mathbf{r}_t\}_{t=1}^{T}$. The generative model is:
+
+\begin{dukebox}[title={Hierarchical Model},colbacktitle=DukeBlue!15]
+\begin{align}
+K &\sim \operatorname{Poisson}^{+}(\lambda_0) \label{eq:priork} \\
+q_{ii} &\sim \operatorname{Beta}(a_0, b_0), \qquad i=1,\dots,K \label{eq:priordiag} \\
+\boldsymbol{\mu}_k &\sim \mathcal{N}_p(\mathbf{0}, \tau^{-1}\mathbf{I}), \qquad k=1,\dots,K \label{eq:priormean} \\
+\boldsymbol{\Sigma}_k &\sim \mathcal{W}^{-1}_p(\nu_0, \mathbf{S}_0), \qquad k=1,\dots,K \label{eq:priorsigma} \\
+s_1 &\sim \operatorname{Categorical}(\boldsymbol{\pi}_0) \nonumber \\
+s_t \mid s_{t-1} &\sim \operatorname{Categorical}(\mathbf{q}_{s_{t-1},\cdot}), \qquad t=2,\dots,T \nonumber \\
+\mathbf{r}_t \mid s_t &\sim \mathcal{N}_p(\boldsymbol{\mu}_{s_t}, \boldsymbol{\Sigma}_{s_t}), \qquad t=1,\dots,T \nonumber
+\end{align}
+\end{dukebox}
+
+\noindent The innovation is the prior on $K$: a zero-truncated Poisson with rate $\lambda_0$, combined with a reversible-jump mechanism~\cite{green1995} that proposes birth, death, and split-merge moves on the state space.
+
+\section{Algorithm}
+
+Algorithm~\ref{alg:rjmcmc} sketches the main loop. At each iteration, with probabilities $b_K$, $d_K$, and $1-b_K-d_K$, we propose a birth, death, or within-model move respectively.
+
+\begin{table}[H]
+\centering
+\caption{Reversible-jump MCMC for regime-switching HMM.}
+\label{tab:algorithm}
+\begin{tabularx}{0.92\textwidth}{@{}l >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Step} & \textbf{Operation} \\
+\midrule
+1 & Initialize $K^{(0)}$, $\boldsymbol{\theta}^{(0)} = \{\boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k, \mathbf{Q}\}$, and $s_{1:T}^{(0)}$ \\{}
+2 & \textbf{for} $m = 1,\dots,M$ \textbf{do} \\{}
+3 & \quad Sample $u \sim \operatorname{Uniform}(0,1)$ \\{}
+4 & \quad \textbf{if} $u < b_K$: propose birth move, accept with prob.\ $\alpha_{\text{birth}}$ \\{}
+5 & \quad \textbf{else if} $u < b_K + d_K$: propose death move, accept with prob.\ $\alpha_{\text{death}}$ \\{}
+6 & \quad \textbf{else}: update $\boldsymbol{\theta}$ via Gibbs, sample $s_{1:T}$ via forward-filtering backward-sampling \\{}
+7 & \textbf{end for} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The birth move draws a new state $(K+1)$ by splitting an existing regime randomly; the death move merges two adjacent regimes. Acceptance probabilities are derived from the usual Metropolis--Hastings--Green ratio, with the Jacobian of the dimension-changing transformation absorbed into the proposal ratio~\cite{green1995}.
+
+\section{Simulation Study}
+
+We evaluate the sampler on synthetic data with known ground truth. Table~\ref{tab:recovery} reports recovery rates for $K$ across 500 replications under three data-generating processes.
+
+\begin{table}[H]
+\centering
+\caption{Regime count recovery across simulation settings ($N=500$ replications).}
+\label{tab:recovery}
+\begin{tabular}{@{}l c c c c@{}}
+\toprule
+\textbf{True $K$} & \textbf{$T=500$} & \textbf{$T=1000$} & \textbf{$T=2000$} & \textbf{Avg.\ Runtime (s)} \\
+\midrule
+$K=2$ & 0.94 & 0.97 & 0.99 & 42.3 \\{}
+$K=3$ & 0.88 & 0.93 & 0.97 & 67.8 \\{}
+$K=4$ & 0.79 & 0.87 & 0.94 & 98.2 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Recovery is excellent for $K \leq 3$ with $T \geq 1000$, broadly adequate for $K=4$, and the sampler correctly avoids over-fitting (the mean posterior $K$ exceeds the truth by at most $0.18$ across settings).
+
+% ══════════════════════════════════════════════════════════════════════════════
+%  BIBLIOGRAPHY
+% ══════════════════════════════════════════════════════════════════════════════
+\begin{thebibliography}{99}
+
+\bibitem{ang2002} A.\ Ang and G.\ Bekaert, ``International asset allocation with regime shifts,'' \textit{Review of Financial Studies}, vol.\ 15, no.\ 4, pp.\ 1137--1187, 2002.
+
+\bibitem{artzner1999} P.\ Artzner, F.\ Delbaen, J.-M.\ Eber, and D.\ Heath, ``Coherent measures of risk,'' \textit{Mathematical Finance}, vol.\ 9, no.\ 3, pp.\ 203--228, 1999.
+
+\bibitem{black1992} F.\ Black and R.\ Litterman, ``Global portfolio optimization,'' \textit{Financial Analysts Journal}, vol.\ 48, no.\ 5, pp.\ 28--43, 1992.
+
+\bibitem{cont2001} R.\ Cont, ``Empirical properties of asset returns: stylized facts and statistical issues,'' \textit{Quantitative Finance}, vol.\ 1, no.\ 2, pp.\ 223--236, 2001.
+
+\bibitem{fabozzi2007} F.\ J.\ Fabozzi, P.\ N.\ Kolm, D.\ A.\ Pachamanova, and S.\ M.\ Focardi, \textit{Robust Portfolio Optimization and Management}. Hoboken, NJ: Wiley, 2007.
+
+\bibitem{green1995} P.\ J.\ Green, ``Reversible jump Markov chain Monte Carlo computation and Bayesian model determination,'' \textit{Biometrika}, vol.\ 82, no.\ 4, pp.\ 711--732, 1995.
+
+\bibitem{guidolin2007} M.\ Guidolin and A.\ Timmermann, ``Asset allocation under multivariate regime switching,'' \textit{Journal of Economic Dynamics and Control}, vol.\ 31, no.\ 11, pp.\ 3503--3544, 2007.
+
+\bibitem{hamilton1989} J.\ D.\ Hamilton, ``A new approach to the economic analysis of nonstationary time series and the business cycle,'' \textit{Econometrica}, vol.\ 57, no.\ 2, pp.\ 357--384, 1989.
+
+\bibitem{ledoit2004} O.\ Ledoit and M.\ Wolf, ``A well-conditioned estimator for large-dimensional covariance matrices,'' \textit{Journal of Multivariate Analysis}, vol.\ 88, no.\ 2, pp.\ 365--411, 2004.
+
+\bibitem{markowitz1952} H.\ Markowitz, ``Portfolio selection,'' \textit{Journal of Finance}, vol.\ 7, no.\ 1, pp.\ 77--91, 1952.
+
+\bibitem{michaud1989} R.\ O.\ Michaud, ``The Markowitz optimization enigma: is `optimized' optimal?'' \textit{Financial Analysts Journal}, vol.\ 45, no.\ 1, pp.\ 31--42, 1989.
+
+\bibitem{rockafellar2000} R.\ T.\ Rockafellar and S.\ Uryasev, ``Optimization of conditional value-at-risk,'' \textit{Journal of Risk}, vol.\ 2, no.\ 3, pp.\ 21--41, 2000.
+
+\bibitem{rockafellar2002} R.\ T.\ Rockafellar and S.\ Uryasev, ``Conditional value-at-risk for general loss distributions,'' \textit{Journal of Banking and Finance}, vol.\ 26, no.\ 7, pp.\ 1443--1471, 2002.
+
+\bibitem{timmermann2000} A.\ Timmermann, ``Moments of Markov switching models,'' \textit{Journal of Econometrics}, vol.\ 96, no.\ 1, pp.\ 75--111, 2000.
+
+\end{thebibliography}
+
+\end{document}

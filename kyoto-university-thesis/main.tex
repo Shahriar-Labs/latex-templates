@@ -1,0 +1,776 @@
+\documentclass[12pt,a4paper,oneside]{report}
+
+% ---------- Geometry ----------
+\usepackage[a4paper,left=3.5cm,right=2.5cm,top=3cm,bottom=3cm,headheight=15pt]{geometry}
+
+% ---------- Fonts ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathpazo}
+\linespread{1.05}
+
+% ---------- Core packages ----------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{graphicx}
+\usepackage{fontawesome5}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns,fit}
+\usepackage[hidelinks]{hyperref}
+
+% ---------- Palette ----------
+\definecolor{kyotomaroon}{RGB}{115,20,35}
+\definecolor{kyotomaroondark}{RGB}{74,10,20}
+\definecolor{kyotogold}{RGB}{178,141,68}
+\definecolor{inkgray}{RGB}{58,54,51}
+\definecolor{paperlight}{RGB}{250,247,241}
+\definecolor{softgray}{RGB}{225,220,212}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=kyotomaroondark,
+  citecolor=kyotomaroondark,
+  urlcolor=kyotomaroondark
+}
+
+% ---------- Section styling ----------
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{kyotomaroon}}
+  {\filright\normalfont\Large\color{kyotogold}\chaptertitlename\ \thechapter}
+  {8pt}
+  {\titlerule[0.8pt]\vspace{6pt}\Huge}
+\titlespacing*{\chapter}{0pt}{0pt}{28pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{kyotomaroondark}}{\thesection}{0.8em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{inkgray}}{\thesubsection}{0.8em}{}
+
+% ---------- Headers / footers ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[LE,RO]{\small\color{kyotomaroon}\thepage}
+\fancyhead[RE]{\small\color{inkgray}\nouppercase{\leftmark}}
+\fancyhead[LO]{\small\color{inkgray}\nouppercase{\rightmark}}
+\renewcommand{\headrule}{\color{kyotogold}\hrule width\headwidth height\headrulewidth}
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[C]{\small\color{kyotomaroon}\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+% ---------- Misc ----------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\captionsetup{font=small,labelfont={bf,color=kyotomaroondark},margin=1cm}
+
+\newtcolorbox{keybox}[1][]{
+  colback=paperlight, colframe=kyotomaroon, boxrule=0.6pt,
+  arc=2pt, left=8pt, right=8pt, top=6pt, bottom=6pt,
+  fonttitle=\bfseries\color{white}, colbacktitle=kyotomaroon,
+  #1
+}
+
+\newcommand{\sectiontag}[1]{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north west,xshift=0pt,yshift=2pt] at (current page.north west) {};
+  \end{tikzpicture}%
+  {\color{kyotogold}\rule{0.9\linewidth}{0.4pt}}\par\vspace{2pt}
+  {\small\itshape\color{inkgray} #1}\par\vspace{4pt}
+}
+
+\begin{document}
+
+% =====================================================
+% TITLE PAGE
+% =====================================================
+\begin{titlepage}
+\newgeometry{left=3.5cm,right=2.5cm,top=1.2cm,bottom=1.2cm}
+\thispagestyle{empty}
+\begin{center}
+\vspace*{0.3cm}
+
+{\small\scshape\color{inkgray} Graduate School of Engineering}\\[2pt]
+{\small\scshape\color{inkgray} Kyoto University}\\[10pt]
+
+{\color{kyotogold}\rule{0.55\linewidth}{0.8pt}}
+
+\vspace{1.0cm}
+
+{\Large\scshape\color{inkgray} Doctoral Thesis}
+
+\vspace{0.9cm}
+
+{\color{kyotomaroon}\rule{0.32\linewidth}{1.6pt}}
+
+\vspace{0.5cm}
+
+{\fontsize{22}{27}\selectfont\bfseries\color{kyotomaroon}
+Machine Learning-Guided Interface\\[3pt] Engineering for Stable\\[3pt] Perovskite Solar Cells}
+
+\vspace{0.5cm}
+
+{\color{kyotomaroon}\rule{0.32\linewidth}{1.6pt}}
+
+\vspace{0.7cm}
+
+{\normalsize\itshape\color{inkgray}
+A dissertation submitted in partial fulfillment of the\\
+requirements for the degree of\\
+\textbf{Doctor of Philosophy in Engineering}}
+
+\vspace{1.0cm}
+
+{\normalsize\color{inkgray} by}
+
+\vspace{0.3cm}
+
+{\LARGE\bfseries\color{inkgray} Haruto Nishikawa}
+
+\vspace{0.2cm}
+
+{\small\color{inkgray} Student ID: 1029384}
+
+\vspace{0.9cm}
+
+\begin{tabular}{rl}
+{\small\color{inkgray}Supervisor:} & {\small\color{inkgray} Professor Aiko Tanabe} \\
+{\small\color{inkgray}Department:} & {\small\color{inkgray} Materials Science and Engineering} \\
+\end{tabular}
+
+\vspace{0.9cm}
+
+{\color{kyotogold}\rule{0.55\linewidth}{0.8pt}}
+
+\vspace{0.5cm}
+
+{\normalsize\color{inkgray} March 2027}
+
+\vfill
+
+{\color{softgray}\rule{0.9\linewidth}{0.4pt}}
+
+\vspace{0.4cm}
+
+{\footnotesize\color{inkgray!80}
+Unofficial template --- not affiliated with or endorsed by the university.
+Sample content only.}
+
+\vspace{0.3cm}
+
+\end{center}
+\restoregeometry
+\end{titlepage}
+
+% =====================================================
+% FRONT MATTER
+% =====================================================
+\pagenumbering{roman}
+\setcounter{page}{2}
+
+\chapter*{Statement of Originality}
+\addcontentsline{toc}{chapter}{Statement of Originality}
+\thispagestyle{plain}
+
+I hereby declare that this dissertation, submitted to the Graduate School of
+Engineering, Kyoto University, is my own original work carried out under the
+supervision of Professor Aiko Tanabe. All experimental data, computational
+results, and analyses presented herein were obtained by the author unless
+otherwise stated and referenced. No part of this dissertation has been
+submitted for any other degree or qualification at this or any other
+institution.
+
+\vspace{1.4cm}
+
+\begin{tabular}{@{}ll}
+Signature: & \makebox[6cm]{\hrulefill} \\[0.9cm]
+Date: & \makebox[6cm]{\hrulefill} \\
+\end{tabular}
+
+\vspace{1.6cm}
+
+\begin{keybox}[title=Note on Sample Content]
+This document is a formatting template for prospective Kyoto University
+graduate students. The author, supervisor, data, and results described are
+entirely fictional and are provided only to demonstrate typographic and
+structural conventions.
+\end{keybox}
+
+\clearpage
+
+\chapter*{Acknowledgments}
+\addcontentsline{toc}{chapter}{Acknowledgments}
+\thispagestyle{plain}
+
+This work would not have been possible without the guidance of my supervisor,
+Professor Aiko Tanabe, whose patience and rigor shaped every chapter of this
+dissertation. I am grateful to my thesis committee, Professor Ichiro Sakamoto
+and Professor Mei Fujita, for their constructive criticism during the
+candidacy review.
+
+I thank my labmates in the Tanabe Photovoltaics Group --- Wei Chen, Priya
+Raman, and Kenji Okamoto --- for countless discussions over glovebox
+handovers and late-night XRD sessions. Special thanks to the Nexa Foundation
+Graduate Fellowship for financial support throughout my doctoral studies, and
+to Synapse Photovoltaics Co., Ltd.\ for providing device-grade indium tin
+oxide substrates used in Chapter~4.
+
+Finally, I thank my family for their unwavering encouragement, and my
+partner, Yuki, for tolerating four years of sulfur-smelling laboratory
+clothes.
+
+\vspace{1cm}
+\hfill \textit{Haruto Nishikawa}\\
+\hfill \textit{Kyoto, March 2027}
+
+\clearpage
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\thispagestyle{plain}
+
+Halide perovskite solar cells have reached certified power conversion
+efficiencies (PCE) exceeding 26\%, yet operational stability remains the
+principal barrier to commercialization. Ion migration and non-radiative
+recombination at the perovskite/electron-transport-layer (ETL) interface are
+widely implicated in the light- and heat-induced degradation that limits
+device lifetime. This dissertation reports a machine learning (ML) guided
+framework for the rational selection of self-assembled monolayer (SAM)
+interlayers that simultaneously passivate interfacial defects and suppress
+ion migration.
+
+A gradient-boosted regression model was trained on a curated dataset of 214
+literature and in-house SAM candidates, using molecular descriptors (dipole
+moment, anchoring-group binding energy, steric footprint) as features and
+measured open-circuit voltage deficit as the target. Bayesian optimization
+over the trained surrogate identified six previously unreported candidate
+molecules, three of which were synthesized and incorporated into
+n--i--p device stacks. The best-performing interlayer, denoted
+\textsc{sam-7}, yielded a champion PCE of 24.1\% (stabilized), a 62~mV
+reduction in $V_{oc}$ deficit relative to the untreated control, and an
+$8.3\times$ improvement in $T_{80}$ operational lifetime under
+one-sun illumination at 65\textdegree C.
+
+Kelvin-probe force microscopy and time-resolved photoluminescence indicate
+that the efficiency and stability gains arise from a reduction in trap-state
+density at the buried interface rather than a change in bulk crystallinity.
+These results demonstrate that ML-accelerated interlayer discovery can
+shortcut traditional trial-and-error interface engineering, and they
+establish a transferable descriptor set for future SAM screening campaigns
+across perovskite compositions.
+
+\vspace{0.8cm}
+\textbf{Keywords:} perovskite solar cells, interface engineering,
+self-assembled monolayers, machine learning, operational stability,
+Bayesian optimization
+
+\clearpage
+
+\tableofcontents
+\clearpage
+\listoffigures
+\clearpage
+\listoftables
+\clearpage
+
+\chapter*{List of Abbreviations}
+\addcontentsline{toc}{chapter}{List of Abbreviations}
+\thispagestyle{plain}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Abbreviation} & \textbf{Description} \\
+\midrule
+PCE & Power conversion efficiency \\
+SAM & Self-assembled monolayer \\
+ETL & Electron transport layer \\
+HTL & Hole transport layer \\
+FF & Fill factor \\
+$V_{oc}$ & Open-circuit voltage \\
+$J_{sc}$ & Short-circuit current density \\
+$T_{80}$ & Time to 80\% of initial PCE \\
+XRD & X-ray diffraction \\
+PL & Photoluminescence \\
+UPS & Ultraviolet photoelectron spectroscopy \\
+KPFM & Kelvin-probe force microscopy \\
+ML & Machine learning \\
+GBRT & Gradient-boosted regression tree \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\clearpage
+
+% =====================================================
+% MAIN MATTER
+% =====================================================
+\pagenumbering{arabic}
+
+\chapter{Introduction}
+
+\section{Motivation}
+
+The transition toward carbon-neutral electricity generation has renewed
+interest in thin-film photovoltaics capable of low-cost, high-throughput
+manufacturing. Metal-halide perovskite solar cells (PSCs) have progressed
+from a laboratory curiosity in 2009 to certified single-junction
+efficiencies above 26\%, rivaling crystalline silicon while requiring
+orders-of-magnitude less active material. Despite this remarkable
+trajectory, the operational lifetime of PSCs under real-world illumination
+and thermal cycling remains insufficient for the 20+ year warranties
+expected of commercial modules.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  layer/.style={draw=kyotomaroondark, thick, minimum width=5.6cm, minimum height=0.9cm, text=inkgray, font=\small},
+  every node/.style={font=\small}
+]
+\begin{scope}[local bounding box=stack]
+\node[layer, fill=softgray] (glass) at (0,0) {Glass Substrate};
+\node[layer, fill=kyotogold!35] (ito) [above=0pt of glass] {ITO / FTO Electrode};
+\node[layer, fill=kyotogold!60] (etl) [above=0pt of ito] {SnO$_2$ Electron Transport Layer};
+\node[layer, fill=kyotomaroon!25, draw=kyotomaroondark, ultra thick] (sam) [above=0pt of etl] {SAM Interlayer (this work)};
+\node[layer, fill=paperlight, draw=kyotomaroondark] (perov) [above=0pt of sam] {Perovskite Absorber (FAPbI$_3$-based)};
+\node[layer, fill=kyotogold!60] (htl) [above=0pt of perov] {Spiro-OMeTAD Hole Transport Layer};
+\node[layer, fill=inkgray!70, text=white] (au) [above=0pt of htl] {Gold Electrode};
+\end{scope}
+\begin{scope}[on background layer]
+\node[fill=paperlight, draw=softgray, inner sep=10pt, fit=(stack)] {};
+\end{scope}
+\draw[->, kyotomaroon, thick] (sam.east) -- ++(2.0,0) node[right, text=kyotomaroondark, align=left] {Buried interface\\targeted in this study};
+\end{tikzpicture}
+\caption{Schematic n--i--p device architecture. The SAM interlayer studied
+in this dissertation is inserted between the SnO$_2$ electron transport
+layer and the perovskite absorber.}
+\label{fig:device-stack}
+\end{figure}
+
+Two coupled degradation pathways dominate the literature: (i) migration of
+halide and organic-cation vacancies under bias and illumination, which
+accumulates at interfaces and accelerates ion-induced decomposition, and
+(ii) non-radiative recombination at under-coordinated surface sites, which
+both caps the attainable open-circuit voltage and generates local heating
+that further destabilizes the lattice. Figure~\ref{fig:device-stack}
+illustrates the standard n--i--p architecture used throughout this work,
+highlighting the buried ETL/perovskite interface as the primary target of
+this dissertation.
+
+\section{Problem Statement}
+
+Interface engineering with self-assembled monolayers (SAMs) has emerged as
+one of the most effective strategies for simultaneously passivating surface
+defects and suppressing ion migration. However, the design space of
+candidate SAM molecules --- combinations of anchoring groups, spacer
+chemistries, and terminal functional groups --- is large, and empirical
+screening remains slow, typically limited to a handful of candidates per
+publication. A systematic, data-driven approach to interlayer discovery is
+therefore needed.
+
+\section{Research Objectives}
+
+\begin{keybox}[title=Research Questions]
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+\item Can a machine learning model trained on molecular descriptors
+  reliably predict the $V_{oc}$-deficit reduction conferred by a candidate
+  SAM interlayer?
+\item Does Bayesian optimization over such a surrogate model identify
+  previously unreported candidates that outperform literature benchmarks?
+\item What is the microscopic origin --- bulk or interfacial --- of any
+  observed efficiency and stability improvement?
+\end{enumerate}
+\end{keybox}
+
+\section{Contributions}
+
+This dissertation makes three primary contributions: (1) a curated,
+publicly documented dataset of 214 SAM/perovskite interface measurements
+compiled from literature and in-house synthesis; (2) a gradient-boosted
+surrogate model, coupled with Bayesian optimization, that reduces the
+candidate search space by an estimated 85\% relative to exhaustive
+screening; and (3) experimental validation of the top candidate,
+\textsc{sam-7}, which achieves an 8.3$\times$ improvement in $T_{80}$
+lifetime over the untreated control.
+
+\section{Thesis Organization}
+
+Chapter~2 reviews prior interface engineering strategies and positions this
+work within the literature. Chapter~3 describes the ML framework,
+descriptor set, and experimental methods. Chapter~4 presents device results
+and stability data. Chapter~5 concludes and outlines future directions.
+
+\chapter{Literature Review}
+
+\section{Degradation Mechanisms in Perovskite Solar Cells}
+
+Extrinsic degradation stressors --- moisture, oxygen, ultraviolet light ---
+have been substantially mitigated through encapsulation and compositional
+engineering (e.g., mixed-cation, mixed-halide formulations). The remaining
+intrinsic degradation pathways are increasingly attributed to interfacial
+phenomena rather than bulk instability, motivating the focus of this
+dissertation on buried-interface treatments rather than bulk additive
+engineering.
+
+\section{Interlayer Strategies}
+
+Table~\ref{tab:literature} summarizes representative interlayer strategies
+reported in the perovskite literature, categorized by passivation
+mechanism.
+
+\begin{table}[htbp]
+\centering
+\caption{Representative interface engineering strategies for the
+ETL/perovskite junction.}
+\label{tab:literature}
+\begin{tabularx}{\linewidth}{@{}l X c c@{}}
+\toprule
+\textbf{Strategy} & \textbf{Passivation Mechanism} & \textbf{$\Delta$PCE (\%)} & \textbf{$\Delta T_{80}$} \\
+\midrule
+Alkylphosphonic acid SAM & Lewis-acid site coordination & +1.2 & 3.1$\times$ \\
+Fullerene interlayer & Trap-state electronic passivation & +0.8 & 2.4$\times$ \\
+2D perovskite capping & Ion-migration barrier & +1.5 & 4.8$\times$ \\
+Alkylammonium halide rinse & Surface stoichiometry correction & +0.6 & 1.9$\times$ \\
+Carboxylate SAM & Dipole-assisted band alignment & +1.0 & 2.7$\times$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+While each approach yields measurable gains, direct comparison across
+studies is confounded by differing perovskite compositions, fabrication
+environments, and testing protocols. This motivates the internally
+consistent, single-laboratory screening campaign undertaken in this
+dissertation.
+
+\section{Data-Driven Materials Discovery}
+
+Machine learning has accelerated candidate screening in adjacent domains,
+including battery electrolyte design and catalyst discovery, typically by
+training a surrogate model on a modest labeled dataset and using an
+acquisition function (e.g., expected improvement) to prioritize the next
+experiment. This dissertation adapts that closed-loop paradigm to SAM
+interlayer selection, described in detail in Chapter~3.
+
+\section{Research Gap}
+
+No prior study, to the author's knowledge, has applied a quantitative
+surrogate-model search over molecular descriptors specifically for
+ETL-side SAM interlayers in perovskite photovoltaics, nor correlated the
+resulting device gains with buried-interface trap-state density measured
+by Kelvin-probe force microscopy. This gap defines the scope of the
+present work.
+
+\chapter{Methodology}
+
+\section{Overview}
+
+Figure~\ref{fig:workflow} summarizes the closed-loop discovery pipeline:
+descriptor calculation, surrogate model training, Bayesian acquisition,
+targeted synthesis, and device fabrication/characterization, with
+experimental results fed back into the training set.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=0.9cm and 1.3cm,
+  box/.style={draw=kyotomaroondark, rounded corners=2pt, fill=paperlight, minimum height=1cm, minimum width=2.6cm, align=center, font=\small, text=inkgray},
+  arr/.style={->, kyotomaroon, thick}
+]
+\node[box] (data) {Descriptor\\Dataset ($n{=}214$)};
+\node[box, right=of data] (model) {GBRT\\Surrogate Model};
+\node[box, right=of model] (acq) {Bayesian\\Acquisition};
+\node[box, below=of acq] (synth) {Targeted\\Synthesis};
+\node[box, left=of synth] (fab) {Device\\Fabrication};
+\node[box, left=of fab] (char) {Characterization\\(PCE, $T_{80}$, KPFM)};
+
+\draw[arr] (data) -- (model);
+\draw[arr] (model) -- (acq);
+\draw[arr] (acq) -- (synth);
+\draw[arr] (synth) -- (fab);
+\draw[arr] (fab) -- (char);
+\draw[arr] (char.north) |- ($(data.south)+(0,-0.6)$) -| (data.south);
+\end{tikzpicture}
+\caption{Closed-loop interlayer discovery workflow used in this
+dissertation. Characterization results are fed back into the training
+dataset for subsequent iterations.}
+\label{fig:workflow}
+\end{figure}
+
+\section{Descriptor Set and Surrogate Model}
+
+Each candidate SAM molecule is represented by an eight-dimensional feature
+vector $\mathbf{x} = (x_1,\ldots,x_8)$ comprising anchoring-group binding
+energy, molecular dipole moment, steric footprint (solvent-accessible
+surface area), HOMO--LUMO gap, chain length, terminal-group Hammett
+constant, computed $\log P$, and literature-reported deposition
+concentration. The regression target is the measured $V_{oc}$-deficit
+reduction, $\Delta V_{oc}^{\text{def}}$, relative to an untreated control
+processed in the same batch.
+
+A gradient-boosted regression tree (GBRT) ensemble of 300 trees (maximum
+depth 4, learning rate 0.05) was trained with five-fold cross-validation,
+achieving a held-out $R^2$ of 0.81 and root-mean-square error of 14~mV.
+The trained surrogate $\hat{f}(\mathbf{x})$ and its predictive variance
+$\hat{\sigma}^2(\mathbf{x})$, estimated from the ensemble spread, define
+the expected-improvement acquisition function
+
+\begin{equation}
+\mathrm{EI}(\mathbf{x}) = \left(\hat{f}(\mathbf{x}) - f^{\star}\right)\,
+\Phi(z) + \hat{\sigma}(\mathbf{x})\,\phi(z), \qquad
+z = \frac{\hat{f}(\mathbf{x}) - f^{\star}}{\hat{\sigma}(\mathbf{x})},
+\label{eq:ei}
+\end{equation}
+
+where $f^{\star}$ is the best value observed so far and $\Phi$, $\phi$
+denote the standard normal CDF and PDF, respectively. Candidates were
+ranked by $\mathrm{EI}(\mathbf{x})$ over a virtual library of 8{,}400
+synthetically accessible molecules generated by combinatorial substitution
+of anchoring groups, spacers, and terminal groups.
+
+\begin{keybox}[title=Algorithm 3.1 --- Closed-Loop Candidate Selection]
+\begin{enumerate}[leftmargin=*, itemsep=2pt]
+\item Fit GBRT ensemble on current labeled dataset $\mathcal{D}$.
+\item Score virtual library $\mathcal{V}$ using Equation~\eqref{eq:ei}.
+\item Select top-$k$ ($k=3$) unlabeled candidates by $\mathrm{EI}$.
+\item Synthesize candidates; fabricate and test devices.
+\item Append new $(\mathbf{x}, y)$ pairs to $\mathcal{D}$; return to step 1.
+\end{enumerate}
+\end{keybox}
+
+\section{Materials and Device Fabrication}
+
+Patterned ITO substrates were sequentially cleaned by ultrasonication in
+detergent, deionized water, acetone, and isopropanol, followed by 15~min
+UV--ozone treatment. A compact SnO$_2$ layer was deposited from
+colloidal precursor and annealed at 150\textdegree C for 30~min. Candidate
+SAM interlayers were deposited from 1~mM ethanolic solution by spin
+coating (3000~rpm, 30~s) followed by a 100\textdegree C anneal. The
+perovskite absorber (Cs$_{0.05}$FA$_{0.90}$MA$_{0.05}$PbI$_3$) was
+deposited by a one-step antisolvent method, followed by Spiro-OMeTAD hole
+transport layer and thermally evaporated gold electrodes (80~nm).
+
+\section{Characterization Techniques}
+
+Current--voltage characteristics were measured under AM1.5G simulated
+illumination (calibrated with a certified silicon reference cell).
+Operational stability was tracked under continuous one-sun illumination at
+65\textdegree C in nitrogen atmosphere, with $T_{80}$ defined as the time
+at which PCE falls to 80\% of its initial (post-burn-in) value.
+Buried-interface trap-state density was estimated from time-resolved
+photoluminescence decay fits, and surface potential was mapped by
+Kelvin-probe force microscopy (KPFM) on cleaved cross-sections.
+
+\chapter{Results and Discussion}
+
+\section{Surrogate Model Performance}
+
+The GBRT surrogate achieved a cross-validated $R^2$ of 0.81 (RMSE
+14~mV) on the held-out fold, with anchoring-group binding energy and
+dipole moment identified as the two most important features by
+permutation importance (weights 0.34 and 0.27, respectively). Six
+candidates were shortlisted by Equation~\eqref{eq:ei}; three were
+synthetically accessible within the project timeline and were carried
+forward to device fabrication.
+
+\section{Device Performance}
+
+\begin{table}[htbp]
+\centering
+\caption{Photovoltaic parameters for control and SAM-treated devices
+(average of 12 cells per condition; champion cell in parentheses).}
+\label{tab:device-results}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Device} & \textbf{PCE (\%)} & $V_{oc}$ \textbf{(V)} & $J_{sc}$ \textbf{(mA/cm}$^2$\textbf{)} & \textbf{FF (\%)} \\
+\midrule
+Control (no SAM) & 21.4 (21.9) & 1.088 & 24.8 & 79.1 \\
+\textsc{sam-3} & 22.6 (23.0) & 1.121 & 24.9 & 80.9 \\
+\textsc{sam-5} & 22.1 (22.5) & 1.104 & 24.7 & 80.6 \\
+\textsc{sam-7} & 23.6 (24.1) & 1.150 & 25.0 & 82.3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:device-results} summarizes photovoltaic parameters for the
+control and three synthesized SAM candidates. \textsc{sam-7} --- a
+phosphonic-acid-anchored molecule with a fluorinated terminal group ---
+delivered the largest gains across all metrics, most notably a 62~mV
+increase in $V_{oc}$ relative to the control, consistent with the
+model's prediction that its combination of high binding energy and
+moderate dipole moment would minimize interfacial recombination.
+
+\section{Operational Stability}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=1.0]
+\draw[->, thick, inkgray] (0,0) -- (9.2,0) node[right, font=\small] {Time (h)};
+\draw[->, thick, inkgray] (0,0) -- (0,5.4) node[above, font=\small] {Normalized PCE (\%)};
+\foreach \x/\lbl in {0/0, 1.84/200, 3.68/400, 5.52/600, 7.36/800, 9.2/1000}
+  \draw[inkgray] (\x,0) -- (\x,-0.1) node[below, font=\scriptsize] {\lbl};
+\foreach \y/\lbl in {0/60, 1.35/70, 2.7/80, 4.05/90, 5.4/100}
+  \draw[inkgray] (0,\y) -- (-0.1,\y) node[left, font=\scriptsize] {\lbl};
+
+\draw[kyotomaroon, thick]
+  (0,5.4) .. controls (1.8,5.2) and (3.6,3.4) .. (5.5,2.15)
+  .. controls (7.0,1.3) and (8.2,0.9) .. (9.2,0.65);
+\node[kyotomaroon, font=\scriptsize] at (7.6,1.9) {Control};
+
+\draw[kyotogold!80!black, thick]
+  (0,5.4) .. controls (2.5,5.35) and (5.0,5.05) .. (7.0,4.55)
+  .. controls (8.0,4.25) and (8.8,3.95) .. (9.2,3.7);
+\node[kyotogold!70!black, font=\scriptsize] at (6.6,4.9) {\textsc{sam-7}};
+
+\draw[dashed, softgray] (0,2.7*1.5) -- (9.2,2.7*1.5);
+\end{tikzpicture}
+\caption{Normalized PCE evolution under one-sun illumination at
+65\textdegree C for control and \textsc{sam-7}-treated devices.
+\textsc{sam-7} extends $T_{80}$ from approximately 190~h (control) to
+approximately 1{,}580~h.}
+\label{fig:stability}
+\end{figure}
+
+Figure~\ref{fig:stability} shows normalized PCE evolution during
+accelerated aging. The \textsc{sam-7} device retains 80\% of its initial
+efficiency after approximately 1{,}580~h, an 8.3$\times$ improvement over
+the 190~h measured for the untreated control.
+
+\section{Mechanistic Origin of the Improvement}
+
+KPFM line scans across cleaved cross-sections reveal a 40~mV reduction in
+surface potential fluctuation at the SnO$_2$/perovskite interface for
+\textsc{sam-7} devices relative to control, consistent with suppressed
+ion accumulation at grain boundaries near the buried interface.
+Time-resolved photoluminescence decay fits yield a bulk trap density
+essentially unchanged between conditions ($\sim 10^{16}$~cm$^{-3}$),
+indicating that the observed gains originate predominantly from
+interfacial rather than bulk passivation, in agreement with the design
+hypothesis motivating this dissertation.
+
+\chapter{Conclusion and Future Work}
+
+\section{Summary of Findings}
+
+This dissertation demonstrates that a machine-learning-guided,
+closed-loop search over molecular descriptors can efficiently identify
+SAM interlayers that improve both efficiency and operational stability of
+perovskite solar cells. The top candidate, \textsc{sam-7}, achieved a
+champion PCE of 24.1\% and an 8.3$\times$ improvement in $T_{80}$
+lifetime, with KPFM and time-resolved photoluminescence data attributing
+the gain to reduced interfacial trap density rather than bulk
+crystallinity changes.
+
+\section{Limitations}
+
+The virtual candidate library, while large (8{,}400 molecules), was
+restricted to synthetically accessible combinations of a fixed set of
+anchoring, spacer, and terminal-group chemistries; the surrogate model
+may therefore under-explore chemically distinct interlayer classes.
+Additionally, stability testing was limited to 1{,}000~h under
+laboratory-controlled accelerated aging and does not capture field
+conditions such as humidity cycling or mechanical stress.
+
+\section{Future Directions}
+
+Future work should extend the descriptor set to include computed
+adsorption geometries from density functional theory, evaluate
+transferability of \textsc{sam-7} across wider-bandgap perovskite
+compositions for tandem applications, and validate stability findings
+under outdoor field testing in collaboration with industrial partners
+such as Synapse Photovoltaics Co., Ltd.
+
+\begin{keybox}[title=Key Contribution]
+A transferable, descriptor-based screening framework that reduces
+empirical SAM interlayer discovery from dozens of trial-and-error
+experiments to a handful of model-guided syntheses, validated by an
+8.3$\times$ operational lifetime improvement in fabricated devices.
+\end{keybox}
+
+% =====================================================
+% REFERENCES
+% =====================================================
+\begin{thebibliography}{99}
+
+\bibitem{ref1} H.\ Nishikawa, A.\ Tanabe, W.\ Chen. Descriptor-based
+  screening of self-assembled monolayers for perovskite photovoltaics.
+  \textit{Journal of Interfacial Materials}, 48(3):211--224, 2025.
+
+\bibitem{ref2} P.\ Raman, K.\ Okamoto. Ion migration suppression at
+  buried perovskite interfaces: a review. \textit{Progress in
+  Photovoltaic Materials}, 12(1):55--79, 2024.
+
+\bibitem{ref3} M.\ Fujita, I.\ Sakamoto. Kelvin-probe force microscopy of
+  halide perovskite grain boundaries. \textit{Applied Surface Science
+  Letters}, 9(4):402--410, 2023.
+
+\bibitem{ref4} S.\ Andersen, L.\ Moreau. Bayesian optimization for
+  accelerated materials discovery. \textit{Computational Materials
+  Review}, 15(2):88--106, 2022.
+
+\bibitem{ref5} T.\ Yoshida, R.\ Nakamura. Gradient-boosted surrogate
+  models in thin-film photovoltaic design. \textit{Machine Learning for
+  Energy Materials}, 3(1):1--18, 2024.
+
+\bibitem{ref6} A.\ Tanabe, H.\ Nishikawa. Buried-interface passivation
+  strategies for n--i--p perovskite solar cells. \textit{Kyoto Materials
+  Science Reports}, 41:133--149, 2025.
+
+\bibitem{ref7} W.\ Chen, P.\ Raman. Fluorinated self-assembled
+  monolayers for band-alignment engineering. \textit{Journal of
+  Interfacial Materials}, 47(2):97--112, 2024.
+
+\bibitem{ref8} K.\ Okamoto, M.\ Fujita, A.\ Tanabe. Accelerated aging
+  protocols for perovskite photovoltaic stability testing.
+  \textit{Progress in Photovoltaic Materials}, 11(4):301--318, 2023.
+
+\end{thebibliography}
+\addcontentsline{toc}{chapter}{References}
+
+% =====================================================
+% APPENDIX
+% =====================================================
+\appendix
+\chapter{Supplementary Data}
+
+\section{Full Candidate Library Summary}
+
+\begin{table}[htbp]
+\centering
+\caption{Summary statistics of the virtual SAM candidate library used for
+Bayesian acquisition ranking.}
+\label{tab:appendix}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Anchoring Group} & \textbf{Candidates} & \textbf{Mean Predicted $\Delta V_{oc}^{\text{def}}$ (mV)} \\
+\midrule
+Phosphonic acid & 2{,}940 & 38 \\
+Carboxylic acid & 3{,}150 & 24 \\
+Silane & 1{,}260 & 19 \\
+Thiol & 1{,}050 & 15 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Data and Code Availability}
+
+The descriptor dataset, trained surrogate model, and analysis scripts
+described in Chapter~3 are archived as sample supplementary material
+accompanying this template and are not intended for redistribution as
+research data.
+
+\end{document}

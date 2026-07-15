@@ -1,0 +1,593 @@
+\documentclass[12pt,a4paper]{report}
+
+% ---------- Core packages ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathpazo}
+\usepackage{geometry}
+\geometry{left=3.5cm,right=2.5cm,top=3cm,bottom=2.5cm,headsep=1cm,footskip=1.25cm}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{setspace}
+\usepackage{xcolor}
+\usepackage[table]{xcolor}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns,arrows.meta,fit}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{fontawesome5}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[hidelinks,colorlinks=false]{hyperref}
+\usepackage{caption}
+\usepackage{multirow}
+\usepackage{longtable}
+
+% ---------- Colour palette ----------
+\definecolor{yonseiblue}{RGB}{0,54,131}
+\definecolor{yonseinavy}{RGB}{10,26,54}
+\definecolor{yonseigold}{RGB}{176,141,66}
+\definecolor{softgray}{RGB}{96,102,112}
+\definecolor{paletint}{RGB}{237,241,247}
+
+% ---------- Section styling ----------
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\color{yonseinavy}}
+  {\filright\Large\color{yonseigold}\chaptertitlename\ \thechapter}
+  {8pt}
+  {\Huge\raggedright}
+\titlespacing*{\chapter}{0pt}{0pt}{28pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{yonseiblue}}{\thesection}{0.6em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{yonseinavy}}{\thesubsection}{0.6em}{}
+
+% ---------- Header / footer ----------
+\pagestyle{fancy}
+\setlength{\headheight}{14.5pt}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{yonseiblue}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[L]{\small\itshape\color{softgray}\leftmark}
+\fancyhead[R]{\small\color{softgray}\thepage}
+
+\captionsetup{font=small,labelfont={bf,color=yonseiblue},format=plain}
+
+\newtcolorbox{keyboxblue}[1][]{
+  colback=paletint, colframe=yonseiblue, boxrule=0.6pt,
+  arc=2pt, left=8pt, right=8pt, top=6pt, bottom=6pt, #1
+}
+
+\newcommand{\seceps}{\vspace{2pt}\noindent\textcolor{yonseigold}{\rule{2.2cm}{1.4pt}}\vspace{6pt}\par}
+
+\setlist[itemize]{label=\textcolor{yonseiblue}{\small$\blacksquare$}, leftmargin=1.4em}
+\setlist[enumerate,1]{label=\textcolor{yonseiblue}{\bfseries\arabic*.}, leftmargin=1.6em}
+
+\begin{document}
+
+% ============================================================
+% TITLE PAGE
+% ============================================================
+\begin{titlepage}
+\newgeometry{left=3.5cm,right=2.5cm,top=2.8cm,bottom=2.5cm}
+\centering
+
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[yonseiblue] (current page.north west) rectangle ([yshift=-0.35cm]current page.north east);
+  \fill[yonseigold] ([yshift=-0.35cm]current page.north west) rectangle ([yshift=-0.45cm]current page.north east);
+\end{tikzpicture}
+
+\vspace*{1.6cm}
+{\color{softgray}\small\scshape Graduate School}\\[2pt]
+{\color{yonseiblue}\Large\bfseries YONSEI UNIVERSITY}\\[4pt]
+{\color{softgray}\footnotesize SEODAEMUN-GU, SEOUL, REPUBLIC OF KOREA}
+
+\vspace{1.4cm}
+\begin{tikzpicture}
+  \node[circle, draw=yonseiblue, line width=1.2pt, minimum size=2.6cm, inner sep=0pt] (seal) {};
+  \node[circle, draw=yonseigold, line width=0.6pt, minimum size=2.1cm, inner sep=0pt] {};
+  \node[font=\bfseries\color{yonseiblue}\LARGE] at (seal.center) {Y};
+\end{tikzpicture}
+
+\vspace{1.5cm}
+{\color{yonseinavy}\Large\bfseries Adaptive Resource Scheduling for\\[3pt] Latency-Constrained Distributed Edge Computing Systems}
+
+\vspace{0.5cm}
+{\color{softgray}\normalsize A Thesis Submitted to the Graduate School of Yonsei University\\
+in Partial Fulfillment of the Requirements for the Degree of\\
+Master of Science}
+
+\vspace{1.6cm}
+{\color{yonseiblue}\rule{6.5cm}{0.5pt}}
+
+\vspace{1.2cm}
+{\large\bfseries\color{yonseinavy} Min-jun Seo}\\[4pt]
+{\color{softgray}\small Department of Computer Science}
+
+\vspace{1.6cm}
+{\color{softgray}\normalsize February 2027}
+
+\vfill
+\begin{center}
+\begin{minipage}{0.82\textwidth}
+\centering
+\footnotesize\color{softgray}
+\textit{Unofficial template --- not affiliated with or endorsed by Yonsei University. Sample content only.}
+\end{minipage}
+\end{center}
+\vspace{0.6cm}
+\restoregeometry
+\end{titlepage}
+
+% ============================================================
+% APPROVAL PAGE
+% ============================================================
+\thispagestyle{empty}
+\begin{center}
+{\large\bfseries\color{yonseiblue} This Certifies that the Thesis of Min-jun Seo is Approved.}
+\end{center}
+\vspace{1.4cm}
+
+\noindent
+\begin{tabular}{@{}p{4cm}p{0.5cm}p{9.5cm}@{}}
+ & & \rule{9.5cm}{0.4pt}\\[2pt]
+ & & Thesis Committee Member, Advisor: Prof.\ Hae-won Choi\\[26pt]
+ & & \rule{9.5cm}{0.4pt}\\[2pt]
+ & & Thesis Committee Member: Prof.\ Yoon-seo Baek\\[26pt]
+ & & \rule{9.5cm}{0.4pt}\\[2pt]
+ & & Thesis Committee Member: Prof.\ Dong-hyun Ahn\\
+\end{tabular}
+
+\vspace{1.6cm}
+\begin{center}
+Graduate School\\
+Yonsei University\\
+December 2026
+\end{center}
+
+\clearpage
+
+% ============================================================
+% FRONT MATTER
+% ============================================================
+\pagenumbering{roman}
+\onehalfspacing
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\seceps
+
+Edge computing platforms increasingly host latency-sensitive workloads that must be
+scheduled across heterogeneous nodes with fluctuating compute and network capacity.
+Static allocation policies degrade rapidly under bursty demand, producing tail latencies
+that violate service-level objectives. This thesis proposes \textbf{Adaptive Tiered
+Scheduling (ATS)}, a resource scheduling framework that combines short-horizon workload
+forecasting with a lightweight priority-feedback controller to redistribute tasks across
+edge clusters in real time.
+
+The framework is evaluated on a simulated testbed of 48 heterogeneous edge nodes
+generated from the Nimbus-Trace-2026 synthetic workload corpus, modeling three
+application classes: interactive inference, telemetry aggregation, and batch
+re-indexing. Compared against a round-robin baseline and a static-priority queue,
+ATS reduces the 95th-percentile task completion latency by \textbf{38.4\%} and improves
+sustained cluster utilization by \textbf{21.7\%}, while keeping controller overhead below
+1.2\% of total scheduling cost. A sensitivity analysis further shows that ATS remains
+stable under node-failure injection rates of up to 12\%, degrading gracefully rather
+than triggering cascading reschedule storms.
+
+These results indicate that combining short-horizon forecasting with feedback-driven
+priority adjustment offers a practical, low-overhead path toward latency-robust
+scheduling for production edge deployments.
+
+\vspace{0.6cm}
+\noindent\textbf{Key words:} edge computing, resource scheduling, latency-aware systems,
+adaptive control, distributed systems
+
+\clearpage
+
+\tableofcontents
+\clearpage
+
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+\clearpage
+
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+\clearpage
+
+% ============================================================
+% MAIN MATTER
+% ============================================================
+\pagenumbering{arabic}
+
+\chapter{Introduction}
+\seceps
+
+\section{Background and Motivation}
+
+The proliferation of latency-sensitive applications --- augmented reality overlays,
+real-time telemetry aggregation, and on-device inference pipelines --- has pushed
+computation away from centralized data centers and toward the network edge. Unlike
+cloud data centers, edge deployments are characterized by heterogeneous hardware,
+intermittent connectivity, and tightly bounded compute budgets per node. A scheduler
+that treats all nodes and tasks uniformly cannot exploit this heterogeneity, and
+naive load-balancing strategies routinely violate the sub-100\,ms response budgets
+that interactive edge workloads require.
+
+Figure~\ref{fig:architecture} sketches the deployment topology considered in this
+thesis: a coordinator tier that receives task submissions, a forecasting module
+that estimates near-term load per node, and a pool of heterogeneous edge workers
+that execute the scheduled tasks.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw=yonseiblue, rounded corners=3pt, minimum width=2.6cm, minimum height=1cm, align=center, fill=paletint, font=\small},
+  worker/.style={draw=yonseigold, rounded corners=2pt, minimum width=1.7cm, minimum height=0.8cm, align=center, fill=white, font=\scriptsize},
+  arr/.style={-{Latex[length=2mm]}, draw=softgray, thick}
+]
+\node[box] (coord) {Coordinator};
+\node[box, below=1.2cm of coord] (fc) {Forecast Module};
+\node[box, right=2.6cm of coord] (ctrl) {Priority-Feedback Controller};
+
+\node[worker, below=1.6cm of fc, xshift=-2.4cm] (w1) {Worker A\\(GPU-lite)};
+\node[worker, below=1.6cm of fc] (w2) {Worker B\\(CPU)};
+\node[worker, below=1.6cm of fc, xshift=2.4cm] (w3) {Worker C\\(GPU)};
+
+\draw[arr] (coord) -- (fc);
+\draw[arr] (coord) -- (ctrl);
+\draw[arr] (fc) -- (ctrl);
+\draw[arr] (fc.south) -- (w1.north);
+\draw[arr] (fc.south) -- (w2.north);
+\draw[arr] (fc.south) -- (w3.north);
+
+\begin{scope}[on background layer]
+\node[draw=softgray, dashed, rounded corners=4pt, fit=(w1)(w2)(w3), inner sep=10pt, label={[font=\scriptsize\color{softgray}]below:Heterogeneous edge cluster}] {};
+\end{scope}
+\end{tikzpicture}
+\caption{High-level architecture of the Adaptive Tiered Scheduling (ATS) system.}
+\label{fig:architecture}
+\end{figure}
+
+\section{Problem Statement}
+
+Formally, given a stream of tasks $\mathcal{T} = \{t_1, t_2, \dots, t_n\}$ arriving
+at a coordinator and a set of edge nodes $\mathcal{N} = \{v_1, \dots, v_m\}$ with
+time-varying capacity $c_j(\tau)$, the scheduler must produce an assignment
+$\phi: \mathcal{T} \rightarrow \mathcal{N}$ that minimizes the 95th-percentile
+completion latency subject to per-node capacity constraints:
+
+\begin{equation}
+\min_{\phi} \; P_{95}\big(\text{lat}(t_i)\big) \quad \text{s.t.} \quad
+\sum_{t_i : \phi(t_i) = v_j} w(t_i) \leq c_j(\tau), \; \forall v_j \in \mathcal{N}
+\label{eq:objective}
+\end{equation}
+
+where $w(t_i)$ denotes the resource weight of task $t_i$. Existing schedulers
+typically optimize a proxy of Equation~\ref{eq:objective} (mean latency or raw
+throughput), which under bursty arrival patterns leaves the tail badly exposed.
+
+\begin{keyboxblue}
+\textbf{\color{yonseiblue}Research Questions}
+\begin{enumerate}
+  \item Can short-horizon load forecasting meaningfully reduce tail latency
+        without adding prohibitive scheduling overhead?
+  \item How should priority feedback be structured to avoid reschedule storms
+        under node-failure conditions?
+  \item What overhead-to-benefit ratio is acceptable for production deployment?
+\end{enumerate}
+\end{keyboxblue}
+
+\section{Contributions}
+
+This thesis makes the following contributions:
+
+\begin{itemize}
+  \item A forecasting-augmented scheduling algorithm, \textbf{ATS}, that combines
+        a lightweight exponential-smoothing load predictor with a bounded
+        priority-feedback controller.
+  \item An open synthetic benchmark corpus (Nimbus-Trace-2026) modeling three
+        representative edge workload classes across 48 heterogeneous nodes.
+  \item An empirical evaluation demonstrating a 38.4\% reduction in $P_{95}$
+        latency and graceful degradation under node-failure injection.
+\end{itemize}
+
+\section{Thesis Organization}
+
+Chapter~2 surveys related work in edge scheduling and adaptive control.
+Chapter~3 details the ATS algorithm and system design. Chapter~4 presents
+the experimental methodology and results. Chapter~5 concludes and outlines
+directions for future work.
+
+\chapter{Related Work}
+\seceps
+
+\section{Edge and Fog Scheduling}
+
+Early edge scheduling research largely adapted cloud data-center techniques ---
+round-robin, least-connections, and static-priority queues --- to smaller,
+more heterogeneous node pools. While straightforward to implement, these
+approaches assume relatively stable per-node capacity and do not react to
+short-term load spikes, which are common at the edge due to intermittent
+connectivity and shared uplink bandwidth.
+
+\section{Forecast-Aware and Feedback Scheduling}
+
+A second line of work introduces predictive signals into the scheduling
+loop, typically using time-series models to anticipate node load several
+seconds ahead. These systems reduce reactive thrashing but often incur
+forecasting overhead that is difficult to justify on resource-constrained
+edge coordinators. Feedback-control approaches, drawing on classical PID
+and bang-bang controllers, instead adjust task priority reactively; they
+are cheap to run but can oscillate under correlated failures.
+
+Table~\ref{tab:related} summarizes representative approaches along three
+axes relevant to this thesis: tail-latency awareness, forecasting cost,
+and failure-injection stability.
+
+\begin{table}[h]
+\centering
+\caption{Comparison of representative edge scheduling approaches.}
+\label{tab:related}
+\begin{tabularx}{\textwidth}{@{}l X c c@{}}
+\toprule
+\rowcolor{yonseiblue}
+\textcolor{white}{\textbf{Approach}} & \textcolor{white}{\textbf{Strategy}} & \textcolor{white}{\textbf{Forecast Cost}} & \textcolor{white}{\textbf{Failure Stability}}\\
+\midrule
+Round-robin & Uniform task rotation across nodes & None & Low\\
+Static priority & Fixed class-based queue ordering & None & Medium\\
+\rowcolor{paletint}
+Predictive LSTM & Deep forecast of per-node load & High & Medium\\
+PID feedback & Reactive priority correction & Low & Low--Medium\\
+\rowcolor{paletint}
+\textbf{ATS (this work)} & Lightweight forecast + bounded feedback & \textbf{Low} & \textbf{High}\\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Positioning of This Work}
+
+ATS is positioned deliberately between the two extremes surveyed above: it
+retains a forecasting signal, but restricts it to an exponential-smoothing
+estimator cheap enough to run on coordinator-tier hardware, and pairs it
+with a bounded feedback controller designed explicitly to damp oscillation
+under correlated node failures.
+
+\chapter{Methodology}
+\seceps
+
+\section{System Design}
+
+ATS operates in three stages executed once per scheduling epoch
+($\Delta\tau = 250$\,ms in our deployment): (1) load forecasting,
+(2) priority-feedback adjustment, and (3) constrained task assignment.
+
+\subsection{Load Forecasting}
+
+Each node $v_j$ reports its instantaneous utilization $u_j(\tau)$ once per
+epoch. The forecast module maintains an exponentially smoothed estimate:
+
+\begin{equation}
+\hat{c}_j(\tau + \Delta\tau) = \alpha \, u_j(\tau) + (1-\alpha)\, \hat{c}_j(\tau), \qquad \alpha = 0.35
+\label{eq:forecast}
+\end{equation}
+
+The smoothing factor $\alpha = 0.35$ was chosen via grid search over
+$\{0.1, 0.2, \dots, 0.9\}$ to minimize forecast RMSE on a held-out trace
+segment (Section~4.2).
+
+\subsection{Priority-Feedback Controller}
+
+Tasks are assigned a base priority by workload class, then adjusted by a
+bounded feedback term proportional to the forecast error observed on the
+candidate node in the previous epoch:
+
+\begin{equation}
+p_i(\tau) = p_i^{\text{base}} + \text{clip}\big(\beta \cdot e_j(\tau - \Delta\tau),\, -\delta,\, \delta\big)
+\label{eq:feedback}
+\end{equation}
+
+where $e_j = u_j - \hat{c}_j$ is the forecast error, $\beta = 0.6$ is the
+feedback gain, and $\delta = 2.0$ bounds the correction to prevent
+reschedule storms when several nodes fail simultaneously.
+
+\begin{keyboxblue}
+\textbf{\color{yonseiblue}Design Note}\\{}
+[Clipping the feedback term in Equation~\ref{eq:feedback} is the single
+change that stabilized ATS under the 12\% node-failure injection scenario
+described in Section~4.4 --- unclipped feedback produced oscillating
+reassignments that amplified rather than absorbed the failure.]
+\end{keyboxblue}
+
+\subsection{Constrained Assignment}
+
+Given adjusted priorities, tasks are assigned to the highest-priority
+feasible node via a greedy pass with capacity backtracking, guaranteeing
+the capacity constraint in Equation~\ref{eq:objective} is never violated.
+
+\section{Experimental Testbed}
+
+Table~\ref{tab:testbed} lists the simulated node classes composing the
+48-node testbed used for evaluation.
+
+\begin{table}[h]
+\centering
+\caption{Composition of the simulated edge testbed.}
+\label{tab:testbed}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Node Class} & \textbf{Count} & \textbf{vCPU} & \textbf{Mem (GB)}\\
+\midrule
+GPU-lite inference & 12 & 4 & 8\\
+CPU aggregation & 24 & 8 & 16\\
+GPU batch & 8 & 16 & 32\\
+Coordinator & 4 & 8 & 16\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Workload Corpus}
+
+The Nimbus-Trace-2026 corpus synthesizes three task classes --- interactive
+inference, telemetry aggregation, and batch re-indexing --- with arrival
+processes calibrated to reproduce diurnal burstiness observed in
+production-scale edge deployments, without exposing any real operator data.
+
+\chapter{Results and Discussion}
+\seceps
+
+\section{Overall Latency Comparison}
+
+ATS was evaluated against round-robin and static-priority baselines over
+20 independent trace replays. Table~\ref{tab:results} reports mean and
+tail latency alongside sustained cluster utilization.
+
+\begin{table}[h]
+\centering
+\caption{Latency and utilization results across scheduling strategies (lower latency is better).}
+\label{tab:results}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\rowcolor{yonseiblue}
+\textcolor{white}{\textbf{Strategy}} & \textcolor{white}{\textbf{Mean Lat.\ (ms)}} & \textcolor{white}{\textbf{$P_{95}$ Lat.\ (ms)}} & \textcolor{white}{\textbf{Utilization (\%)}}\\
+\midrule
+Round-robin & 61.2 & 214.8 & 58.3\\
+\rowcolor{paletint}
+Static priority & 54.7 & 187.1 & 63.9\\
+ATS (this work) & \textbf{41.9} & \textbf{132.3} & \textbf{77.7}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Relative to the static-priority baseline, ATS reduces $P_{95}$ latency by
+38.4\% (from 187.1\,ms to 132.3\,ms) while raising sustained utilization
+by 21.7 percentage points relative to round-robin.
+
+\section{Controller Overhead}
+
+Figure~\ref{fig:overhead} breaks down per-epoch coordinator time between
+forecasting, feedback computation, and assignment. Combined controller
+overhead stays below 1.2\% of the 250\,ms epoch budget across all
+tested loads.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\begin{scope}
+\foreach \name/\val/\col/\pos in {
+  {Assignment}/68/yonseiblue/0,
+  {Forecast}/22/yonseigold/1,
+  {Feedback}/10/softgray/2}
+{
+  \pgfmathsetmacro{\barheight}{\val/10}
+  \draw[fill=\col, draw=none] (\pos*1.6,0) rectangle ++(1.1,\barheight);
+  \node[font=\scriptsize, above] at (\pos*1.6+0.55,\barheight) {\val\%};
+  \node[font=\scriptsize, below, align=center] at (\pos*1.6+0.55,-0.15) {\name};
+}
+\end{scope}
+\draw[->, draw=softgray] (-0.3,0) -- (5.2,0);
+\end{tikzpicture}
+\caption{Share of per-epoch coordinator time by ATS pipeline stage.}
+\label{fig:overhead}
+\end{figure}
+
+\section{Stability Under Node Failure}
+
+Injecting random node failures at rates up to 12\% per epoch, ATS
+maintained bounded reassignment rates due to the clipped feedback term
+(Equation~\ref{eq:feedback}). Removing the clip (an ablation) caused
+reassignment rates to grow superlinearly beyond 8\% failure injection,
+confirming the design note in Section~3.1.2.
+
+\section{Threats to Validity}
+
+Results are obtained on a synthetic workload corpus rather than a live
+production deployment; absolute latency figures should therefore be read
+as relative comparisons between strategies rather than deployment
+guarantees. Network variability beyond the modeled uplink jitter was not
+evaluated.
+
+\chapter{Conclusion}
+\seceps
+
+\section{Summary}
+
+This thesis presented ATS, a scheduling framework for latency-constrained
+edge computing that pairs lightweight load forecasting with a bounded
+priority-feedback controller. Across a 48-node heterogeneous testbed, ATS
+reduced $P_{95}$ latency by 38.4\% and improved utilization by 21.7
+percentage points relative to standard baselines, while keeping controller
+overhead below 1.2\% of the scheduling budget and remaining stable under
+node-failure injection of up to 12\%.
+
+\section{Future Work}
+
+Promising extensions include (1) evaluating ATS on a live edge deployment
+rather than synthetic traces, (2) extending the forecast model to capture
+cross-node correlation during correlated failures, and (3) exploring
+learned, rather than hand-tuned, feedback gains $\beta$ and clip bounds
+$\delta$.
+
+\clearpage
+\begin{thebibliography}{9}
+\addcontentsline{toc}{chapter}{References}
+
+\bibitem{baek2024}
+Y.\ Baek and D.\ Ahn, ``Forecast-aware task placement for heterogeneous
+edge clusters,'' \textit{Journal of Distributed Systems Research}, vol.\ 18,
+no.\ 3, pp.\ 211--229, 2024.
+
+\bibitem{choi2023}
+H.\ Choi, ``Bounded feedback control for reactive cloud schedulers,'' in
+\textit{Proc.\ International Conference on Systems and Networking},
+pp.\ 88--97, 2023.
+
+\bibitem{park2025}
+S.\ Park, J.\ Lim, and M.\ Kwon, ``Tail-latency-aware load balancing at the
+network edge: A survey,'' \textit{ACM Computing Surveys}, vol.\ 57, no.\ 2,
+Article 34, 2025.
+
+\bibitem{seo2026}
+M.\ Seo and H.\ Choi, ``Adaptive tiered scheduling for latency-constrained
+edge workloads,'' Technical Report TR-2026-14, Department of Computer
+Science, Yonsei University, 2026.
+
+\bibitem{yun2022}
+J.\ Yun, ``Exponential smoothing estimators for short-horizon capacity
+forecasting,'' \textit{Journal of Applied Statistics in Computing}, vol.\ 9,
+no.\ 4, pp.\ 305--318, 2022.
+
+\end{thebibliography}
+
+\clearpage
+\appendix
+\chapter{Supplementary Parameter Settings}
+\seceps
+
+Table~\ref{tab:params} lists the ATS hyperparameters used to produce the
+results in Chapter~4, provided for reproducibility.
+
+\begin{table}[h]
+\centering
+\caption{ATS hyperparameter settings used in evaluation.}
+\label{tab:params}
+\begin{tabular}{@{}llc@{}}
+\toprule
+\textbf{Symbol} & \textbf{Description} & \textbf{Value}\\
+\midrule
+$\Delta\tau$ & Scheduling epoch length & 250\,ms\\
+$\alpha$ & Forecast smoothing factor & 0.35\\
+$\beta$ & Feedback gain & 0.6\\
+$\delta$ & Feedback clip bound & 2.0\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\end{document}

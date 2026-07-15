@@ -1,0 +1,291 @@
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[a2paper,landscape,margin=1.2cm]{geometry}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds,patterns}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{xcolor}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{amsmath,amssymb}
+\usepackage{enumitem}
+\usepackage{fontawesome5}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{multicol}
+
+\hypersetup{colorlinks=true,linkcolor=primary,urlcolor=secondary,citecolor=secondary}
+
+\definecolor{primary}{HTML}{1B3A4B}
+\definecolor{secondary}{HTML}{2D8B7A}
+\definecolor{accent}{HTML}{E8A838}
+\definecolor{lightbg}{HTML}{F5F3EE}
+\definecolor{darktext}{HTML}{2D2D2D}
+\definecolor{softgray}{HTML}{E8E5DF}
+
+\pagecolor{lightbg}
+
+\newtcolorbox{posterblock}[1]{
+  enhanced,
+  colback=white,
+  colframe=primary,
+  colbacktitle=primary,
+  coltitle=white,
+  fonttitle=\bfseries\large,
+  title=#1,
+  arc=2mm,
+  boxrule=0.4mm,
+  toptitle=2.5mm,
+  bottomtitle=2.5mm,
+  left=4mm,
+  right=4mm,
+  top=3mm,
+  bottom=3mm,
+  before skip=10pt,
+  after skip=10pt,
+  drop fuzzy shadow=secondary!30!black
+}
+
+\newtcolorbox{headerbox}{
+  enhanced,
+  colback=primary,
+  colframe=primary,
+  arc=2mm,
+  boxrule=0mm,
+  left=6mm,
+  right=6mm,
+  top=5mm,
+  bottom=5mm,
+  before skip=0pt,
+  after skip=14pt,
+  drop fuzzy shadow=secondary!30!black
+}
+
+\newtcolorbox{highlightblock}{
+  enhanced,
+  colback=accent!15,
+  colframe=accent,
+  arc=2mm,
+  boxrule=0.4mm,
+  left=4mm,
+  right=4mm,
+  top=3mm,
+  bottom=3mm,
+  before skip=8pt,
+  after skip=8pt
+}
+
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+
+\newcommand{\sectionicon}[1]{\makebox[1.3em][l]{#1}}
+
+\begin{document}
+\thispagestyle{empty}
+
+\begin{headerbox}
+  \begin{center}
+    {\color{white}\Huge\bfseries Neural Climate Networks: Deep Learning for\\[3pt]
+    Regional Precipitation Forecasting}
+    \vspace{6mm}
+    {\color{white}\Large Sarah Chen, Ph.D.${}^{1,*}$ \quad Marcus Holt, Ph.D.${}^{2}$ \quad Elena Vasquez, M.Sc.${}^{1}$}
+    \vspace{4mm}
+    {\color{white!85}\normalsize
+    ${}^{1}$Nexa Institute for Atmospheric Research, Meridian University \hspace{1cm}
+    ${}^{2}$Department of Computational Science, Apex Polytechnic\\[2pt]
+    ${}^{*}$Correspondence: \texttt{s.chen@nexa-research.edu}}
+  \end{center}
+\end{headerbox}
+
+\begin{minipage}[t]{0.485\textwidth}
+
+\begin{posterblock}{\sectionicon{\faLightbulb} Introduction}
+Accurate regional precipitation forecasting remains a critical challenge in climate science, with direct implications for agriculture, water resource management, and disaster preparedness. While global circulation models (GCMs) provide coarse-grained predictions at 100--250\,km resolution, regional stakeholders require forecasts at the 10--25\,km scale. Traditional dynamical downscaling methods are computationally prohibitive for operational use. Recent advances in deep learning offer a promising alternative by learning statistical downscaling mappings directly from historical data.
+
+We present \textbf{Neural Climate Networks (NCN)}, a novel architecture combining convolutional encoders with attention-based sequence models for precipitation nowcasting and short-range forecasting at 25\,km resolution over the Northwest American corridor. NCN bridges the gap between the speed of statistical methods and the physical fidelity of numerical models.
+\end{posterblock}
+
+\begin{posterblock}{\sectionicon{\faBullseye} Research Objectives}
+\begin{enumerate}[leftmargin=*,itemsep=2pt]
+  \item Develop a hybrid CNN-Transformer architecture for spatiotemporal precipitation prediction at regional scales.
+  \item Benchmark NCN against operational numerical weather prediction (NWP) models and existing machine-learning baselines.
+  \item Quantify predictive uncertainty through ensemble prediction with Monte Carlo dropout.
+  \item Validate forecast skill across diverse climate regimes using a multi-year, multi-source observational dataset.
+\end{enumerate}
+\end{posterblock}
+
+\begin{posterblock}{\sectionicon{\faDatabase} Data Sources \& Study Domain}
+We assembled a comprehensive training corpus spanning 2015--2024 from three primary sources:
+
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+  \item \textbf{ERA5 Reanalysis:} Atmospheric state variables (geopotential, temperature, specific humidity, u/v wind components) at 0.25$^{\circ}$ resolution, hourly.
+  \item \textbf{Stage IV Precipitation:} Radar-gauge multisensor precipitation analysis at 4\,km, hourly -- serving as ground truth for training and verification.
+  \item \textbf{GOES-R ABI:} Infrared brightness temperatures (channels 8--16) at 2\,km native resolution, providing cloud-top and moisture information.
+\end{itemize}
+
+\vspace{4pt}
+The study domain covers 35$^{\circ}$N--55$^{\circ}$N, 140$^{\circ}$W--110$^{\circ}$W (Northwest American corridor). All data were regridded to a common 0.25$^{\circ}$ Lambert conformal grid. The target variable is 6-hour accumulated precipitation. Training used 2015--2022 data; validation and testing used 2023 and 2024 respectively.
+\end{posterblock}
+
+\begin{posterblock}{\sectionicon{\faCogs} Model Architecture}
+The NCN architecture comprises three core modules operating on sequences of 8 consecutive 6-hour timesteps (48-hour context window), predicting precipitation for the subsequent 4 timesteps (24-hour forecast horizon).
+
+\vspace{4pt}
+\begin{center}
+\begin{tikzpicture}[
+  node distance=6mm and 5mm,
+  box/.style={draw=primary,fill=primary!8,rounded corners=2mm,minimum width=28mm,minimum height=10mm,font=\footnotesize\bfseries,align=center,text=darktext},
+  arrow/.style={-{stealth},thick,secondary}
+]
+  \node[box,fill=secondary!15,draw=secondary] (input) {ERA5 Fields\\\footnotesize 8$\times$6h stacks};
+  \node[box,right=of input] (encoder) {Spatial\\Encoder\\\footnotesize ResNet-50};
+  \node[box,right=of encoder] (transformer) {Temporal\\Processor\\\footnotesize Causal Transformer};
+  \node[box,right=of transformer,fill=accent!20,draw=accent] (decoder) {Probabilistic\\Decoder\\\footnotesize Mixture Density};
+  \node[box,right=of decoder,fill=accent!35,draw=accent] (output) {Precipitation\\Forecast\\\footnotesize 4$\times$6h + $\sigma$};
+
+  \draw[arrow] (input) -- (encoder);
+  \draw[arrow] (encoder) -- (transformer);
+  \draw[arrow] (transformer) -- (decoder);
+  \draw[arrow] (decoder) -- (output);
+\end{tikzpicture}
+\end{center}
+
+\vspace{2pt}
+\textbf{Spatial Encoder:} ResNet-50 backbone pretrained on ERA5 pressure-level fields extracts hierarchical spatial features. \textbf{Temporal Processor:} A causal transformer with 8 attention heads and sinusoidal positional embeddings captures lagged atmospheric dynamics. \textbf{Probabilistic Decoder:} A Mixture Density Network outputs parameters of a 5-component Gamma mixture distribution, providing a full predictive density at each grid point.
+\end{posterblock}
+
+\end{minipage}%
+\hfill%
+\begin{minipage}[t]{0.485\textwidth}
+
+\begin{posterblock}{\sectionicon{\faFlask} Training Protocol}
+The model was trained using the \textbf{Continuous Ranked Probability Score (CRPS)} as the primary loss function, which evaluates the full predictive distribution against observations. Optimization used \textbf{AdamW} with a learning rate of $3\times10^{-4}$, weight decay of 0.01, batch size of 64, and a cosine annealing schedule with warm restarts. Training ran for 200 epochs on 4$\times$ NVIDIA A100 GPUs (approximately 38 hours of wall-clock time). Early stopping was triggered after 15 epochs without validation CRPS improvement.
+
+\vspace{4pt}
+\textbf{Baselines:} We compared NCN against (i) \textbf{HRRR} -- the operational 3\,km CONUS model from NOAA, (ii) \textbf{U-Net} -- a standard deep learning precipitation nowcasting baseline, and (iii) \textbf{WRF-ARW} -- a widely-used regional NWP model configured at 12\,km resolution over the study domain.
+\end{posterblock}
+
+\begin{posterblock}{\sectionicon{\faChartBar} Results}
+NCN outperforms all baselines across every forecast horizon. The performance advantage is largest at short lead times and during convective-season precipitation events.
+
+\vspace{4pt}
+\begin{tcolorbox}[enhanced,colback=white,colframe=softgray,arc=1.5mm,boxrule=0.3mm,top=2mm,bottom=2mm,left=3mm,right=3mm]
+\footnotesize
+\begin{tabularx}{\linewidth}{lXXXX}
+\toprule
+\bfseries Model & \bfseries CRPS\,6h & \bfseries CRPS\,12h & \bfseries CRPS\,18h & \bfseries CRPS\,24h \\
+\midrule
+\textbf{NCN (Ours)}      & \textbf{0.87} & \textbf{1.12} & \textbf{1.45} & \textbf{1.89} \\{}
+HRRR                     & 1.24 & 1.58 & 1.92 & 2.31 \\{}
+U-Net Baseline           & 1.41 & 1.73 & 2.08 & 2.54 \\{}
+WRF-ARW                  & 1.63 & 2.01 & 2.38 & 2.79 \\
+\bottomrule
+\end{tabularx}
+\vspace{2pt}
+\begin{center}
+\captionof{table}{CRPS (mm) across forecast horizons. Lower is better. Bold entries indicate best performance.}
+\end{center}
+\end{tcolorbox}
+
+\vspace{4pt}
+\begin{center}
+\begin{tikzpicture}[scale=0.88]
+  \draw[secondary!20,fill=secondary!10] (0,0) rectangle (2.0,2.4);
+  \draw[secondary!20,fill=secondary!10] (2.1,0) rectangle (4.1,2.4);
+  \draw[secondary!20,fill=secondary!10] (4.2,0) rectangle (6.2,2.4);
+  \draw[secondary!20,fill=secondary!10] (6.3,0) rectangle (8.3,2.4);
+  \draw[thick,accent,fill=accent!80] (0.15,0) rectangle (0.65,1.74);
+  \draw[thick,primary!60,fill=primary!40] (0.75,0) rectangle (1.25,2.48);
+  \draw[thick,secondary!60,fill=secondary!40] (1.35,0) rectangle (1.85,2.82);
+  \foreach \x/\l in {0.4/6h,2.5/12h,4.6/18h,6.7/24h} {\node at (\x,-0.35) {\footnotesize\l};}
+  \node at (0.4,1.94) {\tiny\textbf{0.87}};
+  \node at (1.0,2.68) {\tiny\textbf{1.24}};
+  \node at (1.6,3.02) {\tiny\textbf{1.41}};
+  \node at (2.5,1.0)  {\tiny NCN};
+  \node at (3.1,1.0)  {\tiny HRRR};
+  \node at (3.7,1.0)  {\tiny U-Net};
+  \draw[thick,accent,fill=accent!80]     (2.25,0) rectangle (2.75,1.12);
+  \draw[thick,primary!60,fill=primary!40] (2.85,0) rectangle (3.35,1.58);
+  \draw[thick,secondary!60,fill=secondary!40] (3.45,0) rectangle (3.95,1.73);
+  \node at (2.5,1.32) {\tiny\textbf{1.12}};
+  \node at (3.1,1.78) {\tiny\textbf{1.58}};
+  \node at (3.8,1.93) {\tiny\textbf{1.73}};
+  \draw[thick,accent,fill=accent!80]     (4.35,0) rectangle (4.85,1.45);
+  \draw[thick,primary!60,fill=primary!40] (4.95,0) rectangle (5.45,1.92);
+  \draw[thick,secondary!60,fill=secondary!40] (5.55,0) rectangle (6.05,2.08);
+  \node at (4.6,1.65) {\tiny\textbf{1.45}};
+  \node at (5.2,2.12) {\tiny\textbf{1.92}};
+  \node at (5.8,2.28) {\tiny\textbf{2.08}};
+  \draw[thick,accent,fill=accent!80]     (6.45,0) rectangle (6.95,1.89);
+  \draw[thick,primary!60,fill=primary!40] (7.05,0) rectangle (7.55,2.31);
+  \draw[thick,secondary!60,fill=secondary!40] (7.65,0) rectangle (8.15,2.54);
+  \node at (6.7,2.09) {\tiny\textbf{1.89}};
+  \node at (7.3,2.51) {\tiny\textbf{2.31}};
+  \node at (7.9,2.74) {\tiny\textbf{2.54}};
+  \draw[->,thick] (-0.1,0) -- (8.6,0) node[right] {};
+  \draw[->,thick] (-0.1,0) -- (-0.1,3.2);
+  \node[rotate=90] at (-0.65,1.5) {\footnotesize CRPS (mm)};
+  \node at (4.25,-0.75) {\footnotesize Forecast Horizon (lead time)};
+\end{tikzpicture}
+\end{center}
+
+Spatial skill scores (Fractions Skill Score at 25\,km) show NCN achieving FSS\,$>$\,0.7 out to 18 hours, compared to 12 hours for operational models. The CRPS advantage over HRRR widens to 42\% during convective precipitation events (May--September).
+
+\vspace{4pt}
+Monte Carlo dropout ensembles ($n=50$ stochastic forward passes) produced well-calibrated prediction intervals: 82\% of observations fell within the nominal 80\% prediction interval, indicating slight overconfidence that warrants further calibration.
+\end{posterblock}
+
+\begin{posterblock}{\sectionicon{\faComments} Discussion}
+The superior performance of NCN stems from its ability to learn nonlinear precipitation dynamics directly from data, bypassing the convective parameterization assumptions that limit NWP models at sub-grid scales. The causal transformer's attention mechanism effectively captures teleconnection patterns, including the influence of Pacific sea surface temperature anomalies on regional precipitation regimes.
+
+However, we identify two key limitations. First, NCN shows degraded performance during atmospheric river events (AR scale $\geq$ 3), likely due to insufficient representation of integrated vapor transport in the input feature set. Second, the model exhibits a systematic dry bias over mountainous terrain (bias of $-$0.12\,mm/6h in the Cascade and Rocky Mountain ranges), suggesting that explicit orographic feature engineering or elevation-conditional decoding could improve topographic precipitation representation.
+
+Ablation studies confirm that both the transformer temporal processor and the probabilistic decoder contribute independently to forecast skill: removing the transformer (U-Net with MDN head) increases CRPS by 18\%; replacing the MDN with a deterministic MSE loss increases CRPS by 14\% and eliminates uncertainty quantification capability.
+\end{posterblock}
+
+\begin{posterblock}{\sectionicon{\faFlagCheckered} Conclusions \& Future Work}
+Neural Climate Networks demonstrates that deep learning can provide operationally viable precipitation forecasts at regional scales, matching or exceeding the accuracy of physics-based models at a small fraction of the computational cost (0.8 seconds per forecast vs.\ 45 minutes for WRF on equivalent hardware). The probabilistic outputs enable risk-based decision-making for flood warning systems, reservoir operations, and agricultural planning.
+
+\vspace{4pt}
+\textbf{Ongoing and planned work:}
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+  \item Incorporate additional predictor variables -- integrated vapor transport, convective available potential energy (CAPE), and soil moisture.
+  \item Extend the architecture to ensemble prediction with learned perturbations via stochastic latent variables.
+  \item Deploy an operational nowcasting pipeline at the Northwest Regional Climate Center (target: Q3 2026).
+  \item Develop a lightweight variant for resource-constrained settings (single GPU inference).
+\end{itemize}
+\end{posterblock}
+
+\begin{posterblock}{\sectionicon{\faBook} Key References}
+\footnotesize
+\begin{itemize}[leftmargin=*,itemsep=1pt]
+  \item[{[}1{]}] Ravuri, S.\ et al.\ (2021). Skilful precipitation nowcasting using deep generative models. \textit{Nature}, 597, 672--677.
+  \item[{[}2{]}] Espeholt, L.\ et al.\ (2022). Deep learning for twelve hour precipitation forecasts. \textit{Nature Communications}, 13, 5145.
+  \item[{[}3{]}] Bi, K.\ et al.\ (2023). Accurate medium-range global weather forecasting with 3D neural networks. \textit{Nature}, 619, 533--538.
+  \item[{[}4{]}] Gneiting, T.\ \& Raftery, A.\ E.\ (2007). Strictly proper scoring rules, prediction, and estimation. \textit{JASA}, 102(477), 359--378.
+  \item[{[}5{]}] Pathak, J.\ et al.\ (2022). FourCastNet: A global data-driven weather model. arXiv:2202.11214.
+\end{itemize}
+\end{posterblock}
+
+\begin{posterblock}{\sectionicon{\faHandshake} Acknowledgments}
+\footnotesize
+This work was supported by the \textbf{Vertex Science Foundation} (Grant VSF-2025-1847). Computational resources were provided by the \textbf{Nimbus High-Performance Computing Facility} at Meridian University. We gratefully acknowledge the European Centre for Medium-Range Weather Forecasts (ECMWF) for ERA5 data access and NOAA/NCEP for Stage IV precipitation analysis products. The authors thank Dr.\ James Whitfield and Prof.\ Amara Okafor for insightful discussions on attention mechanisms in spatiotemporal prediction.
+\end{posterblock}
+
+\end{minipage}
+
+\vspace{8pt}
+\begin{center}
+{\footnotesize\color{darktext!60} \faCreativeCommons\,\faCreativeCommonsBy\ \ 2026 \textbullet\ Presented at the 15th International Symposium on Applied Climate Informatics (ACI 2026), Meridian University \textbullet\ Code available at \texttt{github.com/nexa-institute/ncn}}
+
+\vspace{2pt}
+{\tiny\color{darktext!40} \textbf{Disclaimer:} This poster presents fictional research for illustrative purposes. All institutions, people, grants, and findings are entirely fictitious.}
+\end{center}
+
+\end{document}

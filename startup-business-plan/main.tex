@@ -1,0 +1,622 @@
+\documentclass[11pt,a4paper]{article}
+
+% ── Core packages ────────────────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[margin=2cm,top=2.2cm,bottom=2.5cm]{geometry}
+\usepackage{microtype}
+\usepackage{lmodern}
+
+% ── Colour ───────────────────────────────────────────────────────────────────
+\usepackage[table]{xcolor}
+\definecolor{NexaNavy}{HTML}{0D2B45}
+\definecolor{NexaTeal}{HTML}{00A896}
+\definecolor{NexaGold}{HTML}{F4A025}
+\definecolor{NexaLight}{HTML}{F0F5F9}
+\definecolor{NexaMid}{HTML}{D0DDE8}
+\definecolor{NexaDark}{HTML}{1C3D5A}
+\definecolor{TextBody}{HTML}{2C3E50}
+\definecolor{TextMuted}{HTML}{6B7C93}
+
+% ── Graphics & drawing ───────────────────────────────────────────────────────
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds,patterns,decorations.pathmorphing}
+\usepackage{graphicx}
+
+% ── Boxes ────────────────────────────────────────────────────────────────────
+\usepackage[most]{tcolorbox}
+
+% ── Tables ───────────────────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{multirow}
+
+% ── Lists & layout ───────────────────────────────────────────────────────────
+\usepackage{enumitem}
+\usepackage{multicol}
+\usepackage{calc}
+
+% ── Math ─────────────────────────────────────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ── Typography ───────────────────────────────────────────────────────────────
+\usepackage{fontawesome5}
+\usepackage{setspace}
+\usepackage{parskip}
+
+% ── Hyperlinks ───────────────────────────────────────────────────────────────
+\usepackage[hidelinks,colorlinks=false]{hyperref}
+
+% ─────────────────────────────────────────────────────────────────────────────
+%  GLOBAL STYLES
+% ─────────────────────────────────────────────────────────────────────────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\color{TextBody}
+
+% Section heading style
+\usepackage{titlesec}
+\titleformat{\section}
+  {\color{NexaNavy}\Large\bfseries}
+  {}
+  {0em}
+  {}
+  [\vspace{-4pt}\color{NexaTeal}\rule{\linewidth}{2pt}\vspace{4pt}]
+
+\titleformat{\subsection}
+  {\color{NexaDark}\normalsize\bfseries}
+  {}
+  {0em}
+  {}
+
+\titlespacing{\section}{0pt}{14pt}{6pt}
+\titlespacing{\subsection}{0pt}{10pt}{3pt}
+
+% ── tcolorbox styles ─────────────────────────────────────────────────────────
+\tcbset{
+  nexacard/.style={
+    enhanced, breakable,
+    colback=NexaLight, colframe=NexaTeal,
+    arc=4pt, boxrule=1.2pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt,
+    fonttitle=\bfseries\small\color{white},
+    attach boxed title to top left={yshift=-2mm, xshift=6mm},
+    boxed title style={colback=NexaTeal, arc=3pt, boxrule=0pt},
+  },
+  statbox/.style={
+    enhanced,
+    colback=#1, colframe=#1,
+    arc=4pt, boxrule=0pt,
+    left=6pt, right=6pt, top=8pt, bottom=8pt,
+    halign=center,
+  },
+  highlight/.style={
+    enhanced,
+    colback=NexaNavy!8, colframe=NexaNavy,
+    arc=3pt, boxrule=0.8pt,
+    left=8pt, right=8pt, top=5pt, bottom=5pt,
+  },
+  milebox/.style={
+    enhanced,
+    colback=white, colframe=NexaMid,
+    arc=3pt, boxrule=0.8pt,
+    left=7pt, right=7pt, top=5pt, bottom=5pt,
+  },
+  warnbox/.style={
+    enhanced,
+    colback=NexaGold!12, colframe=NexaGold,
+    arc=3pt, boxrule=1pt,
+    left=7pt, right=7pt, top=5pt, bottom=5pt,
+  },
+}
+
+% ── Custom helpers ────────────────────────────────────────────────────────────
+\newcommand{\kpi}[3]{%
+  \begin{tcolorbox}[statbox=#1]
+    {\color{white}\fontsize{20}{24}\selectfont\bfseries #2}\\[2pt]
+    {\color{white!80!#1}\small #3}
+  \end{tcolorbox}%
+}
+
+\newcommand{\sectionicon}[1]{\textcolor{NexaTeal}{#1}\hspace{4pt}}
+
+% ─────────────────────────────────────────────────────────────────────────────
+%  COVER PAGE HELPER
+% ─────────────────────────────────────────────────────────────────────────────
+\newcommand{\coverpage}{%
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[NexaNavy] (current page.north west)
+    rectangle ([yshift=-6.5cm]current page.north east);
+  \fill[NexaTeal] ([yshift=-6.5cm]current page.north west)
+    rectangle ([yshift=-7.1cm]current page.north east);
+  \fill[NexaGold] ([xshift=2cm,yshift=-5.8cm]current page.north west)
+    circle (0.25cm);
+  \draw[NexaTeal!40, line width=1.2pt]
+    ([xshift=-3cm,yshift=-2cm]current page.north east) circle (2.2cm);
+  \draw[NexaTeal!20, line width=0.8pt]
+    ([xshift=-3cm,yshift=-2cm]current page.north east) circle (3.8cm);
+  \fill[NexaNavy!10] (current page.south west)
+    rectangle ([yshift=1.2cm]current page.south east);
+  \fill[NexaTeal] ([yshift=1.2cm]current page.south west)
+    rectangle ([yshift=1.6cm]current page.south east);
+\end{tikzpicture}%
+\vspace*{1.6cm}
+\begin{center}
+  {\color{NexaTeal}\small\bfseries\MakeUppercase{Business Plan}}\\[6pt]
+  {\color{white}\fontsize{32}{38}\selectfont\bfseries NEXA}\\[2pt]
+  {\color{white}\fontsize{18}{22}\selectfont\bfseries ANALYTICS}\\[6pt]
+  {\color{NexaMid}\small Transforming Data Into Decisions}
+\end{center}
+
+\vspace{1.4cm}
+
+\begin{center}
+\begin{tcolorbox}[
+  enhanced, colback=NexaTeal!15, colframe=NexaTeal,
+  arc=4pt, boxrule=1pt,
+  width=0.72\linewidth,
+  halign=center, left=10pt, right=10pt, top=8pt, bottom=8pt,
+]
+  {\color{NexaNavy}\bfseries\large AI-Powered Business Intelligence for SMEs}\\[4pt]
+  {\color{TextMuted}\small Seed Round \textbullet{} \$2.4M Target \textbullet{} Series A Ready 2026}
+\end{tcolorbox}
+\end{center}
+
+\vspace{1.0cm}
+
+\noindent
+\begin{minipage}[t]{0.32\linewidth}
+  \kpi{NexaTeal}{\$18B}{Addressable Market}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\linewidth}
+  \kpi{NexaNavy}{340\%}{Projected YoY Growth}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.32\linewidth}
+  \kpi{NexaGold}{Q3 2027}{Break-Even Target}
+\end{minipage}
+
+\vspace{1.2cm}
+
+\begin{center}
+\begin{tabular}{@{}ccc@{}}
+  \color{TextMuted}\faCalendar\enspace{\small July 2025} &
+  \hspace{2cm}\color{TextMuted}\faUser\enspace{\small Prepared by: Clara Whitmore, CEO} &
+  \hspace{2cm}\color{TextMuted}\faLock\enspace{\small Confidential}
+\end{tabular}
+\end{center}
+\vspace{0.4cm}
+}
+
+% ─────────────────────────────────────────────────────────────────────────────
+%  DOCUMENT
+% ─────────────────────────────────────────────────────────────────────────────
+\begin{document}
+\pagestyle{empty}
+
+\coverpage
+
+\newpage
+\pagestyle{plain}
+\setcounter{page}{1}
+
+% ── EXECUTIVE SUMMARY ────────────────────────────────────────────────────────
+\section{\sectionicon{\faBolt}Executive Summary}
+
+\begin{tcolorbox}[highlight]
+  \textbf{Nexa Analytics} is an AI-driven business intelligence platform purpose-built for
+  small and medium enterprises (SMEs). We translate raw operational data into actionable
+  insights through an intuitive, no-code dashboard that requires zero data-science expertise.
+  Founded in March 2024, we have already onboarded \textbf{47 paying customers} across four
+  verticals and are growing monthly recurring revenue (MRR) at \textbf{28\% month-over-month}.
+\end{tcolorbox}
+
+\begin{multicols}{2}
+\textbf{The Problem.} Over 78\% of SMEs collect operational data but lack the internal
+resources to analyse it meaningfully. Off-the-shelf BI tools (Synapse BI, Vertex Dash)
+are either too complex or priced for enterprise budgets, leaving a \textbf{\$18B
+under-served market segment}.
+
+\columnbreak
+
+\textbf{Our Solution.} Nexa Analytics delivers enterprise-grade insight through a
+subscription SaaS model starting at \$149/month. Our proprietary \textit{SmartLens}
+AI engine surfaces anomalies, forecasts, and recommendations automatically --- no SQL,
+no analyst required.
+\end{multicols}
+
+% ── COMPANY OVERVIEW ─────────────────────────────────────────────────────────
+\section{\sectionicon{\faBuilding}Company Overview}
+
+\noindent
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[nexacard, title={\faInfo\enspace Company Facts}]
+    \small
+    \begin{tabular}{@{}ll@{}}
+      \textbf{Founded}      & March 2024 \\[3pt]
+      \textbf{Headquarters} & Austin, TX, USA \\[3pt]
+      \textbf{Structure}    & Delaware C-Corp \\[3pt]
+      \textbf{Employees}    & 11 full-time \\[3pt]
+      \textbf{Stage}        & Pre-Series A (Seed) \\[3pt]
+      \textbf{Website}      & nexaanalytics.io \\[3pt]
+    \end{tabular}
+  \end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[nexacard, title={\faTrophy\enspace Traction Highlights}]
+    \small
+    \begin{itemize}[leftmargin=14pt, itemsep=3pt]
+      \item[\textcolor{NexaTeal}{\faCheckCircle}] 47 paying customers, 0 churn in 6 months
+      \item[\textcolor{NexaTeal}{\faCheckCircle}] MRR: \$38,400 (Jul 2025)
+      \item[\textcolor{NexaTeal}{\faCheckCircle}] NPS score of 72 (industry avg: 34)
+      \item[\textcolor{NexaTeal}{\faCheckCircle}] 3 LOIs from Meridian Capital portfolio
+      \item[\textcolor{NexaTeal}{\faCheckCircle}] Patent-pending SmartLens engine
+    \end{itemize}
+  \end{tcolorbox}
+\end{minipage}
+
+\par
+
+% ── MARKET ANALYSIS ──────────────────────────────────────────────────────────
+\section{\sectionicon{\faChartBar}Market Analysis}
+
+\subsection{Market Size \& Opportunity}
+
+\noindent
+\begin{minipage}[t]{0.62\linewidth}
+The global SME analytics software market is estimated at \textbf{\$18.3 billion} in 2025,
+growing at a CAGR of 19.4\% through 2030. Our serviceable addressable market (SAM)
+focuses on English-speaking SMEs with 10--500 employees in North America and Western
+Europe: approximately \textbf{4.2 million businesses}.
+
+\vspace{6pt}
+\begin{tabular}{@{}lrr@{}}
+  \toprule
+  \rowcolor{NexaNavy}
+  \color{white}\textbf{Segment} &
+  \color{white}\textbf{Size (USD)} &
+  \color{white}\textbf{CAGR} \\
+  \midrule
+  Total Addressable Market & \$18.3B & 19.4\% \\
+  \rowcolor{NexaLight}
+  Serviceable Addressable Market & \$4.1B & 22.7\% \\
+  Serviceable Obtainable (Yr 3) & \$82M & --- \\
+  \bottomrule
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.34\linewidth}
+\begin{tikzpicture}
+  \fill[NexaTeal!20] (0,0) circle ({1.85});
+  \fill[NexaTeal!45] (0,0) circle ({1.2});
+  \fill[NexaTeal]    (0,0) circle ({0.58});
+  \node[font=\tiny\bfseries, text=white] at (0,0) {SOM};
+  \node[font=\tiny\bfseries, text=NexaNavy] at (0, 1.0) {SAM};
+  \node[font=\tiny\bfseries, text=NexaNavy] at (0, 1.65) {TAM};
+  \node[font=\tiny, text=TextMuted, align=center] at (0,-2.35) {\$18.3B market};
+\end{tikzpicture}
+\end{minipage}
+
+\par
+
+\subsection{Competitive Landscape}
+
+\begin{tabularx}{\linewidth}{@{}lXXXX@{}}
+  \toprule
+  \rowcolor{NexaNavy}
+  \color{white}\textbf{Feature} &
+  \color{white}\textbf{Nexa Analytics} &
+  \color{white}\textbf{Synapse BI} &
+  \color{white}\textbf{Vertex Dash} &
+  \color{white}\textbf{Nimbus Reports} \\
+  \midrule
+  SME-First Design     & \textcolor{NexaTeal}{\faCheck} & \textcolor{red!70}{\faTimes} & \textcolor{red!70}{\faTimes} & \textcolor{NexaTeal}{\faCheck} \\
+  \rowcolor{NexaLight}
+  AI Recommendations   & \textcolor{NexaTeal}{\faCheck} & \textcolor{NexaTeal}{\faCheck} & \textcolor{red!70}{\faTimes} & \textcolor{red!70}{\faTimes} \\
+  No-Code Setup        & \textcolor{NexaTeal}{\faCheck} & \textcolor{red!70}{\faTimes} & \textcolor{red!70}{\faTimes} & \textcolor{NexaTeal}{\faCheck} \\
+  \rowcolor{NexaLight}
+  Price / mo (starter) & \$149 & \$799 & \$499 & \$199 \\
+  API Integrations     & 120+ & 200+ & 80+ & 45+ \\
+  \bottomrule
+\end{tabularx}
+
+% ── PRODUCT ──────────────────────────────────────────────────────────────────
+\section{\sectionicon{\faCube}Product \& Technology}
+
+\noindent
+\begin{minipage}[t]{0.30\linewidth}
+  \begin{tcolorbox}[statbox=NexaTeal]
+    {\color{white}\bfseries\large SmartLens AI}\\[4pt]
+    {\color{white!80!NexaTeal}\small Anomaly detection, trend forecasting, and plain-language narrative reports generated nightly.}
+  \end{tcolorbox}
+\end{minipage}\hspace{4pt}
+\begin{minipage}[t]{0.30\linewidth}
+  \begin{tcolorbox}[statbox=NexaNavy]
+    {\color{white}\bfseries\large ConnectHub}\\[4pt]
+    {\color{white!80!NexaNavy}\small 120+ pre-built connectors: Shopify, QuickBooks, HubSpot, Stripe, Salesforce, and more.}
+  \end{tcolorbox}
+\end{minipage}\hspace{4pt}
+\begin{minipage}[t]{0.30\linewidth}
+  \begin{tcolorbox}[statbox=NexaGold]
+    {\color{white}\bfseries\large PulseBoard}\\[4pt]
+    {\color{white!80!NexaGold}\small Customisable real-time dashboards. Mobile-first. Zero SQL. Live collaboration.}
+  \end{tcolorbox}
+\end{minipage}
+
+\par\vspace{6pt}
+
+\begin{tcolorbox}[warnbox]
+  \textbf{\textcolor{NexaGold}{\faStar}\enspace Technology Edge:} Nexa's SmartLens engine is built on a proprietary
+  graph-attention transformer architecture fine-tuned on anonymised SME financial datasets.
+  Unlike generic LLM wrappers, it achieves \textbf{94.2\% anomaly detection precision} on
+  our internal benchmark (NexaBench v1.2), outperforming open-source baselines by 18 pp.
+  A provisional patent (Appl.\ No.\ 63/882,741) was filed in April 2025.
+\end{tcolorbox}
+
+% ── GO-TO-MARKET ─────────────────────────────────────────────────────────────
+\section{\sectionicon{\faRocket}Go-to-Market Strategy}
+
+\begin{multicols}{2}
+\textbf{Channels.} Our primary acquisition channel is \textit{content-led SEO} paired with
+a \textit{product-led growth (PLG)} free trial (14 days, no credit card). Paid
+acquisition via Google Ads and LinkedIn targets finance managers and operations leads.
+Partner referrals via Meridian Capital's portfolio account for 22\% of pipeline.
+
+\vspace{4pt}
+\begin{itemize}[leftmargin=14pt, itemsep=2pt]
+  \item[\textcolor{NexaTeal}{\faChevronRight}] SEO blog: 38K monthly organic visitors
+  \item[\textcolor{NexaTeal}{\faChevronRight}] PLG trial-to-paid: 31\% conversion
+  \item[\textcolor{NexaTeal}{\faChevronRight}] Avg.\ sales cycle: 9 days (SME)
+  \item[\textcolor{NexaTeal}{\faChevronRight}] CAC: \$210 \textbar{} LTV: \$4,100
+\end{itemize}
+
+\columnbreak
+
+\textbf{Pricing Tiers.}
+\begin{tabular}{@{}llr@{}}
+  \toprule
+  \textbf{Plan} & \textbf{Users} & \textbf{Price/mo} \\
+  \midrule
+  Starter   & 3  & \$149 \\
+  Growth    & 15 & \$399 \\
+  Scale     & Unlimited & \$899 \\
+  \bottomrule
+\end{tabular}
+
+\vspace{6pt}
+Annual plans carry a 20\% discount and are prepaid, improving cash flow. Enterprise
+custom pricing available for 500+ seat deployments.
+\end{multicols}
+
+% ── FINANCIAL PROJECTIONS ────────────────────────────────────────────────────
+\section{\sectionicon{\faChartLine}Financial Projections}
+
+\subsection{Three-Year Revenue Forecast}
+
+\begin{tabularx}{\linewidth}{@{}lXXXX@{}}
+  \toprule
+  \rowcolor{NexaNavy}
+  \color{white}\textbf{Metric} &
+  \color{white}\textbf{FY 2025 (Actual)} &
+  \color{white}\textbf{FY 2026 (Proj.)} &
+  \color{white}\textbf{FY 2027 (Proj.)} &
+  \color{white}\textbf{FY 2028 (Proj.)} \\
+  \midrule
+  Customers         & 47        & 210       & 780        & 2,100 \\
+  \rowcolor{NexaLight}
+  ARR               & \$460K    & \$2.1M    & \$7.8M     & \$20.4M \\
+  Gross Margin      & 68\%      & 72\%      & 76\%       & 79\% \\
+  \rowcolor{NexaLight}
+  EBITDA            & (\$680K)  & (\$210K)  & \$1.1M     & \$4.8M \\
+  Headcount         & 11        & 24        & 51         & 98 \\
+  \bottomrule
+\end{tabularx}
+
+\vspace{8pt}
+
+\begin{center}
+\begin{tikzpicture}[yscale=0.55, xscale=1.1]
+  \foreach \y in {0,1,2,3,4,5} {
+    \draw[NexaMid, very thin] (0,\y*2) -- (11.5,\y*2);
+  }
+  \def\bw{1.5}
+  \fill[NexaTeal!70] (1,0) rectangle +(\bw,{0.46*2});
+  \node[above, font=\tiny\bfseries, color=NexaTeal] at ({1+\bw/2},{0.46*2}) {\$0.46M};
+  \node[below, font=\small, color=TextMuted] at ({1+\bw/2},0) {2025};
+  \fill[NexaTeal] (4,0) rectangle +(\bw,{2.1*2});
+  \node[above, font=\tiny\bfseries, color=NexaTeal] at ({4+\bw/2},{2.1*2}) {\$2.1M};
+  \node[below, font=\small, color=TextMuted] at ({4+\bw/2},0) {2026};
+  \fill[NexaNavy] (7,0) rectangle +(\bw,{7.8*2});
+  \node[above, font=\tiny\bfseries, color=NexaNavy] at ({7+\bw/2},{7.8*2}) {\$7.8M};
+  \node[below, font=\small, color=TextMuted] at ({7+\bw/2},0) {2027};
+  \fill[NexaGold] (10,0) rectangle +(\bw,{10*2});
+  \node[above, font=\tiny\bfseries, color=NexaGold] at ({10+\bw/2},{10*2}) {\$20.4M};
+  \node[below, font=\small, color=TextMuted] at ({10+\bw/2},0) {2028};
+  \foreach \y/\lab in {0/0,2/\$2M,4/\$4M,6/\$6M,8/\$8M,10/\$10M} {
+    \node[left, font=\tiny, color=TextMuted] at (0,\y) {\lab};
+  }
+  \draw[NexaNavy, thick] (0,0) -- (11.5,0);
+  \draw[NexaNavy, thick] (0,0) -- (0,10.5);
+  \node[right, font=\small\bfseries, color=NexaNavy] at (0,11) {ARR Trajectory (USD)};
+\end{tikzpicture}
+\end{center}
+
+% ── USE OF FUNDS ─────────────────────────────────────────────────────────────
+\section{\sectionicon{\faMoneyBillWave}Use of Funds --- \$2.4M Seed Round}
+
+\noindent
+\begin{minipage}[t]{0.52\linewidth}
+\begin{tabularx}{\linewidth}{@{}Xrr@{}}
+  \toprule
+  \rowcolor{NexaNavy}
+  \color{white}\textbf{Category} &
+  \color{white}\textbf{Amount} &
+  \color{white}\textbf{Pct.} \\
+  \midrule
+  Engineering \& Product     & \$960K  & 40\% \\
+  \rowcolor{NexaLight}
+  Sales \& Marketing         & \$600K  & 25\% \\
+  Infrastructure \& Security & \$360K  & 15\% \\
+  \rowcolor{NexaLight}
+  Operations \& Legal        & \$240K  & 10\% \\
+  Reserve / Working Capital  & \$240K  & 10\% \\
+  \midrule
+  \textbf{Total}             & \textbf{\$2.4M} & \textbf{100\%} \\
+  \bottomrule
+\end{tabularx}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.44\linewidth}
+\begin{tikzpicture}[scale=1.05]
+  \fill[NexaTeal]      (0,0) -- (90:1.5) arc(90:-54:1.5) -- cycle;
+  \fill[NexaNavy]      (0,0) -- (-54:1.5) arc(-54:-144:1.5) -- cycle;
+  \fill[NexaGold]      (0,0) -- (-144:1.5) arc(-144:-198:1.5) -- cycle;
+  \fill[NexaTeal!40]   (0,0) -- (-198:1.5) arc(-198:-234:1.5) -- cycle;
+  \fill[NexaDark!50]   (0,0) -- (-234:1.5) arc(-234:-270:1.5) -- cycle;
+  \node[right, font=\tiny] at (1.7, 0.9)
+    {\textcolor{NexaTeal}{\rule{6pt}{6pt}}\enspace Eng 40\%};
+  \node[right, font=\tiny] at (1.7, 0.5)
+    {\textcolor{NexaNavy}{\rule{6pt}{6pt}}\enspace Sales 25\%};
+  \node[right, font=\tiny] at (1.7, 0.1)
+    {\textcolor{NexaGold}{\rule{6pt}{6pt}}\enspace Infra 15\%};
+  \node[right, font=\tiny] at (1.7, -0.3)
+    {\textcolor{NexaTeal!40}{\rule{6pt}{6pt}}\enspace Ops 10\%};
+  \node[right, font=\tiny] at (1.7, -0.7)
+    {\textcolor{NexaDark!50}{\rule{6pt}{6pt}}\enspace Reserve 10\%};
+\end{tikzpicture}
+\end{minipage}
+
+% ── MILESTONES ───────────────────────────────────────────────────────────────
+\section{\sectionicon{\faFlag}Milestones \& Roadmap}
+
+\noindent
+\begin{minipage}[t]{0.23\linewidth}
+  \begin{tcolorbox}[milebox]
+    \centering
+    {\color{NexaGold}\bfseries Q4 2025}\\[3pt]
+    {\small\color{TextBody}
+      Close \$2.4M seed\\[2pt]
+      100 customers\\[2pt]
+      iOS app beta}
+  \end{tcolorbox}
+\end{minipage}\hspace{4pt}
+\begin{minipage}[t]{0.23\linewidth}
+  \begin{tcolorbox}[milebox]
+    \centering
+    {\color{NexaTeal}\bfseries Q2 2026}\\[3pt]
+    {\small\color{TextBody}
+      EU market launch\\[2pt]
+      SmartLens v2.0\\[2pt]
+      SOC 2 Type II}
+  \end{tcolorbox}
+\end{minipage}\hspace{4pt}
+\begin{minipage}[t]{0.23\linewidth}
+  \begin{tcolorbox}[milebox]
+    \centering
+    {\color{NexaNavy}\bfseries Q4 2026}\\[3pt]
+    {\small\color{TextBody}
+      200+ integrations\\[2pt]
+      \$2.1M ARR\\[2pt]
+      Series A raise}
+  \end{tcolorbox}
+\end{minipage}\hspace{4pt}
+\begin{minipage}[t]{0.23\linewidth}
+  \begin{tcolorbox}[milebox]
+    \centering
+    {\color{NexaNavy}\bfseries Q3 2027}\\[3pt]
+    {\small\color{TextBody}
+      Break-even\\[2pt]
+      780 customers\\[2pt]
+      APAC expansion}
+  \end{tcolorbox}
+\end{minipage}
+
+% ── TEAM ─────────────────────────────────────────────────────────────────────
+\section{\sectionicon{\faUsers}Leadership Team}
+
+\noindent
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[nexacard, title={\faUser\enspace Clara Whitmore --- CEO \& Co-Founder}]
+    \small
+    Former Head of Analytics at Apex Ventures (exit: \$180M). Stanford MBA. 12 years
+    in enterprise software. Led growth from 0 to \$14M ARR at previous venture.
+    \textit{``We don't just show data --- we tell the story behind it.''}
+  \end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[nexacard, title={\faUser\enspace Daniel Osei --- CTO \& Co-Founder}]
+    \small
+    PhD in Machine Learning, MIT. Ex-Principal Engineer at Nimbus Cloud. Architected
+    distributed systems serving 2M+ daily users. 4 published papers on graph neural
+    networks and time-series anomaly detection.
+  \end{tcolorbox}
+\end{minipage}
+
+\par\vspace{4pt}
+
+\noindent
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[nexacard, title={\faUser\enspace Sofia Nakamura --- VP Sales}]
+    \small
+    10 years in SaaS sales at Meridian Software. Consistently 145\%+ of quota.
+    Built and scaled a 20-person outbound team from scratch. Expert in PLG-assisted
+    enterprise land-and-expand motions.
+  \end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[nexacard, title={\faUser\enspace James Okonkwo --- CFO (Advisor)}]
+    \small
+    CPA. Former CFO at Vertex Logistics (IPO 2021). Deep expertise in SaaS unit
+    economics, fundraising strategy, and international finance. Board observer
+    from Meridian Capital.
+  \end{tcolorbox}
+\end{minipage}
+
+% ── RISK ─────────────────────────────────────────────────────────────────────
+\section{\sectionicon{\faExclamationTriangle}Risk Factors \& Mitigations}
+
+\begin{tabularx}{\linewidth}{@{}lXX@{}}
+  \toprule
+  \rowcolor{NexaNavy}
+  \color{white}\textbf{Risk} &
+  \color{white}\textbf{Description} &
+  \color{white}\textbf{Mitigation} \\
+  \midrule
+  Competitive Pressure &
+    Synapse or Vertex launch an SME-tier product &
+    Patent moat; 12-month product roadmap head start; high switching cost (data lock-in) \\
+  \rowcolor{NexaLight}
+  Data Privacy &
+    GDPR / CCPA compliance burden increases &
+    SOC 2 roadmap; EU hosting; dedicated DPO hired Q1 2026 \\
+  Customer Concentration &
+    Top 5 customers = 38\% of ARR &
+    Aggressive mid-market diversification; PLG flywheel reduces dependency \\
+  \rowcolor{NexaLight}
+  Talent Retention &
+    Competitive ML engineer market &
+    Equity refresh; above-market comp; remote-first culture \\
+  \bottomrule
+\end{tabularx}
+
+\vspace{10pt}
+
+\begin{tcolorbox}[
+  enhanced,
+  colback=NexaNavy, colframe=NexaNavy,
+  arc=5pt, boxrule=0pt,
+  left=14pt, right=14pt, top=10pt, bottom=10pt,
+]
+  \centering
+  {\color{white}\large\bfseries Ready to Join the Future of SME Intelligence?}\\[6pt]
+  {\color{NexaMid}\small
+    Contact Clara Whitmore \textbullet{}
+    \href{mailto:clara@nexaanalytics.io}{clara@nexaanalytics.io} \textbullet{}
+    +1 (512) 800-4192 \textbullet{}
+    nexaanalytics.io/investors}\\[6pt]
+  {\color{NexaTeal}\faLock\enspace\small
+    This document is strictly confidential and intended solely for accredited investors.
+    All projections are forward-looking estimates subject to change.}
+\end{tcolorbox}
+
+\end{document}

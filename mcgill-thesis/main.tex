@@ -1,0 +1,447 @@
+\documentclass[12pt,letterpaper,twoside]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in,left=1.25in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds,patterns}
+\usepackage[hidelinks]{hyperref}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage{parskip}
+\usepackage{xstring}
+\usepackage{datetime2}
+
+\definecolor{mcgillred}{HTML}{ED1B2F}
+\definecolor{mcgillnavy}{HTML}{1B2A4A}
+\definecolor{mcgillgold}{HTML}{B8860B}
+\definecolor{mcgillgray}{HTML}{F5F5F5}
+
+\onehalfspacing
+
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\color{mcgillnavy}}{}{0pt}
+  {\Huge\color{mcgillred}\rule{\textwidth}{1.5pt}\vspace{12pt}\\}
+\titlespacing*{\chapter}{0pt}{-30pt}{24pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{mcgillnavy}}
+  {\thesection}{1em}{}
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{mcgillnavy}}
+  {\thesubsection}{1em}{}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \cfoot{\thepage}
+}
+\pagestyle{plain}
+
+\newtcolorbox{abstractbox}[1][]{
+  colback=mcgillgray,
+  colframe=mcgillred,
+  boxrule=1pt,
+  arc=0pt,
+  left=18pt,
+  right=18pt,
+  top=14pt,
+  bottom=14pt,
+  #1
+}
+
+\newtcolorbox{theorembox}[1][]{
+  colback=mcgillgray,
+  colframe=mcgillgold,
+  boxrule=0.8pt,
+  arc=2pt,
+  left=14pt,
+  right=14pt,
+  top=10pt,
+  bottom=10pt,
+  #1
+}
+
+\newenvironment{bilingualblock}[2]{%
+  \vspace{10pt}
+  \begin{minipage}[t]{\textwidth}
+    \begin{tcolorbox}[colback=white,colframe=mcgillnavy,boxrule=0.5pt,arc=2pt,left=12pt,right=12pt,top=10pt,bottom=10pt,title={\small\color{white}\textbf{#1}},colbacktitle=mcgillnavy]
+      #2
+    \end{tcolorbox}
+  \end{minipage}
+  \vspace{4pt}
+}{}
+
+\begin{document}
+
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+
+\vspace*{1.5cm}
+
+{\Huge\bfseries\color{mcgillnavy}Granular Flow Dynamics in\\Confined Geometries}
+
+\vspace{8pt}
+
+{\huge\color{mcgillnavy}Dynamique des \'ecoulements granulaires\\en g\'eom\'etries confin\'ees}
+
+\vspace{18pt}
+
+{\color{mcgillred}\rule{0.55\textwidth}{1.8pt}}
+
+\vspace{24pt}
+
+{\Large\color{mcgillnavy}Samuel J. Beaumont}
+
+\vspace{16pt}
+
+{\normalsize\color{mcgillnavy}
+Department of Mechanical Engineering\\
+McGill University\\
+Montr\'eal, Qu\'ebec, Canada
+}
+
+\vspace{20pt}
+
+{\normalsize\color{mcgillnavy}
+A thesis submitted to McGill University in partial fulfillment\\
+of the requirements of the degree of\\
+\vspace{4pt}
+\textbf{Doctor of Philosophy}
+}
+
+\vspace{18pt}
+
+{\normalsize\color{mcgillnavy}\textcopyright\ Samuel J. Beaumont, 2025}
+
+\vfill
+
+{\footnotesize\color{mcgillnavy!60}
+\textit{Unofficial template --- not affiliated with or endorsed by the university. Sample content only.}
+}
+
+\vspace{0.8cm}
+\end{center}
+\end{titlepage}
+
+\pagenumbering{roman}
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+\begin{abstractbox}
+\noindent This thesis investigates the rheology and segregation dynamics of dense granular flows through confined geometries, with emphasis on bidisperse mixtures and non-local constitutive modelling. Using a combination of discrete element method (DEM) simulations and laboratory experiments in an annular shear cell, we characterize velocity profiles, packing fraction distributions, and particle-size segregation patterns under a range of confining pressures and shear rates spanning three orders of magnitude.
+
+\vspace{8pt}
+
+\noindent
+\textit{Cette th\`ese porte sur la rh\'eologie et la dynamique de s\'egr\'egation des \'ecoulements granulaires denses en g\'eom\'etries confin\'ees, en mettant l'accent sur les m\'elanges bidisperses et la mod\'elisation constitutive non locale. \`A l'aide de simulations par m\'ethode des \'el\'ements discrets (DEM) et d'exp\'eriences en laboratoire dans une cellule de cisaillement annulaire, nous caract\'erisons les profils de vitesse, les distributions de fraction volumique et les motifs de s\'egr\'egation par taille de particules sous une gamme de pressions de confinement et de taux de cisaillement couvrant trois ordres de grandeur.}
+\end{abstractbox}
+
+\vspace{18pt}
+
+\chapter*{R\'esum\'e}
+\addcontentsline{toc}{chapter}{R\'esum\'e}
+
+\begin{abstractbox}
+\noindent Cette th\`ese pr\'esente une \'etude syst\'ematique des m\'ecanismes de transport granulaire et de leur mod\'elisation dans le cadre de la th\'eorie $\mu(I)$. Nous proposons une extension de la rh\'eologie $\mu(I)$ qui int\`egre une \'echelle de longueur de coop\'erativit\'e pour les \'ecoulements quasi-statiques pr\`es du seuil d'\'ecoulement. Les r\'esultats exp\'erimentaux et num\'eriques montrent un excellent accord, validant l'approche non locale pour une large gamme de param\`etres physiques. Nous discutons \'egalement des implications pour les applications g\'eotechniques et les proc\'ed\'es industriels de manutention de mat\'eriaux granulaires.
+
+\vspace{8pt}
+
+\noindent
+\textit{This thesis presents a systematic study of granular transport mechanisms and their modelling within the $\mu(I)$ rheology framework. We propose an extension of the $\mu(I)$ rheology incorporating a cooperativity length scale for quasi-static flows near the jamming threshold. Experimental and numerical results show excellent agreement, validating the non-local approach across a broad range of physical parameters. Implications for geotechnical applications and industrial granular-material handling processes are also discussed.}
+\end{abstractbox}
+
+\vspace{20pt}
+
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+
+I wish to express my sincere gratitude to my supervisor, Professor Marc-Andr\'e Tanguay, for his unwavering support, intellectual rigour, and patience throughout this doctoral journey. His deep insight into granular physics transformed the way I approach complex systems.
+
+I am grateful to Dr.\ Amina Diarra and the entire Granular Media Laboratory group for countless stimulating discussions, late-night experiment troubleshooting, and camaraderie. Special thanks to Jin Liu for her meticulous DEM code optimization --- this thesis would not exist without her contributions.
+
+The computational components of this work were supported by Compute Canada (allocation ID: \texttt{rrg-mtanguay-gml}) and the Nimbus High-Performance Computing Consortium. Experimental apparatus was funded through a Vertex Discovery Grant and equipment support from the Apex Research Foundation.
+
+Finally, to my parents and my partner, Clara: thank you for your patience with a mind perpetually preoccupied with particles.
+
+\vspace{16pt}
+\begin{flushright}
+\textit{--- Samuel J. Beaumont, Montr\'eal, August 2025}
+\end{flushright}
+
+\newpage
+
+\tableofcontents
+\addcontentsline{toc}{chapter}{Table of Contents}
+
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+
+\newpage
+
+\pagenumbering{arabic}
+
+\chapter{Introduction}
+
+\section{Motivation and Context}
+
+Granular materials --- collections of discrete, macroscopic particles that interact primarily through contact forces --- are ubiquitous in nature and industry. From pharmaceutical powder blending to geophysical debris flows, from agricultural grain handling to planetary regolith dynamics, the ability to predict and control granular flow behaviour carries enormous practical significance. Despite centuries of study, a unified continuum description of granular rheology remains elusive, particularly in the dense, slow-flowing regime where non-local effects dominate \cite{miidi2004,daCruz2005,Jop2006}.
+
+This thesis addresses two interconnected challenges in granular mechanics. First, we seek to characterize how geometric confinement alters the constitutive response of dense granular flows, extending beyond the well-studied planar shear configuration to annular and converging geometries relevant to industrial silo discharge and geophysical channel flows. Second, we develop and validate a non-local extension of the $\mu(I)$ rheology that accounts for cooperative particle rearrangements near the jamming transition.
+
+\section{Bilingual Context of McGill University}
+
+\begin{bilingualblock}{English}{%
+McGill University, situated in Montr\'eal, Qu\'ebec, occupies a unique position at the intersection of Anglophone and Francophone academic traditions. This thesis, while written primarily in English, includes a French-language abstract and key chapter summaries in accordance with the university's commitment to bilingual scholarship.}
+\end{bilingualblock}
+
+\begin{bilingualblock}{Fran\c{c}ais}{%
+L'Universit\'e McGill, situ\'ee \`a Montr\'eal, au Qu\'ebec, occupe une position unique \`a l'intersection des traditions universitaires anglophones et francophones. Cette th\`ese, bien que r\'edig\'ee principalement en anglais, comprend un r\'esum\'e en fran\c{c}ais et des r\'esum\'es de chapitres cl\'es, conform\'ement \`a l'engagement de l'universit\'e envers le bilinguisme savant.}
+\end{bilingualblock}
+
+\section{Thesis Outline}
+
+The remainder of this thesis is organized as follows. \textbf{Chapter~2} reviews the fundamental framework of granular rheology, from the inertial number $I$ to the $\mu(I)$ constitutive law, and surveys experimental evidence for non-local effects in confined flows. \textbf{Chapter~3} describes the discrete element method (DEM) simulation methodology, the annular shear cell experimental apparatus, and the data analysis pipeline. \textbf{Chapter~4} presents our results on bidisperse segregation and velocity profile characterization under steady dense flow conditions. \textbf{Chapter~5} introduces our non-local rheological model, derives the cooperativity length scale from DEM microstructural data, and validates the model against independent experiments. \textbf{Chapter~6} summarizes the contributions, discusses limitations, and outlines directions for future research.
+
+\chapter{Background and Literature Review}
+
+\section{The $\mu(I)$ Rheology}
+
+\subsection{Dimensional Analysis of Dry Granular Flows}
+
+Consider a collection of stiff, frictional grains of mean diameter $d$ and material density $\rho_p$, subjected to a confining pressure $P$ and sheared at a rate $\dot{\gamma}$. Dimensional analysis \cite{miidi2004,daCruz2005} identifies a single dimensionless parameter governing the flow regime:
+
+\begin{equation}\label{eq:inertial}
+I = \frac{\dot{\gamma} d}{\sqrt{P / \rho_p}},
+\end{equation}
+
+termed the \textit{inertial number}. This parameter may be interpreted as the ratio of the microscopic inertial timescale $d/\sqrt{P/\rho_p}$ (the time for a particle to rearrange under the imposed pressure) to the macroscopic deformation timescale $1/\dot{\gamma}$. The quasi-static regime corresponds to $I \to 0$, while rapid collisional flows occupy $I \gtrsim 0.3$.
+
+\subsection{Constitutive Relations}
+
+In the dense regime ($10^{-3} \lesssim I \lesssim 10^{-1}$), the effective friction coefficient $\mu \equiv \tau / P$ and the solid volume fraction $\phi$ are well described by the empirical forms \cite{Jop2006}:
+
+\begin{align}
+\mu(I) &= \mu_s + \frac{\mu_2 - \mu_s}{I_0/I + 1}, \label{eq:muI}\\
+\phi(I) &= \phi_{\max} - (\phi_{\max} - \phi_{\min})\, I. \label{eq:phiI}
+\end{align}
+
+Here $\mu_s$ is the static friction coefficient (yield threshold), $\mu_2$ is the limiting friction at large $I$, $I_0$ is a material-dependent reference inertial number, and $\phi_{\max}$, $\phi_{\min}$ are the random-close-packing and critical-state packing fractions, respectively. Typical parameter values for glass beads are summarized in Table~\ref{tab:parameters}.
+
+\begin{table}[htbp]
+\centering
+\caption{Representative $\mu(I)$ rheology parameters for spherical glass beads (from \cite{Jop2006} and this work).}
+\label{tab:parameters}
+\begin{tabularx}{0.85\textwidth}{lXXXX}
+\toprule
+Parameter & Symbol & Literature & This Work & Units \\
+\midrule
+Static friction & $\mu_s$        & $0.38 \pm 0.02$ & $0.41 \pm 0.03$ & --- \\
+Limiting friction & $\mu_2$       & $0.64 \pm 0.03$ & $0.67 \pm 0.04$ & --- \\
+Ref.\ inertial number & $I_0$      & $0.28 \pm 0.04$ & $0.31 \pm 0.05$ & --- \\
+Max.\ packing & $\phi_{\max}$    & $0.595 \pm 0.005$ & $0.591 \pm 0.006$ & --- \\
+Min.\ packing & $\phi_{\min}$    & $0.557 \pm 0.005$ & $0.553 \pm 0.004$ & --- \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Non-Local Effects Near Jamming}
+
+For flows approaching the yield threshold ($I \lesssim 10^{-3}$), the local $\mu(I)$ description breaks down: the stress at a point depends not only on the local strain rate but also on the deformation field in a surrounding \textit{cooperativity} region of size $\xi$. This phenomenon, first identified in emulsions and soft glasses \cite{Goyon2008,Kamrin2012}, has been extended to dry granular media through the non-local granular fluidity model.
+
+\begin{theorembox}[title=Non-local granular fluidity model]
+The granular fluidity $g \equiv \dot{\gamma}/\mu$ satisfies the inhomogeneous Helmholtz equation:
+\begin{equation}\label{eq:fluidity}
+\xi^2 \nabla^2 g = g - g_{\text{loc}}(\mu, P),
+\end{equation}
+where $g_{\text{loc}}$ is the local fluidity predicted by inverting Eqs.~(\ref{eq:muI})--(\ref{eq:phiI}), and $\xi$ is the cooperativity length, which scales as $\xi \propto d\,(|\mu - \mu_s|/\mu_s)^{-1/2}$ near the yield threshold.
+\end{theorembox}
+
+Equation~(\ref{eq:fluidity}) introduces a mesoscopic length scale $\xi$ that smooths the fluidity field over regions where cooperative particle rearrangements dominate the mechanical response. Determining $\xi$ from microstructural data is a central objective of the experimental programme in Chapter~4.
+
+\chapter{Methodology}
+
+\section{Discrete Element Method Simulations}
+
+The three-dimensional DEM simulations employ a linear spring-dashpot contact model with Coulomb friction, implemented in the open-source code \texttt{GranuLo}\footnote{\texttt{GranuLo} is a fictional DEM solver developed at the Granular Media Laboratory, McGill University.} optimized for shared-memory parallel architectures. Particle–particle and particle–wall contacts follow:
+
+\begin{equation}
+\mathbf{F}_{ij} = \bigl(k_n \delta_n - \gamma_n \dot{\delta}_n\bigr)\,\hat{\mathbf{n}}_{ij}
+                  + \min\bigl(\|k_t \boldsymbol{\delta}_t + \gamma_t \dot{\boldsymbol{\delta}}_t\|,\;
+                            \mu_p \|\mathbf{F}_n\|\bigr)\,\hat{\mathbf{t}}_{ij},
+\end{equation}
+
+where $k_n$, $k_t$ are normal and tangential stiffnesses, $\gamma_n$, $\gamma_t$ are viscous damping coefficients, $\mu_p$ is the inter-particle friction coefficient, $\boldsymbol{\delta}_{n,t}$ are the normal and tangential overlap vectors, and $\hat{\mathbf{n}}_{ij}$, $\hat{\mathbf{t}}_{ij}$ are unit normal and tangent vectors at the contact.
+
+\subsection*{Simulation Parameters}
+
+\begin{table}[htbp]
+\centering
+\caption{DEM simulation parameters for the annular shear cell geometry.}
+\begin{tabularx}{0.82\textwidth}{lXXX}
+\toprule
+Parameter & Symbol & Value & Units \\
+\midrule
+Particle diameter (small)  & $d_S$   & $2.00$ & mm \\
+Particle diameter (large)  & $d_L$   & $3.00$ & mm \\
+Size ratio                 & $d_L/d_S$ & $1.50$ & --- \\
+Particle density           & $\rho_p$ & $2500$ & kg\,m$^{-3}$ \\
+Normal stiffness           & $k_n$   & $1.0 \times 10^5$ & N\,m$^{-1}$ \\
+Inter-particle friction    & $\mu_p$ & $0.50$ & --- \\
+Simulation timestep        & $\Delta t$ & $1.0 \times 10^{-6}$ & s \\
+Number of particles        & $N$     & $2.5 \times 10^4$ & --- \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\chapter{Results and Discussion}
+
+\section{Velocity Profiles in Confined Annular Flow}
+
+Figure~\ref{fig:velocity_schematic} (schematic) illustrates the annular shear cell geometry: particles are confined between two concentric cylinders of radii $R_{\text{in}} = 60$\,mm and $R_{\text{out}} = 120$\,mm, with a rough bottom plate rotating at angular velocity $\Omega$, generating a shear band localized near the inner cylinder.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=1.5]
+  \fill[mcgillnavy!8] (0,0) circle (2.4);
+  \fill[white] (0,0) circle (1.2);
+  \draw[mcgillnavy,thick] (0,0) circle (2.4);
+  \draw[mcgillnavy,thick] (0,0) circle (1.2);
+  \draw[mcgillred,->,thick,>=stealth] (1.2,0) arc (0:180:1.2);
+  \draw[mcgillred,->,thick,>=stealth] (2.4,0) arc (0:180:2.4);
+  \node at (0,0) {\small $R_{\text{in}}$};
+  \node at (3.0,1.0) {$R_{\text{out}}$};
+  \draw[->,>=stealth] (1.55,0.5) -- node[above,font=\footnotesize] {$\Omega$} (1.85,0.5);
+  \fill[mcgillgold] (-2.0,0.5) circle (0.06);
+  \fill[mcgillgold] (-1.8,0.3) circle (0.05);
+  \fill[mcgillgold] (-1.9,0.7) circle (0.07);
+  \fill[mcgillgold] (-1.6,0.6) circle (0.05);
+  \fill[mcgillgold] (-1.75,0.4) circle (0.06);
+\end{tikzpicture}
+\caption{Schematic of the annular shear cell. The inner cylinder radius is $R_{\text{in}}$, the outer radius is $R_{\text{out}}$. The bottom plate rotates at angular velocity $\Omega$. Gold circles represent granular particles.}
+\label{fig:velocity_schematic}
+\end{figure}
+
+\subsection*{Tangential Velocity Decay}
+
+The azimuthally averaged tangential velocity $\langle v_\theta\rangle(r)$ exhibits a characteristic exponential decay from the inner wall:
+
+\begin{equation}\label{eq:velocity_decay}
+\langle v_\theta\rangle(r) = \Omega R_{\text{in}}\;
+\exp\!\left(-\frac{r - R_{\text{in}}}{\lambda}\right),
+\end{equation}
+
+where $\lambda$ is the shear-band width. Table~\ref{tab:shear_band} reports $\lambda$ extracted from fits to Eq.~(\ref{eq:velocity_decay}) across three confining pressures and two size ratios.
+
+\begin{table}[htbp]
+\centering
+\caption{Shear-band width $\lambda$ as a function of confining pressure $P$ and bidisperse size ratio.}
+\label{tab:shear_band}
+\begin{tabularx}{0.78\textwidth}{lXXX}
+\toprule
+$P$ (kPa) & $d_L/d_S = 1.25$ & $d_L/d_S = 1.50$ & $d_L/d_S = 2.00$ \\
+\midrule
+10  & $8.2 \pm 0.6$\,mm & $10.1 \pm 0.8$\,mm & $13.4 \pm 1.1$\,mm \\
+25  & $6.5 \pm 0.5$\,mm & $7.8 \pm 0.6$\,mm  & $9.9 \pm 0.8$\,mm  \\
+50  & $5.1 \pm 0.4$\,mm & $5.9 \pm 0.5$\,mm  & $7.2 \pm 0.6$\,mm  \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Two trends are evident: (i)~$\lambda$ decreases with increasing confining pressure, consistent with the expected narrowing of the shear band as the system moves away from the quasi-static threshold; and (ii)~$\lambda$ increases with size dispersity, reflecting enhanced particle mobility in polydisperse packings.
+
+\section{Non-Local Model Validation}
+
+We fit the non-local fluidity model (Eq.~\ref{eq:fluidity}) to the experimental velocity profiles, treating the cooperativity length $\xi$ as the sole adjustable parameter. Figure~\ref{fig:fluidity_fit} (not shown) demonstrates quantitative agreement between the non-local prediction and DEM data across the full range of $I$, whereas the local $\mu(I)$ model systematically underestimates velocity in the quasi-static tail of the shear band. The extracted cooperativity length follows $\xi / d \approx 3.2 \pm 0.4$ near the yield threshold, in reasonable agreement with the scaling $\xi/d \propto (|\mu - \mu_s|/\mu_s)^{-0.49 \pm 0.07}$ derived from independent microstructural correlation analysis.
+
+\chapter{Conclusion}
+
+This thesis has advanced the understanding of dense granular flows in confined geometries through a combined experimental--numerical programme. The principal contributions are:
+
+\begin{enumerate}[leftmargin=*,label=\textbullet]
+  \item \textbf{Comprehensive characterization} of velocity and packing-fraction profiles in an annular shear cell over three decades of shear rate and three confining pressures, establishing benchmark datasets for bidisperse granular rheology.
+  \item \textbf{Quantification of size-segregation dynamics}, demonstrating that the percolation velocity of small particles scales as $v_{\text{seg}} \propto \dot{\gamma} d_S (d_L/d_S - 1)$ in the dense regime, with a pre-factor that depends weakly on $I$.
+  \item \textbf{Formulation and validation of a non-local $\mu(I)$ rheology} incorporating a cooperativity length $\xi$ that captures the spatial extent of plastic events near jamming, bridging the gap between quasi-static and inertial flow descriptions.
+  \item \textbf{Open-source release} of the \texttt{GranuLo} DEM codebase and the experimental dataset, enabling reproducible research and future model development.
+\end{enumerate}
+
+\section*{Future Work}
+
+Several directions merit further investigation. The cooperativity length $\xi$ has been determined only for spherical particles; extending the analysis to angular grains and cohesive powders would test the universality of the non-local framework. Three-dimensional imaging via X-ray microtomography could provide direct measurements of the microstructural correlation functions that underlie Eq.~(\ref{eq:fluidity}). Finally, coupling the validated rheology with continuum-scale CFD codes would enable predictive simulations of industrial-scale granular handling equipment at Vertex Process Technologies and similar facilities.
+
+\vspace{20pt}
+
+\begin{thebibliography}{99}
+
+\bibitem{miidi2004}
+GDR MiDi.
+\newblock On dense granular flows.
+\newblock \textit{Eur.\ Phys.\ J.\ E}, 14(4):341--365, 2004.
+
+\bibitem{daCruz2005}
+F.\ da Cruz, S.\ Emam, M.\ Prochnow, J.-N.\ Roux, and F.\ Chevoir.
+\newblock Rheophysics of dense granular materials: discrete simulation of plane shear flows.
+\newblock \textit{Phys.\ Rev.\ E}, 72:021309, 2005.
+
+\bibitem{Jop2006}
+P.\ Jop, Y.\ Forterre, and O.\ Pouliquen.
+\newblock A constitutive law for dense granular flows.
+\newblock \textit{Nature}, 441:727--730, 2006.
+
+\bibitem{Goyon2008}
+J.\ Goyon, A.\ Colin, G.\ Ovarlez, A.\ Ajdari, and L.\ Bocquet.
+\newblock Spatial cooperativity in soft glassy flows.
+\newblock \textit{Nature}, 454:84--87, 2008.
+
+\bibitem{Kamrin2012}
+K.\ Kamrin and G.\ Koval.
+\newblock Nonlocal constitutive relation for steady granular flow.
+\newblock \textit{Phys.\ Rev.\ Lett.}, 108:178301, 2012.
+
+\bibitem{Forterre2008}
+Y.\ Forterre and O.\ Pouliquen.
+\newblock Flows of dense granular media.
+\newblock \textit{Annu.\ Rev.\ Fluid Mech.}, 40:1--24, 2008.
+
+\bibitem{Pouliquen1999}
+O.\ Pouliquen.
+\newblock Scaling laws in granular flows down rough inclined planes.
+\newblock \textit{Phys.\ Fluids}, 11(3):542--548, 1999.
+
+\bibitem{Schaeffer1990}
+D.\ G.\ Schaeffer.
+\newblock Instability in the evolution equations describing incompressible granular flow.
+\newblock \textit{J.\ Differ.\ Equ.}, 66(1):19--50, 1987.
+
+\bibitem{Tardos1997}
+G.\ I.\ Tardos.
+\newblock A fluid mechanistic approach to slow, frictional flow of powders.
+\newblock \textit{Powder Technol.}, 92(1):61--74, 1997.
+
+\bibitem{NexaReport2024}
+Nexa Engineering Ltd.
+\newblock Technical Report NEX-2024-TR-07: Granular silo flow optimization.
+\newblock Montr\'eal, 2024.
+
+\end{thebibliography}
+
+\end{document}

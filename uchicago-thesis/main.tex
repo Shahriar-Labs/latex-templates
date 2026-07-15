@@ -1,0 +1,518 @@
+\documentclass[12pt,letterpaper,twoside]{report}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{newtxtext,newtxmath}
+\usepackage[margin=1in,left=1.5in]{geometry}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage[svgnames]{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage{titletoc}
+\usepackage{titlesec}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{caption}
+\usepackage{fontawesome5}
+
+\definecolor{ChicagoMaroon}{RGB}{128,0,0}
+\definecolor{ChicagoDark}{RGB}{60,20,20}
+\definecolor{ChicagoGray}{RGB}{110,110,110}
+\definecolor{ChicagoGold}{RGB}{180,150,70}
+
+\doublespacing
+\raggedbottom
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=ChicagoMaroon,
+  citecolor=ChicagoMaroon,
+  urlcolor=ChicagoMaroon,
+  linktoc=all
+}
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[C]{\small\color{ChicagoGray}\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+\pagestyle{plain}
+
+\titleformat{\chapter}[display]
+  {\normalfont\LARGE\bfseries\color{ChicagoMaroon}}
+  {\filcenter\small\scshape Chapter \thechapter}
+  {18pt}
+  {\filcenter\Huge}
+\titlespacing*{\chapter}{0pt}{40pt}{30pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{ChicagoMaroon}}
+  {\thesection}
+  {1em}
+  {}
+\titlespacing*{\section}{0pt}{18pt}{10pt}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{ChicagoDark}}
+  {\thesubsection}
+  {1em}
+  {}
+\titlespacing*{\subsection}{0pt}{14pt}{8pt}
+
+\titlecontents{chapter}[1.5em]
+  {\addvspace{8pt}\bfseries\color{ChicagoMaroon}}
+  {\contentslabel{1.5em}}
+  {\hspace*{-1.5em}}
+  {\hfill\contentspage}
+
+\titlecontents{section}[3.8em]
+  {\color{ChicagoDark}}
+  {\contentslabel{2.3em}}
+  {\hspace*{-2.3em}}
+  {\hfill\contentspage}
+
+\renewcommand{\bibname}{References}
+
+\newtcolorbox{theorembox}[1][]{
+  colback=ChicagoMaroon!8,
+  colframe=ChicagoMaroon!60,
+  arc=6pt,
+  boxrule=0.8pt,
+  before skip=14pt,
+  after skip=14pt,
+  fonttitle=\bfseries\color{ChicagoMaroon},
+  #1
+}
+
+\newtcolorbox{quotebox}{
+  colback=ChicagoGold!12,
+  colframe=ChicagoGold!40,
+  arc=4pt,
+  boxrule=0.5pt,
+  before skip=12pt,
+  after skip=12pt,
+  left=14pt,
+  right=14pt
+}
+
+\newenvironment{dedicationpage}
+  {\clearpage\thispagestyle{empty}\vspace*{\fill}\begin{center}\itshape\large}
+  {\end{center}\vspace*{\fill}\clearpage}
+
+\newcommand{\titlerulemaroon}[1]{\tikz[baseline]\draw[ChicagoMaroon,line width=#1] (0,0) -- (0.45\textwidth,0);}
+
+\begin{document}
+
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+
+\vspace*{1.5cm}
+
+{\LARGE\bfseries\color{ChicagoMaroon} THE UNIVERSITY OF CHICAGO}
+
+\vspace{0.6cm}
+
+\titlerulemaroon{0.8pt}
+
+\vspace{2cm}
+
+{\Huge\bfseries\color{ChicagoDark} Stochastic Optimization in\\ High-Dimensional Dynamical Systems}
+
+\vspace{1.8cm}
+
+{\Large\color{ChicagoGray} A DISSERTATION SUBMITTED TO}
+
+\vspace{0.4cm}
+
+{\Large\color{ChicagoGray} THE FACULTY OF THE DIVISION OF THE PHYSICAL SCIENCES}
+
+\vspace{0.4cm}
+
+{\Large\color{ChicagoGray} IN CANDIDACY FOR THE DEGREE OF}
+
+\vspace{0.4cm}
+
+{\Large\bfseries\color{ChicagoDark} DOCTOR OF PHILOSOPHY}
+
+\vspace{1cm}
+
+{\Large\color{ChicagoGray} DEPARTMENT OF STATISTICS}
+
+\vspace{1.4cm}
+
+{\Large\color{ChicagoDark} BY}
+
+\vspace{0.4cm}
+
+{\LARGE\bfseries\color{ChicagoMaroon} ELEANOR J. HARROW}
+
+\vspace{1.8cm}
+
+\titlerulemaroon{0.5pt}
+
+\vspace{1.2cm}
+
+{\large\color{ChicagoGray} CHICAGO, ILLINOIS}
+
+\vspace{0.3cm}
+
+{\large\color{ChicagoGray} JUNE 2025}
+
+\vspace{2cm}
+
+{\footnotesize\color{ChicagoGray!70}\itshape
+Unofficial template --- not affiliated with or endorsed by the university.\\
+Sample content only.}
+
+\end{center}
+\end{titlepage}
+
+\begin{dedicationpage}
+To my parents, Clara and Martin Harrow,\\[6pt]
+for teaching me that every question\\[4pt]
+deserves the patience of a thorough answer.
+\end{dedicationpage}
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+High-dimensional dynamical systems pervade modern scientific inquiry, from climate modeling and neural population dynamics to financial market microstructure and genomic regulatory networks. This dissertation develops a unified framework for stochastic optimization in such systems by bridging three previously disconnected threads: spectral regularization of non-convex objectives, kernel-based sensitivity analysis under temporal dependence, and adaptive step-size schemes that exploit the geometry of the loss landscape. The central contribution is the \textbf{Spectral Annealed Gradient (SAG)} algorithm, which couples a preconditioned Langevin dynamics sampler with a spectrally adaptive temperature schedule, yielding provable convergence guarantees in the overparameterized regime. We validate the framework through extensive simulation studies on synthetic systems of up to $10^{5}$ dimensions, and we demonstrate practical efficacy on two real-world problems: predicting short-horizon volatility surfaces from order-book data and inferring cortical connectivity graphs from multi-electrode array recordings. Our results establish that SAG outperforms Adam, RMSProp, and standard Langevin Monte Carlo across a suite of metrics including wall-clock convergence, test-set log-likelihood, and posterior coverage of credible intervals.
+
+\vspace{8pt}
+\noindent\textbf{Keywords:} stochastic optimization, Langevin dynamics, high-dimensional inference, spectral methods, dynamical systems
+
+\clearpage
+
+\tableofcontents
+\clearpage
+
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+\clearpage
+
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+\clearpage
+
+\chapter{Introduction}
+
+The last decade has witnessed an explosion in the dimensionality of data collected across the natural and social sciences. High-throughput genomic sequencers, dense sensor arrays, and tick-by-tick financial data feeds routinely produce observations in spaces of dimension $p$ that may exceed the sample size $n$ by orders of magnitude. Classical inferential machinery --- maximum likelihood, method of moments, and even modern Bayesian computation via Hamiltonian Monte Carlo --- buckles under this regime, either because the requisite linear algebra scales superlinearly in $p$ or because the geometry of the posterior distribution becomes pathologically concentrated.
+
+This dissertation is concerned with the following question:
+
+\begin{quotebox}
+\noindent\textit{Given a high-dimensional dynamical system whose state evolves according to a stochastic differential equation (SDE) with unknown parameters $\theta \in \mathbb{R}^{p}$, how can we design an optimization procedure that recovers $\theta$ with statistical efficiency guarantees while remaining computationally feasible when $p \gtrsim 10^{4}$?}
+\end{quotebox}
+
+\noindent We tackle this question from three complementary angles. First, we develop a spectral regularization framework that leverages the eigendecomposition of the empirical Fisher information matrix to identify and shrink directions of high curvature without requiring full Hessian access. Second, we introduce a kernel-based gradient estimator that exploits temporal structure in the underlying SDE to reduce the variance of stochastic gradients by an order of magnitude relative to naive subsampling. Third, we propose an adaptive temperature schedule that anneals the injected noise in proportion to a local flatness measure, ensuring rapid mixing near saddle points without sacrificing convergence to the global minimizer.
+
+\section{Motivation and Scope}
+
+Consider the prototypical setting of a $d$-dimensional It\^{o} process:
+
+\begin{equation}\label{eq:sde}
+dX_{t} = f(X_{t}; \theta)\,dt + \sigma(X_{t})\,dW_{t},
+\end{equation}
+
+\noindent where $f: \mathbb{R}^{d} \times \mathbb{R}^{p} \to \mathbb{R}^{d}$ is a smooth drift function, $\sigma$ is a state-dependent volatility matrix, and $W_{t}$ is a standard $d$-dimensional Brownian motion. Observations $y_{1}, \ldots, y_{n}$ arrive at discrete times $t_{1}, \ldots, t_{n}$, possibly corrupted by additive Gaussian noise. The log-likelihood $\ell_{n}(\theta) = \sum_{i=1}^{n} \log p(y_{i} \mid \theta)$ is almost always non-convex and may contain exponentially many suboptimal local minima when $p$ is large \cite{choromanska2015}.
+
+Why should we expect any algorithm to succeed here? A growing body of work in the theory of overparameterized models \cite{neyshabur2018,du2019} suggests that the loss landscape of high-dimensional problems is generically benign: saddle points dominate local minima, and all global minima are connected by flat, low-loss valleys. Our contributions show how to exploit this structure algorithmically.
+
+\section{Summary of Contributions}
+
+\begin{enumerate}[leftmargin=*,itemsep=6pt,label={\color{ChicagoMaroon}\bfseries\arabic*.}]
+  \item \textbf{Chapter 2} introduces the Spectral Annealed Gradient (SAG) algorithm, proves its convergence in Wasserstein-2 distance, and characterizes its bias-variance trade-off through a sharp non-asymptotic bound.
+  \item \textbf{Chapter 3} develops the temporal kernel gradient estimator and establishes a central limit theorem for the resulting stochastic gradients under $\beta$-mixing.
+  \item \textbf{Chapter 4} presents the adaptive temperature schedule, which interpolates between exploration and exploitation phases without requiring manual tuning of a cooling rate parameter.
+  \item \textbf{Chapter 5} reports simulation benchmarks on synthetic dynamical systems of varying dimension, comparing SAG against six baseline optimizers.
+  \item \textbf{Chapter 6} applies the full framework to two empirical problems: volatility surface reconstruction from limit-order-book data, and functional connectivity estimation from neural spike trains.
+\end{enumerate}
+
+\chapter{Spectral Annealed Gradient}
+
+This chapter develops the core algorithmic contribution of the dissertation. We begin by establishing notation and reviewing the relevant background on Langevin dynamics and spectral regularization, then present the SAG update rule and prove its main convergence guarantee.
+
+\section{Preliminaries}
+
+Let $\mathcal{L}(\theta) = -\ell_{n}(\theta)$ denote the empirical risk (negative log-likelihood). The unadjusted Langevin algorithm (ULA) \cite{roberts1996} generates a Markov chain $\{\theta_{k}\}_{k \ge 0}$ via the recursion
+
+\begin{equation}\label{eq:ula}
+\theta_{k+1} = \theta_{k} - \eta \nabla\mathcal{L}(\theta_{k}) + \sqrt{2\eta\tau}\,\xi_{k},
+\end{equation}
+
+\noindent where $\eta > 0$ is the step size, $\tau > 0$ is the temperature parameter, and $\xi_{k} \sim \mathcal{N}(0, I_{p})$ are independent Gaussian vectors. Under mild regularity conditions on $\mathcal{L}$, the stationary distribution of \eqref{eq:ula} is proportional to $\exp(-\mathcal{L}(\theta)/\tau)$, making ULA a natural tool for both sampling from and optimizing over the posterior.
+
+However, when $p$ is large and $\mathcal{L}$ is poorly conditioned, the naive ULA update \eqref{eq:ula} mixes prohibitively slowly. The condition number $\kappa = \lambda_{\max}(\nabla^{2}\mathcal{L}) / \lambda_{\min}(\nabla^{2}\mathcal{L})$ can be on the order of $10^{3}$ to $10^{5}$ in the problems we study, forcing $\eta = O(1/\lambda_{\max})$ and yielding a mixing time that scales as $O(\kappa^{2})$.
+
+\section{The SAG Algorithm}
+
+The SAG algorithm replaces the isotropic noise injection in \eqref{eq:ula} with a spectrally adapted counterpart. For each iteration $k$, we compute a low-rank approximation of the empirical Fisher information:
+
+\begin{equation}\label{eq:fisher}
+\hat{F}_{k} = \frac{1}{|\mathcal{B}_{k}|}\sum_{i \in \mathcal{B}_{k}} \nabla\log p(y_{i}\mid\theta_{k})\,\nabla\log p(y_{i}\mid\theta_{k})^{\top},
+\end{equation}
+
+\noindent where $\mathcal{B}_{k}$ is a mini-batch of size $B$. Let $\hat{F}_{k} = U_{k}\Lambda_{k}U_{k}^{\top}$ be the eigendecomposition with $\Lambda_{k} = \operatorname{diag}(\lambda_{k,1}, \ldots, \lambda_{k,p})$ and $\lambda_{k,1} \ge \cdots \ge \lambda_{k,p} \ge 0$. Define the truncated precision matrix
+
+\begin{equation}\label{eq:precision}
+\Gamma_{k} = U_{k}\operatorname{diag}\bigl(\max(\lambda_{k,1},\,\varepsilon), \ldots, \max(\lambda_{k,p},\,\varepsilon)\bigr)^{-1/2} U_{k}^{\top},
+\end{equation}
+
+\noindent with $\varepsilon = 10^{-8}$ for numerical stability. The SAG update is then
+
+\begin{equation}\label{eq:sag}
+\boxed{\;\theta_{k+1} = \theta_{k} - \eta_{k}\,\Gamma_{k}\nabla\mathcal{L}(\theta_{k}) + \sqrt{2\eta_{k}\tau_{k}}\;\Gamma_{k}^{1/2}\,\xi_{k}\;},
+\end{equation}
+
+\noindent where $\eta_{k}$ and $\tau_{k}$ follow adaptive schedules defined in Chapter~4.
+
+\begin{theorembox}[title={Convergence in $W_{2}$ Distance}]
+Assume $\mathcal{L}$ is $M$-smooth and $\mu$-strongly convex outside a compact set. Let $\{\theta_{k}\}$ be generated by \eqref{eq:sag} with $\eta_{k} = \eta_{0}k^{-\gamma}$ and $\tau_{k} = \tau_{0}k^{-\delta}$ for $0 < \delta < \gamma < 1$. Then there exists a constant $C > 0$ such that for all $k \ge 1$,
+
+\begin{equation}\label{eq:convergence}
+W_{2}\bigl(\mathcal{L}(\theta_{k}),\; \pi_{\tau_{k}}\bigr) \le C\,k^{-(\gamma-\delta)/2},
+\end{equation}
+
+\noindent where $\pi_{\tau}$ denotes the Gibbs distribution $\propto \exp(-\mathcal{L}(\theta)/\tau)$ and $W_{2}$ is the Wasserstein-2 distance.
+\end{theorembox}
+
+The proof, deferred to Appendix~A, hinges on a coupling argument that synchronizes two copies of the chain --- one at equilibrium and one evolving from an arbitrary initialization --- and bounds the contraction induced by the preconditioner $\Gamma_{k}$.
+
+\section{Comparison with Related Methods}
+
+Table~\ref{tab:comparison} summarizes the key differences between SAG and several widely used optimizers.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparison of optimization methods for high-dimensional stochastic problems.}
+\label{tab:comparison}
+\begin{tabularx}{0.92\textwidth}{lXXX}
+\toprule
+\textbf{Method} & \textbf{Preconditioning} & \textbf{Noise Model} & \textbf{Temp.\ Schedule} \\
+\midrule
+Adam \cite{kingma2014} & Diagonal EMA of squared grads & None & N/A \\
+RMSProp \cite{tieleman2012} & Diagonal EMA of squared grads & None & N/A \\
+ULA \cite{roberts1996} & None & Isotropic Gaussian & Constant \\
+SGLD \cite{welling2011} & None & Isotropic Gaussian & Decreasing \\
+pSGLD \cite{ahn2012} & RMSProp-style diagonal & Isotropic Gaussian & Decreasing \\
+\textbf{SAG (this work)} & \textbf{Low-rank Fisher} & \textbf{Spectral} & \textbf{Adaptive} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\chapter{Temporal Kernel Gradient Estimation}
+
+When observations arise from an SDE as in \eqref{eq:sde}, the temporal ordering carries information that is discarded by standard i.i.d.\ subsampling. This chapter introduces a kernel-weighted gradient estimator that exploits the $\beta$-mixing property of discretely observed diffusion processes.
+
+\section{Kernel Construction}
+
+For observations at times $0 = t_{0} < t_{1} < \cdots < t_{n} = T$, define the temporal kernel
+
+\begin{equation}\label{eq:kernel}
+K_{h}(i, j) = \frac{1}{h}\,\phi\!\left(\frac{|t_{i} - t_{j}|}{h}\right),
+\end{equation}
+
+\noindent where $\phi: \mathbb{R}_{\ge 0} \to \mathbb{R}_{\ge 0}$ is a symmetric, compactly supported kernel (we use the Epanechnikov kernel throughout) and $h > 0$ is the bandwidth. The kernel-smoothed gradient at iteration $k$ is
+
+\begin{equation}\label{eq:kgrad}
+\tilde{g}_{k}(\theta) = \frac{1}{B}\sum_{i \in \mathcal{B}_{k}}\;\sum_{j=1}^{n} K_{h}(i, j)\,\nabla\log p(y_{j}\mid\theta).
+\end{equation}
+
+The inner sum over $j$ down-weights observations that are temporally distant from $i$, reducing the contribution of high-variance gradient estimates from independent time blocks while preserving the low-bias signal from adjacent observations.
+
+\section{Theoretical Properties}
+
+\begin{theorembox}[title={Asymptotic Normality of $\tilde{g}_{k}$}]
+Let the process $\{X_{t}\}$ in \eqref{eq:sde} be geometrically $\beta$-mixing with mixing coefficient $\beta(t) \le c_{0}e^{-c_{1}t}$. Fix $\theta$ and let $h = h_{n} \to 0$ such that $nh_{n} \to \infty$. Then, as $n \to \infty$,
+
+\begin{equation}\label{eq:clt}
+\sqrt{B}\,\bigl(\tilde{g}_{k}(\theta) - \mathbb{E}[\nabla\log p(y\mid\theta)]\bigr) \;\xrightarrow{d}\; \mathcal{N}\!\bigl(0,\; \Sigma_{\phi}(\theta)\bigr),
+\end{equation}
+
+\noindent where $\Sigma_{\phi}(\theta)$ is a positive semi-definite matrix with $\operatorname{tr}(\Sigma_{\phi}) \le \operatorname{tr}(\Sigma_{\mathrm{iid}})\,/\,(1 + c_{2}h^{-1})$ for some $c_{2} > 0$. In words, the kernel estimator achieves a variance reduction factor of approximately $1 + c_{2}/h$ relative to the standard i.i.d.\ estimator.
+\end{theorembox}
+
+\vspace{6pt}
+
+\begin{center}
+\begin{minipage}{0.48\textwidth}
+\begin{tcolorbox}[colback=ChicagoMaroon!6,colframe=ChicagoMaroon!50,arc=5pt,boxrule=0.6pt,title={\textbf{Key insight}},fonttitle=\bfseries\color{ChicagoMaroon}]
+Temporal dependence is not a nuisance to be corrected --- it is a structural feature that, when properly harnessed through kernel smoothing, can \textit{reduce} gradient variance below the i.i.d.\ baseline.
+\end{tcolorbox}
+\end{minipage}
+\end{center}
+
+\vspace{6pt}
+
+The bandwidth $h$ controls the bias-variance trade-off: small $h$ recovers the raw i.i.d.\ estimator, while large $h$ averages over long temporal windows, potentially introducing bias if the latent state drifts substantially. In practice, we select $h$ via a plug-in estimator derived from the empirical autocorrelation function of the gradient sequence.
+
+\chapter{Empirical Evaluation}
+
+This chapter presents the experimental validation of the SAG framework. All experiments were conducted on a compute cluster equipped with 64-core AMD EPYC processors and NVIDIA A100 GPUs, using a custom implementation in JAX \cite{jax2018}. Code reproducing all figures and tables is publicly available at \url{https://github.com/example/sag-code}.
+
+\section{Synthetic Benchmarks}
+
+We consider three families of synthetic test problems, summarized in Table~\ref{tab:benchmarks}.
+
+\begin{table}[htbp]
+\centering
+\caption{Synthetic benchmark problems. $p$ = parameter dimension; $n$ = sample size; $\kappa$ = condition number of Hessian at optimum.}
+\label{tab:benchmarks}
+\begin{tabularx}{0.92\textwidth}{lrrrX}
+\toprule
+\textbf{Problem} & \textbf{\,$p$\,} & \textbf{\,$n$\,} & \textbf{\,$\kappa$\,} & \textbf{Description} \\
+\midrule
+Logistic bandit & $5\times 10^{3}$ & $10^{5}$ & 820 & Binary outcomes with sparse signal \\
+Lorenz-96 SDE & $1\times 10^{4}$ & $2\times 10^{5}$ & $4.3\times 10^{3}$ & Chaotic atmospheric toy model \\
+Cox--Ingersoll--Ross & $2\times 10^{4}$ & $5\times 10^{4}$ & $1.1\times 10^{4}$ & Multi-factor interest rate dynamics \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent For each problem, we compare SAG against six baseline optimizers: Adam, RMSProp, Adagrad, standard ULA, SGLD \cite{welling2011}, and preconditioned SGLD (pSGLD) \cite{ahn2012}. All methods are given a fixed computational budget of $10^{5}$ gradient evaluations.
+
+\subsection{Convergence Speed}
+
+Figure~\ref{fig:convergence} (appearing in the List of Figures) plots the negative log-likelihood against wall-clock time for the Lorenz-96 problem. SAG reaches a test log-likelihood of $-2.87$ within $1.2\times 10^{3}$ seconds, compared to $-3.41$ for Adam at the same time point and $-4.02$ for standard ULA. The spectral preconditioner yields a roughly $2.5\times$ speedup relative to the next-best method (pSGLD) on this problem class.
+
+\subsection{Posterior Coverage}
+
+\begin{table}[htbp]
+\centering
+\caption{Empirical coverage of 95\% credible intervals across methods on the logistic bandit problem. Nominal coverage target is 0.95.}
+\label{tab:coverage}
+\begin{tabularx}{0.85\textwidth}{lXX}
+\toprule
+\textbf{Method} & \textbf{Mean Coverage} & \textbf{Interval Width} \\
+\midrule
+Adam (bootstrap) & 0.82 & 1.24 \\
+RMSProp (bootstrap) & 0.79 & 1.31 \\
+ULA & 0.88 & 1.08 \\
+SGLD & 0.91 & 0.96 \\
+pSGLD & 0.93 & 0.91 \\
+\textbf{SAG} & \textbf{0.94} & \textbf{0.87} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+SAG achieves 94\% mean coverage with the narrowest intervals among all methods, indicating that the spectral noise injection successfully calibrates uncertainty without sacrificing precision. The gap between SAG and pSGLD narrows as dimension grows, consistent with our theoretical analysis showing that the advantage of low-rank preconditioning is most pronounced in the $p \gg n$ regime.
+
+\section{Real-Data Applications}
+
+\subsection{Volatility Surface Reconstruction}
+
+We apply SAG to reconstruct implied volatility surfaces from Level-2 limit-order-book data for S\&P 500 options during the volatile trading months of January--March 2024. The dataset, sourced from the Market Information Data Analytics System (MIDAS) through a collaborative agreement with Vertex Quantitative Research, contains approximately $8\times 10^{7}$ order-book snapshots at millisecond resolution.
+
+The parameter vector $\theta$ encodes the coefficients of a stochastic volatility inspired (SVI) surface parameterization with $p = 3{,}186$ free parameters covering strikes ranging from $0.5\times$ to $2.0\times$ spot and maturities from one week to two years. Table~\ref{tab:vol} reports the out-of-sample root mean squared error (RMSE) in implied volatility units.
+
+\begin{table}[htbp]
+\centering
+\caption{Out-of-sample RMSE for volatility surface reconstruction. Lower is better.}
+\label{tab:vol}
+\begin{tabularx}{0.80\textwidth}{lXX}
+\toprule
+\textbf{Method} & \textbf{RMSE (weekly)} & \textbf{RMSE (monthly)} \\
+\midrule
+Adam & 0.0241 & 0.0187 \\
+RMSProp & 0.0258 & 0.0193 \\
+SGLD & 0.0194 & 0.0151 \\
+pSGLD & 0.0182 & 0.0144 \\
+\textbf{SAG} & \textbf{0.0156} & \textbf{0.0119} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Cortical Connectivity Inference}
+
+The second application concerns inferring functional connectivity graphs from multi-electrode array recordings of macaque primary visual cortex, collected in collaboration with the Nimbus Neuroscience Institute. The data consist of $n = 1.2 \times 10^{6}$ spike-time events across $d = 96$ electrodes during presentation of drifting grating stimuli. We fit a multivariate Hawkes process with a sparse graph-structured excitation matrix $\theta \in \mathbb{R}^{96 \times 96}$.
+
+The inferred connectivity graph produced by SAG recovers known anatomical pathways with 82\% precision and 74\% recall, outperforming the lasso-regularized maximum-likelihood baseline (64\% precision, 58\% recall) reported in \cite{pillow2008}. Notably, SAG identifies a previously unreported reciprocal connection between layers 2/3 and layer 5 of area V1, a finding that aligns with recent anatomical tracing studies \cite{harris2019}.
+
+\chapter*{Acknowledgments}
+\addcontentsline{toc}{chapter}{Acknowledgments}
+
+I am deeply grateful to my advisor, Professor Jonathan K. Redwood, whose intellectual generosity and exacting standards shaped every page of this dissertation. I thank the members of my committee --- Professors Sanjay Mehta, Diana L. Fairchild, and Thomas Wren --- for their careful reading and incisive feedback. The Vertex Quantitative Research group provided computational resources and stimulating discussions; the Nimbus Neuroscience Institute generously shared electrophysiological data. Any errors that remain are mine alone.
+
+Financial support was provided by a Synapse Foundation Graduate Fellowship and by NSF grant DMS-2145678 (PI: J.K. Redwood).
+
+\vspace{12pt}
+
+\begin{center}
+  \begin{minipage}{0.55\textwidth}
+    \centering
+    \begin{tcolorbox}[colback=ChicagoMaroon!5,colframe=ChicagoMaroon!30,arc=6pt,boxrule=0.4pt]
+      \small\itshape\color{ChicagoGray}
+      \faBookmark\;\; This dissertation was typeset using the \LaTeX\ typesetting system\\
+      with the New TX font family and custom UChicago-inspired styling.\\
+      Unofficial template --- not affiliated with the university.
+    \end{tcolorbox}
+  \end{minipage}
+\end{center}
+
+\begin{thebibliography}{99}
+
+\bibitem{ahn2012}
+S.~Ahn, A.~Korattikara, and M.~Welling.
+\newblock Bayesian posterior sampling via stochastic gradient Fisher scoring.
+\newblock In \textit{ICML}, 2012.
+
+\bibitem{choromanska2015}
+A.~Choromanska, M.~Henaff, M.~Mathieu, G.~Ben Arous, and Y.~LeCun.
+\newblock The loss surfaces of multilayer networks.
+\newblock In \textit{AISTATS}, 2015.
+
+\bibitem{du2019}
+S.~S.~Du, J.~D.~Lee, H.~Li, L.~Wang, and X.~Zhai.
+\newblock Gradient descent finds global minima of deep neural networks.
+\newblock \textit{JMLR}, 20:1--46, 2019.
+
+\bibitem{harris2019}
+K.~D.~Harris, R.~Q.~Quiroga, and G.~Buzs\'{a}ki.
+\newblock Cortical connectivity and the structure of population codes.
+\newblock \textit{Neuron}, 101(2):260--275, 2019.
+
+\bibitem{jax2018}
+J.~Bradbury, R.~Frostig, P.~Hawkins, M.~J.~Johnson, C.~Leary, D.~Maclaurin, G.~Necula, A.~Paske, et al.
+\newblock JAX: composable transformations of Python+NumPy programs, 2018.
+\newblock \url{https://github.com/jax-ml/jax}.
+
+\bibitem{kingma2014}
+D.~P.~Kingma and J.~Ba.
+\newblock Adam: A method for stochastic optimization.
+\newblock In \textit{ICLR}, 2015.
+
+\bibitem{neyshabur2018}
+B.~Neyshabur, Z.~Li, S.~Bhojanapalli, Y.~LeCun, and N.~Srebro.
+\newblock The role of over-parameterization in generalization.
+\newblock In \textit{NeurIPS}, 2018.
+
+\bibitem{pillow2008}
+J.~W.~Pillow, J.~Shlens, L.~Paninski, A.~Sher, A.~M.~Litke, E.~J.~Chichilnisky, and E.~P.~Simoncelli.
+\newblock Spatio-temporal correlations and visual signalling in a complete neuronal population.
+\newblock \textit{Nature}, 454(7207):995--999, 2008.
+
+\bibitem{roberts1996}
+G.~O.~Roberts and R.~L.~Tweedie.
+\newblock Exponential convergence of Langevin distributions and their discrete approximations.
+\newblock \textit{Bernoulli}, 2(4):341--363, 1996.
+
+\bibitem{tieleman2012}
+T.~Tieleman and G.~Hinton.
+\newblock Lecture 6.5: RMSProp.
+\newblock Coursera: Neural Networks for Machine Learning, 2012.
+
+\bibitem{welling2011}
+M.~Welling and Y.~W.~Teh.
+\newblock Bayesian learning via stochastic gradient Langevin dynamics.
+\newblock In \textit{ICML}, 2011.
+
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,363 @@
+\documentclass[10pt,letterpaper]{article}
+\usepackage[top=1.0in, bottom=1.0in, left=0.8in, right=0.8in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[scaled=0.92]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[table]{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{fancyhdr}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage{fontawesome5}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{titlesec}
+\usepackage{hyperref}
+
+% Define color palette
+\definecolor{primary}{HTML}{0F172A}    % Slate 900 (Deep Charcoal)
+\definecolor{secondary}{HTML}{0284C7}  % Sky 600 (Technical Blue)
+\definecolor{accent}{HTML}{0D9488}     % Teal 600 (Hardware Teal)
+\definecolor{lightbg}{HTML}{F8FAFC}    % Slate 50 (Off-white)
+\definecolor{bordergray}{HTML}{E2E8F0} % Slate 200 (Light gray border)
+\definecolor{textdark}{HTML}{334155}   % Slate 700 (Body text)
+\definecolor{highlight}{HTML}{F1F5F9}  % Slate 100
+
+% Set paragraph spacing
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+
+% Hyperref setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=secondary,
+    filecolor=secondary,      
+    urlcolor=accent,
+    citecolor=secondary,
+    pdftitle={Vertex-9 High-Performance DSP Processing Core FPGA Design Specification},
+    pdfauthor={Vertex Systems Engineering Group},
+}
+
+% Customize Section Headings
+\titleformat{\section}
+  {\color{primary}\sffamily\Large\bfseries}
+  {\thesection}{1em}{}[{\color{bordergray}\titlerule[1pt]}]
+\titleformat{\subsection}
+  {\color{secondary}\sffamily\large\bfseries}
+  {\thesubsection}{1em}{}
+
+% Running Header and Footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\setlength{\headheight}{15pt}
+\fancyhead[L]{\textcolor{textdark}{\sffamily \small \textbf{Vertex Systems} \textbar\ Vertex-9 DSP Accelerator}}
+\fancyhead[R]{\textcolor{textdark}{\sffamily \small FPGA Design Specification v2.4.0}}
+\fancyfoot[L]{\textcolor{textdark}{\sffamily \scriptsize CONFIDENTIAL -- VERTEX SYSTEMS INTERNAL USE ONLY}}
+\fancyfoot[R]{\textcolor{textdark}{\sffamily \small Page \thepage}}
+
+\begin{document}
+
+% Cover / Document Header Block
+\thispagestyle{empty}
+\begin{tcolorbox}[
+    colback=primary,
+    colframe=primary,
+    arc=0mm,
+    outer arc=0mm,
+    left=20pt,
+    right=20pt,
+    top=25pt,
+    bottom=25pt,
+    coltext=white
+]
+    {\Huge \bfseries \sffamily \faMicrochip \hspace{10pt} Vertex-9 FPGA DSP Accelerator}\\[12pt]
+    {\large \bfseries \sffamily High-Performance Signal Processing Core Design Specification}\\[15pt]
+    \textcolor{secondary!40}{\rule{\linewidth}{1.5pt}}\par\vspace{10pt}
+    {\sffamily \small
+     \faFile* \hspace{3pt} \textbf{Document ID:} VS-FDS-0924 \hfill \faLock \hspace{3pt} \textbf{Security Level:} Confidential\\
+     \faUser \hspace{3pt} \textbf{Author:} Sarah Jenkins, Lead Hardware Architect \hfill \faBuilding \hspace{3pt} \textbf{Fictional Entity:} Vertex Systems\\
+     \faCalendar \hspace{3pt} \textbf{Date:} July 15, 2026 \hfill \faTag \hspace{3pt} \textbf{Version:} v2.4.0}
+\end{tcolorbox}
+
+\vspace{5pt}
+
+% Section 1: Executive Summary & Document Control
+\section*{Revision History}
+\noindent
+\begin{tabularx}{\textwidth}{l l X l}
+\toprule
+\textbf{Version} & \textbf{Date} & \textbf{Description} & \textbf{Author} \\
+\midrule
+1.0.0 & Oct 12, 2025 & Initial architecture draft for review. & S. Jenkins \\
+2.0.0 & Feb 18, 2026 & Added multi-channel DMA support. & R. Patel \\
+2.3.0 & May 05, 2026 & Refined clock domain crossing (CDC) constraints. & J. Carter \\
+2.4.0 & Jul 15, 2026 & Updated register map and DSP timing parameters. & S. Jenkins \\
+\bottomrule
+\end{tabularx}
+
+\section{Executive Summary}
+This document defines the architectural, functional, and physical interface specifications for the Vertex-9 High-Performance DSP FPGA Accelerator core. Developed by Vertex Systems, the Vertex-9 is a modular, high-throughput signal processing engine tailored for multi-channel RF transceiver systems. 
+
+The core integrates an ExpressLink Gen3 x4 PCIe host interface, a dual-channel scatter-gather DMA engine, a configurable control and status register (CSR) file, and a pipelined DSP processor optimized for parallel IQ filtering. The target implementation platforms are Nexa-Gate Ultra 900 and Meridian-7 series FPGAs, delivering deterministic latency and high spectral efficiency under strict power constraints.
+
+% Section 2: Architecture Overview
+\section{System Architecture}
+The Vertex-9 core architecture utilizes a decoupled design topology, isolating the host interface domain from the high-frequency DSP processing pipelines. All system control, DMA configuration, and signal parameters are governed by the control and status register file.
+
+\begin{tcolorbox}[
+    colback=lightbg,
+    colframe=bordergray,
+    title=\textbf{Figure 1: Internal FPGA Architecture Block Diagram},
+    coltitle=primary,
+    fonttitle=\sffamily\bfseries\small,
+    arc=3mm,
+    left=10pt,
+    right=10pt,
+    top=10pt,
+    bottom=10pt
+]
+\centering
+\begin{tikzpicture}[
+    box/.style={draw, rectangle, rounded corners=2pt, minimum width=2.2cm, minimum height=1.0cm, align=center, thick, fill=white, draw=primary, font=\sffamily\scriptsize},
+    bus/.style={draw, ->, >=stealth, ultra thick, secondary},
+    signal/.style={draw, ->, >=stealth, thick, accent, dashed},
+    every node/.style={font=\sffamily\scriptsize},
+    scale=0.92,
+    every node/.append style={scale=0.92}
+]
+  % Nodes
+  \node[box] (pcie) at (0,3) {\textbf{ExpressLink Gen3}\\\textbf{Controller}\\Hard IP Block};
+  \node[box] (dma) at (3.5,3) {\textbf{Scatter-Gather}\\\textbf{DMA Engine}\\Vertex Core};
+  \node[box] (regs) at (7,3) {\textbf{CSR Interface}\\\textbf{\& Registers}\\SynapseBus Slave};
+  \node[box] (dsp) at (7,0.5) {\textbf{DSP Pipeline}\\\textbf{Processor}\\Parallel IQ Core};
+  
+  \node[box, fill=accent!5, draw=accent] (ddr) at (11,3) {\textbf{DDR4 Controller}\\\textbf{\& Arbiter}\\SynapseBus Mem};
+  \node[box, fill=accent!5, draw=accent] (phy) at (11,0.5) {\textbf{High-Speed SerDes}\\\textbf{ADC/DAC Interface}\\Vertex Phy};
+  
+  % Arrows
+  \draw[bus] (pcie) -- (dma) node[midway, above] {V-Stream};
+  \draw[bus] (dma) -- (regs) node[midway, above] {SynapseBus-L};
+  \draw[bus] (dma) -- (ddr) node[midway, above, sloped] {V-Bus Master};
+  \draw[bus] (phy) -- (dsp) node[midway, above] {IQ Signals};
+  \draw[bus] (dsp) -- (ddr) node[midway, left] {V-Stream};
+  
+  % Control signals
+  \draw[signal] (regs) -- (dsp) node[midway, left] {Ctrl};
+  \draw[signal] (regs) -- (dma) node[midway, left] {Config};
+  
+  % External labels
+  \draw[<->, thick] (-1.8, 3) -- (pcie) node[midway, above] {PCIe Lanes};
+  \draw[<->, thick] (ddr) -- (13.2, 3) node[midway, above] {DDR4 Memory};
+  \draw[<->, thick] (phy) -- (13.2, 0.5) node[midway, above] {RF Frontend};
+
+\end{tikzpicture}
+\end{tcolorbox}
+
+\subsection{Core Subsystem Descriptions}
+\begin{itemize}
+    \item \textbf{ExpressLink Gen3 Controller:} Fictional hard macro handling physical, link, and transaction layer protocols for host interfacing. Bridges standard system PCIe commands to internal protocols.
+    \item \textbf{Scatter-Gather DMA Engine:} Dedicated controller designed to support ring-buffered, non-contiguous host memory access. Coordinates dual-channel memory-mapped transfers to and from DDR4 RAM.
+    \item \textbf{Control \& Status Registers (CSR):} Interconnect endpoints accessed via the SynapseBus-Lite register protocol. Manages hardware parameter configuration and reports processing health.
+    \item \textbf{DSP Pipeline Processor:} Fixed-point signal processor consisting of parallel multiply-accumulate (MAC) arrays and circular pipeline registers.
+\end{itemize}
+
+% Section 3: Register Map
+\section{Register Map (CSR Interface)}
+The control and status register block is accessed via a 32-bit SynapseBus-Lite interface. All registers are 32 bits wide and aligned to 4-byte boundaries.
+
+\noindent
+\begin{tabularx}{\textwidth}{l l c l X}
+\toprule
+\textbf{Offset} & \textbf{Register Name} & \textbf{Access} & \textbf{Reset Value} & \textbf{Description} \\
+\midrule
+0x0000 & \texttt{CTRL\_REG} & R/W & 0x00000000 & Global Control Register. Controls core enabling, resets, and operational modes. \\
+0x0004 & \texttt{STATUS\_REG} & R/O & 0x00000001 & Global Status Register. Exposes FIFO flags, processing status, and errors. \\
+0x0008 & \texttt{INTR\_EN} & R/W & 0x00000000 & Interrupt Enable Register. Enables hardware interrupt sources. \\
+0x000C & \texttt{INTR\_STAT} & R/W1C & 0x00000000 & Interrupt Status Register. Write '1' to clear active interrupt signals. \\
+0x0010 & \texttt{DMA\_SRC\_ADDR} & R/W & 0x00000000 & DMA Source Base Address (Lower 32-bits). \\
+0x0014 & \texttt{DMA\_DST\_ADDR} & R/W & 0x00000000 & DMA Destination Base Address (Lower 32-bits). \\
+0x0018 & \texttt{DMA\_LENGTH} & R/W & 0x00000000 & DMA Transfer Length in bytes. Writing triggers transfer. \\
+0x0020 & \texttt{DSP\_PARAM\_A} & R/W & 0x00004000 & DSP Filter Coefficient A (1.15 fixed-point format). \\
+0x0024 & \texttt{DSP\_PARAM\_B} & R/W & 0x00007FFF & DSP Filter Coefficient B (1.15 fixed-point format). \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Control Register Field Descriptions (CTRL\_REG)}
+The \texttt{CTRL\_REG} controls the general operation of the Vertex-9 DSP core.
+
+\noindent
+\begin{tabularx}{\textwidth}{l l c l X}
+\toprule
+\textbf{Bits} & \textbf{Field Name} & \textbf{Access} & \textbf{Reset} & \textbf{Field Description} \\
+\midrule
+31:16 & \textit{Reserved} & R/O & 0x0000 & Reserved for future expansion. Reads return 0. \\
+15:8  & \texttt{DSP\_MODE} & R/W & 0x00 & Selects processing algorithm: 0x00 (Bypass), 0x01 (FIR Filter), 0x02 (FFT Mode), 0x03 (Correlator). \\
+7:4   & \textit{Reserved} & R/O & 0x0 & Reserved for future expansion. Reads return 0. \\
+3     & \texttt{INTR\_EN\_GL} & R/W & 0x0 & Global Interrupt Enable. Active high. \\
+2     & \texttt{SOFT\_RST} & R/W & 0x0 & Software Reset. Write '1' to reset the DSP pipeline. Self-clearing. \\
+1     & \texttt{RUN} & R/W & 0x0 & Run Enable. Write '1' to start data processing. \\
+0     & \texttt{CORE\_EN} & R/W & 0x0 & Global Core Enable. Must be '1' for any sub-modules to operate. \\
+\bottomrule
+\end{tabularx}
+
+% Section 4: Interface Protocols & Timing
+\section{Interface Protocols \& Timing Handshake}
+The SynapseBus-Lite interface utilizes a strict handshaking interface. The master asserts the write enable (\texttt{WEN}) and supplies address and data. The slave core asserts the \texttt{READY} signal to indicate that the write operation has been accepted and registered.
+
+\begin{tcolorbox}[
+    colback=lightbg,
+    colframe=bordergray,
+    title=\textbf{Figure 2: CSR Write Transaction Timing Handshake},
+    coltitle=primary,
+    fonttitle=\sffamily\bfseries\small,
+    arc=3mm,
+    left=10pt,
+    right=10pt,
+    top=10pt,
+    bottom=10pt
+]
+\centering
+\begin{tikzpicture}[yscale=0.6, xscale=1.2, every node/.style={font=\sffamily\scriptsize}]
+  % Grid
+  \draw[help lines, bordergray!80, dashed] (0,-0.5) grid (8,4.8);
+  
+  % Clock
+  \node[left, textdark, font=\sffamily\bfseries] at (-0.2,4.1) {CLK};
+  \draw[thick, primary] (0,3.8) -- (0.5,3.8) -- (0.5,4.4) -- (1.5,4.4) -- (1.5,3.8) -- (2.5,3.8) -- (2.5,4.4) -- (3.5,4.4) -- (3.5,3.8) -- (4.5,3.8) -- (4.5,4.4) -- (5.5,4.4) -- (5.5,3.8) -- (6.5,3.8) -- (6.5,4.4) -- (7.5,4.4) -- (7.5,3.8) -- (8,3.8);
+  
+  % Reset
+  \node[left, textdark, font=\sffamily\bfseries] at (-0.2,3.3) {RST\_N};
+  \draw[thick, accent] (0,3.1) -- (1.2,3.1) -- (1.2,3.5) -- (8,3.5);
+  
+  % Addr
+  \node[left, textdark, font=\sffamily\bfseries] at (-0.2,2.5) {ADDR[15:0]};
+  \draw[thick, secondary] (0,2.5) -- (2.0,2.5) -- (2.2,2.7) -- (4.0,2.7) -- (4.2,2.5) -- (8,2.5);
+  \draw[thick, secondary] (2.0,2.5) -- (2.2,2.3) -- (4.0,2.3) -- (4.2,2.5);
+  \node at (3.1, 2.5) {\texttt{0x0A24}};
+  
+  % WEN
+  \node[left, textdark, font=\sffamily\bfseries] at (-0.2,1.7) {WEN};
+  \draw[thick, secondary] (0,1.5) -- (2.5,1.5) -- (2.5,1.9) -- (4.5,1.9) -- (4.5,1.5) -- (8,1.5);
+  
+  % WData
+  \node[left, textdark, font=\sffamily\bfseries] at (-0.2,0.9) {WDATA[31:0]};
+  \draw[thick, secondary] (0,0.9) -- (2.5,0.9) -- (2.7,1.1) -- (4.5,1.1) -- (4.7,0.9) -- (8,0.9);
+  \draw[thick, secondary] (2.5,0.9) -- (2.7,0.7) -- (4.5,0.7) -- (4.7,0.9);
+  \node at (3.6, 0.9) {\texttt{0xDEADBEEF}};
+
+  % Ready
+  \node[left, textdark, font=\sffamily\bfseries] at (-0.2,0.1) {READY};
+  \draw[thick, accent] (0,-0.1) -- (3.5,-0.1) -- (3.5,0.3) -- (4.5,0.3) -- (4.5,-0.1) -- (8,-0.1);
+
+  % vertical markers
+  \draw[dashed, red, thick] (2.5,-0.5) -- (2.5,4.8);
+  \draw[dashed, red, thick] (3.5,-0.5) -- (3.5,4.8);
+  \draw[dashed, red, thick] (4.5,-0.5) -- (4.5,4.8);
+  
+  \node[above, red, font=\sffamily\bfseries] at (2.5,4.8) {T1};
+  \node[above, red, font=\sffamily\bfseries] at (3.5,4.8) {T2};
+  \node[above, red, font=\sffamily\bfseries] at (4.5,4.8) {T3};
+\end{tikzpicture}
+\end{tcolorbox}
+
+\subsection{Write Transaction Sequence}
+\begin{enumerate}
+    \item \textbf{Time T1:} The bus master drives the write address (\texttt{0x0A24}) and write enable (\texttt{WEN}) signals. The write data bus (\texttt{WDATA}) becomes valid with the value \texttt{0xDEADBEEF}.
+    \item \textbf{Time T2:} The slave core decodes the address and asserts \texttt{READY} on the falling edge of the clock cycle, signaling that it is prepared to register the transaction.
+    \item \textbf{Time T3:} On the next rising edge of the system clock, the write operation is committed, data is latched into the target CSR, and the master de-asserts \texttt{WEN} to conclude the write transaction.
+\end{enumerate}
+
+% Section 5: Implementation & Resource Utilization
+\section{Physical Implementation \& Resource Summary}
+The Vertex-9 core features isolated clock domains to optimize maximum speed paths. Hardware compilation properties are defined below.
+
+\subsection{Clock Domain and Reset Strategy}
+The logic structure relies on three distinct clock domains to prevent timing violation paths:
+\begin{itemize}
+    \item \textbf{System Clock (\texttt{sys\_clk}):} Operates at 250 MHz. Used for DMA controller logic and the ExpressLink physical link layer interface.
+    \item \textbf{Configuration Clock (\texttt{cfg\_clk}):} Operates at 100 MHz. Used for low-speed CSR read/write access.
+    \item \textbf{Core DSP Clock (\texttt{dsp\_clk}):} Runs at 400 MHz. Dedicated to parallel processing arithmetic.
+\end{itemize}
+Asynchronous Clock Domain Crossings (CDC) are isolated using dual-clock FIFOs and dual-flip-flop synchronizers.
+
+\vspace{5pt}
+\noindent
+\begin{minipage}[t]{0.48\textwidth}
+  \begin{tcolorbox}[
+      colback=lightbg,
+      colframe=primary,
+      title=\textbf{Synthesis Directives},
+      coltitle=white,
+      fonttitle=\sffamily\bfseries\small,
+      arc=2mm,
+      height=3.6cm
+  ]
+      \small
+      \begin{itemize}[leftmargin=12pt, nosep]
+          \item \textbf{FSM Encoding:} One-Hot
+          \item \textbf{Resource Sharing:} Disabled
+          \item \textbf{DSP Mapping:} Block RAM limit
+          \item \textbf{Logic Optimization:} Retiming
+          \item \textbf{Boundary Keep:} False
+      \end{itemize}
+  \end{tcolorbox}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+  \begin{tcolorbox}[
+      colback=lightbg,
+      colframe=secondary,
+      title=\textbf{Place \& Route Constraints},
+      coltitle=white,
+      fonttitle=\sffamily\bfseries\small,
+      arc=2mm,
+      height=3.6cm
+  ]
+      \small
+      \begin{itemize}[leftmargin=12pt, nosep]
+          \item \textbf{Placement Strategy:} High-Speed
+          \item \textbf{Routing Effort:} Maximum
+          \item \textbf{Physical Optimization:} Enabled
+          \item \textbf{Hold-Time Fix:} Aggressive
+          \item \textbf{Slack Threshold:} 0.05 ns
+      \end{itemize}
+  \end{tcolorbox}
+\end{minipage}
+
+\subsection{Hardware Resource Utilization Metrics}
+Utilization is estimated based on compilation targeting default parameter options.
+
+\noindent
+\begin{tabularx}{\textwidth}{X c c c c c}
+\toprule
+\textbf{Target Device} & \textbf{LUTs} & \textbf{Flip-Flops} & \textbf{BRAM (36Kb)} & \textbf{DSP Slices} & \textbf{\(F_{max}\) (MHz)} \\
+\midrule
+Nexa-Gate Ultra 900 & 12,450 (2.4\%) & 18,900 (1.8\%) & 45 (4.2\%) & 128 (6.7\%) & 450 MHz \\
+Meridian-7 F-Series & 10,800 (1.9\%) & 16,500 (1.5\%) & 38 (3.5\%) & 128 (5.8\%) & 520 MHz \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Physical Top-Level Pin Constraints}
+\noindent
+\begin{tabularx}{\textwidth}{l l c l X}
+\toprule
+\textbf{Port Name} & \textbf{Direction} & \textbf{Width} & \textbf{IO Standard} & \textbf{Description} \\
+\midrule
+\texttt{pcie\_rx\_p/n} & Input & 4 & \texttt{DIFF\_SSTL12} & PCIe Differential Receive Lanes. \\
+\texttt{pcie\_tx\_p/n} & Output & 4 & \texttt{DIFF\_SSTL12} & PCIe Differential Transmit Lanes. \\
+\texttt{sys\_clk\_p/n} & Input & 1 & \texttt{LVDS} & Reference Clock for ExpressLink PLL. \\
+\texttt{adc\_data\_in} & Input & 14 & \texttt{LVDS\_25} & Differential ADC data inputs from SerDes. \\
+\texttt{dac\_data\_out} & Output & 14 & \texttt{LVDS\_25} & Differential DAC data outputs to SerDes. \\
+\texttt{sys\_rst\_n} & Input & 1 & \texttt{LVCMOS18} & Active Low Global Asynchronous Reset. \\
+\bottomrule
+\end{tabularx}
+
+\end{document}

@@ -1,0 +1,606 @@
+\documentclass[12pt,a4paper]{report}
+
+% ---------- Geometry ----------
+\usepackage[left=4cm,right=2.5cm,top=2.8cm,bottom=2.8cm]{geometry}
+
+% ---------- Core packages ----------
+\usepackage[table]{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds,patterns,arrows.meta}
+\usepackage[most]{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage[hidelinks]{hyperref}
+
+% ---------- Colour palette (Wits-inspired: deep blue, burnt orange, slate, warm sand) ----------
+\definecolor{witsblue}{HTML}{00305B}
+\definecolor{witsorange}{HTML}{D4661A}
+\definecolor{witsslate}{HTML}{4B5A66}
+\definecolor{witssand}{HTML}{F3EEE4}
+
+% ---------- Section styling ----------
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{witsblue}}
+  {\filright\Large\scshape\color{witsorange} Chapter \thechapter}
+  {6pt}
+  {\Huge}
+\titlespacing*{\chapter}{0pt}{0pt}{28pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{witsblue}}{\thesection}{0.7em}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{witsslate}}{\thesubsection}{0.7em}{}
+
+% ---------- Headers/footers ----------
+\setlength{\headheight}{14pt}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\color{witsslate}\leftmark}
+\fancyhead[R]{\small\color{witsslate}\thepage}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyhead[L]{\small\color{witsslate}\leftmark}
+  \fancyhead[R]{\small\color{witsslate}\thepage}
+  \renewcommand{\headrulewidth}{0.4pt}
+}
+
+\setstretch{1.25}
+\setlength{\parskip}{4pt}
+
+% ---------- tcolorbox styles ----------
+\newtcolorbox{keybox}[1]{
+  colback=witssand,
+  colframe=witsblue,
+  colbacktitle=witsblue,
+  coltitle=white,
+  fonttitle=\bfseries,
+  title=#1,
+  boxrule=0.6pt,
+  arc=2pt,
+  left=6pt,right=6pt,top=4pt,bottom=4pt
+}
+
+\newtcolorbox{contribbox}[1]{
+  colback=white,
+  colframe=witsorange,
+  boxrule=0.8pt,
+  arc=2pt,
+  title=#1,
+  colbacktitle=witsorange,
+  coltitle=white,
+  fonttitle=\bfseries,
+  left=6pt,right=6pt,top=4pt,bottom=4pt
+}
+
+\newtcolorbox{notebox}[1][]{
+  colback=white,
+  colframe=witsslate,
+  boxrule=0.5pt,
+  arc=1pt,
+  left=6pt,right=6pt,top=4pt,bottom=4pt,
+  #1
+}
+
+% ---------- List styling ----------
+\setlist[itemize]{label=\textcolor{witsorange}{\small\faCircle}}
+
+% ---------- Title page rule ----------
+\newcommand{\wrule}[1]{\textcolor{#1}{\rule{\linewidth}{1.2pt}}}
+
+\begin{document}
+
+% ============================================================
+% TITLE PAGE
+% ============================================================
+\begin{titlepage}
+\centering
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[witsblue] (current page.north west) rectangle ([yshift=-1.4cm]current page.north east);
+  \fill[witsorange] (current page.north west) rectangle ([yshift=-1.4cm,xshift=0.18\paperwidth]current page.north east);
+  \fill[witssand] ([yshift=1.1cm]current page.south west) rectangle (current page.south east);
+  \fill[witsblue] ([yshift=1.1cm]current page.south west) rectangle ([yshift=1.3cm,xshift=\paperwidth]current page.south west);
+\end{tikzpicture}
+
+\vspace*{2.6cm}
+
+{\small\color{witsslate}\scshape University of the Witwatersrand, Johannesburg}\\[2pt]
+{\footnotesize\color{witsslate} Faculty of Science \;$\cdot$\; School of Computer Science and Applied Mathematics}
+
+\vspace{2.2cm}
+\wrule{witsorange}
+\vspace{0.5cm}
+
+{\Huge\bfseries\color{witsblue} Adaptive Load Forecasting for\\[2pt] Distributed Microgrids in\\[2pt] Data-Scarce Environments}
+
+\vspace{0.5cm}
+\wrule{witsblue}
+\vspace{1.4cm}
+
+{\large A thesis submitted in fulfilment of the requirements for the degree of}
+
+\vspace{0.35cm}
+{\Large\bfseries\color{witsorange} Doctor of Philosophy}
+
+\vspace{1.6cm}
+
+\begin{tabular}{c}
+{\large\bfseries Lindiwe Mahlangu} \\[2pt]
+{\small Student Number: 2187364}
+\end{tabular}
+
+\vspace{1.6cm}
+
+\begin{tabular}{ll}
+\textbf{Supervisor:} & Prof. Thabo Ndlovu \\
+\textbf{Co-Supervisor:} & Dr. Naledi Khumalo \\
+\end{tabular}
+
+\vspace{1.4cm}
+
+{\large March 2026}
+
+\vfill
+
+\begin{center}
+\begin{minipage}{0.82\linewidth}
+\centering
+\footnotesize\itshape\color{witsslate}
+Unofficial template --- not affiliated with or endorsed by the University of the Witwatersrand.
+Sample content only.
+\end{minipage}
+\end{center}
+
+\vspace{1.6cm}
+
+\end{titlepage}
+
+% ============================================================
+% DECLARATION
+% ============================================================
+\chapter*{Declaration}
+\addcontentsline{toc}{chapter}{Declaration}
+
+I, Lindiwe Mahlangu, declare that this thesis is my own, unaided work. It is submitted in
+fulfilment of the requirements for the degree of Doctor of Philosophy in Electrical
+Engineering at the University of the Witwatersrand, Johannesburg. It has not been submitted
+before for any degree or examination at this or any other university.
+
+\vspace{1.6cm}
+\begin{tabular}{@{}p{4.5cm}p{4.5cm}}
+\dotfill & \dotfill \\
+Signature & Date
+\end{tabular}
+
+\vspace{1cm}
+\noindent\textit{Johannesburg, South Africa}
+
+% ============================================================
+% ABSTRACT
+% ============================================================
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+Sub-Saharan microgrids frequently operate with sparse, irregularly sampled telemetry, which
+undermines classical load-forecasting pipelines that assume dense historical records. This
+thesis develops \textbf{Naledi-Forecast}, a hybrid architecture that couples a lightweight
+temporal convolutional encoder with a Bayesian correction layer to produce calibrated
+short-horizon (15-minute to 6-hour) demand forecasts under data scarcity. The method is
+evaluated against three baselines --- seasonal ARIMA, gradient-boosted trees, and a standard
+LSTM --- across eighteen simulated microgrid feeders modelled on peri-urban South African
+load profiles, plus a twelve-week field deployment on a single university test feeder.
+
+\begin{keybox}{Key Findings}
+\begin{itemize}
+  \item Naledi-Forecast reduces mean absolute percentage error (MAPE) by \textbf{27.4\%}
+        relative to the LSTM baseline under 40\% data-availability conditions.
+  \item Calibrated prediction intervals retain \textbf{94.1\%} empirical coverage at the
+        nominal 95\% level, versus 81.3\% for uncorrected LSTM intervals.
+  \item Inference latency of \textbf{11.8\,ms} per feeder-step makes the model viable for
+        embedded controller deployment on constrained hardware.
+\end{itemize}
+\end{keybox}
+
+The results suggest that Bayesian post-hoc calibration, rather than larger sequence models,
+is the more data-efficient lever for improving forecast reliability in scarce-data regimes.
+Implications for microgrid dispatch policy and rural electrification planning are discussed
+in Chapter~6.
+
+\vspace{0.6cm}
+\noindent\textbf{Keywords:} load forecasting, microgrids, Bayesian calibration, temporal
+convolutional networks, energy access, data scarcity.
+
+% ============================================================
+% ACKNOWLEDGEMENTS
+% ============================================================
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+
+I am deeply grateful to my supervisor, Prof.\ Thabo Ndlovu, for his patient guidance and
+for pushing this work toward field-testable rigour rather than simulation alone. Thanks also
+to Dr.\ Naledi Khumalo for her insight on Bayesian calibration methods, and to the technical
+staff of the Wits Energy Systems Laboratory for maintaining the test feeder used in
+Chapter~5. This research was supported in part by a postgraduate merit bursary from the
+Nexa Foundation for Energy Research. Finally, thanks to my family for their unwavering
+support throughout this degree.
+
+% ============================================================
+% TOC / LOF / LOT
+% ============================================================
+\tableofcontents
+\listoffigures
+\listoftables
+
+\chapter*{List of Abbreviations}
+\addcontentsline{toc}{chapter}{List of Abbreviations}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Abbreviation} & \textbf{Meaning} \\
+\midrule
+MAPE & Mean Absolute Percentage Error \\
+TCN & Temporal Convolutional Network \\
+LSTM & Long Short-Term Memory (network) \\
+PICP & Prediction Interval Coverage Probability \\
+DER & Distributed Energy Resource \\
+SoC & State of Charge \\
+\bottomrule
+\end{tabularx}
+
+% ============================================================
+% CHAPTER 1
+% ============================================================
+\chapter{Introduction}
+
+\section{Background and Motivation}
+Distributed microgrids are increasingly proposed as a pathway to reliable electrification in
+regions where central-grid extension is economically unviable. Effective dispatch of
+batteries, diesel backup, and demand response within these microgrids depends on accurate
+short-horizon load forecasts. However, the telemetry infrastructure available in many
+peri-urban and rural deployments is intermittent: smart meters drop packets, communication
+links fail during load shedding events, and historical records rarely exceed a few months of
+continuous coverage.
+
+\begin{notebox}
+\textbf{Problem statement.} Existing load-forecasting methods --- both classical statistical
+models and modern deep sequence models --- are typically validated on dense, multi-year
+datasets from mature grids. Their behaviour under sustained data scarcity (defined here as
+$<$50\% telemetry availability) is poorly characterised.
+\end{notebox}
+
+\section{Research Questions}
+This thesis addresses three questions:
+\begin{enumerate}
+  \item How does forecast accuracy of standard architectures degrade as telemetry
+        availability decreases from 100\% to 20\%?
+  \item Can a lightweight Bayesian calibration layer recover reliable uncertainty estimates
+        without retraining the base forecaster?
+  \item Does the resulting system generalise from simulated feeders to a real, physically
+        instrumented test feeder?
+\end{enumerate}
+
+\section{Contributions}
+\begin{contribbox}{Summary of Contributions}
+\begin{enumerate}
+  \item \textbf{Naledi-Forecast architecture} --- a TCN encoder with a post-hoc Bayesian
+        correction layer, described fully in Chapter~4.
+  \item \textbf{A synthetic benchmark suite} of eighteen microgrid load profiles calibrated
+        against publicly available South African household consumption surveys.
+  \item \textbf{Field validation} on a twelve-week deployment at the Wits Energy Systems
+        Laboratory test feeder, reported in Chapter~5.
+\end{enumerate}
+\end{contribbox}
+
+\section{Thesis Structure}
+Chapter~2 reviews load-forecasting literature and data-scarcity mitigation strategies.
+Chapter~3 formalises the problem and data model. Chapter~4 presents the Naledi-Forecast
+architecture. Chapter~5 reports simulation and field results. Chapter~6 discusses
+implications and concludes.
+
+% ============================================================
+% CHAPTER 2
+% ============================================================
+\chapter{Literature Review}
+
+\section{Classical Load Forecasting}
+Seasonal ARIMA and exponential smoothing remain common baselines for short-horizon load
+forecasting due to their interpretability and low data requirements \cite{box1976time}.
+However, these methods assume approximately regular sampling and struggle when gaps exceed
+a few consecutive intervals.
+
+\section{Deep Sequence Models}
+Recurrent architectures, particularly LSTM and GRU variants, have become the de facto deep
+learning baseline for load forecasting \cite{hochreiter1997long}. Temporal convolutional
+networks (TCNs) offer comparable accuracy with better training stability and parallelism
+\cite{bai2018empirical}, motivating their use as the encoder in this work.
+
+\section{Uncertainty Calibration}
+Point forecasts alone are insufficient for dispatch decisions under uncertainty. Bayesian
+and conformal calibration methods have shown promise for recovering trustworthy prediction
+intervals from otherwise miscalibrated deep models \cite{gal2016dropout}.
+
+\begin{table}[htbp]
+\centering
+\caption{Summary of related forecasting approaches}
+\label{tab:related-work}
+\begin{tabularx}{\linewidth}{@{}lXcc@{}}
+\toprule
+\textbf{Approach} & \textbf{Core mechanism} & \textbf{Handles gaps?} & \textbf{Calibrated?} \\
+\midrule
+Seasonal ARIMA & Autoregressive + seasonal differencing & No & No \\
+Gradient-boosted trees & Ensemble of shallow trees & Partial & No \\
+Vanilla LSTM & Recurrent gating & Partial & No \\
+Naledi-Forecast (ours) & TCN + Bayesian correction & Yes & Yes \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Research Gap}
+No prior study jointly addresses irregular sampling \emph{and} calibrated uncertainty in the
+specific context of Sub-Saharan microgrid feeders. This thesis fills that gap.
+
+% ============================================================
+% CHAPTER 3
+% ============================================================
+\chapter{Problem Formulation and Data}
+
+\section{Problem Definition}
+Given an irregularly sampled load history $\{(t_i, y_i)\}_{i=1}^{n}$ over a feeder, the task
+is to produce a calibrated forecast distribution for load $y_{t+h}$ at horizon
+$h \in \{15\text{min}, 1\text{h}, 6\text{h}\}$, expressed as a predictive mean $\hat{\mu}$ and
+variance $\hat{\sigma}^2$:
+\begin{equation}
+\label{eq:objective}
+p(y_{t+h} \mid \mathbf{y}_{1:t}) \approx \mathcal{N}\!\left(\hat{\mu}(\mathbf{y}_{1:t}),\,
+\hat{\sigma}^2(\mathbf{y}_{1:t})\right).
+\end{equation}
+
+\section{Data-Scarcity Model}
+Availability $a \in (0,1]$ denotes the fraction of expected 15-minute intervals with valid
+telemetry. Missingness is simulated using a two-state Markov process fitted to outage logs
+from partner feeders, capturing the bursty nature of real communication failures rather than
+independent random dropout.
+
+\begin{equation}
+\label{eq:markov}
+P(\text{missing}_{t+1} \mid \text{missing}_t) = \pi_{mm}, \qquad
+P(\text{present}_{t+1} \mid \text{present}_t) = \pi_{pp}.
+\end{equation}
+
+\section{Datasets}
+\begin{table}[htbp]
+\centering
+\caption{Datasets used for evaluation}
+\label{tab:datasets}
+\begin{tabularx}{\linewidth}{@{}lXcc@{}}
+\toprule
+\textbf{Dataset} & \textbf{Description} & \textbf{Feeders} & \textbf{Duration} \\
+\midrule
+Sim-A & Peri-urban residential profiles & 12 & 24 months (simulated) \\
+Sim-B & Mixed commercial/residential & 6 & 24 months (simulated) \\
+Field-Wits & Wits Energy Systems Lab test feeder & 1 & 12 weeks (real) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{notebox}
+All simulated profiles were generated from publicly available aggregate consumption
+statistics; no individual household data is used or identifiable.
+\end{notebox}
+
+% ============================================================
+% CHAPTER 4
+% ============================================================
+\chapter{The Naledi-Forecast Architecture}
+
+\section{Overview}
+Naledi-Forecast comprises two stages: (i) a temporal convolutional encoder that maps the
+observed, gap-marked load history to a point forecast, and (ii) a lightweight Bayesian
+correction layer that recalibrates the encoder's residual distribution using a small
+held-out calibration window.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  block/.style={rectangle, rounded corners, draw=witsblue, fill=witssand, minimum width=2.6cm, minimum height=1cm, align=center, font=\small},
+  arrow/.style={-{Stealth[length=2.2mm]}, thick, witsslate}
+]
+\node[block] (input) {Irregular load\\history};
+\node[block, right=1.4cm of input, fill=white] (mask) {Gap-mask\\encoding};
+\node[block, right=1.4cm of mask] (tcn) {TCN\\encoder};
+\node[block, right=1.4cm of tcn, draw=witsorange] (bayes) {Bayesian\\correction};
+\node[block, right=1.4cm of bayes, fill=white] (out) {Calibrated\\forecast};
+
+\draw[arrow] (input) -- (mask);
+\draw[arrow] (mask) -- (tcn);
+\draw[arrow] (tcn) -- (bayes);
+\draw[arrow] (bayes) -- (out);
+\end{tikzpicture}%
+}
+\caption{Naledi-Forecast pipeline: gap-aware encoding, TCN point prediction, and Bayesian
+recalibration.}
+\label{fig:architecture}
+\end{figure}
+
+\section{Gap-Mask Encoding}
+Each input timestep is paired with a binary mask channel indicating observed versus imputed
+values, allowing the encoder to distinguish genuine readings from forward-filled gaps rather
+than treating them identically.
+
+\section{Temporal Convolutional Encoder}
+The encoder stacks dilated causal convolutions with residual connections, following the
+general TCN design, using dilation factors $\{1, 2, 4, 8, 16\}$ across five residual blocks
+with 64 channels each.
+
+\section{Bayesian Correction Layer}
+A held-out calibration window of residuals $\{\hat{\mu}_i - y_i\}$ is modelled as a
+Gaussian process with a Matérn kernel, producing a correction term $\delta(\mathbf{x})$ and
+an inflation factor for the predictive variance, so that final intervals reflect both model
+error and residual heteroscedasticity.
+
+\begin{equation}
+\label{eq:correction}
+\hat{\mu}'(\mathbf{x}) = \hat{\mu}(\mathbf{x}) + \delta(\mathbf{x}), \qquad
+\hat{\sigma}'^2(\mathbf{x}) = \hat{\sigma}^2(\mathbf{x}) \cdot \kappa(\mathbf{x}).
+\end{equation}
+
+\section{Training Procedure}
+\begin{enumerate}
+  \item Pre-train the TCN encoder on Sim-A and Sim-B under full data availability.
+  \item Fine-tune under synthetic Markov-gap masking at availability levels
+        $a \in \{1.0, 0.8, 0.6, 0.4, 0.2\}$.
+  \item Fit the Bayesian correction layer on a rolling 10\% calibration split, refreshed
+        weekly.
+\end{enumerate}
+
+% ============================================================
+% CHAPTER 5
+% ============================================================
+\chapter{Results}
+
+\section{Simulation Results}
+\begin{table}[htbp]
+\centering
+\caption{MAPE (\%) by data availability across all simulated feeders}
+\label{tab:mape-results}
+\begin{tabularx}{\linewidth}{@{}lXXXX@{}}
+\toprule
+\textbf{Model} & \textbf{100\% avail.} & \textbf{60\% avail.} & \textbf{40\% avail.} & \textbf{20\% avail.} \\
+\midrule
+Seasonal ARIMA & 6.8 & 11.2 & 17.9 & 28.4 \\
+Gradient-boosted trees & 5.9 & 9.4 & 14.6 & 23.1 \\
+Vanilla LSTM & 5.1 & 8.0 & 12.3 & 19.8 \\
+\rowcolor{witssand} Naledi-Forecast (ours) & \textbf{4.3} & \textbf{6.1} & \textbf{8.9} & \textbf{13.2} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Across all availability regimes, Naledi-Forecast maintains the lowest MAPE, with the margin
+over the LSTM baseline widening as availability decreases --- from 15.7\% relative
+improvement at full availability to 33.3\% at 20\% availability.
+
+\section{Calibration Quality}
+\begin{table}[htbp]
+\centering
+\caption{Prediction interval coverage probability (PICP) at nominal 95\%}
+\label{tab:picp}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Model} & \textbf{Empirical PICP at 40\% availability} \\
+\midrule
+Vanilla LSTM (uncorrected) & 81.3\% \\
+Gradient-boosted trees (quantile) & 86.7\% \\
+\rowcolor{witssand} Naledi-Forecast (ours) & \textbf{94.1\%} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Field Deployment}
+Over the twelve-week deployment on the Wits Energy Systems Laboratory test feeder, real
+telemetry availability averaged 71\%, driven by intermittent cellular backhaul dropouts.
+Naledi-Forecast achieved a field MAPE of 9.6\%, closely tracking simulation results at
+comparable availability, and sustained median inference latency of 11.8\,ms per feeder-step
+on a Raspberry Pi 4-class controller.
+
+\begin{notebox}
+Field results should be interpreted with appropriate caution given the single-feeder sample;
+Chapter~6 discusses this limitation and proposed multi-site follow-up work.
+\end{notebox}
+
+% ============================================================
+% CHAPTER 6
+% ============================================================
+\chapter{Discussion and Conclusion}
+
+\section{Interpretation of Findings}
+The results indicate that calibration-focused interventions, rather than larger base models,
+deliver the greatest reliability gains under data scarcity. This has practical implications
+for microgrid controller hardware, where compute and memory budgets are limited: a modest
+TCN encoder paired with cheap Gaussian-process calibration outperforms larger uncalibrated
+sequence models on both accuracy and interval reliability.
+
+\section{Limitations}
+\begin{itemize}
+  \item Field validation is limited to a single test feeder at one site.
+  \item Markov-gap simulation, while fitted to real outage logs, may not capture rarer
+        correlated failure modes (e.g.\ region-wide load shedding).
+  \item The Bayesian correction layer assumes residual stationarity within each weekly
+        recalibration window.
+\end{itemize}
+
+\section{Future Work}
+Future work should extend field validation to a multi-site trial across at least three
+distinct feeder types, and investigate online recalibration to relax the stationarity
+assumption identified above.
+
+\section{Conclusion}
+This thesis demonstrates that Naledi-Forecast, combining a TCN encoder with Bayesian
+post-hoc correction, delivers materially more accurate and better-calibrated short-horizon
+load forecasts than existing baselines under realistic data-scarcity conditions
+representative of Sub-Saharan microgrid deployments, with encouraging early field evidence
+from a live test feeder.
+
+% ============================================================
+% APPENDIX
+% ============================================================
+\appendix
+\chapter{Hyperparameter Settings}
+\begin{table}[htbp]
+\centering
+\caption{Naledi-Forecast training hyperparameters}
+\label{tab:hyperparams}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Hyperparameter} & \textbf{Value} \\
+\midrule
+Residual blocks & 5 \\
+Channels per block & 64 \\
+Dilation factors & 1, 2, 4, 8, 16 \\
+Optimiser & Adam ($\text{lr}=3\times10^{-4}$) \\
+Calibration window & 10\% rolling, refreshed weekly \\
+Kernel (GP correction) & Matérn ($\nu = 1.5$) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% ============================================================
+% BIBLIOGRAPHY
+% ============================================================
+\begin{thebibliography}{9}
+
+\bibitem{box1976time}
+G.\ E.\ P.\ Box and G.\ M.\ Jenkins,
+\textit{Time Series Analysis: Forecasting and Control}.
+Holden-Day, 1976.
+
+\bibitem{hochreiter1997long}
+S.\ Hochreiter and J.\ Schmidhuber,
+``Long Short-Term Memory,''
+\textit{Neural Computation}, vol.\ 9, no.\ 8, pp.\ 1735--1780, 1997.
+
+\bibitem{bai2018empirical}
+S.\ Bai, J.\ Z.\ Kolter, and V.\ Koltun,
+``An Empirical Evaluation of Generic Convolutional and Recurrent Networks for Sequence
+Modeling,''
+\textit{arXiv preprint arXiv:1803.01271}, 2018.
+
+\bibitem{gal2016dropout}
+Y.\ Gal and Z.\ Ghahramani,
+``Dropout as a Bayesian Approximation: Representing Model Uncertainty in Deep Learning,''
+in \textit{Proc.\ 33rd Int.\ Conf.\ on Machine Learning (ICML)}, 2016, pp.\ 1050--1059.
+
+\end{thebibliography}
+
+\end{document}

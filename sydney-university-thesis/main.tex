@@ -1,0 +1,627 @@
+\documentclass[12pt,twoside]{report}
+
+% ---------- Packages ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[a4paper,left=3.8cm,right=2.5cm,top=2.7cm,bottom=2.7cm]{geometry}
+\usepackage{mathpazo}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage[most]{tcolorbox}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{caption}
+\usepackage[hidelinks,colorlinks=false]{hyperref}
+
+% ---------- Custom colours ----------
+\definecolor{usydmaroon}{RGB}{110,22,32}
+\definecolor{usydgold}{RGB}{181,138,68}
+\definecolor{usydgray}{RGB}{58,58,58}
+\definecolor{usydcream}{RGB}{250,247,241}
+
+% ---------- Chapter / section styling ----------
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{usydmaroon}}
+  {\filright\Large\color{usydgold}\chaptertitlename\ \thechapter}
+  {8pt}
+  {\titlerule[1pt]\vspace{6pt}\Huge}
+\titlespacing*{\chapter}{0pt}{0pt}{28pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{usydmaroon}}{\thesection}{10pt}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{usydgray}}{\thesubsection}{10pt}{}
+
+% ---------- Headers / footers ----------
+\setlength{\headheight}{24.02pt}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{usydgold}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[LE,RO]{\small\color{usydgray}\thepage}
+\fancyhead[RE]{\small\color{usydgray}\nouppercase{\leftmark}}
+\fancyhead[LO]{\small\color{usydgray}\nouppercase{\rightmark}}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyhead[LE,RO]{\small\color{usydgray}\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+\setstretch{1.30}
+\captionsetup{font=small,labelfont={bf,color=usydmaroon},margin=1cm}
+
+\newcommand{\ttitle}{Robust Anomaly Detection for Distributed IoT Sensor Networks in Smart Manufacturing: A Case Study with Apex Manufacturing Ltd.}
+\newcommand{\tauthor}{Amelia Chen}
+
+\begin{document}
+
+% =====================================================
+% TITLE PAGE
+% =====================================================
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[usydmaroon] ([yshift=0pt]current page.north west) rectangle ++(\paperwidth,0.9cm);
+  \fill[usydgold] ([yshift=-0.9cm]current page.north west) rectangle ++(\paperwidth,0.12cm);
+  \fill[usydmaroon] (current page.south west) rectangle ++(\paperwidth,0.6cm);
+\end{tikzpicture}
+
+\vspace*{2.0cm}
+\begin{center}
+  {\Large\scshape\color{usydmaroon} The University of Sydney}\\[2pt]
+  {\small\color{usydgray} Faculty of Engineering\,---\,School of Electrical and Information Engineering}
+
+  \vspace{0.6cm}
+  \begin{tikzpicture}
+    \draw[decorate,decoration={snake,amplitude=0.9mm,segment length=4.5mm},
+      thick,usydgold] (0,0) -- (10.8,0);
+  \end{tikzpicture}
+
+  \vspace{1.6cm}
+  {\Huge\bfseries\color{usydmaroon} \ttitle \par}
+
+  \vspace{1.4cm}
+  {\large\color{usydgray} A thesis submitted in fulfilment of the requirements for the degree of\par}
+  {\Large\bfseries\color{usydmaroon} Doctor of Philosophy \par}
+
+  \vspace{1.6cm}
+  {\large \tauthor \par}
+  {\small\color{usydgray} B.Eng.\,(Hons), University of Sydney\par}
+
+  \vspace{1.4cm}
+  \begin{tabular}{r@{\hspace{0.6em}}l}
+    \textit{Supervisor:} & Associate Professor David Whitfield \\
+    \textit{Associate Supervisor:} & Dr Priya Ramanathan \\
+  \end{tabular}
+
+  \vspace{1.6cm}
+  {\large March 2026}
+\end{center}
+
+\vfill
+\begin{center}
+\begin{minipage}{0.82\textwidth}
+\centering
+\footnotesize\itshape\color{usydgray}
+Unofficial template --- not affiliated with or endorsed by the university. Sample content only.
+\end{minipage}
+\end{center}
+\vspace{1.1cm}
+\end{titlepage}
+
+% =====================================================
+% FRONT MATTER
+% =====================================================
+\pagenumbering{roman}
+
+\chapter*{Declaration of Originality}
+\addcontentsline{toc}{chapter}{Declaration of Originality}
+This is to certify that, to the best of my knowledge, the content of this thesis is my own
+work. This thesis has not been submitted for any degree or other purposes at this or any other
+institution. I certify that the intellectual content of this thesis is the product of my own
+work and that all the assistance received in preparing this thesis and sources have been
+acknowledged, including a statement of contribution for jointly authored publications where
+applicable.
+
+\vspace{1.2cm}
+\noindent
+\begin{tabular}{@{}p{3.4cm}p{9cm}}
+Signed: & \makebox[6cm]{\hrulefill} \\[0.9em]
+Date: & \makebox[6cm]{\hrulefill} \\
+\end{tabular}
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+Industrial Internet-of-Things (IIoT) deployments in discrete manufacturing generate
+high-frequency, multivariate telemetry from hundreds of heterogeneous sensors, yet existing
+anomaly detection pipelines struggle to scale detection latency and false-alarm rates
+simultaneously as fleets grow. This thesis proposes \textbf{StreamGuard}, a two-stage
+detection architecture that combines a lightweight edge-resident statistical filter with a
+cloud-hosted ensemble of temporal autoencoders, coordinated through an adaptive threshold
+controller. The edge filter suppresses redundant transmissions using a windowed
+Mahalanobis-distance test, reducing uplink volume before cloud-side sequence models score
+residual anomalies against a learned manifold of nominal operating behaviour.
+
+The approach is evaluated on eighteen months of production telemetry supplied by Apex
+Manufacturing Ltd.\ across three assembly lines instrumented with 412 vibration, thermal, and
+current sensors. Relative to a tuned Isolation Forest baseline and a centralised LSTM
+autoencoder, StreamGuard reduces end-to-end detection latency by 63\% and false-positive rate
+by 41\%, while cutting cloud ingestion cost by an estimated 55\% through edge-side
+pre-filtering. A field trial across four production shifts confirms that the adaptive
+threshold controller maintains stable precision under seasonal load variation without manual
+retuning. These findings suggest that hybrid edge--cloud architectures offer a practical path
+toward anomaly detection systems that remain both timely and economical at industrial scale.
+
+\vspace{0.6cm}
+\noindent\textbf{Keywords:} anomaly detection, IIoT, edge computing, temporal autoencoders,
+predictive maintenance, smart manufacturing.
+
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+I am deeply grateful to my supervisor, Associate Professor David Whitfield, for his rigorous
+guidance and unfailing patience across the many revisions of this work, and to my associate
+supervisor, Dr Priya Ramanathan, for her insight into deployment-scale evaluation design. I
+thank the engineering and reliability teams at Apex Manufacturing Ltd.\ for facilitating
+telemetry access and field trials, and my colleagues in the Distributed Systems Laboratory for
+countless whiteboard debates that sharpened this thesis considerably. Finally, I thank my
+family for their steady encouragement throughout this candidature.
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\pagenumbering{arabic}
+
+% =====================================================
+% CHAPTER 1
+% =====================================================
+\chapter{Introduction}
+\label{ch:intro}
+
+\section{Background and Motivation}
+Modern discrete-manufacturing facilities increasingly rely on dense sensor deployments to
+monitor equipment health, product quality, and process stability in real time. As fleets of
+industrial assets are instrumented with vibration, thermal, acoustic, and current sensors,
+the resulting telemetry streams grow far faster than the operations staff available to
+interpret them. Anomaly detection --- the task of flagging measurements that deviate from
+expected nominal behaviour --- has therefore become a central capability of predictive
+maintenance programs, with direct consequences for unplanned downtime, warranty costs, and
+worker safety.
+
+Despite substantial research attention, deploying anomaly detection at industrial scale
+remains difficult for three interacting reasons. First, sensor fleets are heterogeneous:
+different asset classes exhibit markedly different nominal signatures, and a single global
+threshold rarely suits all of them. Second, network and compute budgets are constrained at
+the edge, so naively streaming raw telemetry to a central server for scoring is often
+uneconomical. Third, operating conditions drift over time --- with production schedules,
+ambient temperature, and tooling wear all shifting the definition of ``nominal'' --- which
+degrades static models within weeks of deployment.
+
+\section{Research Questions}
+This thesis addresses the following research questions:
+\begin{enumerate}[label=\textbf{RQ\arabic*.}, leftmargin=2.1cm]
+  \item Can a lightweight edge-resident filter meaningfully reduce uplink volume without
+        discarding events that a downstream model would have flagged as anomalous?
+  \item Does a hybrid edge--cloud architecture improve detection latency and false-positive
+        rate relative to purely centralised baselines at comparable operating cost?
+  \item Can an adaptive threshold controller maintain stable detection performance under
+        seasonal and load-driven distribution shift without manual retuning?
+\end{enumerate}
+
+\section{Contributions}
+The principal contributions of this thesis are:
+\begin{itemize}[leftmargin=1.6cm]
+  \item \textbf{StreamGuard}, a two-stage edge--cloud anomaly detection architecture
+        combining a windowed Mahalanobis pre-filter with an ensemble of temporal
+        autoencoders (Chapter~\ref{ch:method}).
+  \item An adaptive threshold controller that adjusts detection sensitivity using an
+        exponentially weighted control-limit update rule, validated against seasonal load
+        variation (Section~\ref{sec:adaptive-threshold}).
+  \item An empirical evaluation on eighteen months of production telemetry from three
+        assembly lines at Apex Manufacturing Ltd., including a four-shift field trial
+        (Chapter~\ref{ch:results}).
+\end{itemize}
+
+\section{Thesis Outline}
+Chapter~\ref{ch:litreview} surveys anomaly detection methods for industrial time series and
+positions this work within the literature. Chapter~\ref{ch:method} details the StreamGuard
+architecture, the adaptive threshold controller, and the experimental dataset. Chapter~\ref{ch:results}
+presents quantitative results against baseline methods and the field trial outcome.
+Chapter~\ref{ch:conclusion} summarises findings, discusses limitations, and outlines future work.
+
+% =====================================================
+% CHAPTER 2
+% =====================================================
+\chapter{Literature Review}
+\label{ch:litreview}
+
+\section{Taxonomy of Approaches}
+Anomaly detection methods for industrial time series broadly fall into four families:
+statistical control-chart methods, classical machine-learning detectors, deep sequence
+models, and hybrid edge--cloud architectures. Figure~\ref{fig:taxonomy} summarises this
+taxonomy and situates the present work.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=8mm and 12mm,
+  every node/.style={font=\small},
+  box/.style={draw=usydmaroon,thick,rounded corners=2pt,fill=usydcream,
+              text width=3.05cm,align=center,minimum height=1.05cm},
+  root/.style={draw=usydmaroon,thick,rounded corners=2pt,fill=usydmaroon,
+               text=white,align=center,minimum height=1.05cm,text width=3.2cm}
+]
+  \node[root] (root) {Anomaly\\Detection Methods};
+  \node[box,below left=14mm and 14mm of root] (stat) {Statistical\\Control Charts};
+  \node[box,below left=14mm and 1mm of root] (ml) {Classical ML\\(Isolation Forest, OCSVM)};
+  \node[box,below right=14mm and 1mm of root] (dl) {Deep Sequence\\Models (LSTM-AE)};
+  \node[box,below right=14mm and 14mm of root,draw=usydgold,line width=1pt] (hybrid) {Hybrid\\Edge--Cloud (this work)};
+
+  \draw[usydgray] (root) -- (stat);
+  \draw[usydgray] (root) -- (ml);
+  \draw[usydgray] (root) -- (dl);
+  \draw[usydgray] (root) -- (hybrid);
+\end{tikzpicture}
+\caption{Taxonomy of anomaly detection approaches for industrial time series.}
+\label{fig:taxonomy}
+\end{figure}
+
+\subsection{Statistical Control Charts}
+Shewhart and CUSUM control charts remain widely used in process monitoring due to their
+interpretability and low computational cost. Their principal weakness is the assumption of a
+stationary nominal distribution, which is routinely violated by seasonal production load and
+tooling wear.
+
+\subsection{Classical Machine Learning}
+Tree-based ensembles such as Isolation Forest, and kernel methods such as one-class SVM,
+capture non-linear nominal boundaries without requiring labelled anomalies. Okafor and
+Lindqvist~\cite{okafor2023} report strong offline performance but note that retraining
+cadence becomes a bottleneck once the sensor fleet exceeds a few hundred channels.
+
+\subsection{Deep Sequence Models}
+Recurrent and convolutional autoencoders learn a compressed representation of nominal
+temporal dynamics and flag high reconstruction error as anomalous. Torres et al.~\cite{torres2022}
+demonstrate strong accuracy on benchmark industrial datasets, though centralised inference
+introduces uplink and latency costs that scale linearly with fleet size.
+
+\subsection{Hybrid Edge--Cloud Architectures}
+A smaller body of work distributes computation between edge devices and a central server.
+Bakr and Sørensen~\cite{bakr2021} propose edge-side compression prior to cloud scoring but
+rely on a fixed compression ratio that does not adapt to operating conditions. This thesis
+extends that direction with an adaptive, statistically grounded pre-filter and a
+closed-loop threshold controller.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparison of representative anomaly detection approaches.}
+\label{tab:litcompare}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}l c c c c@{}}
+\toprule
+Method & Adapts to drift & Edge-aware & Uplink savings & Reported F1 \\
+\midrule
+Shewhart / CUSUM control chart & No & No & --- & 0.61 \\
+Isolation Forest~\cite{okafor2023} & Partial & No & --- & 0.74 \\
+Centralised LSTM autoencoder~\cite{torres2022} & No & No & --- & 0.81 \\
+Fixed-ratio edge compression~\cite{bakr2021} & No & Yes & 38\% & 0.77 \\
+\textbf{StreamGuard (this work)} & \textbf{Yes} & \textbf{Yes} & \textbf{55\%} & \textbf{0.89} \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\section{Research Gap}
+No prior work jointly addresses adaptive edge-side filtering, ensemble cloud scoring, and a
+closed-loop threshold controller that responds to seasonal drift without manual
+intervention. This gap motivates the StreamGuard architecture developed in
+Chapter~\ref{ch:method}.
+
+% =====================================================
+% CHAPTER 3
+% =====================================================
+\chapter{Methodology}
+\label{ch:method}
+
+\section{System Architecture}
+StreamGuard is organised as a two-stage pipeline: an edge-resident pre-filter that reduces
+uplink volume, and a cloud-hosted ensemble that scores the retained events. Figure~\ref{fig:architecture}
+depicts the data flow from sensor to operator dashboard.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=9mm and 11mm,
+  every node/.style={font=\small},
+  stage/.style={draw=usydmaroon,thick,rounded corners=2pt,fill=usydcream,
+                minimum width=2.5cm,minimum height=1.15cm,align=center},
+  arrow/.style={->,thick,usydgray}
+]
+  \node[stage] (sensors) {Edge Sensors\\(412 channels)};
+  \node[stage,right=of sensors] (gateway) {Edge Gateway\\Mahalanobis Filter};
+  \node[stage,right=of gateway,fill=usydgold!25] (cloud) {Cloud Ingestion\\Queue};
+  \node[stage,right=of cloud] (ensemble) {Autoencoder\\Ensemble};
+  \node[stage,right=of ensemble] (dash) {Threshold\\Controller \& Dashboard};
+
+  \draw[arrow] (sensors) -- (gateway);
+  \draw[arrow] (gateway) -- (cloud);
+  \draw[arrow] (cloud) -- (ensemble);
+  \draw[arrow] (ensemble) -- (dash);
+
+  \begin{scope}[on background layer]
+    \fill[usydcream!60] ($(sensors.north west)+(-0.2,0.35)$) rectangle ($(gateway.south east)+(0.2,-0.35)$);
+  \end{scope}
+\end{tikzpicture}}
+\caption{StreamGuard data flow from edge sensors to the operator dashboard.}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Edge Pre-Filter}
+Each gateway maintains a rolling window of $w$ samples per asset and computes the Mahalanobis
+distance of the current observation $\mathbf{x}_t$ from the windowed mean $\boldsymbol{\mu}_w$
+and covariance $\boldsymbol{\Sigma}_w$:
+\begin{equation}
+d_t = \sqrt{(\mathbf{x}_t - \boldsymbol{\mu}_w)^\top \boldsymbol{\Sigma}_w^{-1} (\mathbf{x}_t - \boldsymbol{\mu}_w)}.
+\label{eq:mahalanobis}
+\end{equation}
+Observations with $d_t$ below a locally calibrated threshold $\tau_{\text{edge}}$ are
+summarised into 30-second aggregates rather than transmitted in full, reducing uplink volume
+while preserving the tail events most likely to be genuine anomalies.
+
+\subsection{Cloud Ensemble}
+Retained events are scored by an ensemble of three temporal autoencoders trained per asset
+class (rotating, thermal, electrical) on six months of historical nominal operation. The
+ensemble anomaly score is the mean reconstruction error across members, which empirically
+reduces variance relative to any single autoencoder.
+
+\subsection{Adaptive Threshold Controller}
+\label{sec:adaptive-threshold}
+To remain stable under seasonal drift, the cloud-side alert threshold $\tau_{\text{cloud}}$ is
+updated with an exponentially weighted control-limit rule:
+\begin{equation}
+\tau_{\text{cloud}}^{(k+1)} = \tau_{\text{cloud}}^{(k)} + \alpha \left( \bar{e}^{(k)} + z\, s^{(k)} - \tau_{\text{cloud}}^{(k)} \right),
+\label{eq:threshold-update}
+\end{equation}
+where $\bar{e}^{(k)}$ and $s^{(k)}$ are the rolling mean and standard deviation of
+reconstruction error over control window $k$, $z$ sets the confidence margin, and
+$\alpha \in (0,1]$ governs adaptation speed. Appendix~\ref{app:derivation} derives the
+steady-state behaviour of this update rule.
+
+\begin{tcolorbox}[colback=usydcream,colframe=usydmaroon,title={Algorithm 3.1: Streaming Threshold Update},
+  fonttitle=\bfseries,colbacktitle=usydmaroon]
+\begin{enumerate}[leftmargin=1.4cm,label=\arabic*.]
+  \item Compute ensemble reconstruction error $e_t$ for each retained event.
+  \item Update rolling statistics $\bar{e}^{(k)}$, $s^{(k)}$ over the current control window.
+  \item Apply the update rule in Equation~\eqref{eq:threshold-update} to obtain $\tau_{\text{cloud}}^{(k+1)}$.
+  \item Flag event as anomalous if $e_t > \tau_{\text{cloud}}^{(k+1)}$; otherwise mark nominal.
+  \item Advance to control window $k{+}1$ once $N$ new events have accumulated.
+\end{enumerate}
+\end{tcolorbox}
+
+\section{Dataset}
+Telemetry was supplied by Apex Manufacturing Ltd.\ from three assembly lines over an
+eighteen-month period. Table~\ref{tab:dataset} summarises the dataset composition.
+
+\begin{table}[htbp]
+\centering
+\caption{Summary of the Apex Manufacturing telemetry dataset.}
+\label{tab:dataset}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}l c c c@{}}
+\toprule
+Asset class & Sensor channels & Sampling rate (Hz) & Confirmed anomalies \\
+\midrule
+Rotating equipment & 186 & 500 & 312 \\
+Thermal systems & 128 & 50 & 174 \\
+Electrical drives & 98 & 200 & 209 \\
+\midrule
+\textbf{Total} & \textbf{412} & --- & \textbf{695} \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+Confirmed anomalies were labelled retrospectively by Apex reliability engineers from
+maintenance work orders, providing a held-out evaluation set independent of the training
+period.
+
+% =====================================================
+% CHAPTER 4
+% =====================================================
+\chapter{Results and Discussion}
+\label{ch:results}
+
+\section{Detection Performance}
+Table~\ref{tab:results} compares StreamGuard against the Isolation Forest and centralised
+LSTM autoencoder baselines introduced in Chapter~\ref{ch:litreview}, evaluated on the held-out
+Apex Manufacturing telemetry.
+
+\begin{table}[htbp]
+\centering
+\caption{Detection performance on the held-out evaluation set.}
+\label{tab:results}
+\begin{tabular}{@{}l c c c c@{}}
+\toprule
+Method & Precision & Recall & F1 & Median latency (s) \\
+\midrule
+Isolation Forest & 0.79 & 0.70 & 0.74 & 4.8 \\
+Centralised LSTM autoencoder & 0.83 & 0.79 & 0.81 & 6.1 \\
+\textbf{StreamGuard} & \textbf{0.91} & \textbf{0.88} & \textbf{0.89} & \textbf{2.3} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+  \def\barw{1.1}
+  \begin{scope}
+    \draw[usydgray,thin] (0,0) -- (8.2,0);
+    \foreach \y/\lab in {0/0,1.6/2,3.2/4,4.8/6} {
+      \draw[usydgray!60] (0,\y) -- (8.2,\y);
+      \node[left,font=\tiny,usydgray] at (-0.15,\y) {\lab s};
+    }
+    \fill[pattern=north east lines,pattern color=usydmaroon,draw=usydmaroon]
+      (0.4,0) rectangle (0.4+\barw,4.8*4.8/6);
+    \node[font=\tiny,below] at (0.4+\barw/2,-0.25) {Isolation Forest};
+    \fill[pattern=north east lines,pattern color=usydmaroon,draw=usydmaroon]
+      (2.4,0) rectangle (2.4+\barw,6.1*4.8/6);
+    \node[font=\tiny,below] at (2.4+\barw/2,-0.25) {Centralised LSTM};
+    \fill[usydgold,draw=usydmaroon]
+      (4.4,0) rectangle (4.4+\barw,2.3*4.8/6);
+    \node[font=\tiny,below] at (4.4+\barw/2,-0.25) {StreamGuard};
+  \end{scope}
+\end{tikzpicture}
+\caption{Median end-to-end detection latency by method (lower is better).}
+\label{fig:latency}
+\end{figure}
+
+\begin{tcolorbox}[colback=usydcream,colframe=usydgold,title={Key Finding},
+  fonttitle=\bfseries,colbacktitle=usydgold,coltitle=usydgray]
+StreamGuard reduces median detection latency by 63\% and false-positive rate by 41\%
+relative to the centralised LSTM autoencoder baseline, while the edge pre-filter cuts cloud
+ingestion volume by an estimated 55\%.
+\end{tcolorbox}
+
+\section{Field Trial}
+An operational trial was conducted across four production shifts on the rotating-equipment
+line. Table~\ref{tab:trial} reports precision stability under the seasonal load variation
+observed during the trial window.
+
+\begin{table}[htbp]
+\centering
+\caption{Field trial precision by shift under varying production load.}
+\label{tab:trial}
+\begin{tabular}{@{}l c c@{}}
+\toprule
+Shift & Relative production load & Precision \\
+\midrule
+Morning & 1.00$\times$ & 0.90 \\
+Afternoon & 1.18$\times$ & 0.89 \\
+Night (reduced staffing) & 0.62$\times$ & 0.91 \\
+Weekend maintenance window & 0.35$\times$ & 0.88 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Precision remained within a narrow band (0.88--0.91) across a load range spanning nearly
+$3\times$, supporting the claim that the adaptive threshold controller absorbs seasonal
+drift without manual retuning.
+
+\section{Threats to Validity}
+The evaluation is limited to a single manufacturer and three asset classes; generalisation to
+process industries with continuous (rather than discrete) production remains untested.
+Labelled anomalies were derived from maintenance work orders, which may under-represent
+transient faults that did not trigger a service ticket.
+
+% =====================================================
+% CHAPTER 5
+% =====================================================
+\chapter{Conclusion}
+\label{ch:conclusion}
+
+\section{Summary}
+This thesis presented StreamGuard, a hybrid edge--cloud anomaly detection architecture for
+industrial IoT sensor networks, combining a windowed Mahalanobis pre-filter, an ensemble of
+temporal autoencoders, and an adaptive threshold controller. Evaluated on eighteen months of
+production telemetry from Apex Manufacturing Ltd., StreamGuard reduced detection latency by
+63\% and false-positive rate by 41\% relative to a centralised LSTM autoencoder baseline,
+while a four-shift field trial confirmed stable precision under substantial seasonal load
+variation.
+
+\section{Limitations}
+The dataset, while substantial, is drawn from a single industrial partner; cross-domain
+validation is needed before broader claims of generality can be supported. The adaptive
+threshold controller was tuned for load variation on the timescale of shifts and days;
+its behaviour under abrupt, large-magnitude distribution shift (e.g., a change of product
+line) was not evaluated.
+
+\section{Future Work}
+Future work includes: (i) extending the pre-filter to jointly model cross-sensor
+correlations rather than per-asset statistics alone; (ii) evaluating transfer of the
+autoencoder ensemble across manufacturing sites with limited retraining data; and
+(iii) integrating operator feedback as a weak supervision signal to refine the ensemble
+online.
+
+% =====================================================
+% BIBLIOGRAPHY
+% =====================================================
+\begin{thebibliography}{9}
+
+\bibitem{okafor2023}
+C.~Okafor and E.~Lindqvist, ``Scalable isolation forests for multivariate industrial
+telemetry,'' \textit{Journal of Industrial Data Systems}, vol.~14, no.~2, pp.~112--129, 2023.
+
+\bibitem{torres2022}
+M.~Torres, S.~Bianchi, and R.~Nakagawa, ``Temporal autoencoders for predictive maintenance
+in discrete manufacturing,'' in \textit{Proc.\ International Conference on Industrial
+Analytics}, pp.~301--312, 2022.
+
+\bibitem{bakr2021}
+Y.~Bakr and L.~Sørensen, ``Edge-assisted compression for cloud-based anomaly detection,''
+\textit{IEEE Transactions on Industrial Informatics}, vol.~17, no.~9, pp.~6120--6129, 2021.
+
+\bibitem{harrington2020}
+N.~Harrington, ``Control-chart methods revisited for non-stationary process monitoring,''
+\textit{Quality Engineering Review}, vol.~32, no.~4, pp.~455--468, 2020.
+
+\bibitem{delacruz2021}
+F.~de la Cruz and A.~Petrov, ``Drift-aware retraining schedules for streaming anomaly
+detectors,'' \textit{Data Mining and Knowledge Discovery}, vol.~35, pp.~988--1011, 2021.
+
+\bibitem{singh2019}
+R.~Singh, T.~Almeida, and J.~Park, ``One-class SVM ensembles for vibration-based fault
+detection,'' \textit{Mechanical Systems and Signal Processing}, vol.~128, pp.~44--59, 2019.
+
+\end{thebibliography}
+\addcontentsline{toc}{chapter}{Bibliography}
+
+% =====================================================
+% APPENDIX
+% =====================================================
+\appendix
+\chapter{Sensor Metadata Schema}
+\label{app:schema}
+Table~\ref{tab:schema} lists the metadata fields recorded for each sensor channel in the
+Apex Manufacturing deployment.
+
+\begin{table}[htbp]
+\centering
+\caption{Sensor metadata schema fields.}
+\label{tab:schema}
+\begin{tabular}{@{}l l p{6.2cm}@{}}
+\toprule
+Field & Type & Description \\
+\midrule
+\texttt{sensor\_id} & UUID & Globally unique channel identifier. \\
+\texttt{asset\_class} & Enum & One of \{rotating, thermal, electrical\}. \\
+\texttt{sample\_rate\_hz} & Integer & Nominal sampling frequency in hertz. \\
+\texttt{install\_date} & Date & Commissioning date of the sensor. \\
+\texttt{gateway\_id} & UUID & Edge gateway responsible for pre-filtering. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\chapter{Derivation of Threshold Controller Steady State}
+\label{app:derivation}
+Taking expectations of the update rule in Equation~\eqref{eq:threshold-update} and assuming
+$\bar{e}^{(k)}$ and $s^{(k)}$ converge to stationary values $\bar{e}^{\ast}$ and $s^{\ast}$
+under fixed operating conditions, the fixed point $\tau^{\ast}_{\text{cloud}}$ satisfies:
+\begin{align}
+\tau^{\ast}_{\text{cloud}} &= \tau^{\ast}_{\text{cloud}} + \alpha\left(\bar{e}^{\ast} + z\,s^{\ast} - \tau^{\ast}_{\text{cloud}}\right) \nonumber\\
+0 &= \alpha\left(\bar{e}^{\ast} + z\,s^{\ast} - \tau^{\ast}_{\text{cloud}}\right) \nonumber\\
+\tau^{\ast}_{\text{cloud}} &= \bar{e}^{\ast} + z\,s^{\ast}.
+\end{align}
+The controller therefore converges to the classical $z$-score control limit under stationary
+conditions for any $\alpha \in (0,1]$, with $\alpha$ governing only the rate of convergence
+and transient tracking behaviour under drift.
+
+\end{document}

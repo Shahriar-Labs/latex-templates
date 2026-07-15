@@ -1,0 +1,565 @@
+\documentclass[11pt,a4paper]{article}
+
+%% ─── Core packages ────────────────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+%% ─── Page geometry ────────────────────────────────────────────────────────────
+\usepackage[
+  top=20mm, bottom=20mm,
+  left=22mm, right=22mm,
+  headheight=14pt
+]{geometry}
+
+%% ─── Color ────────────────────────────────────────────────────────────────────
+\usepackage[table]{xcolor}
+\definecolor{jspsNavy}{HTML}{0D2B55}
+\definecolor{jspsGold}{HTML}{C8922A}
+\definecolor{jspsSlate}{HTML}{4A5568}
+\definecolor{jspsFrost}{HTML}{EBF0F7}
+\definecolor{jspsRule}{HTML}{B0BED0}
+\definecolor{jspsBg}{HTML}{F7F9FC}
+
+%% ─── Math ─────────────────────────────────────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+%% ─── Graphics & TikZ ──────────────────────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds,patterns,decorations.pathmorphing}
+
+%% ─── Tables ───────────────────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{multirow}
+
+%% ─── tcolorbox ────────────────────────────────────────────────────────────────
+\usepackage[most]{tcolorbox}
+
+%% ─── Lists ────────────────────────────────────────────────────────────────────
+\usepackage{enumitem}
+
+%% ─── Fonts & Icons ────────────────────────────────────────────────────────────
+\usepackage{fontawesome5}
+\usepackage{setspace}
+
+%% ─── Headers / Footers ────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+%% ─── Hyperref ─────────────────────────────────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=jspsNavy,
+  urlcolor=jspsNavy,
+  pdfauthor={Kenji Yamamoto},
+  pdftitle={JSPS Grant-in-Aid Proposal -- Quantum Coherence in Neural Microtubule Networks},
+  pdfsubject={JSPS Kakenhi Application}
+]{hyperref}
+
+%% ─── Misc ─────────────────────────────────────────────────────────────────────
+\usepackage{parskip}
+\usepackage{calc}
+\usepackage{ifthen}
+\usepackage{ragged2e}
+
+%% ═══════════════════════════════════════════════════════════════════════════════
+%% Custom tcolorbox styles
+%% ═══════════════════════════════════════════════════════════════════════════════
+
+\tcbset{
+  jspsField/.style={
+    enhanced,
+    colback=jspsFrost,
+    colframe=jspsNavy,
+    colbacktitle=jspsNavy,
+    coltitle=white,
+    fonttitle=\bfseries\small,
+    boxrule=0.6pt,
+    arc=3pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+    titlerule=0pt,
+    attach boxed title to top left={yshift=-2pt,xshift=6pt},
+    boxed title style={
+      colback=jspsNavy,
+      arc=2pt,
+      boxrule=0pt,
+      left=4pt, right=4pt, top=2pt, bottom=2pt
+    },
+    drop shadow
+  },
+  jspsInfo/.style={
+    enhanced,
+    colback=white,
+    colframe=jspsRule,
+    boxrule=0.5pt,
+    arc=3pt,
+    left=6pt, right=6pt, top=5pt, bottom=5pt
+  },
+  jspsSection/.style={
+    enhanced,
+    colback=jspsBg,
+    colframe=jspsGold,
+    colbacktitle=jspsGold,
+    coltitle=white,
+    fonttitle=\bfseries,
+    boxrule=0.8pt,
+    arc=3pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt,
+    titlerule=0pt,
+    attach boxed title to top left={yshift=-3pt,xshift=8pt},
+    boxed title style={
+      colback=jspsGold,
+      arc=2pt,
+      boxrule=0pt,
+      left=5pt, right=5pt, top=2pt, bottom=2pt
+    }
+  },
+  jspsBanner/.style={
+    enhanced,
+    colback=jspsNavy,
+    colframe=jspsNavy,
+    arc=0pt,
+    boxrule=0pt,
+    left=12pt, right=12pt, top=10pt, bottom=10pt
+  }
+}
+
+%% ═══════════════════════════════════════════════════════════════════════════════
+%% Page style
+%% ═══════════════════════════════════════════════════════════════════════════════
+
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{%
+  \begin{tikzpicture}[remember picture, overlay]
+    \fill[jspsNavy] (current page.north west) rectangle
+      ([yshift=-11mm]current page.north east);
+  \end{tikzpicture}%
+  \textcolor{white}{\footnotesize\textbf{JSPS Grant-in-Aid for Scientific Research (Kakenhi)}}%
+}
+\fancyhead[R]{%
+  \textcolor{white}{\footnotesize Grant Category: Scientific Research (B) \quad FY 2026}%
+}
+\fancyfoot[C]{%
+  \textcolor{jspsSlate}{\footnotesize Page \thepage\ of \pageref{LastPage}}%
+}
+\fancyfoot[L]{%
+  \textcolor{jspsSlate}{\footnotesize\faLock\enspace Confidential -- Submitted to JSPS}%
+}
+\fancyfoot[R]{%
+  \textcolor{jspsSlate}{\footnotesize Application No.\ 26310042}%
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+
+%% ═══════════════════════════════════════════════════════════════════════════════
+%% Helper macros
+%% ═══════════════════════════════════════════════════════════════════════════════
+
+\newcommand{\bilabel}[2]{%
+  \textbf{\textcolor{jspsNavy}{#1}}\enspace{\footnotesize\textcolor{jspsSlate}{(#2)}}%
+}
+
+\newcommand{\fieldrow}[2]{%
+  \noindent\begin{minipage}[t]{0.38\linewidth}%
+    \raggedright\small\textcolor{jspsSlate}{#1}%
+  \end{minipage}%
+  \begin{minipage}[t]{0.60\linewidth}%
+    \raggedright\small #2%
+  \end{minipage}\par\vspace{2pt}%
+}
+
+%% ═══════════════════════════════════════════════════════════════════════════════
+%% Document
+%% ═══════════════════════════════════════════════════════════════════════════════
+
+\usepackage{CJKutf8}
+\begin{document}
+\begin{CJK}{UTF8}{min}
+
+%% ── Banner / Title block ─────────────────────────────────────────────────────
+\begin{tcolorbox}[jspsBanner]
+  \begin{minipage}{0.72\linewidth}
+    \textcolor{white}{\Large\bfseries
+      Quantum Coherence in Neural Microtubule Networks:\\[2pt]
+      A Cross-Scale Computational and Experimental Investigation}\\[6pt]
+    {\small\textcolor{jspsGold!80!white}{%
+      \textit{Ryoshi Kohirensu to Shinkei Bishokan Net\-work no Tasu-keru Kaiseki}%
+    }}%
+  \end{minipage}%
+  \hfill
+  \begin{minipage}{0.25\linewidth}
+    \raggedleft
+    \begin{tikzpicture}
+      \foreach \i in {1,2,3,4,5}{
+        \draw[white, opacity=0.15+0.1*\i, line width=0.5pt]
+          (0,0) -- ({0.55*\i*cos(60*\i)},{0.55*\i*sin(60*\i)});
+      }
+      \node[circle, fill=jspsGold!80!white, minimum size=18pt,
+            text=white, font=\bfseries\scriptsize] at (0,0) {JSPS};
+    \end{tikzpicture}\\[4pt]
+    \textcolor{jspsGold}{\footnotesize\bfseries FY 2026 Application}\\
+    \textcolor{white!70!jspsNavy}{\scriptsize Scientific Research (B)}
+  \end{minipage}
+\end{tcolorbox}
+
+\vspace{4pt}
+
+%% ── Section 1: Applicant Information ─────────────────────────────────────────
+\begin{tcolorbox}[jspsSection,
+  title={\faUser\enspace \bilabel{Applicant Information}{申請者情報} \hfill \small Section 1}]
+
+  \noindent\begin{minipage}[t]{0.48\linewidth}
+    \begin{tcolorbox}[jspsInfo]
+      \fieldrow{\bilabel{Principal Investigator}{研究代表者}:}{\textbf{Kenji Yamamoto}}
+      \fieldrow{\bilabel{Affiliation}{所属機関}:}{Meridian Institute of Cognitive Science}
+      \fieldrow{\bilabel{Department}{部署}:}{Dept.\ of Computational Neuroscience}
+      \fieldrow{\bilabel{Position}{職位}:}{Associate Professor}
+      \fieldrow{\bilabel{Researcher ID}{研究者番号}:}{70\,412\,683}
+      \fieldrow{\bilabel{ORCID}{ORCID}:}{0000-0002-7341-5829}
+    \end{tcolorbox}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[t]{0.48\linewidth}
+    \begin{tcolorbox}[jspsInfo]
+      \fieldrow{\bilabel{Co-Investigator 1}{研究分担者 1}:}{\textbf{Aiko Nakamura, Ph.D.}}
+      \fieldrow{\bilabel{Affiliation}{所属}:}{Apex University, Osaka}
+      \fieldrow{\bilabel{Co-Investigator 2}{研究分担者 2}:}{\textbf{Hiroshi Tanaka, M.D.}}
+      \fieldrow{\bilabel{Affiliation}{所属}:}{Synapse Medical Research Center}
+      \fieldrow{\bilabel{Research Period}{研究期間}:}{April 2026 -- March 2029}
+      \fieldrow{\bilabel{Total Budget}{総予算額}:}{\textyen\,24,500,000}
+    \end{tcolorbox}
+  \end{minipage}
+
+  \vspace{4pt}
+  \noindent\begin{minipage}[t]{0.32\linewidth}
+    \begin{tcolorbox}[jspsInfo]
+      \fieldrow{\bilabel{Grant Category}{研究種目}:}{Scientific Research (B)\\
+        {\footnotesize\textcolor{jspsSlate}{科学研究費補助金（基盤研究 B）}}}
+    \end{tcolorbox}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[t]{0.32\linewidth}
+    \begin{tcolorbox}[jspsInfo]
+      \fieldrow{\bilabel{Research Field}{研究分野}:}{Neuroscience / Biophysics\\
+        {\footnotesize\textcolor{jspsSlate}{神経科学・生物物理学}}}
+    \end{tcolorbox}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[t]{0.30\linewidth}
+    \begin{tcolorbox}[jspsInfo]
+      \fieldrow{\bilabel{Keywords}{キーワード}:}{quantum biology, microtubules,\\neural oscillations, decoherence}
+    \end{tcolorbox}
+  \end{minipage}
+
+\end{tcolorbox}
+
+\vspace{4pt}
+
+%% ── Section 2: Purpose and Background ────────────────────────────────────────
+\begin{tcolorbox}[jspsSection,
+  title={\faFile\enspace \bilabel{Research Background and Objectives}{研究の背景と目的} \hfill \small Section 2}]
+
+\textbf{\textcolor{jspsNavy}{Background \textcolor{jspsSlate}{\small（背景）}}}
+
+The question of whether quantum mechanical phenomena play a functional role in biological neural systems remains one of the most provocative open problems in biophysics. Recent experimental work at Meridian Institute and elsewhere has demonstrated anomalous long-lived vibrational coherence in isolated tubulin dimers at physiological temperatures (310 K), with coherence lifetimes in the 50--200\,fs window --- far exceeding predictions from classical Redfield theory. Critically, cryo-electron tomography data from the Synapse Medical Research Center collaborating group (Tanaka et al., \textit{Nat.\ Neurosci.}, 2024) reveals that microtubule bundles within hippocampal pyramidal neurons adopt a quasi-crystalline lateral packing geometry that may act as a ``phonon waveguide'', suppressing environmental noise through collective mode engineering.
+
+Despite this tantalizing evidence, two fundamental gaps remain. \textbf{First}, no theoretical framework exists that seamlessly bridges quantum transport at the tubulin dimer scale ($\sim$10\,nm) with mesoscale neural network dynamics ($\sim$10\,mm). \textbf{Second}, no direct in-vivo measurement has demonstrated a causal link between microtubule coherence and observable electrophysiological signatures such as gamma-band ($\gamma$, 30--100\,Hz) oscillations.
+
+\vspace{4pt}
+\textbf{\textcolor{jspsNavy}{Objectives \textcolor{jspsSlate}{\small（目的）}}}
+
+\begin{enumerate}[leftmargin=1.6em, label=\textbf{O\arabic*.}, itemsep=1pt]
+  \item Derive and validate a multi-scale open-quantum-systems model linking tubulin dimer coherence to microtubule bundle phonon modes and ultimately to neural network firing statistics.
+  \item Perform targeted pharmacological perturbation experiments using Taxol and nocodazole in hippocampal slice preparations to isolate microtubule-specific contributions to $\gamma$-band LFPs.
+  \item Apply two-dimensional electronic spectroscopy (2DES) to fresh cortical tissue biopsies to obtain a direct spectroscopic signature of quantum coherence in intact neural tissue.
+  \item Develop an open-source computational pipeline (\texttt{NeuroQuant}) integrating density-matrix simulation with spiking network models, to be released via the Nimbus Open Science Platform.
+\end{enumerate}
+
+\end{tcolorbox}
+
+\vspace{4pt}
+
+%% ── Section 3: Methodology ───────────────────────────────────────────────────
+\begin{tcolorbox}[jspsSection,
+  title={\faPen\enspace \bilabel{Research Methods}{研究方法} \hfill \small Section 3}]
+
+\textbf{\textcolor{jspsNavy}{3.1\enspace Theoretical Framework}}
+
+We adopt the Hierarchical Equations of Motion (HEOM) formalism to model the quantum dynamics of the tubulin--water bath interaction. The system Hamiltonian is partitioned as:
+\[
+  \hat{H}_{\mathrm{tot}} = \hat{H}_S + \hat{H}_B + \hat{H}_{SB}
+\]
+where $\hat{H}_S$ is the electronic Hamiltonian of the tubulin dimer lattice (obtained from quantum-chemistry TDDFT calculations at the PBE0/6-311+G* level), $\hat{H}_B$ denotes the protein-solvent phonon bath, and $\hat{H}_{SB}$ is the system--bath coupling modelled via a Drude--Lorentz spectral density:
+\[
+  J(\omega) = \frac{2\lambda \gamma \omega}{\omega^2 + \gamma^2}
+\]
+with reorganization energy $\lambda$ and bath correlation time $\gamma^{-1}$ fit to experimental 2DES data. The HEOM hierarchy is truncated at depth $\mathcal{N} = 6$ and solved numerically using a GPU-accelerated Julia solver developed within our group.
+
+\vspace{4pt}
+\textbf{\textcolor{jspsNavy}{3.2\enspace Experimental Components}}
+
+\begin{itemize}[leftmargin=1.4em, itemsep=1pt]
+  \item \textit{Hippocampal slice electrophysiology}: Acute 400\,$\mu$m coronal slices from Wistar rats maintained at 34$^\circ$C in ACSF. Multi-electrode arrays (MEA, 256-channel) record spontaneous and carbachol-evoked $\gamma$ oscillations. Microtubule integrity will be graded in parallel via immunofluorescence ($\alpha$-tubulin antibody, clone DM1A).
+  \item \textit{2D Electronic Spectroscopy}: A 10\,fs, 20\,nJ broadband pump--probe apparatus (home-built, Meridian Optics Lab) will be deployed on fresh cortical punch biopsies from surgically resected tissue (ethics approval: Meridian IRB \#2025-0441). The rephasing and non-rephasing signal contributions will be separated via phase cycling.
+  \item \textit{Cryo-ET and image analysis}: Collaboration with Tanaka lab at Synapse Medical Research Center; focused-ion-beam milling on vitrified hippocampal slices followed by sub-tomogram averaging to resolve microtubule lattice spacing to better than 2\,\AA{} precision.
+\end{itemize}
+
+\vspace{4pt}
+\textbf{\textcolor{jspsNavy}{3.3\enspace Computational Pipeline (\texttt{NeuroQuant})}}
+
+The \texttt{NeuroQuant} software will consist of three loosely coupled modules:
+\begin{enumerate}[leftmargin=1.6em, label=(\arabic*), itemsep=1pt]
+  \item \textit{QuantumCore}: HEOM solver with automatic bath parameterization from spectroscopic input.
+  \item \textit{MesoBridge}: Maps quantum transport rates to phenomenological conductance parameters in a multi-compartment neuron model (NEURON simulator backend).
+  \item \textit{NetSim}: Leaky integrate-and-fire network simulator with realistic cortical topology seeded from Allen Brain Connectivity Atlas.
+\end{enumerate}
+All code will be published under the MIT License via Nimbus Open Science Platform (DOI reserved: 10.xxxxx/neurq.2026).
+
+\end{tcolorbox}
+
+\vspace{4pt}
+
+%% ── Section 4: Work Plan & Timeline ─────────────────────────────────────────
+\begin{tcolorbox}[jspsSection,
+  title={\faCalendar\enspace \bilabel{Work Plan and Timeline}{研究計画・スケジュール} \hfill \small Section 4}]
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\linewidth}{>{\bfseries\small\color{jspsNavy}}p{1.7cm}
+                              >{\small}X
+                              >{\small\centering\arraybackslash}p{2.6cm}}
+\toprule
+\rowcolor{jspsNavy}
+\textcolor{white}{Year} & \textcolor{white}{Key Activities} & \textcolor{white}{Milestone} \\
+\midrule
+\rowcolor{jspsFrost}
+FY 2026 &
+  Establish HEOM computational infrastructure; begin slice MEA recordings with pharmacological perturbations; acquire preliminary 2DES spectra from isolated tubulin samples &
+  QuantumCore v1.0 release \\
+\midrule
+FY 2027 &
+  Full 2DES campaign on cortical biopsy tissue; cryo-ET data collection and sub-tomogram averaging; MesoBridge module development and parameter fitting &
+  Milestone: first cross-scale model validation \\
+\midrule
+\rowcolor{jspsFrost}
+FY 2028 &
+  NetSim integration and network-level predictions; comparison of simulated and experimental $\gamma$-band power spectra; manuscript preparation; \texttt{NeuroQuant} v1.0 public release &
+  3 peer-reviewed publications; open-source release \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{4pt}
+\begin{tikzpicture}[x=0.95\linewidth/36, y=0.35cm]
+  % Background strip
+  \fill[jspsBg, rounded corners=2pt] (0,-0.4) rectangle (36,2.4);
+  % Year bands
+  \fill[jspsNavy!15] (0,0) rectangle (12,2);
+  \fill[jspsGold!20] (12,0) rectangle (24,2);
+  \fill[jspsNavy!15] (24,0) rectangle (36,2);
+  % Month ticks
+  \foreach \m in {0,3,...,36}{
+    \draw[jspsRule, thin] (\m,0) -- (\m,2);
+  }
+  % Task bars
+  \fill[jspsNavy!70, rounded corners=1pt] (0,1.35) rectangle (10,1.85)
+    node[midway,white,font=\tiny\bfseries]{HEOM \& MEA};
+  \fill[jspsGold!80, rounded corners=1pt] (8,1.35) rectangle (20,1.85)
+    node[midway,white,font=\tiny\bfseries]{2DES Campaign};
+  \fill[jspsNavy!50, rounded corners=1pt] (16,1.35) rectangle (30,1.85)
+    node[midway,white,font=\tiny\bfseries]{Cryo-ET \& MesoBridge};
+  \fill[jspsGold!60, rounded corners=1pt] (26,1.35) rectangle (36,1.85)
+    node[midway,white,font=\tiny\bfseries]{NetSim \& Writing};
+  % Milestone diamonds
+  \fill[jspsGold] (10,1.0) -- (10.5,0.5) -- (10,0.0) -- (9.5,0.5) -- cycle;
+  \fill[jspsGold] (22,1.0) -- (22.5,0.5) -- (22,0.0) -- (21.5,0.5) -- cycle;
+  \fill[jspsGold] (35,1.0) -- (35.5,0.5) -- (35,0.0) -- (34.5,0.5) -- cycle;
+  % Year labels
+  \node[font=\tiny\bfseries,text=jspsNavy] at (6,-0.15) {FY 2026};
+  \node[font=\tiny\bfseries,text=jspsNavy] at (18,-0.15) {FY 2027};
+  \node[font=\tiny\bfseries,text=jspsNavy] at (30,-0.15) {FY 2028};
+\end{tikzpicture}
+
+\end{tcolorbox}
+
+\vspace{4pt}
+
+%% ── Section 5: Budget ────────────────────────────────────────────────────────
+\begin{tcolorbox}[jspsSection,
+  title={\faCalendar\enspace \bilabel{Budget Breakdown}{予算内訳} \hfill \small Section 5}]
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{>{\small}X
+                              >{\small\raggedleft\arraybackslash}p{2.5cm}
+                              >{\small\raggedleft\arraybackslash}p{2.5cm}
+                              >{\small\raggedleft\arraybackslash}p{2.5cm}
+                              >{\small\raggedleft\arraybackslash}p{2.5cm}}
+\toprule
+\rowcolor{jspsNavy}
+\textcolor{white}{\bfseries Item} &
+\textcolor{white}{\bfseries FY 2026 (\textyen)} &
+\textcolor{white}{\bfseries FY 2027 (\textyen)} &
+\textcolor{white}{\bfseries FY 2028 (\textyen)} &
+\textcolor{white}{\bfseries Total (\textyen)} \\
+\midrule
+\rowcolor{jspsFrost}
+Equipment (MEA system, optics) & 3,200,000 & 800,000 & 200,000 & 4,200,000 \\
+Consumables (reagents, tissue) & 1,100,000 & 1,300,000 & 900,000 & 3,300,000 \\
+\rowcolor{jspsFrost}
+Personnel (RA, 2 PD fellows) & 2,400,000 & 3,600,000 & 3,600,000 & 9,600,000 \\
+Travel (domestic / intl.\ conf.) & 400,000 & 600,000 & 500,000 & 1,500,000 \\
+\rowcolor{jspsFrost}
+HPC cloud compute (Nimbus HPC) & 800,000 & 1,200,000 & 800,000 & 2,800,000 \\
+Publication \& open-data costs & 200,000 & 400,000 & 500,000 & 1,100,000 \\
+\rowcolor{jspsFrost}
+Indirect costs (30\%) & 480,000 & 720,000 & 800,000 & 2,000,000 \\
+\midrule
+\rowcolor{jspsGold!25}
+\textbf{Annual Total} & \textbf{8,580,000} & \textbf{8,620,000} & \textbf{7,300,000} & \textbf{24,500,000} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\end{tcolorbox}
+
+\vspace{4pt}
+
+%% ── Section 6: Significance & Innovation ────────────────────────────────────
+\begin{tcolorbox}[jspsSection,
+  title={\faFile\enspace \bilabel{Significance and Innovation}{研究の独創性と意義} \hfill \small Section 6}]
+
+\noindent\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[jspsField, title=Scientific Significance \small（学術的意義）]
+    \small
+    If quantum coherence is confirmed as functionally relevant in neural tissue, it would necessitate a fundamental revision of both computational neuroscience models and theories of neural synchrony. Our cross-scale framework represents the \textbf{first rigorous quantum-to-network bridge} in the literature, enabling quantitative predictions testable by MEA electrophysiology. This positions the project to resolve a 30-year-old debate initiated by Penrose and Hameroff, now with experimentally grounded methodology.
+  \end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[jspsField, title=Technological Innovation \small（技術的独自性）]
+    \small
+    The 2DES apparatus adapted for intact tissue biopsies is unique in Japan. Our GPU-accelerated HEOM solver achieves a 40$\times$ speedup over existing CPU implementations, enabling parameter sweeps previously infeasible. The \texttt{NeuroQuant} open-source pipeline will serve the international quantum biology community, reinforcing Japan's leadership in this emerging interdisciplinary field.
+  \end{tcolorbox}
+\end{minipage}
+
+\end{tcolorbox}
+
+\vspace{4pt}
+
+%% ── Section 7: Expected Outcomes ─────────────────────────────────────────────
+\begin{tcolorbox}[jspsSection,
+  title={\faFile\enspace \bilabel{Expected Outcomes and Dissemination}{成果と普及}{} \hfill \small Section 7}]
+
+\begin{enumerate}[leftmargin=1.6em, label=\textbf{\arabic*.}, itemsep=2pt]
+  \item \textbf{Publications}: Minimum 3 peer-reviewed articles in high-impact journals (\textit{Nature Physics}, \textit{PNAS}, \textit{Journal of Neuroscience}) plus 1 invited review in \textit{Progress in Biophysics and Molecular Biology}.
+  \item \textbf{Open Software}: \texttt{NeuroQuant} v1.0 public release (Nimbus Open Science Platform) under MIT License, with accompanying documentation and tutorial notebooks.
+  \item \textbf{Conference Presentations}: Annual presentation at the Society for Neuroscience (SfN) meeting and at YITP Workshop on Quantum Biology (Kyoto University, hosted 2027).
+  \item \textbf{Human Resource Development}: Training of 2 postdoctoral researchers and 3 doctoral students in interdisciplinary quantum neuroscience methods; all trainees will complete JST Science Communication training modules.
+  \item \textbf{International Collaboration}: Exchange program with Vertex Institute for Theoretical Biophysics (Zurich) for joint 2DES data interpretation; co-supervision of 1 international PhD student.
+\end{enumerate}
+
+\vspace{4pt}
+\noindent\begin{minipage}[t]{0.30\linewidth}
+  \begin{tcolorbox}[jspsInfo, halign=center]
+    \centering
+    \begin{tikzpicture}
+      \node[circle, fill=jspsNavy, minimum size=46pt, text=white, align=center,
+            font=\bfseries\small] (pub) {3+\\pubs};
+      \node[circle, fill=jspsGold!80!black, minimum size=34pt, text=white, align=center,
+            font=\bfseries\scriptsize, right=6pt of pub] (sw) {Open\\Source};
+      \node[circle, fill=jspsSlate, minimum size=34pt, text=white, align=center,
+            font=\bfseries\scriptsize, below right=2pt and 2pt of pub] (hr) {5\\trainees};
+    \end{tikzpicture}
+  \end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.66\linewidth}
+  \begin{tcolorbox}[jspsInfo]
+    \small
+    \textbf{\textcolor{jspsNavy}{Impact Statement \textcolor{jspsSlate}{\footnotesize（社会的インパクト）}}}\\[4pt]
+    Long-term, this research opens pathways toward quantum-assisted brain--computer interfaces and novel neuromorphic computing architectures. Collaborations with Nexa Semiconductor Co.\ and Apex NeuroTech Ltd.\ (feasibility MOU signed Nov.\ 2025) will explore translational applications in neuromorphic chip design inspired by biologically validated quantum transport mechanisms.
+  \end{tcolorbox}
+\end{minipage}
+
+\end{tcolorbox}
+
+\vspace{4pt}
+
+%% ── Section 8: Ethics & Data Management ─────────────────────────────────────
+\begin{tcolorbox}[jspsSection,
+  title={\faLock\enspace \bilabel{Ethics and Data Management}{倫理・データ管理} \hfill \small Section 8}]
+
+\noindent\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[jspsInfo]
+    \small
+    \textbf{\textcolor{jspsNavy}{Ethical Compliance}}\\[3pt]
+    All animal experiments comply with the Act on Welfare and Management of Animals (Japan) and institutional guidelines (Protocol \#Meridian-2025-038). Human tissue studies operate under Meridian IRB \#2025-0441 with full informed consent. No genetically modified organisms are used. Personal data collected in the human biopsy cohort will be pseudonymized and stored on Meridian's certified secure servers (ISO 27001 certified).
+  \end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[jspsInfo]
+    \small
+    \textbf{\textcolor{jspsNavy}{Data Management Plan}}\\[3pt]
+    Raw electrophysiology and spectroscopy data will be deposited in the RIKEN NeuroPlatform repository within 12 months of collection. Computational codes and model parameters will accompany each publication as a Zenodo archive. A data management agreement with co-investigator institutions (Apex University, Synapse Medical Research Center) has been executed to govern shared access and IP rights.
+  \end{tcolorbox}
+\end{minipage}
+
+\end{tcolorbox}
+
+\vspace{6pt}
+
+%% ── Signature block ──────────────────────────────────────────────────────────
+\begin{tcolorbox}[enhanced, colback=white, colframe=jspsRule, arc=3pt,
+                  boxrule=0.5pt, left=10pt, right=10pt, top=8pt, bottom=8pt]
+  \noindent\begin{minipage}[t]{0.55\linewidth}
+    \small\textbf{\textcolor{jspsNavy}{Declaration by Principal Investigator}}\\[4pt]
+    I confirm that the information provided in this application is accurate and complete to the best of my knowledge. I agree to abide by the regulations of the Japan Society for the Promotion of Science and the ethical guidelines of my institution.\\[12pt]
+    \textcolor{jspsSlate}{\footnotesize Signature:\enspace}%
+    \underline{\hspace{4cm}}\\[4pt]
+    \textcolor{jspsSlate}{\footnotesize Date:\enspace}%
+    \underline{\hspace{3cm}}\\[4pt]
+    \textcolor{jspsSlate}{\footnotesize Institutional Seal:\enspace}%
+    \underline{\hspace{3cm}}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[t]{0.40\linewidth}
+    \raggedright\small
+    \textbf{\textcolor{jspsNavy}{Institution Contact}}\\[4pt]
+    \faPhone\enspace +81-6-2233-5500 (Research Office)\\[2pt]
+    \faFile\enspace grants@meridian-ics.ac.jp\\[2pt]
+    \faCalendar\enspace Submission Date: March 18, 2026\\[6pt]
+    \begin{tcolorbox}[enhanced, colback=jspsFrost, colframe=jspsNavy,
+                      arc=2pt, boxrule=0.5pt, left=4pt, right=4pt,
+                      top=3pt, bottom=3pt]
+      \centering\scriptsize\textcolor{jspsNavy}{\bfseries
+        Application Number}\\
+      \small\textbf{26310042}
+    \end{tcolorbox}
+  \end{minipage}
+\end{tcolorbox}
+
+%% ── Footer rule ──────────────────────────────────────────────────────────────
+\vspace{4pt}
+{\color{jspsRule}\rule{\linewidth}{0.5pt}}
+\begin{center}
+  \scriptsize\textcolor{jspsSlate}{%
+    Japan Society for the Promotion of Science (JSPS) \textbullet{}
+    Grant-in-Aid for Scientific Research (Kakenhi) \textbullet{}
+    Scientific Research (B) Category \textbullet{}
+    FY 2026 Round}
+\end{center}
+
+\end{CJK}
+\end{document}

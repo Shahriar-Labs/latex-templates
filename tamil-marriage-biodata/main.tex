@@ -1,0 +1,266 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[11pt,a4paper]{article}
+
+% --- Package Loading ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[sc]{mathpazo} % Elegant Palatino font clone
+\linespread{1.05}         % Palatino needs more leading
+\usepackage[top=2.5cm, bottom=2.5cm, left=2.2cm, right=2.2cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{eso-pic}
+\usepackage{tikz}
+\usetikzlibrary{calc,backgrounds}
+\usepackage[most]{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{microtype}
+\usepackage{fancyhdr}
+
+% --- Color Palette (Traditional South Indian Aesthetics) ---
+\definecolor{AuspiciousRed}{RGB}{128,0,32}     % Kumkum / Deep Maroon
+\definecolor{GoldenTurmeric}{RGB}{212,175,55}   % Turmeric / Warm Gold
+\definecolor{WarmCream}{RGB}{253,251,245}      % Off-white / Rice Cream
+\definecolor{Charcoal}{RGB}{44,53,57}          % Premium readable text
+
+% --- Page Style Setup ---
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyfoot[C]{\fontsize{9}{11}\selectfont\color{AuspiciousRed}Page \thepage\ of 2}
+
+% --- Borders & Header Banner (TikZ + eso-pic) ---
+\AddToShipoutPictureBG{
+  \begin{tikzpicture}[overlay,remember picture]
+    % Corner coordinates
+    \coordinate (BL) at ($(current page.south west) + (1.5cm,1.5cm)$);
+    \coordinate (BR) at ($(current page.south east) + (-1.5cm,1.5cm)$);
+    \coordinate (TL) at ($(current page.north west) + (1.5cm,-1.5cm)$);
+    \coordinate (TR) at ($(current page.north east) + (-1.5cm,-1.5cm)$);
+    
+    % Thick outer line (maroon)
+    \draw[line width=2.5pt, color=AuspiciousRed] (BL) rectangle (TR);
+    % Thin inner line (gold)
+    \draw[line width=1.0pt, color=GoldenTurmeric] ($(BL) + (2mm,2mm)$) rectangle ($(TR) + (-2mm,-2mm)$);
+    
+    % Concentric corner circles for alignment details
+    \foreach \c in {BL, BR, TL, TR} {
+      \draw[fill=GoldenTurmeric, draw=AuspiciousRed, line width=1.5pt] (\c) circle (5pt);
+      \draw[fill=AuspiciousRed, draw=white, line width=0.5pt] (\c) circle (2.5pt);
+    }
+    
+    % Traditional top center banner
+    \node[fill=WarmCream, draw=AuspiciousRed, line width=1.2pt, rounded corners=4pt, inner sep=6pt] at ($(current page.north) + (0,-1.5cm)$) {
+      \fontsize{10}{12}\selectfont\color{AuspiciousRed}\bfseries\quad || Sri Sivasakthi Thunai || \quad
+    };
+  \end{tikzpicture}
+}
+
+% --- Custom Decorative Divider ---
+\newcommand{\headerdivider}{
+  \begin{center}
+    \begin{tikzpicture}[scale=0.8]
+      \draw[line width=1.5pt, color=AuspiciousRed] (-5,0) -- (5,0);
+      \draw[line width=0.8pt, color=GoldenTurmeric] (-4.8,-0.08) -- (4.8,-0.08);
+      \draw[fill=GoldenTurmeric, draw=AuspiciousRed, line width=1pt] (0,0) circle (6pt);
+      \draw[fill=AuspiciousRed, draw=none] (-1.5,0) circle (3pt);
+      \draw[fill=AuspiciousRed, draw=none] (1.5,0) circle (3pt);
+      \draw[fill=AuspiciousRed, draw=none] (-3.0,0) circle (2pt);
+      \draw[fill=AuspiciousRed, draw=none] (3.0,0) circle (2pt);
+    \end{tikzpicture}
+  \end{center}
+}
+
+% --- Section Header Macro ---
+\newcommand{\sectionheader}[2]{%
+  \vspace{12pt}%
+  \noindent%
+  \begin{tcolorbox}[%
+    colback=AuspiciousRed,%
+    colframe=GoldenTurmeric,%
+    arc=3pt,%
+    boxrule=1.2pt,%
+    boxsep=2pt,%
+    top=4pt,%
+    bottom=4pt,%
+    left=8pt,%
+    right=8pt%
+  ]%
+    \centering
+    {\color{white}\bfseries\large #1\quad \MakeUppercase{#2}}%
+  \end{tcolorbox}%
+  \vspace{6pt}%
+}
+
+% --- Horoscope Grid Macro ---
+\newcommand{\horoscopegrid}[2]{
+  \begin{tikzpicture}[scale=0.85]
+    % Outer border
+    \draw[line width=1.5pt, color=AuspiciousRed] (0,0) rectangle (4,4);
+    % Grid lines
+    \draw[line width=0.8pt, color=GoldenTurmeric] (0,1) -- (4,1);
+    \draw[line width=0.8pt, color=GoldenTurmeric] (0,2) -- (4,2);
+    \draw[line width=0.8pt, color=GoldenTurmeric] (0,3) -- (4,3);
+    \draw[line width=0.8pt, color=GoldenTurmeric] (1,0) -- (1,4);
+    \draw[line width=0.8pt, color=GoldenTurmeric] (2,0) -- (2,4);
+    \draw[line width=0.8pt, color=GoldenTurmeric] (3,0) -- (3,4);
+    
+    % Fill center 2x2
+    \fill[color=WarmCream] (1,1) rectangle (3,3);
+    \node[color=AuspiciousRed, font=\bfseries\small] at (2,2) {#1};
+    
+    % Node placements
+    #2
+  \end{tikzpicture}
+}
+
+% --- Horoscope Planets Definitions ---
+\newcommand{\rasiplanets}{
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (0.5, 3.5) {Rahu};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (1.5, 3.5) {Sevvai};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (2.5, 3.5) {Guru};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (3.5, 3.5) {Suriyan};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (3.5, 2.5) {Budhan};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (3.5, 1.5) {Sukran};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (3.5, 0.5) {Chandran\\Kethu};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (1.5, 0.5) {\bfseries Lagnam};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (0.5, 2.5) {Sani};
+}
+
+\newcommand{\navamsaplanets}{
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (0.5, 3.5) {Guru};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (1.5, 3.5) {Chandran};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (2.5, 3.5) {Rahu};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (3.5, 3.5) {Sukran};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (3.5, 2.5) {Sevvai};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (3.5, 1.5) {\bfseries Lagnam};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (3.5, 0.5) {Suriyan};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (2.5, 0.5) {Budhan};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (0.5, 0.5) {Kethu};
+  \node[align=center, font=\scriptsize\color{Charcoal}] at (0.5, 2.5) {Sani};
+}
+
+\begin{document}
+\color{Charcoal}
+
+% --- Page 1 Header ---
+\begin{center}
+  \vspace*{10pt}
+  {\fontsize{24}{28}\selectfont\color{AuspiciousRed}\bfseries\scshape Marriage Biodata}
+  \headerdivider
+\end{center}
+
+% --- Section: Personal Profile ---
+\sectionheader{\faUser}{Personal Profile}
+\noindent\begin{tabularx}{\textwidth}{>{\bfseries\color{AuspiciousRed}}l X >{\bfseries\color{AuspiciousRed}}l X}
+  Name: & Ramachandran Srinivasan & Date of Birth: & 14 October 1996 \\
+  Height: & 5 ft 10 in (178 cm) & Time of Birth: & 09:45 AM \\
+  Complexion: & Wheatish & Place of Birth: & Madurai, Tamil Nadu \\
+  Blood Group: & O+ Positive & Mother Tongue: & Tamil \\
+  Physical Status: & Normal & Diet: & Pure Vegetarian \\
+\end{tabularx}
+
+% --- Section: Astrological Details ---
+\sectionheader{\faStar}{Astrological Details}
+\begin{minipage}[c]{0.48\textwidth}
+  \noindent\begin{tabularx}{\textwidth}{>{\bfseries\color{AuspiciousRed}}l X}
+    Rasi (Moon Sign): & Kanni (Virgo) \\
+    Nakshatram: & Chithirai \\
+    Padam: & 2nd Padam \\
+    Lagnam: & Viruchigam (Scorpio) \\
+    Gothram: & Vishwamitra \\
+    Suthram: & Apasthamba \\
+    Veda: & Yajur Veda \\
+    Chevvai Dosham: & No (None) \\
+    Naga/Sarpa Dosham: & No (None) \\
+  \end{tabularx}
+\end{minipage}%
+\hfill%
+\begin{minipage}[c]{0.48\textwidth}
+  \centering
+  \horoscopegrid{RASI}{\rasiplanets}
+  \hspace{10pt}
+  \horoscopegrid{NAVAMSAM}{\navamsaplanets}
+\end{minipage}
+
+% --- Section: Educational & Professional Details ---
+\sectionheader{\faGraduationCap}{Educational \& Professional Details}
+\noindent\begin{tabularx}{\textwidth}{>{\bfseries\color{AuspiciousRed}}l X}
+  Education: & \textbf{Master of Science (M.S.) in Software Systems} \\
+             & Apex University of Technology, Chennai (2018--2020) \\[6pt]
+             & \textbf{Bachelor of Engineering (B.E.) in Computer Science} \\
+             & College of Engineering, Guindy, Anna University, Chennai (2014--2018) \\[6pt]
+  Occupation: & \textbf{Senior Software Engineer} at Synapse Technologies \\
+              & Working in the Core Platforms division, Bengaluru \\[6pt]
+  Annual Income: & INR 24,00,000 (24 Lakhs Per Annum) \\
+  Work Location: & Bengaluru, Karnataka, India (Hybrid Model) \\
+\end{tabularx}
+
+\clearpage
+
+% --- Page 2 Header ---
+\begin{center}
+  \vspace*{10pt}
+  {\fontsize{24}{28}\selectfont\color{AuspiciousRed}\bfseries\scshape Marriage Biodata}
+  \headerdivider
+\end{center}
+
+% --- Section: Family Background ---
+\sectionheader{\faHome}{Family Background}
+\noindent\begin{tabularx}{\textwidth}{>{\bfseries\color{AuspiciousRed}}l X}
+  Father's Name: & Srinivasan Ramakrishna \\
+  Father's Occupation: & Retired Deputy General Manager, State Bank of India \\
+  Mother's Name: & Meenakshi Srinivasan \\
+  Mother's Occupation: & Homemaker \\
+  Siblings: & \textbf{Elder Brother:} Dr. Vignesh Srinivasan, M.D. (Pediatrics) \\
+            & Currently practicing at Apollo Children's Hospital, Chennai. \\
+            & Married to Dr. Preethi Vignesh, M.D. (Dermatology). \\[6pt]
+            & \textbf{Younger Sister:} Aishwarya Srinivasan, M.B.A. \\
+            & Pursuing final year PGDM at Vertex Business School, Chennai (Unmarried). \\[6pt]
+  Native Place: & Madurai, Tamil Nadu \\
+  Family Location: & Kasturiba Nagar, Adyar, Chennai, Tamil Nadu \\
+  Family Values: & Upper-middle class, traditional values with a progressive outlook. \\
+  Family Assets: & Own residential apartment in Adyar, Chennai; Ancestral agricultural \\
+                 & land and home in native village near Madurai. \\
+\end{tabularx}
+
+% --- Section: Partner Expectations ---
+\sectionheader{\faHeart}{Partner Expectations}
+\noindent\begin{tabularx}{\textwidth}{>{\bfseries\color{AuspiciousRed}}l X}
+  Age \& Height: & Age 24 to 28 years; Height 5 ft 2 in to 5 ft 7 in. \\
+  Education: & Professionally qualified (B.E./B.Tech, M.B.B.S., M.D., M.S., M.B.A.) \\
+             & from a reputed institution. \\
+  Occupation: & Employed or independent professional. Preference for candidates open to \\
+              & working/residing in Bengaluru or Chennai. \\
+  Horoscope Match: & Compatibility with Kanni Rasi, Chithirai Nakshatram. \\
+                   & Non-dosham (no Chevvai Dosham / Naga Dosham) preferred. \\
+  Lifestyle: & Vegetarian, family-oriented, traditional yet modern outlook. \\
+\end{tabularx}
+
+\vspace{15pt}
+
+% --- Section: Contact Information ---
+\noindent\begin{tcolorbox}[
+  colback=WarmCream,
+  colframe=AuspiciousRed,
+  width=\textwidth,
+  arc=5pt,
+  boxrule=1.5pt,
+  title={\bfseries\color{white}\faPhone\quad CONTACT DETAILS},
+  coltitle=white,
+  attach boxed title to top left={yshift=-3mm, xshift=15pt},
+  boxed title style={colback=AuspiciousRed, colframe=GoldenTurmeric, boxrule=1pt, arc=3pt}
+]
+  \vspace{5pt}
+  \noindent\begin{tabularx}{\linewidth}{>{\bfseries\color{AuspiciousRed}}l X}
+    Primary Contact: & R. Srinivasan (Father) \\
+    Mobile Numbers: & +91 98401 23456 (Father) \quad | \quad +91 98401 98765 (Candidate) \\
+    Email Addresses: & srinivasan.r@nimbusmail.com (Father) \quad | \quad r.srinivasan@synapsetech.co (Candidate) \\
+    Residential Address: & Plot No. 42, 3rd Main Road, Kasturiba Nagar, Adyar, Chennai -- 600020 \\
+  \end{tabularx}
+\end{tcolorbox}
+
+\end{document}

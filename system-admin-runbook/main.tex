@@ -1,0 +1,479 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[margin=2.2cm,headheight=16pt]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{fontawesome5}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+\usepackage{parskip}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=infoblue,
+  urlcolor=infoblue,
+  citecolor=infoblue
+}
+
+\definecolor{nimbusnavy}{RGB}{22,28,44}
+\definecolor{alertred}{RGB}{198,48,48}
+\definecolor{infoblue}{RGB}{42,98,176}
+\definecolor{successgreen}{RGB}{28,148,78}
+\definecolor{amber}{RGB}{210,140,20}
+\definecolor{lightgray}{RGB}{244,245,248}
+\definecolor{mediumgray}{RGB}{160,165,175}
+\definecolor{bordergray}{RGB}{210,213,220}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\textcolor{nimbusnavy}{\textbf{Nimbus Cloud Platform} \textbar\ System Administration Runbook}}
+\fancyhead[R]{\footnotesize\textcolor{alertred}{CONFIDENTIAL}}
+\fancyfoot[C]{\footnotesize\textcolor{mediumgray}{\thepage}}
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\newtcolorbox[auto counter]{warningbox}{
+    colback=alertred!7,
+    colframe=alertred!75,
+    fonttitle=\bfseries\footnotesize,
+    title={\faExclamationTriangle\ \ WARNING},
+    sharp corners,
+    boxrule=0.8pt,
+    leftrule=4pt,
+    before skip=10pt,
+    after skip=10pt,
+  }
+\newtcolorbox[auto counter]{critbox}{
+    colback=alertred!12,
+    colframe=alertred!90,
+    fonttitle=\bfseries\footnotesize,
+    title={\faExclamationTriangle\ \ CRITICAL},
+    sharp corners,
+    boxrule=1.2pt,
+    leftrule=5pt,
+    before skip=10pt,
+    after skip=10pt,
+  }
+\newtcolorbox[auto counter]{infobox}{
+    colback=infoblue!6,
+    colframe=infoblue!65,
+    fonttitle=\bfseries\footnotesize,
+    title={\faInfoCircle\ \ INFORMATION},
+    sharp corners,
+    boxrule=0.8pt,
+    leftrule=4pt,
+    before skip=10pt,
+    after skip=10pt,
+  }
+\newtcolorbox[auto counter]{cmdbox}{
+    colback=nimbusnavy,
+    colframe=nimbusnavy!90,
+    fonttitle=\bfseries\footnotesize\color{white},
+    title={\faTerminal\ \ TERMINAL},
+    sharp corners,
+    boxrule=0.6pt,
+    coltext=green!35!white,
+    fontupper=\ttfamily\footnotesize,
+    before skip=10pt,
+    after skip=10pt,
+  }
+\newtcolorbox[auto counter]{successbox}{
+    colback=successgreen!7,
+    colframe=successgreen!70,
+    fonttitle=\bfseries\footnotesize,
+    title={\faCheckCircle\ \ VERIFICATION},
+    sharp corners,
+    boxrule=0.8pt,
+    leftrule=4pt,
+    before skip=10pt,
+    after skip=10pt,
+  }
+\newtcolorbox[auto counter]{titlebanner}{
+    colback=nimbusnavy,
+    colframe=nimbusnavy,
+    sharp corners,
+    boxrule=0pt,
+    leftrule=0pt,
+    rightrule=0pt,
+    toprule=0pt,
+    bottomrule=0pt,
+    after skip=16pt,
+  }
+\newtcolorbox[auto counter]{stepbox}{
+    colback=lightgray,
+    colframe=bordergray,
+    fonttitle=\bfseries,
+    sharp corners,
+    boxrule=0.5pt,
+    before skip=6pt,
+    after skip=6pt,
+  }
+
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+\setlength{\parindent}{0pt}
+
+\begin{document}
+
+\begin{titlebanner}
+  \centering
+  \color{white}
+  {\huge\bfseries System Administration\\[2pt] Runbook}\\[6pt]
+  {\LARGE Nimbus Cloud Platform}\\[10pt]
+  {\footnotesize\faCalendar\ \ Effective: 2026-07-15 \hspace{18pt} \faUser\ \ Owner: Marcus Chen, Lead SRE \hspace{18pt} \faLock\ \ CONFIDENTIAL}\\[2pt]
+  {\footnotesize\textcolor{green!35!white}{Internal Use Only --- Do Not Distribute}}
+\end{titlebanner}
+
+\section{Document Control}
+
+\begin{tabularx}{\textwidth}{ccllX}
+\toprule
+\textbf{Version} & \textbf{Date} & \textbf{Author} & \textbf{Approver} & \textbf{Change Summary} \\
+\midrule
+1.0 & 2026-07-15 & M.\ Chen & S.\ Okonkwo & Initial release. Covers NCP v4.2 production environment. \\
+0.3 & 2026-06-28 & M.\ Chen & S.\ Okonkwo & Added TLS certificate renewal procedure and escalation matrix. \\
+0.2 & 2026-06-10 & M.\ Chen & J.\ Kowalski & Incorporated incident response checklist and SEV classification. \\
+0.1 & 2026-05-22 & M.\ Chen & --- & Draft: service overview and restart procedures. \\
+\bottomrule
+\end{tabularx}
+
+\section{System Architecture Overview}
+
+The Nimbus Cloud Platform (NCP) is a multi-tenant cloud infrastructure platform serving enterprise customers across three geographic regions: us-east, eu-west, and ap-southeast. The platform processes approximately 2.8 million API requests per minute at peak load and maintains a 99.95\% uptime SLA for tier-1 customers.
+
+\begin{infobox}
+NCP runs on a containerized microservices architecture orchestrated by the NCP Orchestrator. All production services are deployed across a minimum of three availability zones per region. Database services use active-passive replication with automated failover triggered at 30 seconds of primary unresponsiveness.
+\end{infobox}
+
+\subsection*{Core Production Services}
+
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Service} & \textbf{Port} & \textbf{Description} \\
+\midrule
+ncp-api-gateway       & 8443 & Primary ingress controller; terminates TLS, enforces rate limits, routes requests to backend services. \\
+ncp-auth-service      & 9090 & Identity and access management; OAuth 2.0 / OIDC provider with hardware MFA enforcement. \\
+ncp-database-primary  & 5432 & Managed PostgreSQL 15 cluster; primary write node for all transactional and session data. \\
+ncp-message-queue     & 5672 & Asynchronous message broker; handles event streaming, job dispatch, and dead-letter queues. \\
+ncp-object-store      & 9000 & S3-compatible blob storage for customer assets, database backups, and static content delivery. \\
+ncp-orchestrator      & 6443 & Container orchestration control plane; manages service deployment, autoscaling, and health probes. \\
+\bottomrule
+\end{tabularx}
+
+\section{Alert Severity Classification}
+
+Every incident must be assigned a severity level at the moment of declaration. The severity determines response time commitments, escalation paths, and post-incident review requirements.
+
+\medskip
+\begin{tabularx}{\textwidth}{cll>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Level} & \textbf{Label} & \textbf{Response} & \textbf{Definition \& Examples} \\
+\midrule
+\rowcolor{alertred!15} SEV-1 & Critical & $<5$ minutes & Complete service outage affecting multiple regions or all customers. Data loss or corruption in progress. Security breach with active exploitation. \textbf{Example:} ncp-api-gateway returning 503 across all zones. \\
+\rowcolor{amber!15} SEV-2 & Major     & $<15$ minutes & Significant service degradation. Partial outage affecting a single region or a subset of customers. \textbf{Example:} ncp-auth-service latency above 5 seconds in eu-west. \\
+\rowcolor{infoblue!10} SEV-3 & Minor     & $<1$ hour   & Isolated issue affecting a single customer or non-critical component. No data loss risk. \textbf{Example:} ncp-object-store slow listing for one tenant bucket. \\
+SEV-4 & Informational & $<24$ hours & Cosmetic issue, planned maintenance notification, or documentation gap. No customer impact. \textbf{Example:} Monitoring dashboard showing stale CPU metrics for ncp-message-queue. \\
+\bottomrule
+\end{tabularx}
+
+\vspace{4pt}
+\begin{critbox}
+\textbf{SEV-1 Declaration Authority:} Only the on-call Lead SRE or Infrastructure Manager may declare or downgrade a SEV-1 incident. Any engineer may declare SEV-2 through SEV-4. All severity changes must be logged in the incident channel with justification.
+\end{critbox}
+
+\section{Common Operational Procedures}
+
+\subsection{Procedure 4.1: Service Restart}
+
+Restarting a production service requires connection draining and health verification. Never restart more than one service simultaneously without explicit approval from the Infrastructure Manager.
+
+\medskip
+\begin{stepbox}
+\textbf{Step 1 --- Assess Current State}\smallskip
+
+Query the service status and note any active alerts or anomalies.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ ncp-cli service status ncp-api-gateway
+SERVICE              STATUS    UPTIME     CPU%   MEM%    CONNS
+ncp-api-gateway      RUNNING   14d 3h      12%   2.1G     1,847
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{stepbox}
+\textbf{Step 2 --- Notify Affected Teams}\smallskip
+
+Post a heads-up in \texttt{\#ncp-incidents} with the service name, planned restart window, and expected impact duration. Wait for acknowledgement from at least one team lead before proceeding.
+\end{stepbox}
+
+\begin{stepbox}
+\textbf{Step 3 --- Drain Connections}\smallskip
+
+Enable drain mode to stop new connections from reaching the instance while allowing existing requests to complete.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ ncp-cli drain enable ncp-api-gateway --timeout 90
+Drain mode enabled. 1,847 active connections. Waiting...
+All connections drained (87s). Safe to proceed.
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{stepbox}
+\textbf{Step 4 --- Execute Restart}\smallskip
+
+Perform a graceful restart and monitor the service log for errors.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ ncp-cli restart ncp-api-gateway --graceful
+Stopping ncp-api-gateway... [OK]
+Starting ncp-api-gateway... [OK]
+$ ncp-cli logs ncp-api-gateway --since 2m | grep -i error
+(no output -- clean restart)
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{stepbox}
+\textbf{Step 5 --- Verify Health}\smallskip
+
+Confirm the service is accepting traffic and responding within SLA thresholds.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ ncp-cli health-check ncp-api-gateway --sla
+HEALTH CHECK: ncp-api-gateway
+Status:       HEALTHY
+Latency p99:  42ms (SLA: < 100ms)
+Error rate:   0.00% (SLA: < 0.01%)
+All checks passed.
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{successbox}
+Service restart completed successfully. Update the incident ticket if one was open and post a confirmation in \texttt{\#ncp-incidents}. Disable drain mode if it was not automatically cleared: \texttt{\$ ncp-cli drain disable ncp-api-gateway}.
+\end{successbox}
+
+\subsection{Procedure 4.2: Disk Space Emergency Cleanup}
+
+Low disk space on production nodes can cause service failures, database corruption, and log loss. Act immediately when any filesystem exceeds 85\% utilization.
+
+\begin{warningbox}
+\textbf{Do not} delete files from \texttt{/data/ncp/database/} or \texttt{/data/ncp/object-store/} manually. These paths are managed by their respective services and improper cleanup can cause irrecoverable data loss.
+\end{warningbox}
+
+\begin{stepbox}
+\textbf{Step 1 --- Identify Consumption}\smallskip
+
+Locate the largest directories and file types consuming space.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ df -h /data/ncp
+Filesystem      Size   Used   Avail   Use%   Mounted on
+/dev/sdb1       500G   462G    14G    97%    /data/ncp
+
+$ du -sh /data/ncp/* | sort -rh | head -5
+187G    /data/ncp/logs
+142G    /data/ncp/object-store
+ 89G    /data/ncp/database
+ 31G    /data/ncp/temp
+ 13G    /data/ncp/backups
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{stepbox}
+\textbf{Step 2 --- Rotate and Compress Logs}\smallskip
+
+Archive logs older than 7 days and remove raw logs older than 30 days.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ ncp-logrotate --service all --older-than 7d --compress
+Rotating logs older than 7 days...
+  ncp-api-gateway:      compressed 2.3G -> 0.4G
+  ncp-auth-service:     compressed 1.1G -> 0.2G
+  ncp-database-primary: compressed 4.7G -> 0.9G
+Done. Freed approximately 6.6G.
+
+$ find /data/ncp/logs -name "*.log" -mtime +30 -delete
+$ echo $?
+0
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{stepbox}
+\textbf{Step 3 --- Purge Temporary Files}\smallskip
+
+Clear the temp directory. Confirm no active processes are writing to files being removed.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ lsof +D /data/ncp/temp 2>/dev/null | wc -l
+0
+$ rm -rf /data/ncp/temp/*
+$ df -h /data/ncp | grep /data/ncp
+/dev/sdb1       500G   412G    64G    87%    /data/ncp
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{successbox}
+Disk usage reduced from 97\% to 87\%. Monitor for 24 hours. If usage trends above 90\% within that window, escalate to the Infrastructure Manager for capacity planning.
+\end{successbox}
+
+\subsection{Procedure 4.3: TLS Certificate Renewal}
+
+Production TLS certificates are managed by ncp-certbot with automated renewal. Manual intervention is required only when automated renewal fails or when certificates are within 72 hours of expiry.
+
+\begin{warningbox}
+A certificate expiry on ncp-api-gateway will cause a complete platform outage (SEV-1). Certificate renewal must never be deferred once expiry is within the 7-day warning window.
+\end{warningbox}
+
+\begin{stepbox}
+\textbf{Step 1 --- Check Certificate Status}\smallskip
+
+List all managed certificates and their remaining validity periods.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ ncp-certbot list
+CERTIFICATE                  EXPIRY       REMAINING   STATUS
+api.nimbuscloud.io           2026-08-12   28 days     VALID
+auth.nimbuscloud.io          2026-07-18    3 days     RENEWAL_DUE
+console.nimbuscloud.io       2026-09-01   48 days     VALID
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{stepbox}
+\textbf{Step 2 --- Execute Renewal}\smallskip
+
+Renew certificates flagged as \texttt{RENEWAL\_DUE}. The \texttt{-{}-dry-run} flag validates without committing changes.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ ncp-certbot renew auth.nimbuscloud.io --dry-run
+Dry run: auth.nimbuscloud.io
+Challenge type:   DNS-01
+DNS propagation:  OK (4.3s)
+Certificate issued by: Let's Encrypt R11
+Dry run successful. Ready to renew.
+
+$ ncp-certbot renew auth.nimbuscloud.io
+Renewing auth.nimbuscloud.io...
+New certificate fingerprint: A7:F3:...:9C
+Valid until: 2026-10-16
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{stepbox}
+\textbf{Step 3 --- Reload Affected Services}\smallskip
+
+Services that terminated TLS using the old certificate must reload their configuration.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ ncp-cli reload-certs ncp-auth-service
+Reloading TLS certificates for ncp-auth-service... [OK]
+New certificate active. Expires: 2026-10-16.
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{successbox}
+\textbf{Post-Renewal Verification}\\[2pt]
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}X@{}}
+\texttt{ncp-certbot list} & Confirm all certificates show VALID status \\
+\texttt{curl -svI ...} & Verify the new expiry date appears in the TLS handshake \\
+\texttt{ncp-cli health-check ncp-auth-service} & Confirm service health after certificate reload \\
+\end{tabularx}
+\end{successbox}
+
+\section{Incident Response Workflow}
+
+When an incident is detected (alert, customer report, or engineer observation), follow this workflow without deviation.
+
+\begin{infobox}
+\textbf{Incident Channel:} All incident communication happens in \texttt{\#ncp-incidents}. Do not use direct messages or side channels for incident coordination. The incident channel is the single source of truth for post-incident review.
+\end{infobox}
+
+\medskip
+\begin{stepbox}
+\textbf{\faPlay\ \ Incident Response Checklist}\smallskip
+
+\begin{enumerate}[leftmargin=*,itemsep=4pt]
+  \item \textbf{Declare:} Acknowledge the alert in \texttt{\#ncp-incidents}. Assign a severity level per Section~3. Start a timer.
+  \item \textbf{Triage:} Identify the affected service, region, and customer scope. Post findings to the channel.
+  \item \textbf{Mitigate:} Apply the relevant procedure from Section~4. If no procedure matches, escalate to the Lead SRE immediately.
+  \item \textbf{Communicate:} Post a status update every 15 minutes for SEV-1, every 30 minutes for SEV-2. Include: current state, action in progress, ETA to resolution.
+  \item \textbf{Resolve:} Confirm that all health checks pass and affected customers are restored. Post the resolution time and root cause summary.
+  \item \textbf{Review:} Within 48 hours, the incident owner must draft a post-incident review document covering timeline, root cause, impact, and preventive actions.
+\end{enumerate}
+\end{stepbox}
+
+\begin{critbox}
+\textbf{SEV-1 Communication Template}\smallskip
+
+Copy and paste into \texttt{\#ncp-incidents} at declaration and every 15-minute update:\smallskip
+
+\texttt{[SEV-1] \{service-name\} --- \{one-line summary\}}\\
+\texttt{Declared:} \{timestamp UTC\}\\
+\texttt{Incident Lead:} \{name\}\\
+\texttt{Affected:} \{regions / customer count / feature\}\\
+\texttt{Current Action:} \{what is being done right now\}\\
+\texttt{Next Update:} \{timestamp + 15 min\}
+\end{critbox}
+
+\section{Escalation Matrix}
+
+Escalate when a severity-appropriate resolution window is exceeded or when the incident owner determines they lack the necessary access or expertise to resolve the issue.
+
+\medskip
+{\small
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash}p{1.9cm}>{\raggedright\arraybackslash}p{2.1cm}>{\raggedright\arraybackslash}p{5.0cm}>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Role} & \textbf{Name} & \textbf{Contact} & \textbf{Escalation Trigger} \\
+\midrule
+Lead SRE & Marcus Chen & +1-555-0147 \newline marcus.chen@nimbus.internal & SEV-1 declaration; any incident unresolved for 15 minutes. \\
+Infra.\ Manager & Sarah Okonkwo & +1-555-0158 \newline sarah.okonkwo@nimbus.internal & SEV-1 unresolved for 30 minutes; multi-service cascading failure. \\
+Security Lead & Elena Rossi & +1-555-0162 \newline elena.rossi@nimbus.internal & Any suspected security incident; unauthorized access; data exfiltration alert. \\
+CTO & David Park & +1-555-0171 \newline david.park@nimbus.internal & SEV-1 unresolved for 2 hours; SEV-2 unresolved for 4 hours; customer-facing data loss. \\
+VP Engineering & Amara Okafor & +1-555-0184 \newline amara.okafor@nimbus.internal & Escalation required beyond CTO; media or regulatory inquiry about an incident. \\
+\bottomrule
+\end{tabularx}}
+
+\vspace{8pt}
+\begin{warningbox}
+\textbf{Escalation Protocol:} When escalating, always include the incident channel link, current severity, elapsed time, and a one-paragraph summary of actions taken so far. Call the phone number first; follow up with the email if there is no response within 5 minutes. Never hesitate to escalate --- over-escalation is a process concern for the post-incident review, not a violation during an active incident.
+\end{warningbox}
+
+\vfill
+\begin{center}
+\rule{0.4\textwidth}{0.3pt}\\[6pt]
+{\footnotesize\textcolor{mediumgray}{Nimbus Cloud Platform \textbar\ System Administration Runbook v1.0 \textbar\ July 2026}}\\[2pt]
+{\footnotesize\textcolor{mediumgray}{This document is confidential and proprietary to Nimbus. Unauthorized distribution is prohibited.}}
+\end{center}
+
+\end{document}

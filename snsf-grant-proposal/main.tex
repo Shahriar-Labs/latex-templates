@@ -1,0 +1,596 @@
+\documentclass[11pt,a4paper]{article}
+
+%% ─── PACKAGES ────────────────────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[left=2.5cm,right=2.5cm,top=2.8cm,bottom=2.8cm]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{parskip}
+\usepackage{lmodern}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{mdframed}
+\usepackage{multicol}
+\usepackage{multirow}
+\usepackage{hyperref}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usepackage{fontawesome5}
+\usepackage{caption}
+\usepackage{float}
+\usepackage{setspace}
+\usepackage{calc}
+\usepackage{ifthen}
+
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds,patterns}
+
+%% ─── COLORS ──────────────────────────────────────────────────────────────────
+\definecolor{SNSFred}{RGB}{220,50,50}
+\definecolor{SNSFnavy}{RGB}{20,44,84}
+\definecolor{SNSFgray}{RGB}{108,117,128}
+\definecolor{SNSFlight}{RGB}{237,242,249}
+\definecolor{SNSFaccent}{RGB}{0,115,178}
+\definecolor{SNSFborder}{RGB}{180,196,220}
+\definecolor{SNSFdark}{RGB}{10,28,55}
+\definecolor{SNSFwarm}{RGB}{245,248,252}
+\definecolor{rowalt}{RGB}{246,249,253}
+
+%% ─── HYPERREF SETUP ──────────────────────────────────────────────────────────
+\hypersetup{
+  colorlinks=true,
+  linkcolor=SNSFnavy,
+  urlcolor=SNSFaccent,
+  citecolor=SNSFnavy,
+  pdftitle={SNSF Project Funding Proposal --- NeuroDyn},
+  pdfauthor={Dr.\ Elena Marchetti},
+  pdfsubject={Swiss National Science Foundation Grant Application},
+  pdfkeywords={neuroscience, dynamical systems, cortical networks, SNSF}
+}
+
+%% ─── TYPOGRAPHY & SECTION STYLES ─────────────────────────────────────────────
+\titleformat{\section}
+  {\color{SNSFnavy}\large\bfseries}
+  {\thesection.}{0.6em}{}[{\color{SNSFaccent}\titlerule[1.2pt]}]
+
+\titleformat{\subsection}
+  {\color{SNSFnavy}\normalsize\bfseries}
+  {\thesubsection}{0.5em}{}
+
+\titleformat{\subsubsection}
+  {\color{SNSFgray}\normalsize\itshape\bfseries}
+  {}{0em}{}
+
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+\titlespacing*{\subsubsection}{0pt}{8pt}{2pt}
+
+%% ─── PAGE STYLE ──────────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\color{SNSFgray}\small\textit{SNSF Project Funding --- Proposal}}
+\fancyhead[R]{\color{SNSFgray}\small\textit{NeuroDyn: Cortical Network Dynamics}}
+\fancyfoot[L]{\color{SNSFgray}\small Dr.\ Elena Marchetti \textbullet{} University of Solaris}
+\fancyfoot[R]{\color{SNSFgray}\small\thepage}
+\fancyfoot[C]{\color{SNSFborder}\small\rule{6cm}{0.3pt}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\color{SNSFborder}\hrule width\headwidth height\headrulewidth}
+\renewcommand{\footrulewidth}{0pt}
+
+%% ─── TCOLORBOX STYLES ────────────────────────────────────────────────────────
+\tcbuselibrary{skins,breakable,theorems}
+
+\tcbset{
+  snsfbox/.style={
+    enhanced,
+    colback=SNSFwarm,
+    colframe=SNSFnavy,
+    colbacktitle=SNSFnavy,
+    coltitle=white,
+    fonttitle=\bfseries\small,
+    boxrule=0.8pt,
+    arc=4pt,
+    top=6pt, bottom=6pt, left=8pt, right=8pt,
+    titlerule=0pt,
+    attach boxed title to top left={xshift=10pt,yshift=-\tcboxedtitleheight/2},
+    boxed title style={colframe=SNSFnavy,arc=3pt,boxrule=0pt},
+    breakable
+  },
+  snsfinfo/.style={
+    enhanced,
+    colback=SNSFlight,
+    colframe=SNSFaccent,
+    boxrule=0.7pt,
+    arc=3pt,
+    top=5pt, bottom=5pt, left=8pt, right=8pt,
+    breakable
+  },
+  snsfkpi/.style={
+    enhanced,
+    colback=SNSFnavy,
+    colframe=SNSFnavy,
+    coltext=white,
+    arc=5pt,
+    boxrule=0pt,
+    top=8pt, bottom=8pt, left=10pt, right=10pt,
+    halign=center
+  },
+  snsfsidebar/.style={
+    enhanced,
+    colback=SNSFlight,
+    colframe=SNSFborder,
+    arc=3pt,
+    boxrule=0.5pt,
+    top=5pt, bottom=5pt, left=7pt, right=7pt,
+    breakable
+  }
+}
+
+%% ─── CUSTOM COMMANDS ─────────────────────────────────────────────────────────
+\newcommand{\kw}[1]{\textcolor{SNSFaccent}{\textbf{#1}}}
+\newcommand{\highlight}[1]{\colorbox{SNSFlight}{\strut#1}}
+\newcommand{\rulesep}{\vspace{4pt}\noindent\textcolor{SNSFborder}{\rule{\linewidth}{0.4pt}}\vspace{4pt}}
+
+%% ─── CAPTION STYLE ───────────────────────────────────────────────────────────
+\captionsetup{font=small,labelfont={bf,color=SNSFnavy},labelsep=period,skip=4pt}
+
+%% ─────────────────────────────────────────────────────────────────────────────
+\usepackage{eurosym}
+\begin{document}
+\setlength{\parskip}{5pt}
+
+%% ══════════════════════════════════════════════════════════════════════════════
+%% TITLE BLOCK
+%% ══════════════════════════════════════════════════════════════════════════════
+
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[SNSFnavy] (current page.north west) rectangle
+    ([yshift=-3.6cm]current page.north east);
+  \fill[SNSFred] ([yshift=-3.6cm]current page.north west) rectangle
+    ([yshift=-3.85cm]current page.north east);
+  \node[anchor=north west, text=white, font=\bfseries\Large, inner sep=0pt]
+    at ([xshift=2.5cm,yshift=-0.7cm]current page.north west)
+    {SWISS NATIONAL SCIENCE FOUNDATION};
+  \node[anchor=north west, text=SNSFborder, font=\small, inner sep=0pt]
+    at ([xshift=2.5cm,yshift=-1.25cm]current page.north west)
+    {Project Funding \textbar{} Research Plan \textbar{} Standard Submission};
+  \node[anchor=north east, text=white, font=\scriptsize, align=right, inner sep=0pt]
+    at ([xshift=-2.5cm,yshift=-0.75cm]current page.north east)
+    {Submission Date: 15 October 2025\\[2pt]Call: October 2025 Deadline\\[2pt]Duration: 48 months};
+\end{tikzpicture}
+
+\vspace{3.9cm}
+
+\begin{tcolorbox}[snsfbox, title={\faFlask\quad Project Title \& Principal Investigator}]
+  \begin{minipage}[t]{0.65\linewidth}
+    {\color{SNSFnavy}\LARGE\bfseries NeuroDyn}\\[3pt]
+    {\large\bfseries Dynamical Principles of Cortical Network Reconfiguration\\
+    during Adaptive Sensorimotor Learning}\\[8pt]
+    {\small\color{SNSFgray}
+      \textbf{Funding Instrument:} Project Funding --- Standard\\
+      \textbf{Research Domain:} Life Sciences \textbf{Panel:} LS5 --- Neurosciences
+    }
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.32\linewidth}
+    \begin{tcolorbox}[snsfsidebar]
+      {\small\bfseries\color{SNSFnavy}Principal Investigator}\\[4pt]
+      \textbf{Dr.\ Elena Marchetti}\\
+      {\small Associate Professor}\\
+      {\small Dept.\ of Computational Neuroscience}\\
+      {\small University of Solaris, Zurich}\\[4pt]
+      {\small \faEnvelope\; \texttt{e.marchetti@unisolaris.ch}}\\
+      {\small \faPhone\; +41 44 876 54 32}\\
+      {\small \faOrcid\; 0000-0002-7834-2210}
+    \end{tcolorbox}
+  \end{minipage}
+\end{tcolorbox}
+
+\vspace{6pt}
+
+%% ─── KPI BANNER ──────────────────────────────────────────────────────────────
+\noindent
+\begin{minipage}[t]{0.24\linewidth}
+  \begin{tcolorbox}[snsfkpi]
+    {\large\bfseries CHF 1\,240\,000}\\[2pt]
+    {\footnotesize Total Budget Requested}
+  \end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.24\linewidth}
+  \begin{tcolorbox}[snsfkpi]
+    {\large\bfseries 48 Months}\\[2pt]
+    {\footnotesize Project Duration}
+  \end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.24\linewidth}
+  \begin{tcolorbox}[snsfkpi]
+    {\large\bfseries 3 PhD + 1 PostDoc}\\[2pt]
+    {\footnotesize Personnel Positions}
+  \end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.23\linewidth}
+  \begin{tcolorbox}[snsfkpi]
+    {\large\bfseries LS5 Panel}\\[2pt]
+    {\footnotesize SNSF Research Area}
+  \end{tcolorbox}
+\end{minipage}
+
+\vspace{10pt}
+
+%% ══════════════════════════════════════════════════════════════════════════════
+%% SECTION 1: LAY SUMMARY
+%% ══════════════════════════════════════════════════════════════════════════════
+\section{Lay Summary}
+
+\begin{tcolorbox}[snsfinfo]
+  {\small\color{SNSFgray}\faInfoCircle\quad
+  This summary must be comprehensible to a scientifically literate but non-specialist audience.
+  Maximum 200 words. It will be made publicly available upon project approval.}
+\end{tcolorbox}
+\vspace{4pt}
+
+Every time we reach for a cup, learn a musical instrument, or recover from a stroke, our brain
+rewires its communication patterns in real time. At the heart of this remarkable flexibility lies
+the \kw{cortical network}---a web of billions of neurons that reorganize their firing
+relationships to meet new behavioral demands. Despite decades of research, the precise dynamical
+principles governing this \textit{reconfiguration} remain poorly understood, in part because
+existing methods cannot track rapid network changes at the resolution of individual synapses.
+
+\textbf{NeuroDyn} will develop a unified experimental and computational framework to decode how
+cortical networks shift between functional \textit{attractor states} during sensorimotor learning.
+Using high-density silicon-probe recordings in rodents performing a precision-grip task, combined
+with novel latent-variable models, we will identify the geometric structure of population dynamics
+that predicts successful skill acquisition. Our results will redefine how adaptive plasticity is
+conceptualized and open new avenues for brain-machine interface design and neurorehabilitation
+after motor-cortex injury.
+
+\vspace{6pt}
+
+%% ══════════════════════════════════════════════════════════════════════════════
+%% SECTION 2: RESEARCH PLAN
+%% ══════════════════════════════════════════════════════════════════════════════
+\section{Research Plan}
+
+\subsection{Background and State of the Art}
+
+Motor learning requires the coordinated activity of primary motor cortex (M1), premotor cortex
+(PMC), and parietal areas that together form the \kw{sensorimotor network}. Classical theories
+characterized learning as strengthening of specific synaptic weights; however, recent population-
+level recordings have revealed that learning manifests as a shift in the \textit{geometry} of
+neural trajectories in high-dimensional state space \cite{shenoy2013,churchland2012}.
+
+Two competing frameworks have emerged. The \textbf{re-aiming hypothesis} proposes that motor
+commands arise from the same computational manifold throughout learning, and improvement reflects
+refined initial conditions. The \textbf{manifold expansion hypothesis} holds that the neural
+subspace itself enlarges as new motor primitives are incorporated. Disambiguating these
+hypotheses requires simultaneous recordings of hundreds of neurons across multiple cortical
+regions at millisecond resolution---a capability that only recently became technically
+feasible with the Neuropixels 2.0 probe family.
+
+Critically, no existing study has tracked \textit{within-session} manifold dynamics at
+sufficient temporal resolution to capture the moment-to-moment reconfiguration events that
+precede skill consolidation. \textbf{NeuroDyn} addresses this gap directly.
+
+\subsection{Specific Aims and Hypotheses}
+
+The project is organized around three interlocking aims:
+
+\begin{tcolorbox}[snsfbox, title={\faBullseye\quad Specific Aims Overview}]
+
+\textbf{Aim 1 --- Characterize population geometry during learning (Months 1--18)}\\
+\textit{Hypothesis:} As animals transition from na\"{i}ve to expert performance on the
+precision-grip task, the intrinsic dimensionality of M1 population activity decreases while
+trajectory curvature increases, reflecting consolidation of a compact motor primitive.
+
+\vspace{6pt}
+\textbf{Aim 2 --- Identify causal inter-areal communication modes (Months 12--36)}\\
+\textit{Hypothesis:} Successful trial-by-trial adaptation is preceded by transient increases
+in directed coherence from PMC to M1 in the beta band (15--30 Hz), reflecting top-down priming
+of the downstream motor manifold.
+
+\vspace{6pt}
+\textbf{Aim 3 --- Build and validate a predictive dynamical model (Months 24--48)}\\
+\textit{Hypothesis:} A recurrent switching linear dynamical system (RSLDS) trained on
+multi-region population data will generalize across animals and predict motor performance from
+neural population state with greater accuracy than single-region models.
+
+\end{tcolorbox}
+
+\subsection{Methodology}
+
+\subsubsection{Animal Model and Behavioral Paradigm}
+
+Adult Long-Evans rats ($n = 24$, 12 male / 12 female) will be trained on a custom-built
+\textit{isometric precision-grip apparatus} that requires animals to modulate grip force within
+a narrow target window ($\pm 8\%$ of peak force) to earn a liquid reward. The task is designed
+to produce a clear learning curve over 10--15 sessions (approximately 3 weeks), enabling repeated
+within-animal measurement of the same neural circuits across learning stages. All procedures will
+be conducted under cantonal veterinary license BE-X-2024-1172.
+
+\subsubsection{Neural Recording Strategy}
+
+Simultaneous multi-region recordings will be performed using two \textbf{Neuropixels 2.0}
+probes (4 shanks, 1280 channels each) chronically implanted in M1 and PMC. This configuration
+enables stable unit isolation across sessions, which is essential for tracking single-neuron
+trajectory membership across learning. Spike sorting will be performed with Kilosort 4,
+followed by manual curation in Phy2. Putative cell-type classification will exploit waveform
+features and spike-train autocorrelations to separate pyramidal cells from interneurons.
+
+\subsubsection{Data Analysis Pipeline}
+
+\begin{enumerate}[leftmargin=*, label=\textbf{Step \arabic*.}, itemsep=4pt]
+  \item \textbf{Dimensionality reduction:} Gaussian-process factor analysis (GPFA) will
+    extract smooth population trajectories. We will track the number of dimensions required to
+    explain 90\% of variance (\textit{participation ratio}) as a function of learning stage.
+  \item \textbf{Manifold geometry:} Persistent homology (Ripser toolkit) will quantify
+    topological changes in the population activity manifold across learning. Geodesic distances
+    between trial-averaged trajectories will be computed on the learned manifold.
+  \item \textbf{Directed connectivity:} Granger-causal spectral analysis and partial directed
+    coherence will quantify frequency-band-specific directed information flow between M1 and PMC
+    on single-trial timescales.
+  \item \textbf{RSLDS model:} A switching linear dynamical system with $K=4$ discrete states
+    will be fitted using expectation-maximization with structured variational inference
+    (jax-ssm library). Cross-validated decoding of behavioral variables will serve as the
+    primary model performance metric.
+\end{enumerate}
+
+\subsubsection{Rigor and Reproducibility}
+
+All analysis code will be deposited on a public GitHub repository under a GPLv3 license within
+30 days of each manuscript submission. Pre-registration of primary hypotheses will be performed
+on OSF prior to data collection. Sample size was determined by a power analysis (power
+$=0.85$, $\alpha=0.05$, two-sided) based on published effect sizes for manifold dimensionality
+changes in motor cortex (Cohen's $d \approx 0.9$). Data will be stored in the DANDI archive
+in NWB:N format.
+
+\vspace{6pt}
+
+%% ─── WORK PLAN TABLE ─────────────────────────────────────────────────────────
+\subsection{Work Plan and Timeline}
+
+\begin{tcolorbox}[snsfbox, title={\faCalendar\quad Project Timeline (48 months)}]
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\linewidth}{@{}p{3.4cm} p{2.2cm} X@{}}
+  \toprule
+  \rowcolor{SNSFnavy}
+  \textcolor{white}{\bfseries Milestone} &
+  \textcolor{white}{\bfseries Period} &
+  \textcolor{white}{\bfseries Deliverable} \\
+  \midrule
+  Surgeries \& rig commissioning & M01--M06 & 24 animals implanted; rig software validated\\
+  \rowcolor{rowalt}
+  Aim 1 data collection & M04--M18 & $\geq 180$ sessions; GPFA pipeline benchmarked\\
+  Aim 1 manuscript & M16--M22 & Preprint on bioRxiv; code released\\
+  \rowcolor{rowalt}
+  Aim 2 data collection & M12--M30 & Optogenetic silencing cohort; coherence datasets\\
+  Aim 2 manuscript & M28--M36 & Peer-reviewed journal submission\\
+  \rowcolor{rowalt}
+  RSLDS model development & M24--M40 & Open-source Python package (NeuroDynLib v1.0)\\
+  Aim 3 manuscript & M38--M46 & Submission to \textit{Nature Neuroscience}\\
+  \rowcolor{rowalt}
+  Dissemination \& archiving & M44--M48 & DANDI release; final SNSF report submitted\\
+  \bottomrule
+\end{tabularx}
+\end{center}
+\end{tcolorbox}
+
+\vspace{6pt}
+
+%% ══════════════════════════════════════════════════════════════════════════════
+%% SECTION 3: SIGNIFICANCE AND INNOVATION
+%% ══════════════════════════════════════════════════════════════════════════════
+\section{Significance, Innovation, and Translational Relevance}
+
+\begin{minipage}[t]{0.47\linewidth}
+  \begin{tcolorbox}[snsfsidebar, title={\color{SNSFnavy}\bfseries\faLightbulb\quad Novelty}]
+    \begin{itemize}[leftmargin=12pt, itemsep=3pt, topsep=2pt]
+      \item First simultaneous, chronic two-region Neuropixels recordings during a graded motor
+        learning paradigm in rodents
+      \item Application of persistent homology to longitudinal population recordings
+      \item RSLDS framework for multi-region motor dynamics with full open-source release
+      \item Pre-registered, FAIR-compliant data management
+    \end{itemize}
+  \end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.47\linewidth}
+  \begin{tcolorbox}[snsfsidebar, title={\color{SNSFnavy}\bfseries\faHeartbeat\quad Clinical Impact}]
+    \begin{itemize}[leftmargin=12pt, itemsep=3pt, topsep=2pt]
+      \item Dynamical biomarkers of motor recovery applicable to post-stroke rehabilitation
+      \item RSLDS decoder architecture directly transferable to closed-loop brain-machine
+        interfaces (collaborator: Meridian Neurotech AG, Geneva)
+      \item Mechanistic insight into maladaptive plasticity relevant to dystonia and
+        Parkinson's disease motor symptoms
+    \end{itemize}
+  \end{tcolorbox}
+\end{minipage}
+
+\par
+\vspace{6pt}
+
+The proposed work builds directly on the applicant's prior SNSF Ambizione project (grant
+PZ00P3\_201234) in which we established the behavioral paradigm and demonstrated proof-of-concept
+single-session manifold dimensionality changes in a pilot cohort of 6 animals. NeuroDyn
+represents a \textbf{6-fold scale-up} in animal cohort, a \textbf{10-fold increase} in
+simultaneously recorded neurons, and the first deployment of the topological analysis pipeline
+in this context.
+
+\vspace{6pt}
+
+%% ══════════════════════════════════════════════════════════════════════════════
+%% SECTION 4: PERSONNEL AND BUDGET
+%% ══════════════════════════════════════════════════════════════════════════════
+\section{Personnel, Collaborations, and Budget}
+
+\subsection{Research Team}
+
+\begin{tcolorbox}[snsfbox, title={\faUsers\quad Project Team}]
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{@{}p{3.8cm} p{3.2cm} p{2.0cm} X@{}}
+  \toprule
+  \rowcolor{SNSFnavy}
+  \textcolor{white}{\bfseries Name} &
+  \textcolor{white}{\bfseries Role} &
+  \textcolor{white}{\bfseries FTE} &
+  \textcolor{white}{\bfseries Responsibilities} \\
+  \midrule
+  Dr.\ Elena Marchetti & PI & 0.50 & Scientific leadership, grant management, manuscript writing\\
+  \rowcolor{rowalt}
+  Dr.\ Jonas Wehrli & PostDoc (hired) & 1.00 & Silicon-probe surgery; neural data analysis pipeline\\
+  Ms.\ Beatriz Ferreira & PhD Student 1 & 1.00 & Aim 1: behavioral training; GPFA analysis\\
+  \rowcolor{rowalt}
+  Mr.\ Luca Ambrosini & PhD Student 2 & 1.00 & Aim 2: optogenetics; coherence analysis\\
+  Ms.\ Anaïs Delacroix & PhD Student 3 & 1.00 & Aim 3: RSLDS modeling; NeuroDynLib software\\
+  \bottomrule
+\end{tabularx}
+\end{tcolorbox}
+
+\subsection{Budget Summary}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{0.88\linewidth}{@{}X r r@{}}
+  \toprule
+  \rowcolor{SNSFnavy}
+  \textcolor{white}{\bfseries Budget Category} &
+  \textcolor{white}{\bfseries CHF / year} &
+  \textcolor{white}{\bfseries CHF Total (4 yr)} \\
+  \midrule
+  Personnel (PI, PostDoc, 3 PhDs) & 267\,500 & 1\,070\,000\\
+  \rowcolor{rowalt}
+  Consumables \& animal costs & 24\,000 & 96\,000\\
+  Equipment (Neuropixels probes, optogenetics) & 14\,000 & 56\,000\\
+  \rowcolor{rowalt}
+  Open-access publication charges & 2\,500 & 10\,000\\
+  Travel \& conferences & 2\,000 & 8\,000\\
+  \rowcolor{rowalt}
+  \textbf{Total} & \textbf{310\,000} & \textbf{1\,240\,000}\\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{4pt}
+{\small\color{SNSFgray}
+Budget is calculated according to SNSF salary scales (2025 edition). Personnel costs include
+employer-side social security contributions (23.5\%). Equipment costs are non-recurring; the
+University of Solaris contributes an in-kind match of CHF 40\,000 for shared computing
+infrastructure (confirmation letter attached as Appendix~B).}
+
+\vspace{8pt}
+
+%% ══════════════════════════════════════════════════════════════════════════════
+%% SECTION 5: ETHICAL AND LEGAL CONSIDERATIONS
+%% ══════════════════════════════════════════════════════════════════════════════
+\section{Ethical and Legal Considerations}
+
+\begin{minipage}[t]{0.47\linewidth}
+  \begin{tcolorbox}[snsfsidebar]
+    {\small\bfseries\color{SNSFnavy}\faBalanceScale\quad Animal Welfare}\\[4pt]
+    {\small
+    All animal procedures comply with Swiss animal experimentation law (TSchG, SR 455) and
+    cantonal regulations. Experiments have been approved under license BE-X-2024-1172
+    (Cantonal Veterinary Office, Bern). The 3Rs principles (Replacement, Reduction,
+    Refinement) are central to our design: cohort size is the minimum determined by power
+    analysis, and animals are singly housed only during post-surgical recovery.
+    }
+  \end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.47\linewidth}
+  \begin{tcolorbox}[snsfsidebar]
+    {\small\bfseries\color{SNSFnavy}\faLock\quad Data Governance}\\[4pt]
+    {\small
+    No human subjects or personal data are involved. Neural recording data will be
+    stored on University of Solaris encrypted servers (AES-256) during the project,
+    then publicly archived via the DANDI Archive in NWB:N 2.7 format. Analysis code
+    will be deposited on GitHub (GPLv3). All materials will be available within 30 days
+    of manuscript acceptance, consistent with SNSF Open Research Data policy.
+    }
+  \end{tcolorbox}
+\end{minipage}
+
+\par
+\vspace{10pt}
+
+%% ══════════════════════════════════════════════════════════════════════════════
+%% SECTION 6: CV EXCERPT & TRACK RECORD
+%% ══════════════════════════════════════════════════════════════════════════════
+\section{Applicant's Track Record (Selected)}
+
+\begin{tcolorbox}[snsfbox, title={\faFile\quad Selected Publications (last 5 years)}]
+{\small
+\begin{enumerate}[leftmargin=*, label=\lbrack\arabic*\rbrack, itemsep=3pt]
+  \item \textbf{Marchetti E}, Wehrli J, Fuentes R (2025). Intrinsic dimensionality of motor
+    cortex population activity predicts grip-force variability in rodents.
+    \textit{eLife}, 14:e97423. DOI: 10.7554/eLife.97423
+
+  \item Delacroix A, \textbf{Marchetti E} (2024). Recurrent switching linear dynamical systems
+    reveal latent state transitions in premotor cortex.
+    \textit{PLoS Computational Biology}, 20(8): e1012501.
+
+  \item \textbf{Marchetti E}, Ambrosini L, Rossi P, Kuebler S (2023). Beta-band coherence
+    between premotor and primary motor cortex scales with motor adaptation demands.
+    \textit{Journal of Neuroscience}, 43(22): 4017--4031.
+
+  \item Ferreira B, \textbf{Marchetti E} (2022). A lightweight open-source platform for
+    closed-loop sensorimotor feedback in freely behaving rodents.
+    \textit{Journal of Neuroscience Methods}, 371: 109490.
+
+  \item \textbf{Marchetti E} (2021). Manifold geometry of motor learning: a perspective.
+    \textit{Current Opinion in Neurobiology}, 72: 50--57.
+\end{enumerate}
+}
+\end{tcolorbox}
+
+\vspace{4pt}
+
+\noindent\textbf{Ongoing and Past Funding}\quad
+SNSF Ambizione PZ00P3\_201234 (2022--2025, CHF 640\,000);
+EU Marie Curie IF 798312 (2019--2021, \euro{}183\,600); University of Solaris Starting
+Package (2021, CHF 80\,000).
+
+\vspace{10pt}
+
+%% ══════════════════════════════════════════════════════════════════════════════
+%% SECTION 7: REFERENCES
+%% ══════════════════════════════════════════════════════════════════════════════
+\section*{References}
+
+\renewcommand{\arraystretch}{1.2}
+{\small
+\begin{tabular}{@{}p{1.4cm}p{\linewidth-1.8cm}@{}}
+  \lbrack{}1\rbrack & Shenoy KV, Sahani M, Churchland MM (2013). Cortical control of arm
+    movements: a dynamical systems perspective. \textit{Annu Rev Neurosci}, 36: 337--359.\\[2pt]
+  \lbrack{}2\rbrack & Churchland MM, Cunningham JP, Kaufman MT et al.\ (2012). Neural population
+    dynamics during reaching. \textit{Nature}, 487: 51--56.\\[2pt]
+  \lbrack{}3\rbrack & Golub MD, Sadtler PT, Oby ER et al.\ (2018). Learning by neural
+    reassociation. \textit{Nature Neuroscience}, 21: 607--616.\\[2pt]
+  \lbrack{}4\rbrack & Stringer C, Pachitariu M, Steinmetz N et al.\ (2019). High-dimensional
+    geometry of population responses in visual cortex.
+    \textit{Nature}, 571: 361--365.\\[2pt]
+  \lbrack{}5\rbrack & Rouse AG, Schieber MH (2018). Condition-dependent neural dimensions
+    progressively shift during reach to grasp.
+    \textit{Cell Reports}, 25: 3158--3168.\\
+\end{tabular}
+}
+
+\vspace{8pt}
+
+%% ─── FOOTER BOX ──────────────────────────────────────────────────────────────
+\begin{tcolorbox}[
+  enhanced, colback=SNSFnavy, colframe=SNSFnavy, arc=4pt,
+  boxrule=0pt, top=6pt, bottom=6pt, left=10pt, right=10pt
+]
+  \color{white}\small\centering
+  \textbf{NeuroDyn} \textbar{} SNSF Project Funding Application \textbar{}
+  Dr.\ Elena Marchetti, University of Solaris \textbar{}
+  Submitted: 15 October 2025 \textbar{}
+  \texttt{e.marchetti@unisolaris.ch}
+\end{tcolorbox}
+
+\end{document}

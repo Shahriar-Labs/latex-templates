@@ -1,0 +1,696 @@
+\documentclass[12pt,a4paper]{report}
+
+% ---------- Packages ----------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[a4paper,left=1.5in,right=1in,top=1in,bottom=1in]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{caption}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns,arrows.meta,fit}
+\usepackage[skins,breakable]{tcolorbox}
+\usepackage[hidelinks]{hyperref}
+
+% ---------- Colours ----------
+\definecolor{vitnavy}{RGB}{16,42,67}
+\definecolor{vitgold}{RGB}{188,148,58}
+\definecolor{vitteal}{RGB}{0,110,100}
+\definecolor{vitgray}{RGB}{96,96,102}
+\definecolor{vitpale}{RGB}{244,245,247}
+
+% ---------- Section styling ----------
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries}
+  {\begin{tikzpicture}[remember picture,overlay]
+     \node[anchor=north west,xshift=-1.5in,yshift=0.15in] at (0,0) {%
+       \begin{tikzpicture}
+         \fill[vitnavy] (0,0) rectangle (1.5in,1.05in);
+         \fill[vitgold] (0,0) rectangle (0.12in,1.05in);
+         \node[white,font=\sffamily\bfseries\fontsize{11}{13}\selectfont,anchor=west] at (0.3in,0.55in) {CHAPTER};
+         \node[white,font=\sffamily\bfseries\fontsize{34}{34}\selectfont,anchor=west] at (0.3in,0.22in) {\thechapter};
+       \end{tikzpicture}};
+   \end{tikzpicture}\vspace{0.6in}}
+  {0pt}
+  {\color{vitnavy}\sffamily\huge\bfseries}
+  [\vspace{2pt}{\color{vitgold}\titlerule[1.4pt]}\vspace{10pt}]
+\titlespacing*{\chapter}{0pt}{-10pt}{28pt}
+
+\titleformat{\section}
+  {\normalfont\sffamily\bfseries\Large\color{vitnavy}}{\thesection}{0.6em}{}
+\titleformat{\subsection}
+  {\normalfont\sffamily\bfseries\large\color{vitteal}}{\thesubsection}{0.6em}{}
+
+% ---------- Headers/footers ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{vitgold}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[L]{\small\sffamily\color{vitgray}\leftmark}
+\fancyhead[R]{\small\sffamily\color{vitgray}Federated Learning for Industrial IoT}
+\fancyfoot[C]{\small\sffamily\color{vitnavy}\thepage}
+
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[C]{\small\sffamily\color{vitnavy}\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\onehalfspacing
+
+% ---------- tcolorbox styles ----------
+\tcbset{
+  infobox/.style={
+    colback=vitpale, colframe=vitnavy, boxrule=0.6pt, arc=2mm,
+    left=8pt, right=8pt, top=6pt, bottom=6pt,
+    fonttitle=\sffamily\bfseries\color{white}, coltitle=white,
+    colbacktitle=vitnavy, breakable
+  },
+  insightbox/.style={
+    colback=white, colframe=vitteal, boxrule=0.8pt, arc=1.5mm,
+    left=8pt, right=8pt, top=6pt, bottom=6pt,
+    fonttitle=\sffamily\bfseries, coltitle=vitteal,
+    colbacktitle=white, boxrule=0.8pt, breakable,
+    borderline west={3pt}{0pt}{vitgold}
+  }
+}
+
+\newcommand{\keyword}[1]{\textcolor{vitteal}{\textbf{#1}}}
+
+\begin{document}
+
+% =====================================================================
+% TITLE PAGE
+% =====================================================================
+\begin{titlepage}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[vitnavy] (current page.north west) rectangle ++(\paperwidth,0.9in);
+  \fill[vitgold] ($(current page.north west)+(0,-0.9in)$) rectangle ++(\paperwidth,0.06in);
+  \fill[vitnavy] (current page.south west) rectangle ++(\paperwidth,0.5in);
+\end{tikzpicture}
+
+\vspace{1.3in}
+\centering
+{\sffamily\color{vitgray}\large FEDERATED LEARNING-BASED PREDICTIVE MAINTENANCE\\[4pt]
+FOR INDUSTRIAL IoT EDGE NETWORKS}
+
+\vspace{0.35in}
+{\color{vitgold}\rule{0.55\textwidth}{1.2pt}}
+\vspace{0.35in}
+
+{\sffamily\Large A Thesis Submitted in Partial Fulfilment of the Requirements\\
+for the Degree of}
+
+\vspace{0.2in}
+{\sffamily\bfseries\LARGE\color{vitnavy} Master of Technology}\\[4pt]
+{\sffamily\large in}\\[4pt]
+{\sffamily\bfseries\Large\color{vitteal} Computer Science and Engineering}
+
+\vspace{0.5in}
+\begin{tikzpicture}
+  \node[draw=vitnavy,line width=1pt,circle,minimum size=1.4in] (seal) {};
+  \node[font=\sffamily\bfseries\color{vitnavy}\small,align=center] at (seal) {VIT\\[2pt]VELLORE\\[2pt]\footnotesize Est.\ 1984};
+\end{tikzpicture}
+
+\vspace{0.5in}
+{\sffamily\large\textbf{Submitted by}}\\[6pt]
+{\sffamily\Large\bfseries Ananya Suresh}\\[2pt]
+{\sffamily\normalsize Registration No.\ 21MCS0147}
+
+\vspace{0.45in}
+{\sffamily\normalsize\color{vitgray}
+\textbf{Under the Guidance of}\\[4pt]
+Dr.\ Rajeev Menon\\
+Professor, School of Computer Science and Engineering}
+
+\vspace{0.4in}
+{\sffamily\bfseries\large\color{vitnavy}
+SCHOOL OF COMPUTER SCIENCE AND ENGINEERING\\
+VELLORE INSTITUTE OF TECHNOLOGY, VELLORE\\[2pt]
+\normalsize\bfseries July 2026}
+
+\vfill
+\noindent\rule{\textwidth}{0.4pt}\\[4pt]
+{\footnotesize\itshape\color{vitgray}
+Unofficial template — not affiliated with or endorsed by the university. Sample content only.}
+
+\vspace{0.55in}
+\end{titlepage}
+
+% =====================================================================
+% FRONT MATTER
+% =====================================================================
+\pagenumbering{roman}
+
+% ---- Bonafide Certificate ----
+\chapter*{Bonafide Certificate}
+\addcontentsline{toc}{chapter}{Bonafide Certificate}
+\thispagestyle{plain}
+
+\vspace{4pt}
+This is to certify that the thesis entitled \textbf{``Federated Learning-Based Predictive
+Maintenance for Industrial IoT Edge Networks''} submitted by \textbf{Ananya Suresh}
+(Registration No.\ 21MCS0147), School of Computer Science and Engineering, Vellore
+Institute of Technology, Vellore, for the award of the degree of \textbf{Master of
+Technology in Computer Science and Engineering}, is a bonafide record of the work carried
+out by her under my guidance. The thesis, in my opinion, meets the requirements of the
+regulations relating to the degree and, to the best of my knowledge, the work reported
+herein does not form part of any other thesis on the basis of which a degree or award was
+conferred earlier.
+
+\vspace{0.5in}
+\noindent
+\begin{minipage}[t]{0.47\textwidth}
+\textbf{Dr.\ Rajeev Menon}\\
+Guide\\
+School of Computer Science and Engineering\\
+VIT Vellore
+\end{minipage}\hfill
+\begin{minipage}[t]{0.47\textwidth}
+\textbf{Dr.\ Kavita Iyer}\\
+Head of Department\\
+School of Computer Science and Engineering\\
+VIT Vellore
+\end{minipage}
+\par
+
+\vspace{0.4in}
+\noindent Place: Vellore\\
+Date: \today
+
+% ---- Declaration ----
+\chapter*{Declaration}
+\addcontentsline{toc}{chapter}{Declaration}
+\thispagestyle{plain}
+
+I hereby declare that the thesis entitled \textbf{``Federated Learning-Based Predictive
+Maintenance for Industrial IoT Edge Networks''} submitted by me for the degree of Master
+of Technology in Computer Science and Engineering is a record of bona fide work carried
+out by me under the guidance of Dr.\ Rajeev Menon. I further declare that this work has
+not been submitted, either in part or in full, for the award of any other degree or
+diploma in this or any other institute or university, and that all sources of information
+have been duly acknowledged.
+
+\vspace{0.5in}
+\noindent
+\begin{minipage}[t]{0.47\textwidth}
+Place: Vellore\\
+Date: \today
+\end{minipage}\hfill
+\begin{minipage}[t]{0.47\textwidth}
+\raggedleft
+\vspace{0.35in}
+\rule{2.3in}{0.4pt}\\
+Ananya Suresh\\
+21MCS0147
+\end{minipage}
+\par
+
+% ---- Acknowledgement ----
+\chapter*{Acknowledgement}
+\addcontentsline{toc}{chapter}{Acknowledgement}
+\thispagestyle{plain}
+
+I would like to express my sincere gratitude to my guide, \textbf{Dr.\ Rajeev Menon}, for
+his invaluable mentorship, patience, and constructive feedback throughout the course of
+this research. His insistence on rigorous experimental validation shaped every chapter of
+this thesis.
+
+I am thankful to \textbf{Dr.\ Kavita Iyer}, Head of the School of Computer Science and
+Engineering, for providing the computational infrastructure and departmental support
+necessary to carry out the simulation studies reported in Chapter~4.
+
+I extend my appreciation to the engineering team at \textbf{Meridian Industrial Systems}
+for granting access to anonymised vibration and temperature telemetry from their pilot
+factory floor, which grounded the evaluation in realistic operating conditions. I also
+thank my labmates in the Distributed Systems Research Group for numerous discussions that
+sharpened the ideas presented here.
+
+Finally, I am grateful to my family for their unwavering encouragement during the course
+of this degree.
+
+\vspace{0.4in}
+\hfill Ananya Suresh
+
+% ---- Abstract ----
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\thispagestyle{plain}
+
+Industrial Internet-of-Things (IIoT) deployments increasingly rely on machine learning
+models to predict equipment failure before it occurs, yet centralising the raw sensor
+streams required to train such models raises bandwidth, latency, and data-sovereignty
+concerns. This thesis investigates \keyword{federated learning (FL)} as a mechanism for
+training predictive-maintenance models directly on edge gateways co-located with factory
+machinery, without transmitting raw telemetry to a central server.
+
+We propose \textbf{FedGuard}, a federated training scheme that combines a lightweight
+gated recurrent unit (GRU) architecture with adaptive client-weighting based on local
+data volatility, and a differential-privacy noise layer to bound information leakage
+through shared gradients. FedGuard is evaluated on a simulated fleet of 40 edge nodes
+built from vibration, temperature, and current-draw telemetry patterned on a real
+factory-floor deployment at Meridian Industrial Systems, and benchmarked against
+centralised training, FedAvg, and FedProx baselines.
+
+Experimental results show that FedGuard reaches 94.6\% failure-prediction accuracy with
+a 48-hour lead time, within 1.1 percentage points of centralised training, while reducing
+uplink bandwidth consumption by 71\% and cutting the reconstruction risk of raw sensor
+values under a gradient-inversion attack by an order of magnitude. These findings suggest
+that privacy-preserving federated approaches are viable for real-time predictive
+maintenance in bandwidth-constrained industrial settings without materially sacrificing
+predictive accuracy.
+
+\vspace{10pt}
+\noindent\textbf{Keywords:} Federated Learning, Industrial IoT, Predictive Maintenance,
+Edge Computing, Differential Privacy, Time-Series Classification.
+
+% ---- TOC / LOF / LOT ----
+\tableofcontents
+\listoffigures
+\listoftables
+
+\chapter*{List of Abbreviations}
+\addcontentsline{toc}{chapter}{List of Abbreviations}
+\thispagestyle{plain}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Abbreviation} & \textbf{Expansion} \\
+\midrule
+IIoT & Industrial Internet of Things \\
+FL & Federated Learning \\
+GRU & Gated Recurrent Unit \\
+DP & Differential Privacy \\
+MTTF & Mean Time To Failure \\
+IID & Independent and Identically Distributed \\
+RUL & Remaining Useful Life \\
+\bottomrule
+\end{tabularx}
+
+% =====================================================================
+% MAIN MATTER
+% =====================================================================
+\clearpage
+\pagenumbering{arabic}
+
+\chapter{Introduction}
+
+\section{Background and Motivation}
+Unplanned downtime remains one of the largest controllable cost drivers on a modern
+factory floor. Industry surveys commonly attribute losses of several percent of annual
+revenue to unscheduled equipment stoppages, a figure that motivates the growing adoption
+of \keyword{condition-based monitoring} using vibration, thermal, and electrical-current
+sensors attached to rotating machinery. As these sensor fleets have grown from dozens to
+thousands of nodes per site, two constraints have become dominant: the cost of hauling
+raw, high-frequency telemetry to a central data lake, and the reluctance of plant
+operators to expose proprietary process signatures embedded in that telemetry to an
+external cloud provider.
+
+\keyword{Federated learning} offers an attractive middle ground. Rather than moving data
+to the model, FL moves a lightweight model to the data: each edge gateway trains locally
+on its own telemetry and periodically shares only model updates with a coordinating
+server, which aggregates them into a global model. This thesis asks whether that
+paradigm can match the predictive accuracy of centralised training while respecting the
+bandwidth and confidentiality constraints typical of a brownfield industrial deployment.
+
+\section{Problem Statement}
+Existing predictive-maintenance literature largely assumes access to a centralised,
+independent and identically distributed (IID) telemetry corpus. Real factory-floor data
+violates this assumption in two ways: machines of different ages and duty cycles produce
+statistically distinct sensor signatures (non-IID data), and gateway hardware varies in
+compute and connectivity budget across a site. A federated scheme that ignores this
+heterogeneity risks convergence instability and biased global models that under-serve
+the noisiest or most resource-constrained nodes.
+
+\begin{tcolorbox}[infobox,title=Research Questions]
+\begin{enumerate}[leftmargin=1.4em]
+  \item Can a federated GRU model match centralised-training accuracy for 48-hour
+        failure prediction under realistic client heterogeneity?
+  \item How much uplink bandwidth can federated aggregation save relative to raw
+        telemetry streaming?
+  \item What is the residual privacy leakage of shared gradients, and can differential
+        privacy bound it without materially degrading accuracy?
+\end{enumerate}
+\end{tcolorbox}
+
+\section{Objectives}
+\begin{enumerate}[leftmargin=1.6em,label=\textbf{O\arabic*.}]
+  \item Design a federated aggregation scheme, \textbf{FedGuard}, that adapts client
+        contribution weights to local data volatility.
+  \item Integrate a differential-privacy noise layer into the gradient-sharing step and
+        quantify its privacy--utility trade-off.
+  \item Build a realistic 40-node IIoT simulation testbed patterned on factory-floor
+        telemetry characteristics.
+  \item Benchmark FedGuard against centralised training, FedAvg, and FedProx on
+        accuracy, bandwidth, and reconstruction-attack resistance.
+\end{enumerate}
+
+\section{Contributions}
+\begin{tcolorbox}[insightbox,title=Summary of Contributions]
+\begin{itemize}[leftmargin=1.3em]
+  \item A volatility-aware client-weighting rule that improves convergence stability
+        under non-IID sensor distributions (Chapter~3).
+  \item A differential-privacy layer calibrated specifically for gradient updates of
+        recurrent time-series models (Chapter~3).
+  \item An open simulation testbed reproducing realistic industrial telemetry patterns
+        for FL research (Chapter~4).
+  \item An empirical comparison showing FedGuard closes 93\% of the accuracy gap between
+        FedAvg and centralised training while cutting bandwidth by 71\% (Chapter~4).
+\end{itemize}
+\end{tcolorbox}
+
+\section{Thesis Organisation}
+Chapter~2 reviews related work in predictive maintenance and federated learning.
+Chapter~3 details the FedGuard architecture and privacy mechanism. Chapter~4 describes
+the experimental testbed and presents results. Chapter~5 concludes and outlines future
+directions.
+
+\chapter{Literature Review}
+
+\section{Predictive Maintenance with Machine Learning}
+Early condition-based-monitoring systems relied on hand-engineered vibration features
+(RMS energy, kurtosis, spectral peaks) fed into shallow classifiers. Deep sequence
+models — LSTMs and, more recently, GRUs — have since displaced hand-crafted pipelines
+by learning temporal degradation patterns directly from raw or lightly filtered sensor
+streams, typically framed as either binary failure classification within a fixed
+horizon or continuous \keyword{remaining-useful-life (RUL)} regression. Case studies
+from manufacturers such as \textbf{Vertex Robotics} and \textbf{Nimbus Automation}
+report double-digit reductions in unplanned downtime after deploying sequence-model
+monitoring, though nearly all published pipelines assume centralised data collection.
+
+\section{Federated Learning Fundamentals}
+FedAvg, the canonical federated aggregation algorithm, alternates between local
+stochastic-gradient-descent rounds on each client and weighted averaging of client
+model parameters at a central server, with weights proportional to local dataset size.
+Under non-IID data, FedAvg is known to converge slowly and can drift toward clients
+with the largest datasets rather than the most representative ones. \keyword{FedProx}
+partially addresses this by adding a proximal regularisation term that discourages
+local models from straying far from the global model between rounds, at the cost of an
+additional hyperparameter that requires site-specific tuning.
+
+\section{Privacy Risks in Federated Gradient Sharing}
+Although FL avoids transmitting raw data, subsequent work has shown that shared
+gradients can leak substantial information about the underlying training examples
+through gradient-inversion attacks, particularly for models trained on small local
+batches — a realistic scenario for edge gateways with limited per-round compute
+budgets. \keyword{Differential privacy (DP)}, typically implemented by clipping
+per-example gradients and adding calibrated Gaussian noise before transmission,
+provides a formal bound on this leakage but trades off against convergence speed and
+final accuracy, motivating careful noise-budget selection.
+
+\section{Federated Learning for Industrial IoT}
+A smaller body of work has begun applying FL specifically to industrial telemetry.
+Pilot studies at \textbf{Apex Manufacturing} and \textbf{Synapse Energy} report that
+federated schemes reduce uplink traffic substantially but observe accuracy gaps of
+3--6 percentage points relative to centralised baselines when client data is strongly
+heterogeneous — a gap this thesis specifically targets by combining volatility-aware
+weighting with a tuned DP budget rather than applying FedAvg or FedProx unmodified.
+
+\section{Research Gap}
+\begin{tcolorbox}[infobox,title=Positioning of This Work]
+No prior study combines (i) volatility-aware client weighting, (ii) a DP noise layer
+tuned for recurrent gradient structure, and (iii) evaluation on telemetry patterned
+after a real multi-machine factory deployment. This thesis addresses that gap.
+\end{tcolorbox}
+
+\chapter{System Design and Methodology}
+
+\section{Overview}
+FedGuard follows the standard federated round structure — broadcast, local training,
+upload, aggregate — but modifies two stages: client weighting during aggregation, and
+gradient perturbation before upload. Figure~\ref{fig:architecture} shows the resulting
+end-to-end pipeline across three tiers: edge gateways, a regional aggregator, and the
+central coordination server.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=10mm and 14mm,
+  box/.style={draw=vitnavy,thick,rounded corners=2pt,fill=vitpale,minimum width=2.5cm,minimum height=1cm,align=center,font=\sffamily\small},
+  agg/.style={draw=vitteal,thick,rounded corners=2pt,fill=white,minimum width=3cm,minimum height=1.1cm,align=center,font=\sffamily\small\bfseries},
+  cloud/.style={draw=vitgold,thick,rounded corners=4pt,fill=vitnavy,text=white,minimum width=3.4cm,minimum height=1.2cm,align=center,font=\sffamily\small\bfseries},
+  arr/.style={-Latex,thick,vitgray}
+]
+  \node[box] (e1) {Edge Gateway 1\\\footnotesize vibration, temp};
+  \node[box, below=of e1] (e2) {Edge Gateway 2\\\footnotesize vibration, temp};
+  \node[box, below=of e2] (e3) {Edge Gateway $n$\\\footnotesize vibration, temp};
+
+  \node[agg, right=of e2, xshift=8mm] (agg) {Regional Aggregator\\\footnotesize weighted averaging};
+
+  \node[cloud, right=of agg, xshift=10mm] (cloud) {Central Coordinator\\\footnotesize FedGuard global model};
+
+  \draw[arr] (e1) -- (agg);
+  \draw[arr] (e2) -- (agg);
+  \draw[arr] (e3) -- (agg);
+  \draw[arr, decorate, decoration={pre length=2pt,post length=2pt}] (agg) -- node[above,font=\scriptsize\sffamily,text=vitgray]{DP-noised updates} (cloud);
+  \draw[arr, vitgold] (cloud.north) to[out=150,in=30] node[above,font=\scriptsize\sffamily,text=vitgray]{global model broadcast} (e1.north);
+
+  \begin{scope}[on background layer]
+    \node[draw=vitgray,dashed,rounded corners=3pt,fit=(e1)(e2)(e3),inner sep=6pt,label={[font=\scriptsize\sffamily,text=vitgray]above:Factory Floor}] {};
+  \end{scope}
+\end{tikzpicture}
+\caption{Three-tier FedGuard deployment: edge gateways, regional aggregator, and
+central coordinator.}
+\label{fig:architecture}
+\end{figure}
+
+\section{Local Model Architecture}
+Each edge gateway trains a two-layer GRU with 64 hidden units per layer over a sliding
+window of 512 timesteps sampled at 200~Hz from vibration, temperature, and current-draw
+channels, followed by a fully connected classification head predicting the probability
+of failure within the next 48 hours. The architecture is deliberately compact
+(approximately 61k parameters) to fit the compute and memory budget of a typical
+industrial edge gateway.
+
+\section{Volatility-Aware Client Weighting}
+Standard FedAvg weights each client's contribution by local sample count, which
+over-represents clients with high-frequency logging regardless of signal quality. We
+instead compute a volatility score $v_i$ for client $i$ from the rolling variance of
+its residual prediction error over the previous round, and weight contributions as
+
+\[
+w_i = \frac{n_i \cdot (1 + \alpha v_i)}{\sum_{j=1}^{N} n_j \cdot (1 + \alpha v_j)},
+\]
+
+where $n_i$ is the local sample count and $\alpha$ (set to 0.6 empirically, see
+Table~\ref{tab:hyperparams}) controls how strongly volatility influences aggregation.
+Intuitively, clients whose local model is still struggling to fit noisy or rapidly
+evolving degradation patterns are given proportionally more influence, accelerating
+global convergence on the hardest machines rather than the most talkative ones.
+
+\section{Differential Privacy Layer}
+Before upload, each client clips its per-example gradient to an $L_2$ norm of $C$ and
+adds Gaussian noise calibrated to a target privacy budget $(\varepsilon, \delta)$. We
+adopt the moments-accountant method to track cumulative privacy loss across
+communication rounds and halt training if the budget is exhausted before convergence.
+
+\begin{table}[htbp]
+\centering
+\caption{FedGuard training hyperparameters.}
+\label{tab:hyperparams}
+\begin{tabularx}{0.85\textwidth}{@{}l X r@{}}
+\toprule
+\textbf{Parameter} & \textbf{Description} & \textbf{Value} \\
+\midrule
+$\alpha$ & Volatility weighting strength & 0.6 \\
+$C$ & Gradient clipping norm & 1.0 \\
+$\varepsilon$ & DP privacy budget (per training run) & 3.0 \\
+$\delta$ & DP failure probability & $10^{-5}$ \\
+Local epochs & Per-round local training epochs & 3 \\
+Rounds & Total federated communication rounds & 120 \\
+Batch size & Local mini-batch size & 32 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Simulation Testbed}
+Because access to a live production fleet was not feasible within the scope of this
+thesis, a 40-node simulation testbed was constructed by resampling anonymised telemetry
+segments from a Meridian Industrial Systems pilot line and injecting synthetic
+degradation trajectories calibrated to match observed failure statistics, yielding
+heterogeneous per-client data volumes and volatility consistent with a real deployment.
+
+\chapter{Results and Discussion}
+
+\section{Experimental Setup}
+FedGuard is compared against three baselines: (i)~\textit{Centralised}, in which all
+telemetry is pooled and trained on a single GRU; (ii)~\textit{FedAvg}; and
+(iii)~\textit{FedProx} with proximal term $\mu = 0.01$. All schemes share the same GRU
+architecture, batch size, and total local-epoch budget for fairness. Each experiment is
+averaged over five random seeds.
+
+\section{Predictive Accuracy}
+Table~\ref{tab:results} summarises 48-hour failure-prediction accuracy, F1 score, and
+uplink bandwidth per round across all four schemes.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparison of FedGuard against centralised training and federated baselines.}
+\label{tab:results}
+\begin{tabularx}{\textwidth}{@{}l X X X@{}}
+\toprule
+\textbf{Scheme} & \textbf{Accuracy (\%)} & \textbf{F1 Score} & \textbf{Uplink / Round (MB)} \\
+\midrule
+Centralised & 95.7 & 0.951 & --- \\
+FedAvg & 89.4 & 0.881 & 4.8 \\
+FedProx & 91.8 & 0.907 & 4.8 \\
+\rowcolor{vitpale} FedGuard (ours) & \textbf{94.6} & \textbf{0.939} & \textbf{1.4} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+FedGuard closes 93\% of the accuracy gap between FedAvg and centralised training while
+transmitting 71\% less data per round than either federated baseline, a reduction
+attributable to the DP layer's noise sparsification and to fewer wasted rounds from
+faster, more stable convergence under volatility-aware weighting.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+  \def\barw{1.1}
+  \def\scaleY{0.045}
+  \draw[->,thick,vitgray] (0,0) -- (0,4.6) node[above,font=\scriptsize\sffamily]{Accuracy (\%)};
+  \draw[->,thick,vitgray] (0,0) -- (6.2,0);
+  \foreach \y in {80,85,90,95}{
+    \draw[vitgray!40] (-0.08,{(\y-80)*\scaleY*10}) -- (6.0,{(\y-80)*\scaleY*10});
+    \node[left,font=\scriptsize\sffamily,text=vitgray] at (-0.1,{(\y-80)*\scaleY*10}) {\y};
+  }
+  \foreach \name/\val/\x/\col in {Central./95.7/0.6/vitnavy,FedAvg/89.4/2.1/vitgray,FedProx/91.8/3.6/vitteal,FedGuard/94.6/5.1/vitgold}{
+    \fill[\col] (\x,0) rectangle ++(\barw,{(\val-80)*\scaleY*10});
+    \node[below,font=\scriptsize\sffamily] at ({\x+\barw/2},-0.1) {\name};
+    \node[above,font=\scriptsize\sffamily\bfseries] at ({\x+\barw/2},{(\val-80)*\scaleY*10}) {\val};
+  }
+\end{tikzpicture}
+\caption{48-hour failure-prediction accuracy across schemes.}
+\label{fig:barchart}
+\end{figure}
+
+\section{Privacy--Utility Trade-off}
+Sweeping the DP budget $\varepsilon$ from 1.0 to 8.0 shows accuracy rising sharply up to
+$\varepsilon \approx 3.0$ and then plateauing, while gradient-inversion reconstruction
+error (measured as normalised mean-squared error against the true sensor window) falls
+monotonically as $\varepsilon$ decreases. The chosen operating point of $\varepsilon =
+3.0$ reduces reconstruction fidelity by an order of magnitude relative to
+non-private FedAvg while costing only 0.4 percentage points of accuracy.
+
+\begin{tcolorbox}[insightbox,title=Key Insight]
+Volatility-aware weighting contributes roughly two-thirds of FedGuard's accuracy gain
+over FedAvg, with the DP layer contributing the remainder indirectly by stabilising
+gradient magnitudes across rounds — the two mechanisms are complementary rather than
+independent.
+\end{tcolorbox}
+
+\section{Ablation Study}
+Removing volatility-aware weighting (i.e.\ falling back to sample-count weighting) while
+retaining the DP layer drops accuracy to 91.1\%, confirming that weighting, not privacy
+noise, is the dominant driver of FedGuard's improvement over FedAvg.
+
+\chapter{Conclusion and Future Work}
+
+\section{Summary}
+This thesis presented FedGuard, a federated learning scheme for predictive maintenance
+in industrial IoT settings that combines volatility-aware client weighting with a
+tuned differential-privacy gradient layer. Evaluated on a realistic 40-node simulation
+testbed, FedGuard achieved 94.6\% failure-prediction accuracy — within 1.1 percentage
+points of centralised training — while reducing uplink bandwidth by 71\% and
+substantially limiting gradient-inversion reconstruction risk.
+
+\section{Limitations}
+The evaluation relies on a simulation testbed rather than a live multi-site deployment,
+and the volatility score is computed from prediction residuals, which assumes each
+client has enough local labelled failure events to estimate error variance reliably —
+an assumption that may not hold for newly commissioned machinery with sparse failure
+history.
+
+\section{Future Work}
+\begin{itemize}[leftmargin=1.4em]
+  \item Deploy FedGuard on a live pilot fleet to validate simulation-derived results
+        under real network jitter and gateway churn.
+  \item Extend volatility scoring to cold-start clients using transfer from similar
+        machine classes.
+  \item Explore secure-aggregation protocols to remove trust in the regional
+        aggregator entirely.
+  \item Investigate personalised federated models that retain a per-client fine-tuning
+        head atop the shared global backbone.
+\end{itemize}
+
+% =====================================================================
+% REFERENCES
+% =====================================================================
+\begin{thebibliography}{99}
+
+\bibitem{mcmahan2017}
+H.\,B. McMahan, E. Moore, D. Ramage, S. Hampson, and B.\,A.\ y Arcas,
+``Communication-efficient learning of deep networks from decentralized data,''
+\textit{Proceedings of the 20th International Conference on Artificial Intelligence and
+Statistics}, 2017, pp.\ 1273--1282.
+
+\bibitem{li2020fedprox}
+T. Li, A.\,K. Sahu, M. Zaheer, M. Sanjabi, A. Talwalkar, and V. Smith,
+``Federated optimization in heterogeneous networks,''
+\textit{Proceedings of Machine Learning and Systems}, vol.\ 2, 2020, pp.\ 429--450.
+
+\bibitem{abadi2016dp}
+M. Abadi et al., ``Deep learning with differential privacy,''
+\textit{Proceedings of the 2016 ACM SIGSAC Conference on Computer and Communications
+Security}, 2016, pp.\ 308--318.
+
+\bibitem{zhu2019inverting}
+L. Zhu, Z. Liu, and S. Han, ``Deep leakage from gradients,''
+\textit{Advances in Neural Information Processing Systems}, vol.\ 32, 2019.
+
+\bibitem{lei2018rul}
+Y. Lei, N. Li, L. Guo, N. Li, T. Yan, and J. Lin,
+``Machinery health prognostics: A systematic review from data acquisition to RUL
+prediction,'' \textit{Mechanical Systems and Signal Processing}, vol.\ 104, 2018,
+pp.\ 799--834.
+
+\bibitem{kairouz2021advances}
+P. Kairouz et al., ``Advances and open problems in federated learning,''
+\textit{Foundations and Trends in Machine Learning}, vol.\ 14, no.\ 1--2, 2021,
+pp.\ 1--210.
+
+\end{thebibliography}
+\addcontentsline{toc}{chapter}{References}
+
+% =====================================================================
+% APPENDIX
+% =====================================================================
+\appendix
+\chapter{Simulation Testbed Configuration}
+\addcontentsline{toc}{chapter}{Appendix A: Simulation Testbed Configuration}
+
+Table~\ref{tab:appendix} lists the per-client configuration ranges used to generate the
+40-node simulation testbed described in Section~3.6.
+
+\begin{table}[htbp]
+\centering
+\caption{Client configuration ranges for the simulation testbed.}
+\label{tab:appendix}
+\begin{tabularx}{\textwidth}{@{}l X@{}}
+\toprule
+\textbf{Parameter} & \textbf{Range} \\
+\midrule
+Samples per client & 1{,}800 -- 9{,}600 windows \\
+Sampling rate & 200 Hz (vibration), 1 Hz (temperature, current) \\
+Failure event rate & 2\% -- 11\% of windows, per client \\
+Network latency (client--aggregator) & 20 -- 180 ms \\
+Compute budget & 0.5 -- 2.0 GFLOPS per local epoch \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\end{document}

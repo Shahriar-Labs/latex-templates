@@ -1,0 +1,762 @@
+\documentclass[12pt,a4paper]{report}
+
+% ---------- Packages ----------
+\usepackage[a4paper,top=1in,bottom=1in,left=1.5in,right=1in,headheight=26pt]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage[most]{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{float}
+
+% ---------- Colours ----------
+\definecolor{nustgreen}{RGB}{0,71,49}
+\definecolor{nustgold}{RGB}{181,151,91}
+\definecolor{nustslate}{RGB}{48,58,64}
+\definecolor{nustmist}{RGB}{240,243,241}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=nustgreen,
+  citecolor=nustgreen,
+  urlcolor=nustgreen,
+  pdftitle={Energy-Aware Adaptive Duty Cycling for Long-Range Wireless Sensor Networks},
+  pdfauthor={Ayesha Raza Malik}
+}
+
+% ---------- Section styling ----------
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\color{nustgreen}}
+  {\filright\Large\textcolor{nustgold}{CHAPTER \thechapter}}
+  {6pt}
+  {\Huge}
+[\vspace{4pt}{\color{nustgold}\titlerule[1.2pt]}]
+\titlespacing*{\chapter}{0pt}{0pt}{28pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{nustgreen}}{\thesection}{10pt}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{nustslate}}{\thesubsection}{8pt}{}
+
+% ---------- Headers/footers ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{nustgold}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[L]{\small\itshape\color{nustslate}\leftmark}
+\fancyhead[R]{\small\color{nustslate}\thepage}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyhead[L]{\small\itshape\color{nustslate}\leftmark}
+  \fancyhead[R]{\small\color{nustslate}\thepage}
+  \renewcommand{\headrulewidth}{0.6pt}
+}
+
+\onehalfspacing
+
+% ---------- Custom boxes ----------
+\newtcolorbox{infobox}[1][]{
+  colback=nustmist,
+  colframe=nustgreen,
+  boxrule=0.6pt,
+  arc=2pt,
+  left=8pt,right=8pt,top=6pt,bottom=6pt,
+  #1
+}
+
+\newtcolorbox{goldrule}{
+  colback=white,
+  colframe=nustgold,
+  boxrule=0.8pt,
+  arc=1pt,
+  left=8pt,right=8pt,top=6pt,bottom=6pt
+}
+
+\begin{document}
+
+% =====================================================
+% TITLE PAGE
+% =====================================================
+\begin{titlepage}
+\begin{center}
+
+\vspace*{6pt}
+
+\begin{tikzpicture}
+  \node[draw=nustgreen,line width=1.4pt,circle,minimum width=2.4cm,align=center,inner sep=10pt]
+    (crest) {\color{nustgreen}\Large\bfseries NUST};
+  \node[below=2pt of crest,font=\footnotesize\itshape\color{nustslate}] {(placeholder emblem)};
+\end{tikzpicture}
+
+\vspace{10pt}
+
+{\Large\bfseries\color{nustgreen} National University of Sciences \& Technology}\\[2pt]
+{\large\color{nustslate} School of Electrical Engineering and Computer Science}\\[2pt]
+{\small\itshape\color{nustslate} H-12 Sector, Islamabad, Pakistan}
+
+\vspace{6pt}
+{\color{nustgold}\rule{0.55\textwidth}{1pt}}
+\vspace{28pt}
+
+{\large\scshape\color{nustslate} Master of Science Thesis}
+
+\vspace{28pt}
+
+{\LARGE\bfseries\color{nustgreen}
+Energy-Aware Adaptive Duty Cycling\\[4pt]
+for Long-Range Wireless Sensor Networks}
+
+\vspace{10pt}
+{\large\itshape\color{nustslate} A Cross-Layer Scheduling Framework for LoRa-Based Environmental Monitoring}
+
+\vspace{36pt}
+
+\begin{tabular}{c}
+{\large\bfseries Ayesha Raza Malik}\\[2pt]
+{\normalsize NUST Registration No.\ 00000-MSCS-2024}
+\end{tabular}
+
+\vspace{36pt}
+
+\begin{tabular}{ll}
+{\bfseries Supervisor:} & Dr.\ Faisal Ahmed Qureshi\\
+{\bfseries Co-Supervisor:} & Dr.\ Hina Tariq Baig\\
+\end{tabular}
+
+\vspace{24pt}
+
+{\normalsize\color{nustslate}
+Submitted in partial fulfillment of the requirements\\
+for the degree of Master of Science in Computer Engineering}
+
+\vspace{18pt}
+{\normalsize\bfseries\color{nustgreen} June 2026}
+
+\vfill
+
+\begin{goldrule}
+\centering
+\footnotesize\itshape
+Unofficial template --- not affiliated with or endorsed by the university.
+Sample content only.
+\end{goldrule}
+
+\end{center}
+\end{titlepage}
+
+% =====================================================
+% DECLARATION
+% =====================================================
+\chapter*{Declaration}
+\addcontentsline{toc}{chapter}{Declaration}
+\thispagestyle{plain}
+
+\noindent I, \textbf{Ayesha Raza Malik}, hereby declare that this thesis, titled
+\emph{``Energy-Aware Adaptive Duty Cycling for Long-Range Wireless Sensor Networks,''}
+submitted in partial fulfillment of the requirements for the degree of Master of Science in
+Computer Engineering, is my own original work carried out under the supervision of
+Dr.\ Faisal Ahmed Qureshi. No part of this work has been submitted, in whole or in part, for
+any other degree or qualification at this or any other institution. All sources of information
+and assistance have been duly acknowledged.
+
+\vspace{50pt}
+
+\begin{tabular}{@{}p{7cm}p{7cm}@{}}
+\dotfill & \dotfill \\
+Signature of Student & Date \\[4pt]
+Ayesha Raza Malik &  \\
+\end{tabular}
+
+% =====================================================
+% CERTIFICATE
+% =====================================================
+\chapter*{Certificate}
+\addcontentsline{toc}{chapter}{Certificate}
+\thispagestyle{plain}
+
+\noindent It is certified that the contents and form of the thesis entitled
+\emph{``Energy-Aware Adaptive Duty Cycling for Long-Range Wireless Sensor Networks''}
+submitted by \textbf{Ayesha Raza Malik} have been found satisfactory for the requirement of
+the degree of Master of Science.
+
+\vspace{30pt}
+
+\noindent
+\begin{tabular}{@{}p{7cm}p{7cm}@{}}
+\dotfill & \dotfill \\
+Supervisor: Dr.\ Faisal Ahmed Qureshi & Date \\[26pt]
+\dotfill & \dotfill \\
+Co-Supervisor: Dr.\ Hina Tariq Baig & Date \\[26pt]
+\dotfill & \dotfill \\
+Head of Department & Date \\[26pt]
+\dotfill & \dotfill \\
+Associate Dean & Date \\
+\end{tabular}
+
+% =====================================================
+% ABSTRACT
+% =====================================================
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\thispagestyle{plain}
+
+\noindent Long-range wide-area network (LoRaWAN) deployments for environmental monitoring
+in remote terrain suffer from a fundamental tension between sensing fidelity and battery
+lifetime: aggressive duty cycling extends node lifespan but degrades event-detection
+latency, while conservative scheduling drains batteries within months. This thesis presents
+\textbf{AeroCycle}, a cross-layer adaptive duty-cycling framework that jointly reasons about
+residual battery state, link quality, and observed environmental volatility to compute
+per-node sleep intervals at runtime. AeroCycle combines a lightweight exponentially-weighted
+volatility estimator at the application layer with a MAC-layer listen-before-sleep
+negotiation protocol, avoiding the overhead of full clock synchronization schemes.
+
+We evaluate AeroCycle through both a 40-node testbed deployed across a simulated agricultural
+plot and a discrete-event simulation of 500 nodes over a six-month horizon. Compared against
+static duty cycling and the ContikiMAC baseline, AeroCycle achieves a \textbf{34.6\%} reduction
+in mean energy consumption per delivered sample while keeping 95th-percentile detection
+latency under 4.2 seconds during high-volatility events. Network lifetime, measured as time
+to first node death, improves by \textbf{5.8 months} on average under identical battery
+budgets. We further show that the volatility estimator adds negligible computational overhead
+(under 40 microseconds per cycle on an ARM Cortex-M0+) and that the framework degrades
+gracefully under packet loss up to 22\%. These results suggest that lightweight, locally
+computed adaptivity can close much of the gap between static and fully synchronized duty-cycle
+scheduling without its coordination cost.
+
+\vspace{10pt}
+\noindent\textbf{Keywords:} wireless sensor networks, LoRaWAN, duty cycling, energy efficiency,
+adaptive scheduling, environmental monitoring.
+
+% =====================================================
+% ACKNOWLEDGEMENTS
+% =====================================================
+\chapter*{Acknowledgements}
+\addcontentsline{toc}{chapter}{Acknowledgements}
+\thispagestyle{plain}
+
+\noindent I am deeply grateful to my supervisor, Dr.\ Faisal Ahmed Qureshi, for his patient
+guidance, sharp critique, and unwavering availability throughout the course of this research.
+I thank my co-supervisor, Dr.\ Hina Tariq Baig, for her insights on embedded systems power
+profiling that shaped the experimental methodology of Chapter~4.
+
+I would also like to thank the members of the Networked Systems Research Group at SEECS for
+their feedback during our weekly seminars, and the technical staff who supported the testbed
+deployment in the pilot plot. Finally, I thank my family for their steady encouragement during
+the long months of writing.
+
+\vspace{20pt}
+\begin{flushright}
+Ayesha Raza Malik\\
+Islamabad, June 2026
+\end{flushright}
+
+% =====================================================
+% FRONT MATTER: TOC / LOF / LOT
+% =====================================================
+\pagenumbering{roman}
+\tableofcontents
+\listoffigures
+\listoftables
+
+\chapter*{List of Abbreviations}
+\addcontentsline{toc}{chapter}{List of Abbreviations}
+\begin{center}
+\begin{tabularx}{0.85\textwidth}{@{}lX@{}}
+\toprule
+\rowcolor{nustgreen}
+\textcolor{white}{\bfseries Abbreviation} & \textcolor{white}{\bfseries Description} \\
+\midrule
+LoRaWAN & Long Range Wide Area Network \\
+MAC     & Medium Access Control \\
+WSN     & Wireless Sensor Network \\
+LBT     & Listen-Before-Talk \\
+EWMA    & Exponentially Weighted Moving Average \\
+RTT     & Round-Trip Time \\
+SNR     & Signal-to-Noise Ratio \\
+DEVS    & Discrete-Event Simulation \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\clearpage
+\pagenumbering{arabic}
+
+% =====================================================
+% CHAPTER 1: INTRODUCTION
+% =====================================================
+\chapter{Introduction}
+\label{ch:intro}
+
+\section{Background and Motivation}
+Low-power wide-area networks (LPWANs) such as LoRaWAN have become the dominant substrate for
+long-duration environmental monitoring in agriculture, forestry, and infrastructure
+inspection, owing to their multi-kilometre range and sub-milliwatt idle power draw. A recurring
+deployment obstacle, however, is that battery replacement in remote or physically inaccessible
+terrain is costly, and node lifetime is overwhelmingly dominated by the radio's duty cycle
+rather than sensing or computation \cite{bor2016lora}.
+
+The conventional approach --- a fixed sleep interval configured at deployment time --- forces
+operators into an uncomfortable trade-off. A short interval yields responsive event detection
+but exhausts batteries in a handful of months; a long interval extends lifetime but risks
+missing transient events such as frost onset, irrigation leaks, or structural vibration
+spikes. Figure~\ref{fig:tradeoff} illustrates this tension across three representative static
+configurations.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1]
+\begin{scope}
+  \draw[-latex,thick,nustslate] (0,0) -- (9,0) node[right,font=\small]{Duty-cycle interval};
+  \draw[-latex,thick,nustslate] (0,0) -- (0,5.2) node[above,font=\small]{Metric value};
+
+  \draw[thick,nustgreen,domain=0.4:8.6,samples=60] plot (\x,{4.6*exp(-0.28*\x)+0.3}) node[right,font=\scriptsize,nustgreen]{Battery drain};
+  \draw[thick,nustgold,domain=0.4:8.6,samples=60] plot (\x,{0.25*\x+0.2}) node[right,font=\scriptsize,nustgold!70!black]{Detection latency};
+
+  \node[draw,circle,fill=nustslate,inner sep=1.2pt] at (3.2,{4.6*exp(-0.28*3.2)+0.3}) {};
+  \node[draw,circle,fill=nustslate,inner sep=1.2pt] at (3.2,{0.25*3.2+0.2}) {};
+  \draw[dashed,nustslate] (3.2,0) -- (3.2,5) node[above,font=\scriptsize]{sweet spot (target)};
+\end{scope}
+\end{tikzpicture}
+\caption{Illustrative trade-off between battery drain and detection latency across static duty-cycle intervals.}
+\label{fig:tradeoff}
+\end{figure}
+
+\section{Problem Statement}
+Existing adaptive duty-cycling schemes either require tight clock synchronization across the
+network (imposing coordination overhead disproportionate to LPWAN payload budgets) or rely on
+centralized controllers that reintroduce a single point of failure and additional uplink
+cost. There is no lightweight, fully decentralized mechanism that adapts sleep intervals to
+\emph{both} residual energy budget and locally observed environmental volatility without
+external coordination.
+
+\begin{infobox}[title={\faFile\ Research Gap}]
+No existing decentralized duty-cycling protocol jointly conditions sleep interval on
+battery state \emph{and} short-horizon environmental volatility while remaining within the
+0.5--40\,ms processing budget of a Cortex-M0+ class microcontroller.
+\end{infobox}
+
+\section{Research Objectives}
+This thesis pursues the following objectives:
+\begin{enumerate}[label=\textbf{O\arabic*.}, leftmargin=2.2em]
+  \item Design a lightweight, locally computed volatility estimator suitable for
+        microcontroller-class hardware.
+  \item Develop a MAC-layer listen-before-sleep negotiation protocol that avoids full
+        network-wide clock synchronization.
+  \item Implement and evaluate the combined framework (AeroCycle) on both a physical testbed
+        and a large-scale discrete-event simulation.
+  \item Quantify the energy--latency trade-off achieved relative to static and
+        state-of-the-art adaptive baselines.
+\end{enumerate}
+
+\section{Scope and Assumptions}
+The scope of this work is restricted to star-topology LoRaWAN Class~A deployments using
+single-channel gateways, with nodes reporting scalar environmental readings (temperature,
+soil moisture, vibration amplitude) at sub-1\,Hz native sensing rates. Mobile nodes,
+multi-hop mesh topologies, and video/image payloads are outside the scope of this thesis.
+
+\section{Thesis Contributions}
+\begin{itemize}[leftmargin=1.4em]
+  \item An EWMA-based volatility estimator requiring under 200 bytes of RAM and under
+        40\,\textmu s of compute per duty-cycle decision.
+  \item A listen-before-sleep negotiation protocol (Chapter~3) that eliminates the need for
+        network-wide time synchronization while bounding missed-wake probability to
+        under 1.5\%.
+  \item An open experimental methodology combining a 40-node physical testbed with a
+        validated 500-node discrete-event simulation (Chapter~4).
+  \item Empirical evidence of a 34.6\% energy reduction and 5.8-month lifetime extension
+        over static baselines under identical hardware budgets (Chapter~5).
+\end{itemize}
+
+\section{Thesis Organization}
+Chapter~2 reviews related work in adaptive MAC protocols and energy-aware scheduling.
+Chapter~3 details the AeroCycle design. Chapter~4 describes the experimental methodology.
+Chapter~5 presents results and analysis. Chapter~6 concludes and outlines future work.
+
+% =====================================================
+% CHAPTER 2: LITERATURE REVIEW
+% =====================================================
+\chapter{Literature Review}
+\label{ch:lit}
+
+\section{Static and Semi-Static Duty Cycling}
+Early LPWAN deployments relied on fixed sleep schedules configured once at provisioning
+time \cite{bor2016lora}. While simple to implement, such schemes cannot respond to shifts in
+environmental behaviour post-deployment, forcing operators to over-provision battery capacity
+to cover worst-case sensing demand.
+
+\section{Synchronized Adaptive MAC Protocols}
+Protocols such as S-MAC and its LPWAN derivatives adapt duty cycle based on network-wide
+synchronized schedules \cite{ye2004smac}. These achieve strong latency guarantees but impose
+periodic synchronization beacons that consume a disproportionate share of the LPWAN duty-cycle
+regulatory budget (typically 1\% airtime in the EU868 band).
+
+\section{Centralized and Learning-Based Approaches}
+Recent work has explored reinforcement-learning controllers hosted at the gateway that push
+per-node sleep schedules downlink \cite{kim2020rl}. These approaches achieve strong empirical
+performance but reintroduce a single point of failure, require continuous downlink capacity
+that many single-channel gateways lack, and add training/inference latency unsuitable for
+event-driven applications.
+
+\section{Comparative Summary}
+Table~\ref{tab:comparison} summarizes the coordination cost, adaptivity, and hardware
+footprint of representative approaches from the literature against the design goals of this
+thesis.
+
+\begin{table}[H]
+\centering
+\caption{Comparison of duty-cycling strategies from the literature.}
+\label{tab:comparison}
+\begin{tabularx}{\textwidth}{@{}lXXX@{}}
+\toprule
+\rowcolor{nustgreen}
+\textcolor{white}{\bfseries Approach} & \textcolor{white}{\bfseries Coordination cost} &
+\textcolor{white}{\bfseries Adaptivity} & \textcolor{white}{\bfseries MCU footprint} \\
+\midrule
+Static scheduling            & None            & None            & Negligible \\
+\rowcolor{nustmist}
+S-MAC / synchronized adaptive & High (beacons)  & Network-wide     & Low \\
+RL / gateway-centralized      & High (downlink) & Per-node, learned & Server-side \\
+\rowcolor{nustmist}
+\textbf{AeroCycle (this work)} & \textbf{None}   & \textbf{Per-node, local} & \textbf{Low} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Research Gap}
+No prior scheme combines local, low-overhead volatility estimation with a coordination-free
+MAC negotiation protocol. This gap directly motivates the AeroCycle design presented in
+Chapter~3.
+
+% =====================================================
+% CHAPTER 3: METHODOLOGY / DESIGN
+% =====================================================
+\chapter{System Design}
+\label{ch:design}
+
+\section{Architecture Overview}
+AeroCycle is organized as two cooperating layers on each node, as shown in
+Figure~\ref{fig:arch}: an application-layer \emph{Volatility Estimator} that consumes raw
+sensor readings and produces a target sleep interval, and a MAC-layer \emph{Negotiation
+Module} that reconciles this target against link-quality feedback before committing to a
+sleep decision.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  block/.style={draw=nustgreen,thick,rounded corners=2pt,fill=nustmist,minimum width=3.4cm,minimum height=1.1cm,align=center,font=\small},
+  arr/.style={-latex,thick,nustslate}
+]
+\node[block] (sensor) {Sensor\\Sampling};
+\node[block,right=1.4cm of sensor] (vol) {Volatility\\Estimator};
+\node[block,right=1.4cm of vol,fill=nustgold!25,draw=nustgold!70!black] (neg) {Negotiation\\Module};
+\node[block,below=1.1cm of neg] (radio) {LoRa\\Radio};
+
+\draw[arr] (sensor) -- (vol);
+\draw[arr] (vol) -- node[above,font=\scriptsize]{target interval} (neg);
+\draw[arr] (neg) -- (radio);
+\draw[arr] (radio.west) -- ++(-3.9,0) |- node[left,pos=0.75,font=\scriptsize]{link SNR} (neg.south);
+\end{tikzpicture}
+\caption{AeroCycle two-layer architecture: application-layer volatility estimation feeds a MAC-layer negotiation module.}
+\label{fig:arch}
+\end{figure}
+
+\section{Volatility Estimator}
+The estimator maintains an exponentially weighted moving average of successive sample
+deltas $\delta_t = |x_t - x_{t-1}|$:
+\begin{equation}
+\hat{v}_t = \alpha \, \delta_t + (1-\alpha)\, \hat{v}_{t-1}, \qquad \alpha \in (0,1)
+\label{eq:ewma}
+\end{equation}
+where $\alpha$ controls responsiveness to recent change. The target sleep interval
+$T_{\text{sleep}}$ is then computed as a function of estimated volatility $\hat{v}_t$ and
+residual battery fraction $b_t \in [0,1]$:
+\begin{equation}
+T_{\text{sleep}} = T_{\min} + (T_{\max} - T_{\min}) \cdot \left(1 - \hat{v}_t^{\,*}\right)^{\gamma} \cdot f(b_t)
+\label{eq:sleep}
+\end{equation}
+where $\hat{v}_t^{\,*}$ is $\hat{v}_t$ normalized against a rolling maximum, $\gamma$ is a
+sensitivity exponent (empirically set to 1.6 in Chapter~5), and $f(b_t)$ is a battery-aware
+damping term that linearly extends sleep as $b_t$ falls below a 20\% reserve threshold.
+
+\begin{infobox}[title={\faLock\ Design Invariant}]
+The estimator never touches the radio directly. All hardware-facing decisions are deferred to
+the Negotiation Module, keeping the volatility computation portable across radio stacks.
+\end{infobox}
+
+\section{Listen-Before-Sleep Negotiation}
+Rather than requiring synchronized clocks, each node broadcasts a short \emph{intent frame}
+containing its computed $T_{\text{sleep}}$ immediately before entering sleep. Neighbouring
+nodes and the gateway use this frame opportunistically to adjust their own listen windows,
+bounding the probability of a missed wake event without a shared time base. The negotiation
+sequence is summarized in Table~\ref{tab:negotiation}.
+
+\begin{table}[H]
+\centering
+\caption{Listen-before-sleep negotiation sequence.}
+\label{tab:negotiation}
+\begin{tabularx}{\textwidth}{@{}clX@{}}
+\toprule
+\rowcolor{nustgreen}
+\textcolor{white}{\bfseries Step} & \textcolor{white}{\bfseries Actor} & \textcolor{white}{\bfseries Action} \\
+\midrule
+1 & Node    & Compute $T_{\text{sleep}}$ via Eq.~\ref{eq:sleep}. \\
+\rowcolor{nustmist}
+2 & Node    & Broadcast intent frame (14 bytes) carrying $T_{\text{sleep}}$ and SNR estimate. \\
+3 & Gateway & Cache intent, adjust receive-window schedule for that node. \\
+\rowcolor{nustmist}
+4 & Node    & Enter low-power sleep for $T_{\text{sleep}}$. \\
+5 & Node    & Wake, sample sensor, return to Step~1. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Failure Handling}
+If an intent frame is lost, the gateway falls back to a conservative default listen window
+sized to $T_{\max}$, guaranteeing eventual reception at the cost of latency rather than
+missed data. Section~\ref{sec:robustness} evaluates this fallback under induced packet loss.
+
+% =====================================================
+% CHAPTER 4: EXPERIMENTAL SETUP
+% =====================================================
+\chapter{Experimental Methodology}
+\label{ch:exp}
+
+\section{Testbed Deployment}
+A 40-node physical testbed was deployed across a simulated 2-hectare agricultural plot using
+Cortex-M0+ nodes equipped with SX1276 LoRa radios, soil-moisture probes, and temperature
+sensors. Nodes were powered by 2000\,mAh Li-ion cells with in-line current-sense monitoring
+sampled at 10\,Hz for ground-truth energy accounting.
+
+\section{Discrete-Event Simulation}
+To evaluate behaviour at scale and over multi-month horizons impractical for physical
+deployment, a discrete-event simulation was built modelling 500 nodes over a six-month
+period, calibrated against testbed power traces (mean calibration error 3.1\%).
+
+\section{Baselines}
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Static-Short}: fixed 30-second sleep interval.
+  \item \textbf{Static-Long}: fixed 300-second sleep interval.
+  \item \textbf{ContikiMAC}: synchronized adaptive baseline \cite{ye2004smac}.
+  \item \textbf{AeroCycle}: the proposed framework.
+\end{itemize}
+
+\section{Metrics}
+Energy consumption per delivered sample, 95th-percentile detection latency, network lifetime
+(time to first node death), and missed-wake probability were recorded across all
+configurations.
+
+\section{Parameter Configuration}
+Table~\ref{tab:params} lists the parameter values used across all experiments unless
+otherwise noted.
+
+\begin{table}[H]
+\centering
+\caption{Experimental parameter configuration.}
+\label{tab:params}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\rowcolor{nustgreen}
+\textcolor{white}{\bfseries Parameter} & \textcolor{white}{\bfseries Value} \\
+\midrule
+$\alpha$ (EWMA weight)     & 0.30 \\
+\rowcolor{nustmist}
+$\gamma$ (sensitivity exponent) & 1.6 \\
+$T_{\min}$                 & 15\,s \\
+\rowcolor{nustmist}
+$T_{\max}$                 & 600\,s \\
+Battery reserve threshold  & 20\% \\
+\rowcolor{nustmist}
+Simulation horizon          & 6 months \\
+Testbed nodes / sim.\ nodes & 40 / 500 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+% =====================================================
+% CHAPTER 5: RESULTS
+% =====================================================
+\chapter{Results and Analysis}
+\label{ch:results}
+
+\section{Energy Consumption}
+AeroCycle reduced mean energy consumption per delivered sample by 34.6\% relative to
+Static-Short and 11.2\% relative to ContikiMAC, while Static-Long consumed the least energy
+overall at the cost of latency (Table~\ref{tab:energy}).
+
+\begin{table}[H]
+\centering
+\caption{Mean energy consumption per delivered sample across configurations.}
+\label{tab:energy}
+\begin{tabularx}{\textwidth}{@{}lXX@{}}
+\toprule
+\rowcolor{nustgreen}
+\textcolor{white}{\bfseries Configuration} & \textcolor{white}{\bfseries Energy / sample (mJ)} &
+\textcolor{white}{\bfseries Rel.\ to Static-Short} \\
+\midrule
+Static-Short & 18.4 & --- \\
+\rowcolor{nustmist}
+Static-Long  & 6.1  & $-66.8\%$ \\
+ContikiMAC   & 13.5 & $-26.6\%$ \\
+\rowcolor{nustmist}
+\textbf{AeroCycle} & \textbf{12.0} & \textbf{$-34.6\%$} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Detection Latency}
+Despite the energy savings, AeroCycle maintained a 95th-percentile detection latency of
+4.2 seconds during high-volatility events, close to Static-Short (3.1\,s) and substantially
+better than Static-Long (48.6\,s), as visualized in Figure~\ref{fig:latency}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{scope}
+  \draw[-latex,thick,nustslate] (0,0) -- (0,5) node[above,font=\small]{p95 latency (s)};
+  \foreach \x/\label/\val/\col in {
+    1/{Static-\\Short}/3.1/nustgreen,
+    3/{Static-\\Long}/4.8/nustgold,
+    5/{Contiki-\\MAC}/3.6/nustslate,
+    7/{Aero-\\Cycle}/4.2/nustgreen!60!black}
+  {
+    \pgfmathsetmacro{\h}{\val/48.6*4.6+0.3}
+  }
+  % note: Static-Long latency compressed for display; see table for exact values
+  \draw[fill=nustgreen,draw=nustgreen] (0.6,0) rectangle (1.6,{3.1/5*4.6});
+  \node[below,font=\scriptsize] at (1.1,0) {Static-Short};
+  \draw[fill=nustgold,draw=nustgold!70!black] (2.6,0) rectangle (3.6,4.6);
+  \node[below,font=\scriptsize] at (3.1,0) {Static-Long*};
+  \draw[fill=nustslate,draw=nustslate] (4.6,0) rectangle (5.6,{3.6/5*4.6});
+  \node[below,font=\scriptsize] at (5.1,0) {ContikiMAC};
+  \draw[fill=nustgreen!55!black,draw=nustgreen!55!black] (6.6,0) rectangle (7.6,{4.2/5*4.6});
+  \node[below,font=\scriptsize] at (7.1,0) {AeroCycle};
+\end{scope}
+\end{tikzpicture}
+\caption{95th-percentile detection latency by configuration. *Static-Long bar truncated (actual value 48.6\,s) for readability.}
+\label{fig:latency}
+\end{figure}
+
+\section{Network Lifetime}
+Under identical battery budgets, AeroCycle extended time-to-first-node-death by an average of
+5.8 months relative to Static-Short across the six-month simulation horizon, with 402 of 500
+simulated nodes surviving the full horizon versus 261 under Static-Short.
+
+\section{Robustness Under Packet Loss}
+\label{sec:robustness}
+The listen-before-sleep fallback (Section~3.4) was stress-tested under induced intent-frame
+loss rates from 0\% to 30\%. Missed-wake probability remained under 1.5\% for loss rates up to
+22\%, degrading gracefully to 4.8\% at 30\% loss, confirming the fallback's effectiveness
+within the regulatory-compliant retransmission budget.
+
+\section{Computational Overhead}
+The volatility estimator required a mean of 37\,\textmu s per duty-cycle decision on the
+Cortex-M0+ testbed hardware and under 200 bytes of static RAM, confirming feasibility on
+constrained sensor nodes.
+
+\section{Discussion}
+The results support the central hypothesis: locally computed adaptivity, without network-wide
+coordination, can approach the latency profile of aggressive static scheduling while
+approaching the energy profile of conservative static scheduling. The residual gap to
+Static-Long's energy consumption reflects the fundamental cost of retaining responsiveness;
+closing this gap further likely requires predictive (rather than reactive) volatility
+modelling, discussed as future work in Chapter~6.
+
+% =====================================================
+% CHAPTER 6: CONCLUSION
+% =====================================================
+\chapter{Conclusion and Future Work}
+\label{ch:conclusion}
+
+\section{Summary}
+This thesis presented AeroCycle, a decentralized, cross-layer adaptive duty-cycling framework
+for LoRaWAN-based environmental monitoring. By combining a lightweight EWMA volatility
+estimator with a listen-before-sleep negotiation protocol, AeroCycle avoids the coordination
+overhead of synchronized MAC protocols and the single-point-of-failure risk of centralized
+controllers, while achieving a 34.6\% energy reduction and 5.8-month lifetime extension over
+static baselines.
+
+\section{Limitations}
+The evaluation is restricted to star-topology, single-channel deployments and scalar sensing
+payloads; multi-hop mesh topologies and higher-bandwidth payloads (e.g.\ periodic imagery)
+were not evaluated and may alter the coordination trade-offs analyzed here. The simulation's
+calibration error of 3.1\% against testbed traces bounds, but does not eliminate,
+sim-to-real gaps at longer horizons.
+
+\section{Future Work}
+\begin{itemize}[leftmargin=1.4em]
+  \item Extend the volatility estimator to a lightweight predictive (rather than purely
+        reactive) model to further close the gap to conservative static baselines.
+  \item Evaluate AeroCycle under multi-hop mesh topologies with relay-induced negotiation
+        delay.
+  \item Investigate joint optimization of $\alpha$ and $\gamma$ via on-device online
+        learning rather than fixed empirical constants.
+  \item Conduct a full-season physical field trial to validate simulation calibration over
+        a full annual cycle.
+\end{itemize}
+
+% =====================================================
+% BIBLIOGRAPHY
+% =====================================================
+\begin{thebibliography}{99}
+
+\bibitem{bor2016lora}
+M.~Bor, U.~Roedig, T.~Voigt, and J.~M.~Alonso,
+``Do LoRa Low-Power Wide-Area Networks Scale?''
+\emph{Proceedings of the 19th ACM International Conference on Modeling, Analysis and
+Simulation of Wireless and Mobile Systems}, pp.~59--67, 2016.
+
+\bibitem{ye2004smac}
+W.~Ye, J.~Heidemann, and D.~Estrin,
+``Medium Access Control with Coordinated Adaptive Sleeping for Wireless Sensor Networks,''
+\emph{IEEE/ACM Transactions on Networking}, vol.~12, no.~3, pp.~493--506, 2004.
+
+\bibitem{kim2020rl}
+S.~Kim and J.~Park,
+``Reinforcement Learning for Adaptive Duty-Cycle Scheduling in IoT Networks,''
+\emph{IEEE Internet of Things Journal}, vol.~7, no.~11, pp.~10812--10823, 2020.
+
+\end{thebibliography}
+
+% =====================================================
+% APPENDIX
+% =====================================================
+\appendix
+\chapter{Node Firmware Configuration Reference}
+\label{app:firmware}
+
+Table~\ref{tab:firmware} lists the default firmware build flags used across all testbed
+nodes for reproducibility.
+
+\begin{table}[H]
+\centering
+\caption{Default firmware build configuration.}
+\label{tab:firmware}
+\begin{tabularx}{\textwidth}{@{}lX@{}}
+\toprule
+\rowcolor{nustgreen}
+\textcolor{white}{\bfseries Flag} & \textcolor{white}{\bfseries Value} \\
+\midrule
+\texttt{RADIO\_BAND}        & EU868 \\
+\rowcolor{nustmist}
+\texttt{TX\_POWER\_DBM}     & 14 \\
+\texttt{SPREADING\_FACTOR}  & SF9 \\
+\rowcolor{nustmist}
+\texttt{INTENT\_FRAME\_LEN} & 14 bytes \\
+\texttt{WATCHDOG\_TIMEOUT}  & 900\,s \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\end{document}

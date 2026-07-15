@@ -1,0 +1,836 @@
+\documentclass[12pt,a4paper]{report}
+
+% ---------- Geometry (UI standard margins: 4-3-3-3 cm) ----------
+\usepackage[a4paper,left=4cm,right=3cm,top=3cm,bottom=3cm]{geometry}
+
+% ---------- Fonts ----------
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx} % Times-like serif, matches UI's Times New Roman requirement
+
+% ---------- Core packages ----------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage[table]{xcolor}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,arrows.meta,backgrounds}
+\usepackage[most]{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{caption}
+\usepackage{multirow}
+\usepackage[hidelinks]{hyperref}
+
+% ---------- Palette (UI gold identity + elegant supporting tones) ----------
+\definecolor{uigold}{HTML}{C89B3C}
+\definecolor{uinavy}{HTML}{1B2A4A}
+\definecolor{uigray}{HTML}{6B7280}
+\definecolor{uibg}{HTML}{F7F5EF}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=uinavy,
+  citecolor=uinavy,
+  urlcolor=uinavy
+}
+
+% ---------- Chapter / section styling ----------
+\renewcommand{\thechapter}{\Roman{chapter}}
+
+\titleformat{\chapter}[display]
+  {\normalfont\centering}
+  {\color{uigold}\Large\bfseries BAB \thechapter}
+  {8pt}
+  {\centering\color{uinavy}\Huge\bfseries}
+  [\vspace{4pt}\begin{center}\color{uigold}\rule{4cm}{1.2pt}\end{center}\vspace{18pt}]
+
+\titleformat{\section}
+  {\normalfont\large\bfseries\color{uinavy}}
+  {\thesection}{0.8em}{}
+
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries\color{uinavy}}
+  {\thesubsection}{0.8em}{}
+
+\titlespacing*{\chapter}{0pt}{0pt}{28pt}
+\titlespacing*{\section}{0pt}{16pt}{8pt}
+\titlespacing*{\subsection}{0pt}{12pt}{6pt}
+
+% ---------- Headers / footers ----------
+\setlength{\headheight}{14pt}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\itshape\color{uigray}\leftmark}
+\fancyhead[R]{\small\color{uigray}Universitas Indonesia}
+\fancyfoot[C]{\small\thepage}
+
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyfoot[C]{\small\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+% ---------- Caption style ----------
+\captionsetup{font=small,labelfont={bf,color=uinavy},skip=6pt}
+
+% ---------- Helper box styles ----------
+\tcbset{
+  infobox/.style={
+    colback=uibg, colframe=uigold, boxrule=0.6pt, arc=1pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt,
+    fonttitle=\bfseries\color{uinavy}, coltitle=uinavy
+  }
+}
+
+\setlist[itemize]{leftmargin=1.4em, itemsep=2pt, topsep=4pt}
+\setlist[enumerate]{leftmargin=1.6em, itemsep=2pt, topsep=4pt}
+
+\begin{document}
+
+% =========================================================
+% HALAMAN JUDUL
+% =========================================================
+\pagenumbering{roman}
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+
+\vspace*{0.4cm}
+{\small\color{uigray} SKRIPSI}
+
+\vspace{1.6cm}
+{\color{uigold}\rule{5.5cm}{1.4pt}}
+
+\vspace{1.2cm}
+{\Large\bfseries\color{uinavy}
+PENERAPAN METODE \emph{COLLABORATIVE FILTERING}\\[4pt]
+UNTUK SISTEM REKOMENDASI PRODUK\\[4pt]
+PADA PLATFORM E-DAGANG NIMBUS
+\par}
+
+\vspace{1.2cm}
+{\color{uigold}\rule{5.5cm}{1.4pt}}
+
+\vspace{2cm}
+{\normalsize
+Diajukan sebagai salah satu syarat untuk memperoleh gelar\\
+Sarjana Komputer
+\par}
+
+\vspace{2cm}
+{\normalsize\bfseries RANGGA ADITYA NUGROHO}\\[2pt]
+{\normalsize NPM 2006589471}
+
+\vfill
+
+\begin{tikzpicture}
+\draw[uigold, thick] (-1.6,0) -- (-0.3,0);
+\node[color=uigold] at (0,0) {\Large $\diamond$};
+\draw[uigold, thick] (0.3,0) -- (1.6,0);
+\end{tikzpicture}
+
+\vfill
+
+{\normalsize\bfseries FAKULTAS ILMU KOMPUTER}\\
+{\normalsize\bfseries UNIVERSITAS INDONESIA}\\
+{\normalsize\bfseries DEPOK}\\
+{\normalsize\bfseries JULI 2026}
+
+\vspace{0.8cm}
+{\footnotesize\itshape\color{uigray}
+Unofficial template --- not affiliated with or endorsed by the university.\\
+Sample content only.
+\par}
+
+\end{center}
+\end{titlepage}
+
+% =========================================================
+% HALAMAN PERNYATAAN ORISINALITAS
+% =========================================================
+\newpage
+\thispagestyle{plain}
+\begin{center}
+{\bfseries\color{uinavy}\large HALAMAN PERNYATAAN ORISINALITAS}
+\end{center}
+\vspace{1.2cm}
+
+\noindent
+Skripsi ini adalah hasil karya saya sendiri, dan semua sumber baik yang dikutip
+maupun dirujuk telah saya nyatakan dengan benar.
+
+\vspace{2.5cm}
+\begin{flushright}
+\begin{tabular}{c}
+Depok, 14 Juli 2026 \\[2.4cm]
+\underline{\hspace{5cm}} \\
+Rangga Aditya Nugroho \\
+NPM 2006589471
+\end{tabular}
+\end{flushright}
+
+% =========================================================
+% HALAMAN PENGESAHAN
+% =========================================================
+\newpage
+\thispagestyle{plain}
+\begin{center}
+{\bfseries\color{uinavy}\large HALAMAN PENGESAHAN}
+\end{center}
+\vspace{0.6cm}
+
+\noindent
+Skripsi ini diajukan oleh:
+\begin{center}
+\begin{tabularx}{0.85\textwidth}{@{}p{4cm}X@{}}
+Nama & : Rangga Aditya Nugroho \\
+NPM & : 2006589471 \\
+Program Studi & : Ilmu Komputer \\
+Judul Skripsi & : Penerapan Metode \emph{Collaborative Filtering} untuk Sistem
+  Rekomendasi Produk pada Platform E-Dagang Nimbus \\
+\end{tabularx}
+\end{center}
+
+\vspace{0.4cm}
+\noindent
+telah berhasil dipertahankan di hadapan Dewan Penguji dan diterima sebagai
+bagian persyaratan yang diperlukan untuk memperoleh gelar Sarjana Komputer
+pada Program Studi Ilmu Komputer, Fakultas Ilmu Komputer, Universitas
+Indonesia.
+
+\vspace{0.6cm}
+\begin{center}
+{\bfseries\color{uinavy}DEWAN PENGUJI}
+\end{center}
+
+\begin{center}
+\renewcommand{\arraystretch}{2.1}
+\begin{tabularx}{\textwidth}{@{}p{3.6cm}X c@{}}
+\toprule
+\textbf{Jabatan} & \textbf{Nama} & \textbf{Tanda Tangan} \\
+\midrule
+Pembimbing & Dr. Made Wirawan, S.Kom., M.T. & \underline{\hspace{2.6cm}} \\
+Ketua Penguji & Prof. Dr. Ratna Kusuma Dewi, M.Sc. & \underline{\hspace{2.6cm}} \\
+Anggota Penguji & Ir. Bayu Setiawan, Ph.D. & \underline{\hspace{2.6cm}} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\vspace{0.8cm}
+\begin{center}
+Ditetapkan di: Depok \\
+Tanggal: 14 Juli 2026
+\end{center}
+
+% =========================================================
+% KATA PENGANTAR
+% =========================================================
+\newpage
+\thispagestyle{plain}
+\begin{center}
+{\bfseries\color{uinavy}\large KATA PENGANTAR}
+\end{center}
+\vspace{0.6cm}
+
+\begin{onehalfspace}
+\noindent
+Puji syukur penulis panjatkan atas selesainya penyusunan skripsi ini yang
+berjudul ``Penerapan Metode \emph{Collaborative Filtering} untuk Sistem
+Rekomendasi Produk pada Platform E-Dagang Nimbus''. Penulisan skripsi ini
+dilakukan dalam rangka memenuhi salah satu syarat untuk mencapai gelar
+Sarjana Komputer pada Program Studi Ilmu Komputer, Fakultas Ilmu Komputer,
+Universitas Indonesia.
+
+Penulis menyadari bahwa tanpa bantuan dan bimbingan dari berbagai pihak,
+sangat sulit bagi penulis untuk menyelesaikan skripsi ini. Oleh karena itu,
+penulis mengucapkan terima kasih kepada:
+\begin{enumerate}
+  \item Bapak Dr. Made Wirawan, S.Kom., M.T., selaku dosen pembimbing yang
+    telah menyediakan waktu, tenaga, dan pikiran untuk mengarahkan penulis
+    dalam penyusunan skripsi ini;
+  \item Tim riset data di PT Nexa Digital Nusantara yang telah memberikan
+    akses terhadap data transaksi tersamar (\emph{anonymized}) selama
+    program kerja praktik penulis;
+  \item Orang tua dan keluarga penulis yang senantiasa memberikan dukungan
+    moral, material, dan doa yang tiada henti;
+  \item Sahabat seperjuangan di Laboratorium Ilmu Data Fasilkom UI, terutama
+    Dimas Prakoso dan Aulia Rahmawati, atas diskusi dan masukan yang berharga.
+\end{enumerate}
+
+Akhir kata, penulis berharap Tuhan Yang Maha Esa berkenan membalas segala
+kebaikan semua pihak yang telah membantu. Semoga skripsi ini membawa manfaat
+bagi pengembangan ilmu pengetahuan.
+
+\vspace{1cm}
+\begin{flushright}
+Depok, 14 Juli 2026 \\[4pt]
+Penulis
+\end{flushright}
+\end{onehalfspace}
+
+% =========================================================
+% ABSTRAK (Indonesian)
+% =========================================================
+\newpage
+\thispagestyle{plain}
+\begin{center}
+{\bfseries\color{uinavy}\large ABSTRAK}
+\end{center}
+\vspace{0.4cm}
+
+\begin{singlespace}
+\noindent
+\begin{tabularx}{\textwidth}{@{}p{2.6cm}X@{}}
+Nama & : Rangga Aditya Nugroho \\
+Program Studi & : Ilmu Komputer \\
+Judul & : Penerapan Metode \emph{Collaborative Filtering} untuk Sistem
+  Rekomendasi Produk pada Platform E-Dagang Nimbus \\
+\end{tabularx}
+
+\vspace{0.5cm}
+\noindent
+Pertumbuhan katalog produk pada platform e-dagang Nimbus yang melampaui
+40.000 SKU aktif menyebabkan pengguna kesulitan menemukan produk yang
+relevan dengan preferensinya. Penelitian ini mengusulkan sistem rekomendasi
+berbasis \emph{collaborative filtering} dengan pendekatan \emph{matrix
+factorization} (\emph{Alternating Least Squares}) yang dibandingkan dengan
+\emph{user-based} dan \emph{item-based nearest neighbor} sebagai baseline.
+Data yang digunakan berupa 1.248.302 catatan interaksi implisit (klik,
+tambah keranjang, dan pembelian) dari 58.114 pengguna terhadap 41.276 produk
+selama periode Januari--Desember 2025. Evaluasi dilakukan menggunakan
+metrik \emph{Root Mean Square Error} (RMSE), \emph{Precision@10}, dan
+\emph{Normalized Discounted Cumulative Gain} (NDCG@10). Hasil eksperimen
+menunjukkan bahwa model ALS dengan 64 faktor laten memberikan performa
+terbaik dengan RMSE sebesar 0,742, Precision@10 sebesar 0,381, dan NDCG@10
+sebesar 0,447, mengungguli baseline \emph{item-based} sebesar 21,4\% pada
+metrik NDCG@10. Penelitian ini juga menemukan bahwa penambahan mekanisme
+peluruhan waktu (\emph{time decay}) pada bobot interaksi meningkatkan
+relevansi rekomendasi untuk pengguna dengan riwayat interaksi pendek.
+
+\vspace{0.4cm}
+\noindent
+\textbf{Kata kunci:} sistem rekomendasi, \emph{collaborative filtering},
+\emph{matrix factorization}, e-dagang, \emph{implicit feedback}
+\end{singlespace}
+
+% =========================================================
+% ABSTRACT (English)
+% =========================================================
+\newpage
+\thispagestyle{plain}
+\begin{center}
+{\bfseries\color{uinavy}\large ABSTRACT}
+\end{center}
+\vspace{0.4cm}
+
+\begin{singlespace}
+\noindent
+\begin{tabularx}{\textwidth}{@{}p{2.6cm}X@{}}
+Name & : Rangga Aditya Nugroho \\
+Study Program & : Computer Science \\
+Title & : Application of Collaborative Filtering for a Product
+  Recommendation System on the Nimbus E-Commerce Platform \\
+\end{tabularx}
+
+\vspace{0.5cm}
+\noindent
+The rapid growth of the Nimbus e-commerce catalog, now exceeding 40,000
+active SKUs, makes it increasingly difficult for users to discover products
+relevant to their preferences. This research proposes a collaborative
+filtering recommendation system based on matrix factorization (Alternating
+Least Squares), benchmarked against user-based and item-based nearest
+neighbor baselines. The dataset consists of 1,248,302 implicit interaction
+records (clicks, cart additions, and purchases) from 58,114 users across
+41,276 products collected between January and December 2025. Evaluation
+used Root Mean Square Error (RMSE), Precision@10, and Normalized Discounted
+Cumulative Gain (NDCG@10). Experimental results show that the ALS model with
+64 latent factors achieves the best performance, with an RMSE of 0.742, a
+Precision@10 of 0.381, and an NDCG@10 of 0.447, outperforming the
+item-based baseline by 21.4\% on NDCG@10. The study further finds that
+incorporating a time-decay weighting scheme on interactions improves
+recommendation relevance for users with short interaction histories.
+
+\vspace{0.4cm}
+\noindent
+\textbf{Keywords:} recommendation system, collaborative filtering, matrix
+factorization, e-commerce, implicit feedback
+\end{singlespace}
+
+% =========================================================
+% DAFTAR ISI, GAMBAR, TABEL
+% =========================================================
+\newpage
+\tableofcontents
+
+\newpage
+\listoffigures
+
+\newpage
+\listoftables
+
+% =========================================================
+% MAIN MATTER
+% =========================================================
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+\begin{onehalfspace}
+
+\chapter{PENDAHULUAN}
+
+\section{Latar Belakang}
+Platform e-dagang Nimbus telah berkembang dari sebuah toko daring niche
+menjadi salah satu penyedia belanja daring dengan lebih dari 40.000 SKU
+aktif dan rata-rata 58.000 pengguna aktif bulanan pada akhir tahun 2025.
+Pertumbuhan katalog yang pesat ini menimbulkan fenomena \emph{choice
+overload}, yaitu kondisi di mana pengguna kesulitan menentukan pilihan
+karena terlalu banyak alternatif yang tersedia (Kusuma \& Prabowo, 2022).
+Tanpa mekanisme personalisasi yang memadai, tingkat konversi cenderung
+menurun dan waktu penelusuran pengguna meningkat secara signifikan.
+
+Sistem rekomendasi merupakan salah satu solusi yang paling banyak diadopsi
+industri e-dagang untuk mengatasi permasalahan tersebut. Di antara berbagai
+pendekatan yang tersedia, \emph{collaborative filtering} (CF) menjadi
+pendekatan yang populer karena tidak memerlukan atribut konten produk yang
+lengkap dan mampu menangkap pola preferensi laten dari interaksi pengguna
+secara kolektif (Hardjono, Wibisono, \& Santoso, 2021). Namun demikian,
+penerapan CF pada data interaksi implisit --- seperti klik dan tambah
+keranjang, alih-alih rating eksplisit --- menghadirkan tantangan tersendiri
+karena tidak adanya sinyal preferensi negatif yang eksplisit.
+
+\section{Rumusan Masalah}
+Berdasarkan latar belakang di atas, rumusan masalah pada penelitian ini
+adalah sebagai berikut.
+\begin{enumerate}
+  \item Bagaimana merancang model \emph{collaborative filtering} berbasis
+    \emph{matrix factorization} yang sesuai untuk data interaksi implisit
+    pada platform Nimbus?
+  \item Bagaimana performa model yang diusulkan dibandingkan dengan
+    pendekatan \emph{neighborhood-based} sebagai baseline?
+  \item Bagaimana pengaruh mekanisme peluruhan waktu terhadap kualitas
+    rekomendasi bagi pengguna dengan riwayat interaksi pendek?
+\end{enumerate}
+
+\section{Tujuan Penelitian}
+Penelitian ini bertujuan untuk:
+\begin{enumerate}
+  \item merancang dan mengimplementasikan model rekomendasi berbasis
+    \emph{Alternating Least Squares} (ALS) untuk data implisit;
+  \item mengevaluasi dan membandingkan performa model yang diusulkan
+    terhadap baseline \emph{user-based} dan \emph{item-based} \emph{nearest
+    neighbor}; dan
+  \item menganalisis pengaruh peluruhan waktu terhadap relevansi
+    rekomendasi pada segmen pengguna \emph{cold-start}.
+\end{enumerate}
+
+\section{Manfaat Penelitian}
+Secara praktis, hasil penelitian ini diharapkan dapat menjadi rujukan bagi
+tim produk Nimbus dalam mengembangkan modul rekomendasi produksi. Secara
+akademis, penelitian ini memperkaya kajian penerapan \emph{collaborative
+filtering} pada konteks data implisit berskala menengah di ekosistem
+e-dagang Indonesia.
+
+\section{Batasan Masalah}
+Penelitian ini dibatasi pada beberapa hal berikut.
+\begin{itemize}
+  \item Data yang digunakan adalah data interaksi tersamar (\emph{anonymized})
+    periode Januari--Desember 2025.
+  \item Model yang dibandingkan terbatas pada \emph{matrix factorization}
+    (ALS) dan \emph{neighborhood-based collaborative filtering}; metode
+    berbasis \emph{deep learning} berada di luar cakupan penelitian ini.
+  \item Evaluasi dilakukan secara \emph{offline} menggunakan data historis,
+    tanpa pengujian \emph{A/B} pada pengguna produksi.
+\end{itemize}
+
+\section{Sistematika Penulisan}
+Skripsi ini disusun dalam lima bab. Bab I menjelaskan latar belakang dan
+rumusan masalah. Bab II membahas tinjauan pustaka terkait sistem
+rekomendasi dan \emph{collaborative filtering}. Bab III menguraikan metode
+penelitian. Bab IV memaparkan hasil eksperimen dan pembahasan. Bab V
+menyajikan kesimpulan dan saran.
+
+% ---------------------------------------------------------
+\chapter{TINJAUAN PUSTAKA}
+
+\section{E-Dagang dan Personalisasi}
+Personalisasi dalam konteks e-dagang merujuk pada penyesuaian tampilan
+maupun konten yang disajikan kepada pengguna berdasarkan riwayat perilaku
+mereka (Santoso, 2020). Studi Hardjono dkk. (2021) menunjukkan bahwa
+platform yang menerapkan personalisasi berbasis rekomendasi mengalami
+peningkatan rata-rata nilai transaksi sebesar 12--18\% dibandingkan
+platform tanpa personalisasi.
+
+\section{Sistem Rekomendasi}
+Secara umum, sistem rekomendasi dapat dikategorikan menjadi tiga pendekatan
+utama, sebagaimana dirangkum pada Tabel~\ref{tab:pendekatan}.
+
+\begin{table}[htb]
+\centering
+\caption{Perbandingan pendekatan sistem rekomendasi}
+\label{tab:pendekatan}
+\begin{tabularx}{\textwidth}{@{}p{3.2cm}X@{}}
+\toprule
+\textbf{Pendekatan} & \textbf{Karakteristik Utama} \\
+\midrule
+\emph{Content-based filtering} & Merekomendasikan item dengan atribut
+  serupa dengan item yang disukai pengguna sebelumnya. \\
+\emph{Collaborative filtering} & Memanfaatkan pola interaksi kolektif
+  antarpengguna dan item tanpa memerlukan atribut konten. \\
+\emph{Hybrid} & Menggabungkan sinyal konten dan kolaboratif untuk
+  mengurangi kelemahan masing-masing pendekatan. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Collaborative Filtering}
+\emph{Collaborative filtering} dibagi menjadi dua kelompok besar:
+\emph{neighborhood-based} dan \emph{model-based}. Pendekatan
+\emph{neighborhood-based} menghitung kemiripan antarpengguna atau antaritem
+menggunakan metrik seperti \emph{cosine similarity}. Pendekatan
+\emph{model-based}, khususnya \emph{matrix factorization}, memetakan
+pengguna dan item ke dalam ruang faktor laten berdimensi $k$ sedemikian
+rupa sehingga preferensi $\hat{r}_{ui}$ diaproksimasi sebagai:
+\begin{equation}
+\hat{r}_{ui} = \mathbf{p}_u^{\top} \mathbf{q}_i
+\label{eq:mf}
+\end{equation}
+dengan $\mathbf{p}_u \in \mathbb{R}^k$ merupakan vektor faktor laten
+pengguna $u$ dan $\mathbf{q}_i \in \mathbb{R}^k$ merupakan vektor faktor
+laten item $i$ (Hu, Koren, \& Volinsky, 2008). Untuk data \emph{implicit
+feedback}, fungsi kerugian yang diminimalkan mengikuti formulasi berbobot:
+\begin{equation}
+\min_{\mathbf{p}_*, \mathbf{q}_*} \sum_{u,i} c_{ui}\left(p_{ui} -
+\mathbf{p}_u^{\top}\mathbf{q}_i\right)^2 + \lambda\left(\sum_u
+\lVert\mathbf{p}_u\rVert^2 + \sum_i \lVert\mathbf{q}_i\rVert^2\right)
+\label{eq:loss}
+\end{equation}
+dengan $c_{ui}$ merupakan bobot keyakinan (\emph{confidence}) yang
+diturunkan dari frekuensi interaksi dan $\lambda$ merupakan koefisien
+regularisasi.
+
+\section{Penelitian Terkait}
+Tabel~\ref{tab:terkait} merangkum beberapa penelitian terdahulu yang
+relevan dengan topik penelitian ini.
+
+\begin{table}[htb]
+\centering
+\caption{Ringkasan penelitian terkait}
+\label{tab:terkait}
+\begin{tabularx}{\textwidth}{@{}p{3.4cm}p{4.4cm}X@{}}
+\toprule
+\textbf{Peneliti (Tahun)} & \textbf{Metode} & \textbf{Temuan Utama} \\
+\midrule
+Hu, Koren, \& Volinsky (2008) & ALS berbobot untuk data implisit &
+  Memperkenalkan formulasi \emph{confidence-weighted} untuk data implisit. \\
+Wibisono \& Ananta (2019) & \emph{Item-based} kNN &
+  Efektif untuk katalog kecil namun sulit \emph{scale} pada jutaan item. \\
+Hardjono dkk. (2021) & \emph{Hybrid} CF + konten &
+  Meningkatkan \emph{recall} 9\% dibanding CF murni pada domain fesyen. \\
+Prasetyo \& Ramadhani (2023) & \emph{Time-aware} CF &
+  Peluruhan waktu memperbaiki relevansi pada pengguna baru. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Kerangka Pemikiran}
+Gambar~\ref{fig:kerangka} menggambarkan kerangka pemikiran penelitian ini,
+mulai dari data interaksi mentah hingga evaluasi model rekomendasi.
+
+\begin{figure}[htb]
+\centering
+\begin{tikzpicture}[
+  node distance=10mm and 14mm,
+  box/.style={draw=uinavy, thick, rounded corners=2pt, fill=uibg,
+    minimum width=30mm, minimum height=10mm, align=center, font=\small},
+  arrow/.style={-{Latex[length=2.2mm]}, thick, color=uigray}
+]
+\node[box] (data) {Data Interaksi\\Implisit};
+\node[box, right=of data] (prep) {Praproses\\\& Pembobotan};
+\node[box, right=of prep] (model) {Model\\Collaborative Filtering};
+\node[box, below=of model] (eval) {Evaluasi\\RMSE, Precision, NDCG};
+\node[box, left=of eval] (rec) {Daftar\\Rekomendasi};
+
+\draw[arrow] (data) -- (prep);
+\draw[arrow] (prep) -- (model);
+\draw[arrow] (model) -- (eval);
+\draw[arrow] (model) -- (rec);
+\draw[arrow] (rec) -- (eval);
+\end{tikzpicture}
+\caption{Kerangka pemikiran penelitian}
+\label{fig:kerangka}
+\end{figure}
+
+% ---------------------------------------------------------
+\chapter{METODE PENELITIAN}
+
+\section{Desain Penelitian}
+Penelitian ini menggunakan pendekatan eksperimental kuantitatif dengan
+tahapan yang mengikuti kerangka \emph{Cross-Industry Standard Process for
+Data Mining} (CRISP-DM), disesuaikan dengan konteks sistem rekomendasi.
+
+\section{Data dan Sumber Data}
+Data penelitian bersumber dari log interaksi tersamar platform Nimbus
+periode Januari--Desember 2025. Ringkasan karakteristik data disajikan
+pada Tabel~\ref{tab:data}.
+
+\begin{table}[htb]
+\centering
+\caption{Karakteristik data penelitian}
+\label{tab:data}
+\begin{tabularx}{\textwidth}{@{}Xr@{}}
+\toprule
+\textbf{Karakteristik} & \textbf{Nilai} \\
+\midrule
+Jumlah pengguna unik & 58.114 \\
+Jumlah produk unik & 41.276 \\
+Jumlah catatan interaksi & 1.248.302 \\
+Kepadatan matriks interaksi (\emph{density}) & 0,052\% \\
+Rentang waktu data & Jan 2025 -- Des 2025 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Setiap catatan interaksi diberi bobot berdasarkan jenis peristiwa: klik
+bernilai 1, tambah keranjang bernilai 3, dan pembelian bernilai 5,
+mengikuti skema pembobotan pada Prasetyo \& Ramadhani (2023).
+
+\section{Tahapan Penelitian}
+Tahapan penelitian yang dilakukan ditunjukkan pada Gambar~\ref{fig:tahapan}.
+
+\begin{figure}[htb]
+\centering
+\begin{tikzpicture}[
+  node distance=8mm,
+  stage/.style={draw=uigold, thick, fill=white, rounded corners=2pt,
+    minimum width=95mm, minimum height=9mm, align=center, font=\small},
+  arrow/.style={-{Latex[length=2mm]}, thick, color=uinavy}
+]
+\node[stage] (s1) {1. Pengumpulan dan pembersihan data};
+\node[stage, below=of s1] (s2) {2. Konstruksi matriks interaksi pengguna--item};
+\node[stage, below=of s2] (s3) {3. Pembagian data \emph{train/validation/test} (70/15/15)};
+\node[stage, below=of s3] (s4) {4. Pelatihan model ALS dan baseline kNN};
+\node[stage, below=of s4] (s5) {5. Evaluasi dengan RMSE, Precision@10, NDCG@10};
+\node[stage, below=of s5] (s6) {6. Analisis hasil dan uji sensitivitas parameter};
+
+\foreach \a/\b in {s1/s2, s2/s3, s3/s4, s4/s5, s5/s6}
+  \draw[arrow] (\a) -- (\b);
+\end{tikzpicture}
+\caption{Tahapan penelitian}
+\label{fig:tahapan}
+\end{figure}
+
+\section{Metode Evaluasi}
+Performa model dievaluasi menggunakan tiga metrik. \emph{Root Mean Square
+Error} (RMSE) mengukur deviasi prediksi terhadap preferensi aktual:
+\begin{equation}
+\text{RMSE} = \sqrt{\frac{1}{N}\sum_{u,i}\left(r_{ui} -
+\hat{r}_{ui}\right)^2}
+\label{eq:rmse}
+\end{equation}
+\emph{Precision@K} mengukur proporsi item relevan pada $K$ rekomendasi
+teratas, sedangkan \emph{Normalized Discounted Cumulative Gain} (NDCG@K)
+memperhitungkan posisi item relevan dalam daftar rekomendasi:
+\begin{equation}
+\text{NDCG@K} = \frac{1}{\text{IDCG@K}} \sum_{j=1}^{K}
+\frac{2^{\text{rel}_j} - 1}{\log_2(j+1)}
+\label{eq:ndcg}
+\end{equation}
+
+\begin{tcolorbox}[infobox, title={\faCogs\ Konfigurasi Eksperimen}]
+Model ALS dilatih dengan jumlah faktor laten $k \in \{16, 32, 64, 128\}$,
+koefisien regularisasi $\lambda = 0{,}1$, dan 20 iterasi. Pencarian
+hiperparameter dilakukan melalui \emph{grid search} dengan validasi silang
+5 lipatan pada himpunan validasi.
+\end{tcolorbox}
+
+% ---------------------------------------------------------
+\chapter{HASIL DAN PEMBAHASAN}
+
+\section{Karakteristik Hasil Praproses}
+Setelah penyaringan pengguna dan item dengan interaksi minimum (\emph{k-core
+filtering} dengan ambang 5 interaksi), matriks interaksi akhir memiliki
+dimensi $52.847 \times 38.910$ dengan kepadatan 0,061\%.
+
+\section{Hasil Eksperimen}
+Tabel~\ref{tab:hasil} menyajikan hasil evaluasi untuk setiap konfigurasi
+jumlah faktor laten pada model ALS.
+
+\begin{table}[htb]
+\centering
+\caption{Hasil evaluasi model ALS pada berbagai jumlah faktor laten}
+\label{tab:hasil}
+\rowcolors{2}{uibg}{white}
+\begin{tabular}{@{}crrr@{}}
+\toprule
+\textbf{Faktor Laten ($k$)} & \textbf{RMSE} & \textbf{Precision@10} & \textbf{NDCG@10} \\
+\midrule
+16  & 0,811 & 0,329 & 0,388 \\
+32  & 0,768 & 0,357 & 0,419 \\
+64  & 0,742 & 0,381 & 0,447 \\
+128 & 0,745 & 0,376 & 0,441 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Konfigurasi dengan 64 faktor laten memberikan performa terbaik pada ketiga
+metrik. Peningkatan lebih lanjut ke 128 faktor tidak memberikan perbaikan
+performa dan justru mengindikasikan gejala \emph{overfitting} ringan.
+
+\section{Perbandingan dengan Baseline}
+Tabel~\ref{tab:baseline} membandingkan model ALS terbaik ($k=64$) terhadap
+dua baseline \emph{neighborhood-based}.
+
+\begin{table}[htb]
+\centering
+\caption{Perbandingan model ALS dengan baseline}
+\label{tab:baseline}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\textbf{Model} & \textbf{RMSE} & \textbf{Precision@10} & \textbf{NDCG@10} \\
+\midrule
+User-based kNN & 0,893 & 0,301 & 0,352 \\
+Item-based kNN & 0,856 & 0,318 & 0,368 \\
+ALS ($k=64$) & \textbf{0,742} & \textbf{0,381} & \textbf{0,447} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Model ALS mengungguli baseline \emph{item-based} kNN sebesar 21,4\% pada
+metrik NDCG@10 dan 19,8\% pada Precision@10, konsisten dengan temuan Hu,
+Koren, \& Volinsky (2008) bahwa \emph{matrix factorization} lebih unggul
+menangkap pola laten pada data berdimensi tinggi dan jarang (\emph{sparse}).
+
+\section{Analisis Pengaruh Peluruhan Waktu}
+Pada segmen pengguna dengan kurang dari 5 interaksi historis
+(\emph{cold-start}), penambahan mekanisme peluruhan waktu eksponensial pada
+bobot interaksi meningkatkan NDCG@10 dari 0,291 menjadi 0,334, atau
+peningkatan relatif sebesar 14,8\%. Temuan ini memperkuat argumen Prasetyo
+\& Ramadhani (2023) bahwa interaksi terbaru memberikan sinyal preferensi
+yang lebih andal dibanding interaksi lampau, khususnya bagi pengguna dengan
+riwayat pendek.
+
+% ---------------------------------------------------------
+\chapter{KESIMPULAN DAN SARAN}
+
+\section{Kesimpulan}
+Berdasarkan hasil penelitian, dapat disimpulkan sebagai berikut.
+\begin{enumerate}
+  \item Model \emph{collaborative filtering} berbasis ALS dengan 64 faktor
+    laten memberikan performa terbaik dengan RMSE 0,742, Precision@10
+    0,381, dan NDCG@10 0,447 pada data interaksi implisit platform Nimbus.
+  \item Model ALS secara konsisten mengungguli baseline \emph{user-based}
+    maupun \emph{item-based} \emph{nearest neighbor} pada seluruh metrik
+    evaluasi.
+  \item Mekanisme peluruhan waktu terbukti meningkatkan relevansi
+    rekomendasi khususnya bagi pengguna \emph{cold-start} dengan riwayat
+    interaksi pendek.
+\end{enumerate}
+
+\section{Saran}
+Untuk penelitian dan pengembangan selanjutnya, penulis menyarankan:
+\begin{enumerate}
+  \item melakukan pengujian \emph{online} melalui \emph{A/B testing} pada
+    lingkungan produksi untuk memvalidasi temuan \emph{offline};
+  \item mengeksplorasi pendekatan \emph{hybrid} yang menggabungkan sinyal
+    konten produk dengan faktor laten kolaboratif; dan
+  \item mengkaji arsitektur berbasis \emph{deep learning}, seperti
+    \emph{neural collaborative filtering}, sebagai pembanding lanjutan.
+\end{enumerate}
+
+\end{onehalfspace}
+
+% =========================================================
+% DAFTAR PUSTAKA
+% =========================================================
+\newpage
+\begin{center}
+{\bfseries\color{uinavy}\large DAFTAR PUSTAKA}
+\end{center}
+\vspace{0.4cm}
+\begin{singlespace}
+\begin{flushleft}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{8pt}
+
+Hardjono, T., Wibisono, A., \& Santoso, D. (2021). Hybrid recommendation
+approaches for fashion e-commerce platforms. \emph{Jurnal Sistem Informasi
+Nusantara}, 9(2), 112--124.
+
+Hu, Y., Koren, Y., \& Volinsky, C. (2008). Collaborative filtering for
+implicit feedback datasets. \emph{Proceedings of the IEEE International
+Conference on Data Mining}, 263--272.
+
+Kusuma, S. R., \& Prabowo, A. (2022). Choice overload and personalization
+strategies in online retail. \emph{Jurnal Manajemen Teknologi Informasi},
+14(1), 45--58.
+
+Prasetyo, B., \& Ramadhani, F. (2023). Time-aware collaborative filtering
+for cold-start users. \emph{Jurnal Ilmu Komputer dan Informasi}, 16(3),
+201--215.
+
+Santoso, W. (2020). Personalisasi pengalaman pengguna pada platform
+e-dagang: Sebuah tinjauan sistematis. \emph{Jurnal Teknologi dan Sistem
+Informasi}, 6(1), 33--47.
+
+Wibisono, A., \& Ananta, R. (2019). Scalability challenges of item-based
+collaborative filtering on large-scale catalogs. \emph{Prosiding Seminar
+Nasional Ilmu Komputer}, 78--86.
+
+\end{flushleft}
+\end{singlespace}
+
+% =========================================================
+% LAMPIRAN
+% =========================================================
+\newpage
+\begin{center}
+{\bfseries\color{uinavy}\large LAMPIRAN}
+\end{center}
+\vspace{0.4cm}
+
+\noindent
+\textbf{Lampiran A. Cuplikan Kueri Konstruksi Matriks Interaksi}
+
+\begin{tcolorbox}[
+  colback=uinavy, colframe=uinavy, arc=1pt,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+  fontupper=\footnotesize\ttfamily\color{white}
+]
+SELECT user\_id, product\_id,\\{}
+\phantom{xx}SUM(CASE\\{}
+\phantom{xxxx}WHEN event\_type = 'click' THEN 1\\{}
+\phantom{xxxx}WHEN event\_type = 'add\_to\_cart' THEN 3\\{}
+\phantom{xxxx}WHEN event\_type = 'purchase' THEN 5\\{}
+\phantom{xxxx}ELSE 0\\{}
+\phantom{xx}END) AS interaction\_weight\\{}
+FROM interaction\_log\\{}
+WHERE event\_date BETWEEN '2025-01-01' AND '2025-12-31'\\{}
+GROUP BY user\_id, product\_id;
+\end{tcolorbox}
+
+\vspace{0.6cm}
+\noindent
+\textbf{Lampiran B. Parameter Akhir Model ALS Terpilih}
+
+\begin{center}
+\begin{tabularx}{0.7\textwidth}{@{}Xr@{}}
+\toprule
+\textbf{Parameter} & \textbf{Nilai} \\
+\midrule
+Jumlah faktor laten ($k$) & 64 \\
+Koefisien regularisasi ($\lambda$) & 0,1 \\
+Jumlah iterasi & 20 \\
+Skema pembobotan & \emph{time-decay exponential} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\end{document}

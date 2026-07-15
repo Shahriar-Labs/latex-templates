@@ -1,0 +1,441 @@
+% API Documentation (Swagger Style) — editable & compilable online at https://letx.app
+% Compiles with pdflatex. REST API reference for a fictional cloud-storage
+% platform (Nimbus), with colour-coded HTTP method badges, parameter tables,
+% and request/response JSON payload panels.
+\documentclass[10pt]{article}
+\usepackage[letterpaper,margin=2.1cm,top=2.1cm,bottom=2.3cm,headheight=15pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[table]{xcolor}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage[skins]{tcolorbox}
+\usepackage{etoolbox}
+\usepackage{fontawesome5}
+\usepackage[hidelinks]{hyperref}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3.5pt}
+
+% ---------------------------------------------------------------
+% Palette
+% ---------------------------------------------------------------
+\definecolor{navy}{HTML}{162447}
+\definecolor{steel}{HTML}{51617A}
+\definecolor{accent}{HTML}{0F6FDE}
+\definecolor{codebg}{HTML}{F4F6FA}
+\definecolor{panelgray}{HTML}{EEF1F6}
+\definecolor{bordergray}{HTML}{D8DEE8}
+\definecolor{postgreen}{HTML}{1E8E5A}
+\definecolor{putorange}{HTML}{C9752A}
+\definecolor{patchpurple}{HTML}{7C4DBE}
+\definecolor{deletered}{HTML}{C0392B}
+\definecolor{reqblue}{HTML}{E4EEFC}
+\definecolor{respgreen}{HTML}{E5F5EC}
+
+% ---------------------------------------------------------------
+% Section styling
+% ---------------------------------------------------------------
+\titleformat{\section}{\large\bfseries\color{navy}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{navy}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{10pt}{4pt}
+\titlespacing*{\subsection}{0pt}{7pt}{2pt}
+
+% ---------------------------------------------------------------
+% Listings (JSON / cURL panels — plain monospace, no LaTeX escaping needed)
+% ---------------------------------------------------------------
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  breaklines=true,
+  columns=fullflexible,
+  showstringspaces=false,
+  keepspaces=true,
+  frame=none,
+  aboveskip=1pt,
+  belowskip=1pt,
+  xleftmargin=0pt
+}
+
+% ---------------------------------------------------------------
+% HTTP method badge
+% ---------------------------------------------------------------
+\newcommand{\httpbadge}[1]{%
+  \ifstrequal{#1}{GET}{\textcolor{white}{\colorbox{accent}{\textbf{\ttfamily\footnotesize\,GET\,}}}}{}%
+  \ifstrequal{#1}{POST}{\textcolor{white}{\colorbox{postgreen}{\textbf{\ttfamily\footnotesize\,POST\,}}}}{}%
+  \ifstrequal{#1}{PUT}{\textcolor{white}{\colorbox{putorange}{\textbf{\ttfamily\footnotesize\,PUT\,}}}}{}%
+  \ifstrequal{#1}{PATCH}{\textcolor{white}{\colorbox{patchpurple}{\textbf{\ttfamily\footnotesize\,PATCH\,}}}}{}%
+  \ifstrequal{#1}{DELETE}{\textcolor{white}{\colorbox{deletered}{\textbf{\ttfamily\footnotesize\,DELETE\,}}}}{}%
+}
+
+% Endpoint header box: method badge + path + one-line summary
+\newtcolorbox{routebox}{
+  colback=panelgray,
+  colframe=bordergray,
+  boxrule=0.6pt,
+  arc=3pt,
+  left=9pt,right=9pt,top=5pt,bottom=5pt,
+  boxsep=1pt
+}
+
+% Small labelled panel for request/response bodies: #1 label  #2 body colour
+\newtcolorbox{jsonpanel}[2]{
+  colback=#2,
+  colframe=bordergray,
+  boxrule=0.5pt,
+  arc=2pt,
+  left=7pt,right=7pt,top=3pt,bottom=4pt,
+  boxsep=1pt,
+  title={#1},
+  fonttitle=\scriptsize\bfseries,
+  colbacktitle=bordergray,
+  coltitle=navy,
+  toptitle=1.5pt,bottomtitle=1.5pt
+}
+
+\newcommand{\infoicon}[1]{\textcolor{accent}{#1}}
+
+% ---------------------------------------------------------------
+% Header / footer
+% ---------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\footnotesize\color{steel}Nimbus API Reference \textbullet\ v2.3}
+\rhead{\footnotesize\color{steel}\ttfamily api.nimbus.dev/v2}
+\cfoot{\footnotesize\color{steel}Page \thepage\ \textbullet\ \href{https://letx.app}{letx.app}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{bordergray}\leaders\hrule height \headrulewidth\hfill}}
+
+\begin{document}
+
+% =================================================================
+% COMPACT TITLE BANNER (in normal flow — no overlay/remember-picture)
+% =================================================================
+\begin{tcolorbox}[colback=navy,colframe=navy,arc=2pt,boxrule=0pt,
+  left=18pt,right=18pt,top=12pt,bottom=12pt,width=\textwidth,halign=center]
+{\color{white}\small\faServer\ \textsc{Nimbus Cloud Storage}}\\[5pt]
+{\color{white}\Large\bfseries API Reference}\\[3pt]
+{\color{white}\footnotesize Version 2.3 \quad\textbullet\quad REST / JSON over HTTPS}
+\end{tcolorbox}
+
+\vspace{6pt}
+\begin{tcolorbox}[colback=panelgray,colframe=bordergray,boxrule=0.5pt,arc=3pt,
+  left=14pt,right=14pt,top=7pt,bottom=7pt,width=\textwidth]
+\small
+\begin{tabularx}{\linewidth}{@{}l X l X@{}}
+\infoicon{\faGlobe} \textbf{Base URL} & \texttt{\footnotesize api.nimbus.dev/v2} &
+\infoicon{\faLock} \textbf{Auth} & API key or OAuth 2.0 bearer token \\[3pt]
+\infoicon{\faCode} \textbf{Format} & \texttt{\footnotesize application/json} &
+\infoicon{\faClock} \textbf{Rate limit} & 1{,}000 req/hour (standard tier) \\
+\end{tabularx}
+\end{tcolorbox}
+\par
+
+% =================================================================
+\section{Overview}
+The Nimbus API is a resource-oriented REST interface for managing files, folders, and
+event webhooks inside a Nimbus workspace. All requests and responses use JSON, all
+endpoints require HTTPS, and all timestamps are ISO\,8601 UTC. Path-based versioning
+(\texttt{/v2}); \texttt{/v1} is deprecated and sunsets 2026-12-31.
+
+\begin{itemize}[leftmargin=14pt,itemsep=1pt,topsep=1pt]
+  \item Resource IDs (\texttt{file\_id}, \texttt{folder\_id}, \dots) are opaque, URL-safe
+    strings prefixed by type, e.g. \texttt{fl\_8a2c\dots} for files.
+  \item List endpoints are paginated with \texttt{cursor} and \texttt{limit}; see
+    Section~\ref{sec:pagination}.
+  \item Fields omitted from a \texttt{PATCH} body are left unchanged; send \texttt{null}
+    explicitly to clear a field.
+\end{itemize}
+
+% =================================================================
+\section{Authentication}
+Server-to-server integrations should use API keys; user-facing apps should use OAuth 2.0
+bearer tokens. Both are sent via the \texttt{Authorization} header.
+
+\begin{minipage}[t]{0.48\textwidth}
+\begin{jsonpanel}{API KEY}{codebg}
+\begin{lstlisting}
+Authorization: ApiKey
+  nb_live_7f3c9a2e1d4b8f0a
+\end{lstlisting}
+\end{jsonpanel}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{jsonpanel}{OAUTH 2.0 BEARER}{codebg}
+\begin{lstlisting}
+Authorization: Bearer
+  eyJhbGciOiJSUzI1NiIsInR5c...
+\end{lstlisting}
+\end{jsonpanel}
+\end{minipage}
+\par
+
+{\small\color{steel} \infoicon{\faLock}\ API keys are generated per-workspace from
+\textbf{Settings \textrightarrow\ Developer}. OAuth access tokens expire after 3{,}600
+seconds; use the \texttt{refresh\_token} grant to renew without re-prompting the user.}
+
+% =================================================================
+\section{Rate Limiting \& Errors}
+Every response carries rate-limit headers, enforced per credential on a rolling one-hour
+window. Exceeding the limit returns \texttt{429} with a \texttt{Retry-After} header.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\rowcolor{panelgray}
+\textbf{Header} & \textbf{Example} & \textbf{Meaning} \\
+\midrule
+\texttt{X-RateLimit-Limit} & \texttt{1000} & Requests allowed in the current window \\
+\texttt{X-RateLimit-Remaining} & \texttt{842} & Requests left before throttling \\
+\texttt{X-RateLimit-Reset} & \texttt{1750939200} & Unix timestamp the window resets \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Errors share one JSON shape across every endpoint:
+
+\begin{minipage}[t]{0.46\textwidth}
+\begin{jsonpanel}{ERROR — 404 NOT FOUND}{codebg}
+\begin{lstlisting}
+{
+  "error": {
+    "code": "resource_not_found",
+    "message": "No file 'fl_8a2c9f1e'.",
+    "request_id": "req_4d1f7b2a"
+  }
+}
+\end{lstlisting}
+\end{jsonpanel}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.5\textwidth}
+\small
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+\rowcolor{panelgray}
+\textbf{Status} & \textbf{Error code} \\
+\midrule
+400 & \texttt{invalid\_request} \\
+401 & \texttt{unauthenticated} \\
+403 & \texttt{insufficient\_scope} \\
+404 & \texttt{resource\_not\_found} \\
+409 & \texttt{conflict} \\
+422 & \texttt{validation\_failed} \\
+429 & \texttt{rate\_limited} \\
+500 & \texttt{internal\_error} \\
+\bottomrule
+\end{tabularx}
+\end{minipage}
+\par
+
+% =================================================================
+\section{Files}
+Endpoints for uploading, retrieving, updating, and removing files.
+
+\subsection{List \& retrieve files}
+\begin{routebox}
+\httpbadge{GET}\hspace{6pt}\texttt{\textbf{/v2/files}}\hspace{10pt}
+\httpbadge{GET}\hspace{6pt}\texttt{\textbf{/v2/files/\{file\_id\}}}\\[3pt]
+{\small List files visible to the caller (most recently modified first), or fetch one
+file's full metadata, including \texttt{download\_url} and \texttt{checksum\_sha256}.}
+\end{routebox}
+
+{\small\textbf{Query parameters (list only)}}
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}p{2.3cm}p{1.3cm}p{1.7cm}X@{}}
+\toprule
+\rowcolor{panelgray}
+\textbf{Name} & \textbf{Type} & \textbf{Required} & \textbf{Description} \\
+\midrule
+\texttt{folder\_id} & string & No & Restrict results to one folder \\
+\texttt{limit} & integer & No & Page size, 1--100, default 20 \\
+\texttt{cursor} & string & No & Opaque pagination cursor from a prior response \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{jsonpanel}{RESPONSE — 200 OK (single file object)}{respgreen}
+\begin{lstlisting}
+{
+  "id": "fl_8a2c9f1e6d4b",
+  "name": "q3-roadmap.pdf",
+  "size_bytes": 482913,
+  "mime_type": "application/pdf",
+  "folder_id": "fd_2b7e1c9a",
+  "modified_at": "2026-06-18T15:41:22Z"
+}
+\end{lstlisting}
+\end{jsonpanel}
+
+\subsection{Upload, update, and delete}
+\begin{routebox}
+\httpbadge{POST}\hspace{6pt}\texttt{\textbf{/v2/files}}\\[3pt]
+{\small Creates a file record and returns a pre-signed upload URL. Send the raw bytes to
+\texttt{upload\_url} within 15 minutes.}
+\end{routebox}
+
+\begin{minipage}[t]{0.48\textwidth}
+\begin{jsonpanel}{REQUEST BODY}{reqblue}
+\begin{lstlisting}
+{
+  "name": "q3-roadmap.pdf",
+  "folder_id": "fd_2b7e1c9a",
+  "mime_type": "application/pdf",
+  "size_bytes": 482913
+}
+\end{lstlisting}
+\end{jsonpanel}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{jsonpanel}{RESPONSE — 201 CREATED}{respgreen}
+\begin{lstlisting}
+{
+  "id": "fl_8a2c9f1e6d4b",
+  "upload_url": "https://upload...",
+  "expires_at": "2026-06-18T16:00Z"
+}
+\end{lstlisting}
+\end{jsonpanel}
+\end{minipage}
+\par
+
+\begin{routebox}
+\httpbadge{PATCH}\hspace{6pt}\texttt{\textbf{/v2/files/\{file\_id\}}}\hspace{10pt}
+\httpbadge{DELETE}\hspace{6pt}\texttt{\textbf{/v2/files/\{file\_id\}}}\\[3pt]
+{\small \texttt{PATCH} renames or moves a file (\texttt{\{"name": ..., "folder\_id":
+...\}}), returning \texttt{200} with the updated object. \texttt{DELETE} moves the file to
+the trash (purged after 30 days); returns \texttt{204 No Content}. Pass
+\texttt{?permanent=true} to skip the trash (requires \texttt{files:hard\_delete}).}
+\end{routebox}
+
+% =================================================================
+\section{Folders}
+
+\subsection{Create \& list contents}
+\begin{routebox}
+\httpbadge{POST}\hspace{6pt}\texttt{\textbf{/v2/folders}}\hspace{10pt}
+\httpbadge{GET}\hspace{6pt}\texttt{\textbf{/v2/folders/\{id\}/children}}\\[3pt]
+{\small Create a folder, optionally nested under a parent, or list its immediate child
+files and subfolders (accepts the same \texttt{limit}/\texttt{cursor} parameters as
+Section~4.1, plus \texttt{type=file\textbar folder} to filter).}
+\end{routebox}
+
+\begin{minipage}[t]{0.48\textwidth}
+\begin{jsonpanel}{REQUEST BODY}{reqblue}
+\begin{lstlisting}
+{
+  "name": "Client Deliverables",
+  "parent_id": null
+}
+\end{lstlisting}
+\end{jsonpanel}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{jsonpanel}{RESPONSE — 201 CREATED}{respgreen}
+\begin{lstlisting}
+{
+  "id": "fd_2b7e1c9a",
+  "name": "Client Deliverables",
+  "parent_id": null
+}
+\end{lstlisting}
+\end{jsonpanel}
+\end{minipage}
+\par
+
+% =================================================================
+\section{Webhooks}
+Subscribe to workspace events instead of polling. Nimbus signs every delivery with an
+HMAC-SHA256 signature in the \texttt{X-Nimbus-Signature} header.
+
+\begin{routebox}
+\httpbadge{POST}\hspace{6pt}\texttt{\textbf{/v2/webhooks}}\hspace{10pt}
+\httpbadge{DELETE}\hspace{6pt}\texttt{\textbf{/v2/webhooks/\{webhook\_id\}}}\\[3pt]
+{\small Register an HTTPS endpoint and event list, or unregister one (\texttt{204 No
+Content}).}
+\end{routebox}
+
+\begin{minipage}[t]{0.48\textwidth}
+\begin{jsonpanel}{REQUEST BODY}{reqblue}
+\begin{lstlisting}
+{
+  "url": "https://hooks.example-crm.io/nimbus",
+  "events": ["file.created", "file.deleted"],
+  "secret": "whsec_3f9a7c2e"
+}
+\end{lstlisting}
+\end{jsonpanel}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{jsonpanel}{DELIVERY — file.created}{codebg}
+\begin{lstlisting}
+{
+  "event": "file.created",
+  "occurred_at": "2026-06-18T15:41Z",
+  "data": { "id": "fl_8a2c9f1e6d4b" }
+}
+\end{lstlisting}
+\end{jsonpanel}
+\end{minipage}
+\par
+
+\begin{center}
+\begin{tabularx}{0.85\linewidth}{@{}l X@{}}
+\toprule
+\rowcolor{panelgray}
+\textbf{Event} & \textbf{Fires when\dots} \\
+\midrule
+\texttt{file.created} & A new file finishes uploading \\
+\texttt{file.deleted} & A file is trashed or permanently deleted \\
+\texttt{folder.shared} & A folder's sharing settings change \\
+\texttt{quota.exceeded} & The workspace storage quota is reached \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =================================================================
+\section{Pagination}
+\label{sec:pagination}
+List endpoints use cursor-based pagination. Request the first page without a
+\texttt{cursor}; if \texttt{next\_cursor} is present in the response, pass it back as the
+\texttt{cursor} query parameter to fetch the next page. A response with no
+\texttt{next\_cursor} field marks the end of the list.
+
+\begin{jsonpanel}{REQUEST}{codebg}
+\begin{lstlisting}
+GET /v2/files?folder_id=fd_2b7e1c9a&limit=20&cursor=eyJvZmZzZXQiOjIwfQ==
+\end{lstlisting}
+\end{jsonpanel}
+
+% =================================================================
+\section{Changelog}
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\rowcolor{panelgray}
+\textbf{Version} & \textbf{Date} & \textbf{Changes} \\
+\midrule
+v2.3 & 2026-06-01 & Added \texttt{quota.exceeded} webhook event; \texttt{folder\_id}
+  filter on list files \\
+v2.2 & 2026-03-14 & Introduced cursor-based pagination, replacing offset pagination \\
+v2.1 & 2025-12-02 & Added OAuth 2.0 authorization-code flow alongside API keys \\
+v2.0 & 2025-09-19 & Initial \texttt{/v2} release; \texttt{/v1} entered deprecation \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{center}
+\begin{tcolorbox}[colback=panelgray,colframe=bordergray,boxrule=0.5pt,arc=3pt,
+  left=10pt,right=10pt,top=6pt,bottom=6pt,width=0.92\linewidth]
+\small\centering
+\infoicon{\faBook}\ Full changelog, SDKs (\texttt{nimbus-python}, \texttt{nimbus-node}),
+and a Postman collection are available at \texttt{api.nimbus.dev/docs}.
+\end{tcolorbox}
+\end{center}
+
+\end{document}

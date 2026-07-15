@@ -1,0 +1,340 @@
+\documentclass[12pt,oneside]{report}
+
+\usepackage[margin=1in,left=1.5in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage{tocloft}
+\usepackage{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, backgrounds}
+\usepackage{fontawesome5}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{amsmath, amssymb}
+\usepackage[table]{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{caption}
+
+\definecolor{UPennRed}{HTML}{990000}
+\definecolor{UPennBlue}{HTML}{011F5B}
+\definecolor{Charcoal}{HTML}{333333}
+\definecolor{LightGray}{HTML}{F0F0F0}
+
+\doublespacing
+\setlength{\parindent}{0.5in}
+\setlength{\parskip}{0pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\itshape\nouppercase{\leftmark}}
+\fancyhead[R]{\small\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyhead[R]{\small\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries\color{UPennBlue}}
+  {\huge\MakeUppercase{\chaptertitlename}\ \thechapter}
+  {20pt}
+  {\Huge}
+\titlespacing*{\chapter}{0pt}{50pt}{40pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{UPennRed}}
+  {\thesection}
+  {1em}
+  {}
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{Charcoal}}
+  {\thesubsection}
+  {1em}
+  {}
+\titlespacing*{\subsection}{0pt}{14pt}{6pt}
+
+\renewcommand{\cftchapfont}{\bfseries\color{UPennBlue}}
+\renewcommand{\cftsecfont}{\color{Charcoal}}
+\renewcommand{\cftsubsecfont}{\color{Charcoal}}
+\renewcommand{\cftchappagefont}{\bfseries\color{UPennBlue}}
+\renewcommand{\cftbeforechapskip}{8pt}
+\renewcommand{\cftbeforesecskip}{4pt}
+
+\renewenvironment{abstract}
+  {\chapter*{\abstractname}
+   \addcontentsline{toc}{chapter}{\abstractname}
+   \singlespacing}
+  {}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=UPennBlue,
+  citecolor=UPennRed,
+  urlcolor=UPennBlue
+}
+
+\newtcolorbox{insightbox}[1][]{
+  colback=LightGray,
+  colframe=UPennBlue,
+  coltitle=white,
+  fonttitle=\bfseries,
+  title=#1,
+  sharp corners,
+  boxrule=0.8pt,
+  before skip=12pt,
+  after skip=12pt
+}
+
+\begin{document}
+
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{center}
+
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[UPennRed] (current page.north west) rectangle ([yshift=-8pt]current page.north east);
+  \fill[UPennBlue] (current page.south west) rectangle ([yshift=8pt]current page.south east);
+\end{tikzpicture}
+
+\vspace*{2.5cm}
+
+{\color{UPennBlue}\rule{\textwidth}{1.2pt}\par}
+\vspace{1.5cm}
+
+{\Huge\bfseries\color{UPennBlue} Computational Modeling of\\[6pt] Protein--Ligand Interactions}
+
+\vspace{1cm}
+
+{\LARGE\color{Charcoal} A Machine Learning Approach to\\[4pt] Binding Affinity Prediction}
+
+\vspace{1.5cm}
+
+{\color{UPennBlue}\rule{\textwidth}{1.2pt}\par}
+\vspace{2cm}
+
+{\Large\bfseries Marcus J. Chen}
+
+\vspace{0.5cm}
+
+{\large A Dissertation\\[4pt] in\\[4pt] Bioengineering}
+
+\vspace{1cm}
+
+{\large Presented to the Faculties of the University of Pennsylvania\\[4pt] in Partial Fulfillment of the Requirements for the\\[4pt] Degree of Doctor of Philosophy}
+
+\vspace{1.2cm}
+
+{\large 2025}
+
+\vspace{1cm}
+
+\begin{minipage}{0.7\textwidth}
+\centering
+{\large\bfseries Supervisor of Dissertation}\\[8pt]
+{\large Dr.\ Elena M.\ Vasquez}\\[4pt]
+{\normalsize Associate Professor of Bioengineering}\\[4pt]
+{\normalsize School of Engineering and Applied Science}
+\end{minipage}
+
+\vspace{0.8cm}
+
+\begin{minipage}{0.7\textwidth}
+\centering
+{\large\bfseries Graduate Group Chairperson}\\[8pt]
+{\large Dr.\ Robert K.\ Nakamura}\\[4pt]
+{\normalsize Professor of Bioengineering}
+\end{minipage}
+
+\vfill
+
+{\footnotesize\itshape\color{Charcoal}
+Unofficial template --- not affiliated with or endorsed by the university. Sample content only.}
+
+\end{center}
+\end{titlepage}
+
+\pagenumbering{roman}
+
+\begin{abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+The accurate prediction of protein--ligand binding affinities remains one of the central challenges in computational drug discovery. Despite decades of methodological advances in molecular docking and scoring functions, the quantitative reliability of computational predictions often falls short of experimental accuracy. This dissertation presents a novel framework that integrates physics-based molecular simulations with modern machine learning architectures to achieve state-of-the-art binding affinity prediction.
+
+We introduce the Ensemble Graph Attention Network (EGAN), a deep learning architecture that operates directly on three-dimensional protein--ligand complex representations. Unlike conventional methods that rely on hand-crafted geometric features, EGAN learns interaction fingerprints through a hierarchical attention mechanism that captures both local atomic environments and global topological patterns. The model is trained on a curated dataset of 14,000 experimentally measured binding constants spanning seven major protein families.
+
+Our results demonstrate a Pearson correlation coefficient of $R = 0.89$ on independent test sets, representing a 23\% improvement over the best-performing classical scoring functions. We further show that EGAN generalizes effectively to challenging targets including intrinsically disordered proteins and metalloenzymes, domains where traditional docking approaches consistently underperform. Ablation studies confirm that the graph attention mechanism contributes significantly to model performance, with attention weights aligning with experimentally validated binding hot spots.
+
+This work establishes a foundation for integrating deep learning into structure-based drug design pipelines and suggests that hybrid physics-informed neural architectures represent a promising direction for the next generation of computational drug discovery tools.
+\end{abstract}
+
+\chapter*{Acknowledgments}
+\addcontentsline{toc}{chapter}{Acknowledgments}
+
+I wish to express my deepest gratitude to my advisor, Dr.\ Elena Vasquez, whose unwavering support, intellectual rigor, and patience made this work possible. Her ability to see connections across disciplines --- from statistical mechanics to deep learning --- shaped the interdisciplinary character of this research.
+
+I thank the members of my dissertation committee: Dr.\ Robert Nakamura, Dr.\ Sarah Okonkwo, and Dr.\ David Thornton, for their insightful feedback and generous mentorship throughout my doctoral studies. I am also grateful to the members of the Vasquez Laboratory, particularly Dr.\ Priya Sharma and James O'Brien, for countless discussions that refined the ideas presented here.
+
+This research was supported by a Graduate Research Fellowship from the National Science Foundation and by computational resources provided by the Penn Institute for Computational Science. I thank my collaborators at Nimbus Therapeutics for providing access to proprietary binding affinity datasets that enriched the benchmarking studies in Chapter~4.
+
+Finally, I owe an immeasurable debt to my family --- my parents, Lin and Wei Chen, and my sister, Dr.\ Julia Chen --- for their love, encouragement, and steadfast belief in the value of this pursuit. Any errors or omissions remain my own.
+
+\chapter*{Dedication}
+\addcontentsline{toc}{chapter}{Dedication}
+\begin{center}
+\vspace*{3cm}
+\textit{To my parents, who taught me to ask why.}
+\end{center}
+
+\tableofcontents
+\newpage
+\listoffigures
+\addcontentsline{toc}{chapter}{List of Figures}
+\newpage
+\listoftables
+\addcontentsline{toc}{chapter}{List of Tables}
+
+\clearpage
+\pagenumbering{arabic}
+
+\chapter{Introduction}
+\section{Motivation and Significance}
+
+The discovery and development of new pharmaceutical compounds remains an extraordinarily resource-intensive endeavor, with the average cost of bringing a single drug to market exceeding \$2.6 billion and timelines stretching beyond a decade \cite{DiMasi2016}. At the heart of this challenge lies a fundamental molecular recognition problem: predicting how strongly a small molecule ligand will bind to its target protein. Accurate binding affinity predictions can dramatically reduce the experimental burden of early-stage drug discovery by enabling computational prioritization of candidate molecules \cite{Lyu2019}.
+
+Structure-based drug design (SBDD) leverages the three-dimensional structures of protein targets to guide the optimization of lead compounds. Molecular docking --- the computational prediction of ligand binding poses and energies --- has served as the workhorse of SBDD for over three decades \cite{Kitchen2004}. Classical scoring functions, which estimate binding free energy through simplified physical models incorporating terms for van der Waals interactions, electrostatics, hydrogen bonding, and desolvation, offer computational efficiency but often sacrifice quantitative accuracy.
+
+\begin{insightbox}[Key Insight]
+The central limitation of classical scoring functions is their reliance on linear additive energy models. Protein--ligand binding is fundamentally governed by non-additive effects including conformational entropy, solvent reorganization, and cooperative hydrogen bond networks --- phenomena that linear models cannot adequately capture.
+\end{insightbox}
+
+\section{The Binding Affinity Prediction Problem}
+
+Formally, the binding affinity prediction problem can be stated as follows: given a protein structure $\mathcal{P}$ and a ligand structure $\mathcal{L}$, predict the equilibrium dissociation constant $K_d$ or the binding free energy $\Delta G_{\text{bind}}$, related by the thermodynamic relationship:
+
+\begin{equation}\label{eq:thermo}
+\Delta G_{\text{bind}} = -RT \ln K_d = \Delta H_{\text{bind}} - T\Delta S_{\text{bind}}
+\end{equation}
+
+where $R$ is the gas constant, $T$ is the absolute temperature, $\Delta H_{\text{bind}}$ is the binding enthalpy, and $\Delta S_{\text{bind}}$ is the binding entropy. The challenge lies in the fact that $\Delta G_{\text{bind}}$ is typically on the order of $-5$ to $-15$ kcal/mol, representing a small difference between large opposing energetic contributions \cite{Mobley2010}.
+
+\section{Contributions of This Dissertation}
+
+This dissertation makes four primary contributions to the field of computational binding affinity prediction:
+
+\begin{enumerate}[label=(\arabic*), leftmargin=*]
+\item The Ensemble Graph Attention Network (EGAN), a novel deep learning architecture that operates on protein--ligand complex graphs with physics-informed attention mechanisms.
+\item A comprehensive benchmarking framework for evaluating binding affinity predictors across diverse protein families, including intrinsically disordered regions and metalloproteins.
+\item An integrated computational pipeline that combines molecular dynamics sampling with graph neural network predictions, achieving state-of-the-art accuracy on standard benchmarks.
+\item A systematic analysis of attention weight distributions that reveals interpretable patterns corresponding to experimentally validated binding hot spots.
+\end{enumerate}
+
+\section{Organization of the Dissertation}
+
+The remainder of this dissertation is organized as follows. Chapter~2 provides essential background on molecular recognition, classical scoring functions, and the application of graph neural networks to molecular property prediction. Chapter~3 describes the EGAN architecture in detail, including the ensemble sampling strategy and the physics-informed attention mechanism. Chapter~4 presents comprehensive benchmarking results across multiple protein families and compares EGAN performance against established methods. Chapter~5 discusses implications for drug discovery, limitations of the current approach, and directions for future research.
+
+\chapter{Background and Related Work}
+\section{Classical Approaches to Binding Affinity Prediction}
+
+Classical scoring functions can be broadly categorized into three families: force-field-based, empirical, and knowledge-based \cite{Liu2018}. Force-field-based methods compute non-bonded interaction energies using molecular mechanics potentials, typically with an AMBER or CHARMM parameterization. Empirical scoring functions fit weighted sums of physically motivated terms to experimental binding data. Knowledge-based potentials derive statistical pair potentials from the frequency of interatomic contacts observed in structural databases.
+
+Table~\ref{tab:scoring} summarizes the key characteristics of representative scoring functions from each family.
+
+\begin{table}[htbp]
+\centering
+\caption{Representative scoring functions across three classical families.}\label{tab:scoring}
+\singlespacing
+\begin{tabularx}{\textwidth}{l>{\raggedright\arraybackslash}Xcc}
+\toprule
+\textbf{Function} & \textbf{Core Methodology} & \textbf{Type} & \textbf{Year} \\
+\midrule
+AutoDock Vina & Hybrid empirical/knowledge-based scoring & Empirical & 2010 \\
+GlideScore SP & Force-field with empirical hydrophobic term & Force-field & 2004 \\
+DrugScore & Distance-dependent pair potentials from PDB statistics & Knowledge-based & 2006 \\
+X-Score & Atomic-level empirical scoring with desolvation & Empirical & 2002 \\
+PMF04 & Statistical potential with protein-specific corrections & Knowledge-based & 2004 \\
+GoldScore & Genetic algorithm-optimized hydrogen bonding terms & Empirical & 1997 \\
+DSX & Distance-scaled finite ideal-gas reference state & Knowledge-based & 2011 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Deep Learning in Molecular Property Prediction}
+
+Recent years have witnessed an explosion of interest in applying deep learning to molecular problems. Graph neural networks (GNNs) have emerged as a particularly natural framework for modeling molecular structures, where atoms represent nodes and bonds represent edges \cite{Gilmer2017}. The message-passing paradigm, in which node representations are iteratively updated by aggregating information from neighboring nodes, provides a flexible inductive bias well-suited to chemical systems.
+
+\subsection{Graph Neural Network Architectures}
+
+The fundamental operation in a message-passing neural network can be expressed as:
+
+\begin{equation}\label{eq:mpnn}
+\mathbf{h}_v^{(k+1)} = U\left(\mathbf{h}_v^{(k)},\; \bigoplus_{u \in \mathcal{N}(v)} M\left(\mathbf{h}_v^{(k)}, \mathbf{h}_u^{(k)}, \mathbf{e}_{vu}\right)\right)
+\end{equation}
+
+where $\mathbf{h}_v^{(k)}$ is the feature vector of node $v$ at layer $k$, $\mathcal{N}(v)$ denotes the neighbors of $v$, $\mathbf{e}_{vu}$ is the edge feature between nodes $v$ and $u$, $M$ is the message function, $\bigoplus$ is a permutation-invariant aggregation operator (typically sum, mean, or max), and $U$ is the update function. Both $M$ and $U$ are implemented as learnable neural network layers.
+
+\subsection{Application to Binding Affinity Prediction}
+
+Several groups have applied GNN architectures to binding affinity prediction with promising results. The PDBbind benchmark dataset \cite{Wang2004} provides a standardized evaluation framework, containing approximately 19,000 protein--ligand complexes with experimentally measured binding constants. State-of-the-art GNN-based methods achieve Pearson correlation coefficients in the range of $R = 0.80$ to $0.84$ on PDBbind core sets, representing substantial improvements over classical scoring functions.
+
+\begin{insightbox}[Limitations of Current Approaches]
+Most existing deep learning methods for binding affinity prediction operate exclusively on ligand structures, treating the protein environment implicitly or through pre-computed descriptors. This simplification discards critical information about protein conformational dynamics, solvent effects, and long-range electrostatic interactions that are known to modulate binding thermodynamics.
+\end{insightbox}
+
+\section{Ensemble Methods in Computational Chemistry}
+
+Molecular recognition occurs on rugged free energy landscapes characterized by multiple local minima separated by appreciable kinetic barriers. Single-structure representations --- whether from X-ray crystallography, NMR spectroscopy, or single docking poses --- capture only one snapshot of this dynamic equilibrium. Ensemble methods address this limitation by sampling multiple conformations and weighting predictions by their thermodynamic populations \cite{Amaro2018}.
+
+The EGAN architecture introduced in this work extends the ensemble paradigm to graph neural networks. Rather than operating on a single protein--ligand complex graph, EGAN processes an ensemble of conformations sampled from molecular dynamics trajectories, with an attention mechanism that learns to weight conformations according to their relevance for binding affinity prediction. This approach bridges the gap between the statistical mechanical foundations of binding thermodynamics and the representational power of modern deep learning.
+
+\begin{thebibliography}{99}
+
+\bibitem{DiMasi2016}
+J.\ A.\ DiMasi, H.\ G.\ Grabowski, and R.\ W.\ Hansen.
+\newblock Innovation in the pharmaceutical industry: New estimates of R\&D costs.
+\newblock \textit{J.\ Health Econ.}, 47:20--33, 2016.
+
+\bibitem{Lyu2019}
+J.\ Lyu, S.\ Wang, T.\ E.\ Balius, et al.
+\newblock Ultra-large library docking for discovering new chemotypes.
+\newblock \textit{Nature}, 566(7743):224--229, 2019.
+
+\bibitem{Kitchen2004}
+D.\ B.\ Kitchen, H.\ Decornez, J.\ R.\ Furr, and J.\ Bajorath.
+\newblock Docking and scoring in virtual screening for drug discovery: Methods and applications.
+\newblock \textit{Nat.\ Rev.\ Drug Discov.}, 3(11):935--949, 2004.
+
+\bibitem{Mobley2010}
+D.\ L.\ Mobley and K.\ A.\ Dill.
+\newblock Binding of small-molecule ligands to proteins: ``What you see'' is not always ``what you get''.
+\newblock \textit{Structure}, 17(4):489--498, 2010.
+
+\bibitem{Liu2018}
+J.\ Liu and R.\ Wang.
+\newblock Classification of current scoring functions.
+\newblock \textit{J.\ Chem.\ Inf.\ Model.}, 55(3):475--482, 2018.
+
+\bibitem{Gilmer2017}
+J.\ Gilmer, S.\ S.\ Schoenholz, P.\ F.\ Riley, O.\ Vinyals, and G.\ E.\ Dahl.
+\newblock Neural message passing for quantum chemistry.
+\newblock In \textit{Proceedings of the 34th International Conference on Machine Learning}, pages 1263--1272, 2017.
+
+\bibitem{Wang2004}
+R.\ Wang, X.\ Fang, Y.\ Lu, and S.\ Wang.
+\newblock The PDBbind database: Collection of binding affinities for protein--ligand complexes with known three-dimensional structures.
+\newblock \textit{J.\ Med.\ Chem.}, 47(12):2977--2980, 2004.
+
+\bibitem{Amaro2018}
+R.\ E.\ Amaro, J.\ Baudry, J.\ Chodera, et al.
+\newblock Ensemble docking in drug discovery.
+\newblock \textit{Biophys.\ J.}, 114(10):2271--2278, 2018.
+
+\end{thebibliography}
+
+\end{document}

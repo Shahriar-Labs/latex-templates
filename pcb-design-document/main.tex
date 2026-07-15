@@ -1,0 +1,366 @@
+\documentclass[11pt,a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{helvet} % Helvetica font for a modern tech feel
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[top=0.9in, bottom=1.0in, left=0.85in, right=0.85in]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{amsmath, amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, shapes.geometric, backgrounds, patterns}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{fontawesome5}
+\usepackage{lastpage}
+\usepackage{microtype}
+
+% --- Custom Colors ---
+\definecolor{primary}{HTML}{0F172A}      % Slate 900 (Deep primary)
+\definecolor{secondary}{HTML}{0EA5E9}    % Sky 500 (Teal/Blue accent)
+\definecolor{darktext}{HTML}{334155}     % Slate 700 (Body text)
+\definecolor{lightbg}{HTML}{F8FAFC}      % Slate 50 (Background light)
+\definecolor{bordergray}{HTML}{E2E8F0}   % Slate 200 (Borders)
+\definecolor{success}{HTML}{10B981}      % Green accent
+\definecolor{warning}{HTML}{F59E0B}      % Yellow accent
+\definecolor{alertred}{HTML}{EF4444}     % Red accent
+
+% --- Document Formatting ---
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\fancyhead[L]{\color{darktext}\fontsize{9}{11}\selectfont \textbf{Synapse Robotics} \textbar\ PCB Design Document}
+\fancyhead[R]{\color{darktext}\fontsize{9}{11}\selectfont Project Apex-X (Rev 2.1)}
+\fancyfoot[L]{\color{darktext}\fontsize{8}{10}\selectfont Confidential - Internal Engineering Use Only}
+\fancyfoot[R]{\color{darktext}\fontsize{9}{11}\selectfont Page \thepage\ of \pageref{LastPage}}
+
+% --- Headings Formatting ---
+\titleformat{\section}
+  {\color{primary}\normalfont\Large\bfseries}
+  {\thesection}{1em}{}[{\color{bordergray}\titlerule[1pt]}]
+\titleformat{\subsection}
+  {\color{secondary}\normalfont\large\bfseries}
+  {\thesubsection}{1em}{}
+
+\titlespacing*{\section}{0pt}{1.5ex plus 1ex minus .2ex}{1.0ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1.2ex plus 1ex minus .2ex}{0.8ex plus .2ex}
+
+% --- TColorBox Settings ---
+\tcbset{
+    boxrule=1pt,
+    colback=lightbg,
+    colframe=secondary,
+    arc=4pt,
+    left=8pt,
+    right=8pt,
+    top=8pt,
+    bottom=8pt
+}
+
+\begin{document}
+
+% --- Cover/Header Block ---
+\begin{center}
+    \begin{minipage}{0.65\textwidth}
+        {\Huge\bfseries\color{primary} High-Speed Processor Board}\\
+        \vspace{0.2cm}
+        {\large\bfseries\color{secondary} Project Apex-X -- PCB Design Document}\\
+        \vspace{0.1cm}
+        {\color{darktext}\small Synapse Robotics Inc. \textbar\ Hardware Engineering Group}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.3\textwidth}
+        \begin{flushright}
+            \color{darktext}\small
+            \textbf{Document ID:} SR-PCB-2026-004\\
+            \textbf{Revision:} 2.1\\
+            \textbf{Date:} July 15, 2026\\
+            \textbf{Author:} Sarah Jenkins
+        \end{flushright}
+    \end{minipage}
+\end{center}
+\vspace{0.2cm}
+{\color{primary}\rule{\textwidth}{1.5pt}}
+\vspace{0.4cm}
+
+% --- Section 1: Revision History ---
+\section{Document Revision History}
+This design document defines the physical layout rules, schematic integration guidelines, stackup configurations, and routing requirements for the Project Apex-X processor board. All modifications must be tracked and approved by the Hardware Engineering Group.
+
+\vspace{0.2cm}
+\begin{table}[h]
+\centering
+\fontsize{9}{11}\selectfont
+\begin{tabularx}{\textwidth}{l l p{3cm} X}
+\rowcolor{primary}
+\color{white}\textbf{Revision} & \color{white}\textbf{Date} & \color{white}\textbf{Author} & \color{white}\textbf{Description of Changes} \\
+\midrule
+1.0 & Jan 12, 2026 & Sarah Jenkins & Initial draft for schematic entry and footprint validation. \\
+\rowcolor{lightbg}
+1.1 & Mar 05, 2026 & Sarah Jenkins & Added DDR4 impedance profile and updated decoupling rules. \\
+2.0 & May 20, 2026 & Sarah Jenkins & Updated stackup to 6-layer structure for signal integrity optimization. \\
+\rowcolor{lightbg}
+2.1 & Jul 15, 2026 & Sarah Jenkins & Final release for pre-production fabrication. Added PCIe lane rules. \\
+\bottomrule
+\end{tabularx}
+\caption{Document Revision Log}
+\label{tab:revision}
+\end{table}
+
+% --- Section 2: System Architecture ---
+\section{System Overview \& Block Diagram}
+The Project Apex-X processor board acts as the central controller for high-speed edge computing applications. It relies on the Synapse-X SoC, which integrates FPGA fabric with quad-core ARM processing units, flanked by DDR4 SDRAM and eMMC storage.
+
+\vspace{0.4cm}
+\begin{center}
+\begin{tikzpicture}[
+    node distance=0.8cm and 1.5cm,
+    block/.style={
+        rectangle,
+        draw=primary,
+        fill=lightbg,
+        thick,
+        minimum width=2.4cm,
+        minimum height=1.0cm,
+        align=center,
+        font=\small\bfseries,
+        rounded corners
+    },
+    soc/.style={
+        rectangle,
+        draw=primary,
+        fill=secondary!15,
+        thick,
+        minimum width=3.2cm,
+        minimum height=3.2cm,
+        align=center,
+        font=\bfseries\color{primary},
+        rounded corners
+    },
+    conn/.style={
+        draw=secondary,
+        thick,
+        <->,
+        >=latex
+    },
+    pwr/.style={
+        draw=warning!80!black,
+        dashed,
+        thick,
+        ->,
+        >=latex
+    }
+]
+
+% Center SoC
+\node[soc] (soc) {Synapse-X SoC\\(FPGA + ARM)};
+
+% Right Side: Memory and Storage
+\node[block, right=of soc, yshift=1.0cm] (ddr) {DDR4 SDRAM\\8 GB (32-bit)};
+\node[block, right=of soc, yshift=-1.0cm] (flash) {eMMC Storage\\32 GB (HS400)};
+
+% Left Side: Interfaces
+\node[block, left=of soc, yshift=1.0cm] (usb) {USB 3.2 Gen2\\Type-C Interface};
+\node[block, left=of soc, yshift=-10mm] (pcie) {PCIe Gen3 x4\\M.2 Key-M Slot};
+
+% Top: Power
+\node[block, above=of soc] (pmic) {Meridian PMIC\\V4-Power};
+
+% Bottom: Analog / Sensors
+\node[block, below=of soc] (sensor) {IMU \& Telemetry\\Sensors (SPI/I2C)};
+
+% Draw lines
+\draw[conn] ($(soc.east)+(0,0.8)$) -- (ddr.west);
+\draw[conn] ($(soc.east)+(0,-0.8)$) -- (flash.west);
+\draw[conn] ($(soc.west)+(0,0.8)$) -- (usb.east);
+\draw[conn] ($(soc.west)+(0,-0.8)$) -- (pcie.east);
+\draw[pwr] (pmic.south) -- (soc.north);
+\draw[conn] (soc.south) -- (sensor.north);
+
+% Label the buses
+\node[font=\scriptsize\color{darktext}, above] at ($(soc.east)!0.5!(ddr.west)$) {DDR Bus};
+\node[font=\scriptsize\color{darktext}, below] at ($(soc.east)!0.5!(flash.west)$) {eMMC};
+\node[font=\scriptsize\color{darktext}, above] at ($(soc.west)!0.5!(usb.east)$) {USB 3.2};
+\node[font=\scriptsize\color{darktext}, below] at ($(soc.west)!0.5!(pcie.east)$) {PCIe x4};
+
+\end{tikzpicture}
+\end{center}
+
+\newpage
+
+% --- Section 3: Stackup Details ---
+\section{PCB Layer Stackup \& Physical Parameters}
+The design utilizes a 6-layer stackup to optimize signal routing, shield critical nets, and distribute power. This structure provides dedicated reference planes directly adjacent to every signal routing layer.
+
+\subsection{Stackup Diagram}
+The physical construction of the board is outlined below. Layer thicknesses have been selected to ensure an overall nominal thickness of 62 mils (1.6 mm).
+
+\vspace{0.4cm}
+\begin{center}
+\begin{tikzpicture}[
+    node distance=0cm,
+    layer/.style={
+        rectangle,
+        draw=black!40,
+        minimum width=8.5cm,
+        minimum height=0.45cm,
+        align=left,
+        inner sep=4pt,
+        font=\scriptsize\bfseries
+    },
+    copper/.style={
+        fill=primary,
+        text=white
+    },
+    gndplane/.style={
+        fill=darktext!90,
+        text=white
+    },
+    dielectric/.style={
+        fill=lightbg,
+        draw=black!25,
+        text=darktext,
+        font=\scriptsize\itshape
+    }
+]
+
+\node[layer, copper] (l1) {L1: TOP - Signal / High-Speed RF};
+\node[layer, dielectric, below=of l1] (d1) {Prepreg (FR-4, Dk=4.2, 4.0 mil)};
+\node[layer, gndplane, below=of d1] (l2) {L2: GND - Reference Plane};
+\node[layer, dielectric, below=of l2] (d2) {Core (FR-4, Dk=4.4, 8.0 mil)};
+\node[layer, copper, below=of d2] (l3) {L3: IN1 - Signal / High-Speed Routing};
+\node[layer, dielectric, below=of l3] (d3) {Prepreg (FR-4, Dk=4.2, 4.0 mil)};
+\node[layer, copper, below=of d3] (l4) {L4: PWR - Power Plane};
+\node[layer, dielectric, below=of l4] (d4) {Core (FR-4, Dk=4.4, 8.0 mil)};
+\node[layer, gndplane, below=of d4] (l5) {L5: GND - Reference Plane};
+\node[layer, dielectric, below=of l5] (d5) {Prepreg (FR-4, Dk=4.2, 4.0 mil)};
+\node[layer, copper, below=of d5] (l6) {L6: BOTTOM - Signal / Power};
+
+% Callout lines and annotations on the right
+\draw[thick, <-] (l1.east) -- +(1.2, 0) node[right, font=\scriptsize] {1.4 mil Copper (1 oz)};
+\draw[thick, <-] (l2.east) -- +(1.2, 0) node[right, font=\scriptsize] {0.7 mil Copper (0.5 oz)};
+\draw[thick, <-] (l3.east) -- +(1.2, 0) node[right, font=\scriptsize] {0.7 mil Copper (0.5 oz)};
+\draw[thick, <-] (l4.east) -- +(1.2, 0) node[right, font=\scriptsize] {0.7 mil Copper (0.5 oz)};
+\draw[thick, <-] (l5.east) -- +(1.2, 0) node[right, font=\scriptsize] {0.7 mil Copper (0.5 oz)};
+\draw[thick, <-] (l6.east) -- +(1.2, 0) node[right, font=\scriptsize] {1.4 mil Copper (1 oz)};
+
+\end{tikzpicture}
+\end{center}
+\vspace{0.2cm}
+
+\subsection{Stackup Specifications}
+Table~\ref{tab:stackup} details the layer properties. The dielectric constant (Dk) is specified at 1 GHz.
+
+\begin{table}[h]
+\centering
+\fontsize{9}{11}\selectfont
+\begin{tabularx}{\textwidth}{c l l p{3.0cm} l l l}
+\rowcolor{primary}
+\color{white}\textbf{Layer} & \color{white}\textbf{Name} & \color{white}\textbf{Type} & \color{white}\textbf{Material} & \color{white}\textbf{Thickness} & \color{white}\textbf{Dk} & \color{white}\textbf{Copper Wt} \\
+\midrule
+- & Solder Mask & Dielectric & Liquid Photo Imageable & 0.8 mil & 3.5 & - \\
+\rowcolor{lightbg}
+1 & TOP & Signal & Copper Foil / FR-4 & 1.4 mil & 4.2 & 1.0 oz \\
+- & Prepreg & Dielectric & FR-4 2116 & 4.0 mil & 4.2 & - \\
+\rowcolor{lightbg}
+2 & GND & Plane & Copper Foil / FR-4 & 0.7 mil & 4.4 & 0.5 oz \\
+- & Core & Dielectric & FR-4 Core & 8.0 mil & 4.4 & - \\
+\rowcolor{lightbg}
+3 & IN1 & Signal & Copper Foil / FR-4 & 0.7 mil & 4.2 & 0.5 oz \\
+- & Prepreg & Dielectric & FR-4 2116 & 4.0 mil & 4.2 & - \\
+\rowcolor{lightbg}
+4 & PWR & Plane & Copper Foil / FR-4 & 0.7 mil & 4.4 & 0.5 oz \\
+- & Core & Dielectric & FR-4 Core & 8.0 mil & 4.4 & - \\
+\rowcolor{lightbg}
+5 & GND & Plane & Copper Foil / FR-4 & 0.7 mil & 4.4 & 0.5 oz \\
+- & Prepreg & Dielectric & FR-4 2116 & 4.0 mil & 4.2 & - \\
+\rowcolor{lightbg}
+6 & BOTTOM & Signal & Copper Foil / FR-4 & 1.4 mil & 4.2 & 1.0 oz \\
+- & Solder Mask & Dielectric & Liquid Photo Imageable & 0.8 mil & 3.5 & - \\
+\bottomrule
+\end{tabularx}
+\caption{Detailed Layer Parameter Table}
+\label{tab:stackup}
+\end{table}
+
+\newpage
+
+% --- Section 4: Impedance & Routing ---
+\section{Routing Rules \& Impedance Control}
+To prevent signal reflections and cross-talk, controlled impedance is required on all high-speed signals. Signal paths must comply with the target geometries outlined in Table~\ref{tab:impedance}.
+
+\begin{table}[h]
+\centering
+\fontsize{9}{11}\selectfont
+\begin{tabularx}{\textwidth}{l l l l X}
+\rowcolor{primary}
+\color{white}\textbf{Interface} & \color{white}\textbf{Target Impedance} & \color{white}\textbf{Trace Width (w)} & \color{white}\textbf{Spacing (s)} & \color{white}\textbf{Reference Layers} \\
+\midrule
+Single-Ended Reference & 50 $\Omega$ $\pm$ 10\% & 4.5 mil & - & L2 (GND), L5 (GND) \\
+\rowcolor{lightbg}
+USB 2.0 / 3.2 Diff Pair & 90 $\Omega$ $\pm$ 10\% & 4.0 mil & 5.0 mil & L2 (GND), L5 (GND) \\
+PCIe Gen3 Lanes & 100 $\Omega$ $\pm$ 10\% & 3.8 mil & 6.0 mil & L2 (GND) \\
+\rowcolor{lightbg}
+DDR4 Diff Clock & 100 $\Omega$ $\pm$ 10\% & 3.8 mil & 5.5 mil & L2 (GND), L5 (GND) \\
+DDR4 Data / Address & 40 $\Omega$ single-ended & 5.2 mil & - & L2 (GND), L5 (GND) \\
+\bottomrule
+\end{tabularx}
+\caption{Impedance Control Target Parameters}
+\label{tab:impedance}
+\end{table}
+
+\begin{tcolorbox}[colback=lightbg, colframe=secondary, title=\textbf{\faInfoCircle\ High-Speed Routing Best Practices}]
+\fontsize{9}{11}\selectfont
+\begin{itemize}[leftmargin=*]
+    \item \textbf{Reference Planes:} High-speed differential pairs must run continuously over an uninterrupted ground reference plane (L2 or L5). Avoid routing across splits or voids.
+    \item \textbf{Via Count:} Limit via count on high-speed paths (PCIe, USB 3.2) to a maximum of two. Each via transition must have an adjacent ground return via placed within 15 mils.
+    \item \textbf{Length Matching:} USB 3.2 Rx/Tx differential pairs must be length-matched within $\pm$ 5 mils. DDR4 data lanes within the same byte lane must be length-matched within $\pm$ 10 mils.
+\end{itemize}
+\end{tcolorbox}
+
+% --- Section 5: Power Delivery Network (PDN) ---
+\section{Power Delivery Network (PDN) Guidelines}
+The design includes multiple power rails generated by the PMIC. Table~\ref{tab:power} summarizes the target voltage, maximum expected current, ripple tolerance, and routing requirements for each rail.
+
+\begin{table}[h]
+\centering
+\fontsize{9}{11}\selectfont
+\begin{tabularx}{\textwidth}{l l l l X}
+\rowcolor{primary}
+\color{white}\textbf{Rail Name} & \color{white}\textbf{Voltage} & \color{white}\textbf{Max Current} & \color{white}\textbf{Ripple Limit} & \color{white}\textbf{Routing Topology} \\
+\midrule
+VCC\_3V3 & 3.3 V & 2.0 A & $\pm$ 5\% & Star topology, minimum 40 mil trace width. \\
+\rowcolor{lightbg}
+VCC\_1V8 & 1.8 V & 1.5 A & $\pm$ 5\% & Power plane routing on L4. \\
+VCC\_1V2\_DDR & 1.2 V & 4.0 A & $\pm$ 3\% & Solid copper pour on L4, decouple with 0.1 $\mu$F. \\
+\rowcolor{lightbg}
+VCC\_0V85\_SoC & 0.85 V & 12.0 A & $\pm$ 2\% & Dedicated plane cavity, multipoint capacitor connections. \\
+VDD\_VTT & 0.6 V & 1.0 A & $\pm$ 5\% & Trace routing adjacent to DDR4 address bus. \\
+\bottomrule
+\end{tabularx}
+\caption{Power Supply Rail Performance Requirements}
+\label{tab:power}
+\end{table}
+
+% --- Section 6: Design Rule Check (DRC) Checklist ---
+\section{Pre-Release Layout Checklist}
+Before exporting manufacturing Gerber files, layout design rules must be validated against the manufacturing checklist below.
+
+\begin{enumerate}[label=\lbrack\ \rbrack, leftmargin=*]
+    \item Verify that all 50 $\Omega$ single-ended traces match width constraints.
+    \item Verify that return vias are placed next to high-speed signal vias.
+    \item Confirm PMIC power trace widths satisfy current requirements (minimum 20 mil width per 1A).
+    \item Ensure decoupling capacitors are placed directly at the pin entry points.
+    \item Run complete DRC check in Altium and verify zero violations.
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,407 @@
+\documentclass[11pt,a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────────
+\usepackage[table]{xcolor}
+\usepackage[margin=1in,top=1.1in,bottom=0.9in,headheight=14pt]{geometry}
+\usepackage[most]{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage{parskip}
+\usepackage{ragged2e}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+% ── Colors ────────────────────────────────────────────────────────────────
+\definecolor{priNavy}{HTML}{1B2A4A}
+\definecolor{accTeal}{HTML}{0D9488}
+\definecolor{accAmber}{HTML}{D97706}
+\definecolor{accRed}{HTML}{DC2626}
+\definecolor{bgLight}{HTML}{F8FAFC}
+\definecolor{bgBox}{HTML}{F1F5F9}
+\definecolor{txMuted}{HTML}{64748B}
+\definecolor{ruleColor}{HTML}{CBD5E1}
+
+% ── Page style ────────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{%
+  \footnotesize\color{txMuted}Nimbus Platform \textbar{} Release Notes%
+}
+\fancyhead[R]{%
+  \footnotesize\color{txMuted}v3.4.2%
+}
+\fancyfoot[C]{%
+  \footnotesize\color{ruleColor}\thepage%
+}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\headrule}{%
+  \hrule height 0.4pt width\headwidth\vskip0.5pt%
+  \hrule height 0.4pt width\headwidth%
+}
+
+% ── Section formatting ────────────────────────────────────────────────────
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{priNavy}}
+  {}{0pt}{}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{priNavy}}
+  {}{0pt}{}
+
+% ── tcolorbox styles ──────────────────────────────────────────────────────
+\newtcolorbox{releasebox}[1][]{%
+  enhanced,
+  colback=bgBox,
+  colframe=ruleColor,
+  boxrule=0.6pt,
+  arc=4pt,
+  outer arc=4pt,
+  left=12pt,
+  right=12pt,
+  top=10pt,
+  bottom=10pt,
+  before skip=14pt,
+  after skip=14pt,
+  #1%
+}
+
+\newtcolorbox{featurebox}[1][]{%
+  enhanced,
+  colback=bgLight,
+  colframe=accTeal!40,
+  boxrule=0.5pt,
+  arc=3pt,
+  outer arc=3pt,
+  left=10pt,
+  right=10pt,
+  top=8pt,
+  bottom=8pt,
+  before skip=8pt,
+  after skip=8pt,
+  borderline west={3pt}{0pt}{accTeal},
+  #1%
+}
+
+\newtcolorbox{bugbox}[1][]{%
+  enhanced,
+  colback=bgLight,
+  colframe=accAmber!40,
+  boxrule=0.5pt,
+  arc=3pt,
+  outer arc=3pt,
+  left=10pt,
+  right=10pt,
+  top=8pt,
+  bottom=8pt,
+  before skip=8pt,
+  after skip=8pt,
+  borderline west={3pt}{0pt}{accAmber},
+  #1%
+}
+
+\newtcolorbox{depbox}[1][]{%
+  enhanced,
+  colback=bgLight,
+  colframe=accRed!40,
+  boxrule=0.5pt,
+  arc=3pt,
+  outer arc=3pt,
+  left=10pt,
+  right=10pt,
+  top=8pt,
+  bottom=8pt,
+  before skip=8pt,
+  after skip=8pt,
+  borderline west={3pt}{0pt}{accRed},
+  #1%
+}
+
+\newtcolorbox{infobox}[1][]{%
+  enhanced,
+  colback=priNavy!3,
+  colframe=priNavy!20,
+  boxrule=0.5pt,
+  arc=3pt,
+  outer arc=3pt,
+  left=10pt,
+  right=10pt,
+  top=8pt,
+  bottom=8pt,
+  before skip=8pt,
+  after skip=8pt,
+  borderline west={3pt}{0pt}{priNavy},
+  #1%
+}
+
+% ── Helper commands ───────────────────────────────────────────────────────
+\newcommand{\releasebadge}[1]{%
+  \tcbox[enhanced,size=small,arc=3pt,colback=accTeal!10,colframe=accTeal!50,%
+         boxrule=0.4pt,fontupper=\footnotesize\bfseries\color{accTeal}]{#1}%
+}
+
+\newcommand{\verysmall}[1]{{\footnotesize\color{txMuted}#1}}
+
+\newcommand{\iconlabel}[2]{%
+  \textcolor{priNavy}{#1}\hspace{5pt}{\small\bfseries#2}%
+}
+
+% ── Metadata ──────────────────────────────────────────────────────────────
+\hypersetup{%
+  colorlinks=true,
+  linkcolor=accTeal,
+  urlcolor=accTeal,
+  pdfauthor={Nimbus Engineering},
+  pdftitle={Nimbus Platform v3.4.2 Release Notes},
+}
+
+% ══════════════════════════════════════════════════════════════════════════
+\begin{document}
+
+% ── Title block ───────────────────────────────────────────────────────────
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[priNavy] (current page.north west) rectangle
+    ([yshift=-3.7cm]current page.north east);
+  \node[anchor=north west,text=white] at
+    ([yshift=-0.9cm,xshift=1in]current page.north west) {%
+    \begin{minipage}{\dimexpr\paperwidth-2in\relax}
+      \Huge\bfseries Nimbus Platform\\[2pt]
+      \Large Release Notes\vspace{6pt}
+    \end{minipage}%
+  };
+  \node[anchor=north east,text=white] at
+    ([yshift=-1.4cm,xshift=-1in]current page.north east) {%
+    \begin{minipage}{4.5cm}\RaggedLeft
+      \mbox{\releasebadge{v3.4.2}}\\[6pt]
+      {\footnotesize\faCalendar\hspace{4pt}July 15, 2026}\\[3pt]
+      {\footnotesize\faCode\hspace{4pt}Build 3421-stable}
+    \end{minipage}%
+  };
+\end{tikzpicture}
+
+\vspace{3.0cm}
+
+% ── Overview ──────────────────────────────────────────────────────────────
+\begin{minipage}{\textwidth}
+  \iconlabel{\faStar}{Overview}\\[4pt]
+  \small
+  Nimbus Platform v3.4.2 is a stability and quality-of-life release that
+  delivers thirteen new features across the dashboard, API, and automation
+  engine, resolves twenty-four reported defects, and formally deprecates two
+  legacy endpoints ahead of the v4.0 migration in Q1 2027. All teams running
+  v3.3.x or earlier should review the upgrade notes below before applying this
+  update.
+\end{minipage}
+
+\vspace{10pt}
+
+% ══════════════════════════════════════════════════════════════════════════
+% ── NEW FEATURES ──────────────────────────────────────────────────────────
+\section{\faStar\hspace{6pt}New Features}
+
+\begin{featurebox}
+  {\small\bfseries\color{accTeal}Dashboard \& Analytics\par}
+  \vspace{4pt}
+
+  \begin{itemize}[leftmargin=*,nosep,itemsep=0pt,topsep=4pt]
+    \item \textbf{Custom Metric Builder.} Drag-and-drop interface for creating
+      composite KPIs from any data source. Supports rolling windows,
+      weighted averages, and conditional thresholds.
+    \item \textbf{Shared Dashboard Templates.} Teams can now export dashboard
+      layouts as JSON templates and import them across workspaces. Access
+      control respects existing workspace roles.
+    \item \textbf{Scheduled PDF Exports.} Dashboards can be configured to
+      generate and email PDF snapshots on a cron schedule. Delivery targets
+      support SMTP, webhook, and S3-compatible storage.
+  \end{itemize}
+\end{featurebox}
+
+\begin{featurebox}
+  {\small\bfseries\color{accTeal}API \& Developer Experience\par}
+  \vspace{4pt}
+
+  \begin{itemize}[leftmargin=*,nosep,itemsep=0pt,topsep=4pt]
+    \item \textbf{Bulk Operation Endpoint.} New
+      \texttt{POST /api/v3/bulk/execute} accepts up to 200 operations in a
+      single request with atomic rollback on failure.
+    \item \textbf{OpenAPI 3.1 Specification.} The full REST API surface is now
+      documented in an OpenAPI 3.1 spec, available at
+      \texttt{/api/v3/openapi.json}. SDK generation is supported via the
+      Nimbus CLI.
+    \item \textbf{Webhook Retry Policies.} Per-endpoint retry configuration
+      with exponential backoff, jitter, and dead-letter queues. Delivery logs
+      are retained for 30 days.
+  \end{itemize}
+\end{featurebox}
+
+\begin{featurebox}
+  {\small\bfseries\color{accTeal}Automation Engine\par}
+  \vspace{4pt}
+
+  \begin{itemize}[leftmargin=*,nosep,itemsep=0pt,topsep=4pt]
+    \item \textbf{Conditional Branching.} Workflows now support
+      \texttt{if/else} and \texttt{switch} nodes for routing based on runtime
+      data. Evaluated server-side with sub-millisecond latency.
+    \item \textbf{Parallel Execution Pools.} Designate resource pools for
+      concurrent task execution with configurable max concurrency and priority
+      queuing per tenant.
+    \item \textbf{SLA Monitoring Built-in.} Each automation run now emits
+      structured timing data to the observability pipeline. Pre-built Grafana
+      dashboards included.
+  \end{itemize}
+\end{featurebox}
+
+\begin{featurebox}
+  {\small\bfseries\color{accTeal}Security\par}
+  \vspace{4pt}
+
+  \begin{itemize}[leftmargin=*,nosep,itemsep=0pt,topsep=4pt]
+    \item \textbf{SCIM Provisioning (Preview).} System for Cross-domain
+      Identity Management v2.0 support for automated user lifecycle
+      management from Azure AD and Okta-compatible identity providers.
+    \item \textbf{Audit Log Streaming.} Real-time streaming of all audit
+      events to external SIEM platforms via Kafka or HTTP push. Configurable
+      field-level redaction.
+  \end{itemize}
+\end{featurebox}
+
+% ══════════════════════════════════════════════════════════════════════════
+% ── BUG FIXES ─────────────────────────────────────────────────────────────
+\section{\faBug\hspace{6pt}Resolved Issues}
+
+\begin{bugbox}
+  {\small\bfseries\color{accAmber}Critical Fixes\par}
+  \vspace{4pt}
+
+  \begin{itemize}[leftmargin=*,nosep,itemsep=0pt,topsep=4pt]
+    \item \textbf{NB-4821} --- Race condition in the OAuth token refresh flow
+      could cause concurrent requests to receive stale access tokens, resulting
+      in transient 401 errors under high load. \textit{Fixed by: Marcus Webb.}
+    \item \textbf{NB-4798} --- CSV exports exceeding 500,000 rows would
+      silently truncate data without emitting a warning. Export service now
+      chunks output and appends a completeness manifest.
+    \item \textbf{NB-4760} --- Notification channels configured with
+      non-ASCII display names caused publish failures on the Firebase Cloud
+      Messaging adapter. Encoding is now normalized to UTF-8 at the adapter
+      boundary.
+  \end{itemize}
+\end{bugbox}
+
+\begin{bugbox}
+  {\small\bfseries\color{accAmber}General Fixes\par}
+  \vspace{4pt}
+
+  \begin{itemize}[leftmargin=*,nosep,itemsep=0pt,topsep=4pt]
+    \item \textbf{NB-4839} --- Timezone offset was not applied to
+      \texttt{created\_at} timestamps in the activity feed when the user
+      profile specified a non-UTC zone.
+    \item \textbf{NB-4844} --- SAML assertion validation failed for IdPs
+      that sign only the assertion element rather than the full response.
+    \item \textbf{NB-4851} --- Search query highlighting stripped HTML
+      entities from result snippets, occasionally producing garbled text.
+    \item \textbf{NB-4867} --- The data connector for VertexDB returned
+      stale schema caches after DDL changes, requiring a manual cache flush.
+    \item \textbf{NB-4872} --- Pagination cursors on the user listing
+      endpoint would reset when a filter parameter was cleared mid-session.
+    \item \textbf{NB-4880} --- \texttt{NullPointerException} in the
+      workflow scheduler when a task referenced a deleted integration
+      credential. The scheduler now degrades gracefully with a clear error
+      state.
+  \end{itemize}
+\end{bugbox}
+
+% ══════════════════════════════════════════════════════════════════════════
+% ── DEPRECATIONS ──────────────────────────────────────────────────────────
+\section{\faExclamationTriangle\hspace{6pt}Deprecations \& Removals}
+
+\begin{depbox}
+  \small
+  \begin{itemize}[leftmargin=*,nosep,itemsep=6pt,topsep=2pt]
+    \item \textbf{\texttt{GET /api/v2/reports/generate}}
+      \hfill\mbox{\releasebadge{End-of-Life Q1 2027}}\\[2pt]
+      Replaced by \texttt{POST /api/v3/reports/schedule} with improved
+      filtering, asynchronous generation, and webhook delivery. All v2 report
+      integrations must migrate before March 1, 2027.
+
+    \item \textbf{\texttt{POST /api/v2/webhooks/register}}
+      \hfill\mbox{\releasebadge{End-of-Life Q1 2027}}\\[2pt]
+      Superseded by the unified webhook management API at
+      \texttt{/api/v3/webhooks}. The v2 endpoint no longer receives feature
+      updates and will be removed in v4.0.
+
+    \item \textbf{Legacy \texttt{X-Nimbus-Auth} Header}\\[2pt]
+      The custom authentication header has been deprecated in favor of
+      standard \texttt{Authorization: Bearer} tokens. Requests using the
+      legacy header will receive a \texttt{Warning} response header starting
+      with this release.
+  \end{itemize}
+\end{depbox}
+
+% ══════════════════════════════════════════════════════════════════════════
+% ── KNOWN ISSUES ──────────────────────────────────────────────────────────
+\section{\faInfoCircle\hspace{6pt}Known Issues}
+
+\begin{infobox}
+  \small
+  \begin{itemize}[leftmargin=*,nosep,itemsep=4pt,topsep=2pt]
+    \item \textbf{KNW-344} --- The Custom Metric Builder may exhibit layout
+      overflow on viewports narrower than 1024\,px. A responsive update is
+      scheduled for v3.4.3.
+    \item \textbf{KNW-351} --- SCIM provisioning does not yet support group
+      push for nested Azure AD security groups. Flat groups function correctly.
+    \item \textbf{KNW-358} --- Parallel execution pools default to a maximum
+      concurrency of 50; exceeding this requires a support ticket to raise
+      the tenant limit.
+  \end{itemize}
+\end{infobox}
+
+% ══════════════════════════════════════════════════════════════════════════
+% ── UPGRADE NOTES ─────────────────────────────────────────────────────────
+\section{\faDownload\hspace{6pt}Upgrade Instructions}
+
+\begin{releasebox}
+  \small
+
+  \textbf{Prerequisites.} v3.3.0 or later with PostgreSQL~15+ and Redis~7+.
+  Backwards compatibility with PostgreSQL~14 is maintained but unsupported
+  for new installations.
+
+  \vspace{6pt}
+  \textbf{Step 1 --- Backup.} Create a full database snapshot and export
+  your workspace configurations via the Nimbus CLI:
+
+  \texttt{\$ nimbus config export > workspace-backup.json}
+
+  \vspace{6pt}
+  \textbf{Step 2 --- Apply Migration.} Run the database migration script
+  included in the release tarball:
+
+  \texttt{\$ nimbus migrate apply -{}-release 3.4.2 -{}-dry-run}\\[2pt]
+  \texttt{\$ nimbus migrate apply -{}-release 3.4.2}
+
+  \vspace{6pt}
+  \textbf{Step 3 --- Restart Services.} Restart all application nodes in
+  rolling fashion. Zero-downtime upgrades are supported when running at least
+  two nodes behind a load balancer.
+
+  \vspace{6pt}
+  \textbf{Rollback.} If issues arise, revert to v3.4.1 using the same
+  migration tool with the \texttt{-{}-rollback} flag. Database schema changes
+  in this release are backwards-compatible with v3.4.0+.
+
+  \vspace{8pt}
+  \begin{center}
+    \verysmall{Nimbus Platform is developed and maintained by the Meridian
+      Engineering team. For support, contact release-support@nimbus.example.com
+      or visit the internal wiki at wiki.nimbus.example.com.}
+  \end{center}
+\end{releasebox}
+
+\end{document}

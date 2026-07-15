@@ -1,0 +1,19 @@
+from nexa import NexaClientV2
+from nexa.auth import ApiKeyAuth
+from nexa.services import UserService
+
+client = (
+    NexaClientV2.configure()
+    .with_auth(ApiKeyAuth.from_env())
+    .with_retry(max_attempts=3,
+                backoff_factor=0.5)
+    .with_timeout(30)
+    .build()
+)
+
+users = client.users.list(
+    limit=50, status="active"
+)
+# Returns List[User] not raw dict
+for u in users:
+    print(u.name, u.email)

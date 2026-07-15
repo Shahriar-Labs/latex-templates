@@ -1,0 +1,532 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds,patterns,decorations.pathmorphing}
+\usepackage[most]{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{ragged2e}
+
+\definecolor{primary}{RGB}{0,96,100}
+\definecolor{secondary}{RGB}{38,50,56}
+\definecolor{accent}{RGB}{211,84,0}
+\definecolor{lightbg}{RGB}{236,240,241}
+\definecolor{whitebg}{RGB}{255,255,255}
+\definecolor{darktext}{RGB}{33,33,33}
+\definecolor{alertred}{RGB}{198,40,40}
+\definecolor{normalgreen}{RGB}{46,125,50}
+\definecolor{warnamber}{RGB}{230,126,34}
+
+\setbeamercolor{structure}{fg=primary}
+\setbeamercolor{normal text}{fg=darktext,bg=whitebg}
+\setbeamercolor{frametitle}{fg=whitebg,bg=primary}
+\setbeamercolor{framesubtitle}{fg=whitebg!85}
+\setbeamercolor{title}{fg=whitebg}
+\setbeamercolor{subtitle}{fg=whitebg!85}
+\setbeamercolor{author}{fg=whitebg!70}
+\setbeamercolor{date}{fg=whitebg!70}
+\setbeamercolor{institute}{fg=whitebg!70}
+\setbeamercolor{block title}{fg=whitebg,bg=primary}
+\setbeamercolor{block body}{fg=darktext,bg=lightbg}
+\setbeamercolor{block title alerted}{fg=whitebg,bg=alertred}
+\setbeamercolor{block body alerted}{fg=darktext,bg=lightbg}
+\setbeamercolor{alerted text}{fg=alertred}
+\setbeamercolor{footline}{fg=whitebg,bg=secondary}
+\setbeamercolor{page number in head/foot}{fg=whitebg!70}
+\setbeamercolor{section in head/foot}{fg=whitebg,bg=secondary!90}
+\setbeamercolor{item}{fg=primary}
+\setbeamercolor{subitem}{fg=primary}
+\setbeamercolor{enumerate item}{fg=primary}
+\setbeamercolor{caption name}{fg=primary}
+
+\setbeamerfont{title}{size=\LARGE,series=\bfseries}
+\setbeamerfont{subtitle}{size=\large}
+\setbeamerfont{author}{size=\small}
+\setbeamerfont{date}{size=\scriptsize}
+\setbeamerfont{institute}{size=\scriptsize}
+\setbeamerfont{frametitle}{size=\Large,series=\bfseries}
+\setbeamerfont{framesubtitle}{size=\small}
+\setbeamerfont{block title}{size=\normalsize,series=\bfseries}
+\setbeamerfont{footline}{size=\tiny}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{items}[circle]
+\setbeamertemplate{sections/subsections in toc}[square]
+
+\setbeamertemplate{frametitle}{
+  \vspace*{0.3cm}
+  \begin{beamercolorbox}[wd=\paperwidth,ht=1.2cm,dp=0.4cm]{frametitle}
+    \hspace*{0.5cm}\insertframetitle
+    \par\vspace{1pt}
+    \hspace*{0.5cm}{\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\insertframesubtitle}
+  \end{beamercolorbox}
+}
+
+\setbeamertemplate{title page}{
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[primary] (current page.south west) rectangle (current page.north east);
+    \node[anchor=west,text=white,inner sep=0pt] at ([xshift=1.5cm,yshift=0.5cm]current page.west) {
+      \begin{minipage}{0.82\paperwidth}
+        \raggedright
+        {\usebeamerfont{title}\inserttitle\par}
+        \vspace{0.3cm}
+        {\usebeamerfont{subtitle}\insertsubtitle\par}
+        \vspace{0.8cm}
+        {\usebeamerfont{author}\insertauthor\par}
+        \vspace{0.2cm}
+        {\usebeamerfont{institute}\insertinstitute\par}
+        \vspace{0.2cm}
+        {\usebeamerfont{date}\insertdate\par}
+      \end{minipage}
+    };
+    \draw[white,line width=0.8pt] ([shift={(1.2cm,1cm)}]current page.south west) -- ([shift={(1.2cm,-1cm)}]current page.north west);
+  \end{tikzpicture}
+}
+
+\setbeamertemplate{footline}{
+  \leavevmode
+  \hbox{%
+    \begin{beamercolorbox}[wd=.4\paperwidth,ht=2.5ex,dp=1.25ex,left]{section in head/foot}%
+      \hspace*{1em}Clinical Case Conference
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.4\paperwidth,ht=2.5ex,dp=1.25ex,center]{section in head/foot}%
+      \insertsection
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.2\paperwidth,ht=2.5ex,dp=1.25ex,right]{page number in head/foot}%
+      \insertframenumber{} / \inserttotalframenumber\hspace*{1em}
+    \end{beamercolorbox}%
+  }
+}
+
+\tcbset{
+  infobox/.style={
+    colback=lightbg,
+    colframe=primary,
+    arc=3pt,
+    boxrule=0.8pt,
+    left=8pt,
+    right=8pt,
+    top=6pt,
+    bottom=6pt,
+    fonttitle=\bfseries\small,
+    coltitle=whitebg,
+    colbacktitle=primary,
+    titlerule=0pt,
+    toptitle=4pt,
+    bottomtitle=4pt,
+  },
+  alertbox/.style={
+    colback=alertred!5,
+    colframe=alertred,
+    arc=3pt,
+    boxrule=0.8pt,
+    left=8pt,
+    right=8pt,
+    top=6pt,
+    bottom=6pt,
+    fonttitle=\bfseries\small,
+    coltitle=whitebg,
+    colbacktitle=alertred,
+    titlerule=0pt,
+    toptitle=4pt,
+    bottomtitle=4pt,
+  },
+  highlightbox/.style={
+    colback=accent!8,
+    colframe=accent,
+    arc=3pt,
+    boxrule=0.8pt,
+    left=8pt,
+    right=8pt,
+    top=6pt,
+    bottom=6pt,
+    fonttitle=\bfseries\small,
+    coltitle=whitebg,
+    colbacktitle=accent,
+    titlerule=0pt,
+    toptitle=4pt,
+    bottomtitle=4pt,
+  },
+  darkcta/.style={
+    colback=primary,
+    colframe=primary,
+    arc=4pt,
+    boxrule=0pt,
+    left=16pt,
+    right=16pt,
+    top=10pt,
+    bottom=10pt,
+  },
+}
+
+\title{Clinical Case Conference}
+\subtitle{Acute Idiopathic Pericarditis with Associated\\Unilateral Pleural Effusion}
+\author{Dr.\ Sarah Chen, MD}
+\institute{Department of Internal Medicine\\Nimbus University Hospital}
+\date{\today}
+
+\begin{document}
+
+{\setbeamertemplate{footline}{}
+\begin{frame}[plain]
+  \titlepage
+\end{frame}}
+
+\section{Patient History}
+\begin{frame}{Patient History \& Demographics}
+  \framesubtitle{Initial Presentation -- Emergency Department}
+
+  \begin{tcolorbox}[infobox,title={\faUser\hspace{4pt}Patient Demographics}]
+    \small
+    \begin{tabular}{@{}p{0.24\textwidth}p{0.30\textwidth}p{0.34\textwidth}@{}}
+      \textbf{Name:} & Jonathan M.\ Reeves & \textbf{Age:} 47 years \\
+      \textbf{MRN:} & NH-2026-08471 & \textbf{Sex:} Male \\
+      \textbf{Admission:} & 14 July 2026, 22:45 & \textbf{Race/Ethnicity:} Caucasian \\
+    \end{tabular}
+  \end{tcolorbox}
+
+  \vspace{0.3cm}
+
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \begin{tcolorbox}[infobox,title={\faClipboard\hspace{4pt}Chief Complaint}]
+      \small\textit{``I have sharp chest pain that gets worse when I lie down. It started this morning and keeps getting worse. I also feel short of breath.''}
+    \end{tcolorbox}
+
+    \column{0.48\textwidth}
+    \begin{tcolorbox}[alertbox,title={\faExclamationTriangle\hspace{4pt}Key History}]
+      \small
+      \begin{itemize}
+        \item \textbf{Onset:} Sudden, $\approx$ 14 hours prior
+        \item \textbf{Character:} Sharp, pleuritic
+        \item \textbf{Relieving:} Sitting forward
+        \item \textbf{Aggravating:} Supine position, deep inspiration
+      \end{itemize}
+    \end{tcolorbox}
+  \end{columns}
+
+  \vspace{0.3cm}
+
+  \begin{tcolorbox}[infobox,title={\faHistory\hspace{4pt}Past Medical \& Social History}]
+    \small
+    \begin{columns}[T]
+      \column{0.5\textwidth}
+      \begin{itemize}
+        \item Hypertension (diagnosed 2021, well-controlled on lisinopril 10\,mg daily)
+        \item No prior cardiac or pulmonary disease
+        \item No history of autoimmune disorders
+        \item Family history: Father -- CAD at age 62
+      \end{itemize}
+      \column{0.5\textwidth}
+      \begin{itemize}
+        \item Non-smoker, occasional alcohol (2--3 drinks/week)
+        \item Works as a software architect at Vertex Systems
+        \item Denies illicit drug use
+        \item Recent URI symptoms resolved 10 days ago
+      \end{itemize}
+    \end{columns}
+  \end{tcolorbox}
+\end{frame}
+
+\section{Physical Examination}
+\begin{frame}{Physical Examination \& Vital Signs}
+  \framesubtitle{Admission Assessment -- 14 July 2026, 23:10}
+
+  \begin{columns}[T]
+    \column{0.35\textwidth}
+    \begin{tcolorbox}[infobox,title={\faHeartbeat\hspace{4pt}Vital Signs}]
+      \small
+      \renewcommand{\arraystretch}{1.25}
+      \begin{tabular}{@{}ll@{}}
+        \textbf{Temp:}     & 38.2\,\textdegree{}C \\
+        \textbf{HR:}       & 104 bpm \\
+        \textbf{BP:}       & 128/82 mmHg \\
+        \textbf{RR:}       & 22/min \\
+        \textbf{SpO\textsubscript{2}:} & 94\% (RA) \\
+        \textbf{BMI:}      & 27.4 kg/m\textsuperscript{2} \\
+      \end{tabular}
+    \end{tcolorbox}
+
+    \vspace{0.2cm}
+
+    \begin{tcolorbox}[highlightbox,title={\faStethoscope\hspace{4pt}Auscultation}]
+      \small
+      \begin{itemize}
+        \item Pericardial friction rub (triphasic) best heard at left lower sternal border
+        \item Diminished breath sounds at right lung base
+        \item No murmurs, gallops, or crackles
+      \end{itemize}
+    \end{tcolorbox}
+
+    \column{0.63\textwidth}
+    \begin{tcolorbox}[infobox,title={\faFile\hspace{4pt}Physical Examination}]
+      \small
+      \renewcommand{\arraystretch}{1.3}
+      \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.28\textwidth}>{\raggedright\arraybackslash}p{0.32\textwidth}@{}}
+        \toprule
+        \textbf{System} & \textbf{Findings} \\
+        \midrule
+        General & Alert, sitting forward, appears uncomfortable \\
+        HEENT & Normocephalic, pharynx clear \\
+        Cardiovascular & Tachycardic, regular rhythm, friction rub present \\
+        Respiratory & Decreased breath sounds R base, dullness to percussion \\
+        Abdomen & Soft, non-tender, no organomegaly \\
+        Extremities & No edema, no clubbing, pulses 2+ bilaterally \\
+        Skin & Warm, dry, no rashes or lesions \\
+        \bottomrule
+      \end{tabular}
+    \end{tcolorbox}
+
+    \vspace{0.2cm}
+
+    \begin{tcolorbox}[alertbox,title={\faSearch\hspace{4pt}Pertinent Positives}]
+      \small
+      \textbf{+ Pericardial friction rub} (pathognomonic for pericarditis)
+      \hspace{1cm}
+      \textbf{+ Right basilar dullness} (suggests pleural effusion)
+    \end{tcolorbox}
+  \end{columns}
+\end{frame}
+
+\section{Imaging}
+\begin{frame}{Radiological Imaging}
+  \framesubtitle{Chest Radiograph \& Echocardiogram -- 15 July 2026}
+
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \begin{tcolorbox}[infobox,title={\faSearch\hspace{4pt}Chest X-Ray (PA \& Lateral)}]
+      \small
+      \begin{itemize}
+        \item \textbf{Cardiac silhouette:} Enlarged, globular configuration suggestive of pericardial effusion
+        \item \textbf{Right costophrenic angle:} Blunted with meniscus sign -- moderate unilateral pleural effusion ($\approx$ 400\,mL)
+        \item \textbf{Lung fields:} Clear bilaterally, no infiltrates or masses
+        \item \textbf{Mediastinum:} Normal contours, no lymphadenopathy
+        \item \textbf{Bony thorax:} No acute fractures or lesions
+      \end{itemize}
+    \end{tcolorbox}
+
+    \column{0.48\textwidth}
+    \begin{tcolorbox}[infobox,title={\faHeart\hspace{4pt}Transthoracic Echocardiogram}]
+      \small
+      \begin{itemize}
+        \item \textbf{LV function:} Normal, EF 58\%
+        \item \textbf{RV:} Normal size and function
+        \item \textbf{Pericardium:} Small circumferential pericardial effusion ($\approx$ 8\,mm posterior, no tamponade physiology)
+        \item \textbf{Valves:} No significant abnormalities
+        \item \textbf{IVC:} Normal size, $>50$\% collapsibility
+      \end{itemize}
+    \end{tcolorbox}
+  \end{columns}
+
+  \vspace{0.4cm}
+
+  \begin{tcolorbox}[highlightbox,title={\faLightbulb\hspace{4pt}Key Imaging Impressions}]
+    \small
+    \begin{columns}[T]
+      \column{0.5\textwidth}
+      \begin{enumerate}
+        \item Globular cardiac silhouette \textbf{with} concurrent pericardial friction rub $\rightarrow$ \textbf{acute pericarditis} with effusion
+      \end{enumerate}
+      \column{0.5\textwidth}
+      \begin{enumerate}
+        \setcounter{enumi}{1}
+        \item Right-sided pleural effusion likely \textbf{reactive} to pericardial inflammation
+      \end{enumerate}
+    \end{columns}
+  \end{tcolorbox}
+\end{frame}
+
+\section{Laboratory}
+\begin{frame}{Laboratory Results}
+  \framesubtitle{Admission Blood Work -- 15 July 2026, 00:30}
+
+  \begin{tcolorbox}[infobox,title={\faFlask\hspace{4pt}Serum Chemistry \& Hematology}]
+    \small
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{@{}llll@{}}
+      \toprule
+      \textbf{Test} & \textbf{Result} & \textbf{Reference Range} & \textbf{Flag} \\
+      \midrule
+      WBC           & 14.2\,K/$\mu$L    & 4.0--11.0               & \textcolor{alertred}{H} \\
+      Hemoglobin    & 14.1\,g/dL        & 13.5--17.5              & \\
+      Platelets     & 312\,K/$\mu$L     & 150--400                & \\
+      CRP           & 128\,mg/L         & $<5.0$                  & \textcolor{alertred}{H} \\
+      ESR           & 78\,mm/hr         & 0--15                   & \textcolor{alertred}{H} \\
+      Troponin-I    & 1.84\,ng/mL       & $<0.04$                 & \textcolor{alertred}{H} \\
+      CK-MB         & 4.2\,ng/mL        & $<5.0$                  & \\
+      BNP           & 92\,pg/mL         & $<100$                  & \\
+      Creatinine    & 0.92\,mg/dL       & 0.7--1.3                & \\
+      AST           & 34\,U/L           & 10--40                  & \\
+      ALT           & 28\,U/L           & 7--56                   & \\
+      \bottomrule
+    \end{tabular}
+  \end{tcolorbox}
+
+  \vspace{0.3cm}
+
+  \begin{tcolorbox}[highlightbox,title={\faSearchPlus\hspace{4pt}Key Laboratory Findings}]
+    \small
+    \begin{itemize}
+      \item \textbf{Elevated CRP + ESR:} Confirms significant systemic inflammation consistent with pericarditis
+      \item \textbf{Elevated Troponin-I:} Indicates myocardial involvement (myopericarditis) -- warrants close monitoring
+      \item \textbf{Leukocytosis:} Reactive to acute inflammatory process
+      \item \textbf{Normal CK-MB + BNP:} No significant myocardial necrosis or heart failure
+    \end{itemize}
+  \end{tcolorbox}
+\end{frame}
+
+\section{Differential Diagnosis}
+\begin{frame}{Differential Diagnosis}
+  \framesubtitle{Ranked by Clinical Probability}
+
+  \begin{tcolorbox}[infobox,title={\faBalanceScale\hspace{4pt}Diagnostic Assessment}]
+    \small
+    \renewcommand{\arraystretch}{1.35}
+    \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.32\textwidth}>{\raggedright\arraybackslash}p{0.27\textwidth}>{\raggedright\arraybackslash}p{0.27\textwidth}@{}}
+      \toprule
+      \textbf{Diagnosis} & \textbf{Supporting Evidence} & \textbf{Refuting/Uncertain} \\
+      \midrule
+      \textbf{Acute Idiopathic Pericarditis} & Pleuritic pain, friction rub, CRP/ESR, effusion on echo & Requires exclusion of secondary causes \\
+      Myopericarditis & Elevated troponin-I, normal LV function & CK-MB normal, no ECG ST changes \\
+      Pulmonary Embolism & Pleuritic pain, tachycardia, pleural effusion & No risk factors, Wells score 1.5 (low) \\
+      Acute Coronary Syndrome & Chest pain, elevated troponin & Pain is positional/pleuritic, ECG non-diagnostic \\
+      Pneumonia with Parapneumonic Effusion & Fever, leukocytosis & Clear lung fields on CXR, no cough/sputum \\
+      \bottomrule
+    \end{tabular}
+  \end{tcolorbox}
+
+  \vspace{0.3cm}
+
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{tcolorbox}[alertbox,title={\faExclamationCircle\hspace{4pt}Pending Studies}]
+      \small
+      \begin{itemize}
+        \item Serial troponin (q6h $\times$ 3)
+        \item CT pulmonary angiogram (if PE concern persists)
+        \item ANA, RF, anti-dsDNA (autoimmune workup)
+        \item Blood cultures $\times$ 2
+      \end{itemize}
+    \end{tcolorbox}
+
+    \column{0.5\textwidth}
+    \begin{tcolorbox}[highlightbox,title={\faCheck\hspace{4pt}Working Diagnosis}]
+      \small
+      \textbf{Acute idiopathic pericarditis} with myopericardial involvement and reactive right-sided pleural effusion.
+      \par\vspace{4pt}
+      Secondary causes (infectious, autoimmune, neoplastic) under active investigation.
+    \end{tcolorbox}
+  \end{columns}
+\end{frame}
+
+\section{Treatment Plan}
+\begin{frame}{Treatment Plan \& Management}
+  \framesubtitle{Evidence-Based Approach -- ACC/AHA Guidelines}
+
+  \begin{columns}[T]
+    \column{0.5\textwidth}
+    \begin{tcolorbox}[infobox,title={\faPrescriptionBottle\hspace{4pt}Pharmacologic Therapy}]
+      \small
+      \renewcommand{\arraystretch}{1.3}
+      \begin{tabular}{@{}p{0.28\textwidth}p{0.58\textwidth}@{}}
+        \toprule
+        \textbf{Agent} & \textbf{Regimen} \\
+        \midrule
+        Ibuprofen & 600\,mg PO q8h $\times$ 14 days with PPI \\
+        Colchicine & 0.6\,mg PO BID $\times$ 3 months \\
+        Pantoprazole & 40\,mg PO daily (GI prophylaxis) \\
+        \bottomrule
+      \end{tabular}
+    \end{tcolorbox}
+
+    \vspace{0.2cm}
+
+    \begin{tcolorbox}[highlightbox,title={\faCalendarCheck\hspace{4pt}Monitoring Protocol}]
+      \small
+      \begin{itemize}
+        \item Telemetry for 48 hours (myopericarditis)
+        \item Troponin q6h until trending down
+        \item Repeat echocardiogram in 24 hours
+        \item Daily ECG for ST-segment evolution
+      \end{itemize}
+    \end{tcolorbox}
+
+    \column{0.5\textwidth}
+    \begin{tcolorbox}[infobox,title={\faUserMd\hspace{4pt}Non-Pharmacologic}]
+      \small
+      \begin{itemize}
+        \item \textbf{Activity:} Strict bed rest with head-of-bed elevated to 30\textdegree, avoid supine positioning
+        \item \textbf{Diet:} Cardiac diet (2\,g sodium restriction)
+        \item \textbf{Fluids:} 1.5\,L/day restriction while effusion present
+        \item \textbf{Oxygen:} Titrate to SpO\textsubscript{2} $>92$\% 
+        \item \textbf{Pain:} Reassess q4h using numeric rating scale
+      \end{itemize}
+    \end{tcolorbox}
+
+    \vspace{0.2cm}
+
+    \begin{tcolorbox}[alertbox,title={\faBell\hspace{4pt}Red Flags -- Escalate Immediately}]
+      \small
+      \begin{itemize}
+        \item Hypotension + JVD + muffled heart sounds (\textbf{Beck's triad} $\rightarrow$ tamponade)
+        \item Worsening chest pain despite NSAID therapy
+        \item New oxygen requirement $>4$\,L NC
+      \end{itemize}
+    \end{tcolorbox}
+  \end{columns}
+\end{frame}
+
+\section{Summary}
+\begin{frame}{Summary \& Discharge Planning}
+  \framesubtitle{Multidisciplinary Care Coordination}
+
+  \begin{tcolorbox}[infobox,title={\faClipboard\hspace{4pt}Case Summary}]
+    \small
+    47-year-old male with no significant cardiac history presenting with \textbf{acute pleuritic chest pain}, found to have \textbf{pericardial friction rub}, elevated inflammatory markers (CRP 128\,mg/L, ESR 78\,mm/hr), elevated troponin-I (1.84\,ng/mL), and imaging consistent with \textbf{acute pericarditis} with small pericardial effusion and reactive right-sided pleural effusion. Initiated on guideline-directed NSAID + colchicine therapy. Myopericardial involvement warrants 48-hour telemetry observation.
+  \end{tcolorbox}
+
+  \vspace{0.3cm}
+
+  \begin{columns}[T]
+    \column{0.48\textwidth}
+    \begin{tcolorbox}[highlightbox,title={\faCalendar\hspace{4pt}Follow-Up Plan}]
+      \small
+      \begin{itemize}
+        \item Cardiology clinic: 1 week post-discharge
+        \item Repeat echocardiogram: 2 weeks
+        \item CRP recheck at weeks 2 and 4
+        \item Colchicine duration: 3 months minimum
+        \item Gradual return to activity after 4--6 weeks
+      \end{itemize}
+    \end{tcolorbox}
+
+    \column{0.48\textwidth}
+    \begin{tcolorbox}[infobox,title={\faUserMd\hspace{4pt}Consulting Services}]
+      \small
+      \begin{itemize}
+        \item \textbf{Cardiology} -- Dr.\ Marcus Okafor, attending
+        \item \textbf{Rheumatology} -- pending autoimmune workup
+        \item \textbf{Pulmonary} -- if pleural effusion persists
+        \item \textbf{Primary Care} -- resume lisinopril, routine follow-up
+      \end{itemize}
+    \end{tcolorbox}
+  \end{columns}
+
+  \vspace{0.4cm}
+
+  \begin{center}
+    \begin{tcolorbox}[darkcta]
+      \centering\color{white}\textbf{\large Thank You}\\[2pt]
+      {\small Questions \& Discussion}
+    \end{tcolorbox}
+  \end{center}
+\end{frame}
+
+\end{document}

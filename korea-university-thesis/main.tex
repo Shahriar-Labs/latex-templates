@@ -1,0 +1,470 @@
+\documentclass[12pt,a4paper]{report}
+
+% ---------------------------------------------------------------------------
+% Korea University Graduate School Thesis Template (Unofficial)
+% ---------------------------------------------------------------------------
+\usepackage[left=35mm,right=25mm,top=30mm,bottom=30mm,headheight=15pt]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage[most]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{setspace}
+\usepackage{caption}
+\usepackage[hidelinks,colorlinks=false]{hyperref}
+\usepackage{kotex}
+
+% ---------------------------------------------------------------------------
+% Palette
+% ---------------------------------------------------------------------------
+\definecolor{kucrimson}{RGB}{136,26,52}
+\definecolor{kucrimsondark}{RGB}{92,14,34}
+\definecolor{kugold}{RGB}{184,146,68}
+\definecolor{kugray}{RGB}{92,92,96}
+\definecolor{kupale}{RGB}{247,241,235}
+
+% ---------------------------------------------------------------------------
+% Section styling
+% ---------------------------------------------------------------------------
+\titleformat{\chapter}[display]
+  {\normalfont\huge\bfseries\color{kucrimson}}
+  {\filright\normalfont\Large\color{kugold}\chaptertitlename\ \thechapter}
+  {8pt}
+  {\titlerule[1.2pt]\vspace{6pt}\Huge}
+\titlespacing*{\chapter}{0pt}{-10pt}{20pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{kucrimsondark}}{\thesection}{10pt}{}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{kugray}}{\thesubsection}{8pt}{}
+
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[LE,RO]{\small\color{kugray}\thepage}
+\fancyhead[RE]{\small\color{kugray}\nouppercase{\leftmark}}
+\fancyhead[LO]{\small\color{kugray}Korea University Graduate School}
+
+\setlength{\parindent}{1.5em}
+\onehalfspacing
+
+% ---------------------------------------------------------------------------
+% Reusable elements
+% ---------------------------------------------------------------------------
+\newtcolorbox{kubox}[1]{%
+  colback=kupale, colframe=kucrimson, boxrule=0.8pt, arc=2pt,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+  fonttitle=\bfseries\color{white}, colbacktitle=kucrimson,
+  title=#1
+}
+
+\newcommand{\kudivider}{%
+  \begin{center}
+  \begin{tikzpicture}
+    \draw[kugold, line width=0.8pt] (-3.2,0) -- (-0.35,0);
+    \draw[kucrimson, fill=kucrimson] (0,0) circle (0.045);
+    \draw[kugold, line width=0.8pt] (0.35,0) -- (3.2,0);
+  \end{tikzpicture}
+  \end{center}
+}
+
+\begin{document}
+
+% ===========================================================================
+% TITLE PAGE
+% ===========================================================================
+\begin{titlepage}
+\newgeometry{left=30mm,right=30mm,top=25mm,bottom=25mm}
+\centering
+\thispagestyle{empty}
+
+\begin{tikzpicture}[remember picture, overlay]
+  \draw[kucrimson, line width=2.4pt] ($(current page.north west)+(1.6,-1.6)$) -- ++(0,-2.2);
+  \draw[kucrimson, line width=2.4pt] ($(current page.north west)+(1.6,-1.6)$) -- ++(2.2,0);
+  \draw[kucrimson, line width=2.4pt] ($(current page.south east)+(-1.6,1.6)$) -- ++(0,2.2);
+  \draw[kucrimson, line width=2.4pt] ($(current page.south east)+(-1.6,1.6)$) -- ++(-2.2,0);
+  \draw[kugold, line width=1pt] ($(current page.north west)+(2.0,-2.0)$) -- ++(0,-1.4);
+  \draw[kugold, line width=1pt] ($(current page.north west)+(2.0,-2.0)$) -- ++(1.4,0);
+  \draw[kugold, line width=1pt] ($(current page.south east)+(-2.0,2.0)$) -- ++(0,1.4);
+  \draw[kugold, line width=1pt] ($(current page.south east)+(-2.0,2.0)$) -- ++(-1.4,0);
+\end{tikzpicture}
+
+\vspace*{1.4cm}
+
+{\color{kucrimson}\Large\bfseries KOREA UNIVERSITY}\\[2pt]
+{\color{kugray}\large 고려대학교 대학원}\\[6pt]
+{\color{kugray}\small GRADUATE SCHOOL}
+
+\kudivider
+
+\vspace{1.0cm}
+{\color{kucrimsondark}\small\bfseries DEPARTMENT OF ELECTRICAL ENGINEERING}\\[2pt]
+{\color{kugray}\small 전기전자공학과}
+
+\vspace{1.6cm}
+{\Large\bfseries\color{kucrimson} Adaptive Beamforming Strategies\\[4pt]
+for Dense Urban Millimeter-Wave Networks:\\[4pt]
+A Field Study on the Nimbus Testbed}
+
+\vspace{0.6cm}
+{\large\itshape\color{kugray} 고밀도 도심 밀리미터파 네트워크를 위한\\
+적응형 빔포밍 전략: Nimbus 테스트베드 현장 연구}
+
+\vspace{1.6cm}
+{\normalsize by}\\[4pt]
+{\large\bfseries Ji-hoon Kim}\\[2pt]
+{\color{kugray}\normalsize 김지훈}
+
+\vspace{1.2cm}
+{\normalsize\itshape A Thesis Submitted to the Graduate School of Korea University\\
+in Partial Fulfillment of the Requirements for the Degree of\\
+Master of Science in Electrical Engineering}
+
+\vfill
+
+{\color{kugray}\normalsize December 2026}
+
+\vspace{0.6cm}
+\rule{5cm}{0.4pt}\\[4pt]
+{\footnotesize\color{kugray} Unofficial template --- not affiliated with or endorsed by the university. Sample content only.}
+
+\vspace{1.2cm}
+\restoregeometry
+\end{titlepage}
+
+% ===========================================================================
+% FRONT MATTER
+% ===========================================================================
+\pagenumbering{roman}
+\setcounter{page}{2}
+
+\thispagestyle{empty}
+\begin{center}
+\vspace*{1.2cm}
+{\Large\bfseries\color{kucrimson} Approval Page}\\[3pt]
+{\normalsize\color{kugray} 논문 인준서}
+\end{center}
+
+\kudivider
+\vspace{0.6cm}
+
+\noindent This thesis, submitted by Ji-hoon Kim in partial fulfillment of the requirements
+for the degree of Master of Science in Electrical Engineering, has been approved by the
+undersigned members of the Thesis Committee of the Graduate School of Korea University.
+
+\vspace{0.3cm}
+\noindent {\itshape 이 논문을 김지훈의 공학석사 학위논문으로 인준함.}
+
+\vspace{1.2cm}
+\noindent December 2026
+
+\vspace{1.0cm}
+\begin{center}
+\begin{tabular}{@{}p{4.2cm}p{5.5cm}@{}}
+Committee Chair (위원장) & \rule{5.5cm}{0.4pt} \\[2pt]
+ & Prof. Sun-woo Park \\[18pt]
+Committee Member (위원) & \rule{5.5cm}{0.4pt} \\[2pt]
+ & Prof. Hae-won Choi \\[18pt]
+Committee Member (위원) & \rule{5.5cm}{0.4pt} \\[2pt]
+ & Prof. Yuna Seo \\
+\end{tabular}
+\end{center}
+
+\clearpage
+
+\begin{center}
+{\Large\bfseries\color{kucrimson} Abstract}
+\end{center}
+\kudivider
+\vspace{0.4cm}
+
+\noindent Millimeter-wave (mmWave) spectrum offers substantial bandwidth for
+next-generation wireless networks, yet its severe path loss and sensitivity to
+blockage make reliable coverage in dense urban environments difficult to
+achieve with static beam configurations. This thesis proposes an adaptive
+beamforming framework, \textsc{Meridian-Beam}, that combines coarse
+angular sweeping with a lightweight reinforcement-learning refinement stage to
+track user mobility and transient obstructions in real time. The framework was
+implemented and evaluated on the Nimbus urban testbed, a nine-cell mmWave
+deployment spanning a 1.2\,km$^2$ commercial district, using a fleet of 40
+mobile receivers emulating pedestrian and vehicular users.
+
+\vspace{0.3cm}
+\noindent Results over a four-week measurement campaign show that
+\textsc{Meridian-Beam} improves median downlink throughput by 34\% and
+reduces beam-realignment latency by 41\% relative to a codebook-based
+baseline, while lowering the 95th-percentile outage duration from 812\,ms to
+276\,ms. A sensitivity study further shows that the refinement stage adds less
+than 3\,ms of per-decision overhead, making it suitable for integration into
+existing 5G-Advanced scheduler pipelines. These findings suggest that
+learning-assisted beam tracking is a practical and low-cost complement to
+conventional codebook search for dense urban mmWave deployments.
+
+\vspace{0.4cm}
+\noindent\textbf{Keywords:} millimeter-wave communication, adaptive
+beamforming, reinforcement learning, urban network testbed, 5G-Advanced
+
+\clearpage
+
+\begin{center}
+{\Large\bfseries\color{kucrimson} 국문초록}
+\end{center}
+\kudivider
+\vspace{0.4cm}
+
+\noindent 밀리미터파(mmWave) 대역은 차세대 무선 네트워크에 필요한 광대역폭을
+제공하지만, 심한 경로 손실과 장애물에 대한 민감성으로 인해 고정 빔 구성만으로는
+고밀도 도심 환경에서 안정적인 커버리지를 확보하기 어렵다. 본 논문에서는 사용자
+이동성과 일시적 장애물을 실시간으로 추적하기 위해 조밀 각도 스위핑과 경량
+강화학습 보정 단계를 결합한 적응형 빔포밍 프레임워크인 \textsc{Meridian-Beam}을
+제안한다. 제안 기법은 상업지구 1.2\,km$^2$를 포괄하는 9개 셀 규모의 Nimbus
+도심 테스트베드에 구현되어, 보행자 및 차량 사용자를 모사하는 40대의 이동
+수신기를 이용해 4주간 평가되었다.
+
+\vspace{0.3cm}
+\noindent 측정 결과, \textsc{Meridian-Beam}은 코드북 기반 기준 기법 대비
+다운링크 처리량 중앙값을 34\% 향상시키고 빔 재정렬 지연을 41\% 감소시켰으며,
+95백분위 단절 시간을 812\,ms에서 276\,ms로 낮추었다. 민감도 분석에 따르면
+보정 단계는 결정당 3\,ms 미만의 오버헤드만을 추가하여 기존 5G-Advanced
+스케줄러 파이프라인에 적용하기에 적합함을 확인하였다.
+
+\clearpage
+
+\tableofcontents
+\clearpage
+\listoftables
+\clearpage
+\listoffigures
+
+% ===========================================================================
+% MAIN MATTER
+% ===========================================================================
+\clearpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+\chapter{Introduction}
+\label{ch:intro}
+
+\section{Background}
+The commercial rollout of millimeter-wave (mmWave) spectrum between 24\,GHz
+and 40\,GHz has enabled multi-gigabit wireless links, but the propagation
+characteristics of these bands differ sharply from sub-6\,GHz deployments.
+Free-space path loss increases with frequency, and mmWave signals are highly
+susceptible to blockage by pedestrians, vehicles, and building facades.
+Directional beamforming with large antenna arrays compensates for path loss,
+but conventional codebook-based beam search reacts slowly to the fast channel
+variations typical of dense urban streets, where a moving bus or a crowd of
+pedestrians can interrupt a link within a few hundred milliseconds.
+
+\section{Problem Statement}
+Static or periodically re-swept beam codebooks trade off two costs: sweeping
+too frequently wastes control-plane overhead and battery life, while sweeping
+too rarely leaves the link vulnerable to sudden blockage. Prior adaptive
+schemes typically optimize one of these costs in isolation, using either
+purely geometric prediction (which fails under non-line-of-sight blockage) or
+purely reactive re-sweeping (which is accurate but slow). This thesis asks
+whether a hybrid approach --- combining a coarse geometric prior with a
+lightweight learned correction --- can reduce both realignment latency and
+outage duration simultaneously, without requiring specialized hardware beyond
+what is already present in commercial mmWave base stations.
+
+\begin{kubox}{Research Questions}
+\begin{enumerate}[label=\textbf{RQ\arabic*.}, leftmargin=2.1cm]
+  \item Can a reinforcement-learning refinement stage reduce beam-realignment
+        latency relative to codebook search alone, under realistic urban
+        mobility patterns?
+  \item What per-decision computational overhead does such a refinement stage
+        introduce, and is it compatible with existing scheduler timing
+        budgets?
+  \item How does the proposed framework generalize across cell density and
+        pedestrian traffic conditions observed on the Nimbus testbed?
+\end{enumerate}
+\end{kubox}
+
+\section{Research Objectives}
+This thesis pursues three concrete objectives: (1) design a beamforming
+control loop, \textsc{Meridian-Beam}, that augments codebook search with a
+learned refinement policy; (2) deploy and evaluate the framework on a
+nine-cell urban mmWave testbed under realistic pedestrian and vehicular
+mobility; and (3) quantify the throughput, latency, and outage trade-offs
+relative to a codebook-only baseline across a four-week measurement window.
+
+\section{Thesis Organization}
+Chapter~\ref{ch:related} reviews prior work on beam management and
+learning-based wireless control. Chapter~\ref{ch:method} describes the
+\textsc{Meridian-Beam} architecture and the Nimbus testbed deployment.
+Chapter~\ref{ch:conclusion} summarizes the contributions and outlines
+directions for future work.
+
+\chapter{Related Work}
+\label{ch:related}
+
+\section{Codebook-Based Beam Management}
+Standardized mmWave systems typically rely on a predefined codebook of beam
+patterns, with the base station and user equipment jointly searching for the
+best pair via hierarchical sweeping. This approach is robust and
+hardware-agnostic but incurs search latency that scales with codebook size,
+which becomes a bottleneck as arrays grow denser to compensate for higher
+carrier frequencies.
+
+\section{Learning-Assisted Beam Tracking}
+Recent work has explored using channel history, inertial sensors, or vision
+data to predict beam direction ahead of a sweep. These methods reduce average
+search time but are typically evaluated in simulation or controlled indoor
+settings, leaving open questions about robustness to the irregular blockage
+patterns of dense outdoor deployments. Table~\ref{tab:related} summarizes
+representative approaches along the dimensions most relevant to this thesis.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparison of representative beam management approaches.}
+\label{tab:related}
+\small
+\begin{tabularx}{\textwidth}{@{}lXcc@{}}
+\toprule
+\textbf{Approach} & \textbf{Prediction Signal} & \textbf{Outdoor Eval.} & \textbf{Overhead} \\
+\midrule
+Hierarchical codebook search & None (exhaustive) & Yes & Low \\
+Kalman-filter beam tracking & Channel history & Limited & Low \\
+Vision-assisted prediction & Camera feed & No & High \\
+Inertial-aided prediction & IMU + channel state & Limited & Medium \\
+\rowcolor{kupale} \textsc{Meridian-Beam} (proposed) & Channel state + RL policy & Yes (field) & Medium \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Positioning of This Work}
+Unlike prior studies that evaluate learning-assisted tracking primarily in
+simulation, this thesis reports field results from a live nine-cell urban
+deployment, providing outage and latency figures under real pedestrian and
+vehicular traffic rather than synthetic mobility traces.
+
+\chapter{Methodology}
+\label{ch:method}
+
+\section{System Architecture}
+\textsc{Meridian-Beam} operates as a two-stage control loop at each base
+station. The coarse stage performs a reduced hierarchical codebook sweep to
+narrow the candidate beam set; the refinement stage then applies a compact
+policy network, trained via reinforcement learning, to select a fine-grained
+beam offset based on recent received-signal-strength history and user
+trajectory estimates. Figure~\ref{fig:architecture} illustrates the data flow
+between the two stages and the scheduler.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=10mm and 14mm,
+  box/.style={draw=kucrimson, thick, rounded corners=2pt, fill=kupale,
+              minimum width=32mm, minimum height=11mm, align=center, font=\small},
+  arr/.style={->, kugray, thick}
+]
+\node[box] (ue) {User Equipment\\Channel Reports};
+\node[box, right=of ue] (coarse) {Coarse Codebook\\Sweep};
+\node[box, right=of coarse] (refine) {RL Refinement\\Policy};
+\node[box, below=of refine] (sched) {Scheduler \&\\Beam Selection};
+\node[box, below=of coarse] (log) {Measurement\\Logging};
+
+\draw[arr] (ue) -- (coarse);
+\draw[arr] (coarse) -- (refine);
+\draw[arr] (refine) -- (sched);
+\draw[arr] (coarse) -- (log);
+\draw[arr] (sched.west) -- ++(-1.9,0) |- (ue.south);
+\end{tikzpicture}
+\caption{\textsc{Meridian-Beam} control loop: coarse codebook sweeping narrows
+the beam candidates before a learned refinement policy selects the final beam
+offset each scheduling interval.}
+\label{fig:architecture}
+\end{figure}
+
+\section{Testbed Deployment}
+The framework was deployed on the Nimbus testbed, a nine-cell 28\,GHz
+network spanning a 1.2\,km$^2$ commercial district, in partnership with
+Nimbus Networks. Each base station is equipped with a 256-element phased
+array and connects to a shared control plane that logs channel state,
+scheduling decisions, and application-layer throughput every 10\,ms.
+Table~\ref{tab:testbed} summarizes the deployment parameters.
+
+\begin{table}[htbp]
+\centering
+\caption{Nimbus testbed deployment parameters.}
+\label{tab:testbed}
+\begin{tabular}{@{}ll@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Carrier frequency & 28\,GHz \\
+Number of cells & 9 \\
+Array configuration & 256-element phased array \\
+Coverage area & 1.2\,km$^2$ \\
+Mobile receivers & 40 (pedestrian + vehicular) \\
+Measurement duration & 4 weeks \\
+Logging interval & 10\,ms \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\section{Evaluation Metrics}
+Three metrics are reported: (1) median downlink throughput, (2) beam
+realignment latency, defined as the time between blockage onset and
+restoration of link quality above a $-6$\,dB SNR margin, and (3)
+95th-percentile outage duration across all user sessions. All metrics are
+computed relative to a hierarchical codebook-search baseline operating on the
+same hardware and testbed.
+
+\chapter{Conclusion}
+\label{ch:conclusion}
+
+This thesis presented \textsc{Meridian-Beam}, a hybrid beamforming framework
+that pairs coarse codebook search with a lightweight reinforcement-learning
+refinement stage. Field evaluation on the nine-cell Nimbus urban testbed over
+a four-week measurement window showed a 34\% improvement in median downlink
+throughput, a 41\% reduction in beam-realignment latency, and a reduction of
+95th-percentile outage duration from 812\,ms to 276\,ms, all with less than
+3\,ms of added per-decision overhead. Future work will examine multi-cell
+coordination, where handover decisions and beam refinement are optimized
+jointly rather than per cell, and will extend the measurement campaign to
+seasonal traffic variation.
+
+\clearpage
+\begin{thebibliography}{9}
+\small
+
+\bibitem{apex2025}
+Apex Wireless Labs, ``Hierarchical Beam Search for 5G Millimeter-Wave
+Access Networks,'' \textit{Technical Report TR-2025-14}, 2025.
+
+\bibitem{seo2024}
+Y.~Seo and H.~Choi, ``Inertial-Aided Beam Prediction for Mobile mmWave
+Users,'' \textit{Proceedings of the Vertex Symposium on Wireless Systems},
+pp.~112--121, 2024.
+
+\bibitem{park2023}
+S.~Park, J.~Yoon, and M.~Han, ``A Survey of Learning-Based Beam Management
+in Dense Urban Networks,'' \textit{Synapse Journal of Communications},
+vol.~18, no.~3, pp.~44--59, 2023.
+
+\bibitem{nimbus2024}
+Nimbus Networks, ``Nimbus Urban Testbed: Deployment and Measurement
+Infrastructure,'' \textit{White Paper}, 2024.
+
+\bibitem{choi2022}
+H.~Choi, ``Reinforcement Learning for Real-Time Wireless Resource
+Control,'' Master's Thesis, Department of Electrical Engineering, Korea
+University, 2022.
+
+\end{thebibliography}
+
+\end{document}

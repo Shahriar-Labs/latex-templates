@@ -1,0 +1,669 @@
+\documentclass[10pt]{article}
+
+\usepackage[letterpaper,landscape,margin=0.35in,noheadfoot]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{fontawesome5}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{fancyhdr}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\usepackage{parskip}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=primary,
+  urlcolor=secondary,
+  citecolor=accent
+}
+
+\pagestyle{empty}
+
+\definecolor{primary}{RGB}{25,38,75}
+\definecolor{secondary}{RGB}{30,130,120}
+\definecolor{accent}{RGB}{200,135,45}
+\definecolor{lightbg}{RGB}{242,244,247}
+\definecolor{lightprimary}{RGB}{235,238,245}
+\definecolor{lightsecondary}{RGB}{225,245,242}
+\definecolor{darktext}{RGB}{40,40,45}
+\definecolor{softgray}{RGB}{140,145,155}
+
+\colorlet{primarylight}{primary!8}
+\colorlet{secondarylight}{secondary!8}
+
+\newlength{\panelwidth}
+\newlength{\panelgap}
+\setlength{\panelgap}{0.12in}
+\setlength{\panelwidth}{\dimexpr(\textwidth-2\panelgap)/3\relax}
+
+\newtcolorbox{panelhead}[1][]{
+  colback=primary,
+  colframe=primary,
+  boxrule=0pt,
+  arc=3pt,
+  outer arc=3pt,
+  before skip=0pt,
+  after skip=8pt,
+  left=6pt,
+  right=6pt,
+  top=5pt,
+  bottom=5pt,
+  fontupper=\color{white}\bfseries\small,
+  #1
+}
+
+\newtcolorbox{highlightbox}[1][]{
+  colback=lightprimary,
+  colframe=primary!30,
+  boxrule=0.4pt,
+  arc=3pt,
+  outer arc=3pt,
+  before skip=6pt,
+  after skip=6pt,
+  left=5pt,
+  right=5pt,
+  top=4pt,
+  bottom=4pt,
+  fontupper=\small,
+  #1
+}
+
+\newtcolorbox{resultbox}[1][]{
+  colback=lightsecondary,
+  colframe=secondary!40,
+  boxrule=0.4pt,
+  arc=3pt,
+  outer arc=3pt,
+  before skip=6pt,
+  after skip=6pt,
+  left=5pt,
+  right=5pt,
+  top=4pt,
+  bottom=4pt,
+  fontupper=\small,
+  #1
+}
+
+\newtcolorbox{accentstrip}[1][]{
+  colback=accent!10,
+  colframe=accent!50,
+  boxrule=0pt,
+  leftrule=2.5pt,
+  arc=0pt,
+  outer arc=0pt,
+  before skip=6pt,
+  after skip=6pt,
+  left=5pt,
+  right=5pt,
+  top=4pt,
+  bottom=4pt,
+  fontupper=\small,
+  #1
+}
+
+\newcommand{\paneltitle}[1]{%
+  \begin{panelhead}%
+    #1%
+  \end{panelhead}%
+}
+
+\newcommand{\subheading}[1]{%
+  \medskip
+  {\color{secondary}\bfseries\small #1}
+  \smallskip
+}
+
+\newcommand{\metricbox}[2]{%
+  \begin{highlightbox}[center upper]
+    {\fontsize{16}{18}\selectfont\bfseries\color{primary}#1}\\[2pt]
+    {\footnotesize\color{softgray}#2}
+  \end{highlightbox}%
+}
+
+\newcommand{\foldseparator}{%
+  \begin{tikzpicture}[overlay,remember picture]
+    \draw[densely dotted,primary!25,line width=0.3pt]
+      (0,0.35\textheight) -- (0,-0.35\textheight);
+  \end{tikzpicture}%
+}
+
+\newcommand{\sectionrule}{%
+  \vspace{2pt}
+  {\color{secondary}\hrule height 0.6pt}
+  \vspace{4pt}
+}
+
+\newcommand{\contactline}[2]{%
+  {\footnotesize\color{darktext}#1\hspace{4pt}#2}\\[2pt]
+}
+
+\setlist[itemize]{leftmargin=*,nosep,itemsep=1pt,topsep=2pt,partopsep=0pt}
+\setlist[enumerate]{leftmargin=*,nosep,itemsep=1pt,topsep=2pt,partopsep=0pt}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt plus 1pt minus 1pt}
+\setlength{\fboxsep}{0pt}
+
+\newcommand{\tinysep}{\vspace{3pt}}
+\newcommand{\smallsep}{\vspace{6pt}}
+
+\begin{document}
+
+% ============================================================
+% FRONT SIDE
+% ============================================================
+
+\noindent
+\begin{minipage}[t]{\panelwidth}
+  \RaggedRight
+
+  \begin{tikzpicture}
+    \fill[primary] (0,0) rectangle (\linewidth,1.4pt);
+    \fill[secondary] (0,1.8pt) rectangle (\linewidth,2.4pt);
+  \end{tikzpicture}
+  \vspace{10pt}
+
+  {\fontsize{13}{16}\selectfont\bfseries\color{primary}
+   Deep Transfer Learning for Early Wildfire Detection Using Multi-Spectral Satellite Imagery}
+
+  \vspace{10pt}
+
+  {\color{secondary}\hrule height 0.5pt}
+  \vspace{8pt}
+
+  {\small\bfseries\color{darktext}Sarah Chen, Ph.D.}\\[1pt]
+  {\footnotesize\color{softgray}Nexa Research Institute\\
+  Machine Learning \& Remote Sensing Division}
+
+  \vspace{4pt}
+
+  {\small\bfseries\color{darktext}James Hartley, M.Sc.}\\[1pt]
+  {\footnotesize\color{softgray}Nexa Research Institute\\
+  Edge Computing Systems Lab}
+
+  \vspace{4pt}
+
+  {\small\bfseries\color{darktext}Maria Kowalski, Ph.D.}\\[1pt]
+  {\footnotesize\color{softgray}Meridian University\\
+  Department of Environmental Data Science}
+
+  \vspace{10pt}
+
+  \begin{highlightbox}[center upper]
+    {\footnotesize\bfseries\color{primary}ISCES 2026}\\[1pt]
+    {\scriptsize\color{softgray}International Symposium on Computational\\
+    Environmental Science {\textbullet} Barcelona, Spain}
+  \end{highlightbox}
+
+  \vspace{8pt}
+
+  \begin{center}
+    \begin{tikzpicture}[scale=0.9]
+      \node[draw=primary!25,fill=primary!3,rounded corners=3pt,
+            minimum width=1.8cm,minimum height=1.2cm] (a) at (0,0)
+            {\shortstack{\footnotesize\bfseries\color{primary}94.7\%\\{\tiny\color{softgray}Accuracy}}};
+      \node[draw=secondary!25,fill=secondary!3,rounded corners=3pt,
+            minimum width=1.8cm,minimum height=1.2cm] (b) at (2.1,0)
+            {\shortstack{\footnotesize\bfseries\color{secondary}3.2\,min\\{\tiny\color{softgray}Latency}}};
+      \node[draw=accent!25,fill=accent!3,rounded corners=3pt,
+            minimum width=1.8cm,minimum height=1.2cm] (c) at (1.05,-1.4)
+            {\shortstack{\footnotesize\bfseries\color{accent}50K\\{\tiny\color{softgray}Images}}};
+    \end{tikzpicture}
+  \end{center}
+
+  \vspace{6pt}
+
+  \begin{accentstrip}
+    {\footnotesize\color{darktext}\faTag\hspace{5pt}
+     \textbf{Keywords:} Wildfire detection, transfer learning,
+     satellite imagery, edge computing, attention mechanisms}
+  \end{accentstrip}
+
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{\panelwidth}
+  \RaggedRight
+
+  \paneltitle{\faFile\hspace{4pt}Abstract \& Background}
+
+  \smallsep
+
+  {\footnotesize\color{darktext}
+  Early detection of wildfires is critical for minimizing
+  environmental damage and protecting vulnerable communities.
+  Traditional detection methods relying on human observation or
+  ground-based sensor networks suffer from limited coverage and
+  significant response delays. This study presents a novel deep
+  transfer learning framework that leverages multi-spectral
+  satellite imagery for real-time wildfire detection at a
+  global scale.}
+
+  \tinysep
+
+  {\footnotesize\color{darktext}
+  Our approach combines pre-trained convolutional neural
+  networks with spatial-channel attention mechanisms and
+  domain-specific fine-tuning on a curated dataset of over
+  50,000 satellite images spanning five continents and seven
+  distinct climate zones. The framework achieves 94.7\%
+  detection accuracy with a mean detection latency of
+  3.2 minutes when deployed on edge computing hardware.}
+
+  \smallsep
+
+  \subheading{Motivation}
+
+  {\footnotesize\color{darktext}
+  Climate change has intensified wildfire frequency and
+  severity worldwide. In 2024 alone, wildfires burned over
+  12 million hectares globally, emitting an estimated
+  1.8 gigatons of CO\textsubscript{2}. Current satellite-based
+  detection systems, such as MODIS and VIIRS, provide valuable
+  data but suffer from latency issues and limited spatial
+  resolution, often detecting fires only after they have
+  grown to substantial sizes.}
+
+  \smallsep
+
+  \subheading{Research Gap}
+
+  {\footnotesize\color{darktext}
+  While deep learning has shown promise in remote sensing
+  applications, existing models are typically trained on
+  region-specific data and fail to generalize across diverse
+  ecosystems. Furthermore, most approaches require cloud-based
+  inference pipelines, introducing unacceptable latency for
+  time-critical wildfire response scenarios.}
+
+  \smallsep
+
+  \begin{highlightbox}
+    {\footnotesize\bfseries\color{primary}Key Challenge:}
+    {\footnotesize\color{darktext} Can we build a lightweight,
+    globally-generalizable deep learning model that detects
+    wildfires within minutes using standard satellite imagery,
+    while running on edge devices at ground stations?}
+  \end{highlightbox}
+
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{\panelwidth}
+  \RaggedRight
+
+  \paneltitle{\faCrosshairs\hspace{4pt}Objectives \& Contributions}
+
+  \smallsep
+
+  \subheading{Research Objectives}
+
+  {\footnotesize\color{darktext}
+  \begin{enumerate}[label={\color{primary}\bfseries O\arabic*},leftmargin=16pt]
+    \item Develop a lightweight deep learning architecture
+          optimized for real-time wildfire detection from
+          multi-spectral satellite imagery.
+    \item Leverage transfer learning to enable rapid model
+          adaptation across geographically and climatically
+          diverse regions with minimal labeled data.
+    \item Optimize the inference pipeline for deployment on
+          edge computing devices co-located with satellite
+          ground stations.
+    \item Comprehensively validate detection performance
+          against existing operational systems including MODIS
+          and VIIRS active fire products.
+  \end{enumerate}
+  }
+
+  \smallsep
+
+  \subheading{Key Contributions}
+
+  \begin{accentstrip}
+    {\footnotesize\bfseries\color{accent!80!black}C1.}
+    {\footnotesize\color{darktext} A novel attention-enhanced
+    transfer learning architecture that improves cross-region
+    generalization by 18.4\% over standard fine-tuning.}
+  \end{accentstrip}
+
+  \begin{accentstrip}
+    {\footnotesize\bfseries\color{accent!80!black}C2.}
+    {\footnotesize\color{darktext} The WildFire-Net dataset:
+    50,000 curated multi-spectral image patches with
+    pixel-level fire masks across five continents.}
+  \end{accentstrip}
+
+  \begin{accentstrip}
+    {\footnotesize\bfseries\color{accent!80!black}C3.}
+    {\footnotesize\color{darktext} An edge-optimized inference
+    pipeline achieving 3.2-minute end-to-end latency on
+    NVIDIA Jetson Orin hardware, enabling on-site deployment.}
+  \end{accentstrip}
+
+  \begin{accentstrip}
+    {\footnotesize\bfseries\color{accent!80!black}C4.}
+    {\footnotesize\color{darktext} Comprehensive benchmark
+    across seven climate zones demonstrating consistent
+    performance (F1 $>$ 0.89 in all regions) and a 12.3\%
+    improvement over the best existing CNN-based method.}
+  \end{accentstrip}
+
+  \smallsep
+
+  \subheading{Research Questions}
+
+  {\footnotesize\color{darktext}
+  \begin{itemize}
+    \item[\color{primary}\textbf{RQ1.}] How effectively can
+      transfer learning bridge the domain gap between
+      pre-trained vision models and multi-spectral
+      satellite data?
+    \item[\color{primary}\textbf{RQ2.}] What is the minimum
+      spatial and temporal resolution required for reliable
+      early-stage wildfire detection?
+    \item[\color{primary}\textbf{RQ3.}] Can model compression
+      techniques reduce inference latency below 5 minutes
+      without sacrificing detection accuracy?
+  \end{itemize}
+  }
+
+\end{minipage}
+
+\newpage
+
+% ============================================================
+% BACK SIDE
+% ============================================================
+
+\noindent
+\begin{minipage}[t]{\panelwidth}
+  \RaggedRight
+
+  \paneltitle{\faCogs\hspace{4pt}Methodology}
+
+  \smallsep
+
+  \subheading{Dataset: WildFire-Net}
+
+  {\footnotesize\color{darktext}
+  We curated a dataset of 50,000 multi-spectral image patches
+  (512\,$\times$\,512 pixels) from Sentinel-2 and Landsat-8
+  satellites. Images span 2019--2025 and cover boreal forests
+  (Canada, Siberia), Mediterranean shrublands (Spain, Greece),
+  tropical savannas (Brazil, Australia), temperate forests
+  (California, Portugal), and arid grasslands (Central Asia).
+  Each patch is labeled with a binary fire/non-fire mask
+  verified by expert annotators.}
+
+  \smallsep
+
+  \subheading{Model Architecture}
+
+  {\footnotesize\color{darktext}
+  Our framework, named \textbf{WildFire-Net}, builds on
+  EfficientNet-B4 pre-trained on ImageNet-21K. We augment the
+  backbone with:}
+
+  {\footnotesize\color{darktext}
+  \begin{itemize}
+    \item \textbf{Spatial Attention Module:} 3\,$\times$\,3
+      depthwise-separable convolutions with dilated kernels
+      (rates = 1, 2, 3) to capture multi-scale smoke patterns.
+    \item \textbf{Channel Attention Module:} Squeeze-and-
+      excitation blocks recalibrating spectral band weights,
+      emphasizing near-infrared (B8) and shortwave-infrared
+      (B11, B12) bands critical for fire detection.
+    \item \textbf{Lightweight Decoder:} A single upsampling
+      block with skip connections, reducing parameters by
+      40\% compared to U-Net-style decoders.
+  \end{itemize}
+  }
+
+  \smallsep
+
+  \subheading{Training Protocol}
+
+  {\footnotesize\color{darktext}
+  Two-stage training on 4\,$\times$\,NVIDIA A100 GPUs:}
+
+  {\footnotesize\color{darktext}
+  \textbf{Stage 1 --- Pre-training:} ImageNet-21K weights
+  fine-tuned on the BigEarthNet-MM multi-spectral benchmark
+  (590K Sentinel patches, 43 land-cover classes) for 50 epochs.
+  Learning rate: 1e-4 with cosine annealing.}
+
+  \tinysep
+
+  {\footnotesize\color{darktext}
+  \textbf{Stage 2 --- Domain Adaptation:} Fine-tuned on
+  WildFire-Net with a weighted focal loss ($\gamma = 2.0$,
+  $\alpha = 0.75$ to address class imbalance). Data
+  augmentation includes random rotations, flips, spectral
+  jitter, and CutMix. Batch size 64, 30 epochs.}
+
+  \smallsep
+
+  \subheading{Evaluation Metrics}
+
+  {\footnotesize\color{darktext}
+  Precision, Recall, F1-score, Intersection-over-Union (IoU),
+  and end-to-end detection latency measured from image
+  acquisition to alert generation.}
+
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{\panelwidth}
+  \RaggedRight
+
+  \paneltitle{\faChartBar\hspace{4pt}Results \& Analysis}
+
+  \smallsep
+
+  \subheading{Detection Performance}
+
+  \vspace{2pt}
+
+  \renewcommand{\arraystretch}{1.25}
+  \begin{tabularx}{\linewidth}{@{}>{\RaggedRight\arraybackslash}p{1.45cm}>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X>{\centering\arraybackslash}X@{}}
+    \toprule
+    \multicolumn{1}{@{}l}{\footnotesize\bfseries\color{primary}Method} &
+    {\footnotesize\bfseries\color{primary}Prec.} &
+    {\footnotesize\bfseries\color{primary}Rec.} &
+    {\footnotesize\bfseries\color{primary}F1} &
+    {\footnotesize\bfseries\color{primary}IoU} \\
+    \midrule
+    MODIS C6       & 0.789 & 0.717 & 0.751 & 0.602 \\[1pt]
+    VIIRS AF       & 0.821 & 0.754 & 0.786 & 0.648 \\[1pt]
+    ResNet-50      & 0.864 & 0.828 & 0.845 & 0.732 \\[1pt]
+    U-Net++        & 0.891 & 0.863 & 0.877 & 0.781 \\[1pt]
+    \cellcolor{lightsecondary}\textbf{WildFire-Net} & \cellcolor{lightsecondary}\bfseries 0.932 & \cellcolor{lightsecondary}\bfseries 0.918 & \cellcolor{lightsecondary}\bfseries 0.925 & \cellcolor{lightsecondary}\bfseries 0.860 \\
+    \bottomrule
+  \end{tabularx}
+
+  \vspace{4pt}
+  {\scriptsize\color{softgray}\itshape Table 1. Performance comparison on the WildFire-Net test set (10,000 images).}
+
+  \smallsep
+
+  \subheading{Per-Region Generalization}
+
+  {\footnotesize\color{darktext}
+  WildFire-Net maintains strong performance across all seven
+  climate zones (F1 range: 0.892--0.948), compared to
+  ResNet-50 (F1 range: 0.731--0.864). The attention modules
+  are particularly effective in Mediterranean and boreal
+  regions where smoke dispersion patterns differ from
+  temperate training data.}
+
+  \smallsep
+
+  \begin{resultbox}
+    {\footnotesize\bfseries\color{secondary}Key Finding:}
+    {\footnotesize\color{darktext} The spatial-channel
+    attention mechanism improves cross-region F1 by
+    8.3 percentage points compared to the same architecture
+    without attention, confirming that attention helps the
+    model focus on fire-specific spectral signatures rather
+    than region-specific background features.}
+  \end{resultbox}
+
+  \smallsep
+
+  \subheading{Latency Analysis}
+
+  \vspace{2pt}
+
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabularx}{\linewidth}{@{}>{\RaggedRight\arraybackslash}p{1.6cm}>{\centering\arraybackslash}X>{\centering\arraybackslash}X@{}}
+    \toprule
+    \multicolumn{1}{@{}l}{\footnotesize\bfseries\color{primary}Platform} &
+    {\footnotesize\bfseries\color{primary}Latency} &
+    {\footnotesize\bfseries\color{primary}Throughput} \\
+    \midrule
+    Cloud (A100)  & 0.82\,s & 1,220\,img/h \\[1pt]
+    Edge (Jetson) & 3.2\,min & 18.8\,img/h \\[1pt]
+    CPU (Xeon)    & 8.7\,min & 6.9\,img/h \\
+    \bottomrule
+  \end{tabularx}
+
+  \vspace{4pt}
+  {\scriptsize\color{softgray}\itshape Table 2. Inference latency across deployment platforms. Edge latency meets the 5-minute operational target for ground-station deployment.}
+
+  \smallsep
+
+  \subheading{Ablation Study}
+
+  {\footnotesize\color{darktext}
+  Removing spatial attention reduces F1 by 5.2pp; removing
+  channel attention reduces F1 by 4.1pp; removing both
+  reduces F1 by 9.7pp. Two-stage transfer learning contributes
+  6.8pp over single-stage fine-tuning, validating the
+  importance of intermediate domain adaptation.}
+
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{\panelwidth}
+  \RaggedRight
+
+  \paneltitle{\faLightbulb\hspace{4pt}Conclusions \& Resources}
+
+  \smallsep
+
+  \subheading{Summary}
+
+  {\footnotesize\color{darktext}
+  This study demonstrates that deep transfer learning with
+  attention mechanisms can achieve state-of-the-art wildfire
+  detection from satellite imagery while maintaining
+  sufficient efficiency for edge deployment. WildFire-Net
+  outperforms existing operational systems by 12--18\% and
+  generalizes robustly across diverse ecosystems.}
+
+  \smallsep
+
+  \subheading{Limitations}
+
+  {\footnotesize\color{darktext}
+  \begin{itemize}
+    \item Detection of small fires ($<$ 0.5 ha) remains
+      challenging due to spatial resolution constraints
+      (10--30 m per pixel).
+    \item Nighttime detection relies exclusively on thermal
+      bands, reducing accuracy to $\sim$82\%.
+    \item Cloud cover obscures optical imagery; integration
+      with SAR data is needed for all-weather capability.
+  \end{itemize}
+  }
+
+  \smallsep
+
+  \subheading{Future Work}
+
+  \begin{accentstrip}
+    {\footnotesize\color{darktext}\textbf{Drone Integration:}
+    Extending the framework to ingest high-resolution UAV
+    imagery for verification of satellite-based detections.}
+  \end{accentstrip}
+
+  \begin{accentstrip}
+    {\footnotesize\color{darktext}\textbf{Multi-Modal Fusion:}
+    Combining optical, thermal, and synthetic aperture radar
+    (SAR) data for robust all-weather, day-night detection.}
+  \end{accentstrip}
+
+  \begin{accentstrip}
+    {\footnotesize\color{darktext}\textbf{Operational Pilot:}
+    Planned deployment at three ground stations in partnership
+    with regional fire management agencies in California,
+    Portugal, and Australia (2026--2027).}
+  \end{accentstrip}
+
+  \smallsep
+
+  \subheading{References}
+
+  {\scriptsize\color{darktext}
+  \begin{enumerate}[leftmargin=14pt,label={[\arabic*]},itemsep=0pt]
+    \item S.\ Chen \& J.\ Hartley. Transfer learning strategies
+      for multi-spectral Earth observation. \textit{IEEE Trans.\
+      Geosci.\ Remote Sens.}, 63:1--18, 2025.
+    \item M.\ Kowalski, S.\ Chen, \& J.\ Hartley. Attention
+      mechanisms for environmental monitoring with satellite
+      imagery. \textit{NeurIPS 2024 Workshop on Climate Change
+      AI}, Vancouver, 2024.
+    \item Nexa Research Institute. WildFire-Net: An edge-AI
+      framework for environmental threat detection. Technical
+      Report NX-TR-2025-042, 2025.
+    \item L.\ Zhang \& K.\ Park. BigEarthNet-MM: A large-scale
+      multi-modal benchmark for remote sensing. \textit{CVPR
+      2024}, Seattle, 2024.
+  \end{enumerate}
+  }
+
+  \smallsep
+
+  \subheading{Acknowledgments}
+
+  {\footnotesize\color{darktext}
+  This work was supported by the Nexa Environmental AI
+  Initiative (Grant NEAI-2025-042) and the Meridian University
+  High-Performance Computing Center. We thank the European
+  Space Agency and USGS for providing open-access satellite
+  imagery through the Copernicus and Landsat programs.}
+
+  \smallsep
+
+  {\color{primary}\hrule height 0.4pt}
+  \vspace{6pt}
+
+  \subheading{Contact \& Resources}
+
+  \vspace{2pt}
+
+  \contactline{Envelope}{s.chen@nexa-research.org}
+  \contactline{Globe}{nexa-research.org/wildfire-ai}
+  \contactline{MapMarker}{Nexa Research Institute, 4500
+    Innovation Drive, Palo Alto, CA 94304}
+  \contactline{Twitter}{@NexaEnvAI}
+
+  \vspace{8pt}
+
+  \begin{highlightbox}[center upper]
+    {\footnotesize\bfseries\color{primary}
+    Dataset \& Code Available}\\[1pt]
+    {\scriptsize\color{softgray}
+    github.com/nexa-research/wildfire-net\\
+    Released under Apache 2.0 License}
+  \end{highlightbox}
+
+\end{minipage}
+
+\end{document}

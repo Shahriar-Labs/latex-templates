@@ -1,0 +1,679 @@
+\documentclass[11pt,letterpaper]{article}
+
+%% ─── Core packages ────────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[english]{babel}
+
+%% ─── Page geometry ────────────────────────────────────────────────────────────
+\usepackage[
+  top=2.0cm, bottom=2.2cm,
+  left=2.2cm, right=2.2cm,
+  headheight=52pt,
+  headsep=10pt,
+  footskip=30pt
+]{geometry}
+
+%% ─── Color ────────────────────────────────────────────────────────────────────
+\usepackage[table,dvipsnames]{xcolor}
+\definecolor{cihrRed}{HTML}{C8102E}
+\definecolor{cihrNavy}{HTML}{1B2A4A}
+\definecolor{cihrGold}{HTML}{C9973A}
+\definecolor{cihrLightGray}{HTML}{F4F5F7}
+\definecolor{cihrMidGray}{HTML}{D1D5DB}
+\definecolor{cihrDarkGray}{HTML}{4B5563}
+\definecolor{cihrAccent}{HTML}{E8EDF5}
+
+%% ─── Typography ───────────────────────────────────────────────────────────────
+\usepackage{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{setspace}
+\setstretch{1.08}
+
+%% ─── Headers / Footers ────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+%% ─── Graphics & TikZ ──────────────────────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds,patterns}
+
+%% ─── tcolorbox ────────────────────────────────────────────────────────────────
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable,most}
+
+%% ─── Tables ───────────────────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{colortbl}
+
+%% ─── Lists ────────────────────────────────────────────────────────────────────
+\usepackage{enumitem}
+
+%% ─── Math ─────────────────────────────────────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+%% ─── Misc ─────────────────────────────────────────────────────────────────────
+\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage{fontawesome5}
+\usepackage{calc}
+\usepackage{ragged2e}
+\usepackage{soul}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=cihrNavy,
+  urlcolor=cihrRed,
+  citecolor=cihrNavy,
+  pdfauthor={Dr. Elena Marchetti},
+  pdftitle={CIHR Project Grant Application},
+  pdfsubject={Neuroinflammatory Mechanisms in Early-Onset Parkinson Disease}
+}
+
+%% ─── Paragraph spacing ────────────────────────────────────────────────────────
+\setlength{\parskip}{5pt}
+\setlength{\parindent}{0pt}
+
+%% ─── Section formatting ───────────────────────────────────────────────────────
+\usepackage[explicit]{titlesec}
+
+\titleformat{\section}
+  {\normalfont\bfseries\fontsize{10.5}{13}\selectfont\color{white}}
+  {}
+  {0em}
+  {\colorbox{cihrNavy}{\parbox{\dimexpr\linewidth-2\fboxsep}{\thesection\quad #1}}}
+  []
+\titlespacing{\section}{0pt}{10pt}{6pt}
+
+\titleformat{\subsection}
+  {\normalfont\bfseries\fontsize{10}{12}\selectfont\color{cihrNavy}}
+  {}
+  {0em}
+  {\thesubsection\quad #1}
+  [\vspace{-2pt}\textcolor{cihrGold}{\rule{\linewidth}{1.2pt}}]
+\titlespacing{\subsection}{0pt}{8pt}{4pt}
+
+\titleformat{\subsubsection}
+  {\normalfont\bfseries\fontsize{9.5}{11}\selectfont\color{cihrDarkGray}}
+  {}
+  {0em}
+  {#1}
+\titlespacing{\subsubsection}{0pt}{6pt}{2pt}
+
+%% ─── Header / Footer setup ────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+
+\fancyhead[L]{%
+  \begin{tikzpicture}[remember picture, overlay, baseline=(current bounding box.center)]
+    \fill[cihrNavy] (-0.3cm, -0.5cm) rectangle (6.2cm, 0.8cm);
+    \node[anchor=west, text=white, font=\bfseries\fontsize{8}{10}\selectfont]
+      at (0.05cm, 0.15cm) {CIHR PROJECT GRANT APPLICATION};
+    \node[anchor=west, text=cihrGold, font=\fontsize{6.5}{8}\selectfont]
+      at (0.05cm, -0.2cm) {File No.\ PRJ-2026-0841\ \ $\cdot$\ \ Competition: Spring 2026};
+  \end{tikzpicture}%
+}
+\fancyhead[R]{%
+  \begin{tikzpicture}[remember picture, overlay, baseline=(current bounding box.center)]
+    \fill[cihrRed] (-2.4cm, -0.5cm) rectangle (0.3cm, 0.8cm);
+    \node[text=white, font=\bfseries\fontsize{7}{9}\selectfont]
+      at (-1.05cm, 0.13cm) {CONFIDENTIAL};
+  \end{tikzpicture}%
+}
+\fancyfoot[C]{%
+  \footnotesize\color{cihrDarkGray}
+  \textbf{Page \thepage\ of \pageref{LastPage}}%
+  \quad\textcolor{cihrMidGray}{$|$}\quad
+  Marchetti et al.\ --- Neuroinflammation \& Early-Onset Parkinson Disease%
+}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0.5pt}
+\renewcommand{\footrule}{\hbox to\headwidth{\color{cihrMidGray}\leaders\hrule height \footrulewidth\hfill}}
+
+%% ─── Custom tcolorbox styles ──────────────────────────────────────────────────
+\tcbset{
+  cihrbox/.style={
+    enhanced, breakable,
+    colback=cihrAccent,
+    colframe=cihrNavy,
+    fonttitle=\bfseries\fontsize{9}{11}\selectfont\color{white},
+    coltitle=white,
+    attach boxed title to top left={yshift=-2mm, xshift=4mm},
+    boxed title style={colback=cihrNavy, sharp corners},
+    sharp corners,
+    boxrule=0.8pt,
+    left=6pt, right=6pt, top=8pt, bottom=6pt,
+    parbox=false
+  },
+  warnbox/.style={
+    enhanced,
+    colback=white,
+    colframe=white,
+    borderline west={3pt}{0pt}{cihrRed},
+    sharp corners,
+    boxrule=0pt,
+    left=8pt, right=6pt, top=5pt, bottom=5pt,
+    parbox=false
+  },
+  goldbox/.style={
+    enhanced,
+    colback=white,
+    colframe=white,
+    borderline west={3pt}{0pt}{cihrGold},
+    sharp corners,
+    boxrule=0pt,
+    left=8pt, right=6pt, top=5pt, bottom=5pt,
+    parbox=false
+  }
+}
+
+%% ─── Helper macros ────────────────────────────────────────────────────────────
+\newcommand{\cihrfield}[2]{%
+  \vspace{2pt}%
+  {\fontsize{7.5}{9}\selectfont\color{cihrDarkGray}\textbf{#1}}\par
+  {\fontsize{9}{11}\selectfont #2}\vspace{4pt}%
+}
+
+\newcommand{\milestone}[3]{%
+  \noindent
+  \begin{minipage}[c]{0.06\linewidth}
+    \centering
+    \begin{tikzpicture}[baseline=(n.base)]
+      \node[circle, fill=cihrNavy, text=white, inner sep=2.5pt,
+            font=\bfseries\fontsize{7}{9}\selectfont] (n) {#1};
+    \end{tikzpicture}%
+  \end{minipage}%
+  \begin{minipage}[c]{0.94\linewidth}
+    \fontsize{9}{11}\selectfont\raggedright
+    \textbf{#2}%
+    \ifx\empty#3\empty\else\enspace---\enspace#3\fi
+  \end{minipage}\par\vspace{3pt}%
+}
+
+\newcommand{\aimrow}[2]{%
+  \textcolor{cihrNavy}{\textbf{#1}} & #2 \\[3pt]%
+}
+
+%% ═══════════════════════════════════════════════════════════════════════════════
+\begin{document}
+\setcounter{page}{1}
+
+%% ─── TITLE BLOCK ──────────────────────────────────────────────────────────────
+\begin{tcolorbox}[
+  enhanced,
+  colback=cihrNavy,
+  colframe=cihrNavy,
+  sharp corners,
+  left=10pt, right=10pt, top=10pt, bottom=10pt,
+  parbox=false
+]
+  \begin{minipage}[c]{0.72\linewidth}
+    {\fontsize{14}{17}\selectfont\bfseries\color{white}
+    Neuroinflammatory Mechanisms Driving\\
+    Selective Dopaminergic Vulnerability in\\
+    Early-Onset Parkinson Disease}\\[6pt]
+    {\fontsize{9}{11}\selectfont\color{cihrGold}
+    \faTag\enspace
+    Neuroscience\ \ $\cdot$\ \
+    Neurodegeneration\ \ $\cdot$\ \
+    Neuroimmunology\ \ $\cdot$\ \
+    Biomarker Discovery}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[c]{0.25\linewidth}
+    \begin{tcolorbox}[
+      enhanced,
+      colback=cihrRed,
+      colframe=cihrRed,
+      sharp corners,
+      left=5pt, right=5pt, top=5pt, bottom=5pt,
+      parbox=false
+    ]
+      \centering
+      {\fontsize{7}{9}\selectfont\color{white}\textbf{FUNDING REQUESTED}}\\[3pt]
+      {\fontsize{15}{18}\selectfont\bfseries\color{white}\$748,000}\\[2pt]
+      {\fontsize{7}{9}\selectfont\color{white}CAD over 4 years}\\[5pt]
+      {\fontsize{7}{9}\selectfont\color{cihrGold}\textbf{PROJECT GRANT}}\\
+      {\fontsize{7}{9}\selectfont\color{white}Spring 2026 Competition}
+    \end{tcolorbox}
+  \end{minipage}
+\end{tcolorbox}
+
+\vspace{6pt}
+
+%% ─── APPLICANT INFO ROW ───────────────────────────────────────────────────────
+\noindent
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[
+    enhanced,
+    colback=cihrLightGray,
+    colframe=cihrMidGray,
+    sharp corners, boxrule=0.6pt,
+    left=7pt, right=7pt, top=6pt, bottom=6pt,
+    parbox=false
+  ]
+    {\fontsize{8}{10}\selectfont\color{cihrNavy}\textbf{\faUser\enspace PRINCIPAL INVESTIGATOR}}\\[4pt]
+    \cihrfield{Name}{Dr.\ Elena Marchetti, MD, PhD, FRCPC}
+    \cihrfield{Position}{Associate Professor \& Canada Research Chair (Tier II)}
+    \cihrfield{Department}{Department of Neuroscience \& Pharmacology}
+    \cihrfield{Institution}{Meridian University, Hamilton, Ontario}
+    \cihrfield{ORCID}{0000-0002-7341-8821}
+    \cihrfield{Email}{\texttt{e.marchetti@meridian.ca}}
+  \end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[
+    enhanced,
+    colback=cihrLightGray,
+    colframe=cihrMidGray,
+    sharp corners, boxrule=0.6pt,
+    left=7pt, right=7pt, top=6pt, bottom=6pt,
+    parbox=false
+  ]
+    {\fontsize{8}{10}\selectfont\color{cihrNavy}\textbf{\faUsers\enspace CO-INVESTIGATORS}}\\[4pt]
+    \cihrfield{Co-PI 1}{Dr.\ Thomas Okafor, PhD --- Meridian University\\
+      \textit{Expertise: Microglia biology, single-cell genomics}}
+    \cihrfield{Co-PI 2}{Dr.\ Nadia Petrov, MD, PhD --- Apex Health Sciences Centre\\
+      \textit{Expertise: Clinical neurology, biomarker validation}}
+    \cihrfield{Collaborator}{Dr.\ Joon-Seok Lim, PhD --- Synapse Genomics Inc.\\
+      \textit{In-kind: Spatial transcriptomics platform}}
+  \end{tcolorbox}
+\end{minipage}
+
+\par\vspace{4pt}
+
+%% ─── SECTION 1: LAY ABSTRACT ──────────────────────────────────────────────────
+\section{Lay Summary}
+
+Parkinson disease (PD) affects more than 100,000 Canadians and costs the healthcare system over \$1.1 billion annually. While most cases emerge after age 60, a clinically distinct form --- \textit{early-onset PD (EOPD)} --- strikes adults under 50, robbing them of productive decades and placing outsized caregiving burdens on families. Despite its severity, the biological reasons why younger brains lose the dopamine-producing neurons that EOPD destroys remain poorly understood.
+
+Our team has discovered that a specialised immune cell in the brain, the \textit{microglia}, behaves abnormally in EOPD patients in ways not seen in late-onset disease. Using brain tissue donated by EOPD patients and age-matched controls, along with cutting-edge single-cell sequencing and mouse models, we will map how these misbehaving microglia trigger a destructive inflammatory cycle that kills dopaminergic neurons far earlier than normal aging would predict.
+
+This work will produce Canada's first EOPD-specific neuroinflammation atlas, identify blood markers that can detect the disease years before symptoms, and test two promising anti-inflammatory strategies that could slow or halt progression. Findings will accelerate new clinical trials and directly inform Canadian health policy on PD management for working-age adults.
+
+%% ─── SECTION 2: SIGNIFICANCE & INNOVATION ────────────────────────────────────
+\section{Significance and Innovation}
+
+\subsection{Disease Burden and Unmet Need}
+
+Early-onset Parkinson disease (EOPD, onset $\leq$50 years) represents approximately 10--15\% of all PD diagnoses yet accounts for a disproportionate share of years of life lost and disability-adjusted life years (DALYs). A 2024 analysis of Canadian administrative health data (\textit{ICES Cohort}, $n = 4{,}812$) confirmed that EOPD patients experience diagnostic delays averaging 3.4 years, accelerated motor progression, and a 2.8-fold higher rate of treatment-resistant dyskinesia compared with age-matched late-onset PD.
+
+Current pharmacological strategies --- primarily levodopa/carbidopa and dopamine agonists --- address symptoms but do not modify the underlying neurodegenerative process. No CIHR-funded multisite trial has yet evaluated neuroinflammation as a therapeutic target specifically in EOPD. This proposal addresses that gap directly.
+
+\subsection{Scientific Innovation}
+
+\begin{tcolorbox}[cihrbox, title={\faLightbulb\enspace Key Innovations}]
+  \begin{itemize}[leftmargin=14pt, itemsep=2pt, topsep=2pt]
+    \item \textbf{First EOPD-specific microglia atlas}: Leveraging 10x Visium spatial transcriptomics and snRNA-seq on 60 post-mortem substantia nigra specimens stratified by age-of-onset.
+    \item \textbf{Novel microglial subtype --- ``EO-MG1''}: Preliminary data (see Fig.\ 1) reveal a disease-associated microglial cluster expressing \textit{GPNMB$^{\text{hi}}$}/\textit{TREM2$^{\text{lo}}$} uniquely enriched in EOPD nigra ($p < 0.001$ vs.\ LOPD and controls).
+    \item \textbf{Translatable biomarker pipeline}: Plasma GPNMB and soluble TREM2 quantified across a 320-participant longitudinal cohort in partnership with Apex Health Sciences Centre.
+    \item \textbf{Dual therapeutic testing}: CSF1R antagonist (Compound NX-7714, Nexa Biosciences, preclinical licence) and IL-6 trans-signalling blockade tested in humanised microglia-neuron co-culture and AAV-$\alpha$-synuclein rat model.
+  \end{itemize}
+\end{tcolorbox}
+
+%% ─── SECTION 3: OBJECTIVES & HYPOTHESES ──────────────────────────────────────
+\section{Objectives, Hypotheses, and Specific Aims}
+
+\begin{tcolorbox}[
+  enhanced,
+  colback=white,
+  colframe=cihrNavy,
+  sharp corners,
+  boxrule=1pt,
+  left=7pt, right=7pt, top=7pt, bottom=7pt,
+  parbox=false
+]
+  \textbf{Central Hypothesis:} In EOPD, a genetically primed microglial state (EO-MG1) sustains chronic NF-$\kappa$B--driven neuroinflammation, accelerating dopaminergic cell death through IL-6/STAT3 trans-signalling and complement-mediated synapse elimination; pharmacological modulation of this pathway will preserve nigral integrity in vivo.
+\end{tcolorbox}
+
+\vspace{6pt}
+
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{@{} p{2.6cm} X @{}}
+  \toprule
+  \rowcolor{cihrNavy}
+  \multicolumn{1}{l}{\textcolor{white}{\textbf{Specific Aim}}} &
+  \multicolumn{1}{l}{\textcolor{white}{\textbf{Objective \& Primary Outcome}}} \\
+  \midrule
+  \aimrow{Aim 1 (Yr 1--2)}{Map the EOPD microglial landscape at single-cell and spatial resolution; characterise EO-MG1 gene regulatory networks.\newline\textit{Outcome:} Published snRNA-seq/Visium atlas; EO-MG1 transcription factor network model.}
+  \rowcolor{cihrLightGray}
+  \aimrow{Aim 2 (Yr 1--3)}{Validate GPNMB and sTREM2 as diagnostic/prognostic plasma biomarkers in the Meridian EOPD Longitudinal Cohort ($n=320$).\newline\textit{Outcome:} Receiver operating characteristic AUC $\geq 0.80$; sensitivity/specificity thresholds defined.}
+  \aimrow{Aim 3 (Yr 2--4)}{Test NX-7714 (CSF1R antagonist) and sgp130Fc (IL-6 blockade) in AAV-$\alpha$-synuclein Sprague-Dawley rat model.\newline\textit{Outcome:} $\geq$30\% preservation of TH$^{+}$ neurons vs.\ vehicle at 16 weeks post-injection.}
+  \rowcolor{cihrLightGray}
+  \aimrow{Aim 4 (Yr 3--4)}{Identify sex- and ancestry-stratified modifiers of EO-MG1 abundance and treatment response.\newline\textit{Outcome:} Multivariate model; sex/ancestry interaction $p$-values; equity-centred clinical translation framework.}
+  \bottomrule
+\end{tabularx}
+
+%% ─── SECTION 4: BACKGROUND ────────────────────────────────────────────────────
+\section{Background and Preliminary Data}
+
+\subsection{Dopaminergic Vulnerability in EOPD}
+
+The substantia nigra pars compacta (SNc) harbours approximately 400,000--600,000 dopaminergic neurons in the adult human brain. Progressive depletion of these neurons below a $\sim$70\% threshold produces the cardinal motor features of PD. In late-onset PD, this depletion unfolds over decades; in EOPD, modelling of post-mortem neuron counts and symptom onset ages indicates a substantially steeper loss trajectory, suggesting either an accelerated pathological trigger or an impaired neuroprotective response --- or both.
+
+Our group and others have demonstrated that \textit{LRRK2} G2019S and \textit{GBA} N370S variant carriers, enriched in EOPD, show heightened microglial reactivity in iPSC-derived neuroinflammation models (Marchetti et al., \textit{Brain}, 2023; Okafor et al., \textit{Cell Reports}, 2024). However, a comprehensive, spatially resolved characterisation of the inflammatory milieu in human EOPD tissue is absent from the literature.
+
+\subsection{Preliminary Data}
+
+\begin{minipage}[t]{0.55\linewidth}
+  \textbf{Pilot snRNA-seq (n=12 EOPD, n=10 LOPD, n=10 controls):} Unsupervised UMAP clustering of 94,812 nuclei from fresh-frozen nigral tissue resolved 14 microglial subclusters. Cluster EO-MG1 (8.3\% of all microglia in EOPD vs.\ 1.2\% in LOPD; $p=0.0003$, Wilcoxon) was defined by a unique 47-gene signature including \textit{GPNMB}, \textit{SPP1}, \textit{FTH1}, and downregulation of homeostatic markers \textit{P2RY12} and \textit{CX3CR1}.
+
+  \textbf{Biomarker pilot (n=80):} Plasma GPNMB levels were elevated 2.6-fold in EOPD vs.\ age- and sex-matched controls (Wilcoxon $p<0.0001$; AUC=0.83, 95\% CI: 0.72--0.91). Levels correlated negatively with nigral diffusion tensor imaging free-water fraction ($r=-0.61$, $p=0.002$).
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.42\linewidth}
+  \begin{tcolorbox}[
+    enhanced,
+    colback=cihrLightGray,
+    colframe=cihrGold,
+    sharp corners, boxrule=1pt,
+    left=6pt, right=6pt, top=5pt, bottom=5pt,
+    parbox=false
+  ]
+    \centering
+    {\fontsize{8}{10}\selectfont\textbf{\textcolor{cihrNavy}{Figure 1 --- EO-MG1 Cluster Abundance}}}\\[4pt]
+    \begin{tikzpicture}
+      \def\bw{1.0cm}
+      \def\gap{0.55cm}
+      % axes
+      \draw[thick,->] (0,0) -- (0,3.2cm) node[left,font=\tiny] {\% microglia};
+      \draw[thick,->] (0,0) -- (5.6cm,0);
+      % bars
+      \foreach \x/\h/\col/\lbl in {
+        0.35/2.49/cihrRed/EOPD,
+        1.55/0.36/cihrNavy/LOPD,
+        2.75/0.27/cihrDarkGray/Control}{
+        \fill[\col, opacity=0.85] (\x,0) rectangle (\x+\bw,\h cm);
+        \node[font=\tiny, below] at (\x+0.5*\bw, -0.05cm) {\lbl};
+        \node[font=\tiny\bfseries, above] at (\x+0.5*\bw, \h cm) {\pgfmathparse{\h*3.34}\pgfmathprintnumber[fixed,precision=1]{\pgfmathresult}\%};
+      }
+      % y ticks
+      \foreach \y/\lbl in {0.9/3, 1.8/6, 2.7/9}{
+        \draw (0,\y) -- (-2pt,\y);
+        \node[left, font=\tiny] at (-2pt,\y) {\lbl};
+      }
+      \node[font=\tiny, right] at (3.8cm, 3.0cm) {$***$ $p<0.001$};
+    \end{tikzpicture}\\[3pt]
+    {\fontsize{7}{9}\selectfont\color{cihrDarkGray}EO-MG1 frequency is 8.3\% in EOPD vs.\ $\leq$1.2\% in LOPD and controls (pilot $n=32$).}
+  \end{tcolorbox}
+\end{minipage}
+
+\par\vspace{6pt}
+
+\begin{tcolorbox}[warnbox]
+  {\fontsize{8}{10}\selectfont\color{cihrRed}\textbf{\faExclamationTriangle\enspace Sex-Stratified Finding:}}
+  {\fontsize{9}{11}\selectfont\quad Female EOPD participants show 1.9-fold higher EO-MG1 abundance than males ($p=0.04$), consistent with known sex differences in neuroinflammatory tone. This will be a primary stratification variable in all subsequent aims.}
+\end{tcolorbox}
+
+%% ─── SECTION 5: METHODS ───────────────────────────────────────────────────────
+\section{Research Strategy and Methods}
+
+\subsection{Aim 1 --- Single-Cell and Spatial Transcriptomics}
+
+\subsubsection{Tissue Cohort}
+Post-mortem substantia nigra from the Meridian Brain Bank (60 specimens: 20 EOPD, 20 LOPD, 20 age-matched controls; 50\% female in each group) will be processed for single-nucleus RNA sequencing (10x Genomics Chromium, 8,000 nuclei/sample target) and 10x Visium spatial transcriptomics (55 $\mu$m spot resolution). All donors provided informed consent; ethics approval granted by the Meridian University REB (Protocol \#MU-2025-1143).
+
+\subsubsection{Bioinformatics Pipeline}
+Cell Ranger v8.0 $\rightarrow$ Seurat v5 / Scanpy; batch correction via Harmony; trajectory analysis via Monocle 3; regulon inference via SCENIC+. Spatial deconvolution using RCTD. Computing: Compute Canada Narval cluster allocation confirmed (450 core-years, Reference \#RAC-2025-04411).
+
+\subsubsection{Validation}
+Key findings validated by: (i) RNAscope FISH (GPNMB/SPP1/P2RY12) in 20 additional specimens; (ii) flow cytometry on microglia acutely isolated from surgical resection margins (Apex Health Sciences, epilepsy cases, $n=15$); (iii) cross-cohort replication in the open-access MSBB and Allen Brain Cell Atlas datasets.
+
+\subsection{Aim 2 --- Biomarker Validation}
+
+The Meridian EOPD Longitudinal Cohort (MELC, $n=320$; 55\% female; 22\% non-European ancestry) enrolls participants aged 30--55 with confirmed PD (MDS criteria) or at elevated genetic risk (\textit{LRRK2}, \textit{GBA} carrier status confirmed). Plasma GPNMB and sTREM2 are quantified by Simoa HD-X (Quanterix) at baseline, 12, and 24 months. Primary analysis: logistic regression (EOPD vs.\ unaffected carriers); secondary: longitudinal mixed-effects model for motor/cognitive trajectory. Power: 80\% to detect AUC $\geq 0.78$ at $\alpha=0.05$ (DeLong method) confirmed at $n=200$ completers per group.
+
+\subsection{Aim 3 --- Preclinical Therapeutic Testing}
+
+\subsubsection{AAV Model}
+Unilateral intra-nigral AAV2/9-SYN1-$\alpha$-synuclein-A53T (titre $4\times10^{12}$ gc/mL, 2 $\mu$L) in adult male and female Sprague-Dawley rats ($n=12$/group/sex; 6 groups: vehicle, NX-7714 low/high dose, sgp130Fc low/high dose, combination). Drug administration commences 2 weeks post-injection (delayed-treatment model reflecting clinical reality).
+
+\subsubsection{Endpoints}
+\begin{itemize}[leftmargin=16pt, itemsep=2pt, topsep=2pt]
+  \item \textbf{Primary}: TH$^{+}$ neuron count in SNc at 16 weeks (stereology, Optical Fractionator).
+  \item \textbf{Secondary}: Rotarod performance; apomorphine-induced rotations; nigral Iba-1 burden; striatal dopamine turnover (HPLC); plasma NX-7714 pharmacokinetics.
+  \item \textbf{Exploratory}: snRNA-seq of treated rat nigra to confirm target engagement and compare to human EO-MG1 signature.
+\end{itemize}
+
+All animal procedures approved by Meridian University ACUP (Protocol \#AUP-2025-0229, 3Rs principles implemented: refined isoflurane anaesthesia, automated welfare monitoring, veterinary oversight).
+
+\subsection{Aim 4 --- Sex and Ancestry Modifiers}
+
+Multivariate generalised linear models will test interactions between EO-MG1 abundance (or biomarker levels) and: biological sex (male/female), self-reported ancestry (European, South/East Asian, African-Caribbean), \textit{LRRK2}/\textit{GBA} carrier status, and menopausal status (females). A community advisory panel (4 EOPD patient representatives, 2 Indigenous health advocates) will co-design the equity-centred translation framework in Year 4.
+
+%% ─── SECTION 6: TIMELINE ──────────────────────────────────────────────────────
+\section{Timeline and Milestones}
+
+\vspace{4pt}
+\begin{tcolorbox}[
+  enhanced,
+  colback=cihrAccent,
+  colframe=cihrMidGray,
+  sharp corners, boxrule=0.6pt,
+  left=8pt, right=8pt, top=8pt, bottom=8pt,
+  parbox=false
+]
+
+\noindent\textbf{\color{cihrNavy}Year 1 (April 2026 -- March 2027)}\\[3pt]
+\milestone{Q1}{Cohort enrolment \& tissue processing}{snRNA-seq libraries prepared; MELC baseline biosamples collected ($n=100$)}
+\milestone{Q2}{Bioinformatics pipeline deployed}{Preliminary UMAP atlas; EO-MG1 regulon draft}
+\milestone{Q3}{REB amendment filed for expanded biobank access}{}
+\milestone{Q4}{Aim 1 manuscript submitted; Aim 2 Year-1 interim data locked}{}
+
+\vspace{4pt}
+\noindent\textbf{\color{cihrNavy}Year 2 (April 2027 -- March 2028)}\\[3pt]
+\milestone{Q1}{Visium spatial maps completed; RCTD deconvolution}{First cross-cohort validation}
+\milestone{Q2}{AAV injections completed (Aim 3, all groups)}{Rotarod baseline recorded}
+\milestone{Q3}{MELC 12-month biosamples complete; GPNMB assay locked}{}
+\milestone{Q4}{Aim 2 interim analysis; Aim 3 first sacrifice \& stereology}{}
+
+\vspace{4pt}
+\noindent\textbf{\color{cihrNavy}Years 3--4 (April 2028 -- March 2030)}\\[3pt]
+\milestone{Q1--2}{Aims 3 \& 4 preclinical data complete}{Therapeutic manuscript submitted}
+\milestone{Q3}{MELC 24-month follow-up complete}{Biomarker paper submitted}
+\milestone{Q4}{Equity framework published; Phase 2 trial concept submitted to Health Canada}{}
+
+\end{tcolorbox}
+
+%% ─── SECTION 7: BUDGET ────────────────────────────────────────────────────────
+\section{Budget Justification Summary}
+
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{@{} X r r r r r @{}}
+  \toprule
+  \rowcolor{cihrNavy}
+  \textcolor{white}{\textbf{Budget Category}} &
+  \textcolor{white}{\textbf{Yr 1}} &
+  \textcolor{white}{\textbf{Yr 2}} &
+  \textcolor{white}{\textbf{Yr 3}} &
+  \textcolor{white}{\textbf{Yr 4}} &
+  \textcolor{white}{\textbf{Total (CAD)}} \\
+  \midrule
+  Personnel (trainees, RA, coordinator)
+    & \$84,000 & \$87,000 & \$89,000 & \$90,000 & \$350,000 \\
+  \rowcolor{cihrLightGray}
+  Genomics \& sequencing (snRNA-seq, Visium)
+    & \$55,000 & \$38,000 & \$12,000 & \$5,000 & \$110,000 \\
+  Biomarker assays (Simoa GPNMB/sTREM2)
+    & \$14,000 & \$16,000 & \$18,000 & \$14,000 & \$62,000 \\
+  \rowcolor{cihrLightGray}
+  Animal model (AAV, surgery, husbandry)
+    & \$18,000 & \$32,000 & \$22,000 & \$8,000 & \$80,000 \\
+  Compound NX-7714 \& sgp130Fc (licence \& synthesis)
+    & \$22,000 & \$24,000 & \$10,000 & \$4,000 & \$60,000 \\
+  \rowcolor{cihrLightGray}
+  Histology, FISH, flow cytometry
+    & \$11,000 & \$13,000 & \$9,000 & \$5,000 & \$38,000 \\
+  Travel, dissemination, Open Access fees
+    & \$6,000 & \$8,000 & \$8,000 & \$6,000 & \$28,000 \\
+  \rowcolor{cihrLightGray}
+  Patient \& community engagement
+    & \$3,000 & \$4,000 & \$6,000 & \$7,000 & \$20,000 \\
+  \midrule
+  \rowcolor{cihrNavy}
+  \textbf{\textcolor{white}{Total Requested}}
+    & \textcolor{white}{\textbf{\$213,000}}
+    & \textcolor{white}{\textbf{\$222,000}}
+    & \textcolor{white}{\textbf{\$174,000}}
+    & \textcolor{white}{\textbf{\$139,000}}
+    & \textcolor{white}{\textbf{\$748,000}} \\
+  \bottomrule
+\end{tabularx}
+
+\vspace{4pt}
+\begin{tcolorbox}[goldbox]
+  \fontsize{8.5}{10.5}\selectfont
+  \textbf{Matching contributions:} Synapse Genomics Inc.\ provides spatial transcriptomics consumables and bioinformatics cloud credits valued at \$95,000 (in-kind, confirmed letter on file). Meridian University contributes 200 sq.ft.\ dedicated laboratory space and \$30,000 equipment access per year. These resources are not deducted from the budget above but significantly extend study capacity.
+\end{tcolorbox}
+
+%% ─── SECTION 8: TEAM & TRAINING ──────────────────────────────────────────────
+\section{Team Expertise and Training Environment}
+
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[
+    enhanced,
+    colback=cihrLightGray,
+    colframe=cihrMidGray,
+    sharp corners, boxrule=0.6pt,
+    left=6pt, right=6pt, top=6pt, bottom=6pt,
+    parbox=false,
+    title={\faGraduationCap\enspace Trainee Positions},
+    fonttitle=\bfseries\fontsize{8}{10}\selectfont\color{cihrNavy},
+    coltitle=cihrNavy,
+    attach boxed title to top left={yshift=-2mm, xshift=4mm},
+    boxed title style={colback=cihrLightGray, sharp corners}
+  ]
+    \begin{itemize}[leftmargin=12pt, itemsep=2pt, topsep=2pt, parsep=0pt]
+      \item 2 $\times$ PhD students (Neuroscience, Years 1--4)
+      \item 1 $\times$ Postdoctoral Fellow (computational neuroscience)
+      \item 1 $\times$ Clinical Research Coordinator (MELC cohort)
+      \item 1 $\times$ MSc student (equity \& community engagement)
+      \item Rotation positions for 2 undergraduate NSERC-USRA awardees
+    \end{itemize}
+  \end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[
+    enhanced,
+    colback=cihrLightGray,
+    colframe=cihrMidGray,
+    sharp corners, boxrule=0.6pt,
+    left=6pt, right=6pt, top=6pt, bottom=6pt,
+    parbox=false,
+    title={\faChartLine\enspace Productivity Indicators},
+    fonttitle=\bfseries\fontsize{8}{10}\selectfont\color{cihrNavy},
+    coltitle=cihrNavy,
+    attach boxed title to top left={yshift=-2mm, xshift=4mm},
+    boxed title style={colback=cihrLightGray, sharp corners}
+  ]
+    \begin{itemize}[leftmargin=12pt, itemsep=2pt, topsep=2pt, parsep=0pt]
+      \item \textbf{Marchetti}: 68 peer-reviewed publications (h-index 31); PI on 3 active operating grants
+      \item \textbf{Okafor}: 41 publications; developed open-source MiST microglia pipeline (3,200$+$ GitHub stars)
+      \item \textbf{Petrov}: EOPD clinical expertise; lead investigator, MELC cohort; 29 publications
+    \end{itemize}
+  \end{tcolorbox}
+\end{minipage}
+
+\par\vspace{6pt}
+
+%% ─── SECTION 9: ETHICS & EDI ──────────────────────────────────────────────────
+\section{Ethics, Equity, Diversity, and Inclusion}
+
+\textbf{Human Research:} All biobanking and clinical data collection are governed by Tri-Council Policy Statement (TCPS2) requirements. Brain tissue donors provided prospective consent; data are de-identified and stored on encrypted servers within Canada. Genomic data sharing follows GA4GH beacon framework under controlled access.
+
+\textbf{Animal Research:} All procedures comply with the Canadian Council on Animal Care (CCAC) guidelines (Category C). The 3Rs are implemented: sample size minimised by power calculation; group-housed social housing; automated behavioural scoring to reduce observer burden; early humane endpoints defined.
+
+\textbf{EDI Plan:} The research team comprises 60\% women (including the PI and clinical lead), two early-career investigators from under-represented groups, and a dedicated community engagement budget. Cohort recruitment targets 30\% non-European ancestry participants, with translated consent materials in Mandarin, Punjabi, and Tamil. Authorship criteria follow ICMJE guidelines; the EDI plan is reviewed annually by the Community Advisory Panel.
+
+%% ─── SECTION 10: KNOWLEDGE TRANSLATION ───────────────────────────────────────
+\section{Knowledge Translation and Impact}
+
+\begin{tcolorbox}[cihrbox, title={\faRocket\enspace Expected Outputs and KT Pathways}]
+  \begin{minipage}[t]{0.47\linewidth}
+    \textbf{Academic Outputs}
+    \begin{itemize}[leftmargin=12pt, itemsep=1pt, topsep=2pt, parsep=0pt]
+      \item $\geq$8 peer-reviewed publications (target journals: \textit{Nature Neuroscience}, \textit{Brain}, \textit{Annals of Neurology})
+      \item Open-access EOPD microglia atlas (deposited: CELLxGENE, Allen Brain Cell Atlas)
+      \item MiST-EO analysis pipeline (GitHub, MIT licence)
+      \item Presentations at SfN, MDS, CSBN annual meetings
+    \end{itemize}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[t]{0.47\linewidth}
+    \textbf{Clinical \& Policy Outputs}
+    \begin{itemize}[leftmargin=12pt, itemsep=1pt, topsep=2pt, parsep=0pt]
+      \item Validated biomarker panel submitted for IVD regulatory review (Health Canada Class III)
+      \item Phase 2 RCT concept (NX-7714 in EOPD) submitted to CIHR Clinical Trials stream
+      \item Evidence brief to Parkinson Canada \& Canadian Neurological Sciences Federation
+      \item Plain-language summary and patient webinar series (Parkinson Society Canada partnership)
+    \end{itemize}
+  \end{minipage}
+\end{tcolorbox}
+
+%% ─── SECTION 11: REFERENCES ───────────────────────────────────────────────────
+\section{Selected References}
+
+\begingroup
+\fontsize{8.5}{11}\selectfont
+\setlength{\parskip}{3pt}
+
+\noindent
+\lbrack 1\rbrack\ Marchetti E, Okafor T, Singh P, et al.\ GPNMB defines a disease-associated microglial state in early-onset Parkinson disease. \textit{Brain}. 2023;146(8):3201--3219.\\{}
+\lbrack 2\rbrack\ Okafor TN, Lim JS, Marchetti E. Single-nucleus transcriptomics reveals convergent microglial activation programs across $\alpha$-synucleinopathies. \textit{Cell Reports}. 2024;43(4):114052.\\{}
+\lbrack 3\rbrack\ Petrov N, Zhao Y, Marchetti E. Diagnostic delay and progression trajectories in early-onset versus late-onset Parkinson disease: an ICES cohort analysis. \textit{JAMA Neurology}. 2024;81(3):287--297.\\{}
+\lbrack 4\rbrack\ Fournier C, Hamid R, Zhao Y, Marchetti E. Plasma GPNMB as a prodromal biomarker in \textit{LRRK2} G2019S carriers: a cross-sectional pilot study. \textit{Movement Disorders}. 2025;40(2):310--320.\\{}
+\lbrack 5\rbrack\ Petrov N, Marchetti E, Canadian EOPD Consortium. Prevalence, socioeconomic burden, and healthcare utilisation of early-onset Parkinson disease in Canada: 2010--2023. \textit{CMAJ}. 2025;197(12):E401--E412.\\{}
+\lbrack 6\rbrack\ Masuda T, Sankowski R, Staszewski O, Prinz M. Microglia heterogeneity in the adult mouse brain. \textit{Nature Immunology}. 2019;20:754--765.\\{}
+\lbrack 7\rbrack\ Liddelow SA, Guttenplan KA, Clarke LE, et al.\ Neurotoxic reactive astrocytes are induced by activated microglia. \textit{Nature}. 2017;541:481--487.
+
+\endgroup
+
+%% ─── SIGNATURE BLOCK ──────────────────────────────────────────────────────────
+\vspace{8pt}
+\begin{tcolorbox}[
+  enhanced,
+  colback=cihrNavy,
+  colframe=cihrNavy,
+  sharp corners,
+  left=8pt, right=8pt, top=8pt, bottom=8pt,
+  parbox=false
+]
+  \fontsize{8}{10}\selectfont\color{white}
+  \textbf{Declaration:} I certify that the information provided in this application is accurate and complete, and that the proposed research will comply with all applicable federal and provincial regulations, including TCPS2, CCAC guidelines, and CIHR's Open Access Policy. I acknowledge that CIHR reserves the right to audit any aspects of this application and the conduct of the research.
+
+  \vspace{8pt}
+  \begin{minipage}[t]{0.32\linewidth}
+    \centering
+    \textcolor{cihrGold}{\rule{4cm}{0.5pt}}\\[2pt]
+    \textbf{Dr.\ Elena Marchetti}\\
+    Principal Investigator\\
+    \textit{Date: \underline{\hspace{2.5cm}}}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[t]{0.32\linewidth}
+    \centering
+    \textcolor{cihrGold}{\rule{4cm}{0.5pt}}\\[2pt]
+    \textbf{Dr.\ Thomas Okafor}\\
+    Co-Investigator\\
+    \textit{Date: \underline{\hspace{2.5cm}}}
+  \end{minipage}%
+  \hfill
+  \begin{minipage}[t]{0.32\linewidth}
+    \centering
+    \textcolor{cihrGold}{\rule{4cm}{0.5pt}}\\[2pt]
+    \textbf{Dr.\ Nadia Petrov}\\
+    Co-Investigator\\
+    \textit{Date: \underline{\hspace{2.5cm}}}
+  \end{minipage}
+\end{tcolorbox}
+
+\end{document}

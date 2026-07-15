@@ -1,0 +1,550 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[top=1.8cm, bottom=1.8cm, left=2cm, right=2cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage[table,dvipsnames]{xcolor}
+\definecolor{primaryNavy}{RGB}{25,35,75}
+\definecolor{accentBlue}{RGB}{41,98,177}
+\definecolor{statusPass}{RGB}{34,139,34}
+\definecolor{statusFail}{RGB}{178,34,34}
+\definecolor{bgLight}{RGB}{245,248,252}
+\definecolor{borderGray}{RGB}{200,205,215}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds}
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{fontawesome5}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accentBlue,
+  urlcolor=accentBlue,
+  citecolor=accentBlue
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\color{primaryNavy}\footnotesize UAT Test Plan --- NimbusPay v2.4}
+\fancyhead[R]{\color{primaryNavy}\footnotesize Nimbus Solutions --- Confidential}
+\fancyfoot[C]{\color{primaryNavy}\footnotesize Page \thepage\ of \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.3pt}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[C]{\color{primaryNavy}\footnotesize Page \thepage\ of \pageref{LastPage}}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0.3pt}
+}
+
+\newcommand{\passmark}{\textcolor{statusPass}{\faCheckCircle}}
+\newcommand{\failmark}{\textcolor{statusFail}{\faTimesCircle}}
+\newcommand{\sectionline}{\vspace{2pt}\noindent\rule{\textwidth}{1.5pt}\vspace{6pt}}
+
+\begin{document}
+
+\begin{tcolorbox}[
+  enhanced,
+  colback=primaryNavy,
+  colframe=primaryNavy,
+  boxrule=0pt,
+  left=16pt,
+  right=16pt,
+  top=14pt,
+  bottom=14pt,
+  sharp corners
+]
+  \begin{center}
+    {\color{white}\LARGE\bfseries User Acceptance Testing Plan}\\[6pt]
+    {\color{white}\large NimbusPay --- Payment Processing Platform}\\[4pt]
+    {\color{white}\normalsize Release v2.4.0 \textbar{} \faCalendar\ April 14--25, 2026}
+  \end{center}
+\end{tcolorbox}
+
+\vspace{10pt}
+
+\begin{tcolorbox}[
+  enhanced,
+  colback=bgLight,
+  colframe=borderGray,
+  boxrule=0.8pt,
+  left=12pt,
+  right=12pt,
+  top=10pt,
+  bottom=10pt,
+  sharp corners,
+  title={\textbf{\faFile\ Document Control}},
+  fonttitle=\bfseries\color{primaryNavy}
+]
+  \begin{tabularx}{\textwidth}{@{}>{\bfseries}l X l l@{}}
+    Document ID:   & NIM-UAT-2026-041 & Version:   & 1.0 \\
+    Author:        & Elena Vasquez, QA Lead & Status: & Draft \\
+    Reviewed By:   & Marcus Chen, Product Owner & Classification: & Internal \\
+    Approved By:   & Priya Kapoor, VP Engineering & Total Pages: & \pageref{LastPage} \\
+  \end{tabularx}
+\end{tcolorbox}
+
+\vspace{12pt}
+
+\section*{\color{primaryNavy}1. Introduction \& Objectives}
+\sectionline
+
+This User Acceptance Testing (UAT) Plan defines the strategy, scope, and execution framework for validating NimbusPay v2.4 against business requirements. The objective is to ensure the release meets stakeholder expectations and is fit for production deployment.
+
+\vspace{6pt}
+
+\begin{tcolorbox}[
+  enhanced,
+  colback=bgLight,
+  colframe=accentBlue,
+  boxrule=0.8pt,
+  left=12pt,
+  right=12pt,
+  top=8pt,
+  bottom=8pt,
+  sharp corners,
+  before skip=6pt,
+  after skip=6pt
+]
+  \textbf{Primary Objectives:}
+  \begin{itemize}[nosep, leftmargin=*]
+    \item Validate that all functional requirements defined in BRD-NIM-2026-03 are implemented correctly.
+    \item Confirm end-to-end business workflows execute without failure under realistic conditions.
+    \item Verify that non-functional requirements (performance, security, usability) meet acceptance thresholds.
+    \item Obtain formal stakeholder sign-off before production release.
+  \end{itemize}
+\end{tcolorbox}
+
+\section*{\color{primaryNavy}2. Scope}
+\sectionline
+
+\subsection*{2.1 In Scope}
+
+\begin{itemize}[nosep, leftmargin=*]
+  \item User authentication module with role-based access control (RBAC).
+  \item Payment processing engine --- credit card and ACH transactions.
+  \item Transaction reporting dashboard with export capabilities.
+  \item Integration with external fraud detection service (Vertex Shield API).
+  \item Administrative user management and audit logging.
+\end{itemize}
+
+\subsection*{2.2 Out of Scope}
+
+\begin{itemize}[nosep, leftmargin=*]
+  \item Mobile application (iOS/Android) --- tested separately under NIM-UAT-MOB-2026.
+  \item Hardware security module (HSM) certification --- pending external audit.
+  \item Legacy batch processing module --- deprecated from v2.4.
+\end{itemize}
+
+\section*{\color{primaryNavy}3. Test Environment \& Setup}
+\sectionline
+
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}l X@{}}
+  Environment: & UAT Staging (\texttt{uat.nimbuspay.internal}) \\
+  Server:      & Application Server: 4 vCPU, 16\,GB RAM, Ubuntu 22.04 LTS \\
+  Database:    & PostgreSQL 15.4 (anonymized production snapshot dated 2026-04-10) \\
+  Browser:     & Chrome 124, Firefox 125, Edge 124, Safari 17.4 \\
+  Test Data:   & Synthetic merchant accounts with transaction history spanning 90\,days \\
+  Tools:       & Jira (test case management), Zephyr Scale (traceability), Postman (API validation) \\
+\end{tabularx}
+
+\vspace{12pt}
+
+\section*{\color{primaryNavy}4. Test Scenarios \& Acceptance Criteria}
+\sectionline
+
+\begin{tcolorbox}[
+  enhanced,
+  colback=white,
+  colframe=accentBlue,
+  boxrule=1pt,
+  left=12pt,
+  right=12pt,
+  top=10pt,
+  bottom=10pt,
+  sharp corners,
+  title={\textbf{TC-001: User Login \& Multi-Factor Authentication}},
+  fonttitle=\bfseries\color{white},
+  colbacktitle=accentBlue
+]
+  \textbf{Priority:} Critical \hfill \textbf{Assigned To:} Sarah Lin, UAT Tester\\[4pt]
+  \textbf{Precondition:} Valid user credentials exist in the staging identity provider.\\[4pt]
+
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bgLight,
+    colframe=borderGray,
+    boxrule=0.5pt,
+    left=10pt,
+    right=10pt,
+    top=6pt,
+    bottom=6pt,
+    sharp corners,
+    title={Test Steps},
+    fonttitle=\bfseries\color{primaryNavy}
+  ]
+    \begin{enumerate}[nosep, leftmargin=*]
+      \item Navigate to \texttt{https://uat.nimbuspay.internal/login}.
+      \item Enter valid email and password; submit the login form.
+      \item Enter the 6-digit OTP received via authenticator app.
+      \item Verify redirection to the dashboard.
+      \item Attempt login with an expired OTP (30-second window exceeded).
+      \item Attempt login with invalid credentials three times consecutively.
+    \end{enumerate}
+  \end{tcolorbox}
+
+  \vspace{4pt}
+
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bgLight,
+    colframe=statusPass,
+    boxrule=0.5pt,
+    left=10pt,
+    right=10pt,
+    top=6pt,
+    bottom=6pt,
+    sharp corners,
+    title={\passmark\ Acceptance Criteria},
+    fonttitle=\bfseries\color{statusPass}
+  ]
+    \begin{itemize}[nosep, leftmargin=*]
+      \item Successful login redirects to dashboard within 2\,seconds.
+      \item Expired OTP is rejected with message ``Authentication code expired. Request a new code.''
+      \item After three failed attempts, the account is locked for 15\,minutes and an alert is logged.
+      \item All login events (success and failure) are recorded in the audit trail.
+    \end{itemize}
+  \end{tcolorbox}
+\end{tcolorbox}
+
+\vspace{12pt}
+
+\begin{tcolorbox}[
+  enhanced,
+  colback=white,
+  colframe=accentBlue,
+  boxrule=1pt,
+  left=12pt,
+  right=12pt,
+  top=10pt,
+  bottom=10pt,
+  sharp corners,
+  title={\textbf{TC-002: Credit Card Payment Processing}},
+  fonttitle=\bfseries\color{white},
+  colbacktitle=accentBlue
+]
+  \textbf{Priority:} Critical \hfill \textbf{Assigned To:} David Okonkwo, UAT Tester\\[4pt]
+  \textbf{Precondition:} Merchant account \texttt{MER-8842} is active with a valid processor configuration.\\[4pt]
+
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bgLight,
+    colframe=borderGray,
+    boxrule=0.5pt,
+    left=10pt,
+    right=10pt,
+    top=6pt,
+    bottom=6pt,
+    sharp corners,
+    title={Test Steps},
+    fonttitle=\bfseries\color{primaryNavy}
+  ]
+    \begin{enumerate}[nosep, leftmargin=*]
+      \item Initiate a payment of \$149.99 using Visa test card \texttt{4111\,1111\,1111\,1111}.
+      \item Verify that the fraud detection callout to Vertex Shield completes successfully.
+      \item Confirm the transaction appears in the merchant dashboard with status ``Settled.''
+      \item Initiate a payment of \$2,500.00 using Mastercard test card \texttt{5555\,5555\,5555\,4444}.
+      \item Simulate a declined transaction by using card \texttt{4000\,0000\,0000\,0002}.
+      \item Process a partial refund of \$75.00 against the settled Visa transaction.
+    \end{enumerate}
+  \end{tcolorbox}
+
+  \vspace{4pt}
+
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bgLight,
+    colframe=statusPass,
+    boxrule=0.5pt,
+    left=10pt,
+    right=10pt,
+    top=6pt,
+    bottom=6pt,
+    sharp corners,
+    title={\passmark\ Acceptance Criteria},
+    fonttitle=\bfseries\color{statusPass}
+  ]
+    \begin{itemize}[nosep, leftmargin=*]
+      \item Payment authorization completes within 3\,seconds for transactions under \$500.
+      \item Fraud detection response is received and logged; high-risk transactions are flagged for manual review.
+      \item Declined transactions display a clear reason code (e.g., ``Insufficient funds,'' ``Do not honor'').
+      \item Partial refund is processed within one business-day settlement window and reflected in the ledger.
+      \item All payment events are recorded with a unique transaction reference ID.
+    \end{itemize}
+  \end{tcolorbox}
+\end{tcolorbox}
+
+\newpage
+
+\begin{tcolorbox}[
+  enhanced,
+  colback=white,
+  colframe=accentBlue,
+  boxrule=1pt,
+  left=12pt,
+  right=12pt,
+  top=10pt,
+  bottom=10pt,
+  sharp corners,
+  title={\textbf{TC-003: Transaction Report Generation \& Export}},
+  fonttitle=\bfseries\color{white},
+  colbacktitle=accentBlue
+]
+  \textbf{Priority:} High \hfill \textbf{Assigned To:} Sarah Lin, UAT Tester\\[4pt]
+  \textbf{Precondition:} At least 50 transactions exist for merchant \texttt{MER-8842} in the current billing cycle.\\[4pt]
+
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bgLight,
+    colframe=borderGray,
+    boxrule=0.5pt,
+    left=10pt,
+    right=10pt,
+    top=6pt,
+    bottom=6pt,
+    sharp corners,
+    title={Test Steps},
+    fonttitle=\bfseries\color{primaryNavy}
+  ]
+    \begin{enumerate}[nosep, leftmargin=*]
+      \item Navigate to Reports $\rightarrow$ Transaction Summary.
+      \item Set date range from 2026-04-01 to 2026-04-14.
+      \item Apply filter: Payment Type = ``Credit Card,'' Status = ``Settled.''
+      \item Click ``Generate Report'' and verify on-screen preview.
+      \item Export the report in PDF and CSV formats.
+      \item Schedule a recurring weekly report to be emailed to \texttt{finance@nimbuspay.internal}.
+    \end{enumerate}
+  \end{tcolorbox}
+
+  \vspace{4pt}
+
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bgLight,
+    colframe=statusPass,
+    boxrule=0.5pt,
+    left=10pt,
+    right=10pt,
+    top=6pt,
+    bottom=6pt,
+    sharp corners,
+    title={\passmark\ Acceptance Criteria},
+    fonttitle=\bfseries\color{statusPass}
+  ]
+    \begin{itemize}[nosep, leftmargin=*]
+      \item Report preview renders within 5\,seconds for datasets up to 1,000 records.
+      \item PDF export preserves all columns, formatting, and totals.
+      \item CSV export includes headers and is importable into Excel without manual correction.
+      \item Scheduled report is delivered to the specified recipient at the configured interval.
+      \item Report footer displays generation timestamp and data freshness indicator.
+    \end{itemize}
+  \end{tcolorbox}
+\end{tcolorbox}
+
+\vspace{12pt}
+
+\begin{tcolorbox}[
+  enhanced,
+  colback=white,
+  colframe=accentBlue,
+  boxrule=1pt,
+  left=12pt,
+  right=12pt,
+  top=10pt,
+  bottom=10pt,
+  sharp corners,
+  title={\textbf{TC-004: User Role Management \& Access Control}},
+  fonttitle=\bfseries\color{white},
+  colbacktitle=accentBlue
+]
+  \textbf{Priority:} High \hfill \textbf{Assigned To:} David Okonkwo, UAT Tester\\[4pt]
+  \textbf{Precondition:} Admin user \texttt{admin@nimbuspay.internal} is logged in with full privileges.\\[4pt]
+
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bgLight,
+    colframe=borderGray,
+    boxrule=0.5pt,
+    left=10pt,
+    right=10pt,
+    top=6pt,
+    bottom=6pt,
+    sharp corners,
+    title={Test Steps},
+    fonttitle=\bfseries\color{primaryNavy}
+  ]
+    \begin{enumerate}[nosep, leftmargin=*]
+      \item Navigate to Admin $\rightarrow$ User Management.
+      \item Create a new user with role ``Finance Viewer'' and assign to merchant \texttt{MER-8842}.
+      \item Log in as the new Finance Viewer and attempt to access the Payment Processing module.
+      \item From the admin account, modify the user role to ``Finance Manager.''
+      \item Log in as Finance Manager and attempt to process a refund.
+      \item Delete the test user and verify the audit log records the deletion event.
+    \end{enumerate}
+  \end{tcolorbox}
+
+  \vspace{4pt}
+
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bgLight,
+    colframe=statusPass,
+    boxrule=0.5pt,
+    left=10pt,
+    right=10pt,
+    top=6pt,
+    bottom=6pt,
+    sharp corners,
+    title={\passmark\ Acceptance Criteria},
+    fonttitle=\bfseries\color{statusPass}
+  ]
+    \begin{itemize}[nosep, leftmargin=*]
+      \item Finance Viewer can access reports and dashboards but receives a 403 error when attempting payment operations.
+      \item Finance Manager can process refunds up to \$5,000 without additional approval.
+      \item Role changes take effect immediately upon the next user session.
+      \item User deletion cascades correctly: session tokens are invalidated and audit trail is preserved.
+      \item All role modifications and access attempts are logged with timestamp and IP address.
+    \end{itemize}
+  \end{tcolorbox}
+\end{tcolorbox}
+
+\vspace{12pt}
+
+\section*{\color{primaryNavy}5. Requirements Traceability Matrix}
+\sectionline
+
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\textwidth}{@{}>{\centering\arraybackslash}p{2.2cm} X >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.5cm} >{\centering\arraybackslash}p{1.8cm}@{}}
+  \toprule
+  \rowcolor{primaryNavy}
+  \color{white}\textbf{Req. ID} & \color{white}\textbf{Requirement Description} & \color{white}\textbf{Test Case} & \color{white}\textbf{Status} & \color{white}\textbf{Verified By} \\
+  \midrule
+  REQ-AUTH-01 & User login with email/password and MFA & TC-001 & \passmark\ Pass & S.~Lin \\
+  \midrule
+  REQ-AUTH-02 & Account lockout after three failed attempts & TC-001 & \passmark\ Pass & S.~Lin \\
+  \midrule
+  REQ-PAY-01 & Credit card payment authorization & TC-002 & \passmark\ Pass & D.~Okonkwo \\
+  \midrule
+  REQ-PAY-02 & Fraud detection service integration & TC-002 & \passmark\ Pass & D.~Okonkwo \\
+  \midrule
+  REQ-PAY-03 & Declined transaction handling with reason codes & TC-002 & \passmark\ Pass & D.~Okonkwo \\
+  \midrule
+  REQ-PAY-04 & Partial refund processing & TC-002 & \passmark\ Pass & D.~Okonkwo \\
+  \midrule
+  REQ-REP-01 & Transaction report generation with filters & TC-003 & \passmark\ Pass & S.~Lin \\
+  \midrule
+  REQ-REP-02 & PDF and CSV export functionality & TC-003 & \passmark\ Pass & S.~Lin \\
+  \midrule
+  REQ-REP-03 & Scheduled report delivery via email & TC-003 & \faClock\ Pending & S.~Lin \\
+  \midrule
+  REQ-RBAC-01 & Role-based access control enforcement & TC-004 & \passmark\ Pass & D.~Okonkwo \\
+  \midrule
+  REQ-RBAC-02 & User role modification with immediate effect & TC-004 & \passmark\ Pass & D.~Okonkwo \\
+  \midrule
+  REQ-RBAC-03 & Audit logging of all access and role changes & TC-004 & \passmark\ Pass & D.~Okonkwo \\
+  \bottomrule
+\end{tabularx}
+
+\vspace{6pt}
+{\footnotesize\color{primaryNavy}\faInfoCircle\ Note: REQ-REP-03 is pending email delivery infrastructure configuration by the DevOps team (ticket: OPS-1287).}
+
+\vspace{14pt}
+
+\section*{\color{primaryNavy}6. UAT Process Flow}
+\sectionline
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=1.6cm and 1.4cm,
+  box/.style={
+    rectangle,
+    draw=accentBlue,
+    fill=bgLight,
+    line width=1pt,
+    minimum width=2.6cm,
+    minimum height=1.1cm,
+    align=center,
+    font=\footnotesize\bfseries\color{primaryNavy},
+    rounded corners=4pt
+  },
+  arrow/.style={
+    ->,
+    >=stealth,
+    line width=1.2pt,
+    color=accentBlue
+  }
+]
+  \node[box] (plan) {Plan\\UAT};
+  \node[box, right=of plan] (execute) {Execute\\Tests};
+  \node[box, right=of execute] (review) {Review\\Results};
+  \node[box, right=of review] (signoff) {Sign-Off\\\& Deploy};
+
+  \draw[arrow] (plan) -- (execute);
+  \draw[arrow] (execute) -- (review);
+  \draw[arrow] (review) -- (signoff);
+\end{tikzpicture}
+\end{center}
+
+\vspace{14pt}
+
+\section*{\color{primaryNavy}7. Sign-Off}
+\sectionline
+
+By signing below, each stakeholder confirms that the UAT results meet the acceptance criteria and that NimbusPay v2.4 is approved for production release.
+
+\vspace{10pt}
+
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}l X l l@{}}
+  \toprule
+  \rowcolor{primaryNavy}
+  \color{white}\textbf{Role} & \color{white}\textbf{Name} & \color{white}\textbf{Signature} & \color{white}\textbf{Date} \\
+  \midrule
+  QA Lead          & Elena Vasquez      & \hspace{3cm} & \hspace{2.2cm} \\
+  \midrule
+  Product Owner    & Marcus Chen        & \hspace{3cm} & \hspace{2.2cm} \\
+  \midrule
+  VP Engineering   & Priya Kapoor       & \hspace{3cm} & \hspace{2.2cm} \\
+  \midrule
+  Business Sponsor & Akira Tanaka       & \hspace{3cm} & \hspace{2.2cm} \\
+  \bottomrule
+\end{tabularx}
+
+\vspace{10pt}
+
+\begin{tcolorbox}[
+  enhanced,
+  colback=bgLight,
+  colframe=primaryNavy,
+  boxrule=1pt,
+  left=12pt,
+  right=12pt,
+  top=8pt,
+  bottom=8pt,
+  sharp corners
+]
+  {\footnotesize\color{primaryNavy}\faLock\ \textbf{Confidentiality Notice:} This document contains proprietary information belonging to Nimbus Solutions. Distribution is limited to authorized personnel only. Unauthorized reproduction or disclosure is prohibited under the terms of the Master Services Agreement.}
+\end{tcolorbox}
+
+\end{document}

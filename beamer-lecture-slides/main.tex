@@ -1,0 +1,329 @@
+\documentclass[11pt,aspectratio=169]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage{xcolor}
+\definecolor{primaryblue}{RGB}{25,65,120}
+\definecolor{accentteal}{RGB}{0,120,120}
+\definecolor{warmgray}{RGB}{90,95,105}
+\definecolor{boxbg}{RGB}{240,247,255}
+\definecolor{lightteal}{RGB}{230,245,245}
+
+\usetheme{Madrid}
+\usecolortheme{default}
+
+\setbeamercolor{palette primary}{bg=primaryblue,fg=white}
+\setbeamercolor{palette secondary}{bg=primaryblue!85!black,fg=white}
+\setbeamercolor{palette tertiary}{bg=primaryblue!70!black,fg=white}
+\setbeamercolor{palette quaternary}{bg=primaryblue,fg=white}
+\setbeamercolor{structure}{fg=primaryblue}
+\setbeamercolor{frametitle}{fg=primaryblue,bg=white}
+\setbeamercolor{titlelike}{parent=palette primary}
+\setbeamercolor{section in head/foot}{bg=primaryblue!85!black,fg=white}
+\setbeamercolor{subsection in head/foot}{bg=primaryblue!70!black,fg=white}
+\setbeamercolor{author in head/foot}{bg=white,fg=warmgray}
+\setbeamercolor{title in head/foot}{bg=white,fg=primaryblue}
+\setbeamercolor{date in head/foot}{bg=white,fg=warmgray}
+\setbeamercolor{section in toc}{fg=primaryblue}
+\setbeamercolor{block title}{bg=primaryblue,fg=white}
+\setbeamercolor{block body}{bg=boxbg,fg=black}
+
+\usefonttheme{professionalfonts}
+\usefonttheme{structurebold}
+
+\setbeamertemplate{navigation symbols}{}
+
+\setbeamertemplate{frametitle}{
+  \begin{beamercolorbox}[wd=\paperwidth,ht=3ex,dp=1.25ex,leftskip=0.3cm]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle
+  \end{beamercolorbox}
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=1.5pt]{palette primary}
+  \end{beamercolorbox}
+}
+
+\setbeamertemplate{footline}{
+  \leavevmode
+  \hbox{%
+    \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.5ex,dp=1.125ex,leftskip=.3cm]{author in head/foot}%
+      \usebeamerfont{author in head/foot}\insertshortauthor
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.34\paperwidth,ht=2.5ex,dp=1.125ex,center]{title in head/foot}%
+      \usebeamerfont{title in head/foot}\insertshorttitle
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.33\paperwidth,ht=2.5ex,dp=1.125ex,rightskip=.3cm]{date in head/foot}%
+      \usebeamerfont{date in head/foot}\insertframenumber{} / \inserttotalframenumber\hspace*{2ex}
+    \end{beamercolorbox}%
+  }
+  \vskip0pt
+}
+
+\usepackage[skins]{tcolorbox}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,arrows.meta,backgrounds,patterns}
+\usepackage{fontawesome5}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+
+\tcbset{
+  defblock/.style={
+    enhanced,
+    colback=boxbg,
+    colframe=primaryblue,
+    boxrule=0.6pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+    fonttitle=\bfseries\color{primaryblue},
+  },
+  thmblock/.style={
+    enhanced,
+    colback=lightteal,
+    colframe=accentteal,
+    boxrule=0.6pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+    fonttitle=\bfseries\color{accentteal},
+  },
+  exblock/.style={
+    enhanced,
+    colback=white,
+    colframe=warmgray,
+    boxrule=0.5pt,
+    arc=3pt,
+    left=10pt,
+    right=10pt,
+    top=8pt,
+    bottom=8pt,
+    before skip=12pt,
+    after skip=12pt,
+    fonttitle=\bfseries\color{warmgray},
+  },
+}
+
+\title[Consensus in Distributed Systems]{Consensus in Distributed Systems}
+\subtitle{From Impossibility to Paxos}
+\author[Dr.\ Elena Vasquez]{Dr.\ Elena Vasquez}
+\institute[Meridian University]{Department of Computer Science \\ Meridian University}
+\date{\faCalendar\ Fall 2025}
+
+\begin{document}
+
+\section{The Consensus Problem}
+\section{FLP Impossibility}
+\section{The Paxos Protocol}
+\section{Key Takeaways}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\begin{frame}{Lecture Overview}
+\tableofcontents
+\end{frame}
+
+\section{The Consensus Problem}
+
+\begin{frame}{The Consensus Problem}
+\begin{tcolorbox}[defblock,title={Definition (Consensus)}]
+A set of $n$ distributed processes must agree on a single output value from a set of proposed input values, even in the presence of failures.
+\end{tcolorbox}
+
+\pause
+
+\vspace{6pt}
+\textbf{Required Properties:}
+\begin{itemize}
+  \item<2-> \textbf{Agreement:} Every correct process outputs the same value.
+  \item<3-> \textbf{Termination:} Every correct process eventually decides.
+  \item<4-> \textbf{Validity:} The output value was proposed by some process.
+  \item<5-> \textbf{Integrity:} Each process decides at most once.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Why Consensus Matters}
+\textbf{Real-world applications:}
+
+\vspace{8pt}
+\begin{itemize}
+  \item \textbf{Leader Election:} Selecting a coordinator among a group of servers. Used in NimbusDB for automatic failover across data centers.
+
+  \vspace{6pt}
+  \item \textbf{State Machine Replication:} Keeping multiple replicas consistent. The Apex Cloud platform uses replicated state machines for its configuration service.
+
+  \vspace{6pt}
+  \item \textbf{Atomic Broadcast:} Ensuring all nodes receive messages in the same order. Vertex's trading engine depends on total-order broadcast for audit trails.
+\end{itemize}
+
+\vspace{10pt}
+\begin{tcolorbox}[exblock,title={Key Insight}]
+Consensus is the foundational primitive that enables fault-tolerant distributed coordination.
+\end{tcolorbox}
+\end{frame}
+
+\begin{frame}{System Model}
+\begin{columns}[T]
+\begin{column}{0.45\textwidth}
+\begin{tikzpicture}[
+  scale=0.9,
+  proc/.style={circle,draw=primaryblue,fill=primaryblue!8,minimum size=1.1cm,font=\footnotesize\bfseries,line width=0.6pt},
+  arrow/.style={->,>=Stealth,semithick,accentteal},
+]
+  \node[proc] (P1) at (90:2)   {$P_1$};
+  \node[proc] (P2) at (162:2)  {$P_2$};
+  \node[proc] (P3) at (234:2)  {$P_3$};
+  \node[proc] (P4) at (306:2)  {$P_4$};
+  \node[proc] (P5) at (18:2)   {$P_5$};
+
+  \draw[arrow] (P1) -- (P2);
+  \draw[arrow] (P2) -- (P3);
+  \draw[arrow] (P3) -- (P4);
+  \draw[arrow] (P4) -- (P5);
+  \draw[arrow] (P5) -- (P1);
+  \draw[arrow] (P1) -- (P3);
+  \draw[arrow] (P2) -- (P5);
+  \draw[arrow] (P3) -- (P1);
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.55\textwidth}
+\textbf{Assumptions:}
+\begin{itemize}
+  \item Asynchronous message passing --- no bounds on message delay.
+  \item Processes communicate via reliable channels.
+  \item Crash-stop failures: a failed process stops forever.
+  \item No Byzantine (arbitrary) failures.
+  \item At most $f < n/2$ processes may fail.
+\end{itemize}
+\end{column}
+\end{columns}
+\end{frame}
+
+\section{FLP Impossibility}
+
+\begin{frame}{FLP Impossibility Result}
+\begin{tcolorbox}[thmblock,title={Theorem (Fischer--Lynch--Paterson, 1985)}]
+In a fully asynchronous distributed system, it is impossible to achieve deterministic consensus in the presence of even a single crash failure.
+\end{tcolorbox}
+
+\pause
+
+\vspace{10pt}
+\textbf{What this means:}
+\begin{itemize}
+  \item<2-> No deterministic protocol can guarantee both \textbf{safety} (agreement) and \textbf{liveness} (termination) under full asynchrony.
+  \item<3-> The adversary can delay messages arbitrarily, preventing a process from distinguishing a slow process from a crashed one.
+  \item<4-> This is a \textbf{fundamental result} --- not an engineering limitation but a theoretical impossibility.
+\end{itemize}
+
+\pause
+
+\vspace{10pt}
+\textbf{Implication:} Practical systems must either assume partial synchrony or use randomization to circumvent FLP.
+\end{frame}
+
+\section{The Paxos Protocol}
+
+\begin{frame}{Paxos: Core Ideas}
+\textbf{Developed by Leslie Lamport (1989).} Named after the legislative process on the Greek island of Paxos.
+
+\vspace{10pt}
+\textbf{Three Roles:}
+\begin{itemize}
+  \item \textbf{Proposers:} Initiate consensus by proposing values.
+  \item \textbf{Acceptors:} Vote on proposals; a \emph{majority quorum} must agree.
+  \item \textbf{Learners:} Learn the chosen value once consensus is reached.
+\end{itemize}
+
+\vspace{8pt}
+\textbf{Key Insight:} A process can play multiple roles simultaneously.
+
+\vspace{8pt}
+\begin{tcolorbox}[defblock,title={Safety Property}]
+If any value is chosen, every subsequent chosen value must be identical. Paxos guarantees this even with $f < n/2$ failures.
+\end{tcolorbox}
+\end{frame}
+
+\begin{frame}{Paxos: Phase 1 --- Prepare \& Promise}
+\textbf{Goal:} Elect a leader and learn about any previously chosen values.
+
+\vspace{8pt}
+\begin{enumerate}
+  \item<2-> \textbf{Proposer} selects a unique, monotonically increasing proposal number $n$.
+  \item<3-> Sends $\textsc{Prepare}(n)$ to a \textbf{majority} of acceptors.
+  \item<4-> Each \textbf{Acceptor} that receives $\textsc{Prepare}(n)$:
+    \begin{itemize}
+      \item If $n$ is the highest it has seen, it \textbf{promises} to reject proposals with lower numbers.
+      \item It replies with $\textsc{Promise}(n, v, n')$ where $v$ is the highest-numbered proposal it has already accepted (with number $n' < n$), or $\bot$ if none.
+    \end{itemize}
+  \item<5-> The proposer collects promises. If it hears from a majority, Phase~2 begins.
+\end{enumerate}
+
+\vspace{6pt}
+\onslide<6->{
+\begin{tcolorbox}[exblock,title={Invariant}]
+An acceptor always remembers the highest proposal number it has promised and the highest-numbered proposal it has accepted.
+\end{tcolorbox}
+}
+\end{frame}
+
+\begin{frame}{Paxos: Phase 2 --- Accept \& Learn}
+\textbf{Goal:} Drive the system to choose a single value.
+
+\vspace{8pt}
+\begin{enumerate}
+  \item<2-> The \textbf{Proposer} examines the Promise replies:
+    \begin{itemize}
+      \item If any acceptor returned a previously accepted value, the proposer \textbf{must} use the value with the highest $n'$.
+      \item Otherwise, it is free to propose its own value $v$.
+    \end{itemize}
+  \item<3-> Proposer sends $\textsc{Accept}(n, v)$ to the same majority.
+  \item<4-> Each \textbf{Acceptor} accepts $(n, v)$ \emph{only if} it has not promised a proposal $> n$.
+  \item<5-> When a majority of acceptors have accepted $(n, v)$, the value $v$ is \textbf{chosen}.
+  \item<6-> \textbf{Learners} are notified of the chosen value.
+\end{enumerate}
+
+\vspace{6pt}
+\onslide<7->{
+\begin{tcolorbox}[defblock,title={Chosen Value}]
+A value is \emph{chosen} once a majority of acceptors have accepted it for the same proposal number. All future decisions will agree on this value.
+\end{tcolorbox}
+}
+\end{frame}
+
+\section{Key Takeaways}
+
+\begin{frame}{Summary \& Key Takeaways}
+\begin{enumerate}
+  \item \textbf{Consensus} is the problem of getting distributed processes to agree on a single value despite failures.
+
+  \vspace{4pt}
+  \item The \textbf{FLP impossibility} result proves that deterministic consensus is impossible in a purely asynchronous model with even one crash.
+
+  \vspace{4pt}
+  \item \textbf{Paxos} provides a practical solution by assuming eventual synchrony (or using randomization), achieving safety under all conditions.
+
+  \vspace{4pt}
+  \item The two-phase structure --- \textbf{Prepare/Promise} followed by \textbf{Accept/Learn} --- is the core mechanism.
+
+  \vspace{4pt}
+  \item Modern systems (NimbusDB, Apex Cloud, Vertex) build on these primitives for fault-tolerant coordination.
+\end{enumerate}
+
+\vspace{12pt}
+\begin{center}
+\Large\textcolor{primaryblue}{\textbf{Questions?}}
+\end{center}
+\end{frame}
+
+\end{document}

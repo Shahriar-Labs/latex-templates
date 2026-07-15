@@ -1,0 +1,416 @@
+\documentclass[10pt,aspectratio=169]{beamer}
+
+% === Packages ===
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds,patterns}
+\usepackage[skins,listings,breakable]{tcolorbox}
+\usepackage{listings}
+\usepackage{fontawesome5}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{seqsplit}
+
+% === Colors ===
+\definecolor{bgDark}{HTML}{0d1117}
+\definecolor{bgCard}{HTML}{161b22}
+\definecolor{bgCode}{HTML}{0d1117}
+\definecolor{bgTerminal}{HTML}{0c0c0c}
+\definecolor{accentCyan}{HTML}{00d4aa}
+\definecolor{accentBlue}{HTML}{58a6ff}
+\definecolor{accentAmber}{HTML}{f0883e}
+\definecolor{accentRed}{HTML}{f85149}
+\definecolor{textLight}{HTML}{c9d1d9}
+\definecolor{textMuted}{HTML}{8b949e}
+\definecolor{borderSubtle}{HTML}{30363d}
+\definecolor{codeKeyword}{HTML}{ff7b72}
+\definecolor{codeString}{HTML}{a5d6ff}
+\definecolor{codeComment}{HTML}{8b949e}
+\definecolor{codeFunc}{HTML}{d2a8ff}
+\definecolor{codeNumber}{HTML}{79c0ff}
+\definecolor{termGreen}{HTML}{4ce64c}
+\definecolor{termPrompt}{HTML}{00d4aa}
+\definecolor{dotRed}{HTML}{ff5f56}
+\definecolor{dotAmber}{HTML}{ffbd2e}
+\definecolor{dotGreen}{HTML}{27c93f}
+
+% === Beamer Theme ===
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor{background canvas}{bg=bgDark}
+\setbeamercolor{normal text}{fg=textLight}
+\setbeamercolor{frametitle}{fg=accentCyan}
+\setbeamercolor{title}{fg=textLight}
+\setbeamercolor{subtitle}{fg=textMuted}
+\setbeamercolor{author}{fg=textMuted}
+\setbeamercolor{date}{fg=textMuted}
+\setbeamercolor{item}{fg=accentCyan}
+\setbeamercolor{itemize/enumerate body}{fg=textLight}
+\setbeamercolor{section in toc}{fg=textLight}
+
+\setbeamertemplate{frametitle}{%
+  \vspace*{10pt}%
+  \begin{beamercolorbox}[wd=\textwidth,ht=2.8ex,dp=1ex]{frametitle}%
+    \hspace*{16pt}{\Large\bfseries\insertframetitle}%
+  \end{beamercolorbox}%
+  \vspace*{-2pt}%
+  \textcolor{accentCyan}{\rule{\linewidth}{1.2pt}}%
+  \vspace*{6pt}%
+}
+
+\setbeamertemplate{footline}{%
+  \hfill%
+  \textcolor{textMuted}{\footnotesize\insertframenumber\hspace*{2pt}/\hspace*{2pt}\inserttotalframenumber}%
+  \hspace*{16pt}%
+  \vspace*{10pt}%
+}
+
+\setbeamertemplate{itemize item}{\textcolor{accentCyan}{$\blacktriangleright$}}
+\setbeamertemplate{itemize subitem}{\textcolor{accentBlue}{$\bullet$}}
+
+% === Listings Style ===
+\lstdefinestyle{codewalk}{
+  backgroundcolor=\color{bgCode},
+  basicstyle=\ttfamily\footnotesize\color{textLight},
+  keywordstyle=\color{codeKeyword}\bfseries,
+  stringstyle=\color{codeString},
+  commentstyle=\color{codeComment}\itshape,
+  numberstyle=\tiny\color{textMuted},
+  numbers=left,
+  numbersep=10pt,
+  numberblanklines=false,
+  showstringspaces=false,
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=4,
+  frame=none,
+  xleftmargin=16pt,
+  xrightmargin=8pt,
+  aboveskip=0pt,
+  belowskip=0pt,
+  morekeywords={async,await,configure,with_auth,with_retry,build,fetch_data,from},
+  emph={NexaClient,NexaClientV2,ApiKeyAuth,UserService,User,ClientConfig},
+  emphstyle=\color{codeFunc},
+  literate={~}{{\color{textLight}\textasciitilde}}{1},
+}
+
+% === Tcolorbox: Code Block ===
+\newtcblisting{codeblock}[2][]{
+  enhanced,
+  listing engine=listings,
+  listing only,
+  listing options={style=codewalk,language=Python},
+  colback=bgCode,
+  colframe=borderSubtle,
+  arc=6pt,
+  boxrule=0.8pt,
+  top=0pt,
+  bottom=0pt,
+  left=0pt,
+  right=0pt,
+  before=\vspace{4pt},
+  after=\vspace{4pt},
+  title={\faCode\hspace{6pt}\ttfamily\footnotesize\textcolor{textMuted}{#2}},
+  coltitle=textMuted,
+  colbacktitle=bgCard,
+  attach boxed title to top left={xshift=12pt,yshift=-8pt},
+  boxed title style={colframe=borderSubtle,arc=4pt,boxrule=0.5pt},
+  #1,
+}
+
+% === Tcolorbox: Terminal ===
+\newtcolorbox{terminal}[1][]{
+  enhanced,
+  colback=bgTerminal,
+  colframe=borderSubtle,
+  arc=6pt,
+  boxrule=0.8pt,
+  top=2pt,
+  bottom=0pt,
+  left=0pt,
+  right=0pt,
+  before=\vspace{4pt},
+  after=\vspace{4pt},
+  title={
+    \textcolor{dotRed}{\faCircle}\hspace{3pt}%
+    \textcolor{dotAmber}{\faCircle}\hspace{3pt}%
+    \textcolor{dotGreen}{\faCircle}%
+    \hfill%
+    \ttfamily\footnotesize\textcolor{textMuted}{terminal}%
+  },
+  coltitle=textMuted,
+  colbacktitle=bgCard,
+  attach boxed title to top left={xshift=12pt,yshift=-8pt},
+  boxed title style={colframe=borderSubtle,arc=4pt,boxrule=0.5pt},
+  #1,
+}
+
+% === Tcolorbox: Info Card ===
+\newtcolorbox{infocard}[1][]{
+  enhanced,
+  colback=bgCard,
+  colframe=borderSubtle,
+  arc=6pt,
+  boxrule=0.8pt,
+  left=14pt,
+  right=14pt,
+  top=10pt,
+  bottom=10pt,
+  before=\vspace{4pt},
+  after=\vspace{4pt},
+  #1,
+}
+
+% === Commands ===
+\newcommand{\termline}[2]{%
+  \textcolor{termPrompt}{\texttt{\$~#1}}%
+  \ifthenelse{\equal{#2}{}}{\\[2pt]}{\textcolor{termGreen}{\texttt{#2}}\\[2pt]}%
+}
+\newcommand{\termoutput}[1]{\textcolor{termGreen}{\texttt{#1}}\\[2pt]}
+\newcommand{\highlight}[1]{\textcolor{accentCyan}{#1}}
+\newcommand{\hiamber}[1]{\textcolor{accentAmber}{#1}}
+
+\begin{document}
+
+% ============================================================
+% FRAME 1: Title
+% ============================================================
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[accentCyan,opacity=0.06] (current page.south west) rectangle (current page.north east);
+
+    \foreach \i in {0,1,...,5} {
+      \draw[accentCyan,opacity=0.08,line width=0.4pt]
+        (current page.north west) ++(0,-2.5-0.8*\i) -- ++(\paperwidth,0);
+    }
+
+    \draw[accentCyan,line width=1.5pt]
+      (current page.north west) ++(0,-1.6) -- ++(0.38\paperwidth,0);
+
+    \node[anchor=north west,text width=0.55\paperwidth] at ($(current page.north west)+(1.2,-2.4)$) {
+      {\fontsize{28}{34}\selectfont\bfseries\color{textLight}Code Walkthrough}
+
+      \vspace{12pt}
+      {\Large\color{accentCyan}Migrating Nexa API Client\\from v1 to v2}
+
+      \vspace{20pt}
+      {\normalsize\color{textMuted}
+        \faUser\hspace{6pt}Elena Vasquez
+        \hspace{24pt}
+        \faCalendar\hspace{6pt}July 2026
+      }
+
+      \vspace{8pt}
+      {\small\color{textMuted}
+        \faBuilding\hspace{6pt}Nexa Engineering \textbullet{} Platform Team
+      }
+    };
+
+    \node[anchor=south east,opacity=0.12] at ($(current page.south east)+(-0.6,0.8)$) {
+      \begin{tikzpicture}
+        \node[draw=accentCyan,fill=accentCyan!5,rounded corners=8pt,minimum width=140pt,minimum height=90pt] {};
+        \foreach \y in {0.3,0.6,0.9} {
+          \draw[accentCyan,opacity=0.3] (-1.6,\y) -- (1.6,\y);
+        }
+        \foreach \y/\s in {0.3/0.7,0.6/0.4,0.9/0.6} {
+          \fill[accentCyan,opacity=0.25] (-1.3,\y) rectangle ++(1.2*\s,0.12);
+        }
+        \node[accentCyan,opacity=0.4] at (0,-0.4) {\tiny\textless/\textgreater};
+      \end{tikzpicture}
+    };
+  \end{tikzpicture}
+\end{frame}
+
+% ============================================================
+% FRAME 2: The Challenge
+% ============================================================
+\begin{frame}[fragile]{The Migration Challenge}
+
+  \begin{columns}[T,onlytextwidth]
+    \column{0.52\textwidth}
+    \begin{infocard}
+      {\large\bfseries\color{accentAmber}\faExclamationTriangle\hspace{8pt}Why Migrate?}
+
+      \vspace{8pt}
+      The v1 client served us well for two years, but production incidents at Apex and Meridian exposed critical gaps:
+      \vspace{4pt}
+      \begin{itemize}
+        \item Sync-only calls block the event loop under load
+        \item No built-in retry or circuit breaking
+        \item Token refresh requires manual intervention
+        \item Response parsing couples callers to raw HTTP
+      \end{itemize}
+    \end{infocard}
+
+    \vspace{10pt}
+    \begin{infocard}
+      {\large\bfseries\color{accentCyan}\faBullseye\hspace{8pt}Target Architecture}
+
+      \vspace{6pt}
+      \highlight{async-first} design with typed service objects, automatic token rotation, and exponential backoff. Zero breaking changes to business logic.
+    \end{infocard}
+
+    \column{0.48\textwidth}
+    \begin{codeblock}{nexa\_client\_v1.py}
+import requests
+
+class NexaClient:
+    def __init__(self, api_key):
+        self.key = api_key
+        self.base = "https://api.nexa.io"
+
+    def fetch_data(self, endpoint):
+        url = f"{self.base}{endpoint}"
+        resp = requests.get(url,
+            headers={"X-Key": self.key})
+        if resp.status_code != 200:
+            raise APIError(resp.text)
+        return resp.json()
+
+    def post_data(self, endpoint, body):
+        url = f"{self.base}{endpoint}"
+        resp = requests.post(url,
+            json=body,
+            headers={"X-Key": self.key})
+        return resp.json()
+\end{codeblock}
+  \end{columns}
+
+\end{frame}
+
+% ============================================================
+% FRAME 3: Code Walkthrough
+% ============================================================
+\begin{frame}[fragile]{Walkthrough: Core Changes}
+
+  \begin{columns}[T,onlytextwidth]
+    \column{0.5\textwidth}
+    {\small\color{textMuted}\faArrowRight\hspace{4pt} v1 \textemdash{} manual wiring}
+    \vspace{4pt}
+    \begin{codeblock}{old\_approach.py}
+client = NexaClient(
+    api_key="sk-nexa-..."
+)
+users = client.fetch_data(
+    "/v1/users?limit=50"
+)
+orders = client.post_data(
+    "/v1/orders",
+    {"item": "widget-42"}
+)
+\end{codeblock}
+
+    \vspace{6pt}
+    \begin{infocard}
+      {\small\faTimesCircle\hspace{4pt}\color{accentRed}Pain points:} No retries, raw dicts everywhere, blocking I/O, key leaks in logs.
+    \end{infocard}
+
+    \column{0.5\textwidth}
+    {\small\color{accentCyan}\faArrowRight\hspace{4pt} v2 \textemdash{} fluent builder}
+    \vspace{4pt}
+    \begin{codeblock}{new\_approach.py}
+from nexa import NexaClientV2
+from nexa.auth import ApiKeyAuth
+from nexa.services import UserService
+
+client = (
+    NexaClientV2.configure()
+    .with_auth(ApiKeyAuth.from_env())
+    .with_retry(max_attempts=3,
+                backoff_factor=0.5)
+    .with_timeout(30)
+    .build()
+)
+
+users = client.users.list(
+    limit=50, status="active"
+)
+# Returns List[User] not raw dict
+for u in users:
+    print(u.name, u.email)
+\end{codeblock}
+
+    \vspace{6pt}
+    \begin{infocard}
+      {\small\faCheckCircle\hspace{4pt}\color{accentCyan}Wins:} Typed models, async-ready, auto-retry, env-based secrets.
+    \end{infocard}
+  \end{columns}
+
+\end{frame}
+
+% ============================================================
+% FRAME 4: Terminal \& Results
+% ============================================================
+\begin{frame}{Build, Test, Deploy}
+
+  \begin{columns}[T,onlytextwidth]
+    \column{0.5\textwidth}
+    \begin{terminal}
+\vspace{2pt}
+\textcolor{termPrompt}{\texttt{\$~}\textcolor{textLight}{\texttt{nexactl build --target staging}}}
+\vspace{1pt}
+
+\textcolor{textMuted}{\texttt{[1/4]}}\hspace{4pt}\textcolor{termGreen}{\texttt{Bundling source\dotfill{}OK}}
+\textcolor{textMuted}{\texttt{[2/4]}}\hspace{4pt}\textcolor{termGreen}{\texttt{Running type checks\dotfill{}OK}}
+\textcolor{textMuted}{\texttt{[3/4]}}\hspace{4pt}\textcolor{termGreen}{\texttt{Compiling protobuf stubs\dotfill{}OK}}
+\textcolor{textMuted}{\texttt{[4/4]}}\hspace{4pt}\textcolor{termGreen}{\texttt{Generating wheel\dotfill{}OK}}
+
+\vspace{3pt}
+\textcolor{accentCyan}{\texttt{Build complete \textemdash{} 4.7s}}
+\textcolor{textMuted}{\texttt{Output: \seqsplit{dist/nexa\_client\_v2-1.0.0-py3-none-any.whl}}}
+
+\vspace{4pt}
+\textcolor{termPrompt}{\texttt{\$~}\textcolor{textLight}{\texttt{nexactl test --suite integration}}}
+\vspace{1pt}
+
+\textcolor{termGreen}{\texttt{test\_auth\_flow\dotfill{}PASSED}}
+\textcolor{termGreen}{\texttt{test\_user\_service\dotfill{}PASSED}}
+\textcolor{termGreen}{\texttt{test\_retry\_logic\dotfill{}PASSED}}
+\textcolor{termGreen}{\texttt{test\_token\_refresh\dotfill{}PASSED}}
+\textcolor{termGreen}{\texttt{test\_timeout\_handling\dotfill{}PASSED}}
+
+\vspace{3pt}
+\textcolor{accentCyan}{\texttt{5 passed in 12.3s}}
+\vspace{2pt}
+    \end{terminal}
+
+    \column{0.5\textwidth}
+    \begin{infocard}[title={\faChartBar\hspace{6pt}\bfseries Migration Outcomes},colbacktitle=bgCard,coltitle=accentCyan,attach boxed title to top left={xshift=12pt,yshift=-8pt},boxed title style={colframe=borderSubtle,arc=4pt,boxrule=0.5pt}]
+      \vspace{2pt}
+      \begin{tabular}{@{}p{0.55\linewidth}p{0.38\linewidth}@{}}
+        \textcolor{textMuted}{Metric} & \textcolor{textMuted}{Change} \\
+        \midrule
+        P99 latency & \highlight{$-$62\%} \\
+        Error rate & \highlight{$-$84\%} \\
+        Token incidents & \highlight{$-$100\%} \\
+        Lines of glue code & \highlight{$-$1{,}240} \\
+        \bottomrule
+      \end{tabular}
+
+      \vspace{8pt}
+      {\small\color{textMuted}Rolled out to \highlight{Vertex} and \highlight{Nimbus} clusters first. Full fleet migration completed in four sprints with zero Sev2+ incidents.}
+    \end{infocard}
+
+    \vspace{10pt}
+    \begin{center}
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}[node distance=18pt]
+        \node[draw=accentCyan,fill=accentCyan!10,rounded corners=6pt,text=textLight,minimum width=100pt,minimum height=22pt,font=\footnotesize]
+          (a) {\faCode\hspace{4pt}v2 Client};
+        \node[draw=accentCyan,fill=accentCyan!10,rounded corners=6pt,text=textLight,minimum width=100pt,minimum height=22pt,font=\footnotesize,right=of a]
+          (b) {\faCog\hspace{4pt}Service Layer};
+        \node[draw=accentCyan,fill=accentCyan!10,rounded corners=6pt,text=textLight,minimum width=100pt,minimum height=22pt,font=\footnotesize,right=of b]
+          (c) {\faCloud\hspace{4pt}Nexa API};
+
+        \draw[->,>=stealth,accentCyan,line width=1pt] (a) -- (b);
+        \draw[->,>=stealth,accentCyan,line width=1pt] (b) -- (c);
+      \end{tikzpicture}%
+      }
+    \end{center}
+  \end{columns}
+
+\end{frame}
+
+\end{document}
