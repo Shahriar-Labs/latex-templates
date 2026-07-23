@@ -12,6 +12,7 @@
 \usepackage{enumitem}
 \usepackage{eso-pic}
 \usepackage{array}
+\usepackage{paracol}   % breakable two-column body (flows across pages, unlike minipage)
 
 \definecolor{primary}{HTML}{1A1A2E}
 \definecolor{accent}{HTML}{E94560}
@@ -59,14 +60,17 @@
   \vspace{16pt}
   {\Large\bfseries\color{primary}\MakeUppercase{#1}}\par
   \vspace{3pt}
-  {\color{accent}\rule{\textwidth}{1.5pt}}\par
+  {\color{accent}\rule{\linewidth}{1.5pt}}\par  % \linewidth = column width inside paracol
   \vspace{10pt}
 }
 
 \begin{document}
 
-\noindent
-\begin{minipage}[t]{\sidebarwd}
+% Sidebar (left) + main (right) as paracol columns so the main column breaks across
+% pages. The dark sidebar background is painted per-page by eso-pic (above), full height.
+\columnratio{0.262}
+\setlength{\columnsep}{0.8cm}
+\begin{paracol}{2}
   \vspace*{1.2cm}
   \hspace{0.5cm}%
   \begin{minipage}[t]{4.5cm}
@@ -124,11 +128,9 @@
       Notion / Asana\par
     }
   \end{minipage}
-\end{minipage}%
-\begin{minipage}[t]{\dimexpr\paperwidth-\sidebarwd\relax}
+\switchcolumn
   \vspace*{1.2cm}
-  \hspace{0.7cm}%
-  \begin{minipage}[t]{\dimexpr\paperwidth-\sidebarwd-1.4cm\relax}
+  \par
     {\color{graytext}\small\itshape
       Creative graphic designer with over eight years of experience crafting
       compelling visual identities, digital campaigns, and print materials for
@@ -244,7 +246,6 @@
     Art direction and layout design for a 120-page annual report,
     incorporating custom data visualizations, original photography
     direction, and a modular grid system reused for subsequent editions.
-  \end{minipage}
-\end{minipage}
+\end{paracol}
 
 \end{document}

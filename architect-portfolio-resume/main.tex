@@ -17,6 +17,7 @@
 \usepackage{amssymb}
 \usepackage{hyperref}
 \usepackage{fancyhdr}
+\usepackage{paracol}   % breakable two-column layout (flows across pages, unlike minipage)
 
 \definecolor{dark}{HTML}{2C3E50}
 \definecolor{accent}{HTML}{8E6E53}
@@ -54,7 +55,7 @@
   {\large\bfseries\color{dark}#1}%
   \vspace{4pt}%
   {\color{accent}\rule{0.55cm}{1.4pt}}%
-  \vspace{6pt}%
+  \par\vspace{6pt}%  \par so the following content drops below the heading rule
 }
 
 \newtcolorbox{projectbox}{
@@ -86,8 +87,11 @@
 \end{center}
 \vspace{10pt}
 
-\noindent
-\begin{minipage}[t]{0.275\textwidth}
+% Two-column body via paracol so the columns break across pages (a minipage cannot,
+% which previously pushed the whole right column onto page 2 and cut off the tail).
+\columnratio{0.30}
+\setlength{\columnsep}{0.035\textwidth}
+\begin{paracol}{2}
   \sectionsidebar{Contact}
   \renewcommand{\arraystretch}{1.35}
   \begin{tabular}{@{}p{0.38cm}p{3.85cm}@{}}
@@ -144,9 +148,8 @@
     \item Spanish {\small\color{medium}(Fluent)}
     \item French {\small\color{medium}(Conversational)}
   \end{itemize}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.69\textwidth}
+
+\switchcolumn
   {\large\bfseries\color{dark}Professional Summary}
   \sectionrule
   \vspace{-2pt}
@@ -224,7 +227,6 @@
     AIA Young Architect Award & 2020 \\
     Chicago Athenaeum American Architecture Award & 2019 \\
   \end{tabularx}
-
-\end{minipage}
+\end{paracol}
 
 \end{document}
