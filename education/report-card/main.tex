@@ -84,19 +84,28 @@ D = 60--69 \quad F = below 60}
 
 \vspace{0.5cm}
 % ---- comments ----
+% The comment panel sizes itself to the text. It used to draw a fixed 3.1cm box
+% and then reverse into it with \vspace{-2.95cm}, which only lined up for a
+% comment of one exact length: write a longer one and the text spilled out of
+% the panel and collided with the signature rules below. A node grows with its
+% content, so any length of comment stays inside the box.
 \begin{tikzpicture}
-  \fill[band,rounded corners=5pt] (0,0) rectangle (17.8,3.1);
-  \fill[accent,rounded corners=5pt] (0,0) rectangle (0.18,3.1);
+  \node[fill=band, rounded corners=5pt, inner xsep=5mm, inner ysep=4mm,
+        text width=16.8cm, align=left, anchor=north west] (comments) at (0,0) {%
+    {\color{accdark}\bfseries Instructor's Comments}\\[3pt]
+    {\small Ava has had a wonderful year of growth. She reads well above grade level and
+    approaches mathematics with increasing confidence, especially after mastering fractions
+    this spring. Her science journals are a highlight — detailed and thoughtful. Next year we
+    will focus on longer writing projects and independent research skills. A joy to teach.}%
+  };
+  % accent rule down the left edge, clipped to the panel's own height
+  \begin{scope}
+    \clip[rounded corners=5pt] (comments.north west) rectangle (comments.south east);
+    \fill[accent] (comments.north west) rectangle ([xshift=1.8mm]comments.south west);
+  \end{scope}
 \end{tikzpicture}
-\vspace{-2.95cm}\hspace{0.5cm}
-\begin{minipage}{16.8cm}
-{\color{accdark}\bfseries Instructor's Comments}\\[3pt]
-{\small Ava has had a wonderful year of growth. She reads well above grade level and
-approaches mathematics with increasing confidence, especially after mastering fractions
-this spring. Her science journals are a highlight — detailed and thoughtful. Next year we
-will focus on longer writing projects and independent research skills. A joy to teach.}
-\end{minipage}
-\vspace{1.4cm}
+
+\vspace{0.9cm}
 
 \begin{tabularx}{\linewidth}{@{}X X@{}}
 \rule{6cm}{0.5pt} & \hfill\rule{6cm}{0.5pt}\\

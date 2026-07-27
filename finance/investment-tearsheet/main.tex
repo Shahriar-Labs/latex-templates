@@ -14,6 +14,7 @@
 \tcbuselibrary{skins}
 \usepackage{fontawesome5}
 \usepackage{tabularx}
+\usepackage{needspace}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{enumitem}
@@ -72,9 +73,15 @@
 }
 
 % === Custom commands ===
+% Label over value. The stack lives in its own tabular because a bare \\ at the
+% top level of an X (paragraph) column ends the TABLE ROW rather than breaking
+% the line — so every metric used to terminate its row early and the values
+% ended up displayed against the wrong labels.
 \newcommand{\metriclabel}[2]{%
-  {\footnotesize\color{slate}#1}\\[1pt]
-  {\normalsize\color{navy}\bfseries#2}%
+  \begin{tabular}[t]{@{}l@{}}
+    {\footnotesize\color{slate}#1}\\[1pt]
+    {\normalsize\color{navy}\bfseries#2}
+  \end{tabular}%
 }
 
 \newcommand{\risktile}[2]{%
@@ -192,7 +199,10 @@
     \rowcolor{navy}
     \multicolumn{1}{@{}>{\color{white}\footnotesize}r}{\#} &
     \multicolumn{1}{l}{\color{white}\bfseries\footnotesize Holding} &
-    \multicolumn{1}{X}{\color{white}\bfseries\footnotesize Sector} &
+    % `l`, not `X`: X is a tabularx preamble column type and is not valid inside
+    % \multicolumn, which made this header cell set as its own paragraph and drop
+    % "Sector" onto a second line under the rest of the header.
+    \multicolumn{1}{l}{\color{white}\bfseries\footnotesize Sector} &
     \multicolumn{1}{r@{}}{\color{white}\bfseries\footnotesize Weight} \\
     \toprule
     1 & Apex Technologies Inc.           & Technology                & 5.82\% \\
@@ -253,7 +263,9 @@
   \toprule
   \rowcolor{navy}
   \color{white}\bfseries\footnotesize Period &
-  \color{white}\bfseries\footnotesize Quartile &
+  % forced to `l` so the header sits on the same baseline as its neighbours; an X
+  % (paragraph) column drops its first line lower than the plain columns beside it
+  \multicolumn{1}{l}{\color{white}\bfseries\footnotesize Quartile} &
   \color{white}\bfseries\footnotesize \% Rank &
   \color{white}\bfseries\footnotesize Peer Count &
   \color{white}\bfseries\footnotesize Return \\
@@ -278,6 +290,9 @@
 
 % ===== RISK METRICS =====
 \vspace{8pt}
+% Keep the heading with its table. Without this it stranded itself at the
+% bottom of page 1 with nothing under it, which reads as a broken document.
+\Needspace*{6\baselineskip}
 \section{Risk \& Portfolio Characteristics}
 \vspace{-2pt}
 \risktile{Alpha (3Y)}{\,+\,3.24\%}\hfill
