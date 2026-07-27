@@ -825,4 +825,3 @@ Templates are organised as `<category>/<template-slug>/`. To add one, create a d
 
 MIT — free for academic and commercial use. Individual templates that adapt an official publisher or university class file retain the licence of that upstream file; see each template's `metadata.json`.
 
-<sub>This README is generated from the repository contents by `gen_readme.py` in the letX template factory — the counts above are read from disk, not maintained by hand.</sub>
