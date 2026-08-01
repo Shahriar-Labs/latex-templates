@@ -1,0 +1,241 @@
+\documentclass[aspectratio=169]{beamer}
+
+% Theme selection
+\usetheme{Singapore}
+
+% Package declarations
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{fontawesome5}
+\usepackage{hyperref}
+
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+
+% Custom branding colors for Vertex Research Lab
+\definecolor{vertexNavy}{HTML}{0B2545}
+\definecolor{vertexBlue}{HTML}{134074}
+\definecolor{vertexGold}{HTML}{EEB902}
+\definecolor{vertexLight}{HTML}{EEF4F8}
+
+% Style adjustments using custom colors
+\setbeamercolor{structure}{fg=vertexBlue}
+\setbeamercolor{palette primary}{bg=vertexNavy,fg=white}
+\setbeamercolor{palette secondary}{bg=vertexBlue,fg=white}
+\setbeamercolor{palette tertiary}{bg=vertexNavy,fg=white}
+\setbeamercolor{titlelike}{fg=vertexNavy}
+\setbeamercolor{block title}{fg=white,bg=vertexBlue}
+\setbeamercolor{block body}{bg=vertexLight}
+\setbeamercolor{block title alerted}{fg=white,bg=red!70!black}
+\setbeamercolor{block body alerted}{bg=red!5!white}
+\setbeamercolor{block title example}{fg=white,bg=green!50!black}
+\setbeamercolor{block body example}{bg=green!5!white}
+
+% Title Page Information
+\title{Scalable Decentralized Optimization for Large Language Models}
+\subtitle{Introducing the Vertex-SGD Framework}
+\author{Dr. Sarah Vance \and Prof. Thomas Miller}
+\institute{Vertex AI Research Lab, Synapse Technologies}
+\date{\today}
+
+\begin{document}
+
+% Slide 1: Title
+\begin{frame}[plain]
+    \titlepage
+\end{frame}
+
+% Slide 2: Table of Contents
+\begin{frame}{Outline}
+    \tableofcontents
+\end{frame}
+
+\section{Motivation \& Challenges}
+
+% Slide 3: Challenges (Bullet builds)
+\begin{frame}{Challenges in Large-Scale LLM Training}
+    \begin{itemize}[<+->]
+        \item \textbf{High Communication Overhead}: Dense parameters result in all-reduce bottlenecks on large clusters.
+        \item \textbf{Single-Point Failure}: Centralized parameter server topologies pose massive reliability risks.
+        \item \textbf{Resource Underutilization}: Asymmetric compute nodes lead to idle wait states during barrier synchronization.
+        \item \textbf{Scalability Limits}: Traditional SGD efficiency drops drastically beyond a few dozen nodes.
+    \end{itemize}
+\end{frame}
+
+% Slide 4: Centralized vs. Decentralized (Two Columns)
+\begin{frame}{Centralized vs. Decentralized Optimization}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Centralized Paradigm}
+                \begin{itemize}
+                    \item Rely on dedicated parameter servers.
+                    \item High bandwidth required at the root.
+                    \item Synchronous gradient aggregation.
+                    \item Vulnerable to straggler nodes.
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \hfill
+        \begin{column}{0.48\textwidth}
+            \begin{block}{Decentralized (Vertex-SGD)}
+                \begin{itemize}
+                    \item Local consensus updates via neighbors.
+                    \item Uniform network traffic distribution.
+                    \item Asynchronous execution models.
+                    \item High robustness to node failures.
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\section{The Vertex-SGD Algorithm}
+
+% Slide 5: The Optimization Loop (Equations)
+\begin{frame}{The Vertex-SGD Optimization Protocol}
+    Let $x_i^{(t)}$ represent the local parameter weights of node $i$ at step $t$.
+    
+    The local update consists of a gradient step followed by neighbor consensus:
+    
+    \begin{equation}
+        x_i^{(t+1/2)} = x_i^{(t)} - \eta g_i\left(x_i^{(t)}\right)
+    \end{equation}
+    
+    \begin{equation}
+        x_i^{(t+1)} = \sum_{j \in \mathcal{N}_i} W_{ij} x_j^{(t+1/2)}
+    \end{equation}
+    
+    \vskip 0.5cm
+    \begin{itemize}
+        \item $\eta > 0$ is the local learning rate.
+        \item $g_i$ is the stochastic gradient computed on node $i$'s local batch.
+        \item $W \in \mathbb{R}^{n \times n}$ is a doubly stochastic gossip matrix.
+        \item $\mathcal{N}_i$ is the set of physical neighbors of node $i$.
+    \end{itemize}
+\end{frame}
+
+% Slide 6: Network Topology (TikZ figure)
+\begin{frame}{Communication Topology \& Adjacency}
+    The network graph determines the speed of consensus convergence.
+    \vskip 0.5cm
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=2.2cm, 
+            auto, 
+            thick, 
+            main node/.style={circle,draw=vertexNavy,fill=vertexLight,minimum size=1.4cm,font=\sffamily\bfseries\small}
+        ]
+            \node[main node] (1) {Node A};
+            \node[main node] (2) [right=of 1] {Node B};
+            \node[main node] (3) [below=of 2] {Node C};
+            \node[main node] (4) [below=of 1] {Node D};
+            
+            \path[draw, <->, bend left=15, color=vertexBlue, line width=1.2pt]
+                (1) edge node[above] {$W_{AB}$} (2)
+                (2) edge node[right] {$W_{BC}$} (3)
+                (3) edge node[below] {$W_{CD}$} (4)
+                (4) edge node[left] {$W_{DA}$} (1)
+                (1) edge node[above left] {$W_{AC}$} (3);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+\section{Empirical Evaluation}
+
+% Slide 7: Experimental Setup (Booktabs Table)
+\begin{frame}{Experimental Configurations}
+    We evaluate Vertex-SGD on the custom Apex-8B model cluster:
+    \vskip 0.5cm
+    \begin{table}
+        \centering
+        \caption{Comparison of training settings on Vertex clusters}
+        \begin{tabular}{llcc}
+            \toprule
+            Cluster Configuration & Optimization Type & Avg. Bandwidth (GB/s) & Step Time (ms) \\
+            \midrule
+            Vertex-32 (32 nodes)  & Centralized Adam  & 100                   & 420            \\
+            Vertex-32 (32 nodes)  & Vertex-SGD (Ours) & 12                    & 180            \\
+            Vertex-128 (128 nodes) & Centralized Adam  & 400                   & 890            \\
+            Vertex-128 (128 nodes) & Vertex-SGD (Ours) & 15                    & 210            \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+% Slide 8: Convergence Performance (PGFPlots figure)
+\begin{frame}{Convergence Efficiency}
+    Vertex-SGD maintains the convergence quality of centralized methods while decreasing wall-clock time.
+    \vskip 0.2cm
+    \begin{center}
+        \begin{tikzpicture}
+            \begin{axis}[
+                xlabel={Training Steps $\times 10^3$},
+                ylabel={Cross-Entropy Loss},
+                grid=major,
+                width=0.75\textwidth,
+                height=0.55\textheight,
+                legend style={at={(0.95,0.95)},anchor=north east},
+                line width=1.5pt
+            ]
+                \addplot[color=red,mark=none] coordinates {
+                    (0, 8.5) (1, 6.2) (2, 4.8) (3, 3.9) (4, 3.2) (5, 2.8) (6, 2.6) (7, 2.5) (8, 2.4)
+                };
+                \addlegendentry{Centralized Adam}
+                \addplot[color=vertexBlue,mark=none] coordinates {
+                    (0, 8.5) (1, 5.9) (2, 4.3) (3, 3.3) (4, 2.7) (5, 2.3) (6, 2.1) (7, 2.0) (8, 1.9)
+                };
+                \addlegendentry{Vertex-SGD (Ours)}
+            \end{axis}
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+% Slide 9: Block, Alertblock, Exampleblock Trio
+\begin{frame}{Key Observations \& Robustness}
+    \begin{block}{Theoretical Convergence}
+        Local parameters approach the true global optimum sublinearly for non-convex loss surfaces.
+    \end{block}
+    
+    \begin{alertblock}{Straggler Vulnerability}
+        Strict consensus bounds might delay updates if individual node computation speeds degrade.
+    \end{alertblock}
+    
+    \begin{exampleblock}{Empirical Speedup}
+        Over a wide range of tasks, Vertex-SGD yields a $2.1\times$ to $4.2\times$ reduction in end-to-end wall-clock training times.
+    \end{exampleblock}
+\end{frame}
+
+\section{Conclusion}
+
+% Slide 10: Future Directions
+\begin{frame}{Future Work \& Outlook}
+    We plan to extend Vertex-SGD to address the following challenges:
+    \vskip 0.5cm
+    \begin{itemize}
+        \item \textbf{Asynchronous Updates}: Relaxing consensus synchrony to allow fully lock-free training.
+        \item \textbf{Adaptive Topologies}: Modifying matrix weights dynamically based on live throughput metrics.
+        \item \textbf{Quantized Gossip}: Lowering communication bandwidth via lossy gradient quantization.
+    \end{itemize}
+\end{frame}
+
+% Slide 11: Closing
+\begin{frame}[plain]
+    \begin{center}
+        \Huge \bfseries \color{vertexNavy}{Thank You!}
+        \vskip 1.5cm
+        \normalsize \sffamily
+        Questions \& Discussion
+        \vskip 1cm
+        \begin{tabular}{rl}
+            \faEnvelope & \href{mailto:sarah.vance@vertexai.org}{sarah.vance@vertexai.org} \\
+            \faGlobe & \href{https://vertexai.org}{vertexai.org/research} \\
+            \faPhone & +1 (555) 019-9283
+        \end{tabular}
+    \end{center}
+\end{frame}
+
+\end{document}

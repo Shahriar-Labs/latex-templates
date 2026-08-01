@@ -1,0 +1,252 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[aspectratio=169]{beamer}
+
+\usetheme{Auriga}
+\usecolortheme{auriga}
+
+% ====================
+% Packages
+% ====================
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds,patterns}
+\usepackage{fontawesome5}
+\usepackage{url}
+
+% ====================
+% Custom Color Palette
+% ====================
+\definecolor{meridianBlue}{HTML}{1A5276}
+\definecolor{meridianTeal}{HTML}{117A65}
+\definecolor{meridianOrange}{HTML}{D35400}
+\definecolor{meridianSlate}{HTML}{2E4053}
+
+% Style Beamer Blocks using the theme colors
+\setbeamertemplate{blocks}[rounded]
+\setbeamercolor{block title}{fg=white,bg=meridianBlue}
+\setbeamercolor{block body}{fg=black,bg=lightgray}
+\setbeamercolor{block title example}{fg=white,bg=meridianTeal}
+\setbeamercolor{block body example}{fg=black,bg=lightgray}
+\setbeamercolor{block title alerted}{fg=white,bg=meridianOrange}
+\setbeamercolor{block body alerted}{fg=black,bg=lightgray}
+
+% ====================
+% Presentation Info
+% ====================
+\title{Synapse: High-Performance Federated Learning}
+\subtitle{Distributed Optimization on Vertex Edge Architectures}
+\author{Dr. Sarah Jenkins \samelineand Prof. Thomas Patel}
+\institute{Meridian Research Labs}
+\date{August 2026}
+
+% ====================
+% Document
+% ====================
+\begin{document}
+
+% Slide 1: Title Slide
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% Slide 2: Table of Contents
+\begin{frame}{Presentation Outline}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Part I: Architecture \& Design}
+      \begin{enumerate}
+        \item Distributed Orchestration
+        \item Synapse System Topology
+        \item Optimization Framework
+      \end{enumerate}
+    \end{column}
+    \hfill
+    \begin{column}{0.48\textwidth}
+      \textbf{Part II: Performance \& Security}
+      \begin{enumerate}
+        \setcounter{enumi}{3}
+        \item Hardware Benchmarking
+        \item Privacy-Preserving Mechanics
+        \item Deployment Roadmap
+      \end{enumerate}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 3: Section Break 1
+\begin{frame}
+  \centering
+  \vfill
+  {\usebeamerfont{title page title}\usebeamercolor[fg]{title page}Part I: Architecture \& Design}
+  \vskip2ex
+  {\usebeamerfont{title page author}Distributed Orchestration on Vertex Edge Nodes}
+  \vfill
+\end{frame}
+
+% Slide 4: Bullet Builds (sequential list)
+\begin{frame}{Orchestration Challenges in Edge AI}
+  \textbf{Goal:} Train a unified model across decentralized data resources without raw upload.
+  \vskip3ex
+  \begin{itemize}
+    \item<1-> \textbf{Communication Latency:} High-dimensional updates saturate shared channels.
+    \item<2-> \textbf{Resource Asymmetry:} Vertex nodes span low-power IoT to compute clusters.
+    \item<3-> \textbf{Statistical Variance:} Non-IID local data distributions delay convergence.
+  \end{itemize}
+\end{frame}
+
+% Slide 5: Two-Column Slide
+\begin{frame}{System Topology Paradigm}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Traditional Centralized Training}
+      \vskip1.5ex
+      \begin{itemize}
+        \item Direct raw upload to centralized database.
+        \item Saturated uplink networks during peak times.
+        \item Single-point-of-failure under breach.
+      \end{itemize}
+    \end{column}
+    \hfill
+    \begin{column}{0.48\textwidth}
+      \textbf{Synapse Federated Protocol}
+      \vskip1.5ex
+      \begin{itemize}
+        \item Local optimization on local device storage.
+        \item Only parameterized weights are transmitted.
+        \item Data remains isolated inside the local edge.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 6: TikZ Figure Slide
+\begin{frame}{Synapse Optimization Loop}
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}[
+        node distance=1.0cm and 1.5cm,
+        coord/.style={draw=meridianBlue, fill=meridianBlue!10, thick, rectangle, rounded corners=6pt, minimum width=3.5cm, minimum height=1.4cm, align=center},
+        client/.style={draw=meridianSlate, fill=meridianSlate!10, thick, rectangle, rounded corners=4pt, minimum width=2.4cm, minimum height=1.2cm, align=center},
+        arrow/.style={-latex, thick, draw=meridianSlate},
+        doublearrow/.style={latex-latex, thick, draw=meridianTeal}
+    ]
+      % Nodes
+      \node[coord] (coordinator) {Meridian Coordinator\\(Global Aggregation)};
+      \node[client, below left=of coordinator] (clientA) {Vertex Node A\\(Nexa Client)};
+      \node[client, below=of coordinator] (clientB) {Vertex Node B\\(Apex Client)};
+      \node[client, below right=of coordinator] (clientC) {Vertex Node C\\(Nimbus Client)};
+      
+      % Paths
+      \draw[arrow] (clientA) -- node[left, yshift=2mm, font=\scriptsize] {$\theta_{\text{local}}^A$} (coordinator);
+      \draw[arrow] (coordinator) -- node[right, yshift=2mm, font=\scriptsize] {$\theta_{\text{global}}$} (clientC);
+      \draw[doublearrow] (coordinator) -- node[right, font=\scriptsize] {Sync} (clientB);
+    \end{tikzpicture}
+    \caption{Interactive aggregation loop between Meridian Coordinator and local clients.}
+  \end{figure}
+\end{frame}
+
+% Slide 7: Mathematical Formulation Slide
+\begin{frame}{Optimization Objective}
+  We formulate the distributed empirical risk minimization as:
+  \vskip1ex
+  \begin{equation*}
+    \min_{\theta \in \mathbb{R}^d} F(\theta) = \sum_{k=1}^K p_k F_k(\theta)
+  \end{equation*}
+  \vskip1ex
+  where the local loss function $F_k(\theta)$ for client $k$ is computed over dataset $\mathcal{D}_k$:
+  \vskip1ex
+  \begin{equation*}
+    F_k(\theta) = \frac{1}{|\mathcal{D}_k|} \sum_{i \in \mathcal{D}_k} \ell(f(x_i; \theta), y_i)
+  \end{equation*}
+  \vskip1.5ex
+  Here, client weights are proportional to dataset sizes: $p_k = |\mathcal{D}_k| / \sum_j |\mathcal{D}_j|$.
+\end{frame}
+
+% Slide 8: Section Break 2
+\begin{frame}
+  \centering
+  \vfill
+  {\usebeamerfont{title page title}\usebeamercolor[fg]{title page}Part II: Performance \& Security}
+  \vskip2ex
+  {\usebeamerfont{title page author}Differential Privacy and Security Benchmarks}
+  \vfill
+\end{frame}
+
+% Slide 9: Booktabs Table Slide
+\begin{frame}{Heterogeneous Device Performance}
+  Comparative evaluations of Synapse training runs on various client edge nodes.
+  \vskip3ex
+  \begin{table}
+    \centering
+    \begin{tabular}{llcc}
+      \toprule
+      Platform & Node Type & Latency (s) & Accuracy (\%) \\
+      \midrule
+      Apex & Compute Heavy & 12.4 & 94.2 \\
+      Vertex & Standard Edge & 24.8 & 93.8 \\
+      Nexa & Low-Power IoT & 85.2 & 91.5 \\
+      Nimbus & High-Performance & 8.9 & 94.5 \\
+      \bottomrule
+    \end{tabular}
+    \caption{Training metrics compiled over 100 federated epochs.}
+  \end{table}
+\end{frame}
+
+% Slide 10: Block / Alertblock / Exampleblock Trio
+\begin{frame}{Synapse Security Architecture}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Differential Privacy}
+        Strict bounding of local update sensitivity to protect user membership information.
+      \end{block}
+      \vskip2.5ex
+      \begin{exampleblock}{Local Perturbation}
+        Additive Gaussian noise is parameterized per-epoch based on privacy budget constraints.
+      \end{exampleblock}
+    \end{column}
+    \hfill
+    \begin{column}{0.48\textwidth}
+      \begin{alertblock}{Aggregator Threat Model}
+        The coordinator is considered curious but honest. Synapse deploys cryptographic secret sharing to prevent weight snooping.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 11: Future Directions / Roadmap
+\begin{frame}{Milestones \& Future Roadmap}
+  \begin{itemize}
+    \item \textbf{Secure Aggregation Expansion (Q4 2026):} Deploying multi-party computation across all Apex and Nexa standard nodes.
+    \item \textbf{Asynchronous Updates (Q2 2027):} Alleviating straggler issues on low-bandwidth IoT devices.
+    \item \textbf{Hardware Enclaves (Q4 2027):} Leveraging Vertex trusted execution environments (TEEs) for isolated training.
+  \end{itemize}
+\end{frame}
+
+% Slide 12: Contact \& Resources Slide (using FontAwesome)
+\begin{frame}{Resources \& Contacts}
+  Additional developer tools and contact details for the Synapse project.
+  \vskip3ex
+  \begin{itemize}
+    \item[\faPen] Project Homepage: \url{https://meridian-labs.org/synapse}
+    \item[\faLock] Security disclosures: \url{https://meridian-labs.org/sec}
+    \item[\faCalendar] Scheduled presentation: NeurIPS 2026
+    \item[\faPhone] Developer Lab Hotline: +1-555-0199
+  \end{itemize}
+\end{frame}
+
+% Slide 13: Closing Slide
+\begin{frame}
+  \centering
+  \vfill
+  {\usebeamerfont{title page title}\usebeamercolor[fg]{title page}Thank You!}
+  \vskip3ex
+  {\usebeamerfont{title page author}Questions \& Discussion}
+  \vskip2ex
+  {\usebeamerfont{title page institute}Meridian Research Labs \quad $\cdot$ \quad Synapse Project}
+  \vfill
+\end{frame}
+
+\end{document}

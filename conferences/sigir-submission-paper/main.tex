@@ -1,0 +1,487 @@
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage[letterpaper,margin=0.78in,columnsep=0.28in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{filecontents}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,arrows.meta,backgrounds}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage{authblk}
+\usepackage[colorlinks=true,linkcolor=sigirblue,citecolor=sigirblue,urlcolor=sigirteal]{hyperref}
+
+% ---------------------------------------------------------------------------
+% Palette
+% ---------------------------------------------------------------------------
+\definecolor{sigirblue}{RGB}{23,53,105}
+\definecolor{sigirteal}{RGB}{0,110,110}
+\definecolor{sigirgray}{RGB}{95,95,100}
+\definecolor{sigirlight}{RGB}{234,239,246}
+
+\renewcommand{\Authfont}{\bfseries}
+\renewcommand{\Affilfont}{\normalfont\itshape\small\color{sigirgray}}
+\setlength{\affilsep}{4pt}
+
+% ---------------------------------------------------------------------------
+% Embedded bibliography (filecontents keeps this file fully standalone)
+% ---------------------------------------------------------------------------
+\begin{filecontents*}{references.bib}
+@inproceedings{kessler2021fusion,
+  author    = {Kessler, Hana and Bracewell, Owen},
+  title     = {Sparse and Dense Signal Fusion for Passage Retrieval},
+  booktitle = {Proceedings of the 44th International ACM SIGIR Conference on Research and Development in Information Retrieval},
+  year      = {2021},
+  pages     = {1201--1210}
+}
+
+@inproceedings{aldana2020dpr,
+  author    = {Aldana, Yusuf and Castellano, Wren},
+  title     = {Dense Passage Representations for Open-Domain Question Answering},
+  booktitle = {Proceedings of the Association for Computational Linguistics (ACL)},
+  year      = {2020},
+  pages     = {6769--6781}
+}
+
+@inproceedings{solheim2020late,
+  author    = {Solheim, Ingrid and Petrelli, Marco and Beaumont, Ana},
+  title     = {Late Interaction Retrieval with Contextualized Token Embeddings},
+  booktitle = {Proceedings of the 43rd International ACM SIGIR Conference on Research and Development in Information Retrieval},
+  year      = {2020},
+  pages     = {39--48}
+}
+
+@inproceedings{renner2021distill,
+  author    = {Renner, Tobias and Adeyemi, Femi},
+  title     = {Distilling Cross-Encoders into Efficient Bi-Encoder Rankers},
+  booktitle = {Proceedings of the Conference on Empirical Methods in Natural Language Processing (EMNLP)},
+  year      = {2021},
+  pages     = {4102--4114}
+}
+
+@inproceedings{vong2022reform,
+  author    = {Vong, Priscilla and Eriksen, Karsten},
+  title     = {A Deep Look at Query Reformulation for Neural Retrieval},
+  booktitle = {Proceedings of the ACM Web Conference (WWW)},
+  year      = {2022},
+  pages     = {2114--2124}
+}
+
+@article{fakhoury2022survey,
+  author  = {Fakhoury, Noor and Savchenko, Dmitri},
+  title   = {Knowledge Distillation for Ranking: A Survey},
+  journal = {ACM Transactions on Information Systems},
+  volume  = {40},
+  number  = {3},
+  pages   = {1--34},
+  year    = {2022}
+}
+
+@inproceedings{obinna2021longdoc,
+  author    = {Obinna, Chidi and Hedman, Lars},
+  title     = {Efficient Transformers for Long-Document Retrieval},
+  booktitle = {Proceedings of the 30th ACM International Conference on Information and Knowledge Management (CIKM)},
+  year      = {2021},
+  pages     = {3355--3364}
+}
+
+@inproceedings{lindberg2023calibrate,
+  author    = {Lindberg, Sofia and Chandrasekar, Rajiv},
+  title     = {Calibrating Relevance Scores for Multi-Stage Ranking Pipelines},
+  booktitle = {Proceedings of the European Conference on Information Retrieval (ECIR)},
+  year      = {2023},
+  pages     = {112--127}
+}
+
+@inproceedings{solano2022hardneg,
+  author    = {Solano, Beatrix and Amrani, Youssef},
+  title     = {Hard Negative Mining Strategies for Dense Retrieval},
+  booktitle = {Proceedings of the 45th International ACM SIGIR Conference on Research and Development in Information Retrieval},
+  year      = {2022},
+  pages     = {512--522}
+}
+
+@inproceedings{voss2019crossattn,
+  author    = {Voss, Elmar and Nair, Priya},
+  title     = {Cross-Attention Mechanisms for Fine-Grained Text Matching},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2019},
+  pages     = {8734--8744}
+}
+
+@inproceedings{marchetti2020monobert,
+  author    = {Marchetti, Silvio and Okonkwo, Adaeze},
+  title     = {Multi-Stage Document Ranking with a {BERT}-Based Cross-Encoder},
+  booktitle = {Proceedings of the 29th ACM International Conference on Information and Knowledge Management (CIKM)},
+  year      = {2020},
+  pages     = {2825--2832}
+}
+\end{filecontents*}
+
+\title{\vspace{-0.4em}\textbf{\Large Cross-Attention Distillation for Lightweight\\ Passage Re-ranking in Dense Retrieval Pipelines}}
+
+\author[1]{Elena Vasquez}
+\author[2]{Daniel Osei}
+\author[3]{Priya Ramanathan}
+\author[4]{Marcus Lindqvist}
+
+\affil[1]{Meridian Institute of Technology}
+\affil[2]{Vertex University, Department of Computer Science}
+\affil[3]{Nimbus Information Retrieval Lab}
+\affil[4]{Apex College of Computing}
+
+\date{}
+
+\begin{document}
+
+\twocolumn[
+\begin{@twocolumnfalse}
+\maketitle
+
+\begin{center}
+\fcolorbox{sigirblue}{sigirlight}{%
+  \begin{minipage}{0.9\textwidth}
+  \small\color{sigirblue}
+  \textbf{Unofficial template.} This document is an unofficial \LaTeX{} template
+  inspired by the general two-column style of information retrieval conference
+  submissions and is \textbf{not affiliated with, endorsed by, or produced by
+  SIGIR} or its organizing committee. Author names, affiliations, results, and
+  citations below are fictional and provided for layout demonstration only.
+  Before submitting a real paper, always download the current year's official
+  style files and author instructions from the official SIGIR call for papers,
+  as formatting requirements (margins, page limits, anonymization policy) change
+  year to year.
+  \end{minipage}%
+}
+\end{center}
+
+\vspace{0.6em}
+\begin{center}
+\begin{minipage}{0.92\textwidth}
+\small
+\textbf{Abstract.} Cross-encoder re-rankers deliver the strongest relevance
+quality in multi-stage retrieval pipelines but are too slow to score every
+document a first-stage retriever returns. We introduce \textbf{CARD}
+(Cross-Attention Re-ranking Distillation), a lightweight re-ranking head that
+is trained to mimic a full cross-encoder teacher while operating on
+pre-computed bi-encoder representations, avoiding the joint query--document
+forward pass that makes cross-encoders expensive at serving time. CARD
+attaches a shallow cross-attention block on top of frozen dense query and
+passage embeddings and is trained with a temperature-scaled distillation
+objective that combines soft-label matching against the teacher with the
+original relevance labels. Across three retrieval benchmarks, CARD recovers
+97.8\% of the teacher's nDCG@10 while reducing re-ranking latency by
+6.5$\times$, and it consistently outperforms bi-encoder-only and
+late-interaction baselines at comparable serving cost. We release ablations
+isolating the contribution of distillation temperature, cross-attention
+depth, and teacher choice, and discuss where the distilled head still departs
+measurably from teacher behavior.
+\end{minipage}
+\end{center}
+\vspace{0.9em}
+\end{@twocolumnfalse}
+]
+
+\section{Introduction}
+\label{sec:intro}
+
+Modern search systems resolve a query in stages: a fast first-stage
+retriever, typically a sparse index~\cite{kessler2021fusion} or a dense
+bi-encoder~\cite{aldana2020dpr}, recalls hundreds to thousands of candidate
+passages, and a second-stage re-ranker reorders that candidate set to
+maximize precision at the top of the list. Cross-encoders, which jointly
+encode the query and each candidate passage through a shared transformer,
+consistently produce the highest-quality re-ranking scores because
+self-attention can condition directly on token-level query--passage
+interactions~\cite{marchetti2020monobert}. That same joint encoding is what
+makes them expensive: every candidate requires a full forward pass over the
+concatenated query and passage, and this cost scales linearly with the
+number of candidates re-ranked per query.
+
+Bi-encoders sidestep this cost by encoding queries and passages
+independently, so passage embeddings can be pre-computed offline and reused
+across queries~\cite{aldana2020dpr}. The relevance score is then a cheap
+similarity between two fixed-size vectors. This efficiency comes at a
+quality cost: independent encoding cannot capture fine-grained token-level
+interactions, and bi-encoders reliably trail cross-encoders in ranking
+quality. Late-interaction models such as token-level maximum-similarity
+matching~\cite{solheim2020late} sit between these two extremes, but still
+require storing and scanning per-token passage representations at serving
+time, which is memory-intensive at large index sizes.
+
+This paper asks whether a re-ranker can be built that keeps the offline
+pre-computation property of bi-encoders while recovering most of the
+relevance quality of a cross-encoder teacher. We propose \textbf{CARD}: a
+shallow cross-attention head trained by distillation against a cross-encoder
+teacher, operating only on the frozen query and passage embeddings a
+bi-encoder already produces. Because the expensive joint reasoning is
+distilled into a small student head rather than performed online, CARD adds
+only a few milliseconds of re-ranking latency per candidate while closing
+most of the gap to the teacher.
+
+Our contributions are threefold. First, we describe the CARD architecture
+and its temperature-scaled distillation objective
+(\S\ref{sec:method}). Second, we evaluate CARD against sparse, dense, and
+late-interaction baselines, along with its own teacher, on three retrieval
+benchmarks, showing consistent quality recovery at a fraction of
+cross-encoder latency (\S\ref{sec:experiments}--\S\ref{sec:results}). Third,
+we analyze where CARD's distilled scores still diverge from the teacher,
+including a systematic gap on queries with high lexical ambiguity
+(\S\ref{sec:discussion}).
+
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Sparse and dense first-stage retrieval.} Term-based retrieval
+remains a strong and cheap recall mechanism, particularly when fused with
+dense signals~\cite{kessler2021fusion}. Dense passage retrieval trains a
+dual encoder with a contrastive objective so that relevant query--passage
+pairs are close in embedding space~\cite{aldana2020dpr}, and subsequent work
+has focused heavily on the construction of informative hard negatives during
+training~\cite{solano2022hardneg}.
+
+\paragraph{Late interaction.} Rather than collapsing a passage into a single
+vector, late-interaction models keep per-token representations and compute a
+maximum-similarity aggregation between query and passage
+tokens~\cite{solheim2020late}. This recovers some of the fine-grained
+matching signal cross-encoders provide, but the storage and scanning cost
+grows with passage length, and CARD's ablations in
+\S\ref{sec:results} compare directly against this family.
+
+\paragraph{Cross-encoder re-ranking.} Full cross-encoder re-rankers built on
+pretrained transformers remain the quality reference point for multi-stage
+ranking~\cite{marchetti2020monobert}. Their latency has motivated a line of
+work on making multi-stage pipelines cheaper without discarding the
+cross-encoder's quality signal entirely, including score calibration across
+stages~\cite{lindberg2023calibrate} and efficient long-document variants of
+the cross-encoder itself~\cite{obinna2021longdoc}.
+
+\paragraph{Knowledge distillation for ranking.} Distilling a strong
+cross-encoder teacher into a cheaper student has been studied broadly, with
+approaches ranging from distilling into a smaller cross-encoder to
+distilling directly into bi-encoder embeddings~\cite{renner2021distill,
+fakhoury2022survey}. CARD differs from embedding-only distillation in that
+the student retains a small cross-attention computation at inference time;
+we find in \S\ref{sec:results} that this residual joint computation, however
+small, is responsible for most of the quality recovered over a pure
+bi-encoder student. The underlying cross-attention mechanism follows the
+formulation of query-conditioned token matching introduced for fine-grained
+text matching~\cite{voss2019crossattn}, and re-ranking pipelines built on
+learned query reformulation~\cite{vong2022reform} are complementary to CARD
+rather than competing with it.
+
+\section{Method}
+\label{sec:method}
+
+\subsection{Overview}
+
+CARD assumes a standard two-stage pipeline: a bi-encoder produces a query
+embedding $\mathbf{E}_q \in \mathbb{R}^{n \times d}$ and, offline, a passage
+embedding $\mathbf{E}_p \in \mathbb{R}^{m \times d}$ for every indexed
+passage, where $n$ and $m$ are token counts and $d$ is the hidden dimension.
+Both encoders are frozen during CARD training; only a shallow cross-attention
+head and a scoring layer are learned on top of these fixed representations.
+
+\subsection{Cross-attention head}
+
+Given the token-level query and passage embeddings, the head computes a
+single layer of query-to-passage cross-attention followed by a passage-side
+pooling step:
+\[
+\mathbf{A} = \operatorname{softmax}\!\left(\frac{\mathbf{E}_q W_Q \,(\mathbf{E}_p W_K)^\top}{\sqrt{d_k}}\right)(\mathbf{E}_p W_V),
+\]
+where $W_Q, W_K, W_V \in \mathbb{R}^{d \times d_k}$ are learned projections
+and $\mathbf{A} \in \mathbb{R}^{n \times d_k}$ is the attended representation
+of each query token over the passage. Mean-pooling $\mathbf{A}$ over the
+query dimension and concatenating with the pooled bi-encoder similarity
+yields the student relevance score
+\begin{equation}
+s_S(q,p) = \mathbf{w}^\top\big[\,\bar{\mathbf{A}} \,;\, \mathbf{E}_q^{\text{cls}} \cdot \mathbf{E}_p^{\text{cls}}\,\big] + b,
+\label{eq:score}
+\end{equation}
+where $\bar{\mathbf{A}}$ is the mean-pooled attention output, $\mathbf{E}_q^{\text{cls}}
+\cdot \mathbf{E}_p^{\text{cls}}$ is the standard bi-encoder dot-product
+similarity, and $\mathbf{w}, b$ are learned parameters. Because $\mathbf{E}_p$
+is fixed and pre-computed, the only per-query, per-candidate cost at serving
+time is the single cross-attention layer over already-cached embeddings.
+
+\subsection{Distillation objective}
+
+Let $s_T(q,p)$ denote the score produced by the frozen cross-encoder teacher.
+CARD is trained with a temperature-scaled distillation loss combined with the
+original binary relevance label $y$:
+\begin{multline}
+\mathcal{L}_{\text{CARD}} = \alpha \, \mathrm{KL}\!\left(\sigma\!\left(\frac{s_T(q,p)}{\tau}\right)
+\,\middle\|\, \sigma\!\left(\frac{s_S(q,p)}{\tau}\right)\right) \\
+{}+ (1-\alpha)\,\mathrm{CE}\big(y,\, s_S(q,p)\big),
+\label{eq:distill}
+\end{multline}
+where $\sigma(\cdot)$ is the sigmoid function, $\tau$ is the distillation
+temperature, and $\alpha \in [0,1]$ balances soft-label matching against the
+teacher and hard-label supervision from the original ranking data. We use
+$\tau = 2.0$ and $\alpha = 0.7$ throughout, chosen by grid search on a held-out
+development split (\S\ref{sec:experiments}).
+
+Figure~\ref{fig:pipeline} summarizes the resulting serving-time pipeline: a
+first-stage retriever recalls candidates using pre-computed passage
+embeddings, and the CARD head re-scores each candidate using only the
+already-cached embeddings and a single lightweight attention pass, with the
+teacher cross-encoder appearing only during offline training.
+
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=6mm and 6mm,
+  box/.style={rectangle, rounded corners=2pt, draw=sigirblue, thick,
+    fill=sigirlight, minimum height=8mm, text width=2.05cm, align=center,
+    font=\scriptsize},
+  teacher/.style={box, draw=sigirgray, fill=white, dashed, text width=2.6cm},
+  arr/.style={-{Latex[length=2mm]}, thick, sigirblue},
+  darr/.style={-{Latex[length=2mm]}, thick, dashed, sigirgray}
+]
+\node[box] (q) {Query $q$};
+\node[box, right=of q] (bq) {Bi-encoder $\mathbf{E}_q$};
+\node[box, below=of q] (p) {Passage cache $\mathbf{E}_p$};
+\node[box, right=of p] (cand) {Retrieved candidates};
+\node[box, right=of cand, yshift=8mm, text width=2.3cm] (card) {CARD cross-attention head};
+\node[box, right=of card, text width=1.6cm] (score) {Score $s_S(q,p)$};
+\node[teacher, above=8mm of card] (teacher) {Teacher cross-encoder (training only)};
+
+\draw[arr] (q) -- (bq);
+\draw[arr] (p) -- (cand);
+\draw[arr] (bq) |- (card);
+\draw[arr] (cand) |- (card);
+\draw[arr] (card) -- (score);
+\draw[darr] (teacher) -- node[right, font=\tiny, sigirgray] {distillation, Eq.~\ref{eq:distill}} (card);
+\end{tikzpicture}%
+}
+\caption{CARD serving-time pipeline. Query and passage embeddings are
+produced by a frozen bi-encoder; the passage side is pre-computed offline.
+Only the lightweight cross-attention head runs per candidate at query time.
+The cross-encoder teacher (dashed) supervises the head during training and
+is never invoked at serving time.}
+\label{fig:pipeline}
+\end{figure}
+
+\section{Experiments}
+\label{sec:experiments}
+
+\paragraph{Data.} We evaluate on three passage retrieval benchmarks: the
+Nimbus-1M passage collection with the Apex-Dev and Apex-Test query splits,
+and the Meridian-Web crawl, a held-out set of 4{,}200 web queries with graded
+relevance judgments. All three follow the standard train/dev/test protocol
+used in prior re-ranking work~\cite{lindberg2023calibrate}.
+
+\paragraph{Models.} The first-stage retriever is a dense bi-encoder trained
+with in-batch and mined hard negatives~\cite{solano2022hardneg}, shared
+across all re-ranking methods for a controlled comparison. We compare: BM25
+(sparse baseline, no re-ranking), the bi-encoder score alone (no re-ranking),
+a late-interaction re-ranker~\cite{solheim2020late}, the cross-encoder
+teacher~\cite{marchetti2020monobert}, and two CARD variants: the full model
+(2-head cross-attention) and CARD-small (single-head, half hidden width).
+
+\paragraph{Metrics.} We report MRR@10, nDCG@10, and Recall@1000 on the
+top-1000 candidates returned by the first-stage retriever, along with
+measured re-ranking latency per query (100 candidates, single V100 GPU,
+batch size 1) to reflect realistic online serving conditions.
+
+\section{Results}
+\label{sec:results}
+
+Table~\ref{tab:results} reports quality and latency across all six methods.
+CARD recovers 97.8\% of the teacher's nDCG@10 (0.409 vs.\ 0.415) at roughly
+one-sixth of its latency, and it outperforms the late-interaction baseline
+on every quality metric while remaining substantially cheaper. CARD-small
+trades a further 3.6 points of nDCG@10 for the lowest latency among all
+non-trivial re-rankers, making it attractive when candidate sets are large
+or latency budgets are tight.
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Re-ranking quality and latency on the pooled Nimbus/Apex/Meridian
+test splits. Best value per column among proposed methods in bold;
+the teacher row is shown in italics as an upper bound, not a deployable
+system.}
+\label{tab:results}
+\begin{tabular}{lcccc}
+\toprule
+Method & MRR@10 & nDCG@10 & Recall@1000 & Latency (ms/query) \\
+\midrule
+BM25 (no re-rank)          & 0.187 & 0.221 & 0.857 & 8 \\
+Bi-encoder (no re-rank)    & 0.311 & 0.348 & 0.912 & 3 \\
+Late interaction~\cite{solheim2020late} & 0.336 & 0.375 & 0.921 & 118 \\
+\textit{Cross-encoder teacher~\cite{marchetti2020monobert}} & \textit{0.372} & \textit{0.415} & \textit{0.941} & \textit{620} \\
+\rowcolor{sigirlight}
+CARD (ours)                & \textbf{0.365} & \textbf{0.409} & \textbf{0.939} & 95 \\
+CARD-small (ours)          & 0.352 & 0.395 & 0.930 & \textbf{34} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Breaking results down by query length, the gap between CARD and the teacher
+widens on queries longer than 12 tokens (nDCG@10 gap of 0.014 vs.\ 0.005 for
+shorter queries), which we attribute to the single cross-attention layer
+having less capacity to resolve interactions among multiple query aspects
+simultaneously. Increasing CARD's cross-attention depth from one layer to two
+recovers roughly half of this gap but increases latency by 40\%, which we
+did not find worthwhile given the pipeline's overall latency budget.
+
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Where distillation helps most.} The largest quality gains from
+CARD over the plain bi-encoder appear on queries with high lexical overlap
+across multiple candidate passages, where independent encoding cannot
+distinguish passages that differ only in how a shared term is used in
+context. This is consistent with the token-level matching motivation behind
+late-interaction and cross-encoder architectures more broadly.
+
+\paragraph{Teacher choice matters.} Replacing the cross-encoder teacher with
+a smaller distilled cross-encoder as an intermediate teacher
+(self-distillation) reduced CARD's nDCG@10 by 0.011 relative to distilling
+directly from the full teacher, suggesting that distillation chains lose
+signal at each hop and that CARD should be trained from the strongest
+available teacher rather than a cheaper proxy, even though training-time
+teacher cost does not affect serving latency.
+
+\paragraph{Limitations.} Our evaluation covers English web and passage
+retrieval collections only; we have not verified that the distillation
+temperature and loss weighting transfer without retuning to other domains
+such as legal or biomedical retrieval, where relevance judgments are sparser
+and passage lengths differ substantially. The survey of distillation methods
+for ranking~\cite{fakhoury2022survey} notes more broadly that distillation
+gains are sensitive to the capacity gap between teacher and student, and our
+own ablation over cross-attention depth supports that observation directly.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented CARD, a cross-attention distillation head that recovers most of
+a cross-encoder teacher's re-ranking quality while keeping the offline
+pre-computation property that makes bi-encoders cheap to serve. Across three
+retrieval benchmarks, CARD reaches 97.8\% of teacher nDCG@10 at 6.5$\times$
+lower latency, and its smaller variant offers a further latency reduction
+for deployments where candidate sets are large. We view CARD as one point on
+a broader quality--latency frontier for multi-stage ranking, and we hope the
+query-length breakdown in \S\ref{sec:results} is useful to others deciding
+how much residual cross-attention capacity a distilled re-ranker actually
+needs.
+
+\section*{Acknowledgments}
+We thank colleagues at Meridian Institute of Technology, Vertex University,
+Nimbus Information Retrieval Lab, and Apex College of Computing for feedback
+on early drafts. All computational resources for this fictional study were
+provided internally; no external funding is associated with this work.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

@@ -1,0 +1,434 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+
+% -----------------------------------------------------------------------------
+% Theme and typography
+% -----------------------------------------------------------------------------
+\usetheme{Szeged}
+\usefonttheme{professionalfonts}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% -----------------------------------------------------------------------------
+% Mathematics and tables
+% -----------------------------------------------------------------------------
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+
+% -----------------------------------------------------------------------------
+% Color system
+% -----------------------------------------------------------------------------
+\definecolor{SzegedBlue}{HTML}{174A6E}
+\definecolor{SzegedTeal}{HTML}{187C7A}
+\definecolor{SzegedGold}{HTML}{D49A2A}
+\definecolor{SzegedRed}{HTML}{B44646}
+\definecolor{SzegedInk}{HTML}{23313D}
+\definecolor{SzegedMist}{HTML}{EEF3F5}
+
+\setbeamercolor{normal text}{fg=SzegedInk,bg=white}
+\setbeamercolor{structure}{fg=SzegedBlue}
+\setbeamercolor{alerted text}{fg=SzegedRed}
+\setbeamercolor{example text}{fg=SzegedTeal}
+
+\setbeamercolor{palette primary}{fg=white,bg=SzegedBlue}
+\setbeamercolor{palette secondary}{fg=SzegedBlue,bg=SzegedMist}
+\setbeamercolor{palette tertiary}{fg=white,bg=SzegedBlue}
+\setbeamercolor{palette quaternary}{fg=white,bg=SzegedInk}
+
+\setbeamercolor{title}{fg=white,bg=SzegedBlue}
+\setbeamercolor{subtitle}{fg=white!90}
+\setbeamercolor{frametitle}{fg=SzegedBlue,bg=white}
+\setbeamercolor{section in head/foot}{fg=white,bg=SzegedBlue}
+\setbeamercolor{subsection in head/foot}{fg=SzegedBlue,bg=SzegedMist}
+\setbeamercolor{title in head/foot}{fg=white,bg=SzegedBlue}
+\setbeamercolor{institute in head/foot}{fg=SzegedBlue,bg=SzegedMist}
+\setbeamercolor{separation line}{bg=SzegedGold}
+
+\setbeamercolor{block title}{fg=white,bg=SzegedBlue}
+\setbeamercolor{block body}{fg=SzegedInk,bg=SzegedBlue!7}
+\setbeamercolor{block title alerted}{fg=white,bg=SzegedRed}
+\setbeamercolor{block body alerted}{fg=SzegedInk,bg=SzegedRed!7}
+\setbeamercolor{block title example}{fg=white,bg=SzegedTeal}
+\setbeamercolor{block body example}{fg=SzegedInk,bg=SzegedTeal!7}
+
+\setbeamerfont{title}{size=\fontsize{27}{31},series=\bfseries}
+\setbeamerfont{subtitle}{size=\large}
+\setbeamerfont{frametitle}{size=\Large,series=\bfseries}
+\setbeamerfont{block title}{series=\bfseries}
+\setbeamerfont{section in head/foot}{size=\scriptsize,series=\bfseries}
+\setbeamerfont{subsection in head/foot}{size=\scriptsize}
+
+\setbeamersize{text margin left=0.65cm,text margin right=0.65cm}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{page number in head/foot}[totalframenumber]
+\setbeamertemplate{itemize item}{\color{SzegedGold}$\blacktriangleright$}
+\setbeamertemplate{itemize subitem}{\color{SzegedTeal}$\bullet$}
+\setbeamertemplate{enumerate items}[circle]
+\setbeamertemplate{blocks}[rounded][shadow=false]
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=SzegedBlue,
+  urlcolor=SzegedTeal,
+  pdfauthor={LetX Research Engineering},
+  pdftitle={Every Result Needs a Trail}
+}
+
+% A compact label used in the manifest and roadmap slides.
+\newcommand{\taglabel}[1]{%
+  \begingroup
+  \setlength{\fboxsep}{3pt}%
+  \colorbox{SzegedMist}{\color{SzegedBlue}\scriptsize\bfseries #1}%
+  \endgroup
+}
+
+% -----------------------------------------------------------------------------
+% Presentation metadata
+% -----------------------------------------------------------------------------
+\title[Every Result Needs a Trail]{Every Result Needs a Trail}
+\subtitle{A practical architecture for reproducible computational experiments}
+\author[LetX Research Engineering]{LetX Research Engineering}
+\institute[Technical Presentation]{Technical Presentation}
+\date{August 2026}
+
+\begin{document}
+
+% -----------------------------------------------------------------------------
+% 1. Title
+% -----------------------------------------------------------------------------
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 2. Narrative map
+% -----------------------------------------------------------------------------
+\begin{frame}{Reproducibility is a chain, not a final checklist}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.56\textwidth}
+      \tableofcontents[hideallsubsections]
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      \begin{block}{The design question}
+        What must travel with a result so that another person can inspect, replay,
+        and challenge it?
+      \end{block}
+      \vspace{0.15cm}
+      \small
+      The answer spans the full experiment lifecycle: intent, inputs, execution,
+      evidence, and interpretation.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\section{The gap}
+\subsection{Why trails break}
+
+% -----------------------------------------------------------------------------
+% 3. Problem
+% -----------------------------------------------------------------------------
+\begin{frame}{A saved script does not preserve the experiment}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.57\textwidth}
+      \begin{itemize}
+        \item Parameters drift between exploratory runs and reported results.
+        \item Data snapshots change while filenames remain the same.
+        \item Package, hardware, and operating-system details disappear.
+        \item Manual exclusions survive only in a notebook margin or chat thread.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.39\textwidth}
+      \begin{alertblock}{The hidden failure}
+        The chart can remain visible even after the path that produced it has been
+        lost.
+      \end{alertblock}
+      \vspace{0.15cm}
+      \begin{exampleblock}{The required shift}
+        Treat provenance as part of the result, not as documentation added later.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\subsection{Design principles}
+
+% -----------------------------------------------------------------------------
+% 4. Principles
+% -----------------------------------------------------------------------------
+\begin{frame}{Three principles keep the evidence attached}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Capture by default}
+        Record configuration, code identity, data identity, environment, and seed
+        at execution time.
+      \end{block}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Make runs immutable}
+        Create a new run record for every change; never revise history in place.
+      \end{block}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Verify independently}
+        Test replayability and interpretation with checks separate from the analysis
+        code.
+      \end{block}
+    \end{column}
+  \end{columns}
+
+  \vfill
+  \centering
+  \color{SzegedBlue}\large\bfseries
+  The trail should be cheaper to create than to reconstruct.
+\end{frame}
+
+\section{The architecture}
+\subsection{Experiment flow}
+
+% -----------------------------------------------------------------------------
+% 5. Architecture
+% -----------------------------------------------------------------------------
+\begin{frame}{One manifest connects intent to evidence}
+  \centering
+  \begin{tabular}{>{\centering\arraybackslash}p{0.17\textwidth}
+                  >{\centering\arraybackslash}p{0.035\textwidth}
+                  >{\centering\arraybackslash}p{0.17\textwidth}
+                  >{\centering\arraybackslash}p{0.035\textwidth}
+                  >{\centering\arraybackslash}p{0.17\textwidth}
+                  >{\centering\arraybackslash}p{0.035\textwidth}
+                  >{\centering\arraybackslash}p{0.17\textwidth}}
+    \color{SzegedBlue}\bfseries Question &
+    \color{SzegedGold}$\boldsymbol{\rightarrow}$ &
+    \color{SzegedBlue}\bfseries Specification &
+    \color{SzegedGold}$\boldsymbol{\rightarrow}$ &
+    \color{SzegedBlue}\bfseries Execution &
+    \color{SzegedGold}$\boldsymbol{\rightarrow}$ &
+    \color{SzegedBlue}\bfseries Evidence \\
+    \small hypothesis and scope &&
+    \small manifest and tests &&
+    \small isolated run &&
+    \small metrics and artifacts
+  \end{tabular}
+
+  \vspace{0.5cm}
+
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{The manifest declares}
+        Inputs, parameters, code revision, environment contract, random seed,
+        expected outputs, and validation rules.
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{exampleblock}{The run record returns}
+        Resolved identities, timestamps, logs, checksums, metrics, outputs, and the
+        verdict of every validation rule.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\subsection{Identity}
+
+% -----------------------------------------------------------------------------
+% 6. Run identity
+% -----------------------------------------------------------------------------
+\begin{frame}{A run fingerprint makes silent changes visible}
+  For a computational run $r$, define its identity from the resolved experiment
+  state:
+  \begin{equation*}
+    \phi(r)
+      = H\!\left(
+          h_{\mathrm{code}}\,\Vert\,
+          h_{\mathrm{data}}\,\Vert\,
+          h_{\mathrm{env}}\,\Vert\,
+          \theta\,\Vert\,s
+        \right),
+  \end{equation*}
+  where $\theta$ is the canonical parameter set, $s$ is the random seed, and
+  $H$ is a collision-resistant hash.
+
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Same fingerprint}
+        The declared computational state is identical and the run is eligible for
+        a replay comparison.
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{alertblock}{Different fingerprint}
+        Something material changed; compare manifests before comparing outcomes.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+
+  \vfill
+  \small\color{SzegedInk!82}
+  A fingerprint identifies the declared state; validation still determines whether
+  the run behaved as expected.
+\end{frame}
+
+\subsection{Manifest}
+
+% -----------------------------------------------------------------------------
+% 7. Manifest
+% -----------------------------------------------------------------------------
+\begin{frame}{The manifest answers the reviewer before the reviewer asks}
+  \centering
+  \small
+  \renewcommand{\arraystretch}{1.14}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.20\textwidth}
+                  >{\raggedright\arraybackslash}p{0.36\textwidth}
+                  >{\raggedright\arraybackslash}p{0.33\textwidth}}
+    \toprule
+    Artifact & What is captured & Reviewer test \\
+    \midrule
+    \taglabel{INTENT}\ \textbf{Plan} &
+      hypothesis, scope, exclusions, acceptance rule &
+      Does the result answer the declared question? \\
+    \taglabel{INPUT}\ \textbf{Data} &
+      immutable ID, schema, lineage, license &
+      Can the exact input be recovered? \\
+    \taglabel{RUN}\ \textbf{Runtime} &
+      locked dependencies, platform, seed &
+      Can the computation replay under contract? \\
+    \taglabel{OUTPUT}\ \textbf{Evidence} &
+      logs, metrics, artifacts, checksums, tests &
+      Do outputs pass the declared validation? \\
+    \taglabel{CLAIM}\ \textbf{Claim map} &
+      claim, evidence link, limitations, owner &
+      Is the conclusion supported without hidden steps? \\
+    \bottomrule
+  \end{tabular}
+\end{frame}
+
+\section{The assurance case}
+\subsection{Validation ladder}
+
+% -----------------------------------------------------------------------------
+% 8. Validation
+% -----------------------------------------------------------------------------
+\begin{frame}{Validation moves from execution to interpretation}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.47\textwidth}
+      \begin{enumerate}
+        \item \textbf{Integrity}\quad Inputs and outputs match their checksums.
+        \item \textbf{Executability}\quad The environment rebuilds and the workflow completes.
+        \item \textbf{Determinism}\quad Repeated runs meet the declared tolerance.
+      \end{enumerate}
+    \end{column}
+    \begin{column}{0.47\textwidth}
+      \begin{enumerate}
+        \setcounter{enumi}{3}
+        \item \textbf{Robustness}\quad Controlled perturbations reveal sensitivity.
+        \item \textbf{Traceability}\quad Every claim links to a checked artifact.
+        \item \textbf{Reviewability}\quad A new reader can follow the trail without private context.
+      \end{enumerate}
+    \end{column}
+  \end{columns}
+
+  \vfill
+  \begin{exampleblock}{Acceptance rule}
+    Publish only when every required rung passes; otherwise place the owned
+    exception beside the claim.
+  \end{exampleblock}
+\end{frame}
+
+\subsection{Failure controls}
+
+% -----------------------------------------------------------------------------
+% 9. Failure modes
+% -----------------------------------------------------------------------------
+\begin{frame}{Controls should target the way the trail actually breaks}
+  \small
+  \renewcommand{\arraystretch}{1.25}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.27\textwidth}
+                  >{\raggedright\arraybackslash}p{0.30\textwidth}
+                  >{\raggedright\arraybackslash}p{0.34\textwidth}}
+    \toprule
+    \textbf{Failure mode} & \textbf{Observable signal} & \textbf{Control} \\
+    \midrule
+    Mutable input data & Same path, different checksum &
+      Content-addressed snapshots and schema checks \\
+    Environment drift & Rebuild changes the dependency graph &
+      Locked dependencies and a captured runtime image \\
+    Untracked parameter edit & Metric changes without a code change &
+      Canonical manifest and fingerprint comparison \\
+    Selective reporting & Output exists without its rejected alternatives &
+      Append-only run registry and declared selection rule \\
+    Unsupported conclusion & Claim has no direct artifact link &
+      Claim-to-evidence review before release \\
+    \bottomrule
+  \end{tabular}
+
+\end{frame}
+
+\section{Adoption}
+\subsection{Implementation path}
+
+% -----------------------------------------------------------------------------
+% 10. Roadmap
+% -----------------------------------------------------------------------------
+\begin{frame}{Adopt the trail in four bounded steps}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.23\textwidth}
+      \taglabel{STEP 1}\par\vspace{0.12cm}
+      \textbf{Inventory}\par
+      \small Map where inputs, parameters, environments, and outputs currently live.
+    \end{column}
+    \begin{column}{0.23\textwidth}
+      \taglabel{STEP 2}\par\vspace{0.12cm}
+      \textbf{Standardize}\par
+      \small Define one manifest schema and one immutable run directory convention.
+    \end{column}
+    \begin{column}{0.23\textwidth}
+      \taglabel{STEP 3}\par\vspace{0.12cm}
+      \textbf{Automate}\par
+      \small Capture identity and validation evidence inside the execution path.
+    \end{column}
+    \begin{column}{0.23\textwidth}
+      \taglabel{STEP 4}\par\vspace{0.12cm}
+      \textbf{Govern}\par
+      \small Require evidence links at review and rehearse replay with a new operator.
+    \end{column}
+  \end{columns}
+
+  \vspace{0.65cm}
+  \begin{block}{Start with the highest-value workflow}
+    Choose one result that is frequently revised, reused, or challenged. Make its
+    trail complete before scaling the convention across projects.
+  \end{block}
+\end{frame}
+
+\subsection{Decision}
+
+% -----------------------------------------------------------------------------
+% 11. Close
+% -----------------------------------------------------------------------------
+\begin{frame}{Before the next run, decide what must be replayable}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.58\textwidth}
+      \begin{itemize}
+        \item Put the experiment contract in a machine-readable manifest.
+        \item Give every run an immutable identity and evidence bundle.
+        \item Validate the trail independently of the analysis that produced it.
+        \item Link each released claim to the artifact that supports it.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \begin{exampleblock}{The practical standard}
+        A credible result is not merely repeatable by its creator; it is inspectable
+        and replayable by someone new.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+
+  \vfill
+  \centering
+  {\color{SzegedBlue}\Large\bfseries Preserve the path, not only the picture.}
+\end{frame}
+
+\end{document}

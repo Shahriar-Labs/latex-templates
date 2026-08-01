@@ -1,0 +1,499 @@
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage[letterpaper,margin=0.75in,columnsep=0.28in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathptmx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{enumitem}
+\usepackage{caption}
+\usepackage[hidelinks]{hyperref}
+
+\definecolor{ink}{RGB}{25,25,25}
+\definecolor{usenixblue}{RGB}{28,54,92}
+\definecolor{accentgold}{RGB}{170,120,40}
+\definecolor{panelgray}{RGB}{240,240,238}
+
+\color{ink}
+
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+
+\begin{filecontents*}{refs.bib}
+@inproceedings{chen2019placement,
+  author    = {Marcus Chen and Elena Vasquez},
+  title     = {Fine-Grained Task Placement for Interactive Analytics Clusters},
+  booktitle = {Proceedings of the ACM Symposium on Operating Systems Principles (SOSP)},
+  year      = {2019},
+  pages     = {112--127}
+}
+
+@inproceedings{raman2020tail,
+  author    = {Priya Raman and Daniel Okafor},
+  title     = {Taming Tail Latency in Shared Container Fleets},
+  booktitle = {Proceedings of the USENIX Symposium on Operating Systems Design and Implementation (OSDI)},
+  year      = {2020},
+  pages     = {455--470}
+}
+
+@inproceedings{holm2018batch,
+  author    = {Anders Holm and Elena Vasquez},
+  title     = {Batch Sampling Revisited: Load Balancing at Sub-Millisecond Scale},
+  booktitle = {Proceedings of the USENIX Annual Technical Conference (ATC)},
+  year      = {2018},
+  pages     = {301--314}
+}
+
+@article{ferro2021elastic,
+  author  = {Lucia Ferro and Marcus Chen},
+  title   = {Elastic Resource Bin-Packing under Bursty Multi-Tenant Demand},
+  journal = {IEEE Transactions on Parallel and Distributed Systems},
+  volume  = {32},
+  number  = {6},
+  pages   = {1391--1405},
+  year    = {2021}
+}
+
+@inproceedings{okafor2017borgish,
+  author    = {Daniel Okafor and Priya Raman},
+  title     = {Cluster Managers at Scale: Lessons from a Decade of Production Scheduling},
+  booktitle = {Proceedings of the ACM European Conference on Computer Systems (EuroSys)},
+  year      = {2017},
+  pages     = {88--103}
+}
+
+@inproceedings{tan2022predictive,
+  author    = {Wei Tan and Lucia Ferro},
+  title     = {Predictive Autoscaling with Lightweight Latency Models},
+  booktitle = {Proceedings of the USENIX Symposium on Networked Systems Design and Implementation (NSDI)},
+  year      = {2022},
+  pages     = {201--216}
+}
+
+@inproceedings{vasquez2016mesoslike,
+  author    = {Elena Vasquez and Anders Holm},
+  title     = {Two-Level Scheduling for Heterogeneous Datacenter Workloads},
+  booktitle = {Proceedings of the USENIX Symposium on Operating Systems Design and Implementation (OSDI)},
+  year      = {2016},
+  pages     = {77--92}
+}
+
+@article{chen2015omega,
+  author  = {Marcus Chen and Daniel Okafor and Priya Raman},
+  title   = {Shared-State Scheduling for Large-Scale Compute Clusters},
+  journal = {ACM Transactions on Computer Systems},
+  volume  = {33},
+  number  = {2},
+  pages   = {1--34},
+  year    = {2015}
+}
+
+@inproceedings{ferro2019tetris,
+  author    = {Lucia Ferro and Wei Tan},
+  title     = {Multi-Resource Packing for Heterogeneous Cluster Schedulers},
+  booktitle = {Proceedings of the ACM Symposium on Operating Systems Principles (SOSP)},
+  year      = {2019},
+  pages     = {201--215}
+}
+
+@inproceedings{raman2023straggler,
+  author    = {Priya Raman and Anders Holm},
+  title     = {Straggler Mitigation via Predictive Speculative Execution},
+  booktitle = {Proceedings of the USENIX Annual Technical Conference (ATC)},
+  year      = {2023},
+  pages     = {512--527}
+}
+
+@inproceedings{okafor2020serverless,
+  author    = {Daniel Okafor and Lucia Ferro and Marcus Chen},
+  title     = {Cold-Start Aware Placement for Serverless Function Fleets},
+  booktitle = {Proceedings of the ACM European Conference on Computer Systems (EuroSys)},
+  year      = {2020},
+  pages     = {143--158}
+}
+\end{filecontents*}
+
+\begin{document}
+\pagestyle{plain}
+
+\twocolumn[
+  \begin{center}
+    \fcolorbox{usenixblue}{panelgray}{%
+      \begin{minipage}{0.92\textwidth}
+        \footnotesize\centering
+        \textbf{Unofficial template.} This document is an independent, fan-made
+        \LaTeX{} template styled after systems-conference paper formatting. It is
+        \textbf{not affiliated with, endorsed by, or produced by USENIX} or the
+        USENIX ATC organizing committee. Before submitting, authors must obtain
+        the official style files and current-year formatting instructions from
+        the official USENIX ATC call for papers.
+      \end{minipage}%
+    }
+
+    \vspace{1.1em}
+    {\LARGE\bfseries\color{usenixblue} Tempo: Latency-Aware Elastic Scheduling\\[2pt] for Multi-Tenant Container Fleets\par}
+
+    \vspace{1em}
+    {\large
+    Elena Vasquez$^{1}$ \quad
+    Marcus Chen$^{1}$ \quad
+    Priya Raman$^{2}$ \quad
+    Daniel Okafor$^{3}$\par}
+
+    \vspace{0.6em}
+    {\normalsize
+    $^{1}$Nexa Systems Lab \quad
+    $^{2}$Synapse University \quad
+    $^{3}$Vertex Research Institute\par}
+
+    \vspace{0.4em}
+    {\ttfamily\footnotesize \{e.vasquez, m.chen\}@nexa-systems.example \quad
+    p.raman@synapse.example \quad
+    d.okafor@vertexresearch.example\par}
+  \end{center}
+
+  \vspace{1.2em}
+  \begin{center}
+  \begin{minipage}{0.94\textwidth}
+    \small
+    \textbf{Abstract.}
+    Multi-tenant container fleets must satisfy tight tail-latency
+    service-level objectives while packing workloads densely enough to keep
+    cost per request low. Existing schedulers optimize for one goal at the
+    expense of the other: throughput-oriented bin-packers ignore queueing
+    effects at high utilization, while latency-oriented schedulers leave
+    capacity idle as a safety margin. We present \textsc{Tempo}, a scheduler
+    that folds a lightweight, continuously updated tail-latency predictor
+    directly into the placement cost function, allowing it to pack
+    aggressively when headroom is safe and to shed load pre-emptively when it
+    is not. Tempo requires no workload-specific tuning: it observes queueing
+    delay and migration cost online and adjusts its own weighting terms every
+    scheduling epoch. Across a 480-node testbed running a mix of interactive
+    RPC services and batch analytics jobs, Tempo reduces p99 latency by
+    \textbf{41\%} relative to a least-loaded baseline and by \textbf{23\%}
+    relative to a power-of-two-choices scheduler, while improving mean CPU
+    utilization from 58\% to 74\%. We describe Tempo's architecture,
+    its online cost model, and the operational trade-offs we encountered
+    running it in a shared production-like environment.
+  \end{minipage}
+  \end{center}
+  \vspace{1.4em}
+]
+
+\section{Introduction}
+\label{sec:intro}
+
+Operators of shared container fleets face a persistent tension: dense
+bin-packing lowers infrastructure cost, but it also increases queueing delay
+for latency-sensitive tenants whenever aggregate demand spikes. The standard
+response is to schedule with a fixed utilization ceiling --- for example,
+never placing new work on a node above 65\% CPU --- so that transient bursts
+have somewhere to go. This works, but it leaves a large, permanently idle
+margin on every node in the fleet, and the ceiling has to be chosen
+conservatively because it cannot see workload-specific queueing behavior.
+
+The alternative family of schedulers, exemplified by batch-sampling and
+power-of-two-choices approaches~\cite{holm2018batch,chen2019placement},
+picks placement targets by comparing a small number of candidate nodes and
+routing to whichever looks least loaded at decision time. These systems are
+fast and scale well, but the load signal they compare on --- typically queue
+length or recent CPU samples --- is a lagging indicator. By the time a node
+looks loaded, tenants already sharing it have usually already seen a latency
+spike.
+
+Our observation is that both problems stem from using a single, static proxy
+for load. What operators actually care about is \emph{predicted future tail
+latency}, and that quantity can be estimated online from signals the
+scheduler already has access to: recent p99 latency history, current queue
+depth, and the marginal cost of migrating work away from a node under
+pressure. \textsc{Tempo} scores every placement decision against a cost
+function that combines these signals with weights that adapt every
+scheduling epoch based on how well the previous epoch's predictions held up.
+
+This paper makes three contributions:
+
+\begin{itemize}[noitemsep,topsep=2pt,leftmargin=1.4em]
+  \item An online tail-latency predictor lightweight enough to run inside
+    the scheduler's hot path on every placement decision (Section~\ref{sec:method}).
+  \item A self-tuning cost function that adjusts its own packing-versus-latency
+    trade-off without workload-specific configuration (Section~\ref{sec:method}).
+  \item An evaluation on a 480-node testbed showing that combining
+    predicted latency with adaptive weighting outperforms both
+    throughput-first and latency-first baselines simultaneously
+    (Sections~\ref{sec:experiments}--\ref{sec:results}).
+\end{itemize}
+
+The remainder of the paper is organized as follows. Section~\ref{sec:related}
+positions Tempo against prior cluster schedulers. Section~\ref{sec:method}
+describes the predictor and the cost function. Section~\ref{sec:experiments}
+describes our testbed and workloads. Section~\ref{sec:results} presents
+results. Section~\ref{sec:discussion} discusses limitations, and
+Section~\ref{sec:conclusion} concludes.
+
+\section{Related Work}
+\label{sec:related}
+
+\textbf{Cluster-level schedulers.} Shared-state and two-level schedulers
+such as those described by Chen et al.~\cite{chen2015omega} and Vasquez and
+Holm~\cite{vasquez2016mesoslike} decouple resource offering from placement
+policy, letting frameworks bid for resources independently. Tempo operates
+at the placement-policy layer and could sit underneath either architecture;
+our contribution is orthogonal to the offer-vs-assign split those systems
+address.
+
+\textbf{Latency-aware placement.} Raman and Okafor~\cite{raman2020tail}
+show that shared caches and network contention, not just CPU scheduling,
+dominate tail latency in multi-tenant fleets, and propose isolating
+latency-sensitive tenants onto dedicated node pools. This sidesteps the
+packing problem rather than solving it; Tempo instead tries to make dense
+co-location safe by predicting when it will hurt.
+
+\textbf{Sampling-based load balancing.} Batch-sampling
+schedulers~\cite{holm2018batch} and multi-resource packers such as
+Ferro and Tan's~\cite{ferro2019tetris} extension of bin-packing heuristics
+to vector resource demands both use point-in-time load samples. We compare
+directly against a power-of-two-choices baseline in
+Section~\ref{sec:results} and find that Tempo's predictive signal
+outperforms it once utilization crosses roughly 60\%.
+
+\textbf{Predictive autoscaling.} Tan and Ferro~\cite{tan2022predictive}
+apply lightweight latency models to horizontal autoscaling decisions at
+the fleet level. Tempo applies a structurally similar predictor, but at
+the much finer grain of individual placement decisions rather than
+fleet-wide capacity changes, and folds migration cost into the same model.
+
+\textbf{Speculative execution and stragglers.} Raman and
+Holm~\cite{raman2023straggler} address tail latency caused by individual
+slow tasks via speculative re-execution. That mechanism is complementary
+to Tempo: stragglers within an already-placed job are a separate problem
+from deciding where to place work in the first place. Serverless-specific
+placement work by Okafor et al.~\cite{okafor2020serverless} and
+cluster-manager retrospectives by Okafor and Raman~\cite{okafor2017borgish}
+and Ferro and Chen~\cite{ferro2021elastic} inform our choice of which
+signals are cheap enough to compute inside a hot scheduling path.
+
+\section{Method}
+\label{sec:method}
+
+\subsection{Overview}
+
+Tempo runs as a drop-in replacement for the placement stage of a
+Kubernetes-style scheduler. Each scheduling epoch $t$ (we use 250\,ms in our
+deployment), Tempo re-evaluates a cost $C_i(t)$ for every candidate node $i$
+in the feasible set for the pending pod, and places the pod on
+$\arg\min_i C_i(t)$. The feasible set is produced by ordinary predicate
+filtering (resource requests, affinity, taints) exactly as in a conventional
+scheduler; Tempo only replaces the scoring step.
+
+\subsection{Cost function}
+
+The core of Tempo is a per-node cost that combines three terms: predicted
+tail latency, spare capacity, and migration cost.
+
+\begin{equation}
+\label{eq:cost}
+C_i(t) \;=\; \alpha(t)\, \hat{L}^{99}_i(t) \;+\; \beta(t)\,\bigl(1 - U_i(t)\bigr) \;+\; \gamma(t)\, M_i(t)
+\end{equation}
+
+Here $\hat{L}^{99}_i(t)$ is the predicted p99 latency node $i$ would exhibit
+if the pending pod were placed on it, $U_i(t) \in [0,1]$ is current CPU
+utilization, and $M_i(t)$ is an estimate of the disruption cost of later
+having to evict work from $i$ under memory or CPU pressure. Lower cost is
+better, so the $(1 - U_i(t))$ term rewards packing onto already-busy nodes
+\emph{unless} the latency term $\hat{L}^{99}_i(t)$ signals that doing so is
+risky.
+
+The predictor $\hat{L}^{99}_i(t)$ is a exponentially-weighted online
+regression over three inputs sampled at 1\,Hz from each node: current queue
+depth $q_i$, CPU steal time $s_i$, and a short window of realized p99
+latency $L^{99}_i$. We fit
+
+\begin{equation}
+\label{eq:predictor}
+\hat{L}^{99}_i(t+1) \;=\; w_0 L^{99}_i(t) + w_1 q_i(t) + w_2 s_i(t)
+\end{equation}
+
+with weights $w_0, w_1, w_2$ updated by recursive least squares after every
+epoch, using the realized latency at $t+1$ as the training target. Because
+the model has only three features, a full update costs under
+10\,microseconds per node on commodity hardware, which keeps Tempo's
+scheduling-loop overhead below the noise floor of the underlying container
+runtime (Section~\ref{sec:discussion}).
+
+\subsection{Adaptive weighting}
+
+The coefficients $\alpha(t)$, $\beta(t)$, $\gamma(t)$ in
+Equation~\ref{eq:cost} are not fixed. At the end of every epoch, Tempo
+computes the prediction error $e(t) = |\hat{L}^{99}(t) - L^{99}_{\text{observed}}(t)|$
+averaged across nodes that received a placement in that epoch. If $e(t)$
+exceeds a rolling threshold, $\alpha(t{+}1)$ is increased relative to
+$\beta(t{+}1)$, causing Tempo to weight latency safety more heavily and pack
+less aggressively until predictions stabilize again. This lets a single
+deployment of Tempo run unmodified across workloads with very different
+latency sensitivity, from batch analytics ($\alpha$ settles low) to
+interactive RPC tenants ($\alpha$ settles high).
+
+\section{Experiments}
+\label{sec:experiments}
+
+We evaluate Tempo on a 480-node testbed (dual-socket, 64 vCPU, 256\,GiB RAM
+per node) running a container orchestrator with the scheduler replaced by
+Tempo or one of two baselines. All nodes share a common overlay network and
+a common distributed block store, matching the shared-infrastructure
+assumptions of the systems we compare against.
+
+\textbf{Baselines.} \emph{Least-Loaded} places every pod on the node with
+the lowest instantaneous CPU utilization among the feasible set.
+\emph{PowerOfTwo} samples two candidate nodes per placement and picks the
+one with the shorter queue, following the batch-sampling design
+of~\cite{holm2018batch}.
+
+\textbf{Workload.} We generate a mixed workload of 65\% interactive RPC
+services (open-loop Poisson arrivals, 5\,ms median service time) and 35\%
+batch analytics jobs (bursty arrivals, service times ranging from 200\,ms
+to 4\,s). Offered load is ramped from 30\% to 90\% of aggregate fleet
+capacity over a 40-minute run, repeated five times per scheduler.
+
+\textbf{Metrics.} We report p50 and p99 end-to-end request latency for the
+RPC tenants, aggregate throughput in requests per second, and mean
+scheduler CPU overhead as a percentage of one core.
+
+\section{Results}
+\label{sec:results}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Steady-state performance at 80\% offered load, averaged over five runs.}
+\label{tab:results}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Policy} & \textbf{p50} & \textbf{p99} & \textbf{Tput.} & \textbf{Ovh.} \\
+ & \textbf{(ms)} & \textbf{(ms)} & \textbf{(kreq/s)} & \textbf{(\%)} \\
+\midrule
+Least-Loaded    & 6.1  & 88.4 & 41.2 & 0.4 \\
+PowerOfTwo      & 5.4  & 61.7 & 46.8 & 0.6 \\
+Tempo (ours)    & \textbf{4.8} & \textbf{47.5} & \textbf{52.1} & 1.1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:results} summarizes steady-state behavior at 80\% offered
+load, the region where the three schedulers diverge most. Tempo reduces
+p99 latency by 41\% relative to Least-Loaded and by 23\% relative to
+PowerOfTwo, while also sustaining higher throughput, because its packing
+decisions free up headroom that the other two policies waste on
+already-quiet nodes. Tempo's scheduler-side CPU overhead is roughly double
+that of PowerOfTwo, almost entirely attributable to the recursive
+least-squares update in Equation~\ref{eq:predictor}; at 1.1\% of one core
+per scheduler instance, we consider this cost negligible relative to the
+latency win.
+
+Figure~\ref{fig:latency-load} shows p99 latency as offered load increases
+from 30\% to 90\% of fleet capacity. Below 50\% load the three policies are
+statistically indistinguishable, since no policy is forced to make a hard
+trade-off yet. Above roughly 60\% load, Least-Loaded's latency grows
+sharply as its conservative placement runs out of genuinely idle nodes,
+while Tempo continues to track a much flatter curve by anticipating
+contention before utilization-based signals would flag it.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.98\linewidth,
+    height=4.6cm,
+    xlabel={Offered load (\% of fleet capacity)},
+    ylabel={p99 latency (ms)},
+    xmin=30, xmax=90,
+    ymin=0, ymax=140,
+    legend pos=north west,
+    legend style={font=\footnotesize, draw=gray!40},
+    label style={font=\footnotesize},
+    tick label style={font=\footnotesize},
+    grid=major,
+    grid style={gray!20},
+    axis line style={gray!70},
+]
+\addplot[color=usenixblue!60,mark=square*,mark size=1.4pt,thick]
+  coordinates {(30,9)(40,11)(50,15)(60,24)(70,45)(80,88)(90,131)};
+\addlegendentry{Least-Loaded}
+
+\addplot[color=accentgold,mark=triangle*,mark size=1.6pt,thick]
+  coordinates {(30,8)(40,10)(50,13)(60,19)(70,31)(80,62)(90,104)};
+\addlegendentry{PowerOfTwo}
+
+\addplot[color=usenixblue,mark=*,mark size=1.4pt,thick]
+  coordinates {(30,8)(40,9)(50,11)(60,15)(70,22)(80,48)(90,69)};
+\addlegendentry{Tempo (ours)}
+\end{axis}
+\end{tikzpicture}
+\caption{Tail latency versus offered load. Tempo's predictive placement
+delays the onset of latency inflation relative to both baselines.}
+\label{fig:latency-load}
+\end{figure}
+
+We also measured sensitivity to the adaptation rate of
+$\alpha(t),\beta(t),\gamma(t)$. Disabling adaptation (fixing the weights at
+their converged values from a single workload mix) degrades p99 latency by
+roughly 12\% when the workload composition is changed mid-run, confirming
+that the online adjustment described in Section~\ref{sec:method}, not just
+the predictor itself, contributes to Tempo's robustness across workloads.
+
+\section{Discussion}
+\label{sec:discussion}
+
+\textbf{Where Tempo helps least.} At low aggregate load (below 50\% in our
+experiments), the three schedulers are nearly indistinguishable, since
+there is enough slack everywhere that placement quality does not matter.
+Tempo's benefit is concentrated in the operating region most operators
+actually worry about: 60--90\% utilization, where every scheduling decision
+has a real opportunity cost.
+
+\textbf{Overhead.} The recursive least-squares update is $O(1)$ per node
+per epoch, but scheduler overhead still scales linearly with feasible-set
+size, so Tempo's constant-factor cost matters more on very large clusters
+with permissive affinity rules that leave thousands of nodes feasible per
+pod. We have not tested Tempo beyond 480 nodes, and expect the overhead
+column in Table~\ref{tab:results} to grow, though the predictor itself
+remains cheap per node.
+
+\textbf{Predictor staleness.} Because the predictor is trained online from
+the previous epoch's outcome, a sudden workload shift (a new tenant onboarding
+at scale, for instance) can leave Tempo scheduling against a stale model for
+one or two epochs (500\,ms in our deployment) before the weights catch up.
+We did not observe this causing instability in our experiments, but we have
+not stress-tested adversarial workload shifts designed to exploit the lag.
+
+\textbf{Fairness.} Tempo optimizes for aggregate tail latency, not
+per-tenant fairness. A tenant with an unusually latency-sensitive workload
+benefits from Tempo's caution, but so does every other tenant sharing the
+same nodes; Tempo does not currently support per-tenant latency budgets,
+which we consider the most valuable direction for follow-on work.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented Tempo, a scheduler that folds an online tail-latency predictor
+directly into its placement cost function and adapts its own
+packing-versus-safety weighting every scheduling epoch. Across a 480-node
+testbed running a realistic mix of interactive and batch workloads, Tempo
+reduces p99 latency substantially relative to both a conservative
+least-loaded baseline and a batch-sampling baseline, while simultaneously
+increasing throughput and mean utilization. The predictor's cost is small
+enough to run on every placement decision without workload-specific
+tuning. We see per-tenant latency budgeting and evaluation beyond 480
+nodes as the most immediate next steps.
+
+\bibliographystyle{abbrv}
+\bibliography{refs}
+
+\end{document}

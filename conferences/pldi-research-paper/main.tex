@@ -1,0 +1,776 @@
+\begin{filecontents*}[overwrite]{main.bib}
+@inproceedings{plotkin2009handlers,
+  author    = {Plotkin, Gordon D. and Pretnar, Matija},
+  title     = {Handlers of Algebraic Effects},
+  booktitle = {Programming Languages and Systems (ESOP)},
+  year      = {2009},
+  pages     = {80--94},
+  publisher = {Springer},
+  doi       = {10.1007/978-3-642-00590-9_7}
+}
+
+@inproceedings{kammar2013handlers,
+  author    = {Kammar, Ohad and Lindley, Sam and Oury, Nicolas},
+  title     = {Handlers in Action},
+  booktitle = {Proceedings of the 18th ACM SIGPLAN International Conference on Functional Programming},
+  year      = {2013},
+  pages     = {145--158},
+  publisher = {ACM},
+  doi       = {10.1145/2500365.2500590}
+}
+
+@article{leijen2017type,
+  author  = {Leijen, Daan},
+  title   = {Type Directed Compilation of Row-Typed Algebraic Effects},
+  journal = {Proceedings of the ACM on Programming Languages},
+  volume  = {1},
+  number  = {POPL},
+  year    = {2017},
+  pages   = {1--28},
+  doi     = {10.1145/3009872}
+}
+
+@article{biernacki2020abstracting,
+  author  = {Biernacki, Dariusz and Pir\'og, Maciej and Polesiuk, Piotr and Sieczkowski, Filip},
+  title   = {Abstracting Algebraic Effects},
+  journal = {Proceedings of the ACM on Programming Languages},
+  volume  = {4},
+  number  = {POPL},
+  year    = {2020},
+  pages   = {1--28},
+  doi     = {10.1145/3371116}
+}
+
+@inproceedings{holzle1992debugging,
+  author    = {H\"olzle, Urs and Chambers, Craig and Ungar, David},
+  title     = {Debugging Optimized Code with Dynamic Deoptimization},
+  booktitle = {Proceedings of the ACM SIGPLAN 1992 Conference on Programming Language Design and Implementation},
+  year      = {1992},
+  pages     = {32--43},
+  publisher = {ACM},
+  doi       = {10.1145/143095.143114}
+}
+
+@article{fluckiger2018correctness,
+  author  = {Fl\"uckiger, Olivier and Chari, Gabriel and Jeannerod, Jan and Yee, Ming-Ho and Goel, Jakob and K\"as, Aviral and Vitek, Jan},
+  title   = {Correctness of Speculative Optimizations with Dynamic Deoptimization},
+  journal = {Proceedings of the ACM on Programming Languages},
+  volume  = {2},
+  number  = {POPL},
+  year    = {2018},
+  pages   = {1--28},
+  doi     = {10.1145/3158137}
+}
+
+@inproceedings{delia2018osr,
+  author    = {D'Elia, Daniele Cono and Demetrescu, Camil},
+  title     = {On-Stack Replacement, Distilled},
+  booktitle = {Proceedings of the 39th ACM SIGPLAN Conference on Programming Language Design and Implementation},
+  year      = {2018},
+  pages     = {141--156},
+  publisher = {ACM},
+  doi       = {10.1145/3192366.3192396}
+}
+
+@inproceedings{lattner2004llvm,
+  author    = {Lattner, Chris and Adve, Vikram},
+  title     = {{LLVM}: A Compilation Framework for Lifelong Program Analysis \& Transformation},
+  booktitle = {Proceedings of the International Symposium on Code Generation and Optimization},
+  year      = {2004},
+  pages     = {75--86},
+  publisher = {IEEE},
+  doi       = {10.1109/CGO.2004.1281665}
+}
+
+@inproceedings{georges2007statistically,
+  author    = {Georges, Andy and Buytaert, Dries and Eeckhout, Lieven},
+  title     = {Statistically Rigorous {Java} Performance Evaluation},
+  booktitle = {Proceedings of the 22nd Annual ACM SIGPLAN Conference on Object-Oriented Programming Systems and Applications},
+  year      = {2007},
+  pages     = {57--76},
+  publisher = {ACM},
+  doi       = {10.1145/1297027.1297033}
+}
+
+@article{dolstra2010nixos,
+  author  = {Dolstra, Eelco and L\"oh, Andres and Pierron, Nicolas},
+  title   = {{NixOS}: A Purely Functional {Linux} Distribution},
+  journal = {Journal of Functional Programming},
+  volume  = {20},
+  number  = {5--6},
+  year    = {2010},
+  pages   = {577--615},
+  doi     = {10.1017/S0956796810000195}
+}
+\end{filecontents*}
+
+\documentclass[sigplan,screen,review,anonymous]{acmart}
+
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage[capitalize,nameinlink]{cleveref}
+\usepackage{listings}
+\usepackage{microtype}
+\usepackage{tikz}
+\usepackage{xspace}
+\usetikzlibrary{arrows.meta,calc,fit,positioning,shapes.geometric}
+
+\setcopyright{none}
+\settopmatter{printacmref=true,printfolios=true}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+\pagestyle{plain}
+
+\acmConference[PLDI]{ACM SIGPLAN Conference on Programming Language Design and Implementation}{2027}{Anonymous submission}
+\acmBooktitle{ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI)}
+\acmDOI{}
+\acmISBN{}
+
+\definecolor{aegisblue}{HTML}{245A78}
+\definecolor{aegisteal}{HTML}{2A7F73}
+\definecolor{aegisgold}{HTML}{C6862B}
+\definecolor{aegisred}{HTML}{A6423A}
+\definecolor{codebg}{HTML}{F5F7F8}
+\definecolor{codecomment}{HTML}{52656F}
+
+\newcommand{\system}{\textsc{Aegis}\xspace}
+\newcommand{\lang}{\ensuremath{\lambda_{\mathsf{h}}}\xspace}
+\newcommand{\op}{\mathsf{op}}
+\newcommand{\ret}{\mathsf{return}}
+\newcommand{\handle}{\mathsf{handle}}
+\newcommand{\with}{\mathsf{with}}
+\newcommand{\resume}{\mathsf{resume}}
+\newcommand{\guard}{\mathsf{guard}}
+\newcommand{\deopt}{\mathsf{deopt}}
+\newcommand{\trace}{\mathcal{T}}
+\newcommand{\handlers}{\mathcal{H}}
+\newcommand{\heaps}{\mathcal{M}}
+\newcommand{\contexts}{\mathcal{K}}
+\newcommand{\sem}[1]{\llbracket #1 \rrbracket}
+
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+
+\lstdefinelanguage{AegisIR}{
+  morekeywords={fun,let,in,perform,handle,with,return,resume,if,then,else,
+                assume,deopt,case,of},
+  sensitive=true,
+  morecomment=[l]{//},
+  morestring=[b]"
+}
+\lstset{
+  language=AegisIR,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\bfseries\color{aegisblue},
+  commentstyle=\itshape\color{codecomment},
+  stringstyle=\color{aegisred},
+  backgroundcolor=\color{codebg},
+  frame=single,
+  rulecolor=\color{black!18},
+  columns=fullflexible,
+  keepspaces=true,
+  showstringspaces=false,
+  numbers=left,
+  numberstyle=\scriptsize\color{black!45},
+  xleftmargin=1.5em,
+  framexleftmargin=1.1em,
+  aboveskip=0.65em,
+  belowskip=0.55em
+}
+\crefname{lstlisting}{listing}{listings}
+\Crefname{lstlisting}{Listing}{Listings}
+
+\title{Aegis: Guarded Specialization of Algebraic Effect Handlers}
+
+\author{Anonymous Author(s)}
+\affiliation{%
+  \institution{Anonymous Institution}
+  \country{Anonymous}}
+
+\begin{document}
+
+\begin{abstract}
+Algebraic effect handlers make control flow modular, but their general
+implementation pays for a capability that most programs rarely use: a handled
+operation may search an unknown handler stack and resume its continuation an
+unknown number of times. Existing compilers either preserve this generality or
+specialize only when the entire handler stack is statically visible. We present
+\system, a guarded compiler transformation that specializes across separately
+compiled and dynamically selected handlers. A compact \emph{handler shape}
+records exactly the assumptions needed by a direct-style fast path: handler
+identity, operation clause, and continuation multiplicity. When a shape test
+fails, execution reconstructs the source-level continuation and transfers to a
+generic path. We formalize the transformation for a call-by-value calculus with
+deep, multi-shot handlers and prove a forward simulation that covers both the
+specialized and deoptimized executions. Our prototype integrates the pass into
+an LLVM-based compiler. Across 18 effect-heavy programs, the prototype removes
+74--96\% of dynamic handler searches and improves steady-state execution time
+by 1.08--2.41$\times$ (geometric mean 1.46$\times$), while adding 3.7\% to code
+size. Shape failures cost 31 ns and disappear after at most two recompilations
+for stable workloads. These results show that effect handlers can retain their
+open-world semantics without forcing every operation through an open-world
+implementation.
+\end{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+ <concept>
+  <concept_id>10011007.10011006.10011050.10011017</concept_id>
+  <concept_desc>Software and its engineering~Compilers</concept_desc>
+  <concept_significance>500</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10003752.10010124.10010138</concept_id>
+  <concept_desc>Theory of computation~Program semantics</concept_desc>
+  <concept_significance>300</concept_significance>
+ </concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Software and its engineering~Compilers}
+\ccsdesc[300]{Theory of computation~Program semantics}
+\keywords{algebraic effects, effect handlers, speculative optimization,
+deoptimization, compiler correctness}
+
+\maketitle
+
+% --- Unofficial-template notice (required: this is not an official PLDI file) ---
+\noindent\fbox{\parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule\relax}{%
+  \footnotesize\textbf{Unofficial template.} This layout is provided for convenience and is
+  \textbf{not} affiliated with, endorsed by, or sponsored by PLDI or its organisers.
+  Always check the official call for papers and use the current year's official style files
+  for a real submission.}}
+\vspace{0.8em}
+
+
+
+\section{Introduction}
+\label{sec:introduction}
+
+Algebraic effects separate the request for an operation from its
+interpretation. A parser can \lstinline|perform choose()| without knowing
+whether choice will backtrack, sample, log, or abort; a surrounding handler
+supplies that policy. This separation has become a practical basis for
+exceptions, asynchronous I/O, probabilistic programming, and lightweight
+concurrency. It also frustrates conventional optimization. At each operation,
+the implementation may need to search the dynamic handler stack, capture an
+unknown portion of the continuation, and preserve that continuation for
+multi-shot use. Even when the common handler simply increments a counter and
+resumes once, generic machinery remains on the hot path.
+
+Whole-program inlining can expose a handler and recover direct control flow,
+but only if the optimizer can see through module boundaries and dynamic
+selection. Real systems routinely fail both conditions: libraries abstract
+over handlers, applications load handlers as plug-ins, and incremental
+compilation prevents a global fixed point. The key observation behind this
+paper is that specialization does not require the handler to be immutable. It
+requires only a cheap way to validate the assumptions under which a fast path
+was generated, plus a correct route back to the general semantics.
+
+\system realizes that observation using \emph{handler shapes}. A shape is a
+versioned descriptor of the clauses relevant to one operation site. The
+compiler profiles shapes, emits direct-style code for the dominant shape, and
+guards entry to that code. Specialized continuations are ordinary functions;
+the compiler retains a reconstruction map from their live values to a generic
+continuation frame. On guard failure, the runtime materializes those frames and
+continues at the original operation. This is deoptimization
+\cite{holzle1992debugging,fluckiger2018correctness} applied at an effect
+boundary rather than at a function or loop boundary.
+
+The design has three less-obvious requirements. First, a guard must cover the
+\emph{clause and its resumption contract}, not merely a handler object's
+address. Second, deoptimization must be valid after partial evaluation has
+changed the representation of the continuation. Third, a multi-shot clause
+must never enter a single-shot fast path, even transiently. Our shape protocol
+and proof make each requirement explicit.
+
+This paper makes the following contributions:
+
+\begin{itemize}
+  \item We identify a minimal, constant-time shape test that enables
+        specialization across separately compiled effect handlers
+        (\cref{sec:design}).
+  \item We give a source-to-source transformation for deep, multi-shot handlers
+        and a reconstruction relation for deoptimization (\cref{sec:formal}).
+  \item We prove semantic preservation by forward simulation, including shape
+        changes at operation boundaries (\cref{sec:correctness}).
+  \item We implement the design in an LLVM-based compiler and evaluate its
+        speed, code-size cost, and behavior under changing workloads
+        (\cref{sec:evaluation}).
+\end{itemize}
+
+\section{Motivating Example}
+\label{sec:motivation}
+
+\Cref{lst:example} sketches a stream pipeline that reads bytes through an
+abstract effect. The library owns \lstinline|checksum| but not the client
+handler. In the common client, \lstinline|Read| copies a byte from a buffer and
+resumes exactly once. A generic implementation nevertheless walks to
+\lstinline|io|, packages the suffix beginning at line~3 as a heap continuation,
+and invokes it indirectly for every byte.
+
+\begin{lstlisting}[float,caption={A separately compiled handler on a hot path.},label={lst:example}]
+fun checksum(n) =
+  let acc = 0 in
+  for i = 0 .. n-1 do
+    acc = mix(acc, perform Read(i))
+  return acc
+
+handle checksum(length(buf)) with io {
+  Read(i, k) -> resume k buf[i]
+  return x   -> x
+}
+\end{lstlisting}
+
+After profiling, \system observes a stable descriptor
+$s=\langle\textit{io},\textit{Read},1,v\rangle$: handler identity, clause
+identity, single resumption, and version $v$. It clones the loop, replaces the
+operation with a direct load, and guards the clone with one descriptor
+comparison. The generic loop remains available. If a debugger installs a
+logging clause, or the handler changes to a two-shot exploration policy, its
+descriptor or version differs and the guard transfers to the generic loop.
+
+This approach differs from an inline cache on the operation call. An inline
+cache avoids method lookup but still captures a generic continuation. \system
+specializes the \emph{region between operation and resumption}, which makes the
+continuation a direct control-flow edge. That transformation accounts for 63\%
+of the measured speedup (\cref{sec:ablation}).
+
+\begin{figure*}[t]
+  \centering
+  \begin{tikzpicture}[
+    node distance=8mm and 9mm,
+    box/.style={draw,rounded corners=2pt,minimum height=8mm,align=center,
+                font=\small,inner xsep=7pt},
+    hot/.style={box,fill=aegisteal!10,draw=aegisteal},
+    cold/.style={box,fill=black!3,draw=black!45},
+    test/.style={diamond,draw=aegisgold,fill=aegisgold!10,aspect=2.2,
+                 align=center,font=\small,inner sep=1.5pt},
+    arrow/.style={-{Latex[length=2.2mm]},thick},
+    note/.style={font=\footnotesize,align=center,text=black!65}
+  ]
+    \node[cold] (source) {generic operation\\search, capture, dispatch};
+    \node[test,right=18mm of source] (guard) {shape $=s$?};
+    \node[hot,above right=7mm and 14mm of guard] (fast) {specialized region\\direct clause + direct resume};
+    \node[cold,below right=7mm and 14mm of guard] (generic) {generic region\\unchanged semantics};
+    \node[cold,right=16mm of fast] (cont) {continuation\\of caller};
+    \node[cold,right=16mm of generic] (materialize) {materialize frames\\from reconstruction map};
+    \node[note,below=3mm of materialize] (map) {$R_p$: live SSA values $\mapsto$ source frames};
+
+    \draw[arrow] (source) -- node[above,font=\footnotesize]{profile + clone} (guard);
+    \draw[arrow,aegisteal] (guard) -- node[above left,font=\footnotesize]{yes} (fast);
+    \draw[arrow,aegisred] (guard) -- node[below left,font=\footnotesize]{no} (generic);
+    \draw[arrow] (fast) -- (cont);
+    \draw[arrow] (generic) -- (materialize);
+    \draw[arrow] (materialize.east) -| (cont.south);
+    \draw[dashed,draw=black!45] (map) -- (materialize);
+  \end{tikzpicture}
+  \caption{The \system pipeline. The fast path is valid only while its handler
+  shape matches. A failed guard reconstructs the generic continuation; it does
+  not restart the computation.}
+  \Description{A flow diagram starts at a generic effect operation and a shape
+  guard. A matching shape enters a direct specialized region, while a mismatch
+  enters a generic region and materializes continuation frames using a
+  reconstruction map. Both paths rejoin at the caller continuation.}
+  \label{fig:overview}
+\end{figure*}
+
+\section{Design}
+\label{sec:design}
+
+\subsection{Handler Shapes}
+
+Every runtime handler carries an immutable pointer to a shape descriptor. A
+descriptor contains a layout identifier and, for each handled operation, a
+clause entry point and a resumption summary. Updating a handler creates a new
+descriptor; descriptors are never mutated in place. Consequently, one pointer
+comparison validates all assumptions in a compiled fast path.
+
+\begin{definition}[Handler shape]
+A handler shape for an operation $o$ is a tuple
+$s_o=\langle \ell,c,m,v\rangle$, where $\ell$ identifies the handler layout,
+$c$ identifies the operation clause, $m\in\{0,1,\omega\}$ bounds how often the
+clause resumes, and $v$ is a monotonically increasing implementation version.
+\end{definition}
+
+The multiplicity $m$ is conservative. Untrusted single-shot clauses receive a
+dynamic check; the runtime assigns $m=\omega$ when it cannot certify their
+behavior. The optimizer uses a single-shot representation only for $m\leq1$.
+Layout and version make closure offsets and inlined clause code safe. Clause
+identity alone is insufficient because a hot reload may preserve an entry
+address while changing captured state.
+
+\subsection{Selecting Regions}
+
+Profiles attach a small heavy-hitter table to each operation site. A site is
+eligible when one shape covers at least 70\% of executions and the estimated
+benefit exceeds the guard, cloning, and reconstruction cost. The selected
+region begins at the nearest dominator that makes the guard loop-invariant and
+ends after every resumption rejoins ordinary control flow. This usually moves a
+single guard outside a loop, as in \cref{lst:example}.
+
+Specialization performs familiar scalar replacement, inlining, and dead-code
+elimination after rewriting the operation clause as a direct call. The pass is
+otherwise representation-agnostic: it consumes and produces typed SSA. A
+region may contain nested handlers; the compiler adds their shapes to the same
+descriptor vector and compares a 64-bit interned vector key.
+
+\subsection{Reconstruction Maps}
+\label{sec:reconstruction}
+
+Every guard point $p$ has a reconstruction map $R_p$. The map describes each
+frame of the generic continuation using constants or live SSA values. For
+example, after scalar-replacing the checksum accumulator, $R_p$ records the
+current loop index, accumulator, buffer, and generic return address. Values
+that are dead in the source continuation are omitted.
+
+On failure, a short out-of-line stub allocates the frames, fills their slots,
+and jumps to the generic operation. This resembles on-stack replacement
+\cite{delia2018osr}, with two important restrictions: deoptimization occurs
+only at operation boundaries, and the target is always a point in the same
+source function. These restrictions keep maps small and avoid reconstructing
+partially executed clauses.
+
+\subsection{Invalidation and Concurrency}
+
+Shape descriptors are immutable and reclaimed with the handler object. The
+guard loads the current descriptor with acquire semantics; publishing a new
+handler uses a release store. A matching pointer therefore also validates the
+captured environment. No compiled code is patched. Concurrent threads may
+observe different shapes, but each enters a path consistent with the shape it
+observes. Modules that mutate captured values retain ordinary synchronization;
+\system assumes only that the descriptor truthfully describes code and layout.
+
+\section{Formal Model}
+\label{sec:formal}
+
+We formalize the essential transformation using \lang, a call-by-value
+calculus with integers, functions, operations, and deep handlers. Values and
+computations are:
+
+\begin{align*}
+v &::= n \mid x \mid \lambda x.e \mid h \\
+e &::= v \mid e\;e \mid \op_i(v) \mid
+      \handle\ e\ \with\ h \mid \resume\ k\ v .
+\end{align*}
+
+A handler $h$ maps operation labels to clauses $\lambda(x,k).e$ and has a
+return clause. A machine configuration has the form
+\[
+  C = \langle e,\rho,\heaps,\handlers,\contexts\rangle .
+\]
+Its components are an environment and heap, plus stacks of handlers and
+evaluation contexts. The generic transition $\longrightarrow_g$ searches $\handlers$ for an
+operation, captures the corresponding suffix of $\contexts$, and evaluates the
+clause. Captured continuations are persistent, so the semantics permits
+multi-shot resumption.
+
+For a profiled shape $s$, transformation $\trace_s(e)$ produces a guarded
+term. At operation site $p$, the interesting rule is:
+
+\begin{equation}
+\begin{aligned}
+\trace_s(\op_i(v)) ={}& \guard_s(\handlers,i, \\
+  &\mathsf{direct}_{s,i}(v,k_s),\deopt(p,R_p)).
+\end{aligned}
+\label{eq:transform}
+\end{equation}
+
+where $k_s$ is the residual direct-style continuation. If $s.m=0$, the
+continuation is dead; if $s.m=1$, it is a linear function. No direct rule is
+generated for $s.m=\omega$. Transformed configurations additionally contain a
+map store $\trace$ and step under $\longrightarrow_a$.
+
+\begin{definition}[Reconstruction consistency]
+$R_p$ is consistent with source context $K$ and specialized environment
+$\rho'$ (written $R_p,\rho'\simeq K$) when materializing each frame recipe in
+$R_p$ yields a context alpha-equivalent to $K$, and corresponding free
+variables contain related values.
+\end{definition}
+
+The compiler constructs maps backward from the generic target, then verifies
+them with an SSA data-flow check. Every recipe operand must dominate $p$, every
+required source slot must have one recipe, and reference-typed operands remain
+GC roots until the deoptimization stub returns.
+
+\section{Correctness}
+\label{sec:correctness}
+
+We relate a generic configuration $C$ to a transformed configuration $C'$ by
+$C\approx C'$. Ordinary values are structurally related. A generic
+continuation relates either to an unspecialized frame sequence or to a
+specialized continuation paired with a consistent reconstruction map. Handler
+stacks agree on observable clauses; their physical representations may differ.
+
+\begin{lemma}[Successful guard]
+If $C\approx C'$, the next source operation has shape $s$, and the transformed
+guard matches $s$, then the direct clause and residual continuation take a
+finite number of steps to some $D'$ such that the corresponding generic clause
+takes steps to $D$ and $D\approx D'$.
+\end{lemma}
+
+\begin{proof}
+The descriptor equality establishes clause, layout, version, and multiplicity.
+Substitution of the direct clause therefore agrees with generic dispatch.
+For multiplicity zero the continuations are unobserved. For multiplicity one,
+linearity lets us replace capture and resume by beta reduction. The
+reconstruction relation supplies the induction hypothesis for the residual
+continuation.
+\end{proof}
+
+\begin{lemma}[Failed guard]
+If $C\approx C'$ at guard point $p$, the guard fails, and
+$R_p,\rho'\simeq K$, then deoptimization reaches a generic configuration $D$
+such that $C\longrightarrow_g^{*}D$ and $D\approx D$.
+\end{lemma}
+
+\begin{proof}
+Materialization creates, from oldest to youngest, exactly the frames described
+by $R_p$. Consistency gives an alpha-equivalent $K$; dominance ensures that
+every recipe operand still has its related value. The stub then jumps to the
+unmodified operation before any clause action has occurred.
+\end{proof}
+
+\begin{theorem}[Semantic preservation]
+For every closed well-typed program $e$, if $C_0$ and $C'_0$ are the initial
+configurations of $e$ and $\trace_s(e)$, then:
+\begin{enumerate}
+  \item if $C'_0\longrightarrow_a^{*}v'$, there exists $v$ such that
+        $C_0\longrightarrow_g^{*}v$ and $v\approx v'$; and
+  \item if $C'_0$ diverges, then $C_0$ diverges or takes infinitely many
+        administrative handler steps.
+\end{enumerate}
+The result holds for arbitrary shape changes between operation boundaries.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By coinduction on $C\approx C'$. Pure reductions commute with the
+transformation. At a guard, apply the successful- or failed-guard lemma. The
+multiplicity component excludes an unsound linearization of multi-shot
+continuations. Immutable descriptors ensure a guard's facts remain true
+through clause entry. Shape changes affect only later guards, where the failed
+case applies. Stuttering accounts for descriptor tests and frame
+materialization. The mechanized development proves the corresponding
+small-step simulation for all rules of \lang.
+\end{proof}
+
+The theorem is deliberately a partial-correctness statement: \system preserves
+the source language's behavior but cannot repair a data race inside a handler.
+It also does not equate resource usage, since the purpose of the transformation
+is to change allocation and execution cost.
+
+\section{Implementation}
+\label{sec:implementation}
+
+Our prototype adds 6.8 K lines of C++ and 1.1 K lines of runtime code to an
+LLVM-based strict functional-language compiler \cite{lattner2004llvm}. The
+front end lowers operations to three intrinsics: \texttt{effect.perform},
+\texttt{effect.resume}, and \texttt{effect.shape}. Generic lowering uses
+segmented stacks; captured segments become copy-on-write only when a clause
+resumes more than once.
+
+Profiling uses four 16-bit saturating counters per site and an overflow bucket.
+Compilation begins after 2,048 samples. Descriptor-vector keys are interned,
+so nested guards remain a single load and compare. Recompilation is capped at
+two versions per site; a persistently unstable site stays generic. Generated
+code shares cold deoptimization stubs between sites with identical maps.
+
+The reconstruction verifier runs after register allocation, where locations
+are final. A map may reference registers, stack slots, constants, and two
+derived forms (tagging and fixed-offset address). The garbage collector reads
+the same maps at safepoints. In our benchmarks, maps contain a median of six
+values and occupy 34 bytes per specialized site.
+
+\section{Evaluation}
+\label{sec:evaluation}
+
+We ask four questions:
+
+\begin{description}
+  \item[RQ1:] Does guarded specialization improve steady-state performance?
+  \item[RQ2:] Which part of the design produces the improvement?
+  \item[RQ3:] What are its code-size and compilation costs?
+  \item[RQ4:] How does it behave when handler shapes change?
+\end{description}
+
+\subsection{Methodology}
+
+The benchmark suite contains 18 programs in five groups: parsers, asynchronous
+services, probabilistic models, search workloads, and effect microbenchmarks.
+Programs range from 0.8 to 41 K source lines and execute between $1.7\times
+10^6$ and $2.1\times10^9$ operations. We compare \emph{Generic}, which uses
+segmented-stack handlers, with \emph{Cache}, which adds a polymorphic inline
+cache but retains generic continuation capture, and \system.
+
+Measurements use a 16-core 3.4 GHz x86-64 machine with 64 GiB of memory,
+frequency scaling disabled. Each configuration receives 10 warm-up executions
+followed by 30 measured executions in a fresh process. We report geometric
+means and 95\% bootstrap confidence intervals, following established guidance
+for managed-language experiments \cite{georges2007statistically}. Builds and
+inputs are pinned by a declarative environment \cite{dolstra2010nixos}.
+
+\begin{table}[t]
+  \caption{Performance and specialization coverage. Time is normalized to
+  Generic; lower is better. Parentheses show 95\% confidence intervals.}
+  \label{tab:results}
+  \centering
+  \small
+  \setlength{\tabcolsep}{4.5pt}
+  \begin{tabular}{lrrrr}
+    \toprule
+    Group & $n$ & Cache & \system & Searches removed \\
+    \midrule
+    Parsing       & 4 & 0.91 & \textbf{0.63} & 89\% \\
+    Async         & 4 & 0.94 & \textbf{0.72} & 81\% \\
+    Probabilistic & 3 & 0.88 & \textbf{0.58} & 96\% \\
+    Search        & 3 & 0.96 & \textbf{0.79} & 74\% \\
+    Micro         & 4 & 0.73 & \textbf{0.41} & 95\% \\
+    \midrule
+    Geo. mean     & 18 & 0.88 & \textbf{0.68} & 87\% \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Steady-State Performance}
+
+\Cref{tab:results} answers RQ1. \system is faster than Generic on all 18
+programs, with speedups from 1.08$\times$ to 2.41$\times$ and a geometric mean
+of 1.46$\times$. It outperforms Cache on 16 programs. The two ties are async
+servers whose time is dominated by kernel I/O; specialization still reduces
+CPU time by 9\% and 11\%. Benefits track eliminated handler searches only
+loosely ($r=0.61$), because avoiding continuation allocation is more valuable
+than avoiding a short search.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[x=0.68cm,y=3.0cm,font=\scriptsize]
+    \draw[->] (0,0) -- (8.4,0) node[right]{program};
+    \draw[->] (0,0) -- (0,1.12) node[above,align=center]{normalized\\time};
+    \foreach \y/\lab in {0.25/{0.25},0.5/{0.50},0.75/{0.75},1/{1.00}} {
+      \draw[black!15] (0,\y) -- (8.1,\y);
+      \node[left] at (0,\y) {\lab};
+    }
+    \foreach \x/\name/\cache/\aegis in {
+      0.7/P1/.89/.62,2.2/A1/.95/.73,3.7/B1/.86/.56,
+      5.2/S1/.97/.81,6.7/M1/.72/.42} {
+      \fill[aegisgold!75] (\x,0) rectangle +(0.38,\cache);
+      \fill[aegisteal!85] (\x+0.42,0) rectangle +(0.38,\aegis);
+      \node[below] at (\x+0.4,-0.035) {\name};
+    }
+    \draw[dashed,thick,black!55] (0,1) -- (8.1,1);
+    \fill[aegisgold!75] (5.4,1.02) rectangle +(0.25,0.07);
+    \node[anchor=west] at (5.72,1.055) {Cache};
+    \fill[aegisteal!85] (6.65,1.02) rectangle +(0.25,0.07);
+    \node[anchor=west] at (6.97,1.055) {\system};
+  \end{tikzpicture}
+  \caption{Representative normalized execution times. P, A, B, S, and M denote
+  parser, async, probabilistic, search, and microbenchmark programs. Generic is
+  the dashed line at 1.0.}
+  \Description{A grouped bar chart for five representative programs compares
+  an inline cache with Aegis. All bars are below the generic baseline, and the
+  Aegis bar is lower in every group.}
+  \label{fig:performance}
+\end{figure}
+
+\subsection{Ablation Study}
+\label{sec:ablation}
+
+We disable one optimization at a time. Specializing dispatch while leaving
+capture generic retains only 37\% of \system's benefit. Moving guards inside
+loops loses 19\%; disabling scalar replacement loses 12\%. Descriptor-vector
+interning changes execution time by less than 1\% on shallow programs but saves
+7\% on probabilistic models with three nested handlers. Thus the main result
+does not come from a richer inline cache: direct-style continuations are
+essential.
+
+\subsection{Cost and Dynamic Behavior}
+
+Specialization increases text size by 3.7\% geometrically (range 0.8--8.9\%)
+and compilation time by 6.2\% (RQ3). Reconstruction metadata adds 0.4\% to
+binary size. Peak compiler memory rises by 4.5\%. The region benefit model
+rejects 38\% of candidate sites, mostly cold sites and regions with large
+control-flow duplication.
+
+For RQ4, we switch each benchmark among one, two, or four handler shapes every
+$10^2$ to $10^6$ operations. A failed guard costs 31 ns (median) including
+reconstruction. With phases of at least $10^4$ operations, \system adapts after
+one recompilation and retains 91\% of its stable-workload speedup. At the most
+adversarial $10^2$ interval, the recompilation cap activates and performance is
+within 2.6\% of Generic. No workload creates more than two specialized versions
+per site.
+
+\subsection{Threats to Validity}
+
+The prototype targets one strict language and x86-64; different continuation
+representations or weaker memory models may change costs. Our suite emphasizes
+effect-heavy code and should not predict whole-application speedups when
+effects are cold. Profile-directed choices can depend on inputs, which we
+mitigate with held-out evaluation inputs and the dynamic fallback. Finally,
+the semantic proof covers the core transformation, not LLVM or the garbage
+collector. We reduce this gap with map verification and differential tests that
+force every guard to fail, but end-to-end compiler verification remains future
+work.
+
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Effect-handler implementation.}
+Plotkin and Pretnar introduced the semantic account of algebraic effect
+handlers \cite{plotkin2009handlers}; later work established their practical
+expressiveness \cite{kammar2013handlers}. Type-directed compilation can select
+efficient representations when row types expose enough structure
+\cite{leijen2017type}. Abstracting effects clarifies how handlers relate to
+other control operators \cite{biernacki2020abstracting}. \system is
+complementary: it applies when static types deliberately leave the handler
+open, using a checked runtime shape to recover a direct representation.
+
+\paragraph{Speculation and deoptimization.}
+Dynamic deoptimization was developed to retain source-level observability in
+optimized systems \cite{holzle1992debugging}; subsequent formal work made the
+correctness obligations of assume instructions precise
+\cite{fluckiger2018correctness}. On-stack replacement generalizes transfer
+between versions of active functions \cite{delia2018osr}. \system narrows
+transfer to effect boundaries and adds multiplicity to the guarded facts. This
+restriction is what makes persistent, possibly multi-shot continuations
+compatible with speculative direct style.
+
+\paragraph{Inline caching.}
+Polymorphic inline caches specialize dynamic dispatch by observed receiver
+identity. A handler-shape cache is similar at the lookup level, but lookup is
+only one cost of an effect operation. \system additionally changes the
+representation of the captured continuation and therefore needs explicit
+reconstruction maps and a semantic relation between representations.
+
+\section{Discussion and Future Work}
+\label{sec:discussion}
+
+Handler shapes expose a useful boundary between language semantics and
+implementation policy. The semantics remains open-world: any clause can appear
+and multi-shot continuations remain valid. The compiler optimizes a closed
+observation, then checks that observation at the exact point where it matters.
+
+Three extensions appear promising. First, a richer multiplicity lattice could
+specialize bounded multi-shot handlers by unrolling a small number of resumes.
+Second, descriptor vectors could include effect-state invariants, allowing
+specialization of stateful clauses while preserving modular compilation.
+Third, hardware return-address protection and precise GC impose constraints on
+frame materialization that deserve evaluation beyond x86-64. Each extension
+fits the same proof pattern if its new assumptions are represented in the
+shape and re-established by the guard.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+General effect handlers need not imply a permanently general hot path. \system
+specializes handler dispatch and continuation representation under one
+constant-time shape guard, then reconstructs the original continuation if the
+assumption stops holding. A forward-simulation proof accounts for successful
+specialization, deoptimization, and multi-shot behavior. The prototype's
+1.46$\times$ geometric-mean speedup, modest 3.7\% code-size cost, and bounded
+response to changing shapes suggest that guarded specialization is a practical
+way to combine open-world effect abstractions with direct-style performance.
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{main}
+
+\end{document}

@@ -1,0 +1,244 @@
+\documentclass[10pt,twocolumn]{article}
+
+% --- Packages ---
+\usepackage[letterpaper, left=0.75in, right=0.75in, top=0.75in, bottom=0.75in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, shapes.geometric, backgrounds, patterns}
+\usepackage{tcolorbox}
+\usepackage{cite}
+\usepackage{filecontents}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{titlesec}
+\usepackage{balance}
+\usepackage{hyperref}
+
+% --- Color Definitions ---
+\definecolor{icramutedblue}{HTML}{1A365D}
+\definecolor{icradarkgray}{HTML}{2D3748}
+\definecolor{icraalertred}{HTML}{9B2C2C}
+\definecolor{icrabgred}{HTML}{FFF5F5}
+
+% --- Title Styling ---
+\titleformat{\section}{\large\bfseries\color{icramutedblue}}{\thesection.}{0.5em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{icradarkgray}}{\thesubsection.}{0.5em}{}
+
+% --- Hyperref Setup ---
+\hypersetup{
+  colorlinks=true,
+  linkcolor=icramutedblue,
+  citecolor=icramutedblue,
+  urlcolor=icramutedblue
+}
+
+% --- Bib File Generation ---
+\begin{filecontents*}{\jobname.bib}
+@article{chen2024vertex,
+  author    = {Chen, Sarah and Takahashi, Kenji},
+  title     = {Vertex-Graph Mapping: A Topological Representation for Flight in Forest Canopies},
+  journal   = {Journal of Field Robotics},
+  volume    = {41},
+  number    = {3},
+  pages     = {312--325},
+  year      = {2024},
+  publisher = {Synapse Press}
+}
+@inproceedings{miller2023nexa,
+  author    = {Miller, David and Chen, Sarah},
+  title     = {Solid-State LiDAR Integration on lightweight Synapse-V3 UAV Platforms},
+  booktitle = {Proceedings of the International Conference on Robotics and Automation (ICRA)},
+  pages     = {1042--1048},
+  year      = {2023}
+}
+@article{takahashi2022topological,
+  author    = {Takahashi, Kenji},
+  title     = {Dynamic Graph Planning in Obstacle-Dense Environments},
+  journal   = {Robotics and Autonomous Systems},
+  volume    = {150},
+  pages     = {103980},
+  year      = {2022}
+}
+@inproceedings{nimbus2021octomap,
+  author    = {Nimbus, Alan and Vertex, Catherine},
+  title     = {Limitations of Volumetric Representation in Real-time Aerial Navigation},
+  booktitle = {IEEE/RSJ International Conference on Intelligent Robots and Systems (IROS)},
+  pages     = {4211--4217},
+  year      = {2021}
+}
+@article{chen2021uav,
+  author    = {Chen, Sarah and Miller, David and Takahashi, Kenji},
+  title     = {Autonomous Flight through Forest Canopies: A Survey},
+  journal   = {Robotics Reports},
+  volume    = {9},
+  number    = {2},
+  pages     = {88--101},
+  year      = {2021}
+}
+@inproceedings{meridian2022lidar,
+  author    = {Meridian, James and Apex, Robert},
+  title     = {Solid-state LiDAR vs. Rotating LiDAR for Micro Aerial Vehicles},
+  booktitle = {International Symposium on Experimental Robotics (ISER)},
+  pages     = {215--224},
+  year      = {2022}
+}
+@article{vertex2023path,
+  author    = {Vertex, Catherine and Synapse, Marcus},
+  title     = {Path Planning Optimization using Topological Graphs},
+  journal   = {IEEE Transactions on Robotics},
+  volume    = {39},
+  number    = {4},
+  pages     = {2045--2058},
+  year      = {2023}
+}
+@inproceedings{nexa2024forest,
+  author    = {Nexa, Engineering Team},
+  title     = {Synapse-V4 Hardware Reference Manual for Autonomous Forestry Flight},
+  booktitle = {Nexa Technical Report Series},
+  year      = {2024}
+}
+\end{filecontents*}
+
+\begin{document}
+
+\twocolumn[{
+  \begin{tcolorbox}[
+    colback=icrabgred,
+    colframe=icraalertred,
+    arc=2pt,
+    boxrule=0.5pt,
+    width=\textwidth,
+    top=6pt,
+    bottom=6pt,
+    left=8pt,
+    right=8pt
+  ]
+    \small\textcolor{icraalertred}{\textbf{UNOFFICIAL TEMPLATE:}} This is an unofficial LaTeX template and is \textbf{not affiliated} with, sponsored by, or endorsed by the IEEE International Conference on Robotics and Automation (ICRA) or its organizers. Authors preparing submissions must check the official call for papers for the current year's style files and formatting guidelines.
+  \end{tcolorbox}
+  \vspace{1.5em}
+  
+  \begin{center}
+    {\LARGE\bfseries Autonomous Navigation of Synapse-V4 UAVs in Dense Forest Environments Using Vertex-Graph Mapping\par}
+    \vspace{1.5em}
+    {\large Sarah Chen$^{1}$, David Miller$^{2}$, and Kenji Takahashi$^{1}$\par}
+    \vspace{1.0em}
+    {\small $^{1}$Synapse Robotics Lab, Apex University, Email: \{\href{mailto:schen@apex.edu}{schen}, \href{mailto:ktakahashi@apex.edu}{ktakahashi}\}@apex.edu\par
+    $^{2}$Autonomous Systems Division, Nexa Technologies Inc., Email: \href{mailto:dmiller@nexa.com}{dmiller@nexa.com}\par}
+    \vspace{1.5em}
+    \begin{minipage}{0.9\textwidth}
+      \small\textbf{Abstract}---This paper presents a complete methodology for the autonomous navigation of Synapse-V4 unmanned aerial vehicles (UAVs) operating under dense canopy environments. We propose the Vertex-Graph Mapping (VGM) algorithm, which builds a local topological representation of the free space by clustering point-cloud data from a lightweight solid-state LiDAR sensor. The topological graph is dynamically updated to find safe traversable paths without requiring global GPS availability. We evaluate our approach in simulated and real-world dense pine forests. The results demonstrate that the VGM algorithm reduces the path execution time by 23.4\% and the collision rate by 87.5\% compared to traditional volumetric grid-based planning approaches, showing robust obstacle avoidance at speeds up to 5.0~m/s.
+      
+      \vspace{0.5em}
+      \textbf{Keywords}---Robot Navigation, Aerial Systems, Solid-State LiDAR, Graph-Based Planning.
+    \end{minipage}
+    \vspace{2.5em}
+  \end{center}
+}]
+
+\section{Introduction}
+Autonomous flight in dense unstructured environments, such as forests or collapsed structures, remains a primary challenge in field robotics \cite{chen2021uav}. Standard volumetric mapping techniques like OctoMap \cite{nimbus2021octomap} require significant computational resources to maintain a high-resolution representation of three-dimensional space. For micro aerial vehicles (MAVs) with strict weight and energy constraints, the processing latency of these volumetric models often limits the maximum safe flight velocity.
+
+To address this challenge, we introduce the Vertex-Graph Mapping (VGM) framework. Our approach leverages a lightweight solid-state LiDAR sensor to detect obstacles and construct a topological map in real time. Rather than storing voxel grids, VGM represents the environment as a sparse set of nodes corresponding to open geometric corridors and edges indicating collision-free trajectories. By planning within this low-dimensional topological representation, the onboard flight computer can compute dynamically feasible maneuvers in milliseconds.
+
+The primary contributions of this work are three-fold:
+\begin{enumerate}
+  \item The formulation of a dynamic vertex-graph structure that models open flight channels in dense environments.
+  \item A graph pruning algorithm that removes redundant edges to maintain a compact topological map.
+  \item Simulated and hardware validation on the Synapse-V4 quadrotor platform demonstrating high-speed navigation in real pine forest canopies.
+\end{enumerate}
+
+\section{Related Work}
+Traditional approaches to forest navigation rely heavily on grid-based representations or reactive control schemes. In \cite{nimbus2021octomap}, the authors show that volumetric grids scale poorly as the mapped area expands, leading to significant memory overhead. While octree-based compression mitigates this issue, the underlying representation remains metric rather than topological, which complicates long-range planning under uncertainty.
+
+In contrast, topological map representations simplify path-finding by abstracting free space into networks of nodes and edges \cite{takahashi2022topological}. Recent advancements in solid-state LiDAR technologies \cite{meridian2022lidar} have enabled long-range, high-frequency sensing at a fraction of the weight of rotating scanners. This work builds upon the integration methodologies developed by Miller and Chen \cite{miller2023nexa} for the Synapse-V3 platform, extending the sensing model to support active, non-holonomic topological planning.
+
+\section{Method}
+Our proposed Vertex-Graph Mapping algorithm builds a local topological map directly from raw point cloud data. Let $P = \{p_1, p_2, \dots, p_N\}$ be the point cloud returned by the onboard solid-state LiDAR sensor. The algorithm operates in three main stages: vertex generation, edge evaluation, and graph pruning.
+
+\subsection{Vertex Generation}
+We extract potential vertices by clustering regional point densities. A point $p_i$ is classified as a boundary point if its local neighborhood lacks geometric continuity. Once boundaries are identified, we compute the centroid of adjacent free-space spheres. These centroids define the candidate vertices $V = \{v_1, v_2, \dots, v_M\}$. Each vertex $v_i \in V$ is associated with a clearance radius $r(v_i)$ representing the distance to the nearest obstacle.
+
+\subsection{Edge Evaluation}
+For any pair of vertices $v_i, v_j \in V$, we evaluate the feasibility of a traversable edge $e_{ij}$. The weight $W(e_{ij})$ of the edge is defined by the traversal distance and the minimum clearance along the linear path. We model the clearance cost function as:
+\begin{equation}
+  C(e_{ij}) = \int_{0}^{1} \frac{\alpha}{\| \gamma(t) - O_k \|^2} dt
+  \label{eq:clearance}
+\end{equation}
+where $\gamma(t) = (1-t)v_i + tv_j$ represents the line segment connecting the vertices, $O_k$ is the position of the nearest obstacle, and $\alpha$ is a user-defined scaling parameter. An edge is added to the graph only if $C(e_{ij})$ remains below a critical safety threshold $C_{\text{max}}$.
+
+\subsection{Graph Pruning}
+To prevent exponential growth of the graph, we apply a local cycle-breaking routine. If multiple pathways exist between $v_i$ and $v_j$ within a spatial radius, we retain only the pathway that minimizes the cumulative cost:
+\begin{equation}
+  J = \sum_{k} W(e_k) + \beta \max_{k} \left( \frac{1}{r(v_k)} \right)
+  \label{eq:cost}
+\end{equation}
+where $\beta$ balances the path length against the narrowness of the corridor.
+
+\section{Experiments}
+We validated our framework in both simulation and physical field tests. The simulator represents a dense pine forest with tree densities ranging from 0.1 to 0.5 trees per square meter.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.2cm and 1.2cm,
+    block/.style={draw, fill=icramutedblue!10, rectangle, minimum height=2.2em, minimum width=6.5em, rounded corners, align=center, font=\small, draw=icramutedblue},
+    sensor/.style={draw, fill=green!10, rectangle, minimum height=2.2em, minimum width=6.5em, rounded corners, align=center, font=\small, draw=green!70!black},
+    cloud/.style={draw, fill=orange!10, ellipse, minimum height=2.5em, minimum width=6.5em, align=center, font=\small, draw=orange},
+    arrow/.style={thick,->,>=stealth, draw=icradarkgray}
+  ]
+    % Nodes
+    \node[sensor] (lidar) {LiDAR Sensor};
+    \node[block, right=of lidar] (vgm) {Vertex-Graph\\Mapping};
+    \node[block, right=of vgm] (planner) {Topological\\Planner};
+    \node[block, below=of planner, yshift=-0.2cm] (controller) {Flight\\Controller};
+    \node[cloud, below=of vgm, yshift=-0.2cm] (uav) {Synapse-V4\\UAV};
+
+    % Arrows
+    \draw[arrow] (lidar) -- node[above, font=\scriptsize] {Point Cloud} (vgm);
+    \draw[arrow] (vgm) -- node[above, font=\scriptsize] {Graph} (planner);
+    \draw[arrow] (planner) -- node[right, font=\scriptsize] {Setpoints} (controller);
+    \draw[arrow] (controller) -- (uav);
+    \draw[arrow] (uav.west) -| node[left, pos=0.8, font=\scriptsize] {State Estimate} (vgm.south);
+  \end{tikzpicture}
+  \caption{System architecture of the proposed autonomous navigation framework. The Synapse-V4 platform utilizes solid-state LiDAR data to construct the Vertex-Graph, which guides the topological path planner.}
+  \label{fig:architecture}
+\end{figure}
+
+The physical experiments were conducted using the Synapse-V4 quadrotor platform developed by Nexa Technologies \cite{nexa2024forest}. The drone is equipped with an Apex-200 companion computer (featuring a quad-core 2.4~GHz processor) and a single forward-facing Nexa Solid-State LiDAR. The sensor provides a 120-degree horizontal field of view at 20~Hz.
+
+\section{Results}
+Our quantitative experiments demonstrate the efficiency of the Vertex-Graph Mapping framework. In Table \ref{tab:results}, we compare the performance of VGM against volumetric planning baselines in terms of success rate, path efficiency, and computation times.
+
+\begin{table*}[t]
+  \centering
+  \caption{Comparison of Path Planning Algorithms in Simulated Forest Scenarios}
+  \label{tab:results}
+  \begin{tabular}{lcccccc}
+    \toprule
+    Algorithm & Success (\%) & Path (m) & Time (s) & Speed (m/s) & Energy (J) & Collisions \\
+    \midrule
+    Volumetric A* & 72.5 & 142.3 & 12.8 & 2.1 & 4250 & 11 \\
+    Dynamic Octomap \cite{nimbus2021octomap} & 84.0 & 131.8 & 8.4 & 3.2 & 3890 & 6 \\
+    Vertex-Graph (Ours) & \textbf{98.5} & \textbf{118.2} & \textbf{2.1} & \textbf{4.8} & \textbf{3120} & \textbf{0} \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+The VGM planner achieved a 98.5\% success rate across 200 trials in the dense simulated forest. Notably, the execution time was reduced to 2.1~seconds, which represents an 83.5\% speedup over volumetric A*. This reduction in computation time allowed the flight controller to maintain higher average velocities (4.8~m/s vs. 2.1~m/s) because the vehicle did not need to slow down to wait for path regeneration.
+
+\section{Discussion}
+\balance
+The key to VGM's high-speed flight capability is the representation of the environment. While a volumetric grid stores status information for all voxels, the vertex-graph representation only tracks the topological skeleton of the navigable space. This dramatic reduction in state dimension simplifies the search space for path planners \cite{vertex2023path}.
+
+However, a limitation of the current VGM formulation is its reliance on local geometric features. In environments with highly uniform obstacles (e.g., man-made structures with flat walls), vertex generation can become degenerate due to lack of distinct local point density variations. Future work will investigate incorporating semantic labels to assist vertex generation.
+
+\section{Conclusion}
+We presented a complete framework for autonomous high-speed UAV flight in dense forest canopies. By combining real-time solid-state LiDAR point clouds with a sparse Vertex-Graph representation, our system achieves low-latency planning and navigation. Simulation and field testing on the Synapse-V4 quadrotor show significant improvements in safety and path efficiency compared to conventional volumetric grid methods.
+
+\bibliographystyle{plain}
+\bibliography{\jobname}
+
+\end{document}

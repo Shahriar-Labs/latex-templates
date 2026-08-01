@@ -1,0 +1,288 @@
+\documentclass[10pt,twocolumn]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+
+% Set margins
+\usepackage[letterpaper, margin=0.75in, top=1.0in, bottom=1.0in]{geometry}
+
+% Colors
+\usepackage{xcolor}
+\definecolor{cikmblue}{HTML}{1A365D}
+\definecolor{cikmgray}{HTML}{4A5568}
+\definecolor{cikmred}{HTML}{C53030}
+\definecolor{cikmbg}{HTML}{F7FAFC}
+
+% Typography
+\usepackage{times}
+\usepackage[scaled=0.92]{helvet}
+\usepackage{courier}
+\usepackage{microtype}
+
+% Math
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+
+% Tables
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{colortbl}
+
+% Figures
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,arrows.meta}
+
+% Citations & Bibliography
+\usepackage{filecontents}
+\usepackage{cite}
+
+% Hyperref
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=cikmblue,
+    citecolor=cikmblue,
+    urlcolor=cikmblue
+}
+
+\begin{filecontents*}{\jobname.bib}
+@inproceedings{jenkins2024heterogeneous,
+  author    = {Sarah Jenkins and Robert Chen},
+  title     = {Heterogeneous Entity Alignment in Large-Scale Knowledge Graphs},
+  booktitle = {Proceedings of the International Conference on Information and Knowledge Management (CIKM)},
+  pages     = {102--111},
+  year      = {2024}
+}
+@article{chen2023vertex,
+  author    = {Robert Chen and Fatima Al-Fihri},
+  title     = {Vertex: A High-Performance Distributed Graph Database System},
+  journal   = {Journal of Database Research},
+  volume    = {45},
+  number    = {3},
+  pages     = {289--304},
+  year      = {2023}
+}
+@inproceedings{alfihri2022nexa,
+  author    = {Fatima Al-Fihri and Sarah Jenkins},
+  title     = {Nexa-Align: A Scalable Deep Alignment Framework for Enterprise Knowledge Bases},
+  booktitle = {Proceedings of the Web Conference (WWW)},
+  pages     = {456--465},
+  year      = {2022}
+}
+@inproceedings{smith2021graph,
+  author    = {David Smith and Emily Davis},
+  title     = {Graph Convolutional Networks for Relation-Aware Entity Resolution},
+  booktitle = {Proceedings of the ACM SIGMOD International Conference on Management of Data},
+  pages     = {891--903},
+  year      = {2021}
+}
+@article{nimbus2023framework,
+  author    = {Michael Johnson and Linda Wang},
+  title     = {Nimbus-GNN: Joint Entity and Relation Embedding for Heterogeneous Graphs},
+  journal   = {IEEE Transactions on Knowledge and Data Engineering},
+  volume    = {35},
+  number    = {8},
+  pages     = {7821--7834},
+  year      = {2023}
+}
+@inproceedings{apex2022benchmarking,
+  author    = {James Miller and Patricia Garcia},
+  title     = {Benchmarking Entity Alignment Methods on Apex Fictional Graphs},
+  booktitle = {Proceedings of the International Conference on Very Large Data Bases (VLDB)},
+  pages     = {1203--1215},
+  year      = {2022}
+}
+@article{meridian2024survey,
+  author    = {Thomas Wilson and Susan Martinez},
+  title     = {A Survey of Representation Learning in Heterogeneous Database Systems},
+  journal   = {ACM Computing Surveys},
+  volume    = {56},
+  number    = {4},
+  pages     = {56:1--56:38},
+  year      = {2024}
+}
+@inproceedings{synapse2023neural,
+  author    = {Sarah Jenkins and Robert Chen and Fatima Al-Fihri},
+  title     = {Synapse: A Neural Message-Passing Engine for Enterprise Graphs},
+  booktitle = {Proceedings of the International Conference on Machine Learning (ICML)},
+  pages     = {1542--1553},
+  year      = {2023}
+}
+@inproceedings{vertex2024realworld,
+  author    = {Robert Chen and David Smith},
+  title     = {Real-World Evaluation of Entity Alignment on the Vertex Graph Engine},
+  booktitle = {Proceedings of the International Conference on Extending Database Technology (EDBT)},
+  pages     = {234--245},
+  year      = {2024}
+}
+@article{wang2025scalable,
+  author    = {Linda Wang and James Miller},
+  title     = {Scalable Graph Alignment via Locality-Sensitive Hashing and Neural Networks},
+  journal   = {Distributed Database Systems},
+  volume    = {12},
+  number    = {1},
+  pages     = {45--59},
+  year      = {2025}
+}
+@inproceedings{garcia2023unified,
+  author    = {Patricia Garcia and Thomas Wilson},
+  title     = {A Unified View of Entity Alignment and Schema Matching in Graph Databases},
+  booktitle = {Proceedings of the ACM International Conference on WSDM},
+  pages     = {612--620},
+  year      = {2023}
+}
+\end{filecontents*}
+
+\title{
+  \vspace{-2.0cm}
+  {\small\color{cikmred}\sffamily \textbf{UNOFFICIAL TEMPLATE} --- NOT AFFILIATED with or endorsed by the conference. Authors must check the official call for papers for the current year's style files.}\\[1.0cm]
+  \bfseries\color{cikmblue} Heterogeneous Entity Alignment in Vertex Database Systems \\ via Relation-Aware Graph Neural Networks
+}
+
+\author{
+  \textbf{Sarah Jenkins}\textsuperscript{1}, \textbf{Robert Chen}\textsuperscript{2}, \textbf{Fatima Al-Fihri}\textsuperscript{1} \\[0.2cm]
+  \textsuperscript{1}Nexa Research Labs, \texttt{\{sjenkins,falfihri\}@nexa.org} \\
+  \textsuperscript{2}Meridian Institute of Technology, \texttt{rchen@meridian.edu}
+}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Entity alignment (EA) plays a crucial role in integrating heterogeneous knowledge graphs across different enterprise platforms. Traditional methods often fail to capture the complex, multi-relational structures inherent in modern database systems. In this paper, we present Synapse-HEA, a novel relation-aware Graph Neural Network (GNN) framework designed specifically for heterogeneous entity alignment in Vertex Database systems. By leveraging a localized messaging scheme that separates node feature propagation from relational path routing, Synapse-HEA learns robust embeddings that project entities from disparate sources into a unified alignment space. We conduct extensive experiments on the Synapse-10K and Nexa-50K enterprise benchmarks, showing that our method outperforms existing baselines by up to 7.5\% in Hits@1. Furthermore, we demonstrate the scalability of our approach under real-world workloads, validating its suitability for production enterprise graph databases.
+\end{abstract}
+
+\section{Introduction}
+Knowledge graph integration has emerged as a fundamental challenge in information and knowledge management. Enterprise databases, such as those built on the Vertex Graph Database system \cite{chen2023vertex}, typically contain millions of nodes representing entities with highly diverse schemas. When merging data from external partners, such as Nexa Graph databases \cite{alfihri2022nexa}, identifying corresponding entities that refer to the same real-world objects is a critical task known as entity alignment (EA).
+
+Traditional database systems rely on rule-based schema matching or lexical similarity heuristics to resolve entities. However, these techniques struggle with structural heterogeneity and vocabulary mismatch. Recent advances in deep representation learning, particularly Graph Neural Networks (GNNs) \cite{smith2021graph}, have shown great promise by learning low-dimensional vector representations that capture the topological context of entities.
+
+Despite their success, existing GNN-based alignment methods face two key limitations. First, they often treat all relations uniformly, ignoring the semantic differences between diverse edge types. Second, they exhibit poor scalability when deployed on massive distributed graphs.
+
+To address these challenges, we introduce Synapse-HEA, a relation-aware entity alignment framework. Our contribution is threefold:
+\begin{enumerate}
+    \item We design a novel GNN architecture that explicitly incorporates relation-specific weight matrices, allowing for fine-grained message passing across heterogeneous relations.
+    \item We implement a localized training objective that utilizes negative sampling in the alignment space to optimize embedding layout.
+    \item We provide a comprehensive evaluation on two new enterprise benchmarks, demonstrating superior alignment accuracy and runtime efficiency compared to state-of-the-art baselines.
+\end{enumerate}
+
+\section{Related Work}
+Entity alignment has been widely studied in both the database and semantic web communities. Early approaches focused on string similarity, rule-based matching, and entity resolution algorithms. While effective for clean datasets with shared schemas, these methods fail to generalise to heterogeneous graphs where schema definitions are completely disjoint.
+
+With the rise of graph representation learning, researchers have proposed translation-based models such as TransE and its variants to embed entities and relations. These methods model alignment by minimizing the distance between matched entities in a shared embedding space. However, translation-based methods struggle to capture high-order neighborhood structures.
+
+Recently, Graph Convolutional Networks (GCNs) and Graph Attention Networks (GATs) have been applied to entity alignment. For example, Nimbus-GNN \cite{nimbus2023framework} uses joint entity and relation embeddings to align heterogeneous graphs, while Nexa-Align \cite{alfihri2022nexa} explores deep neural networks for enterprise knowledge bases. While these methods achieve high accuracy, their computational cost remains a bottleneck for large-scale production databases.
+
+\section{Method}
+Our proposed framework, Synapse-HEA, consists of three main components: feature initialization, relation-aware GNN encoding, and alignment space mapping. The overall workflow is illustrated in Figure~\ref{fig:framework}.
+
+\begin{figure}[t]
+  \centering
+  \resizebox{\columnwidth}{!}{%
+  \begin{tikzpicture}[
+    node distance=1.3cm and 1.2cm,
+    every node/.style={font=\small, align=center},
+    block/.style={rectangle, draw, fill=cikmbg, minimum width=2.0cm, minimum height=0.8cm, rounded corners},
+    arrow/.style={-{Latex[scale=0.8]}, thick, draw=cikmgray}
+  ]
+    % Input Graphs
+    \node (g1) [block] {Input Graph $\mathcal{G}_1$ \\ (Vertex DB)};
+    \node (g2) [block, below=of g1] {Input Graph $\mathcal{G}_2$ \\ (Nexa Graph)};
+    
+    % Embeddings
+    \node (emb1) [block, right=of g1] {Initial Features \\ $\mathbf{H}^{(0)}_1$};
+    \node (emb2) [block, right=of g2] {Initial Features \\ $\mathbf{H}^{(0)}_2$};
+    
+    % GNN Encoder
+    \node (gnn) [block, right=of emb1, yshift=-1.0cm, fill=cikmblue!10, draw=cikmblue, minimum height=1.6cm] {Synapse GNN \\ Encoder};
+    
+    % Alignment Space
+    \node (align) [block, right=of gnn] {Alignment \\ Space $\mathcal{Z}$};
+    
+    % Flows
+    \draw [arrow] (g1) -- (emb1);
+    \draw [arrow] (g2) -- (emb2);
+    \draw [arrow] (emb1) -- (gnn.north west);
+    \draw [arrow] (emb2) -- (gnn.south west);
+    \draw [arrow] (gnn) -- (align);
+    
+    % Loss loop
+    \path (align.east) edge [out=30, in=-30, loop, arrow, distance=0.8cm] node[right] {Loss \\ $\mathcal{L}_{\text{align}}$} (align.east);
+  \end{tikzpicture}
+  }
+  \caption{Overview of the Synapse Heterogeneous Entity Alignment (HEA) framework running on Vertex and Nexa database graph inputs.}
+  \label{fig:framework}
+\end{figure}
+
+\subsection{Relation-Aware Encoding}
+Given a heterogeneous graph $\mathcal{G} = (\mathcal{V}, \mathcal{E}, \mathcal{R})$ with entity set $\mathcal{V}$, edge set $\mathcal{E}$, and relation set $\mathcal{R}$, we define the relation-aware graph convolution operation at layer $l$ as follows:
+\begin{equation}
+  \mathbf{h}_{i}^{(l+1)} = \sigma \left( \sum_{r \in \mathcal{R}} \sum_{j \in \mathcal{N}_r(i)} \frac{1}{c_{i,r}} \mathbf{W}_r^{(l)} \mathbf{h}_{j}^{(l)} + \mathbf{W}_0^{(l)} \mathbf{h}_{i}^{(l)} \right)
+  \label{eq:gnn_update}
+\end{equation}
+where $\mathbf{h}_{i}^{(l)}$ denotes the embedding of entity $v_i$ at layer $l$, $\mathcal{N}_r(i)$ is the set of neighbors of $v_i$ under relation $r$, $\mathbf{W}_r^{(l)}$ is a relation-specific projection matrix, $\mathbf{W}_0^{(l)}$ is a self-loop transformation matrix, and $\sigma(\cdot)$ is the activation function (e.g., ReLU). The normalization constant is set to $c_{i,r} = |\mathcal{N}_r(i)|$.
+
+\subsection{Alignment Space Mapping}
+To align entities from two different graphs $\mathcal{G}_1$ and $\mathcal{G}_2$, we map their GNN-encoded representations into a unified alignment space $\mathcal{Z}$. We train the projection network using a margin-based ranking loss over a set of known alignment seeds $\mathcal{S} = \{(e_1, e_2) \mid e_1 \in \mathcal{G}_1, e_2 \in \mathcal{G}_2\}$:
+\begin{equation}
+  \mathcal{L} = \sum_{(e_1, e_2) \in \mathcal{S}} \sum_{(e_1', e_2') \in \mathcal{S}'} \max \left( 0, \gamma + d(e_1, e_2) - d(e_1', e_2') \right)
+  \label{eq:loss}
+\end{equation}
+where $d(\cdot, \cdot)$ is the Manhattan distance in $\mathcal{Z}$, $\gamma > 0$ is a margin parameter, and $\mathcal{S}'$ is a set of negative alignment pairs generated by corrupting the seeds.
+
+\section{Experiments}
+We evaluate our framework on two realistic enterprise benchmarks generated from real-world schema distributions: Synapse-10K and Nexa-50K.
+
+\subsection{Dataset Statistics}
+The Synapse-10K dataset contains 10,000 entity alignment pairs across two heterogeneous subgraphs with 15 relation types. The Nexa-50K dataset represents a larger instance, consisting of 50,000 alignment pairs and 32 relation types. Both datasets are stored and queried using the Vertex Graph Database \cite{chen2023vertex}.
+
+\subsection{Baseline Methods}
+We compare Synapse-HEA against three competitive baselines:
+\begin{itemize}
+    \item \textbf{Multi-GCN} \cite{smith2021graph}: A multi-channel graph convolutional network that models relation structures via graph flattening.
+    \item \textbf{Nimbus-GNN} \cite{nimbus2023framework}: A joint entity and relation embedding model.
+    \item \textbf{Nexa-Align} \cite{alfihri2022nexa}: An enterprise-focused deep alignment framework.
+\end{itemize}
+
+\begin{table*}[t]
+  \caption{Entity Alignment performance (Hits@K and MRR) on the Synapse enterprise benchmark datasets. The best results are highlighted in bold. All evaluations are conducted within the Vertex Graph Database environment.}
+  \label{tab:results}
+  \centering
+  \small
+  \begin{tabularx}{\textwidth}{l X c c c}
+    \toprule
+    Dataset & Method & Hits@1 (\%) & Hits@10 (\%) & MRR \\
+    \midrule
+    Synapse-10K & Multi-GCN \cite{smith2021graph} & 45.2 & 71.8 & 0.543 \\
+    ~ & Nimbus-GNN \cite{nimbus2023framework} & 52.8 & 79.1 & 0.612 \\
+    ~ & Nexa-Align \cite{alfihri2022nexa} & 58.4 & 84.5 & 0.671 \\
+    ~ & \textbf{Synapse-HEA (Ours)} & \textbf{65.9} & \textbf{89.8} & \textbf{0.738} \\
+    \midrule
+    Nexa-50K    & Multi-GCN \cite{smith2021graph} & 31.4 & 58.2 & 0.401 \\
+    ~ & Nimbus-GNN \cite{nimbus2023framework} & 38.6 & 67.9 & 0.485 \\
+    ~ & Nexa-Align \cite{alfihri2022nexa} & 46.1 & 74.3 & 0.554 \\
+    ~ & \textbf{Synapse-HEA (Ours)} & \textbf{55.7} & \textbf{82.4} & \textbf{0.647} \\
+    \bottomrule
+  \end{tabularx}
+\end{table*}
+
+\section{Results}
+Table~\ref{tab:results} summarizes the performance of Synapse-HEA and the baseline models on both datasets. 
+
+Our method, Synapse-HEA, consistently outperforms all baselines. On the Synapse-10K dataset, it achieves a Hits@1 of 65.9\%, representing a 7.5\% absolute improvement over the strongest baseline (Nexa-Align). On the larger Nexa-50K dataset, the improvement is even more pronounced, with Hits@1 reaching 55.7\% and MRR increasing to 0.647. This demonstrates that our relation-aware message passing is highly effective at handling complex heterogeneous graph structures.
+
+\section{Discussion}
+To understand the factors contributing to the success of Synapse-HEA, we conduct an ablation study. We observe that removing the relation-specific projection matrices ($\mathbf{W}_r^{(l)}$) and replacing them with a shared matrix leads to a significant performance drop (Hits@1 decreases by 8.4\% on Synapse-10K). This confirms our hypothesis that modeling relation semantics is critical for heterogeneous alignment.
+
+Furthermore, we evaluate the scalability of the training process. Thanks to the localized update scheme in the Vertex DB engine, Synapse-HEA exhibits linear scaling with respect to the number of edges, making it highly suitable for large-scale enterprise deployments.
+
+\section{Conclusion}
+In this paper, we presented Synapse-HEA, a relation-aware Graph Neural Network framework for entity alignment in heterogeneous graph databases. By explicitly modeling relation-specific transformations and mapping entity embeddings into a shared alignment space, our method achieves state-of-the-art results on realistic enterprise benchmarks. In future work, we plan to extend Synapse-HEA to support dynamic graphs with real-time entity streams.
+
+\bibliographystyle{abbrv}
+\bibliography{\jobname}
+
+\end{document}

@@ -1,0 +1,730 @@
+\documentclass[11pt,a4paper,twocolumn]{article}
+
+% -----------------------------------------------------------------------------
+% Unofficial, self-contained NAACL-style example manuscript.
+% Replace this preamble with the official conference style package before
+% submission. The current ACL-wide formatting guidance is available at:
+% https://acl-org.github.io/ACLPUB/formatting.html
+% -----------------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{mathptmx}
+\usepackage[a4paper,left=2.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm,
+            columnsep=0.6cm]{geometry}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc,fit}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{xcolor}
+\usepackage{xspace}
+\usepackage{enumitem}
+\usepackage{natbib}
+\usepackage{titlesec}
+\usepackage[font=small,labelfont=bf]{caption}
+\usepackage{url}
+\usepackage{hyperref}
+
+% -----------------------------------------------------------------------------
+% Visual system
+% -----------------------------------------------------------------------------
+\definecolor{naaclblue}{HTML}{17365D}
+\definecolor{naaclgold}{HTML}{B7791F}
+\definecolor{naaclred}{HTML}{9B2C2C}
+\definecolor{naaclgreen}{HTML}{276749}
+\definecolor{naaclgray}{HTML}{4A5568}
+\definecolor{naacllight}{HTML}{F4F7FA}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=naaclblue,
+  citecolor=naaclblue,
+  urlcolor=naaclgreen,
+  breaklinks=true,
+  pdfauthor={Anonymous NAACL 2026 Submission},
+  pdftitle={BridgeMatch: Uncertainty-Guided Retrieval for Low-Resource Dialect Normalization}
+}
+\urlstyle{same}
+
+\titleformat{\section}
+  {\normalfont\fontsize{12}{14}\selectfont\bfseries\color{naaclblue}}
+  {\thesection}{0.55em}{}
+\titleformat{\subsection}
+  {\normalfont\fontsize{11}{13}\selectfont\bfseries\color{naaclblue!88!black}}
+  {\thesubsection}{0.55em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries}{\thesubsubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{10pt plus 2pt minus 2pt}{5pt}
+\titlespacing*{\subsection}{0pt}{8pt plus 2pt minus 1pt}{4pt}
+
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+\setlength{\emergencystretch}{2em}
+\setlist[itemize]{leftmargin=1.25em,itemsep=1pt,topsep=3pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=1.4em,itemsep=1pt,topsep=3pt,parsep=0pt}
+\captionsetup{justification=centering}
+\raggedbottom
+
+\pagestyle{plain}
+
+\newcommand{\method}{\textsc{BridgeMatch}\xspace}
+\newcommand{\dataset}{\textsc{TriDial}\xspace}
+\newcommand{\vect}[1]{\boldsymbol{#1}}
+
+\begin{document}
+
+% -----------------------------------------------------------------------------
+% Title, status notice, and abstract
+% -----------------------------------------------------------------------------
+\twocolumn[
+\begin{center}
+  \fcolorbox{naaclred!85!black}{naaclred!4}{%
+    \parbox{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}{%
+      \centering\small
+      \textcolor{naaclred}{\textbf{UNOFFICIAL EXAMPLE MANUSCRIPT.}}
+      This independently produced file is not affiliated with or endorsed by
+      NAACL or the Association for Computational Linguistics. Its experiments,
+      data, authorship, and numerical results are illustrative. Replace the
+      content and use the official style files and current call for papers
+      before submitting.
+    }%
+  }
+  \vspace{1.2em}
+
+  {\fontsize{15}{18}\selectfont\bfseries\color{naaclblue}
+   BridgeMatch: Uncertainty-Guided Retrieval for\
+   Low-Resource Dialect Normalization\par}
+  \vspace{0.9em}
+
+  {\fontsize{12}{14}\selectfont\bfseries Anonymous NAACL 2026 Submission\par}
+  \vspace{0.25em}
+  {\fontsize{11}{13}\selectfont
+   Paper under double-blind review\\
+   \texttt{anonymous@example.org}\par}
+  \vspace{1.0em}
+
+  \begin{minipage}{0.91\textwidth}
+    \fontsize{10}{12}\selectfont
+    \begin{center}
+      {\fontsize{12}{14}\selectfont\bfseries Abstract}
+    \end{center}
+    Dialect normalization maps non-standard text to a standardized variety
+    while preserving meaning, names, and speaker intent. In low-resource
+    settings, sequence-to-sequence models often over-correct rare forms and
+    hallucinate plausible but unsupported words. We introduce \method, a
+    retrieval-augmented normalizer that estimates token-level uncertainty,
+    retrieves only when the base model is uncertain, and constrains evidence
+    by semantic and entity consistency. A confidence-weighted gate combines
+    generation and memory distributions, allowing the system to copy a
+    retrieved form only when its evidence is both relevant and locally
+    reliable. On \dataset, a controlled three-variety benchmark, the method
+    improves character F-score by 2.3 points over a byte-level transformer
+    while reducing named-entity corruption by 31\%. Ablations attribute most
+    gains to uncertainty-aware gating rather than retrieval alone. The study
+    illustrates a practical recipe for auditable normalization when parallel
+    supervision and compute are limited.
+  \end{minipage}
+\end{center}
+\vspace{1.2em}
+]
+
+% -----------------------------------------------------------------------------
+\section{Introduction}
+\label{sec:introduction}
+
+Written language varies across regions, communities, and media. Search,
+translation, and accessibility systems nevertheless often expect a single
+standardized form. Dialect normalization---rewriting a non-standard input into
+that form without changing its content---can bridge this mismatch, but it is
+especially difficult for the communities that have the least labeled data.
+The same spelling may be a dialect marker in one context and a person or place
+name in another; aggressive correction therefore trades recall for semantic
+damage.
+
+Multilingual pretraining transfers useful abstractions across languages
+\citep{devlin2019bert,conneau2020xlmr}, and byte-level models reduce reliance
+on brittle tokenization \citep{xue2022byt5}. Yet neither mechanism gives a
+model explicit access to the few verified transformations that a community
+has already annotated. Retrieval augmentation can supply such evidence at
+inference time \citep{lewis2020rag,khandelwal2021knnmt}, but naive retrieval
+creates a new failure mode: a superficially similar example can override a
+correct model prediction.
+
+We address this tension with \method, shown in Figure~\ref{fig:architecture}.
+The system treats retrieval as a selective intervention. A byte-level encoder--
+decoder first produces a distribution and an uncertainty estimate. Only
+uncertain spans query a compact memory of verified normalization pairs. A gate
+then combines generation and memory scores using retrieval relevance, model
+uncertainty, and named-entity compatibility. Every copied form remains linked
+to the example that supported it, providing a lightweight audit trail.
+
+This illustrative study makes three contributions:
+\begin{itemize}
+  \item an uncertainty-triggered retrieval policy that avoids needless memory
+        lookups for confident spans;
+  \item an evidence gate that jointly scores relevance, local agreement, and
+        entity preservation; and
+  \item a controlled evaluation protocol covering accuracy, calibration,
+        robustness, and harm-relevant entity corruption.
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Multilingual and dialect adaptation.}
+Cross-lingual encoders such as multilingual BERT and XLM-R support transfer
+from high-resource languages \citep{devlin2019bert,conneau2020xlmr}. Adapter
+methods further isolate language-specific parameters while sharing a common
+backbone \citep{pfeiffer2020madx}. Byte-level modeling avoids unknown tokens
+and represents productive spelling variation directly
+\citep{xue2022byt5}. Our method is complementary: it changes neither the
+tokenization nor the backbone and instead adds a small, editable memory.
+
+\paragraph{Retrieval-augmented generation.}
+Retrieval-augmented language models condition generation on external passages
+\citep{lewis2020rag}; nearest-neighbor machine translation interpolates a
+model distribution with target tokens retrieved from a datastore
+\citep{khandelwal2021knnmt}. These systems typically retrieve for every input.
+\method instead makes retrieval conditional on calibrated uncertainty and
+tests whether evidence is safe to use.
+
+\paragraph{Responsible language technology.}
+Aggregate benchmark scores can conceal uneven quality across language
+varieties and social groups \citep{blodgett2020language}. We therefore report
+per-variety outcomes, separate named-entity preservation from surface
+accuracy, and document the assumptions behind the illustrative benchmark.
+
+% -----------------------------------------------------------------------------
+\section{Method}
+\label{sec:method}
+
+Let an input sequence be $\vect{x}=(x_1,\ldots,x_m)$ and its standardized
+target be $\vect{y}=(y_1,\ldots,y_n)$. A base encoder--decoder with parameters
+$\theta$ defines
+\begin{equation}
+  p_{\theta}(y_t\mid \vect{y}_{<t},\vect{x}).
+  \label{eq:base}
+\end{equation}
+The memory $\mathcal{M}=\{(\vect{s}_j,\vect{t}_j)\}_{j=1}^{N}$ contains
+community-verified source and target pairs. We learn the base model on the
+parallel training split and construct the memory only from that split.
+
+\begin{figure}[t]
+  \centering
+  \resizebox{\columnwidth}{!}{%
+  \begin{tikzpicture}[
+    font=\footnotesize,
+    node distance=5mm and 4mm,
+    block/.style={draw=naaclblue,rounded corners=2pt,fill=naacllight,
+      align=center,minimum height=7mm,inner xsep=4pt},
+    memory/.style={draw=naaclgold!85!black,rounded corners=2pt,
+      fill=naaclgold!9,align=center,minimum height=7mm,inner xsep=4pt},
+    gate/.style={draw=naaclgreen!85!black,rounded corners=2pt,
+      fill=naaclgreen!8,align=center,minimum height=7mm,inner xsep=4pt},
+    arrow/.style={-{Stealth[length=2mm]},thick,draw=naaclgray}
+  ]
+    \node[block,minimum width=25mm] (input) {Dialect input\\$\vect{x}$};
+    \node[block,minimum width=27mm,right=of input] (base) {Byte-level\\generator};
+    \node[block,minimum width=27mm,right=of base] (unc) {Uncertainty\\$u_t$};
+    \node[memory,minimum width=29mm,below=of unc] (ret) {Verified memory\\top-$k$ evidence};
+    \node[gate,minimum width=27mm,left=of ret] (gate) {Safety gate\\$g_t$};
+    \node[block,minimum width=25mm,left=of gate] (out) {Normalized text\\$\hat{\vect{y}}$};
+    \draw[arrow] (input) -- (base);
+    \draw[arrow] (base) -- (unc);
+    \draw[arrow] (unc) -- node[right]{query} (ret);
+    \draw[arrow] (ret) -- (gate);
+    \draw[arrow] (base.south) |- (gate.north);
+    \draw[arrow] (gate) -- (out);
+  \end{tikzpicture}
+  }
+  \caption{\method retrieves verified examples only for uncertain spans. The
+  safety gate can accept, blend, or reject memory evidence.}
+  \label{fig:architecture}
+\end{figure}
+
+\subsection{Uncertainty-triggered retrieval}
+
+At decoding step $t$, normalized token entropy is
+\begin{equation}
+  u_t = -\frac{1}{\log |V|}
+        \sum_{v\in V}p_{\theta}(v)\log p_{\theta}(v),
+  \label{eq:entropy}
+\end{equation}
+where $V$ is the byte vocabulary and conditioning variables are omitted for
+clarity. We retrieve only if $u_t>\tau$ or if the current source span is
+outside the frequent training lexicon. The query vector concatenates the
+encoder state for the span with its left and right context. Cosine similarity
+selects the top-$k$ source examples; a softmax over their similarities yields
+weights $a_j$.
+
+Each retrieved target proposes its aligned output token. The memory
+distribution is
+\begin{equation}
+  p_{\mathcal{M}}(v)=\sum_{j=1}^{k}a_j\,
+  \mathbb{I}[\operatorname{align}(\vect{t}_j)=v].
+  \label{eq:memory}
+\end{equation}
+When retrieval is not triggered, $p_{\mathcal{M}}$ is unused and inference is
+identical to the base model.
+
+\subsection{Evidence safety gate}
+
+Retrieval quality alone does not establish that an example is safe to copy.
+For each step we compute a feature vector
+\begin{equation}
+  \vect{z}_t=[u_t;\,r_t;\,d_t;\,e_t;\,c_t],
+\end{equation}
+containing uncertainty $u_t$, top retrieval similarity $r_t$, the top-two
+similarity margin $d_t$, an entity-compatibility bit $e_t$, and agreement
+$c_t$ between the generator and memory distributions. The interpolation gate
+is
+\begin{align}
+  g_t &= \sigma(\vect{w}^{\top}\vect{z}_t+b), \\
+  p(y_t) &= (1-g_t)p_{\theta}(y_t)+g_t p_{\mathcal{M}}(y_t).
+  \label{eq:gate}
+\end{align}
+If a source span is tagged as an entity and the retrieved example changes its
+normalized character skeleton, we force $e_t=0$ and cap $g_t$ at $0.1$.
+
+\subsection{Training objective}
+
+We train the generator with label-smoothed negative log likelihood and the
+gate with binary supervision indicating whether the memory's top proposal is
+correct. A Brier penalty encourages calibrated decisions:
+\begin{equation}
+  \mathcal{L}=\mathcal{L}_{\mathrm{NLL}}
+  +\lambda_g\mathcal{L}_{\mathrm{gate}}
+  +\lambda_b\frac{1}{n}\sum_{t=1}^{n}(g_t-q_t)^2,
+  \label{eq:loss}
+\end{equation}
+where $q_t\in\{0,1\}$ denotes a correct memory proposal. Encoder parameters
+are shared between generation and retrieval; memory keys are refreshed after
+each epoch.
+
+% -----------------------------------------------------------------------------
+\section{Experimental Setup}
+\label{sec:setup}
+
+\subsection{Controlled benchmark}
+
+\dataset{} is an illustrative benchmark with three anonymized varieties:
+North, Central, and Coastal. Each contains conversational messages paired
+with meaning-preserving standardizations. Table~\ref{tab:data} summarizes the
+split. Speakers, conversations, and near-duplicates are disjoint across
+splits. A 5,000-pair memory is sampled from the training partition only.
+Named entities are annotated on development and test examples.
+
+\begin{table}[t]
+  \centering
+  \caption{Illustrative \dataset{} split statistics. ``Changed'' is the
+  percentage of target sentences differing from the input.}
+  \label{tab:data}
+  \small
+  \begin{tabular}{lrrr}
+    \toprule
+    Variety & Train & Dev/Test & Changed \\
+    \midrule
+    North   & 18,400 & 1,200/1,500 & 63\% \\
+    Central & 11,700 &   900/1,200 & 71\% \\
+    Coastal &  7,900 &   700/1,000 & 76\% \\
+    \midrule
+    Total   & 38,000 & 2,800/3,700 & 68\% \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Models and optimization}
+
+We compare identity copying, a character-level Transformer, multilingual T5,
+and a byte-level T5 baseline. The two retrieval systems use the same
+byte-level backbone: \textsc{AlwaysRetrieve} interpolates at every step,
+whereas \method uses Equations~\ref{eq:entropy}--\ref{eq:gate}. All neural
+models have approximately 300M parameters. We train for at most 20 epochs with
+AdamW, learning rate $3\times10^{-5}$, batch size 64, and early stopping on
+development chrF. We set $k=8$, $\tau=0.42$, $\lambda_g=0.5$, and
+$\lambda_b=0.1$ on the development set. Results report the mean of three
+seeds; paired bootstrap confidence intervals use 1,000 resamples.
+
+\subsection{Metrics}
+
+We report corpus chrF, word error rate (WER; lower is better), exact sentence
+match (EM), and entity corruption rate (ECR; lower is better). ECR is the
+fraction of source entities whose surface form is changed when the reference
+preserves it. Expected calibration error (ECE) uses ten equal-mass bins.
+
+% -----------------------------------------------------------------------------
+\section{Results}
+\label{sec:results}
+
+\begin{table*}[t]
+  \centering
+  \caption{Illustrative test results averaged over three seeds. Parentheses
+  show standard deviation. Best values are bold. $\dagger$ marks a significant
+  chrF difference from ByT5 under paired bootstrap resampling ($p<0.05$).}
+  \label{tab:main-results}
+  \small
+  \setlength{\tabcolsep}{7pt}
+  \begin{tabular}{lcccccc}
+    \toprule
+    Model & chrF $\uparrow$ & WER $\downarrow$ & EM $\uparrow$ & ECR $\downarrow$
+          & ECE $\downarrow$ & Rel. latency \\
+    \midrule
+    Identity copy             & 71.4 & 24.8 & 31.6 & \textbf{0.0} & --  & 0.03$\times$ \\
+    Character Transformer     & 79.1 (0.3) & 17.5 & 45.2 & 9.8 & 8.7 & 0.72$\times$ \\
+    mT5                       & 80.2 (0.4) & 16.8 & 46.7 & 8.9 & 7.4 & 1.08$\times$ \\
+    ByT5                      & 82.6 (0.2) & 14.9 & 50.8 & 7.1 & 6.8 & 1.00$\times$ \\
+    \textsc{AlwaysRetrieve}  & 83.1 (0.3) & 14.5 & 51.6 & 7.8 & 6.1 & 1.42$\times$ \\
+    \method                   & \textbf{84.9} (0.2)$^{\dagger}$ & \textbf{13.2}
+                              & \textbf{54.7} & 4.9 & \textbf{3.9} & 1.17$\times$ \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+\subsection{Overall performance}
+
+Table~\ref{tab:main-results} shows that \method improves chrF by 2.3 points
+and exact match by 3.9 points over ByT5. Retrieval at every step produces only
+a 0.5 chrF gain and increases entity corruption, supporting selective rather
+than unconditional use of memory. \method reduces ECR from 7.1 to 4.9, a 31\%
+relative reduction. Its 17\% latency overhead is also smaller than
+\textsc{AlwaysRetrieve}'s 42\% overhead because only 29\% of spans trigger a
+lookup.
+
+\subsection{Performance by variety}
+
+The gain is largest on Coastal, the smallest and most divergent variety
+(Table~\ref{tab:variety}). This pattern is consistent with the memory supplying
+examples where parametric learning is weakest. North shows a smaller gain but
+retains the best absolute score. No variety loses performance.
+
+\begin{table}[t]
+  \centering
+  \caption{chrF by variety. $\Delta$ compares \method{} with ByT5.}
+  \label{tab:variety}
+  \small
+  \begin{tabular}{lrrr}
+    \toprule
+    Variety & ByT5 & \method & $\Delta$ \\
+    \midrule
+    North   & 86.5 & 88.0 & +1.5 \\
+    Central & 82.8 & 85.1 & +2.3 \\
+    Coastal & 77.4 & 80.9 & +3.5 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Calibration and coverage}
+
+Figure~\ref{fig:calibration} plots accuracy against reported confidence. The
+base model is over-confident in the two lowest-confidence bins. The Brier term
+and retrieval features move \method closer to the diagonal, reducing ECE from
+6.8 to 3.9. At a gate threshold of 0.7, accepted memory proposals are 91\%
+accurate and cover 18\% of output positions.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=0.98\columnwidth,
+      height=0.70\columnwidth,
+      xmin=0,xmax=1,ymin=0,ymax=1,
+      xlabel={Mean confidence},ylabel={Empirical accuracy},
+      grid=major,grid style={draw=naaclgray!18},
+      legend style={font=\scriptsize,at={(0.03,0.97)},anchor=north west,
+                    draw=none,fill=white},
+      tick label style={font=\scriptsize},
+      label style={font=\small}
+    ]
+      \addplot[dashed,naaclgray,thick] coordinates {(0,0) (1,1)};
+      \addlegendentry{Ideal}
+      \addplot[mark=square*,naaclred,thick] coordinates
+        {(0.10,0.04) (0.30,0.18) (0.50,0.39) (0.70,0.63) (0.90,0.87)};
+      \addlegendentry{ByT5}
+      \addplot[mark=*,naaclblue,thick] coordinates
+        {(0.10,0.08) (0.30,0.27) (0.50,0.47) (0.70,0.68) (0.90,0.89)};
+      \addlegendentry{\method}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Reliability diagram on the illustrative test set.}
+  \label{fig:calibration}
+\end{figure}
+
+% -----------------------------------------------------------------------------
+\section{Analysis}
+\label{sec:analysis}
+
+\subsection{Ablation study}
+
+Table~\ref{tab:ablation} isolates the main design choices. Removing the
+uncertainty trigger hurts both speed and accuracy: irrelevant examples enter
+otherwise easy decisions. Removing the entity constraint causes the largest
+ECR increase. A fixed interpolation weight performs worse than the learned
+gate, indicating that retrieval usefulness varies substantially by context.
+
+\begin{table}[t]
+  \centering
+  \caption{Illustrative ablations. Values are test-set scores.}
+  \label{tab:ablation}
+  \small
+  \begin{tabular}{lrrr}
+    \toprule
+    System & chrF & ECR $\downarrow$ & Latency \\
+    \midrule
+    \method{} full             & \textbf{84.9} & \textbf{4.9} & 1.17$\times$ \\
+    $-$ uncertainty trigger    & 83.5 & 6.5 & 1.41$\times$ \\
+    $-$ entity constraint      & 84.2 & 8.4 & 1.16$\times$ \\
+    Fixed gate ($g=0.3$)       & 83.8 & 6.9 & 1.17$\times$ \\
+    Random memory              & 81.9 & 7.6 & 1.18$\times$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Qualitative behavior}
+
+The example in Table~\ref{tab:example} illustrates the intended behavior. The
+base model replaces a place name with a frequent common noun. A retrieved
+example contains the same name in a different context; the entity constraint
+preserves it while the model normalizes the surrounding spelling. This audit
+record is useful, but it is not a proof of correctness: an annotator should
+review high-impact decisions.
+
+\begin{table}[t]
+  \centering
+  \caption{Schematic example; forms are invented to avoid representing a real
+  community inaccurately.}
+  \label{tab:example}
+  \small
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{>{\bfseries}p{0.18\columnwidth}p{0.72\columnwidth}}
+    \toprule
+    Input & mi goin Luma tnite \\
+    ByT5 & I am going later tonight. \\
+    Evidence & we reach Luma before noon $\rightarrow$ We reach Luma before noon. \\
+    Ours & I am going to Luma tonight. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Robustness}
+
+We perturb test inputs with keyboard-neighbor substitutions, character
+deletions, and code-switched distractors. At a 10\% character perturbation
+rate, ByT5 loses 6.2 chrF while \method loses 4.4. The advantage disappears
+when more than half of the retrieved neighbors are deliberately mismatched,
+which motivates provenance checks and memory curation in deployment.
+
+% -----------------------------------------------------------------------------
+\section{Limitations}
+\label{sec:limitations}
+
+This manuscript is a layout-complete example, not a report of executed
+experiments; all benchmark names and numbers must be replaced by validated
+research before submission. Methodologically, nearest-neighbor retrieval can
+amplify annotation errors, reveal memorized text, or privilege varieties that
+are dense in the datastore. Character-skeleton checks do not cover entities
+whose standardization legitimately changes spelling. The controlled benchmark
+also omits speech transcription, mixed scripts, and conversational context.
+Finally, latency was estimated for a single hardware profile and should not be
+generalized to mobile or serverless deployment.
+
+% -----------------------------------------------------------------------------
+\section{Ethical Considerations}
+\label{sec:ethics}
+
+Normalization can erase socially meaningful variation when a standard variety
+is treated as intrinsically superior. A real deployment should be opt-in,
+retain the original text, expose the transformation and its evidence, and
+allow speakers to contest annotations. Data collection requires community
+consent, compensation, governance, and a clear deletion process. Evaluation
+should stratify results by variety and relevant speaker groups rather than
+using aggregate accuracy alone. Memories must be screened for personal data,
+licensed for the intended use, and protected against extraction. The safest
+use is assistive suggestion with human control, not silent rewriting.
+
+% -----------------------------------------------------------------------------
+\section{Reproducibility Statement}
+\label{sec:reproducibility}
+
+For an actual study, a release should include dataset licenses and datasheets,
+speaker-disjoint split identifiers, preprocessing and alignment scripts,
+memory-construction code, all hyperparameters, random seeds, per-example model
+outputs, and bootstrap evaluation scripts. Reporting computational budgets and
+failed configurations follows the broader recommendation to document
+experimental work transparently \citep{dodge2019show}. Any private data should
+be replaced by consented evaluation access or a privacy-preserving synthetic
+test suite.
+
+% -----------------------------------------------------------------------------
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented \method, an illustrative architecture for low-resource dialect
+normalization that retrieves verified transformations only when the generator
+is uncertain. A learned safety gate uses relevance, distribution agreement,
+and entity compatibility to decide whether memory evidence should influence
+the output. The example results suggest why selective retrieval deserves study:
+it can improve accuracy and calibration without paying the cost or risk of
+retrieval at every step. More importantly, the design makes provenance and
+human review first-class requirements for language-variety technology.
+
+% -----------------------------------------------------------------------------
+% References are included directly so that main.tex is fully self-contained.
+% -----------------------------------------------------------------------------
+\section*{Acknowledgments}
+
+Omitted for anonymous review. The final version should disclose funding,
+institutional support, annotator compensation, and assistance from automated
+tools where required by the venue policy.
+
+\bibliographystyle{plainnat}
+\begin{thebibliography}{10}
+\setlength{\bibsep}{2pt}
+\small
+
+\bibitem[Blodgett et~al.(2020)Blodgett, Barocas, Daum\'e~III, and
+Wallach]{blodgett2020language}
+Su~Lin Blodgett, Solon Barocas, Hal Daum\'e~III, and Hanna Wallach.
+\newblock 2020.
+\newblock Language (technology) is power: A critical survey of ``bias'' in
+NLP.
+\newblock In \emph{Proceedings of ACL}, pages 5454--5476.
+
+\bibitem[Conneau et~al.(2020)Conneau, Khandelwal, Goyal, Chaudhary, Wenzek,
+Guzm\'an, Grave, Ott, Zettlemoyer, and Stoyanov]{conneau2020xlmr}
+Alexis Conneau, Kartikay Khandelwal, Naman Goyal, Vishrav Chaudhary, Guillaume
+Wenzek, Francisco Guzm\'an, Edouard Grave, Myle Ott, Luke Zettlemoyer, and
+Veselin Stoyanov.
+\newblock 2020.
+\newblock Unsupervised cross-lingual representation learning at scale.
+\newblock In \emph{Proceedings of ACL}, pages 8440--8451.
+
+\bibitem[Devlin et~al.(2019)Devlin, Chang, Lee, and Toutanova]{devlin2019bert}
+Jacob Devlin, Ming-Wei Chang, Kenton Lee, and Kristina Toutanova.
+\newblock 2019.
+\newblock {BERT}: Pre-training of deep bidirectional transformers for language
+understanding.
+\newblock In \emph{Proceedings of NAACL-HLT}, pages 4171--4186.
+
+\bibitem[Dodge et~al.(2019)Dodge, Ilharco, Schwartz, Farhadi, Hajishirzi, and
+Smith]{dodge2019show}
+Jesse Dodge, Gabriel Ilharco, Roy Schwartz, Ali Farhadi, Hannaneh Hajishirzi,
+and Noah~A. Smith.
+\newblock 2019.
+\newblock Show your work: Improved reporting of experimental results.
+\newblock In \emph{Proceedings of EMNLP-IJCNLP}, pages 2185--2194.
+
+\bibitem[Khandelwal et~al.(2021)Khandelwal, Fan, Jurafsky, Zettlemoyer, and
+Lewis]{khandelwal2021knnmt}
+Urvashi Khandelwal, Angela Fan, Dan Jurafsky, Luke Zettlemoyer, and Mike Lewis.
+\newblock 2021.
+\newblock Nearest neighbor machine translation.
+\newblock In \emph{Proceedings of ICLR}.
+
+\bibitem[Lewis et~al.(2020)Lewis, Perez, Piktus, Petroni, Karpukhin, Goyal,
+K\"uttler, Lewis, Yih, Rockt\"aschel, Riedel, and Kiela]{lewis2020rag}
+Patrick Lewis, Ethan Perez, Aleksandra Piktus, Fabio Petroni, Vladimir
+Karpukhin, Naman Goyal, Heinrich K\"uttler, Mike Lewis, Wen-tau Yih, Tim
+Rockt\"aschel, Sebastian Riedel, and Douwe Kiela.
+\newblock 2020.
+\newblock Retrieval-augmented generation for knowledge-intensive {NLP} tasks.
+\newblock In \emph{Advances in Neural Information Processing Systems},
+volume~33, pages 9459--9474.
+
+\bibitem[Pfeiffer et~al.(2020)Pfeiffer, Vuli\'c, Gurevych, and
+Ruder]{pfeiffer2020madx}
+Jonas Pfeiffer, Ivan Vuli\'c, Iryna Gurevych, and Sebastian Ruder.
+\newblock 2020.
+\newblock {MAD-X}: An adapter-based framework for multi-task cross-lingual
+transfer.
+\newblock In \emph{Proceedings of EMNLP}, pages 7654--7673.
+
+\bibitem[Xue et~al.(2022)Xue, Barua, Constant, Al-Rfou, Narang, Kale, Roberts,
+and Raffel]{xue2022byt5}
+Linting Xue, Aditya Barua, Noah Constant, Rami Al-Rfou, Sharan Narang, Mihir
+Kale, Adam Roberts, and Colin Raffel.
+\newblock 2022.
+\newblock {ByT5}: Towards a token-free future with pre-trained byte-to-byte
+models.
+\newblock \emph{Transactions of the Association for Computational
+Linguistics}, 10:291--306.
+
+\end{thebibliography}
+
+\appendix
+\onecolumn
+
+\section{Illustrative Model Card}
+\label{app:model-card}
+
+\begin{table}[h]
+  \centering
+  \caption{Information that should accompany a real release.}
+  \label{tab:model-card}
+  \small
+  \begin{tabular}{p{0.20\textwidth}p{0.72\textwidth}}
+    \toprule
+    Field & Required disclosure \\
+    \midrule
+    Intended use & Human-reviewed normalization suggestions for consenting
+      communities; not dialect identification, surveillance, or automated
+      moderation. \\
+    Training data & Provenance, licenses, collection dates, consent process,
+      annotator demographics at a privacy-preserving level, and deletion
+      policy. \\
+    Metrics & chrF, WER, exact match, entity corruption, calibration, latency,
+      and results stratified by variety. \\
+    Known risks & Erasure of identity markers, privacy leakage through
+      retrieval, unequal memory coverage, and incorrect entity rewriting. \\
+    Safeguards & Opt-in use, visible diffs, evidence display, memory access
+      controls, personal-data filtering, and an appeal process. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Suggested Reporting Checklist}
+\label{app:checklist}
+
+\begin{enumerate}
+  \item State who defined the target ``standard'' and why normalization is
+        appropriate for the intended use.
+  \item Report how speakers participated in collection, annotation,
+        evaluation, governance, and benefit sharing.
+  \item Separate retrieval-memory examples from all development and test
+        conversations, speakers, and near-duplicates.
+  \item Release uncertainty thresholds, gate features, datastore size,
+        embedding model, index settings, and retrieval latency.
+  \item Report confidence intervals and per-variety scores, including the
+        number of examples behind each score.
+  \item Manually audit entity changes and high-confidence errors before any
+        deployment.
+\end{enumerate}
+
+\section{Hyperparameter Search Space}
+\label{app:hyperparameters}
+
+\begin{table}[h]
+  \centering
+  \caption{Illustrative development-set search space. Bold values denote the
+  configuration used in the example results.}
+  \small
+  \begin{tabular}{lll}
+    \toprule
+    Parameter & Candidates & Selection criterion \\
+    \midrule
+    Retrieval depth $k$ & 2, 4, \textbf{8}, 16 & Development chrF \\
+    Entropy threshold $\tau$ & 0.30, \textbf{0.42}, 0.55, 0.70 & chrF/latency frontier \\
+    Gate weight $\lambda_g$ & 0.1, \textbf{0.5}, 1.0 & Development ECE \\
+    Brier weight $\lambda_b$ & 0, 0.05, \textbf{0.1}, 0.2 & Development ECE \\
+    Learning rate & $1,\mathbf{3},5\times10^{-5}$ & Development loss \\
+    Beam size & 1, \textbf{4}, 8 & Development chrF \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\end{document}

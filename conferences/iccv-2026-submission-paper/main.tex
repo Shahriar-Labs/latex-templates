@@ -1,0 +1,594 @@
+\documentclass[10pt,twocolumn,letterpaper]{article}
+
+% -----------------------------------------------------------------------------
+% Self-contained, unofficial ICCV-style manuscript.
+% ICCV is ordinarily held in odd-numbered years. For an actual submission,
+% replace this preamble with the official style files supplied by the venue.
+% Compile with: latexmk -pdf -interaction=nonstopmode main.tex
+% -----------------------------------------------------------------------------
+
+\usepackage[letterpaper,top=0.72in,bottom=0.82in,left=0.66in,right=0.66in,
+            columnsep=0.25in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,backgrounds,fit,positioning}
+\usepackage{url}
+\usepackage[colorlinks=true,allcolors=blue!55!black]{hyperref}
+\usepackage[nameinlink,noabbrev]{cleveref}
+\usepackage[switch]{lineno}
+
+\definecolor{iccvblue}{RGB}{24,63,112}
+\definecolor{iccvcyan}{RGB}{0,132,154}
+\definecolor{lightblue}{RGB}{232,242,248}
+\definecolor{lightgray}{RGB}{244,245,247}
+\definecolor{warmgray}{RGB}{92,96,102}
+
+\newif\ificcvfinal
+\iccvfinalfalse                    % Change to \iccvfinaltrue for a camera-ready draft.
+\newcommand{\paperid}{0000}       % Replace with the assigned submission ID.
+\newcommand{\method}{TriFuse}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\softmax}{\operatorname{softmax}}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\floatsep}{7pt plus 2pt minus 2pt}
+\setlength{\intextsep}{7pt plus 2pt minus 2pt}
+\setlist[itemize]{leftmargin=*,topsep=3pt,itemsep=1.5pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=*,topsep=3pt,itemsep=1.5pt,parsep=0pt}
+\renewcommand{\arraystretch}{1.08}
+
+\makeatletter
+\renewcommand\section{\@startsection{section}{1}{\z@}%
+  {-2.2ex \@plus -.5ex \@minus -.2ex}%
+  {0.9ex \@plus .2ex}%
+  {\normalfont\large\bfseries\color{iccvblue}}}
+\renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
+  {-1.7ex \@plus -.4ex \@minus -.2ex}%
+  {0.6ex \@plus .2ex}%
+  {\normalfont\normalsize\bfseries}}
+\makeatother
+
+\pagestyle{plain}
+\ificcvfinal
+  \newcommand{\reviewmark}{}
+\else
+  \newcommand{\reviewmark}{%
+    \begin{tikzpicture}[remember picture,overlay]
+      \node[anchor=north east,text=warmgray,font=\scriptsize]
+        at ([xshift=-0.65in,yshift=-0.28in]current page.north east)
+        {Unofficial review draft -- Paper \#\paperid};
+    \end{tikzpicture}}
+\fi
+
+\title{\method: Reliability-Guided Multi-Scale Token Fusion\\
+for Robust Dense Prediction}
+
+\ificcvfinal
+  \author{Amina Rahman\textsuperscript{1}\quad Leo Martins\textsuperscript{2}\quad
+          Yuki Tanaka\textsuperscript{1}\\
+          \textsuperscript{1}Northstar Vision Lab \quad
+          \textsuperscript{2}Atlas Research\\
+          {\tt\small amina.rahman@northstar.example}}
+\else
+  \author{Anonymous authors\\Paper ID \paperid}
+\fi
+\date{}
+
+\begin{document}
+
+\ificcvfinal\else\linenumbers\fi
+\maketitle
+
+% --- Unofficial-template notice (required: this is not an official ICCV file) ---
+\noindent\fbox{\parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule\relax}{%
+  \footnotesize\textbf{Unofficial template.} This layout is provided for convenience and is
+  \textbf{not} affiliated with, endorsed by, or sponsored by ICCV or its organisers.
+  Always check the official call for papers and use the current year's official style files
+  for a real submission.}}
+\vspace{0.8em}
+
+
+\reviewmark
+\thispagestyle{plain}
+
+\begin{center}
+\fcolorbox{iccvcyan}{lightblue}{%
+  \parbox{0.92\columnwidth}{\footnotesize
+  \textbf{Status notice.} This is a self-contained, community-produced
+  ICCV-style manuscript, not an official conference template. ICCV is normally
+  held in odd-numbered years; authors must use the official files and rules for
+  the actual target venue. All experimental values below are illustrative.}}
+\end{center}
+
+\begin{abstract}
+Dense prediction systems increasingly combine high-resolution convolutional
+features with semantically rich transformer tokens. Existing fusion modules
+usually treat every scale as equally trustworthy, even though corruption,
+motion blur, and domain shift affect scales differently. We introduce
+\method, a reliability-guided fusion module that estimates token uncertainty
+before cross-scale aggregation. A lightweight reliability head predicts a
+spatial confidence field for each feature level; confidence-normalized gates
+then control both token selection and residual mixing. The design adds less
+than three percent computation to a standard hierarchical backbone and can be
+inserted into segmentation or depth-estimation decoders without changing their
+losses. In an illustrative evaluation protocol spanning clean, corrupted, and
+cross-domain data, \method{} improves mean intersection-over-union while reducing
+expected calibration error. Controlled ablations isolate the effects of
+reliability supervision, confidence-aware token pruning, and scale-consistency
+regularization. The results motivate treating feature reliability as a
+first-class signal in multi-scale vision models.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:introduction}
+
+Dense visual prediction requires both fine spatial detail and broad semantic
+context. Convolutional feature pyramids preserve local structure, while vision
+transformers model long-range interactions~\cite{he2016resnet,dosovitskiy2021vit,
+liu2021swin}. Modern systems therefore fuse representations from several
+resolutions before producing pixel-level outputs~\cite{lin2017fpn,
+cheng2022mask2former}. This recipe performs strongly on in-distribution images,
+but its behavior under image corruption or domain shift is less predictable.
+A blurred boundary can make the highest-resolution stream unreliable, whereas
+small objects may disappear from a coarse semantic stream. Unconditional
+fusion propagates whichever error happens to dominate.
+
+This paper studies a simple question: \emph{can a model estimate which scale to
+trust at each spatial location before fusing its tokens?} We answer with
+\method, the module shown in \cref{fig:overview}. Rather than adding a separate
+uncertainty model after decoding, \method{} predicts reliability directly from
+intermediate features. The reliability maps determine a fixed-budget token
+subset and reweight the residual contribution of each scale. A consistency
+objective prevents the gates from becoming overconfident when two augmented
+views disagree.
+
+The approach has three useful properties. First, reliability is local: the
+model may trust fine features along one boundary and coarse features inside a
+large object. Second, token pruning and feature mixing share the same signal,
+so efficiency and calibration are optimized together. Third, the module is
+task-agnostic and leaves the prediction head unchanged.
+
+Our main contributions are:
+\begin{itemize}
+  \item a reliability-guided cross-scale fusion rule that assigns spatially
+        varying trust to hierarchical visual features;
+  \item a confidence-aware pruning strategy with a strict token budget and a
+        differentiable training surrogate; and
+  \item a reproducible evaluation protocol that reports task accuracy,
+        calibration, corruption robustness, and computational cost together.
+\end{itemize}
+
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Multi-scale dense prediction.}
+Feature Pyramid Networks combine top-down semantic features with lateral
+high-resolution features~\cite{lin2017fpn}. Transformer backbones extend this
+idea using hierarchical attention~\cite{liu2021swin}, while mask-classification
+decoders attend to multi-scale features through learned queries
+~\cite{cheng2022mask2former}. These methods learn how to transform each scale,
+but do not explicitly represent whether a feature is reliable for a particular
+pixel. \method{} augments the fusion operation rather than replacing the encoder
+or prediction head.
+
+\paragraph{Uncertainty and calibration.}
+Neural networks can be accurate but poorly calibrated~\cite{guo2017calibration}.
+Predictive uncertainty often degrades under dataset shift
+~\cite{ovadia2019uncertainty}, precisely when a confidence signal would be most
+valuable. Prior work generally estimates uncertainty at the output. We instead
+use intermediate reliability to control computation and representation mixing,
+then evaluate the final predictions with expected calibration error (ECE).
+
+\paragraph{Efficient token processing.}
+Dynamic token methods reduce transformer cost by pruning or merging redundant
+tokens~\cite{rao2021dynamicvit,bolya2023tome}. Their selection criteria primarily
+target classification utility or token similarity. Our selection score is tied
+to a cross-scale reliability estimate and is evaluated for dense outputs, where
+discarding a small uncertain region can disproportionately harm boundaries.
+
+\paragraph{Robust visual recognition.}
+Corruption benchmarks reveal that models with similar clean accuracy may differ
+substantially under blur, noise, or weather artifacts~\cite{hendrycks2019imagenetc}.
+Large pretrained models such as SAM broaden transfer capabilities
+~\cite{kirillov2023sam}, but deployment still requires calibrated confidence.
+Our protocol separates clean accuracy, corruption retention, and calibration
+instead of compressing them into one score.
+
+\section{Method}
+\label{sec:method}
+
+\subsection{Problem Formulation}
+
+Let a hierarchical encoder produce $L$ feature maps
+$\{X^{\ell}\}_{\ell=1}^{L}$, where
+$X^{\ell}\in\R^{H_{\ell}\times W_{\ell}\times C_{\ell}}$. Projection and
+bilinear resampling map them to a common grid and width,
+$F^{\ell}\in\R^{H\times W\times d}$. A conventional fusion block computes a
+weighted sum or concatenation with weights that are shared across positions.
+We seek a fused representation $Z\in\R^{H\times W\times d}$ whose scale weights
+vary with both the input and spatial location.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  x=1cm,y=1cm,
+  feat/.style={draw=iccvblue,fill=lightblue,rounded corners=2pt,
+               minimum width=2.25cm,minimum height=0.75cm,align=center,
+               font=\small},
+  op/.style={draw=iccvcyan,fill=iccvcyan!10,rounded corners=2pt,
+             minimum width=2.45cm,minimum height=0.75cm,align=center,
+             font=\small},
+  result/.style={draw=black!65,fill=lightgray,rounded corners=2pt,
+                 minimum width=2.25cm,minimum height=0.75cm,align=center,
+                 font=\small},
+  arr/.style={-{Latex[length=2mm]},thick,draw=iccvblue}
+]
+  \node[feat] (f1) at (0,1.15) {fine features $F^1$};
+  \node[feat] (f2) at (0,0) {mid features $F^2$};
+  \node[feat] (f3) at (0,-1.15) {coarse features $F^3$};
+  \node[op] (head) at (3.3,0) {reliability head\\$r^1,r^2,r^3$};
+  \node[op] (select) at (6.5,0.75) {budgeted token\\selection};
+  \node[op] (mix) at (6.5,-0.75) {confidence-normalized\\residual mixing};
+  \node[result] (z) at (9.7,0) {fused tokens $Z$};
+  \node[result] (decoder) at (12.4,0) {task decoder\\$\hat{Y}$};
+
+  \foreach \n in {f1,f2,f3} \draw[arr] (\n.east) -- (head.west);
+  \draw[arr] (head.east) -- (select.west);
+  \draw[arr] (head.east) -- (mix.west);
+  \draw[arr] (select.east) -- (z.west);
+  \draw[arr] (mix.east) -- (z.west);
+  \draw[arr] (z.east) -- (decoder.west);
+
+  \begin{scope}[on background layer]
+    \node[draw=warmgray!40,dashed,rounded corners=4pt,
+          fit=(head)(select)(mix),inner sep=8pt,
+          label={[font=\small\bfseries,text=iccvblue]above:\method{} module}] {};
+  \end{scope}
+\end{tikzpicture}
+\caption{Overview of \method. Projected multi-scale features feed a shared
+reliability head. The resulting confidence fields control token selection and
+residual scale mixing before an unchanged task decoder.}
+\label{fig:overview}
+\end{figure*}
+
+\subsection{Spatial Reliability Estimation}
+
+For each level, a depthwise $3\times3$ convolution provides local context and a
+shared two-layer multilayer perceptron predicts a logit $a^{\ell}_{p}$ at grid
+position $p$. Reliability is normalized across scales:
+\begin{equation}
+  r^{\ell}_{p} =
+  \frac{\exp(a^{\ell}_{p}/T)}
+       {\sum_{j=1}^{L}\exp(a^{j}_{p}/T)},
+  \qquad \sum_{\ell=1}^{L} r^{\ell}_{p}=1,
+  \label{eq:reliability}
+\end{equation}
+where $T>0$ is a learned temperature constrained to $[0.1,10]$. The normalized
+form prevents every level from simultaneously declaring high confidence and
+makes the maps directly interpretable as relative trust.
+
+The initial fused token is
+\begin{equation}
+  \bar{z}_{p}=\sum_{\ell=1}^{L}r^{\ell}_{p}W_{\ell}f^{\ell}_{p},
+  \label{eq:mix}
+\end{equation}
+with learned projections $W_{\ell}\in\R^{d\times d}$. A residual gate preserves
+the reference-resolution feature $f^{\mathrm{ref}}_{p}$:
+\begin{equation}
+  z_{p}=\bar{z}_{p}+\sigma\!\left(w^{\top}\bar{z}_{p}\right)
+  f^{\mathrm{ref}}_{p}.
+  \label{eq:residual}
+\end{equation}
+
+\subsection{Confidence-Aware Token Budget}
+
+Computing cross-scale attention for all $HW$ positions is wasteful in uniform,
+high-confidence regions. We define ambiguity
+$u_p=1-\max_{\ell}r^{\ell}_{p}$ and retain the $K$ positions with largest
+$u_p+\gamma e_p$, where $e_p$ is the local feature-gradient magnitude. The
+edge term protects thin structures whose scale confidence may otherwise be
+sharp. Selected tokens receive full cross-scale attention; unselected tokens
+use \cref{eq:mix}. Thus, for $L$ levels, attention cost decreases from
+$O(L(HW)^2)$ to $O(LK^2)$, while dense residual mixing remains linear.
+
+The hard top-$K$ operator is used during inference. During training we apply a
+straight-through estimator to a temperature-controlled sigmoid around the
+$K$th score. The deployed token count is therefore deterministic and does not
+depend on a threshold calibrated to a particular dataset.
+
+\subsection{Training Objective}
+
+The task loss $\mathcal{L}_{\mathrm{task}}$ is the standard cross-entropy plus
+Dice loss for segmentation, or scale-invariant log loss for depth. Reliability
+is regularized using two augmented views $x$ and $x'$ whose geometric alignment
+is known. Let $\mathcal{W}$ warp fields from $x'$ into the coordinates of $x$.
+We minimize the symmetric consistency loss
+\begin{equation}
+  \mathcal{L}_{\mathrm{con}}=
+  \frac{1}{2HW}\sum_{p,\ell}
+  \left(r^{\ell}_{p}-\mathcal{W}(r'^{\ell})_{p}\right)^2.
+  \label{eq:consistency}
+\end{equation}
+To prevent premature one-hot gates, an entropy floor is applied only during the
+first 20\% of training. The complete objective is
+\begin{equation}
+  \mathcal{L}=\mathcal{L}_{\mathrm{task}}
+  +\lambda_{\mathrm{con}}\mathcal{L}_{\mathrm{con}}
+  +\lambda_{\mathrm{ent}}\max(0,h_0-\mathcal{H}(r)).
+  \label{eq:objective}
+\end{equation}
+
+\section{Experimental Protocol}
+\label{sec:experiments}
+
+\subsection{Tasks and Metrics}
+
+The primary protocol uses semantic segmentation with three complementary test
+conditions: a clean in-domain split, a corruption suite covering noise, blur,
+weather, and digital artifacts, and an unlabeled target-domain split. We report
+mean intersection-over-union (mIoU), boundary F-score (BF), ECE with 15 equal-
+width bins, throughput, and parameter count. Corruption retention is the mean
+corrupted mIoU divided by clean mIoU. A secondary monocular-depth experiment
+reports absolute relative error to test whether the fusion module transfers
+beyond semantic masks.
+
+\subsection{Implementation Details}
+
+All comparisons use the same four-stage hierarchical backbone, input size
+$512\times512$, decoder width $d=256$, and data augmentation. Models are
+optimized for 160k steps using AdamW, a base learning rate of $6\times10^{-5}$,
+weight decay $0.05$, linear warm-up for 1,500 steps, and polynomial decay.
+Unless stated otherwise, $K=1024$, $\gamma=0.25$,
+$\lambda_{\mathrm{con}}=0.2$, and $\lambda_{\mathrm{ent}}=0.01$. Throughput is
+measured after 50 warm-up iterations with batch size one and mixed precision.
+Every result is the mean of three seeds; paired bootstrap intervals are used for
+the main comparison.
+
+\subsection{Baselines}
+
+We compare sum fusion, concatenation followed by a $1\times1$ projection,
+feature-pyramid fusion~\cite{lin2017fpn}, and a dense cross-scale attention
+block. All baselines match the encoder, decoder, training budget, and input
+resolution. This control is essential: changing the pretrained backbone can
+produce a larger gain than the fusion mechanism itself.
+
+\section{Results}
+\label{sec:results}
+
+\begin{table*}[t]
+\centering
+\caption{Illustrative main comparison. Higher is better for mIoU, BF,
+retention, and throughput; lower is better for ECE. Values are placeholders for
+a reproducible manuscript example, not measured claims.}
+\label{tab:main}
+\small
+\begin{tabular}{lccccccc}
+\toprule
+Method & Clean mIoU $\uparrow$ & BF $\uparrow$ & Corrupt mIoU $\uparrow$ & Retention $\uparrow$ & ECE $\downarrow$ & Images/s $\uparrow$ & Params (M) \\
+\midrule
+Sum fusion                         & 48.6 & 61.2 & 34.1 & 70.2 & 8.7 & \textbf{31.8} & 46.1 \\
+Concatenation                      & 49.1 & 61.8 & 34.8 & 70.9 & 8.2 & 29.7 & 47.6 \\
+Feature pyramid~\cite{lin2017fpn} & 49.4 & 62.4 & 35.3 & 71.5 & 7.9 & 30.2 & 47.0 \\
+Dense cross-scale attention        & 50.3 & 63.1 & 36.0 & 71.6 & 7.5 & 21.4 & 50.8 \\
+\rowcolor{lightblue}
+\method{}                          & \textbf{51.2} & \textbf{64.5} & \textbf{38.2} & \textbf{74.6} & \textbf{5.3} & 28.9 & 48.2 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\paragraph{Accuracy and robustness.}
+The illustrative results in \cref{tab:main} show the intended analysis: dense
+cross-scale attention improves clean accuracy but carries a substantial
+throughput cost, whereas reliability-guided allocation recovers most of that
+speed and improves corrupted performance. The larger gain under corruption is
+consistent with the motivating hypothesis that different scales fail in
+different regions. A valid study should report confidence intervals and test
+whether the robust gain remains after matching computational budgets.
+
+\paragraph{Calibration.}
+The ECE column captures a distinct effect from mIoU. Output temperature scaling
+can reduce ECE without changing predictions~\cite{guo2017calibration}; by
+contrast, \method{} changes the representation using confidence before decoding.
+A reliability diagram and negative log-likelihood should accompany ECE in a
+full evaluation because bin-based metrics can conceal class imbalance.
+
+\begin{table}[t]
+\centering
+\caption{Illustrative ablation of \method{} components. R: reliability-guided
+mixing; P: token pruning; C: consistency loss.}
+\label{tab:ablation}
+\small
+\begin{tabular}{ccc|ccc}
+\toprule
+R & P & C & mIoU $\uparrow$ & ECE $\downarrow$ & Images/s $\uparrow$ \\
+\midrule
+  &   &   & 48.6 & 8.7 & 31.8 \\
+$\checkmark$ &   &   & 50.4 & 6.7 & 27.6 \\
+$\checkmark$ & $\checkmark$ &   & 50.7 & 6.4 & 29.2 \\
+$\checkmark$ & $\checkmark$ & $\checkmark$ & \textbf{51.2} & \textbf{5.3} & 28.9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Ablation.}
+The structure of \cref{tab:ablation} separates representation quality from
+efficiency. Reliability-guided mixing supplies the largest accuracy gain. Token
+pruning restores throughput and slightly improves accuracy, suggesting a useful
+regularization effect. Consistency supervision primarily improves calibration.
+The final paper should additionally sweep $K$, $T$, and
+$\lambda_{\mathrm{con}}$ rather than selecting them on the test set.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[x=0.58cm,y=0.38cm,font=\scriptsize]
+  \draw[->] (0,0) -- (8.8,0) node[right] {token budget $K$};
+  \draw[->] (0,0) -- (0,8.2) node[above] {mIoU};
+  \foreach \x/\lab in {1/256,3/512,5/1024,7/2048}
+    \draw (\x,0.12)--(\x,-0.12) node[below=2pt] {\lab};
+  \foreach \y/\lab in {1/49,3/50,5/51,7/52}
+    \draw (0.12,\y)--(-0.12,\y) node[left=2pt] {\lab};
+  \fill[iccvcyan!12] (1,2.0) -- (3,4.1) -- (5,5.5) -- (7,5.8)
+       -- (7,6.5) -- (5,6.2) -- (3,4.8) -- (1,2.7) -- cycle;
+  \draw[very thick,iccvblue]
+       plot[smooth] coordinates {(1,2.35) (3,4.45) (5,5.85) (7,6.15)};
+  \foreach \x/\y in {1/2.35,3/4.45,5/5.85,7/6.15}
+    \fill[iccvblue] (\x,\y) circle (2.2pt);
+  \node[align=left,anchor=west,text=warmgray] at (3.4,1.3)
+    {shaded band: illustrative\\three-seed variation};
+\end{tikzpicture}
+\caption{Illustrative sensitivity to token budget. Performance saturates as
+the budget grows, motivating the default $K=1024$.}
+\label{fig:budget}
+\end{figure}
+
+\section{Discussion and Limitations}
+\label{sec:limitations}
+
+\method{} relies on relative confidence across scales. It cannot recover evidence
+that is missing from every encoder level, and a shared failure can still produce
+a sharp but incorrect gate. The top-$K$ rule also couples accuracy to input
+resolution: a fixed budget covers a smaller fraction of a larger image.
+Adaptive budgets may address this issue, but would weaken deterministic latency.
+
+The corruption protocol approximates only a narrow subset of deployment shift.
+Geographic, demographic, sensor, and annotation shifts require separate study.
+Calibration should be measured per class and subgroup where legally and
+ethically appropriate. Finally, efficiency claims depend on the kernel and
+hardware; theoretical FLOPs do not replace wall-clock measurements on the
+target platform.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+We presented \method, a compact module that estimates local scale reliability
+before multi-scale token fusion. One confidence field controls both residual
+mixing and fixed-budget token selection, connecting robustness and efficiency in
+a single mechanism. The accompanying protocol emphasizes clean accuracy,
+corruption retention, calibration, and measured throughput. The central lesson
+is broader than this particular architecture: when representations fail in
+different ways, a fusion module should reason about trust instead of assuming
+that every source is equally dependable.
+
+\ificcvfinal
+\section*{Acknowledgments}
+The authors thank the anonymous reviewers for their constructive feedback.
+\fi
+
+\begin{thebibliography}{99}
+\small
+
+\bibitem{bolya2023tome}
+D.~Bolya, C.~Fu, X.~Dai, P.~Zhang, C.~Feichtenhofer, and J.~Hoffman.
+\newblock Token merging: Your {ViT} but faster.
+\newblock In \emph{International Conference on Learning Representations}, 2023.
+
+\bibitem{cheng2022mask2former}
+B.~Cheng, I.~Misra, A.~G. Schwing, A.~Kirillov, and R.~Girdhar.
+\newblock Masked-attention mask transformer for universal image segmentation.
+\newblock In \emph{CVPR}, 2022.
+
+\bibitem{dosovitskiy2021vit}
+A.~Dosovitskiy, L.~Beyer, A.~Kolesnikov, D.~Weissenborn, X.~Zhai,
+T.~Unterthiner, M.~Dehghani, M.~Minderer, G.~Heigold, S.~Gelly, J.~Uszkoreit,
+and N.~Houlsby.
+\newblock An image is worth 16x16 words: Transformers for image recognition at scale.
+\newblock In \emph{International Conference on Learning Representations}, 2021.
+
+\bibitem{guo2017calibration}
+C.~Guo, G.~Pleiss, Y.~Sun, and K.~Q. Weinberger.
+\newblock On calibration of modern neural networks.
+\newblock In \emph{International Conference on Machine Learning}, 2017.
+
+\bibitem{he2016resnet}
+K.~He, X.~Zhang, S.~Ren, and J.~Sun.
+\newblock Deep residual learning for image recognition.
+\newblock In \emph{CVPR}, 2016.
+
+\bibitem{hendrycks2019imagenetc}
+D.~Hendrycks and T.~Dietterich.
+\newblock Benchmarking neural network robustness to common corruptions and perturbations.
+\newblock In \emph{International Conference on Learning Representations}, 2019.
+
+\bibitem{kirillov2023sam}
+A.~Kirillov, E.~Mintun, N.~Ravi, H.~Mao, C.~Rolland, L.~Gustafson, T.~Xiao,
+S.~Whitehead, A.~C. Berg, W.-Y. Lo, P.~Doll\'{a}r, and R.~Girshick.
+\newblock Segment anything.
+\newblock In \emph{ICCV}, 2023.
+
+\bibitem{lin2017fpn}
+T.-Y. Lin, P.~Doll\'{a}r, R.~Girshick, K.~He, B.~Hariharan, and S.~Belongie.
+\newblock Feature pyramid networks for object detection.
+\newblock In \emph{CVPR}, 2017.
+
+\bibitem{liu2021swin}
+Z.~Liu, Y.~Lin, Y.~Cao, H.~Hu, Y.~Wei, Z.~Zhang, S.~Lin, and B.~Guo.
+\newblock Swin Transformer: Hierarchical vision transformer using shifted windows.
+\newblock In \emph{ICCV}, 2021.
+
+\bibitem{ovadia2019uncertainty}
+Y.~Ovadia, E.~Fertig, J.~Ren, Z.~Nado, D.~Sculley, S.~Nowozin, J.~Dillon,
+B.~Lakshminarayanan, and J.~Snoek.
+\newblock Can you trust your model's uncertainty? Evaluating predictive uncertainty under dataset shift.
+\newblock In \emph{NeurIPS}, 2019.
+
+\bibitem{rao2021dynamicvit}
+Y.~Rao, W.~Zhao, B.~Liu, J.~Lu, J.~Zhou, and C.-J. Hsieh.
+\newblock DynamicViT: Efficient vision transformers with dynamic token sparsification.
+\newblock In \emph{NeurIPS}, 2021.
+
+\end{thebibliography}
+
+\clearpage
+\appendix
+\section{Reproducibility Checklist}
+\label{sec:appendix}
+
+For a real submission, the following items should accompany the reported
+results:
+\begin{enumerate}
+  \item exact dataset versions, split hashes, preprocessing, and licenses;
+  \item optimizer, schedule, seed list, augmentation ranges, and stopping rule;
+  \item parameter counts, multiply--accumulate counts, hardware, software
+        versions, precision, batch size, and timing protocol;
+  \item per-seed results and confidence intervals, plus the statistical test
+        used for each central claim;
+  \item qualitative successes and failures selected by a stated procedure; and
+  \item source code for reliability visualization, metric computation, and all
+        table generation.
+\end{enumerate}
+
+\section{Additional Derivation}
+
+When $K<HW$, the attention portion of the fusion block has the approximate
+complexity ratio
+\begin{equation}
+  \rho = \frac{LK^2d}{L(HW)^2d}=\left(\frac{K}{HW}\right)^2.
+\end{equation}
+This ratio excludes the linear reliability head, projections, memory traffic,
+and decoder. Consequently, it is an upper-level algorithmic comparison rather
+than a prediction of wall-clock speed. The gap between $\rho$ and measured
+throughput should be discussed explicitly.
+
+\section{Suggested Qualitative Analysis}
+
+A complete qualitative figure should show, for each example, the input image,
+ground truth, baseline prediction, \method{} prediction, reliability maps for all
+scales, and the selected-token mask. Examples should cover blur, small objects,
+thin structures, and a shared failure across all scales. This presentation makes
+it possible to distinguish a useful reliability estimate from a confidence map
+that merely follows object boundaries.
+
+\end{document}

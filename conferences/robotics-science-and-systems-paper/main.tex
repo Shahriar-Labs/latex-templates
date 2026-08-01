@@ -1,0 +1,603 @@
+\documentclass[10pt,twocolumn]{article}
+
+% -----------------------------------------------------------------------------
+% Self-contained, unofficial Robotics: Science and Systems-style sample paper.
+% For an actual submission, replace the page setup below with the official
+% style files and author kit for the relevant conference year.
+% -----------------------------------------------------------------------------
+\usepackage[letterpaper,top=0.70in,bottom=0.78in,left=0.72in,right=0.72in,
+            columnsep=0.24in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,multirow,array}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,backgrounds,calc,fit,positioning,shapes.geometric}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{balance}
+\usepackage{cite}
+\usepackage{hyperref}
+
+% --- Visual system ------------------------------------------------------------
+\definecolor{rssnavy}{HTML}{102A43}
+\definecolor{rssteal}{HTML}{087E8B}
+\definecolor{rssmint}{HTML}{DDF3F1}
+\definecolor{rssorange}{HTML}{F28C28}
+\definecolor{rssred}{HTML}{B23A48}
+\definecolor{rssgray}{HTML}{52606D}
+\definecolor{rsslight}{HTML}{F4F7F9}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=rssnavy,
+  citecolor=rssteal,
+  urlcolor=rssteal,
+  pdfauthor={Elena Varga, Noah Kim, and Priya Raman},
+  pdftitle={MOSAIC: Risk-Calibrated Terrain Memory for Legged Navigation under Perceptual Dropout}
+}
+
+\titleformat{\section}
+  {\large\bfseries\color{rssnavy}}{\thesection}{0.55em}{}
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{rssnavy}}{\thesubsection}{0.55em}{}
+\titlespacing*{\section}{0pt}{1.8ex plus .6ex minus .2ex}{0.8ex}
+\titlespacing*{\subsection}{0pt}{1.35ex plus .4ex minus .2ex}{0.55ex}
+\setlist[itemize]{leftmargin=*,nosep,topsep=3pt}
+\setlist[enumerate]{leftmargin=*,nosep,topsep=3pt}
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+\setlength{\textfloatsep}{7pt plus 2pt minus 2pt}
+\setlength{\floatsep}{6pt plus 2pt minus 2pt}
+\setlength{\intextsep}{6pt plus 2pt minus 2pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\scriptsize\color{rssgray}\textsc{Illustrative RSS-Style Manuscript}}
+\fancyhead[R]{\scriptsize\color{rssgray}\textsc{MOSAIC}}
+\fancyfoot[C]{\scriptsize\color{rssgray}\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+
+\newcommand{\method}{\textsc{Mosaic}}
+\newcommand{\vect}[1]{\boldsymbol{#1}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\best}[1]{\textbf{#1}}
+\newcommand{\second}[1]{\underline{#1}}
+
+% --- Embedded bibliography: main.tex has no external source dependencies. -----
+\begin{filecontents*}{\jobname.bib}
+@article{miki2022wild,
+  author  = {Miki, Takahiro and Lee, Joonho and Hwangbo, Jemin and Wellhausen, Lorenz and Koltun, Vladlen and Hutter, Marco},
+  title   = {Learning Robust Perceptive Locomotion for Quadrupedal Robots in the Wild},
+  journal = {Science Robotics},
+  volume  = {7},
+  number  = {62},
+  pages   = {eabk2822},
+  year    = {2022}
+}
+@article{hwangbo2019skills,
+  author  = {Hwangbo, Jemin and Lee, Joonho and Dosovitskiy, Alexey and Bellicoso, C. Dario and Tsounis, Vassilios and Koltun, Vladlen and Hutter, Marco},
+  title   = {Learning Agile and Dynamic Motor Skills for Legged Robots},
+  journal = {Science Robotics},
+  volume  = {4},
+  number  = {26},
+  pages   = {eaau5872},
+  year    = {2019}
+}
+@inproceedings{fankhauser2018rough,
+  author    = {Fankhauser, P{\'e}ter and Bjelonic, Marko and Bellicoso, C. Dario and Miki, Takahiro and Hutter, Marco},
+  title     = {Robust Rough-Terrain Locomotion with a Quadrupedal Robot},
+  booktitle = {Proceedings of the IEEE International Conference on Robotics and Automation},
+  pages     = {5761--5768},
+  year      = {2018}
+}
+@article{hornung2013octomap,
+  author  = {Hornung, Armin and Wurm, Kai M. and Bennewitz, Maren and Stachniss, Cyrill and Burgard, Wolfram},
+  title   = {{OctoMap}: An Efficient Probabilistic 3D Mapping Framework Based on Octrees},
+  journal = {Autonomous Robots},
+  volume  = {34},
+  number  = {3},
+  pages   = {189--206},
+  year    = {2013}
+}
+@inproceedings{oleynikova2017voxblox,
+  author    = {Oleynikova, Helen and Taylor, Zachary and Fehr, Marius and Siegwart, Roland and Nieto, Juan},
+  title     = {{Voxblox}: Incremental 3D Euclidean Signed Distance Fields for On-Board {MAV} Planning},
+  booktitle = {Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems},
+  pages     = {1366--1373},
+  year      = {2017}
+}
+@inproceedings{rudin2022minutes,
+  author    = {Rudin, Nikita and Hoeller, David and Reist, Philipp and Hutter, Marco},
+  title     = {Learning to Walk in Minutes Using Massively Parallel Deep Reinforcement Learning},
+  booktitle = {Proceedings of the Conference on Robot Learning},
+  volume    = {164},
+  pages     = {91--100},
+  year      = {2022}
+}
+@inproceedings{kendall2017uncertainty,
+  author    = {Kendall, Alex and Gal, Yarin},
+  title     = {What Uncertainties Do We Need in Bayesian Deep Learning for Computer Vision?},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {30},
+  year      = {2017}
+}
+@article{grandia2023perceptive,
+  author  = {Grandia, Ruben and Jenelten, Fabian and Yang, Shaohui and Farshidian, Farbod and Hutter, Marco},
+  title   = {Perceptive Locomotion through Nonlinear Model-Predictive Control},
+  journal = {IEEE Transactions on Robotics},
+  volume  = {39},
+  number  = {5},
+  pages   = {3402--3421},
+  year    = {2023}
+}
+@article{wellhausen2020terrain,
+  author    = {Wellhausen, Lorenz and Dosovitskiy, Alexey and Ranftl, Ren{\'e} and Walas, Krzysztof and Cadena, Cesar and Hutter, Marco},
+  title     = {Where Should I Look? Optimized Gaze Control for Whole-Body Collision Avoidance in Dynamic Environments},
+  journal   = {IEEE Robotics and Automation Letters},
+  volume    = {5},
+  number    = {2},
+  pages     = {3050--3057},
+  year      = {2020}
+}
+@article{schmid2020approach,
+  author    = {Schmid, Lukas and Pantic, Michael and Khanna, Raghav and Ott, Lionel and Siegwart, Roland and Nieto, Juan},
+  title     = {An Efficient Sampling-Based Method for Online Informative Path Planning in Unknown Environments},
+  journal   = {IEEE Robotics and Automation Letters},
+  volume    = {5},
+  number    = {2},
+  pages     = {1500--1507},
+  year      = {2020}
+}
+\end{filecontents*}
+
+\begin{document}
+
+\twocolumn[
+\begin{minipage}{\textwidth}
+  \noindent
+  \colorbox{rsslight}{%
+    \parbox{\dimexpr\textwidth-2\fboxsep\relax}{%
+      \centering\scriptsize\color{rssgray}
+      \textbf{Unofficial example.} This self-contained manuscript is not an official
+      Robotics: Science and Systems template and is not endorsed by the RSS Foundation.
+      Use the current official author kit, policies, and page limits for a real submission.}}
+  \vspace{12pt}
+
+  \begin{center}
+    {\fontsize{20}{23}\selectfont\bfseries\color{rssnavy}
+      MOSAIC: Risk-Calibrated Terrain Memory for Legged Navigation under Perceptual Dropout\par}
+    \vspace{9pt}
+    {\large Elena Varga$^{1}$, Noah Kim$^{2}$, and Priya Raman$^{1}$\par}
+    \vspace{5pt}
+    {\small
+      $^{1}$Field Robotics Laboratory, Northbridge Institute of Technology \quad
+      $^{2}$Embodied Intelligence Group, Atlas Research\\[-1pt]
+      \texttt{\{elena.varga, priya.raman\}@northbridge.edu} \quad
+      \texttt{noah.kim@atlas-research.org}\par}
+  \end{center}
+  \vspace{7pt}
+
+  \noindent\colorbox{rssmint}{%
+    \parbox{\dimexpr\textwidth-2\fboxsep\relax}{%
+      \small\textbf{Abstract---}
+      Perceptive legged robots often fail after a camera is occluded, a depth return is
+      missing, or a moving obstacle invalidates the local elevation map. We introduce
+      \method{}, a compact terrain memory that separates geometric state from calibrated
+      epistemic risk and exposes both to a constrained foothold controller. A recurrent
+      fusion module updates a robot-centric map from asynchronous depth and proprioceptive
+      observations; a risk head predicts whether each cell is stale, unobserved, or
+      inconsistent with recent contact. The controller then trades progress against
+      collision probability rather than treating every reconstructed height as equally
+      trustworthy. In an illustrative benchmark spanning 1,200 simulated courses and 48
+      hardware trials, \method{} reduces intervention rate from 21.7\% to 7.9\% under
+      structured sensor dropout while retaining 92\% of nominal traversal speed. Ablations
+      show that calibrated risk, contact-driven correction, and temporal memory each account
+      for distinct gains. These results support uncertainty as a first-class planning signal
+      for reliable mobility beyond continuously visible terrain.
+
+      \vspace{3pt}
+      \textbf{Keywords---}legged robots, terrain mapping, uncertainty calibration,
+      model-predictive control, sensor dropout.}}
+  \vspace{12pt}
+\end{minipage}
+]
+
+\section{Introduction}
+
+Legged machines can traverse gaps, stairs, and debris that defeat wheeled platforms, but
+their mobility depends on a fragile perception--planning interface. State-of-the-art
+locomotion systems combine learned policies \cite{hwangbo2019skills,miki2022wild} or
+model-predictive control (MPC) \cite{grandia2023perceptive} with a robot-centric terrain
+map. Most controllers consume the map as if its cells were equally current and reliable.
+In practice, a swinging leg occludes the camera, dust erases depth returns, and rapid body
+motion moves important footholds outside the field of view. The map remains numerically
+dense while the evidence supporting it quietly expires.
+
+This paper studies the following question: \emph{how should a legged robot move when its
+best geometric map may be wrong?} Our answer is \method{}, a short-horizon terrain memory
+whose output is a pair $(\hat{H},R)$: an estimated elevation map and a calibrated risk map.
+The representation makes missing evidence explicit, incorporates contact events as local
+geometric measurements, and permits the controller to choose whether uncertain progress is
+worth the predicted failure probability.
+
+The system, summarized in Fig.~\ref{fig:overview}, contributes:
+\begin{itemize}
+  \item a recurrent, robot-centric fusion model that preserves terrain evidence across
+        asynchronous observations without freezing stale geometry;
+  \item a cell-wise risk target derived from reconstruction error, visibility age, and
+        contact inconsistency, calibrated for use as a control cost; and
+  \item a risk-constrained foothold objective with a simple fallback behavior that remains
+        stable when the entire forward view is unavailable.
+\end{itemize}
+The numerical results in this example manuscript are clearly illustrative, but the
+experimental protocol, equations, reporting structure, and implementation details are
+specified to make the document a complete, adaptable research-paper source.
+
+\begin{figure*}[t]
+\centering
+\resizebox{0.98\textwidth}{!}{%
+\begin{tikzpicture}[
+  x=1cm,y=1cm,
+  block/.style={rounded corners=2pt,draw=rssnavy,thick,fill=white,
+                minimum height=1.05cm,minimum width=2.45cm,align=center,font=\small},
+  data/.style={rounded corners=2pt,draw=rssteal,thick,fill=rssmint,
+               minimum height=.75cm,minimum width=1.65cm,align=center,font=\scriptsize},
+  arrow/.style={-{Latex[length=2.1mm]},thick,color=rssgray},
+  risk/.style={rounded corners=2pt,draw=rssorange,thick,fill=rssorange!10,
+               minimum height=.82cm,minimum width=2.1cm,align=center,font=\small}
+]
+  \node[data] (depth) at (0,1.2) {Depth\ image};
+  \node[data] (state) at (0,0) {Body state\ \& contacts};
+  \node[block] (warp) at (3,0.6) {Egomotion warp\\and evidence fusion};
+  \node[block] (memory) at (6.15,0.6) {Recurrent terrain\\memory $\vect{m}_t$};
+  \node[data] (height) at (9.1,1.35) {Elevation\\$\hat H_t$};
+  \node[risk] (risk) at (9.1,-0.15) {Calibrated risk\\$R_t$};
+  \node[block,minimum width=2.75cm] (mpc) at (12.5,0.6)
+       {Risk-constrained\\foothold MPC};
+  \node[data,minimum width=1.8cm] (cmd) at (15.3,0.6) {Footsteps \&\\body command};
+
+  \draw[arrow] (depth) -- (warp);
+  \draw[arrow] (state) -- (warp);
+  \draw[arrow] (warp) -- (memory);
+  \draw[arrow] (memory) -- (height);
+  \draw[arrow] (memory) -- (risk);
+  \draw[arrow] (height) -- (mpc);
+  \draw[arrow] (risk) -- (mpc);
+  \draw[arrow] (mpc) -- (cmd);
+  \draw[arrow,rssorange] (state.south) -- ++(0,-.65) -| node[pos=.72,below,
+       font=\scriptsize,color=rssgray]{contact correction} (memory.south);
+
+  \begin{scope}[on background layer]
+    \node[fit=(depth)(state)(warp),fill=rsslight,rounded corners=4pt,inner sep=8pt] {};
+    \node[fit=(memory)(height)(risk),fill=rssteal!6,rounded corners=4pt,inner sep=8pt] {};
+  \end{scope}
+\end{tikzpicture}
+}
+\caption{\textbf{System overview.} \method{} converts asynchronous exteroceptive and
+proprioceptive observations into separate geometry and risk maps. Contact events correct
+local elevation, while the controller explicitly limits accumulated foothold risk.}
+\label{fig:overview}
+\end{figure*}
+
+\section{Related Work}
+
+\textbf{Terrain representations.}
+Occupancy maps such as OctoMap \cite{hornung2013octomap} and signed-distance fields such as
+Voxblox \cite{oleynikova2017voxblox} provide geometrically meaningful state for planning.
+Elevation maps are especially efficient for legged motion and have enabled robust
+rough-terrain locomotion \cite{fankhauser2018rough}. These representations generally encode
+sensor noise but do not expose the decision-specific probability that a proposed contact
+will fail after occlusion. \method{} retains the efficient $2.5$D interface while learning
+how map error evolves when evidence becomes stale.
+
+\textbf{Learning for locomotion.}
+Massively parallel simulation can produce capable locomotion policies in minutes
+\cite{rudin2022minutes}; perceptive policies have since demonstrated impressive outdoor
+mobility \cite{miki2022wild}. Learned policies can internalize some observation corruption,
+but their confidence is difficult to inspect or constrain. Our design instead learns a
+mapping module and gives an optimization-based controller an interpretable chance-risk
+budget.
+
+\textbf{Uncertainty-aware planning.}
+Aleatoric and epistemic uncertainty capture different failure sources
+\cite{kendall2017uncertainty}. Informative planners have used uncertainty to select sensing
+actions \cite{schmid2020approach}, while gaze-control methods reason about what the robot
+should observe \cite{wellhausen2020terrain}. We focus on the complementary interval after
+an observation is lost: memory preserves the last evidence, calibration tells the planner
+how quickly to stop trusting it, and contacts selectively repair the estimate.
+
+\section{Problem Formulation}
+
+Let the robot receive a depth frame $D_t$, base state $\vect{x}_t$, joint state
+$\vect{q}_t$, and binary foot contacts $\vect{c}_t$. Frames may be absent according to a
+dropout mask $d_t\in\{0,1\}$. We seek a local map on grid
+$\mathcal{G}\subset\R^2$ with cell size $s=0.05$~m. For cell $i$, the estimator produces
+height $\hat h_{t,i}$ and risk $r_{t,i}\in[0,1]$. Risk is defined operationally as
+\begin{equation}
+\begin{aligned}
+ r_{t,i}\approx\Pr\!\bigl(&\lvert \hat h_{t,i}-h^{\star}_{t,i}\rvert>\epsilon_h
+ \\[-2pt]
+ &\lor\ i\ \text{is non-traversable}\mid\mathcal{O}_{1:t}\bigr),
+\end{aligned}
+ \label{eq:risk}
+\end{equation}
+where $h^{\star}$ is the latent surface, $\epsilon_h=0.06$~m, and
+$\mathcal{O}_{1:t}$ is the available observation history. This event-based definition makes
+$r_{t,i}$ directly useful to planning, unlike an unscaled variance.
+
+At each control update the planner selects body inputs $\vect{u}_{0:T-1}$ and footholds
+$\vect{p}_{1:K}$ over horizon $T$. A plan is feasible if dynamics, reachability, friction,
+and clearance constraints hold and its aggregate contact risk stays below $\delta$:
+\begin{equation}
+ 1-\prod_{k=1}^{K}\bigl(1-r(\vect{p}_k)\bigr) \leq \delta.
+ \label{eq:chance}
+\end{equation}
+The independence approximation in Eq.~\eqref{eq:chance} is conservative only when local
+errors are weakly correlated; Sec.~\ref{sec:limitations} discusses this limitation.
+
+\section{MOSAIC}
+
+\subsection{Evidence-Preserving Terrain Memory}
+
+Depth pixels are back-projected, transformed into the current base frame, and splatted into
+a measurement map $Z_t=[H_t^{z},V_t^{z}]$, containing mean height and empirical variance.
+Previous memory is warped by planar odometry, $\bar{\vect m}_{t-1}=W(\vect m_{t-1},
+\vect{x}_{t-1:t})$. A gated convolutional update then computes
+\begin{align}
+ \vect g_t &= \sigma\!\left(f_g[Z_t,\bar{\vect m}_{t-1},A_t,C_t]\right),\\
+ \vect m_t &= \vect g_t\odot f_z(Z_t,C_t)
+            +(1-\vect g_t)\odot\bar{\vect m}_{t-1},
+ \label{eq:memory}
+\end{align}
+where $A_t$ is per-cell observation age and $C_t$ is a sparse contact map. If $d_t=0$,
+$Z_t$ is masked and the update propagates memory while increasing age. Unlike a standard
+ConvGRU, the gate receives explicit evidence age, preventing unchanged hidden state from
+being interpreted as fresh evidence.
+
+When foot $j$ establishes a stable contact, forward kinematics yields
+$\tilde h_j$. We update nearby cells using a Gaussian kernel $k_j(i)$ and contact variance
+$\sigma_c^2$:
+\begin{equation}
+ \hat h'_{t,i}=\frac{w_{t,i}\hat h_{t,i}+
+ k_j(i)\sigma_c^{-2}\tilde h_j}{w_{t,i}+k_j(i)\sigma_c^{-2}}.
+ \label{eq:contact}
+\end{equation}
+The same event reduces local risk only after slip and impact checks pass.
+
+\subsection{Calibrated Risk Head}
+
+Two decoder heads predict height $\hat H_t$ and risk logit $L_t$. Training sequences contain
+random rectangular occluders, dropped frames, motion blur, and depth-dependent noise. The
+risk label is one if the event in Eq.~\eqref{eq:risk} occurs within the cell. The loss is
+\begin{equation}
+\begin{aligned}
+ \mathcal{L}={}&\lambda_h\lVert M\odot(\hat H-H^\star)\rVert_1
+ +\lambda_n\mathcal{L}_{\mathrm{normal}}\\
+ &+\lambda_r\operatorname{BCE}(L,Y)
+ +\lambda_t\lVert\hat H_t-W(\hat H_{t-1})\rVert_1,
+\end{aligned}
+ \label{eq:loss}
+\end{equation}
+where $M$ marks valid ground truth. After training, a scalar temperature $\tau$ is fitted on
+a held-out validation set and $R=\sigma(L/\tau)$. We report expected calibration error
+(ECE) with 15 equal-mass bins and the Brier score; lower is better for both.
+
+\subsection{Risk-Constrained Foothold Control}
+
+The MPC stage extends a conventional centroidal objective with map terms:
+\begin{equation}
+ J=J_{\mathrm{track}}+\lambda_eJ_{\mathrm{effort}}
+ +\sum_{k=1}^{K}\left[
+ \lambda_s\lVert\nabla\hat H(\vect p_k)\rVert_2^2
+ +\lambda_r\,\phi(r(\vect p_k))\right],
+ \label{eq:objective}
+\end{equation}
+where $\phi(r)=-\log(1-r+10^{-4})$. Candidate contacts violating
+Eq.~\eqref{eq:chance} are removed before continuous trajectory refinement. If no feasible
+candidate remains for three replans, the robot lowers its body, shortens step length, and
+turns toward the lowest-risk visible sector. This deterministic fallback avoids asking the
+learned map to hallucinate a route through wholly unobserved space.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\columnwidth,height=4.25cm,
+  ybar,bar width=5.5pt,
+  ymin=0,ymax=30,
+  ylabel={Interventions (\%)},
+  symbolic x coords={Nominal,Random,Structured,Dust},
+  xtick=data,
+  xticklabel style={font=\scriptsize,rotate=18,anchor=east},
+  yticklabel style={font=\scriptsize},
+  ylabel style={font=\small},
+  legend style={font=\scriptsize,draw=none,fill=none,at={(0.5,1.02)},anchor=south,
+                legend columns=3},
+  axis line style={rssgray},
+  grid=major,grid style={rssgray!15},
+  enlarge x limits=0.16
+]
+\addplot[fill=rssgray!55,draw=rssgray] coordinates
+  {(Nominal,5.0) (Random,14.6) (Structured,21.7) (Dust,27.1)};
+\addplot[fill=rssteal!65,draw=rssteal] coordinates
+  {(Nominal,4.6) (Random,10.2) (Structured,13.8) (Dust,18.5)};
+\addplot[fill=rssorange!78,draw=rssorange] coordinates
+  {(Nominal,4.2) (Random,6.5) (Structured,7.9) (Dust,11.3)};
+\legend{Reactive,Memory-only,\method{}}
+\end{axis}
+\end{tikzpicture}
+\caption{Illustrative hardware intervention rate across sensing conditions. Structured
+dropout removes every fourth 0.8-s camera interval; dust uses a scattering overlay plus
+real missing-depth masks.}
+\label{fig:interventions}
+\end{figure}
+
+\section{Experimental Design}
+
+\subsection{Platforms and Environments}
+
+Simulation uses a 12-DoF, 32-kg quadruped in 1,200 procedurally generated $12\times8$~m
+courses. Obstacles include steps (0.08--0.28~m), gaps (0.10--0.35~m), ramps
+($5$--$28^{\circ}$), and compliant patches. Dynamics randomize mass ($\pm12\%$), friction
+($0.35$--$1.1$), latency (0--35~ms), and camera extrinsics ($\pm1.5^{\circ}$).
+
+Hardware evaluation uses the same controller on a 31-kg electric quadruped with a forward
+stereo camera at 30~Hz, state estimation at 400~Hz, and MPC at 50~Hz. Twelve physical
+courses combine pallets, foam blocks, gravel, and a three-step staircase. Each of four
+sensing conditions is repeated once per course, yielding 48 trials and 2.7~km of travel.
+An intervention is counted when a safety operator touches the stop control or supports the
+robot. Trials end after a fall, two interventions, or the 25-m goal.
+
+\subsection{Baselines and Metrics}
+
+We compare: (i) \textbf{Reactive}, which uses only the latest elevation frame;
+(ii) \textbf{DecayMap}, an exponential temporal filter whose confidence decays with age;
+(iii) \textbf{Memory-only}, the recurrent estimator without the risk head; and
+(iv) \method{}. All methods share locomotion tracking, state estimation, candidate
+footholds, and compute budget. Primary metrics are course success and operator
+interventions. We also report velocity normalized by the no-dropout command, height mean
+absolute error (MAE), and risk calibration.
+
+\subsection{Implementation Details}
+
+The memory encoder has four residual blocks with channels $(24,32,48,64)$; the recurrent
+state has 64 channels at quarter resolution and 1.8 million parameters. We train for 180k
+steps with AdamW, batch size 16, initial learning rate $3\times10^{-4}$, and cosine decay.
+Loss weights $(\lambda_h,\lambda_n,\lambda_r,\lambda_t)=(1.0,0.25,0.6,0.15)$ are selected
+once on validation data. The map spans $6.4\times4.8$~m. Estimation takes 5.8~ms on an
+embedded GPU; candidate evaluation and MPC take 4.1 and 7.6~ms, respectively.
+
+\section{Results}
+
+\begin{table*}[t]
+\centering
+\caption{Illustrative aggregate results. Mean $\pm$ standard error over simulation seeds;
+hardware success is reported over 48 trials. The best value is bold and the second best is
+underlined. All planners use the same locomotion controller and sensing stream.}
+\label{tab:main}
+\small
+\setlength{\tabcolsep}{7pt}
+\begin{tabular}{lcccccc}
+\toprule
+Method & Sim. success $\uparrow$ & HW success $\uparrow$ & Interventions $\downarrow$
+& Speed ratio $\uparrow$ & Height MAE (cm) $\downarrow$ & ECE $\downarrow$ \\
+\midrule
+Reactive     & $71.4\!\pm\!1.8$ & 31/48 & 17.1\% & \best{0.97} & 7.8 & --- \\
+DecayMap     & $79.6\!\pm\!1.5$ & 35/48 & 13.5\% & 0.90 & 6.1 & 0.142 \\
+Memory-only  & $84.8\!\pm\!1.3$ & 39/48 & 10.9\% & \second{0.94} & \second{4.7} & --- \\
+\method{}    & \best{$92.1\!\pm\!0.9$} & \best{44/48} & \best{7.5\%}
+             & 0.92 & \best{4.1} & \best{0.036} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsection{Navigation Reliability}
+
+Table~\ref{tab:main} shows that geometry memory alone improves simulated success by 13.4
+points over Reactive, confirming the value of evidence across occlusions. Adding calibrated
+risk produces a further 7.3-point gain while reducing normalized speed by only 0.02 relative
+to Memory-only. On hardware, \method{} completes 44 of 48 trials. Its four failures consist
+of two correlated map-warp errors, one unmodeled compliant obstacle, and one state-estimator
+reset. Figure~\ref{fig:interventions} shows the largest benefit under structured dropout,
+where old terrain can appear plausible for several steps.
+
+A paired bootstrap over courses gives a $-6.1$ percentage-point intervention difference
+between \method{} and Memory-only (95\% interval $[-10.4,-2.2]$). The result suggests that
+better reconstruction alone does not explain reliability: exposing the residual error to
+the controller changes which footholds are selected.
+
+\subsection{Calibration and Selective Planning}
+
+Before temperature scaling, the risk head has ECE 0.091 and is overconfident on cells older
+than 0.6~s. Scaling reduces ECE to 0.036 and Brier score from 0.118 to 0.082. When the planner
+rejects the riskiest 20\% of candidate footholds, the remaining set contains 91\% of valid
+contacts and only 24\% of invalid contacts. This selective behavior matters more than raw
+height MAE: two methods can reconstruct similar surfaces while assigning very different
+costs to unobserved gap edges.
+
+\begin{table}[t]
+\centering
+\caption{Ablation under structured dropout. ``Contact'' applies
+Eq.~\eqref{eq:contact}; ``cal.'' applies temperature calibration.}
+\label{tab:ablation}
+\small
+\setlength{\tabcolsep}{4.2pt}
+\begin{tabular}{lccc}
+\toprule
+Variant & Success $\uparrow$ & Interv. $\downarrow$ & Speed $\uparrow$ \\
+\midrule
+Full \method{}              & \best{90.8} & \best{7.9} & 0.92 \\
+$-$ contact correction      & 86.1 & 10.7 & 0.91 \\
+$-$ calibrated risk         & 82.9 & 13.2 & \best{0.95} \\
+$-$ temporal memory         & 76.8 & 16.9 & 0.93 \\
+$-$ fallback behavior       & 84.0 & 12.6 & 0.94 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Ablations}
+
+Table~\ref{tab:ablation} separates representation and control choices. Removing temporal
+memory causes the largest success loss because the planner repeatedly encounters empty
+foothold sets. Removing calibration causes the highest speed but nearly doubles
+interventions: unscaled scores are too confident under long occlusions. Contact correction
+primarily helps after a foot lands on gravel or foam, when visual height is biased. The
+fallback affects only 8.3\% of replans yet prevents five falls, indicating that explicit
+behavior for ``nothing is trustworthy'' is valuable.
+
+\section{Discussion}
+
+The core finding is not that a recurrent map always predicts geometry more accurately; it
+is that map confidence must have semantics that the planner can use. Three design rules
+emerge. First, age is evidence, not merely a feature: it should evolve even when perception
+is absent. Second, contact supplies sparse but decision-relevant ground truth and should
+update both geometry and trust. Third, calibration must be evaluated under the exact
+corruptions that matter at deployment, including bursts rather than only independent
+frame loss.
+
+The risk budget $\delta$ also offers a practical operating knob. Reducing it from 0.20 to
+0.08 lowers interventions by 2.4 points but reduces speed from 0.92 to 0.84; increasing it
+to 0.35 recovers nominal speed but erases half of the reliability gain. A deployment can
+therefore select a documented safety--throughput tradeoff without retraining locomotion.
+
+\subsection{Limitations and Responsible Use}
+\label{sec:limitations}
+
+The $2.5$D map cannot represent overhangs, rails, or multiple surfaces in one cell.
+Equation~\eqref{eq:chance} also ignores spatially correlated errors, so its probability is
+not a formal system-level safety guarantee. Fast deformable terrain can invalidate contact
+correction, and the fallback assumes enough room to lower and rotate the body. Finally, the
+reported study is an illustrative template rather than evidence for a deployable product.
+Real evaluation should publish seeds and code, include diverse weather and terrain, report
+all safety interventions, and retain an independent emergency stop. The method should not
+be used around people without a separate certified safety layer.
+
+\section{Conclusion}
+
+We presented \method{}, a terrain-memory interface that estimates both local geometry and
+the probability that geometry will mislead a foothold decision. By propagating evidence,
+repairing it with contact, calibrating risk, and constraining accumulated foothold risk, the
+system remains useful during perceptual dropout instead of silently treating stale terrain
+as truth. The illustrative experiments show complementary gains from temporal memory and
+risk-aware control. Future work should model correlated map errors, extend the representation
+to full 3D structure, and couple locomotion with active viewpoint selection.
+
+\section*{Acknowledgments}
+
+This sample manuscript uses fictional authors, affiliations, experiments, and numerical
+results for demonstration. It was designed as a complete, self-contained LaTeX starting
+point; no claim of real-world performance is intended.
+
+{\footnotesize
+  \bibliographystyle{unsrt}
+  \bibliography{\jobname}
+}
+
+\end{document}

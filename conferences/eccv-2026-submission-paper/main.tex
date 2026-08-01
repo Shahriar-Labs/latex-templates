@@ -1,0 +1,312 @@
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage[letterpaper,margin=0.75in,columnsep=0.25in]{geometry}
+\usepackage{filecontents}
+
+\begin{filecontents*}{references.bib}
+@inproceedings{voss2025temporal,
+  author    = {Voss, Elena and Kade, Lukas},
+  title     = {Temporal Sparse Attention for Video Instance Segmentation},
+  booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+  year      = {2025},
+  pages     = {3312--3321}
+}
+@inproceedings{adebayo2024xmem,
+  author    = {Adebayo, Marcus and Fontaine, Julie},
+  title     = {Memory-Augmented Mask Propagation for Long Video Sequences},
+  booktitle = {Proceedings of the European Conference on Computer Vision (ECCV)},
+  year      = {2024},
+  pages     = {201--218}
+}
+@inproceedings{nathan2024aot,
+  author    = {Nathan, Priya and Okafor, Daniel},
+  title     = {Associating Objects with Transformers for Efficient Segmentation},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year      = {2024},
+  pages     = {5544--5553}
+}
+@article{reyes2023deva,
+  author  = {Reyes, Thomas and Lindqvist, Sofia},
+  title   = {Decoupled Video Segmentation via Open-World Tracking},
+  journal = {Journal of Computer Vision and Image Understanding},
+  volume  = {228},
+  year    = {2023},
+  pages   = {103--119}
+}
+@inproceedings{park2023sparse,
+  author    = {Park, Soo-Jin and Meyer, Hannah},
+  title     = {Sparse Transformers for Dense Prediction Tasks},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2023},
+  pages     = {8891--8903}
+}
+@inproceedings{castillo2022stcn,
+  author    = {Castillo, Renata and Huang, Wei},
+  title     = {Space-Time Correspondence Networks for Video Object Segmentation},
+  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
+  year      = {2022},
+  pages     = {1122--1135}
+}
+@inproceedings{ferreira2022crossmodal,
+  author    = {Ferreira, Bruno and Takahashi, Aiko},
+  title     = {Cross-Modal Fusion for Referring Video Object Segmentation},
+  booktitle = {Proceedings of the European Conference on Computer Vision (ECCV)},
+  year      = {2022},
+  pages     = {442--459}
+}
+@article{osei2021efficient,
+  author  = {Osei, Kwame and Larsen, Freya},
+  title   = {Efficient Attention Mechanisms: A Survey for Dense Vision Tasks},
+  journal = {International Journal of Computer Vision},
+  volume  = {129},
+  year    = {2021},
+  pages   = {2765--2789}
+}
+@inproceedings{blake2021swin,
+  author    = {Blake, Nathaniel and Iyer, Ananya},
+  title     = {Hierarchical Shifted-Window Backbones for Video Understanding},
+  booktitle = {Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV)},
+  year      = {2021},
+  pages     = {9650--9660}
+}
+@inproceedings{delacroix2020memnet,
+  author    = {Delacroix, Marion and Sato, Kenji},
+  title     = {Recurrent Memory Networks for Semi-Supervised Video Segmentation},
+  booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+  year      = {2020},
+  pages     = {8207--8216}
+}
+@article{whitfield2019benchmark,
+  author  = {Whitfield, Owen and Novak, Barbora},
+  title   = {A Large-Scale Benchmark for Multi-Object Video Segmentation},
+  journal = {Pattern Recognition Letters},
+  volume  = {126},
+  year    = {2019},
+  pages   = {45--53}
+}
+\end{filecontents*}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{enumitem}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,arrows.meta,backgrounds,patterns,fit}
+\usepackage[colorlinks=true]{hyperref}
+
+\definecolor{meridianblue}{RGB}{27,53,95}
+\definecolor{apexteal}{RGB}{32,116,108}
+\definecolor{softgray}{RGB}{95,95,95}
+\definecolor{paperbg}{RGB}{247,247,244}
+
+\hypersetup{
+  linkcolor=meridianblue,
+  citecolor=apexteal,
+  urlcolor=apexteal
+}
+
+\newcommand{\secrule}{\vspace{-6pt}{\color{apexteal!60}\hrule height 0.6pt}\vspace{4pt}}
+\let\oldsection\section
+\renewcommand{\section}[1]{\oldsection{\color{meridianblue}#1}\secrule}
+\let\oldsubsection\subsection
+\renewcommand{\subsection}[1]{\oldsubsection{\color{meridianblue!85!black}#1}}
+
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+
+\newcommand{\methodname}{SparseFlow}
+
+\begin{document}
+
+% --- Unofficial-template notice (required: this is not an official ECCV file) ---
+\noindent\fbox{\parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule\relax}{%
+  \footnotesize\textbf{Unofficial template.} This layout is provided for convenience and is
+  \textbf{not} affiliated with, endorsed by, or sponsored by ECCV or its organisers.
+  Always check the official call for papers and use the current year's official style files
+  for a real submission.}}
+\vspace{0.8em}
+
+
+
+\twocolumn[
+  {\centering
+   {\Large\bfseries\color{meridianblue} \methodname: Cross-Modal Sparse Attention for Efficient Video Object Segmentation\par}
+   \vspace{10pt}
+   {\normalsize
+    Elena Voss$^{1}$ \quad Marcus Adebayo$^{2}$ \quad Priya Nathan$^{1}$ \quad Thomas Reyes$^{3}$ \par}
+   \vspace{4pt}
+   {\small\itshape
+    $^{1}$Meridian Institute of Vision Science \quad
+    $^{2}$Vertex Research Labs \quad
+    $^{3}$Nimbus AI\par}
+   \vspace{2pt}
+   {\small\ttfamily \{e.voss,p.nathan\}@meridian-ivs.edu \quad m.adebayo@vertexlabs.ai \quad t.reyes@nimbus.ai\par}
+   \vspace{12pt}
+  }
+  \begin{center}
+  \begin{minipage}{0.94\textwidth}
+  \small
+  {\bfseries\color{apexteal} Abstract.}
+  Video object segmentation methods that rely on dense frame-to-memory attention scale poorly with sequence length, since every query location attends to every stored feature regardless of relevance. We introduce \methodname{}, a cross-modal sparse attention mechanism that restricts memory lookups to a dynamically predicted neighborhood, cutting attention floating-point operations by an order of magnitude while retaining segmentation accuracy. \methodname{} couples a lightweight relevance predictor with a similarity-gated attention kernel, and further fuses appearance and motion cues through a shared sparse index rather than two independent branches. On two video segmentation benchmarks, \methodname{} matches or exceeds the mean intersection-over-union of dense-attention baselines while running at $2.6\times$ the frame rate on a single accelerator. We release ablations isolating the contribution of sparsity scheduling, cross-modal fusion, and memory-bank pruning.
+  \end{minipage}
+  \end{center}
+  \vspace{10pt}
+]
+
+\begin{tcolorbox}[
+  colback=paperbg,
+  colframe=apexteal,
+  boxrule=0.6pt,
+  arc=2pt,
+  left=6pt,right=6pt,top=4pt,bottom=4pt
+]
+\footnotesize
+\textbf{Unofficial template --- not an official ECCV publication.} This document is an independent, community-produced \LaTeX{} template that follows the general visual conventions of computer vision conference submissions. It is \textbf{not} produced, reviewed, or endorsed by the European Conference on Computer Vision (ECCV), its organizing committee, or any sponsoring body, and it carries no association with the official proceedings. Authors preparing a real submission \textbf{must} download the current year's official style files and formatting instructions from the official ECCV call for papers before use.
+\end{tcolorbox}
+
+\section{Introduction}
+Semi-supervised video object segmentation (VOS) asks a model to propagate an initial object mask through an entire video given only the annotation on the first frame. The dominant recipe stores encoded features from previously segmented frames in a memory bank and retrieves them at every query location through dense cross-attention~\cite{castillo2022stcn,adebayo2024xmem}. Dense retrieval is accurate because every query can, in principle, attend to the single most informative memory slot, but its cost grows linearly with the number of stored frames and quadratically with spatial resolution, which makes long, high-resolution sequences impractical on a single accelerator.
+
+A natural remedy is sparsity: restrict each query to a small, relevant subset of memory. Prior sparse-attention work in dense prediction largely targets a single modality, either appearance or motion, and applies a fixed sparsity pattern chosen at design time~\cite{park2023sparse,osei2021efficient}. We observe that appearance and motion cues are useful at different times during a video --- appearance dominates near object boundaries after a long static period, while motion dominates during fast, non-rigid deformation --- so a single fixed pattern under-uses one modality or the other throughout the sequence.
+
+\methodname{} addresses this with a \emph{shared} sparse index: a lightweight relevance predictor scores memory slots using both appearance and motion embeddings jointly, and only the highest-scoring slots are expanded into full attention keys and values. Because the index is shared, the model can shift emphasis between modalities frame-by-frame without maintaining two separate retrieval pipelines. Our contributions are:
+
+\begin{itemize}[leftmargin=*,itemsep=2pt,topsep=2pt]
+\item A cross-modal relevance predictor that produces a single sparse index over a joint appearance-motion memory bank, avoiding duplicate retrieval passes.
+\item A similarity-gated attention kernel (Eq.~\ref{eq:sparse-attn}) that provably reduces attention FLOPs while bounding the drop in retrieved-key coverage.
+\item An empirical study on two benchmarks showing that \methodname{} reaches $2.6\times$ the frame rate of dense-attention baselines at matched or better mean intersection-over-union.
+\end{itemize}
+
+\section{Related Work}
+\textbf{Memory-based video segmentation.} Space-time correspondence networks store per-frame keys and values and retrieve them with dense attention at every decoding step~\cite{castillo2022stcn}. Follow-up work reduces memory growth by periodically compacting the bank~\cite{adebayo2024xmem} or by associating tracked objects with transformer queries that persist across frames~\cite{nathan2024aot}. Decoupled approaches separate tracking from mask decoding entirely, trading some accuracy for open-world generalization~\cite{reyes2023deva}. All of these methods retain dense attention over the retained memory, which is precisely the cost \methodname{} targets.
+
+\textbf{Sparse and efficient attention.} Sparsity has been used to accelerate transformers in classification and detection by restricting attention to local windows or a fixed stride~\cite{blake2021swin}, and a broader survey catalogs efficient-attention variants for dense vision tasks~\cite{osei2021efficient}. Closest to our setting, learned sparse patterns for dense prediction select keys via a content-dependent gate rather than a fixed geometric pattern~\cite{park2023sparse}, though this line of work considers a single input modality. \methodname{} extends learned sparsity to a joint appearance-motion memory, which is, to our knowledge, not addressed by prior sparse-attention formulations for VOS.
+
+\textbf{Cross-modal fusion.} Referring video segmentation fuses visual and linguistic features through cross-attention blocks that remain dense over the visual tokens~\cite{ferreira2022crossmodal}. Earlier recurrent memory formulations propagate a single fused hidden state across frames rather than an explicit key-value store~\cite{delacroix2020memnet}. \methodname{} differs in fusing modalities \emph{before} the sparsity decision, so the relevance predictor --- not a downstream attention block --- is what reconciles appearance and motion.
+
+\section{Method}
+\methodname{} follows the encode--retrieve--decode structure common to memory-based VOS (Fig.~\ref{fig:architecture}), replacing the retrieval step with a cross-modal sparse variant.
+
+\subsection{Joint Appearance-Motion Memory}
+For frame $t$, an appearance encoder $E_a$ and a motion encoder $E_m$ produce feature maps that are projected into a shared embedding space of dimension $d$ and concatenated per spatial location into a single memory slot $\mathbf{m}_i \in \mathbb{R}^{d}$. The memory bank $\mathcal{M} = \{\mathbf{m}_i\}_{i=1}^{N}$ therefore has one entry per spatial location per stored frame, rather than one bank for appearance and a second for motion.
+
+\subsection{Cross-Modal Sparse Attention}
+For a query location $q$ with embedding $\mathbf{q} \in \mathbb{R}^{d}$, a lightweight relevance predictor $g_\theta$ scores every memory slot with a low-rank bilinear form, and only slots whose score exceeds a per-query adaptive threshold $\tau_q$ are retained as the neighborhood $\mathcal{N}(q)$. Attention is then computed only over $\mathcal{N}(q)$:
+\begin{equation}
+\label{eq:sparse-attn}
+\alpha_{qi} = \frac{\exp\!\left(\mathbf{q}^{\top}\mathbf{k}_i / \sqrt{d}\right)\cdot \mathbb{1}\!\left[g_\theta(\mathbf{q}, \mathbf{m}_i) > \tau_q\right]}{\displaystyle\sum_{j \in \mathcal{N}(q)} \exp\!\left(\mathbf{q}^{\top}\mathbf{k}_j / \sqrt{d}\right)}\,.
+\end{equation}
+The threshold $\tau_q$ is set so that $|\mathcal{N}(q)|$ never exceeds a fixed budget $k$, which bounds worst-case attention cost at $O(Nk)$ instead of $O(N^2)$. We find $k$ as small as $32$ out of memory banks holding several thousand slots is sufficient once relevance scoring is trained end-to-end (Sec.~\ref{sec:experiments}), because $g_\theta$ quickly learns to route appearance-dominant queries toward appearance-rich slots and motion-dominant queries toward motion-rich slots without an explicit modality label.
+
+\subsection{Training Objective}
+We train $g_\theta$ jointly with the segmentation decoder using a combination of the standard cross-entropy mask loss $\mathcal{L}_{\mathrm{mask}}$ and an auxiliary coverage loss $\mathcal{L}_{\mathrm{cov}}$ that penalizes the predictor when it excludes a slot that a dense attention oracle (computed on a random 10\% of training steps only, for efficiency) would have weighted highly:
+\begin{equation}
+\mathcal{L} = \mathcal{L}_{\mathrm{mask}} + \lambda \, \mathcal{L}_{\mathrm{cov}}, \qquad \lambda = 0.1 .
+\end{equation}
+Without $\mathcal{L}_{\mathrm{cov}}$ the predictor collapses to a narrow, purely appearance-driven neighborhood; the ablation in Sec.~\ref{sec:results} quantifies this effect.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=6mm and 6mm,
+  block/.style={rectangle, rounded corners=2pt, draw=meridianblue, fill=meridianblue!8,
+                minimum width=2.5cm, minimum height=0.8cm, align=center, font=\scriptsize},
+  mem/.style={cylinder, shape border rotate=90, draw=apexteal, fill=apexteal!12,
+              minimum width=1.7cm, minimum height=0.8cm, align=center, font=\scriptsize},
+  arrow/.style={-{Latex[length=1.8mm]}, thick, meridianblue}
+]
+  \node[block] (frame) {Video frame $t$};
+  \node[block, below=of frame] (enc) {Appearance / motion encoders};
+  \node[mem, below=of enc] (mem) {Joint memory bank $\mathcal{M}$};
+  \node[block, below=of mem] (sparse) {Relevance predictor $g_\theta$ + sparse attention};
+  \node[block, below=of sparse] (dec) {Mask decoder};
+  \node[block, below=of dec] (out) {Output mask $t$};
+
+  \draw[arrow] (frame) -- (enc);
+  \draw[arrow] (enc) -- (mem);
+  \draw[arrow] (enc.east) -- ++(0.9,0) |- (sparse.east);
+  \draw[arrow] (mem) -- (sparse);
+  \draw[arrow] (sparse) -- (dec);
+  \draw[arrow] (dec) -- (out);
+  \draw[arrow] (out.west) -- ++(-1.0,0) |- (mem.west);
+
+  \begin{scope}[on background layer]
+    \node[fill=softgray!8, rounded corners=3pt, fit=(frame)(enc)(mem)(sparse)(dec)(out), inner sep=6pt] {};
+  \end{scope}
+\end{tikzpicture}
+\caption{\methodname{} pipeline. Appearance and motion features are fused into a single memory bank; a shared relevance predictor selects a sparse per-query neighborhood before attention and decoding. The predicted mask is re-encoded and written back to the memory bank for subsequent frames.}
+\label{fig:architecture}
+\end{figure}
+
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Datasets}
+We evaluate on \textbf{MeridianVOS}, a 480-video benchmark with an average of 74 frames per clip and dense multi-object annotations, and \textbf{ApexTrack-400}, a 400-video benchmark emphasizing fast non-rigid motion and frequent occlusion. Both follow the standard semi-supervised protocol: the first-frame mask is given, and the model predicts masks for every subsequent frame. We report mean Jaccard index $\mathcal{J}$, boundary F-measure $\mathcal{F}$, and their average $\mathcal{J}\&\mathcal{F}$, alongside inference frame rate on a single accelerator at 480p.
+
+\subsection{Baselines and Implementation}
+We compare against three dense-attention memory baselines re-implemented under an identical training schedule: a lightweight space-time correspondence network (\emph{STCN-lite}, following~\cite{castillo2022stcn}), a compacted memory transformer (\emph{XMem-S}, following~\cite{adebayo2024xmem}), and a tracking-associated transformer (\emph{AOT-T}, following~\cite{nathan2024aot}). All models, including \methodname{}, use the same backbone and are trained for 120k iterations with a batch size of 16, an initial learning rate of $3\times10^{-4}$ decayed with a cosine schedule, and the same augmentation pipeline (random affine, color jitter, and cutout). \methodname{} uses embedding dimension $d=128$, retrieval budget $k=32$, and $\lambda=0.1$ unless stated otherwise.
+
+\section{Results}
+\label{sec:results}
+
+\begin{table*}[t]
+\centering
+\caption{Comparison on MeridianVOS and ApexTrack-400. FPS is measured at 480p on a single accelerator, averaged over the test split. Best result per column in \textbf{bold}.}
+\label{tab:results}
+\small
+\begin{tabular}{lccccccc}
+\toprule
+& \multicolumn{3}{c}{MeridianVOS} & \multicolumn{3}{c}{ApexTrack-400} & \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+Method & $\mathcal{J}$ (\%) & $\mathcal{F}$ (\%) & $\mathcal{J}\&\mathcal{F}$ & $\mathcal{J}$ (\%) & $\mathcal{F}$ (\%) & $\mathcal{J}\&\mathcal{F}$ & FPS \\
+\midrule
+STCN-lite~\cite{castillo2022stcn}   & 82.1 & 84.6 & 83.4 & 74.8 & 76.2 & 75.5 & 22.4 \\
+XMem-S~\cite{adebayo2024xmem}       & 83.4 & 85.9 & 84.7 & 76.1 & 77.5 & 76.8 & 27.1 \\
+AOT-T~\cite{nathan2024aot}          & 84.0 & 86.3 & 85.2 & 76.9 & 78.0 & 77.5 & 25.8 \\
+\midrule
+\textbf{\methodname{} (ours)} & \textbf{84.3} & \textbf{86.7} & \textbf{85.5} & \textbf{77.6} & \textbf{78.9} & \textbf{78.3} & \textbf{70.6} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Table~\ref{tab:results} summarizes the main comparison. \methodname{} matches or slightly exceeds all three dense-attention baselines on both benchmarks while running at $2.6$--$3.2\times$ their frame rate. The gain is largest on ApexTrack-400, where frequent occlusion produces long stretches in which most stored memory slots are stale; a sparse, content-dependent neighborhood avoids wasting attention capacity on those slots, whereas dense attention must down-weight them at every query.
+
+\begin{table}[t]
+\centering
+\caption{Ablation on MeridianVOS. Removing cross-modal fusion or the coverage loss $\mathcal{L}_{\mathrm{cov}}$ degrades $\mathcal{J}\&\mathcal{F}$; a fixed sparsity budget without learned relevance is worse still.}
+\label{tab:ablation}
+\small
+\begin{tabular}{lcc}
+\toprule
+Variant & $\mathcal{J}\&\mathcal{F}$ & FPS \\
+\midrule
+Full \methodname{} & \textbf{85.5} & 70.6 \\
+w/o $\mathcal{L}_{\mathrm{cov}}$ & 84.1 & 71.0 \\
+w/o cross-modal fusion (appearance only) & 82.9 & 73.4 \\
+Fixed stride pattern, $k=32$ & 80.6 & 69.8 \\
+Dense attention (no sparsity) & 85.6 & 24.1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:ablation} isolates each component. The coverage loss contributes $1.4$ points of $\mathcal{J}\&\mathcal{F}$ at negligible frame-rate cost, confirming that it prevents the predictor from collapsing onto a narrow appearance-only neighborhood. Replacing cross-modal fusion with an appearance-only memory costs a further $1.2$ points, and a fixed geometric sparsity pattern --- the closest prior approach~\cite{park2023sparse} adapted to our memory layout --- loses $4.9$ points relative to the full model, which suggests that content-dependent selection, not sparsity alone, is responsible for most of the accuracy retained. Notably, removing sparsity altogether (dense attention over the full joint memory) recovers only $0.1$ additional points of $\mathcal{J}\&\mathcal{F}$ at roughly one third the frame rate, indicating that the sparse neighborhood already captures nearly all attention mass that matters for the final mask.
+
+\section{Discussion}
+The results suggest that the accuracy cost of sparsity in VOS is small once the sparsity pattern is learned jointly with the task rather than fixed a priori, and that the main benefit of cross-modal fusion is not raw accuracy but robustness during occlusion, where a single modality's memory becomes unreliable. Two limitations are worth noting. First, the relevance predictor $g_\theta$ is trained with an auxiliary dense-attention oracle on a subset of steps, which adds training-time overhead that does not appear in our reported inference FPS; a fully sparse training regime is left to future work. Second, our retrieval budget $k$ is fixed across the whole sequence; videos with many simultaneously visible objects may benefit from a budget that scales with the number of active tracks rather than a constant per-query value. We also observed that \methodname{}'s advantage narrows on short clips (under 20 frames), where the memory bank is small enough that dense attention is already cheap; sparsity mainly pays off as sequence length grows, which matches our motivating use case of long, uncut video.
+
+\section{Conclusion}
+We presented \methodname{}, a cross-modal sparse attention mechanism for video object segmentation that fuses appearance and motion into a single memory bank and retrieves from it through a learned, content-dependent sparse neighborhood. Across two benchmarks, \methodname{} matches dense-attention accuracy at a fraction of the attention cost, and our ablations indicate that learned relevance, rather than sparsity in isolation, drives this result. We plan to explore sequence-adaptive retrieval budgets and a fully sparse training procedure as directions for future work.
+
+\section*{Acknowledgments}
+We thank the Meridian Institute of Vision Science compute cluster team for infrastructure support, and colleagues at Vertex Research Labs and Nimbus AI for feedback on early drafts of this work.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

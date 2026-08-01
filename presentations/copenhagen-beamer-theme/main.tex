@@ -1,0 +1,330 @@
+\documentclass{beamer}
+
+% Theme configuration
+\usetheme{Copenhagen}
+
+% Package imports
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{fontawesome5}
+
+% PGFPlots settings
+\pgfplotsset{compat=1.18}
+
+% TikZ libraries
+\usetikzlibrary{positioning, calc, shapes.geometric, backgrounds, patterns}
+
+% Define custom color palette
+\definecolor{SynapseNavy}{RGB}{20,40,80}
+\definecolor{SynapseCyan}{RGB}{0,150,200}
+\definecolor{SynapseTeal}{RGB}{0,120,110}
+\definecolor{SynapseCharcoal}{RGB}{40,40,40}
+
+% Apply color palette to Beamer components
+\setbeamercolor{structure}{fg=SynapseNavy}
+\setbeamercolor{palette primary}{bg=SynapseNavy,fg=white}
+\setbeamercolor{palette secondary}{bg=SynapseCyan,fg=white}
+\setbeamercolor{palette tertiary}{bg=SynapseCharcoal,fg=white}
+\setbeamercolor{palette quaternary}{bg=black,fg=white}
+
+% Apply block colors
+\setbeamercolor{block title}{bg=SynapseNavy,fg=white}
+\setbeamercolor{block body}{bg=SynapseNavy!10,fg=black}
+\setbeamercolor{block title alerted}{bg=red!75!black,fg=white}
+\setbeamercolor{block body alerted}{bg=red!10,fg=black}
+\setbeamercolor{block title example}{bg=SynapseTeal,fg=white}
+\setbeamercolor{block body example}{bg=SynapseTeal!10,fg=black}
+
+% Metadata
+\title[Synapse ML]{Synapse ML: Decentralized Neural Network Training Protocols over Edge Networks}
+\subtitle{Scaling Deep Learning on Heterogeneous Distributed Compute}
+\author[Dr. Evelyn Carter]{Dr. Evelyn Carter\inst{1} \and Marcus Vance\inst{2} \and Sarah Jenkins\inst{2}}
+\institute[Synapse \& Meridian]{
+  \inst{1} Synapse Research Institute \\
+  \inst{2} Department of Distributed Systems, Meridian Technology Group
+}
+\date[LetX 2026]{LetX Research Conference, August 2026}
+
+\begin{document}
+
+% Slide 1: Title Slide
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+% Slide 2: Table of Contents
+\begin{frame}{Talk Outline}
+  \tableofcontents[hidesubsections]
+\end{frame}
+
+\section{Introduction \& Motivation}
+
+% Slide 3: Background: Centralized vs. Decentralized Compute
+\begin{frame}{Background: Centralized vs. Decentralized Compute}
+  \begin{itemize}
+    \item<1-> \textbf{Centralized Systems:} Heavy reliance on hyper-scale data centers (e.g., cloud platforms).
+    \begin{itemize}
+      \item High throughput and low latency within the cluster.
+      \item Single point of failure and high operational costs.
+    \end{itemize}
+    \item<2-> \textbf{Decentralized Architecture:} Leveraging edge nodes and idle resource pools.
+    \begin{itemize}
+      \item Lower network egress and geo-distributed latency benefits.
+      \item High heterogeneity in hardware capabilities and network bandwidth.
+    \end{itemize}
+    \item<3-> \textbf{The Synapse Vision:} Orchestrate model training across unstable, low-power edge nodes without sacrificing convergence speed.
+  \end{itemize}
+\end{frame}
+
+% Slide 4: Challenges in Distributed Edge Networks
+\begin{frame}{Challenges in Distributed Edge Networks}
+  Training neural networks over consumer-grade nodes introduces severe bottleneck vectors:
+  \vspace{0.3cm}
+  \begin{itemize}
+    \item \textbf{Network Fluctuation:} Slower uplinks lead to synchronization lag.
+    \pause
+    \item \textbf{Hardware Heterogeneity:} Devices ranging from low-power edge accelerators to high-end workstations.
+    \pause
+    \item \textbf{Security \& Trust:} Nodes can join/leave arbitrarily, raising data privacy issues.
+    \pause
+    \item \textbf{Straggler Nodes:} Slow nodes delay gradient aggregation under traditional synchronous protocols.
+  \end{itemize}
+\end{frame}
+
+\section{Architecture \& Protocol Design}
+
+% Slide 5: The Synapse Protocol Stack
+\begin{frame}{The Synapse Protocol Stack}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \textbf{Key Layered Modules:}
+      \begin{itemize}
+        \item \textbf{Consensus Layer:} Filters updates to block malicious gradients.
+        \item \textbf{Aggregation Layer:} Runs asynchronous federated averaging.
+        \item \textbf{Transport Layer:} Compresses weights via quantization.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \begin{tikzpicture}[
+          layer/.style={rectangle, draw=SynapseNavy, fill=SynapseNavy!10, rounded corners, minimum width=3.8cm, minimum height=0.55cm, align=center, font=\scriptsize\sffamily},
+          arrow/.style={-stealth, thick, SynapseCharcoal}
+        ]
+          \node (app) [layer] {Application Layer \\ (Vertex / Nimbus CLI)};
+          \node (agg) [layer, below=0.2cm of app] {Aggregation Layer \\ (Asynchronous FedAvg)};
+          \node (cons) [layer, below=0.2cm of agg] {Consensus Layer \\ (Proof-of-Accuracy)};
+          \node (trans) [layer, below=0.2cm of cons] {Transport Layer \\ (Quantized Gradient)};
+          
+          \draw [arrow] (app) -- (agg);
+          \draw [arrow] (agg) -- (cons);
+          \draw [arrow] (cons) -- (trans);
+        \end{tikzpicture}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 6: Mathematical Formulation
+\begin{frame}{Mathematical Formulation}
+  In Synapse ML, we formulate the global objective function as:
+  \begin{equation}
+    \min_{w \in \mathbb{R}^d} F(w) = \sum_{k=1}^K p_k F_k(w)
+  \end{equation}
+  where $K$ is the total active edge nodes, and $p_k = n_k / N$ (with $N = \sum_{k=1}^K n_k$) represents the node weighting factor.
+  Under our asynchronous protocol, the weight update at step $t+1$ is defined as:
+  \begin{equation}
+    w_{t+1} = w_t - \eta \nabla F_k(w_{t - \tau_k(t)})
+  \end{equation}
+  where $\tau_k(t)$ is the gradient staleness factor.
+\end{frame}
+
+% Slide 7: Algorithmic Framework
+\begin{frame}{Asynchronous Aggregation Algorithm}
+  \textbf{Synapse Server-Side Update Protocol}
+  \hrule\vspace{0.2cm}
+  \begin{enumerate}
+    \item \textbf{Initialize} global model parameters $w_0$ and node contribution vector $c_0$.
+    \item \textbf{On receiving} local update $g_k$ from node $k$ at time $t$:
+    \begin{enumerate}
+      \item Calculate the dynamic staleness parameter: $\tau = t - t_{sent}$.
+      \item Compute learning rate scaling factor: $\alpha(\tau) = \frac{\alpha_0}{1 + \gamma \tau}$.
+      \item Update global parameters:
+      \begin{equation*}
+        w_{t+1} \leftarrow w_t - \alpha(\tau) \cdot g_k
+      \end{equation*}
+    \end{enumerate}
+    \item \textbf{Broadcast} the updated global weights $w_{t+1}$ back to node $k$.
+    \item \textbf{Repeat} until target validation accuracy $\epsilon$ is reached.
+  \end{enumerate}
+  \hrule
+\end{frame}
+
+\section{Performance \& Evaluation}
+
+% Slide 8: Experimental Setup & Workloads
+\begin{frame}{Experimental Setup \& Workloads}
+  We evaluated the Synapse ML protocol across three distinct cluster configurations:
+  \vspace{0.3cm}
+  \begin{table}
+    \centering
+    \footnotesize
+    \setlength{\tabcolsep}{5pt}
+    \begin{tabular}{lccc}
+      \toprule
+      Configuration & Active Nodes & Target Model & Dataset Size \\
+      \midrule
+      Synapse-Lite & 50 & MobileNetV3 & 1.2M Samples \\
+      Synapse-Standard & 250 & ResNet-50 & 5.0M Samples \\
+      Synapse-Enterprise & 1000 & GPT-Small (Fictional) & 20.0M Tokens \\
+      \bottomrule
+    \end{tabular}
+    \caption{Experimental environment configurations and target architectures.}
+  \end{table}
+  \vspace{0.2cm}
+  All clusters operate on simulated network latency bounds ranging from 10ms to 500ms to mimic realistic edge conditions.
+\end{frame}
+
+% Slide 9: Performance Results
+\begin{frame}{Performance Metrics \& Convergence}
+  \begin{block}{Throughput Optimization}
+    Synapse ML yields a $3.4\times$ improvement in gradient processing speeds compared to vanilla asynchronous federated learning schemes on edge networks.
+  \end{block}
+  \begin{exampleblock}{Convergence Validation}
+    Models trained under Synapse ML converged to baseline accuracies within 4.5\% of the centralized equivalents (e.g., ImageNet classification).
+  \end{exampleblock}
+  \begin{alertblock}{Bandwidth Limitation Notice}
+    When node uplink bandwidth falls below 5 Mbps, the compression ratio dynamically scales down to maintain synchronization rates.
+  \end{alertblock}
+\end{frame}
+
+% Slide 10: Scalability Analysis
+\begin{frame}{Scalability Analysis}
+  Comparing system scaling throughput against baseline models:
+  \begin{center}
+    \begin{tikzpicture}
+      \begin{axis}[
+        width=0.85\textwidth,
+        height=5.0cm,
+        xlabel={Number of Edge Nodes},
+        ylabel={Throughput (kSPS)},
+        xmin=0, xmax=1000,
+        ymin=0, ymax=1000,
+        xtick={0,200,400,600,800,1000},
+        ytick={0,200,400,600,800,1000},
+        legend pos=north west,
+        ymajorgrids=true,
+        grid style=dashed,
+        font=\small
+      ]
+      \addplot[
+        color=SynapseNavy,
+        mark=square,
+        line width=1.5pt,
+      ]
+      coordinates {
+        (50,60)(250,280)(500,530)(750,780)(1000,940)
+      };
+      \addlegendentry{Synapse ML}
+      
+      \addplot[
+        color=SynapseCyan,
+        mark=triangle,
+        line width=1.5pt,
+      ]
+      coordinates {
+        (50,55)(250,200)(500,340)(750,420)(1000,460)
+      };
+      \addlegendentry{Baseline (Meridian v1)}
+      \end{axis}
+    \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+\section{Case Studies \& Roadmaps}
+
+% Slide 11: Real-World Deployments
+\begin{frame}{Real-World Deployments}
+  We deployed Synapse ML across pilot environments with our partners:
+  \vspace{0.3cm}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Nexa Core Services}
+        \begin{itemize}
+          \item Connected 1,200 mobile application endpoints.
+          \item Trained on-device keyboard predictor models asynchronously.
+          \item Reduced cloud compute ingress fees by 42\%.
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Apex Smart Systems}
+        \begin{itemize}
+          \item Connected 350 regional processing hubs.
+          \item Aggregated thermal profile models across hardware clusters.
+          \item Zero downtime reported during network partition events.
+        \end{itemize}
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 12: Future Milestones
+\begin{frame}{Future Milestones \& Roadmap}
+  Projected development schedule for Synapse ML (2026--2027):
+  \vspace{0.8cm}
+  \begin{center}
+    \begin{tikzpicture}[
+      node distance=1.2cm,
+      milestone/.style={rectangle, draw=SynapseNavy, fill=SynapseNavy!10, rounded corners, minimum width=2.0cm, minimum height=1.0cm, align=center, font=\scriptsize\sffamily},
+      line/.style={draw=SynapseNavy, line width=1.5pt}
+    ]
+      % Draw nodes
+      \node (q3) [milestone] {\textbf{Q3 2026} \\ Protocol \\ Spec Draft};
+      \node (q4) [milestone, right=0.6cm of q3] {\textbf{Q4 2026} \\ Simulated \\ Testbed};
+      \node (q1) [milestone, right=0.6cm of q4] {\textbf{Q1 2027} \\ Edge Core \\ Release};
+      \node (q2) [milestone, right=0.6cm of q1] {\textbf{Q2 2027} \\ Vertex / LetX \\ Integration};
+
+      % Connect nodes
+      \draw [line, ->] (q3) -- (q4);
+      \draw [line, ->] (q4) -- (q1);
+      \draw [line, ->] (q1) -- (q2);
+    \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+% Slide 13: Summary of Contributions
+\begin{frame}{Summary of Contributions}
+  \begin{itemize}
+    \item<1-> \textbf{Robust Architecture:} Desynchronized parameter exchange reduces network congestion on low-bandwidth uplinks.
+    \item<2-> \textbf{Mathematical Rigor:} Formulated convergence bounds under arbitrary staleness bounds.
+    \item<3-> \textbf{Practical Validation:} Proven scalability up to 1,000 active edge nodes with stable model accuracy.
+    \item<4-> \textbf{Real-world Adoption:} Successfully piloted in industrial settings via Nexa Core and Apex Smart Systems.
+  \end{itemize}
+\end{frame}
+
+% Slide 14: Q&A / Closing Slide
+\begin{frame}[plain]
+  \begin{center}
+    \Huge\color{SynapseNavy} Thank You!
+    
+    \vspace{0.8cm}
+    
+    \large\color{SynapseCharcoal} Questions \& Discussion
+    
+    \vspace{1.0cm}
+    
+    \small
+    \begin{tabular}{rl}
+      \textbf{Contact:} & carter@synapse.org \\
+      \textbf{Project Website:} & letx.app/synapse-ml \\
+      \textbf{Repository:} & github.com/synapse/vertex-core
+    \end{tabular}
+  \end{center}
+\end{frame}
+
+\end{document}

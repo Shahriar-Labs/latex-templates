@@ -1,0 +1,641 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt,aspectratio=169]{beamer}
+
+% A self-contained SINTEF-inspired Beamer presentation.
+% Compile with: latexmk -pdf -interaction=nonstopmode main.tex
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[default]{sourcesanspro}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{fontawesome5}
+\usepackage{microtype}
+\usetikzlibrary{arrows.meta,calc,positioning,shapes.geometric}
+\pgfplotsset{compat=1.18}
+
+% -----------------------------------------------------------------------------
+% SINTEF-inspired visual system
+% -----------------------------------------------------------------------------
+\definecolor{SintefBlue}{HTML}{005B82}
+\definecolor{SintefDeep}{HTML}{003B5C}
+\definecolor{SintefGreen}{HTML}{14B878}
+\definecolor{SintefLime}{HTML}{CDEFE1}
+\definecolor{SintefSky}{HTML}{DDEFF5}
+\definecolor{SintefRed}{HTML}{BE3C37}
+\definecolor{SintefYellow}{HTML}{C89B14}
+\definecolor{SintefInk}{HTML}{183642}
+\definecolor{SintefMuted}{HTML}{607781}
+\definecolor{SintefGrey}{HTML}{EBEBE6}
+\definecolor{SintefPaper}{HTML}{F8FAF9}
+
+\usetheme{default}
+\usefonttheme{professionalfonts}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{items}[circle]
+\setbeamersize{text margin left=9mm,text margin right=9mm}
+
+\setbeamercolor{normal text}{fg=SintefInk,bg=white}
+\setbeamercolor{structure}{fg=SintefGreen}
+\setbeamercolor{alerted text}{fg=SintefRed}
+\setbeamercolor{frametitle}{fg=SintefDeep,bg=white}
+\setbeamercolor{block title}{fg=white,bg=SintefBlue}
+\setbeamercolor{block body}{fg=SintefInk,bg=SintefSky!55!white}
+\setbeamercolor{block title example}{fg=white,bg=SintefGreen}
+\setbeamercolor{block body example}{fg=SintefInk,bg=SintefLime!70!white}
+\setbeamercolor{block title alerted}{fg=white,bg=SintefRed}
+\setbeamercolor{block body alerted}{fg=SintefInk,bg=SintefRed!8!white}
+
+\setbeamerfont{title}{size=\fontsize{29}{32},series=\bfseries}
+\setbeamerfont{subtitle}{size=\fontsize{14}{17},series=\mdseries}
+\setbeamerfont{frametitle}{size=\fontsize{18}{21},series=\bfseries}
+\setbeamerfont{framesubtitle}{size=\small,series=\mdseries}
+\setbeamerfont{block title}{size=\small,series=\bfseries}
+\setbeamerfont{block body}{size=\small}
+\setbeamerfont{footline}{size=\fontsize{6.5}{7.5}}
+
+\setbeamertemplate{blocks}[rounded][shadow=false]
+\setbeamertemplate{itemize item}{\raisebox{.15ex}{\scriptsize\color{SintefGreen}$\bullet$}}
+\setbeamertemplate{itemize subitem}{\raisebox{.15ex}{\tiny\color{SintefBlue}$\bullet$}}
+\setlength{\leftmargini}{4.2mm}
+\setlength{\leftmarginii}{3.5mm}
+
+% Compact wordmark used in lieu of an external logo asset.
+\newcommand{\sintefmark}[1][SintefBlue]{%
+  {\color{#1}\fontsize{11}{11}\selectfont\bfseries\sffamily SINTEF}%
+}
+
+\newcommand{\eyebrow}[1]{%
+  {\color{SintefGreen}\bfseries\scriptsize\MakeUppercase{#1}}\par\vspace{1mm}%
+}
+
+\newcommand{\metric}[3]{%
+  \begin{tikzpicture}
+    \node[fill=#1!11,rounded corners=1.5mm,minimum width=.96\linewidth,
+      minimum height=18mm,inner sep=2.6mm,align=left] (m) {%
+      \makebox[.82\linewidth][l]{%
+        {\color{#1}\fontsize{24}{25}\selectfont\bfseries #2}\hfill
+        {\color{SintefMuted}\scriptsize\begin{tabular}{r}#3\end{tabular}}}};
+    \fill[#1] (m.north west) rectangle ([xshift=1.7mm]m.south west);
+  \end{tikzpicture}%
+}
+
+\newcommand{\sectionframe}[2]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture,overlay]
+      \fill[SintefBlue] (current page.south west) rectangle (current page.north east);
+      \fill[SintefGreen] (current page.south west) rectangle
+        ([xshift=4.5mm]current page.north west);
+      \draw[white!15,line width=.4pt]
+        ([xshift=91mm]current page.south west) circle (38mm);
+      \draw[white!10,line width=8mm]
+        ([xshift=104mm,yshift=-4mm]current page.south west) circle (31mm);
+      \node[anchor=north west,text=white!70,font=\bfseries\scriptsize]
+        at ([xshift=12mm,yshift=-10mm]current page.north west) {#1};
+      \node[anchor=west,text=white,align=left,text width=11.3cm,
+        font=\fontsize{26}{30}\selectfont\bfseries]
+        at ([xshift=12mm,yshift=2mm]current page.west) {#2};
+      \node[anchor=south west] at ([xshift=12mm,yshift=8mm]current page.south west)
+        {\sintefmark[white]};
+    \end{tikzpicture}
+  \end{frame}%
+}
+
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=13mm,dp=2mm,leftskip=9mm,rightskip=9mm]{frametitle}
+    \vspace*{3.1mm}\usebeamerfont{frametitle}\insertframetitle
+    \ifx\insertframesubtitle\empty\else
+      \hfill{\usebeamerfont{framesubtitle}\color{SintefMuted}\insertframesubtitle}
+    \fi
+  \end{beamercolorbox}
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[SintefGreen]
+      ([xshift=9mm,yshift=-14.2mm]current page.north west) rectangle
+      ([xshift=39mm,yshift=-13.35mm]current page.north west);
+    \fill[SintefGrey]
+      ([xshift=39mm,yshift=-14.2mm]current page.north west) rectangle
+      ([xshift=-9mm,yshift=-13.35mm]current page.north east);
+  \end{tikzpicture}%
+}
+
+\setbeamertemplate{footline}{%
+  \leavevmode
+  \hbox{%
+    \begin{beamercolorbox}[wd=.72\paperwidth,ht=3.8mm,dp=1.5mm,leftskip=9mm]{normal text}
+      \usebeamerfont{footline}\color{SintefMuted}%
+      NORTHSTAR / FLEXIBLE ENERGY SYSTEMS
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.28\paperwidth,ht=3.8mm,dp=1.5mm,rightskip=9mm plus 1fil]{normal text}
+      \usebeamerfont{footline}\color{SintefBlue}\bfseries
+      \insertframenumber\enspace/\enspace\inserttotalframenumber
+    \end{beamercolorbox}%
+  }%
+}
+
+% -----------------------------------------------------------------------------
+% Metadata
+% -----------------------------------------------------------------------------
+\title{NORTHSTAR}
+\subtitle{Coordinating flexible energy at the industrial edge}
+\author{Ingrid Solberg \and Emil Nyg\aa rd}
+\institute{SINTEF Energy Research}
+\date{Strategy review / August 2026}
+
+\begin{document}
+
+% 01 — Title ------------------------------------------------------------------
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[SintefPaper] (current page.south west) rectangle (current page.north east);
+    \fill[SintefBlue]
+      ([xshift=101mm]current page.south west) rectangle (current page.north east);
+    \fill[SintefGreen]
+      ([xshift=96.5mm]current page.south west) rectangle
+      ([xshift=101mm]current page.north west);
+
+    % An abstract energy-network illustration.
+    \coordinate (hub) at ([xshift=-28mm,yshift=2mm]current page.east);
+    \foreach \a/\r/\op in {18/25/70,82/31/45,145/22/55,215/29/35,292/23/60}{
+      \coordinate (p) at ($(hub)+(\a:\r mm)$);
+      \draw[white!35,line width=.55pt] (hub) -- (p);
+      \fill[white!12] (p) circle (3.4mm);
+      \fill[white!85] (p) circle (1.1mm);
+    }
+    \draw[white!18,line width=.4pt] (hub) circle (29mm);
+    \draw[white!12,line width=.4pt] (hub) circle (21mm);
+    \fill[SintefGreen] (hub) circle (3.2mm);
+    \fill[white] (hub) circle (1.2mm);
+
+    \node[anchor=north west] at ([xshift=11mm,yshift=-9mm]current page.north west)
+      {\sintefmark};
+    \node[anchor=north west,text=SintefMuted,font=\bfseries\scriptsize]
+      at ([xshift=11mm,yshift=-17mm]current page.north west)
+      {ENERGY RESEARCH / SYSTEM INNOVATION};
+    \node[anchor=west,align=left,text width=8.4cm]
+      at ([xshift=11mm,yshift=5mm]current page.west) {%
+      {\usebeamerfont{title}\color{SintefDeep}\inserttitle\par}
+      \vspace{2.2mm}
+      {\usebeamerfont{subtitle}\color{SintefBlue}\insertsubtitle\par}
+    };
+    \node[anchor=south west,align=left,text=SintefInk]
+      at ([xshift=11mm,yshift=10mm]current page.south west) {%
+      {\bfseries Ingrid Solberg\quad\textbullet\quad Emil Nyg\aa rd}\\[.7mm]
+      {\small\color{SintefMuted}\insertinstitute}\\[-.2mm]
+      {\scriptsize\color{SintefMuted}\insertdate}
+    };
+  \end{tikzpicture}
+\end{frame}
+
+% 02 — Executive case ---------------------------------------------------------
+\begin{frame}{The opportunity in one minute}
+  \eyebrow{Decision brief}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.31\textwidth}
+      \metric{SintefBlue}{18\%}{lower\\peak demand}
+    \end{column}
+    \begin{column}{.31\textwidth}
+      \metric{SintefGreen}{2.4 MW}{flexibility\\made dispatchable}
+    \end{column}
+    \begin{column}{.31\textwidth}
+      \metric{SintefYellow}{11 mo.}{modelled\\payback period}
+    \end{column}
+  \end{columns}
+  \vspace{4mm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.63\textwidth}
+      {\fontsize{18}{22}\selectfont\bfseries
+       Industrial sites already own the flexibility.\par}
+      \vspace{1.5mm}
+      {\color{SintefMuted}
+       NORTHSTAR turns thermal storage, batteries, compressors, and process buffers
+       into one auditable operating resource.}
+    \end{column}
+    \begin{column}{.31\textwidth}
+      \begin{alertblock}{Decision requested}
+        Approve a 12-month, three-site scale-up with a single control-room interface.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\sectionframe{01 / THE SYSTEM GAP}{Flexible assets are abundant.\\Coordination is scarce.}
+
+% 04 — Problem ----------------------------------------------------------------
+\begin{frame}{Value leaks between planning and operations}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.56\textwidth}
+      \begin{tikzpicture}[
+        node distance=6mm,
+        processbox/.style={draw=SintefGrey,fill=SintefPaper,rounded corners=1mm,
+          minimum width=66mm,minimum height=10mm,align=left,text width=58mm,
+          inner sep=2mm,font=\small},
+        arr/.style={-{Latex[length=2mm]},SintefMuted!60,line width=.7pt}
+      ]
+        \node[processbox] (plan) {\textbf{Day-ahead plan}\hfill fixed schedules};
+        \node[processbox,below=of plan] (market) {\textbf{Market signal}\hfill prices + grid needs};
+        \node[processbox,below=of market] (floor) {\textbf{Plant reality}\hfill constraints + drift};
+        \node[processbox,below=of floor,draw=SintefRed,fill=SintefRed!7]
+          (manual) {\textbf{Manual intervention}\hfill value arrives too late};
+        \draw[arr] (plan) -- (market);
+        \draw[arr] (market) -- (floor);
+        \draw[arr] (floor) -- (manual);
+        \draw[SintefRed,line width=1pt,dashed]
+          ([xshift=2mm]market.east) -- ++(6mm,0)
+          node[above left,text=SintefRed,font=\tiny\bfseries] {coordination gap};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{.40\textwidth}
+      \eyebrow{What operators told us}
+      \begin{itemize}
+        \item Models do not reflect the latest plant state.
+        \item Asset controls are fragmented by vendor.
+        \item Flexibility bids lack a defensible audit trail.
+      \end{itemize}
+      \vspace{2mm}
+      \begin{block}{Design principle}
+        Optimise the portfolio, but protect every local process constraint.
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% 05 — Architecture -----------------------------------------------------------
+\begin{frame}{NORTHSTAR closes the loop every five minutes}
+  \resizebox{\textwidth}{!}{%
+  \begin{tikzpicture}[
+    node distance=3.5mm,
+    stage/.style={rounded corners=1.5mm,minimum width=25mm,minimum height=17mm,
+      align=center,text=white,font=\small\bfseries,inner sep=2mm},
+    flow/.style={-{Latex[length=2.4mm]},line width=1pt,draw=SintefBlue!70}
+  ]
+    \node[stage,fill=SintefBlue] (sense) {SENSE\\\scriptsize telemetry + weather};
+    \node[stage,fill=SintefBlue,right=of sense] (predict) {PREDICT\\\scriptsize demand + availability};
+    \node[stage,fill=SintefGreen,right=of predict] (decide) {DECIDE\\\scriptsize constrained MPC};
+    \node[stage,fill=SintefBlue,right=of decide] (act) {ACT\\\scriptsize site-level setpoints};
+    \node[stage,fill=SintefDeep,right=of act] (prove) {PROVE\\\scriptsize baseline + ledger};
+    \foreach \a/\b in {sense/predict,predict/decide,decide/act,act/prove}{
+      \draw[flow] (\a) -- (\b);
+    }
+    \draw[-{Latex[length=2.4mm]},SintefGreen,line width=1pt]
+      (prove.south) -- ++(0,-11mm) -| (sense.south)
+      node[pos=.48,below,text=SintefGreen,font=\scriptsize\bfseries]
+      {measured response updates the next horizon};
+  \end{tikzpicture}%
+  }
+  \vspace{5mm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.31\textwidth}
+      \eyebrow{Edge first}
+      Site safety logic remains local and retains final authority.
+    \end{column}
+    \begin{column}{.31\textwidth}
+      \eyebrow{Portfolio aware}
+      Assets are dispatched against a shared flexibility envelope.
+    \end{column}
+    \begin{column}{.31\textwidth}
+      \eyebrow{Evidence native}
+      Every bid, limit, setpoint, and response is time-stamped.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% 06 — Optimisation -----------------------------------------------------------
+\begin{frame}{Optimising flexibility within production limits}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.51\textwidth}
+      \eyebrow{Rolling-horizon objective}
+      \begin{equation*}
+        \min_{u_{1:H}}\;
+        \sum_{t=1}^{H}
+        \underbrace{p_t P_t}_{\text{energy}}
+        + \underbrace{c_t^{\mathrm{peak}} z_t}_{\text{capacity}}
+        + \underbrace{\lambda\lVert \Delta u_t\rVert_1}_{\text{wear}}
+      \end{equation*}
+      \vspace{-1mm}
+      \begin{align*}
+        x_{t+1} &= A x_t + B u_t + E w_t,\\[-1mm]
+        x_t &\in \mathcal{X}_{\mathrm{safe}},\qquad
+        u_t \in \mathcal{U}_{\mathrm{asset}}.
+      \end{align*}
+      {\small\color{SintefMuted}
+        Forecast uncertainty tightens the safe envelope before dispatch.}
+    \end{column}
+    \begin{column}{.44\textwidth}
+      \begin{exampleblock}{Hard constraints}
+        Process temperature, pressure, state-of-charge, ramp rate, and operator lockouts.
+      \end{exampleblock}
+      \vspace{2mm}
+      \begin{block}{Soft objectives}
+        Cost, emissions, reserve value, asset wear, and schedule preference.
+      \end{block}
+      \vspace{2mm}
+      \begin{alertblock}{Fail-safe behaviour}
+        If data quality drops, the site returns to its last verified local policy.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\sectionframe{02 / FIELD EVIDENCE}{A pilot designed around\\operational credibility}
+
+% 08 — Pilot ------------------------------------------------------------------
+\begin{frame}{Three sites, one coordinated flexibility envelope}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.58\textwidth}
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}[
+        asset/.style={circle,minimum size=12mm,draw=SintefBlue,line width=.8pt,
+          fill=white,font=\scriptsize\bfseries,align=center},
+        site/.style={rounded corners=1mm,fill=SintefSky!55,minimum width=29mm,
+          minimum height=12mm,align=center,font=\small},
+        link/.style={SintefBlue!45,line width=.7pt}
+      ]
+        \node[fill=SintefBlue,text=white,rounded corners=2mm,minimum width=40mm,
+          minimum height=14mm,align=center,font=\bfseries] (northstar) at (3.6,2.2)
+          {NORTHSTAR\\\scriptsize portfolio controller};
+        \node[site] (alum) at (0,0) {ALUMINIUM\\\scriptsize thermal buffers};
+        \node[site] (food) at (3.6,0) {FOOD PROCESSING\\\scriptsize refrigeration};
+        \node[site] (harbour) at (7.2,0) {PORT TERMINAL\\\scriptsize battery + cranes};
+        \draw[link] (northstar) -- (alum);
+        \draw[link] (northstar) -- (food);
+        \draw[link] (northstar) -- (harbour);
+        \node[asset,below=5mm of alum] {1.1\\MW};
+        \node[asset,below=5mm of food] {0.6\\MW};
+        \node[asset,below=5mm of harbour] {0.7\\MW};
+      \end{tikzpicture}%
+      }
+    \end{column}
+    \begin{column}{.37\textwidth}
+      \eyebrow{Pilot protocol}
+      \begin{enumerate}
+        \item Six-week baseline period
+        \item Twelve-week shadow dispatch
+        \item Eight-week live operation
+        \item Independent settlement review
+      \end{enumerate}
+      \vspace{2mm}
+      \begin{block}{Evidence base}
+        38,400 control intervals across winter and shoulder-season conditions.
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% 09 — Load profile -----------------------------------------------------------
+\begin{frame}{Coordination removes the peak---not production}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.66\textwidth}
+      \begin{tikzpicture}
+        \begin{axis}[
+          width=9.15cm,height=5.6cm,
+          xmin=0,xmax=24,ymin=2.8,ymax=6.4,
+          xtick={0,4,8,12,16,20,24},
+          ytick={3,4,5,6},
+          xlabel={Hour},ylabel={Site load (MW)},
+          grid=major,grid style={SintefGrey},
+          axis line style={SintefMuted},tick style={SintefMuted},
+          tick label style={font=\scriptsize},label style={font=\scriptsize},
+          legend style={draw=none,fill=none,font=\scriptsize,at={(.5,1.02)},anchor=south,legend columns=2}
+        ]
+          \addplot[SintefMuted,line width=1.2pt,dashed] coordinates {
+            (0,3.6)(2,3.5)(4,3.7)(6,4.1)(8,4.8)(10,5.2)(12,5.0)
+            (14,5.3)(16,6.1)(18,5.8)(20,4.7)(22,4.1)(24,3.8)};
+          \addlegendentry{Baseline}
+          \addplot[SintefGreen,line width=1.8pt] coordinates {
+            (0,3.7)(2,3.6)(4,3.8)(6,4.2)(8,4.8)(10,5.1)(12,5.0)
+            (14,5.2)(16,5.0)(18,5.0)(20,4.8)(22,4.3)(24,4.0)};
+          \addlegendentry{NORTHSTAR}
+          \addplot[SintefRed!18,draw=none] coordinates {(15,2.8)(15,6.4)(19,6.4)(19,2.8)} \closedcycle;
+        \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{.29\textwidth}
+      \vspace{5mm}
+      \metric{SintefGreen}{1.1 MW}{verified\\peak reduction}
+      \vspace{2mm}
+      \metric{SintefBlue}{96.8\%}{dispatch\\completion}
+      \vspace{2mm}
+      {\scriptsize\color{SintefMuted}
+        Shaded interval denotes the capacity-charge window.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% 10 — Results ----------------------------------------------------------------
+\begin{frame}{Performance holds across operating modes}
+  \begin{table}
+    \centering
+    \small
+    \setlength{\tabcolsep}{7pt}
+    \begin{tabular}{lrrrr}
+      \toprule
+      \textbf{Asset group} & \textbf{Available} & \textbf{Delivered} &
+        \textbf{Response} & \textbf{Process events} \\
+      & \textbf{flex (MW)} & \textbf{share} & \textbf{time} & \textbf{attributable} \\
+      \midrule
+      Thermal buffers & 1.10 & 97.4\% & 4.8 min & 0 \\
+      Refrigeration   & 0.62 & 95.9\% & 3.1 min & 0 \\
+      Battery system  & 0.48 & 99.2\% & 8 sec   & 0 \\
+      Crane schedule  & 0.23 & 91.7\% & 6.0 min & 0 \\
+      \midrule
+      \rowcolor{SintefLime!65}
+      \textbf{Portfolio} & \textbf{2.43} & \textbf{96.8\%} & \textbf{3.4 min} & \textbf{0} \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \vspace{3mm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.31\textwidth}
+      \eyebrow{Reliability}
+      99.94\% platform availability during live operation.
+    \end{column}
+    \begin{column}{.31\textwidth}
+      \eyebrow{Economics}
+      21.6\% reduction in energy and capacity cost.
+    \end{column}
+    \begin{column}{.31\textwidth}
+      \eyebrow{Assurance}
+      All dispatches reconciled to meter and operator logs.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% 11 — Resilience -------------------------------------------------------------
+\begin{frame}{Graceful degradation is a designed operating mode}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.60\textwidth}
+      \resizebox{\linewidth}{!}{%
+      \begin{tikzpicture}[
+        lane/.style={font=\scriptsize\bfseries,text=SintefMuted,anchor=east},
+        event/.style={rounded corners=.8mm,minimum height=7mm,align=center,font=\scriptsize},
+        arrow/.style={-{Latex[length=1.8mm]},SintefMuted!65,line width=.65pt}
+      ]
+        \draw[SintefGrey,line width=1pt] (0,0) -- (7.7,0);
+        \foreach \x/\lab in {0/00:00,1.9/00:30,3.8/01:00,5.7/01:30,7.6/02:00}{
+          \draw[SintefGrey] (\x,-.12)--(\x,.12);
+          \node[below,font=\tiny,text=SintefMuted] at (\x,-.12) {\lab};
+        }
+        \node[lane] at (-.3,1.55) {DATA};
+        \node[lane] at (-.3,.75) {CONTROL};
+        \node[lane] at (-.3,-.95) {RECOVERY};
+        \node[event,fill=SintefSky,minimum width=28mm] at (1.25,1.55) {normal telemetry};
+        \node[event,fill=SintefRed!15,minimum width=27mm] at (4.0,1.55) {gateway loss};
+        \node[event,fill=SintefLime,minimum width=26mm] at (6.75,1.55) {stream restored};
+        \node[event,fill=SintefGreen,text=white,minimum width=31mm] at (1.55,.75) {portfolio MPC};
+        \node[event,fill=SintefBlue,text=white,minimum width=44mm] at (5.6,.75) {verified local policy};
+        \node[event,fill=SintefGrey,minimum width=33mm] at (5.65,-.95) {backfill + reconcile};
+        \draw[arrow] (3.0,1.28) -- (3.0,.95);
+        \draw[arrow] (5.85,1.28) -- (5.85,.95);
+        \draw[arrow] (6.75,1.28) -- (6.1,-.62);
+      \end{tikzpicture}%
+      }
+    \end{column}
+    \begin{column}{.35\textwidth}
+      \eyebrow{Observed gateway outage}
+      \begin{itemize}
+        \item Local constraints remained enforced.
+        \item No operator action was required.
+        \item Meter data reconciled automatically after recovery.
+      \end{itemize}
+      \vspace{2mm}
+      \begin{exampleblock}{Result}
+        Zero unsafe setpoints and only 0.6\% of scheduled flexibility deferred.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\sectionframe{03 / SCALE WITH CONTROL}{Standardise the core.\\Localise the constraints.}
+
+% 13 — Assurance --------------------------------------------------------------
+\begin{frame}{Scale depends on clear layers of authority}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.31\textwidth}
+      \begin{block}{\faLock\quad Site safety}
+        \textbf{Owns the boundary}
+        \begin{itemize}
+          \item PLC interlocks
+          \item operator lockouts
+          \item safe-state policies
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{.31\textwidth}
+      \begin{exampleblock}{\faSlidersH\quad Portfolio control}
+        \textbf{Owns the dispatch}
+        \begin{itemize}
+          \item forecasts
+          \item optimisation
+          \item setpoint allocation
+        \end{itemize}
+      \end{exampleblock}
+    \end{column}
+    \begin{column}{.31\textwidth}
+      \begin{alertblock}{\faClipboardCheck\quad Assurance}
+        \textbf{Owns the evidence}
+        \begin{itemize}
+          \item model versions
+          \item event ledger
+          \item settlement trace
+        \end{itemize}
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+  \vspace{5mm}
+  \begin{center}
+    {\fontsize{17}{21}\selectfont\bfseries\color{SintefDeep}
+      The optimiser may request. The site controller decides.}
+  \end{center}
+\end{frame}
+
+% 14 — Roadmap ----------------------------------------------------------------
+\begin{frame}{A staged path from pilot to portfolio service}
+  \resizebox{\textwidth}{!}{%
+  \begin{tikzpicture}[
+    phase/.style={rounded corners=1mm,minimum width=25mm,minimum height=16mm,
+      align=left,text width=22mm,inner sep=2mm,font=\scriptsize},
+    dot/.style={circle,fill=SintefGreen,minimum size=3mm,inner sep=0pt}
+  ]
+    \draw[SintefGrey,line width=2pt] (.5,0) -- (12.8,0);
+    \foreach \x in {.7,4.7,8.7,12.7}{\node[dot] at (\x,0) {};}
+    \node[phase,fill=SintefSky,above=4mm] at (.7,0) {\textbf{Q4 2026}\\Harden pilot\\{\tiny cyber review + operator UX}};
+    \node[phase,fill=SintefLime,below=4mm] at (4.7,0) {\textbf{Q1 2027}\\Three-site scale\\{\tiny shared control-room service}};
+    \node[phase,fill=SintefSky,above=4mm] at (8.7,0) {\textbf{Q3 2027}\\Market integration\\{\tiny capacity + balancing bids}};
+    \node[phase,fill=SintefLime,below=4mm] at (12.7,0) {\textbf{2028}\\Portfolio product\\{\tiny repeatable site onboarding}};
+  \end{tikzpicture}%
+  }
+  \vspace{2mm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.47\textwidth}
+      \eyebrow{Gate to proceed}
+      Independent cyber assessment and signed operating envelopes for all sites.
+    \end{column}
+    \begin{column}{.47\textwidth}
+      \eyebrow{Gate to commercialise}
+      Twelve months of auditable availability above 95\% across the portfolio.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% 15 — Ask --------------------------------------------------------------------
+\begin{frame}{Recommendation: fund the control layer}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.62\textwidth}
+      {\fontsize{19}{23}\selectfont\bfseries\color{SintefDeep}
+       Launch a 12-month scale-up with three explicit outcomes.\par}
+      \vspace{2mm}
+      \begin{enumerate}
+        \item \textbf{Operational:} one interface for site and portfolio control.
+        \item \textbf{Commercial:} verified delivery into two flexibility products.
+        \item \textbf{Repeatable:} onboarding kit proven on a fourth asset class.
+      \end{enumerate}
+    \end{column}
+    \begin{column}{.33\textwidth}
+      \begin{tikzpicture}
+        \node[fill=SintefBlue,rounded corners=2mm,minimum width=.98\linewidth,
+          minimum height=41mm,text=white,align=center,inner sep=4mm] {%
+          {\scriptsize SCALE-UP ENVELOPE}\\[2mm]
+          {\fontsize{25}{27}\selectfont\bfseries NOK 6.8m}\\[1mm]
+          {\scriptsize 12 months / 3 sites}\\[3mm]
+          {\color{SintefLime}\bfseries Decision: August 2026}};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+  \vfill
+  \begin{exampleblock}{Expected outcome}
+    A field-proven, assurance-ready flexibility service with a modelled 11-month customer payback.
+  \end{exampleblock}
+\end{frame}
+
+% 16 — Close ------------------------------------------------------------------
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[SintefBlue] (current page.south west) rectangle (current page.north east);
+    \fill[SintefGreen] (current page.south west) rectangle
+      ([xshift=4.5mm]current page.north west);
+    \foreach \r/\op in {13/55,21/35,30/20}{
+      \draw[white!\op,line width=.5pt]
+        ([xshift=-25mm,yshift=4mm]current page.east) circle (\r mm);
+    }
+    \fill[SintefGreen] ([xshift=-25mm,yshift=4mm]current page.east) circle (3mm);
+    \node[anchor=north west] at ([xshift=12mm,yshift=-9mm]current page.north west)
+      {\sintefmark[white]};
+    \node[anchor=west,align=left,text width=10.2cm]
+      at ([xshift=12mm,yshift=5mm]current page.west) {%
+      {\fontsize{29}{33}\selectfont\bfseries\color{white}
+       Flexible energy.\\Industrial confidence.\par}
+      \vspace{3mm}
+      {\large\color{SintefLime}Questions \& discussion}
+    };
+    \node[anchor=south west,align=left,text=white]
+      at ([xshift=12mm,yshift=9mm]current page.south west) {%
+      {\bfseries Ingrid Solberg}\quad\texttt{ingrid.solberg@sintef.example}\\[.8mm]
+      {\small\color{white!70}SINTEF Energy Research / Trondheim}
+    };
+  \end{tikzpicture}
+\end{frame}
+
+\end{document}

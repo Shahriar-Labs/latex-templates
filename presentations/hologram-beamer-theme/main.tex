@@ -1,0 +1,417 @@
+\documentclass[10pt,aspectratio=169]{beamer}
+
+% -----------------------------------------------------------------------------
+% Hologram -- a self-contained Beamer theme and demonstration deck
+% Compile with: latexmk -pdf -interaction=nonstopmode main.tex
+% -----------------------------------------------------------------------------
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,positioning,shapes.geometric}
+
+% --- Palette -----------------------------------------------------------------
+\definecolor{HoloInk}{HTML}{EAFBFF}
+\definecolor{HoloMuted}{HTML}{8BA8B7}
+\definecolor{HoloNight}{HTML}{061019}
+\definecolor{HoloDeep}{HTML}{091B2A}
+\definecolor{HoloPanel}{HTML}{102B3D}
+\definecolor{HoloCyan}{HTML}{27E7F2}
+\definecolor{HoloBlue}{HTML}{2C8CFF}
+\definecolor{HoloMagenta}{HTML}{FF4FD8}
+\definecolor{HoloViolet}{HTML}{8B5CFF}
+\definecolor{HoloLime}{HTML}{9EFFA8}
+\definecolor{HoloAmber}{HTML}{FFD166}
+
+% --- Beamer foundation -------------------------------------------------------
+\usetheme{default}
+\usefonttheme{professionalfonts}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{items}[circle]
+\setbeamersize{text margin left=8mm,text margin right=8mm}
+
+\setbeamercolor{normal text}{fg=HoloInk,bg=HoloNight}
+\setbeamercolor{structure}{fg=HoloCyan}
+\setbeamercolor{alerted text}{fg=HoloMagenta}
+\setbeamercolor{example text}{fg=HoloLime}
+\setbeamercolor{frametitle}{fg=HoloInk,bg=}
+\setbeamercolor{title}{fg=HoloInk}
+\setbeamercolor{subtitle}{fg=HoloCyan}
+\setbeamercolor{author}{fg=HoloInk}
+\setbeamercolor{institute}{fg=HoloMuted}
+\setbeamercolor{date}{fg=HoloMuted}
+\setbeamercolor{itemize item}{fg=HoloCyan}
+\setbeamercolor{itemize subitem}{fg=HoloMagenta}
+\setbeamercolor{enumerate item}{fg=HoloCyan}
+
+\setbeamerfont{title}{size=\fontsize{30}{34},series=\bfseries}
+\setbeamerfont{subtitle}{size=\fontsize{14}{17},series=\mdseries}
+\setbeamerfont{author}{size=\normalsize,series=\bfseries}
+\setbeamerfont{institute}{size=\small}
+\setbeamerfont{frametitle}{size=\fontsize{18}{21},series=\bfseries}
+\setbeamerfont{framesubtitle}{size=\small,series=\mdseries}
+\setbeamerfont{footline}{size=\scriptsize}
+
+% --- Subtle projection grid --------------------------------------------------
+\setbeamertemplate{background}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[HoloNight] (current page.south west) rectangle (current page.north east);
+    \draw[HoloCyan!8,line width=.25pt,step=7mm]
+      (current page.south west) grid (current page.north east);
+    \shade[left color=HoloBlue!8!HoloNight,right color=HoloMagenta!6!HoloNight]
+      (current page.south west) rectangle (current page.north east);
+    \draw[HoloCyan!36,line width=.4pt]
+      ([xshift=4mm,yshift=4mm]current page.south west)
+      rectangle
+      ([xshift=-4mm,yshift=-4mm]current page.north east);
+  \end{tikzpicture}%
+}
+
+% --- Headings and footer -----------------------------------------------------
+\setbeamertemplate{frametitle}{%
+  \vspace*{3mm}%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,leftskip=8mm,rightskip=8mm]{frametitle}
+    \vspace*{2.8mm}%
+    \usebeamerfont{frametitle}\strut\insertframetitle
+    \ifx\insertframesubtitle\empty\else
+      \hfill{\usebeamerfont{framesubtitle}\color{HoloCyan}\insertframesubtitle}
+    \fi
+    \par\vspace*{2.0mm}%
+  \end{beamercolorbox}
+  \begin{tikzpicture}[remember picture,overlay]
+    \draw[HoloCyan,line width=.8pt]
+      ([xshift=8mm,yshift=-15.5mm]current page.north west) --
+      ([xshift=55mm,yshift=-15.5mm]current page.north west);
+    \draw[HoloMagenta,line width=.8pt]
+      ([xshift=55mm,yshift=-15.5mm]current page.north west) --
+      ([xshift=71mm,yshift=-15.5mm]current page.north west);
+  \end{tikzpicture}%
+}
+
+\setbeamertemplate{footline}{%
+  \leavevmode
+  \hbox{%
+    \begin{beamercolorbox}[wd=.78\paperwidth,ht=4.2mm,dp=1.4mm,leftskip=8mm]{author in head/foot}
+      \usebeamerfont{footline}\color{HoloMuted}%
+      PRISM / SPATIAL COLLABORATION
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=.22\paperwidth,ht=4.2mm,dp=1.4mm,rightskip=8mm plus 1fil]{date in head/foot}
+      \usebeamerfont{footline}\color{HoloCyan}%
+      \insertframenumber\enspace/\enspace\inserttotalframenumber
+    \end{beamercolorbox}%
+  }%
+}
+
+% --- Blocks ------------------------------------------------------------------
+\setbeamertemplate{blocks}[rounded][shadow=false]
+\setbeamercolor{block title}{fg=HoloNight,bg=HoloCyan}
+\setbeamercolor{block body}{fg=HoloInk,bg=HoloPanel!88!HoloNight}
+\setbeamercolor{block title alerted}{fg=HoloNight,bg=HoloMagenta}
+\setbeamercolor{block body alerted}{fg=HoloInk,bg=HoloPanel!88!HoloNight}
+\setbeamercolor{block title example}{fg=HoloNight,bg=HoloLime}
+\setbeamercolor{block body example}{fg=HoloInk,bg=HoloPanel!88!HoloNight}
+\setbeamerfont{block title}{size=\normalsize,series=\bfseries}
+
+% --- Reusable visual components ---------------------------------------------
+\newcommand{\holoeyebrow}[1]{%
+  {\color{HoloCyan}\bfseries\scriptsize\MakeUppercase{#1}}\par\vspace{1mm}%
+}
+
+\newcommand{\holometric}[3]{%
+  \begin{tikzpicture}
+    \node[
+      draw=#1!85,
+      fill=HoloPanel!80!HoloNight,
+      rounded corners=2mm,
+      minimum width=.94\linewidth,
+      minimum height=15mm,
+      inner sep=3mm,
+      align=left
+    ] (box) {\makebox[.82\linewidth][l]{%
+      {\color{#1}\fontsize{22}{24}\selectfont\bfseries #2}\hfill
+      {\color{HoloMuted}\small #3}}};
+    \draw[#1,line width=1.1pt]
+      ([xshift=2mm]box.south west) -- ([xshift=18mm]box.south west);
+  \end{tikzpicture}%
+}
+
+\newcommand{\holosection}[2]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture,overlay]
+      \coordinate (c) at (current page.center);
+      \draw[HoloCyan!30,line width=.5pt] ($(c)+(-5.5,-.65)$) -- ($(c)+(5.5,-.65)$);
+      \draw[HoloMagenta,line width=1.2pt] ($(c)+(-1.0,-.65)$) -- ($(c)+(1.0,-.65)$);
+      \node[text=HoloCyan,font=\bfseries\scriptsize] at ($(c)+(0,1.35)$) {#1};
+      \node[text=HoloInk,font=\bfseries\fontsize{22}{26}\selectfont,
+        align=center,text width=13.2cm] at ($(c)+(0,.35)$) {#2};
+      \node[draw=HoloCyan!70,fill=HoloCyan!12,diamond,minimum size=7mm]
+        at ($(c)+(0,-1.45)$) {};
+      \draw[HoloMagenta!70] ($(c)+(-.42,-1.45)$) -- ($(c)+(.42,-1.45)$);
+    \end{tikzpicture}
+  \end{frame}%
+}
+
+% --- Metadata ----------------------------------------------------------------
+\title{PRISM}
+\subtitle{A light-field workspace for decisions that need shared spatial context}
+\author{Maya Chen \and Idris Rahman}
+\institute{Nexa Spatial Systems}
+\date{Concept review / August 2026}
+
+\begin{document}
+
+% 1 ---------------------------------------------------------------------------
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture,overlay]
+    \coordinate (c) at ([xshift=-30mm,yshift=5mm]current page.east);
+    \foreach \r/\op in {2.45/15,1.95/22,1.45/30}{
+      \draw[HoloCyan!\op,line width=.55pt] (c) ellipse ({\r} and {0.30*\r});
+      \draw[HoloMagenta!\op,line width=.45pt] (c) ellipse ({0.30*\r} and {\r});
+    }
+    \fill[HoloCyan!45] (c) circle (1.2pt);
+    \node[anchor=west,align=left,text width=9.2cm]
+      at ([xshift=13mm,yshift=5mm]current page.west) {%
+      {\usebeamerfont{title}\color{HoloInk}\inserttitle\par}
+      \vspace{2mm}
+      {\usebeamerfont{subtitle}\color{HoloCyan}\insertsubtitle\par}
+    };
+    \node[anchor=south west,align=left] at ([xshift=13mm,yshift=9mm]current page.south west) {%
+      {\color{HoloInk}\bfseries\insertauthor}\quad
+      {\color{HoloMuted}/ \insertinstitute}
+    };
+    \node[anchor=south east,text=HoloMuted,font=\scriptsize]
+      at ([xshift=-13mm,yshift=9mm]current page.south east) {\insertdate};
+    \node[anchor=north west,text=HoloCyan,font=\bfseries\scriptsize]
+      at ([xshift=8mm,yshift=-7mm]current page.north west) {NEXA / CONCEPT 04};
+  \end{tikzpicture}
+\end{frame}
+
+% 2 ---------------------------------------------------------------------------
+\begin{frame}{Spatial work needs spatial context}
+  \holoeyebrow{Design premise}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.54\textwidth}
+      \vspace{3mm}
+      {\fontsize{20}{25}\selectfont\bfseries
+      Flat calls compress spatial work into a stream of rectangles.\par}
+      \vspace{4mm}
+      {\color{HoloMuted}\normalsize
+      PRISM keeps people, evidence, and the object under discussion in one shared coordinate system.}
+    \end{column}
+    \begin{column}{.40\textwidth}
+      \holometric{HoloCyan}{01}{shared scene}\vspace{2mm}
+      \holometric{HoloMagenta}{02}{evidence layers}\vspace{2mm}
+      \holometric{HoloLime}{03}{recorded decisions}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\holosection{01 / WHY NOW}{Spatial work loses meaning\\when flattened}
+
+% 4 ---------------------------------------------------------------------------
+\begin{frame}{Collaboration breaks in three places}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.30\textwidth}
+      \holoeyebrow{Context}
+      {\fontsize{34}{38}\selectfont\bfseries\color{HoloCyan}01}\par
+      \vspace{2mm}{\large The object and the conversation live in different places.}
+    \end{column}
+    \begin{column}{.30\textwidth}
+      \holoeyebrow{Attention}
+      {\fontsize{34}{38}\selectfont\bfseries\color{HoloMagenta}02}\par
+      \vspace{2mm}{\large Participants infer where others are looking.}
+    \end{column}
+    \begin{column}{.30\textwidth}
+      \holoeyebrow{Memory}
+      {\fontsize{34}{38}\selectfont\bfseries\color{HoloLime}03}\par
+      \vspace{2mm}{\large Decisions survive; their spatial rationale does not.}
+    \end{column}
+  \end{columns}
+  \vfill
+  \begin{alertblock}{The consequence}
+    Teams spend meeting time reconstructing context instead of testing the decision.
+  \end{alertblock}
+\end{frame}
+
+% 5 ---------------------------------------------------------------------------
+\begin{frame}{One scene aligns people, models, and evidence}
+  \begin{tikzpicture}[
+    node distance=10mm and 10mm,
+    every node/.style={font=\small,align=center},
+    stage/.style={draw=HoloCyan,fill=HoloPanel!88!HoloNight,rounded corners=2mm,
+      minimum width=26mm,minimum height=14mm,text=HoloInk,line width=.8pt},
+    flow/.style={-{Latex[length=2.2mm]},line width=.8pt,draw=HoloCyan!75}
+  ]
+    \node[stage,draw=HoloCyan] (capture) {\textbf{Capture}\\people + room};
+    \node[stage,draw=HoloBlue,right=of capture] (reconstruct) {\textbf{Reconstruct}\\live 3D scene};
+    \node[stage,draw=HoloMagenta,right=of reconstruct] (compose) {\textbf{Compose}\\models + evidence};
+    \node[stage,draw=HoloLime,right=of compose] (record) {\textbf{Record}\\decision state};
+
+    \draw[flow] (capture) -- node[above,text=HoloMuted]{depth} (reconstruct);
+    \draw[flow] (reconstruct) -- node[above,text=HoloMuted]{mesh} (compose);
+    \draw[flow] (compose) -- node[above,text=HoloMuted]{anchors} (record);
+
+    \node[below=13mm of reconstruct.south east,draw=HoloViolet,fill=HoloViolet!15!HoloNight,
+      rounded corners=2mm,minimum width=54mm,minimum height=12mm] (scene)
+      {\textbf{Shared scene graph}\quad identity / pose / permissions};
+    \draw[-{Latex[length=2mm]},draw=HoloViolet!80] (scene.north) -- (reconstruct.south);
+    \draw[-{Latex[length=2mm]},draw=HoloViolet!80] (scene.north east) -- (compose.south);
+  \end{tikzpicture}
+  \vfill
+  {\color{HoloMuted}\small One coordinate system makes every gesture, annotation, and decision refer to the same object state.}
+\end{frame}
+
+% 6 ---------------------------------------------------------------------------
+\begin{frame}{Perceptual stability governs fidelity}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.50\textwidth}
+      \holoeyebrow{Control objective}
+      \begin{equation*}
+        \mathcal{J}
+        = \alpha\,E_{\mathrm{pose}}
+        + \beta\,E_{\mathrm{time}}
+        + \gamma\,E_{\mathrm{depth}}
+        + \lambda\,C_{\mathrm{compute}}
+      \end{equation*}
+      \vspace{3mm}
+      \begin{itemize}
+        \item $E_{\mathrm{pose}}$: viewpoint alignment error
+        \item $E_{\mathrm{time}}$: motion-to-photon delay
+        \item $E_{\mathrm{depth}}$: reconstruction inconsistency
+        \item $C_{\mathrm{compute}}$: render and network cost
+      \end{itemize}
+    \end{column}
+    \begin{column}{.44\textwidth}
+      \begin{block}{Operating principle}
+        Preserve stable eye contact and object registration before increasing visual detail.
+      \end{block}
+      \vspace{3mm}
+      \begin{exampleblock}{Adaptive response}
+        When bandwidth falls, PRISM reduces peripheral fidelity while protecting faces, hands, and the active object.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\holosection{02 / PROOF}{The prototype protects\\what the task needs most}
+
+% 8 ---------------------------------------------------------------------------
+\begin{frame}{Spend quality where attention is highest}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.58\textwidth}
+      \begin{tikzpicture}[x=.65mm,y=.52mm]
+        \draw[HoloMuted!45] (0,0) -- (108,0);
+        \foreach \y/\label in {0/0,20/20,40/40,60/60,80/80}{
+          \draw[HoloMuted!20] (0,\y) -- (108,\y);
+          \node[left,text=HoloMuted,font=\scriptsize] at (0,\y) {\label};
+        }
+        \foreach \x/\label in {12/Faces,42/Hands,72/Object,102/Room}{
+          \node[below,text=HoloMuted,font=\scriptsize,align=center] at (\x,-3) {\label};
+        }
+        \foreach \x/\h/\c in {12/78/HoloCyan,42/66/HoloMagenta,72/72/HoloLime,102/28/HoloViolet}{
+          \fill[\c!18] (\x-7,0) rectangle (\x+7,\h);
+          \draw[\c,line width=1pt] (\x-7,\h) -- (\x+7,\h);
+          \node[above,text=\c,font=\bfseries\small] at (\x,\h) {\h\%};
+        }
+        \node[rotate=90,text=HoloMuted,font=\scriptsize] at (-12,40) {relative quality budget};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{.36\textwidth}
+      \holoeyebrow{Interpretation}
+      {\large\bfseries The room can degrade gracefully without weakening the shared task.}\par
+      \vspace{4mm}
+      {\color{HoloMuted}\small
+      Values show an illustrative allocation profile for design discussion; they are not product benchmarks.}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% 9 ---------------------------------------------------------------------------
+\begin{frame}{Test behavior, not spectacle}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.31\textwidth}
+      \begin{block}{Observe}
+        Can participants point, compare, and take turns without translating the scene into words?
+      \end{block}
+    \end{column}
+    \begin{column}{.31\textwidth}
+      \begin{alertblock}{Stress}
+        What breaks first when bandwidth, lighting, or tracking quality changes?
+      \end{alertblock}
+    \end{column}
+    \begin{column}{.31\textwidth}
+      \begin{exampleblock}{Recall}
+        Can a new participant reconstruct the decision from the recorded spatial state?
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+  \vfill
+  \centering
+  {\color{HoloCyan}\bfseries Success means less time rebuilding context between sessions.}
+\end{frame}
+
+% 10 --------------------------------------------------------------------------
+\begin{frame}{Pilot one consequential workflow}
+  \begin{tikzpicture}[
+    milestone/.style={circle,draw=HoloCyan,fill=HoloNight,minimum size=9mm,line width=1pt,text=HoloCyan,font=\bfseries},
+    label/.style={text width=27mm,align=center,text=HoloInk,font=\small}
+  ]
+    \draw[HoloMuted!35,line width=1pt] (0.6,0) -- (12.6,0);
+    \node[milestone] (m1) at (1.0,0) {1};
+    \node[milestone,draw=HoloBlue,text=HoloBlue] (m2) at (4.7,0) {2};
+    \node[milestone,draw=HoloMagenta,text=HoloMagenta] (m3) at (8.4,0) {3};
+    \node[milestone,draw=HoloLime,text=HoloLime] (m4) at (12.1,0) {4};
+    \node[label,above=7mm of m1] {Lock a single\\spatial artifact};
+    \node[label,below=7mm of m2] {Instrument\\attention + latency};
+    \node[label,above=7mm of m3] {Run one\\cross-site decision};
+    \node[label,below=7mm of m4] {Compare context\\recovery time};
+  \end{tikzpicture}
+  \vfill
+  \begin{block}{Pilot boundary}
+    Two rooms, one shared model, one repeatable decision, and a four-week learning cycle.
+  \end{block}
+\end{frame}
+
+% 11 --------------------------------------------------------------------------
+\begin{frame}{Validate shared spatial context}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{.57\textwidth}
+      \holoeyebrow{Recommendation}
+      {\fontsize{22}{27}\selectfont\bfseries
+      Fund a bounded pilot around one workflow where spatial rationale matters.\par}
+      \vspace{4mm}
+      {\color{HoloMuted}
+      Do not test whether holograms feel futuristic. Test whether teams reach and recover decisions with less translation.}
+    \end{column}
+    \begin{column}{.37\textwidth}
+      \begin{exampleblock}{Approve now}
+        Pilot team, two instrumented rooms, and access to one representative 3D model.
+      \end{exampleblock}
+      \vspace{3mm}
+      \begin{alertblock}{Gate expansion}
+        Continue only if context recovery and task completion improve.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% 12 --------------------------------------------------------------------------
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture,overlay]
+    \coordinate (c) at (current page.center);
+    \draw[HoloCyan!45,line width=.6pt] ($(c)+(-5.3,-1.4)$) -- ($(c)+(5.3,-1.4)$);
+    \draw[HoloMagenta,line width=1.2pt] ($(c)+(-1.2,-1.4)$) -- ($(c)+(1.2,-1.4)$);
+    \node[text=HoloCyan,font=\bfseries\scriptsize] at ($(c)+(0,1.4)$) {ONE SHARED SCENE};
+    \node[text=HoloInk,font=\bfseries\fontsize{32}{36}\selectfont] at ($(c)+(0,.45)$) {Questions?};
+    \node[text=HoloMuted,font=\small] at ($(c)+(0,-.45)$)
+      {maya.chen@example.com \quad / \quad nexaspacialsystems.example};
+    \node[draw=HoloCyan!75,fill=HoloCyan!12,diamond,minimum size=9mm]
+      at ($(c)+(0,-1.4)$) {};
+  \end{tikzpicture}
+\end{frame}
+
+\end{document}

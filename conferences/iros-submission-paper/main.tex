@@ -1,0 +1,398 @@
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage[letterpaper, left=0.75in, right=0.75in, top=0.75in, bottom=0.85in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds,patterns,decorations.pathmorphing}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+\usepackage[table]{xcolor}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{cite}
+\usepackage{filecontents}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{titlesec}
+\usepackage{balance}
+\usepackage{hyperref}
+
+\definecolor{irosnavy}{HTML}{0B3D5C}
+\definecolor{irosteal}{HTML}{0E7C7B}
+\definecolor{irosgray}{HTML}{3A3A3A}
+\definecolor{irosamber}{HTML}{B5651D}
+\definecolor{irosbg}{HTML}{F4F8F8}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=irosnavy,
+  citecolor=irosnavy,
+  urlcolor=irosteal
+}
+
+\titleformat{\section}{\normalfont\large\bfseries\color{irosnavy}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalfont\bfseries\color{irosgray}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{2.0ex plus 1ex minus .2ex}{1.2ex plus .2ex}
+\titlespacing*{\subsection}{0pt}{1.4ex plus .8ex minus .2ex}{0.8ex plus .2ex}
+
+\begin{filecontents}{refs.bib}
+@inproceedings{oyelaran2024wholebody,
+  author    = {Oyelaran, Femi and Kastrup, Lina},
+  title     = {Whole-Body Contact Planning for Quadrupeds on Fractured Terrain},
+  booktitle = {Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems},
+  year      = {2024},
+  pages     = {2201--2208}
+}
+
+@inproceedings{mbeki2023legged,
+  author    = {Mbeki, Thandiwe and Roos, Ingrid},
+  title     = {Learned Foothold Selection via Implicit Terrain Encoders},
+  booktitle = {Proceedings of the IEEE International Conference on Robotics and Automation},
+  year      = {2023},
+  pages     = {5541--5548}
+}
+
+@article{halvorsen2022survey,
+  author  = {Halvorsen, Kristoffer and Aoyama, Rin},
+  title   = {A Survey of Sim-to-Real Transfer for Legged Locomotion},
+  journal = {IEEE Transactions on Robotics},
+  volume  = {38},
+  number  = {6},
+  pages   = {3312--3331},
+  year    = {2022}
+}
+
+@inproceedings{delacroix2021mpc,
+  author    = {Delacroix, Manon and Ferreira, Joaquin},
+  title     = {Nonlinear Model Predictive Control for Dynamic Gait Transitions},
+  booktitle = {Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems},
+  year      = {2021},
+  pages     = {884--891}
+}
+
+@inproceedings{tanaka2023perception,
+  author    = {Tanaka, Sora and Weiss, Dorit},
+  title     = {Elevation-Map Fusion for Blind Foothold Estimation},
+  booktitle = {Proceedings of the IEEE International Conference on Robotics and Automation},
+  year      = {2023},
+  pages     = {1123--1130}
+}
+
+@article{oduya2020reactive,
+  author  = {Oduya, Chinedu and Lindqvist, Sara},
+  title   = {Reactive Recovery Controllers for Quadrupedal Stumble Rejection},
+  journal = {IEEE Robotics and Automation Letters},
+  volume  = {5},
+  number  = {4},
+  pages   = {6104--6111},
+  year    = {2020}
+}
+
+@inproceedings{papazian2022rl,
+  author    = {Papazian, Aram and Solberg, Eirik},
+  title     = {Curriculum Reinforcement Learning for Terrain-Adaptive Gaits},
+  booktitle = {Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems},
+  year      = {2022},
+  pages     = {7719--7726}
+}
+
+@article{nakashima2019whole,
+  author  = {Nakashima, Yuto and Brandt, Mette},
+  title   = {Whole-Body Impedance Control for Compliant Locomotion},
+  journal = {IEEE Transactions on Robotics},
+  volume  = {35},
+  number  = {2},
+  pages   = {410--424},
+  year    = {2019}
+}
+
+@inproceedings{fontaine2021domain,
+  author    = {Fontaine, Elodie and Kowalski, Bartek},
+  title     = {Domain Randomization Schedules for Contact-Rich Locomotion},
+  booktitle = {Proceedings of the IEEE International Conference on Robotics and Automation},
+  year      = {2021},
+  pages     = {3390--3397}
+}
+
+@article{singh2018survey,
+  author  = {Singh, Ravinder and Costa, Beatriz},
+  title   = {Terrain Classification for Legged Robots: A Review},
+  journal = {IEEE Transactions on Robotics},
+  volume  = {34},
+  number  = {5},
+  pages   = {1201--1219},
+  year    = {2018}
+}
+
+@inproceedings{grunwald2020energy,
+  author    = {Grunwald, Petra and Ibarra, Diego},
+  title     = {Energy-Aware Gait Scheduling for Extended-Duration Field Deployment},
+  booktitle = {Proceedings of the IEEE/RSJ International Conference on Intelligent Robots and Systems},
+  year      = {2020},
+  pages     = {4477--4484}
+}
+
+@inproceedings{holstrom2024benchmark,
+  author    = {Holstr{\"o}m, Anneli and Petrov, Yusuf},
+  title     = {A Benchmark Suite for Blind Quadrupedal Locomotion over Unstructured Terrain},
+  booktitle = {Proceedings of the IEEE International Conference on Robotics and Automation},
+  year      = {2024},
+  pages     = {9902--9909}
+}
+\end{filecontents}
+
+\begin{document}
+
+\twocolumn[
+\noindent\fcolorbox{irosamber}{irosbg}{%
+\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
+\footnotesize\color{irosgray}
+\textbf{Unofficial template.} This document is an independent, community-produced LaTeX
+template inspired by the general look of IROS (IEEE/RSJ International Conference on
+Intelligent Robots and Systems) submissions. It is \textbf{not affiliated with, endorsed by,
+or sourced from IEEE, RSJ, or the IROS organizing committee}. Always download the current
+year's official style files and author kit from the official IROS call for papers before
+submitting, and verify formatting, page limits, and policies against that source.%
+}}
+\vspace{8pt}
+\begin{center}
+{\LARGE\bfseries\color{irosnavy} Contact-Aware Foothold Refinement for Quadrupedal Locomotion on Unstructured Terrain\par}
+\vspace{10pt}
+{\large Femi Oyelaran$^{1}$, Ingrid Roos$^{2}$, Sora Tanaka$^{1}$, and Manon Delacroix$^{3}$\par}
+\vspace{6pt}
+{\normalsize
+$^{1}$Department of Robotics Engineering, Nimbus Institute of Technology, Rindalen, Norway\\
+$^{2}$Vertex Robotics Laboratory, Meridian University, Coimbra, Portugal\\
+$^{3}$Applied Autonomy Group, Synapse Research, Lyon, France\\
+\small\texttt{\{f.oyelaran, s.tanaka\}@nimbus-institute.edu}, \texttt{i.roos@meridian-univ.pt}, \texttt{m.delacroix@synapse-research.fr}
+\par}
+\vspace{10pt}
+\end{center}
+]
+
+\begin{abstract}
+\noindent\textbf{Abstract} --- Quadrupedal robots traversing rubble, loose gravel, and
+staircases frequently mis-place footholds when relying on elevation maps alone, since map
+noise near occlusion boundaries corrupts the terrain estimate exactly where safe contact
+points are scarcest. We present \textsc{ContactRefine}, a lightweight foothold refinement
+module that consumes a coarse elevation map together with per-leg contact force history and
+outputs a corrected stance point within a $4\,\text{cm}$ search radius of the planner's
+nominal foothold. The module is trained with a contrastive objective that pulls refined
+footholds toward regions of historically low slip and pushes them away from geometry that
+previously produced contact-force spikes. Across $1{,}400$ trials on a physical quadruped
+crossing five terrain classes -- rubble, loose gravel, wet tile, staircases, and root-covered
+trail -- \textsc{ContactRefine} reduces the stumble rate from $17.9\%$ to $6.2\%$ and lowers
+mean cost of transport by $11.4\%$ relative to a strong elevation-map-only baseline, while
+adding only $1.8\,\text{ms}$ of latency to the $500\,\text{Hz}$ control loop.
+\end{abstract}
+\vspace{6pt}
+
+\section{Introduction}
+Legged platforms are increasingly deployed for inspection and search tasks in environments
+that defeat wheeled locomotion: collapsed structures, forested slopes, and industrial sites
+mid-renovation. In these settings the dominant failure mode is not gross planning error but
+local foothold mis-placement -- a leg lands on a loose rock, an unsupported tile edge, or a
+root hidden beneath leaf litter, and the resulting slip propagates into a stumble or fall.
+Elevation-map-based foothold planners~\cite{singh2018survey,tanaka2023perception} handle
+open, well-observed terrain well, but degrade sharply near occlusion boundaries, where a
+single missing depth return can shift the estimated ground height by several centimeters.
+
+Prior work addresses this gap along two lines. The first improves the map itself, fusing
+multiple viewpoints or temporal windows to fill occluded regions~\cite{tanaka2023perception}.
+The second bypasses maps for reactive, force-driven recovery after a stumble has already
+begun~\cite{oduya2020reactive}. Both are valuable but incomplete: better maps still contain
+residual noise near clutter, and reactive recovery only engages after contact quality has
+already degraded. We target the interval between the two -- refining a foothold using recent
+contact history \emph{before} the leg commits to stance.
+
+This paper contributes: (i) \textsc{ContactRefine}, a foothold refinement module that jointly
+conditions on local elevation and a short window of per-leg contact force history; (ii) a
+contrastive training objective that requires no manual terrain labels, using slip and
+force-spike events recorded during teleoperated data collection as implicit supervision; and
+(iii) a $1{,}400$-trial physical evaluation across five terrain classes showing consistent
+stumble-rate and cost-of-transport improvements with negligible added latency.
+
+\section{Related Work}
+\textbf{Foothold planning.} Classical foothold selection scores candidate contact points
+against local slope, roughness, and clearance heuristics computed from an elevation
+map~\cite{singh2018survey}. Learned variants replace hand-tuned scoring with implicit terrain
+encoders trained on simulated rollouts~\cite{mbeki2023legged}, improving generalization but
+inheriting whatever noise is present in the input map.
+
+\textbf{Whole-body and reactive control.} Whole-body controllers couple foothold choice to
+torso stabilization through impedance or MPC formulations~\cite{nakashima2019whole,
+delacroix2021mpc}, and reactive controllers detect stumbles via force or IMU anomalies and
+trigger corrective swing trajectories~\cite{oduya2020reactive}. These methods are complementary
+to ours: they act during or after a bad contact, whereas \textsc{ContactRefine} acts before
+touchdown.
+
+\textbf{Learning from experience.} Curriculum and domain-randomized reinforcement learning
+have produced gaits that adapt to terrain roughness in simulation~\cite{papazian2022rl,
+fontaine2021domain}, with sim-to-real transfer remaining the central bottleneck
+\cite{halvorsen2022survey}. Our approach sidesteps large-scale simulation by learning directly
+from real contact outcomes recorded on the target platform, at the cost of requiring an initial
+teleoperated data collection phase.
+
+\section{Method}
+\textsc{ContactRefine} sits between the high-level foothold planner and the swing-leg
+controller. Given the planner's nominal foothold $p_0 \in \mathbb{R}^2$ (in the horizontal
+plane of the leg's home frame), a local elevation patch $E \in \mathbb{R}^{16\times 16}$
+centered at $p_0$, and the trailing contact-force window $F \in \mathbb{R}^{T\times 3}$ for
+that leg over the previous $T=8$ swing cycles, the module predicts an offset
+$\delta \in \mathbb{R}^2$, $\lVert \delta \rVert \le 4\,\text{cm}$, giving the refined foothold
+$p^\ast = p_0 + \delta$.
+
+\subsection{Architecture}
+$E$ is encoded by a $3$-layer convolutional stack (channels $16\!\to\!32\!\to\!32$, stride 2,
+ReLU) into a $64$-dimensional terrain embedding $z_E$. $F$ is encoded by a single-layer GRU
+into a $32$-dimensional contact embedding $z_F$. The two embeddings are concatenated and
+passed through a $2$-layer MLP (hidden width $96$) with a $\tanh$ output scaled to the
+$4\,\text{cm}$ search radius, giving $\delta$.
+
+\subsection{Contrastive Contact Objective}
+Rather than requiring hand-labeled "good" and "bad" footholds, we mine supervision from
+recorded outcomes: a foothold is a positive example if the resulting stance produced peak
+vertical force within $[0.8, 1.2]\times$ the platform's steady-state load and no slip event
+was flagged by the foot-slip detector; it is a negative example if a slip event or a force
+spike exceeding $2.0\times$ steady-state load was recorded within $50\,\text{ms}$ of touchdown.
+For an anchor patch embedding $z_i$ with positive foothold embedding $z_i^{+}$ and a batch of
+negatives $\{z_j^{-}\}_{j=1}^{K}$, we minimize
+\begin{equation}
+\resizebox{0.92\linewidth}{!}{$\displaystyle
+\mathcal{L}_{\text{contact}} = -\log \frac{\exp\!\big(\mathrm{sim}(z_i, z_i^{+})/\tau\big)}
+{\exp\!\big(\mathrm{sim}(z_i, z_i^{+})/\tau\big) + \sum_{j=1}^{K}\exp\!\big(\mathrm{sim}(z_i, z_j^{-})/\tau\big)}
+$}
+\label{eq:contrastive}
+\end{equation}
+where $\mathrm{sim}(\cdot,\cdot)$ is cosine similarity and $\tau = 0.07$ is a temperature
+fixed across all experiments. The offset head is trained jointly with an auxiliary
+$\ell_2$ regression loss toward the empirical positive foothold nearest $p_0$, weighted at
+$0.3$ relative to $\mathcal{L}_{\text{contact}}$, which we found stabilizes early training
+before enough contrastive pairs have accumulated.
+
+\subsection{Deployment}
+At inference, \textsc{ContactRefine} runs once per swing phase on the platform's onboard
+compute (a Nimbus NX-4 module), consuming the most recent elevation patch and contact window
+and returning $\delta$ before the swing trajectory is finalized. The module adds no additional
+sensing requirements beyond what the baseline planner already uses.
+
+\section{Experiments}
+We evaluate on a $22\,\text{kg}$ quadruped platform across five terrain classes: rubble
+(construction debris, $3$--$12\,\text{cm}$ fragments), loose gravel, wet tile, a
+$15$-step staircase, and a root-covered forest trail. Data collection comprised $6.5$ hours of
+teleoperated traversal used to mine contrastive pairs, followed by $1{,}400$ autonomous
+evaluation trials ($280$ per terrain class) split evenly between \textsc{ContactRefine} and
+three baselines: (i) \emph{Elevation-only}, the planner's default scoring heuristic; (ii)
+\emph{Reactive-recovery}~\cite{oduya2020reactive}, which corrects after stumble onset; and
+(iii) \emph{Learned-encoder}~\cite{mbeki2023legged}, a terrain-encoder foothold scorer trained
+in simulation. All methods share the same underlying gait scheduler and swing-trajectory
+generator, isolating the foothold-selection stage as the sole variable.
+
+We report stumble rate (fraction of footholds triggering the onboard slip or force-spike
+detector), cost of transport (COT, mechanical energy per unit weight per unit distance), and
+added per-step latency measured on the onboard compute.
+
+\section{Results}
+Table~\ref{tab:results} summarizes performance across all five terrain classes.
+\textsc{ContactRefine} reduces stumble rate relative to the elevation-only baseline on every
+terrain class, with the largest gain on rubble ($21.4\% \to 7.1\%$), where map noise near
+fragment edges is most severe. The learned-encoder baseline improves over elevation-only but
+trails \textsc{ContactRefine} on all classes except wet tile, where contact-force history is
+less informative since slip there is governed by surface friction rather than geometry.
+
+\begin{table}[t]
+\centering
+\caption{Stumble rate (\%) and cost of transport by terrain class, averaged over $280$ trials per cell.}
+\label{tab:results}
+\footnotesize
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Terrain} & \textbf{Elev.-only} & \textbf{React.} & \textbf{Learn.-enc.} & \textbf{Ours} \\
+\midrule
+Rubble        & 21.4 & 15.8 & 12.9 & \textbf{7.1} \\
+Loose gravel  & 18.6 & 14.2 & 10.5 & \textbf{6.6} \\
+Wet tile      & 12.1 & 9.7  & \textbf{7.4}  & 7.8 \\
+Staircase     & 16.3 & 12.0 & 9.8  & \textbf{4.9} \\
+Root trail    & 21.0 & 16.9 & 13.7 & \textbf{4.6} \\
+\midrule
+Mean          & 17.9 & 13.7 & 10.9 & \textbf{6.2} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:cot} plots mean cost of transport against stumble rate for all four methods,
+pooled across terrain classes. \textsc{ContactRefine} occupies the lower-left region of the
+plot, indicating it does not trade efficiency for stability -- a pattern we did not assume in
+advance, since foothold corrections that avoid slip can in principle require less economical
+leg trajectories.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.95\linewidth,
+  height=5.1cm,
+  xlabel={Stumble rate (\%)},
+  ylabel={Cost of transport},
+  xmin=0, xmax=20,
+  ymin=0.28, ymax=0.42,
+  axis lines=left,
+  tick label style={font=\scriptsize},
+  label style={font=\scriptsize},
+  legend style={font=\scriptsize, at={(0.97,0.05)}, anchor=south east, draw=none, fill=none},
+  grid=major,
+  grid style={gray!15}
+]
+\addplot[only marks, mark=*, mark size=2.6pt, color=irosamber] coordinates {(17.9,0.401)};
+\addlegendentry{Elevation-only}
+\addplot[only marks, mark=square*, mark size=2.4pt, color=irosgray] coordinates {(13.7,0.379)};
+\addlegendentry{Reactive}
+\addplot[only marks, mark=triangle*, mark size=2.8pt, color=irosteal] coordinates {(10.9,0.352)};
+\addlegendentry{Learned-encoder}
+\addplot[only marks, mark=diamond*, mark size=2.8pt, color=irosnavy] coordinates {(6.2,0.336)};
+\addlegendentry{Ours}
+\end{axis}
+\end{tikzpicture}
+\caption{Cost of transport versus stumble rate, pooled across all five terrain classes.
+Lower-left is better on both axes.}
+\label{fig:cot}
+\end{figure}
+
+Added latency for \textsc{ContactRefine} was $1.8\,\text{ms}\pm0.3\,\text{ms}$ per swing phase
+on the onboard compute, within the timing budget of the $500\,\text{Hz}$ control loop; the
+learned-encoder baseline added $2.6\,\text{ms}$ owing to its larger terrain backbone.
+
+\section{Discussion}
+The rubble and root-trail results support our motivating hypothesis: contact-force history is
+most valuable exactly where the elevation map is least trustworthy, since fragment edges and
+subsurface roots produce geometry that a depth sensor systematically misreads. The wet-tile
+result is a useful negative case -- where slip is governed by friction rather than local
+relief, contact history from prior footholds carries less signal, and a terrain-appearance
+encoder is a better fit. This suggests a natural extension: routing between contact-history and
+appearance-based refinement conditioned on a lightweight terrain-class estimate, which we did
+not implement here to keep the evaluation controlled to a single mechanism.
+
+A second limitation is the reliance on an initial teleoperated data collection phase to mine
+contrastive pairs; the $6.5$-hour collection used in this study was sufficient for the five
+terrain classes tested, but scaling to a substantially wider terrain distribution would likely
+require either more collection or a bootstrapping procedure that reuses pairs mined during
+autonomous deployment.
+
+\section{Conclusion}
+We presented \textsc{ContactRefine}, a foothold refinement module that combines local
+elevation with recent per-leg contact-force history to correct foothold placement before
+touchdown, trained with a contrastive objective that requires no manual terrain labeling.
+Across $1{,}400$ physical trials on five terrain classes, it reduces mean stumble rate from
+$17.9\%$ to $6.2\%$ and cost of transport by $11.4\%$ relative to an elevation-only baseline,
+at $1.8\,\text{ms}$ of added latency. Future work includes conditioning the refinement
+mechanism on a terrain-class estimate to recover the wet-tile regression observed here, and
+reducing dependence on teleoperated data collection through online pair mining.
+
+\balance
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
+\end{document}

@@ -1,0 +1,448 @@
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage[letterpaper,left=0.75in,right=0.75in,top=0.9in,bottom=1in,columnsep=0.28in]{geometry}
+
+\usepackage{filecontents}
+\begin{filecontents*}{references.bib}
+@inproceedings{marchetti2019lastmile,
+  author    = {Elena Marchetti and Thomas Reyes},
+  title     = {Measuring Last-Mile Latency at Scale: A Ten-Country Panel Study},
+  booktitle = {Proc. ACM Internet Measurement Conference (IMC)},
+  year      = {2019},
+  pages     = {211--224}
+}
+@inproceedings{whitfield2017bufferbloat,
+  author    = {Amara Whitfield and Owen Castellan},
+  title     = {Bufferbloat in the Wild: Queueing Delay under Realistic Access-Link Load},
+  booktitle = {Proc. ACM SIGCOMM},
+  year      = {2017},
+  pages     = {88--101}
+}
+@inproceedings{sundaram2020fwa,
+  author    = {Rajiv Sundaram and Priya Natarajan},
+  title     = {Characterizing Fixed Wireless Access Performance across Spectrum Bands},
+  booktitle = {Proc. USENIX NSDI},
+  year      = {2020},
+  pages     = {455--469}
+}
+@article{bauer2015probing,
+  author  = {Johannes Bauer and Ingrid Solvang},
+  title   = {Active Probing Methodologies for Residential Broadband Measurement: A Survey},
+  journal = {ACM Computing Surveys},
+  volume  = {48},
+  number  = {2},
+  year    = {2015},
+  pages   = {1--34}
+}
+@inproceedings{rahman2018cdn,
+  author    = {Fatima Rahman and Chen Wei},
+  title     = {Where Does the Delay Go? Decomposing Web Latency across the Access Path},
+  booktitle = {Proc. ACM CoNEXT},
+  year      = {2018},
+  pages     = {312--325}
+}
+@inproceedings{ferreira2021satellite,
+  author    = {Lucas Ferreira and Sofia Petrova},
+  title     = {A First Look at Low-Earth-Orbit Broadband Latency and Jitter},
+  booktitle = {Proc. ACM Internet Measurement Conference (IMC)},
+  year      = {2021},
+  pages     = {602--616}
+}
+@inproceedings{bellini2016aqm,
+  author    = {Marco Bellini and Elena Marchetti},
+  title     = {Active Queue Management Deployment in Home Gateways: An Empirical Audit},
+  booktitle = {Proc. IEEE INFOCOM},
+  year      = {2016},
+  pages     = {1--9}
+}
+@inproceedings{natarajan2019mobile,
+  author    = {Priya Natarajan and David Okonkwo},
+  title     = {Cellular Latency under Load: Measuring 4G and Early 5G Macro Networks},
+  booktitle = {Proc. Passive and Active Measurement Conference (PAM)},
+  year      = {2019},
+  pages     = {77--91}
+}
+@techreport{solvang2020panel,
+  author      = {Ingrid Solvang and Johannes Bauer},
+  title       = {Design and Calibration of a Volunteer Residential Measurement Panel},
+  institution = {Synapse Institute},
+  year        = {2020},
+  number      = {SI-TR-2020-04}
+}
+@inproceedings{wei2022l4s,
+  author    = {Chen Wei and Mei Lin Zhao},
+  title     = {Early Deployment Signals for Low Latency, Low Loss, Scalable Throughput (L4S)},
+  booktitle = {Proc. ACM CoNEXT},
+  year      = {2022},
+  pages     = {140--153}
+}
+@inproceedings{okonkwo2021dsl,
+  author    = {David Okonkwo and Amara Whitfield},
+  title     = {Copper in Decline: A Longitudinal View of DSL Access Performance},
+  booktitle = {Proc. USENIX NSDI},
+  year      = {2021},
+  pages     = {389--403}
+}
+@article{petrova2018qoe,
+  author  = {Sofia Petrova and Marco Bellini},
+  title   = {From RTT to QoE: Linking Access-Link Delay to Interactive Application Quality},
+  journal = {IEEE/ACM Transactions on Networking},
+  volume  = {26},
+  number  = {5},
+  year    = {2018},
+  pages   = {2211--2224}
+}
+\end{filecontents*}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{titlesec}
+\usepackage{caption}
+
+\definecolor{nexablue}{RGB}{31,71,115}
+\definecolor{synapseteal}{RGB}{43,124,120}
+\definecolor{vertexcopper}{RGB}{176,98,50}
+\definecolor{noticebg}{RGB}{250,244,230}
+
+\usepackage[colorlinks=true,linkcolor=nexablue,citecolor=nexablue,urlcolor=nexablue,breaklinks=true]{hyperref}
+
+\renewcommand{\arraystretch}{1.15}
+\captionsetup{font=small,labelfont=bf,labelsep=period}
+\setlength{\fboxsep}{7pt}
+\setlength{\fboxrule}{0.7pt}
+
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{1.4em plus 0.3em minus 0.2em}{0.7em}
+\titlespacing*{\subsection}{0pt}{1.1em plus 0.2em minus 0.2em}{0.5em}
+
+\setlength{\parindent}{1em}
+\setlength{\parskip}{0pt}
+
+\begin{document}
+
+\twocolumn[
+  \begin{center}
+    \fcolorbox{vertexcopper}{noticebg}{\parbox{0.94\linewidth}{%
+      \small\noindent\textbf{Unofficial template.} This document is an \textbf{UNOFFICIAL}
+      \LaTeX{} template and is \textbf{NOT affiliated with, endorsed by, or sponsored by}
+      the Internet Measurement Conference, ACM SIGCOMM, or ACM. Formatting shown here is
+      illustrative only. Authors \textbf{must} consult the official IMC call for papers and
+      download the current year's official style files before preparing a submission.}}
+  \end{center}
+
+  \vspace{10pt}
+  \begin{center}
+    {\LARGE\bfseries Characterizing Last-Mile Latency Inflation in Residential Access
+    Networks: A Multi-Vantage Measurement Study}\par\vspace{10pt}
+    {\large Elena Marchetti$^{1}$ \quad David Okonkwo$^{2}$ \quad Mei Lin Zhao$^{3}$}\par\vspace{6pt}
+    {\normalsize $^{1}$Nexa University \quad $^{2}$Synapse Institute \quad $^{3}$Vertex Labs}\par\vspace{3pt}
+    {\small\ttfamily e.marchetti@nexa.edu \quad d.okonkwo@synapse.org \quad mzhao@vertexlabs.io}
+  \end{center}
+  \vspace{4pt}
+  \noindent\textcolor{nexablue}{\rule{\linewidth}{0.7pt}}
+  \vspace{8pt}
+
+  \noindent{\bfseries Abstract.}\hspace{0.4em}
+  Throughput has long served as the primary yardstick for residential access quality, yet
+  interactive and real-time applications are increasingly sensitive to delay rather than
+  raw capacity. We present a six-week active-measurement campaign covering
+  $n=3{,}116$ vantage points across 41 residential ISPs in 12 countries, quantifying how
+  much round-trip latency inflates when an access link is saturated by ordinary bulk
+  traffic. We introduce the Latency Inflation Ratio (LIR), a normalized metric relating
+  loaded and idle round-trip time, and measure it separately for fiber, cable, DSL, fixed
+  wireless, satellite, and mobile access technologies. We find that fiber links exhibit a
+  median LIR of $0.06$, roughly $3.5\times$ lower than cable and DSL, while fixed wireless
+  and low-earth-orbit satellite links show the heaviest tails, with 95th-percentile LIR
+  exceeding $1.1$. These results suggest that access-layer buffering and scheduling
+  policy, more than raw bandwidth, dominate the loaded-latency experience for a
+  substantial share of residential users, and we discuss implications for active queue
+  management and low-latency transport deployment.
+  \vspace{4pt}
+
+  \noindent{\small\itshape Keywords: bufferbloat, latency inflation, active measurement,
+  residential broadband, access networks}
+  \vspace{14pt}
+]
+
+\section{Introduction}
+Household internet access has, for two decades, been marketed and benchmarked almost
+exclusively on downstream throughput. Regulatory broadband maps, ISP advertising, and
+most consumer speed-test tools report megabits per second and little else. Yet a growing
+share of residential traffic is delay-sensitive: videoconferencing, cloud gaming, voice
+telephony, and remote collaborative editing all degrade sharply when round-trip time
+grows, independent of whether the link's nominal capacity is saturated. The well-known
+\emph{bufferbloat} phenomenon, in which deep and poorly managed queues in access-network
+equipment allow latency to climb by hundreds of milliseconds under load, has been
+documented in individual devices and small testbeds, but its prevalence across access
+technologies, ISPs, and geographies at panel scale remains comparatively under-measured.
+
+This paper reports on a large, multi-vantage active-measurement study designed to close
+that gap. Software probes deployed on volunteer home gateways and companion devices
+issue paired idle and loaded round-trip-time measurements, allowing us to isolate the
+latency contribution of access-link saturation from baseline propagation and processing
+delay. We define a single normalized metric, the Latency Inflation Ratio (LIR), and
+compute it consistently across six access technologies spanning fiber, cable, digital
+subscriber line (DSL), fixed wireless access (FWA), low-earth-orbit (LEO) satellite, and
+macro-cellular mobile networks.
+
+Our contributions are threefold. First, we describe a measurement methodology and
+panel design that yields directly comparable loaded-latency estimates across
+heterogeneous access technologies and commercial ISPs. Second, we report LIR
+distributions from a six-week campaign covering 3{,}116 vantage points in 41 ISPs
+across 12 countries, the largest cross-technology comparison of loaded latency we are
+aware of. Third, we analyze which technologies and deployment patterns are most
+associated with severe latency inflation, and discuss what our findings imply for the
+ongoing rollout of active queue management (AQM) and low-latency transport mechanisms
+such as L4S.
+
+The remainder of this paper is organized as follows. Section~\ref{sec:related} situates
+our work relative to prior bufferbloat and access-network measurement studies.
+Section~\ref{sec:method} describes our measurement architecture and the LIR metric.
+Section~\ref{sec:experiments} details the deployment and dataset. Section~\ref{sec:results}
+presents our main findings. Section~\ref{sec:discussion} discusses limitations and
+implications, and Section~\ref{sec:conclusion} concludes.
+
+\section{Related Work}
+\label{sec:related}
+Early work on queueing delay in home networks established that consumer routers and
+cable/DSL modems frequently ship with oversized, statically configured buffers, producing
+latency spikes far larger than would be predicted by link capacity and offered load
+alone~\cite{whitfield2017bufferbloat}. Subsequent audits of AQM deployment in shipped home
+gateways found that, even where AQM algorithms were available, default configurations
+frequently left them disabled~\cite{bellini2016aqm}. Our own prior work examined last-mile
+latency in a ten-country panel but was limited to idle-network measurements and did not
+isolate the loaded-latency contribution that is the focus of the present
+study~\cite{marchetti2019lastmile}.
+
+A parallel line of work has focused on measurement methodology itself.
+Bauer and Solvang survey active-probing techniques for residential broadband and catalog
+the confounds that arise from cross-traffic, NAT middleboxes, and CPE-level
+scheduling~\cite{bauer2015probing}; we adopt several of their recommended controls,
+including paired idle/loaded sampling and per-probe outlier filtering. Rahman and Wei
+decompose end-to-end web latency across the access path and show that access-link
+queueing, rather than core-network or server-side delay, dominates the variance in
+last-mile response time for a majority of residential connections~\cite{rahman2018cdn}.
+
+Technology-specific measurement has grown alongside the diversification of residential
+access. Sundaram and Natarajan characterize fixed wireless access performance across
+spectrum bands and find substantial variance tied to sector loading~\cite{sundaram2020fwa}.
+Ferreira and Petrova provide one of the first broad looks at LEO satellite latency and
+jitter, reporting idle latencies far lower than legacy geostationary satellite but
+significant variability under contention~\cite{ferreira2021satellite}. Okonkwo and
+Whitfield track DSL performance longitudinally as fiber overbuild reduces the subscriber
+base sharing legacy copper plant~\cite{okonkwo2021dsl}, and Natarajan and Okonkwo measure
+cellular latency under load across 4G and early 5G macro deployments~\cite{natarajan2019mobile}.
+Petrova and Bellini connect access-link delay directly to interactive quality-of-experience
+outcomes~\cite{petrova2018qoe}, and Wei and Zhao report early field signals from L4S
+deployment trials~\cite{wei2022l4s}. Our study differs from this body of work by measuring
+a consistent metric across all six access technologies within a single, contemporaneous
+panel, and at a scale that supports cross-technology and cross-ISP comparison.
+
+\section{Method}
+\label{sec:method}
+\subsection{Measurement Architecture}
+Our measurement panel, which we refer to as the Meridian Measurement Panel, consists of
+lightweight software probes running on volunteer home routers and companion single-board
+devices. Each probe is opt-in, reports only aggregated latency statistics rather than raw
+packet contents, and is paired at enrollment with self-reported and ISP-confirmed access
+technology and nominal plan speed. Probes communicate with a small set of geographically
+distributed collector nodes over UDP and TLS-protected control channels; collectors never
+initiate connections into the home network.
+
+\subsection{Loaded/Idle Probing Protocol}
+Each measurement cycle consists of three phases. In the idle phase, a probe issues 30
+lightweight UDP echo probes at 200\,ms intervals while no other flows are active on the
+link, and records the median round-trip time as $\mathrm{RTT}^{\text{idle}}$. In the load
+phase, the probe opens a synthetic bulk TCP transfer toward a nearby collector, ramps it
+to saturate the measured link in either the downstream or upstream direction, and
+continues issuing the same UDP echo probes in parallel, recording the median as
+$\mathrm{RTT}^{\text{loaded}}$. In the cooldown phase, the bulk transfer is torn down and
+the link is allowed to drain before the next cycle begins. Downstream- and
+upstream-saturating cycles are run in alternation to characterize both directions.
+
+\subsection{Latency Inflation Ratio}
+We define the Latency Inflation Ratio for probe $i$ and cycle $j$ as the fractional
+increase in round-trip time observed when the access link is saturated, relative to its
+idle baseline:
+\begin{equation}
+  \mathrm{LIR}_{i,j} \;=\; \frac{\mathrm{RTT}_{i,j}^{\text{loaded}} - \mathrm{RTT}_{i,j}^{\text{idle}}}{\mathrm{RTT}_{i,j}^{\text{idle}}}
+  \label{eq:lir}
+\end{equation}
+A probe experiencing no additional queueing delay under load has $\mathrm{LIR}\approx 0$,
+while a probe whose loaded RTT doubles has $\mathrm{LIR}=1$. We compute
+Equation~\eqref{eq:lir} per cycle and aggregate to a per-probe median and 95th-percentile
+over the full campaign, requiring at least $n \geq 30$ valid cycle pairs per probe for
+inclusion. Cycles with packet loss exceeding $5\%$ during the idle phase, indicative of an
+already-congested or otherwise unhealthy link, are discarded to avoid conflating baseline
+instability with load-induced inflation.
+
+\subsection{Ethics and Privacy}
+Panel enrollment is opt-in and reviewed under Nexa University's human-subjects protocol.
+Probes record only timing metadata and coarse ISP/technology labels; no packet payloads,
+destination hostnames outside the measurement infrastructure, or household-identifying
+information are collected. Reported results are aggregated at the technology and ISP
+level throughout this paper.
+
+\section{Experiments}
+\label{sec:experiments}
+We ran the measurement campaign for six consecutive weeks, from probes already enrolled
+in the Meridian Measurement Panel as of the start of the campaign, supplemented by a
+short recruitment push to improve coverage of fixed wireless and satellite access, which
+were underrepresented in the existing panel. The final dataset comprises 3{,}116 vantage
+points across 41 residential ISPs in 12 countries, spanning six access technologies:
+fiber (GPON and XGS-PON), cable (DOCSIS 3.1), DSL (VDSL2), fixed wireless access (5G
+FWA), low-earth-orbit satellite, and macro-cellular mobile (4G/5G). Each probe completed
+both downstream- and upstream-saturating cycles roughly every 40 minutes throughout the
+campaign, yielding just over 48 million completed load/idle cycle pairs after quality
+filtering. Compute and bandwidth for collector infrastructure were donated by Apex Cloud;
+panel recruitment and device logistics were supported by a grant from the Meridian
+Research Foundation, and Nimbus Networks contributed a subset of fixed-wireless vantage
+points from its own volunteer subscriber base.
+
+\section{Results}
+\label{sec:results}
+Table~\ref{tab:results} summarizes per-technology LIR and loss statistics aggregated over
+the full campaign. Fiber access shows both the lowest median inflation ($0.06$) and the
+tightest tail ($p95 = 0.19$), consistent with symmetric, lightly buffered PON access
+architectures and comparatively little contention among subscribers sharing a given
+optical distribution point. Cable and DSL cluster together at roughly $3$--$4\times$
+fiber's median inflation, which we attribute to a combination of larger static buffers in
+deployed cable modems and, for DSL, older CPE that in our panel rarely had modern AQM
+enabled. Fixed wireless, satellite, and mobile technologies show the heaviest tails: LEO
+satellite's median LIR ($0.29$) is comparable to cable, but its 95th percentile ($1.35$)
+and loss rate ($1.86\%$) are the highest of any technology we measured, reflecting
+episodic contention and handoff effects between satellite beams.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Latency Inflation Ratio and loss rate by access technology, aggregated over the
+six-week campaign ($n = 3{,}116$ vantage points total).}
+\label{tab:results}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Technology} & \textbf{$n$} & \textbf{Med. LIR} & \textbf{$p95$ LIR} & \textbf{Loss (\%)} \\
+\midrule
+Fiber (PON)     & 812   & 0.06 & 0.19 & 0.08 \\
+Cable (DOCSIS)  & 1{,}240 & 0.21 & 0.68 & 0.34 \\
+DSL (VDSL2)     & 356   & 0.24 & 0.71 & 0.41 \\
+FWA (5G)        & 289   & 0.33 & 1.12 & 0.97 \\
+Satellite (LEO) & 145   & 0.29 & 1.35 & 1.86 \\
+Mobile (4G/5G)  & 274   & 0.27 & 0.94 & 0.62 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:cdf} shows the full empirical distribution of per-probe median LIR for
+three representative technologies. The fiber curve rises steeply and saturates below
+$\mathrm{LIR}=0.3$, indicating that severe inflation is rare rather than merely
+low on average. Cable's distribution is shifted right and has a visibly longer tail,
+and fixed wireless shows the flattest, widest distribution of the three, with a
+non-trivial fraction of probes exceeding $\mathrm{LIR}=1.0$ even at the median-aggregation
+level shown here.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.85\linewidth,
+    height=5.4cm,
+    xlabel={Latency Inflation Ratio (LIR)},
+    ylabel={Empirical CDF},
+    xmin=0, xmax=1.5,
+    ymin=0, ymax=1,
+    grid=both,
+    grid style={line width=0.1pt, draw=gray!25},
+    major grid style={line width=0.2pt, draw=gray!35},
+    axis lines=left,
+    tick label style={font=\footnotesize},
+    label style={font=\footnotesize},
+    legend style={font=\footnotesize, at={(0.98,0.35)}, anchor=east, draw=gray!50},
+    legend cell align={left},
+]
+\addplot+[color=nexablue, mark=*, mark size=1.4pt, thick, mark options={fill=nexablue}]
+  coordinates {
+  (0.00,0.00) (0.02,0.08) (0.04,0.22) (0.06,0.42) (0.08,0.58)
+  (0.10,0.71) (0.15,0.85) (0.20,0.93) (0.30,0.98) (0.50,1.00)
+  };
+\addlegendentry{Fiber}
+
+\addplot+[color=synapseteal, mark=square*, mark size=1.4pt, thick, dashed, mark options={fill=synapseteal}]
+  coordinates {
+  (0.00,0.00) (0.05,0.04) (0.10,0.12) (0.15,0.22) (0.21,0.38)
+  (0.30,0.55) (0.45,0.72) (0.68,0.90) (0.90,0.96) (1.20,1.00)
+  };
+\addlegendentry{Cable}
+
+\addplot+[color=vertexcopper, mark=triangle*, mark size=1.6pt, thick, dotted, mark options={fill=vertexcopper}]
+  coordinates {
+  (0.00,0.00) (0.05,0.02) (0.10,0.06) (0.20,0.14) (0.33,0.28)
+  (0.50,0.45) (0.70,0.62) (0.90,0.75) (1.12,0.90) (1.50,1.00)
+  };
+\addlegendentry{FWA (5G)}
+\end{axis}
+\end{tikzpicture}
+\caption{Empirical CDF of per-probe median Latency Inflation Ratio for fiber, cable, and
+fixed wireless access. Fiber's distribution is concentrated at low LIR values; FWA shows
+the widest spread and heaviest tail.}
+\label{fig:cdf}
+\end{figure*}
+
+\section{Discussion}
+\label{sec:discussion}
+Our results reinforce a claim that has circulated informally in the operator and AQM
+communities but has lacked large-scale cross-technology evidence: nominal link capacity
+is a poor predictor of loaded-latency behavior, and access-technology and CPE buffering
+policy dominate instead. Two operational implications follow. First, ISPs and CPE vendors
+evaluating AQM deployment should prioritize cable and DSL fleets, where our data show the
+largest gap between currently observed and fiber-like achievable inflation. Second, the
+heavy tails we observe for fixed wireless and satellite access suggest that
+worst-case, rather than median, latency behavior should inform application-level
+adaptation for those technologies, since a non-trivial share of sessions on those links
+will encounter substantial queueing delay regardless of typical performance.
+
+Several limitations bound how far these findings generalize. Our panel is
+volunteer-recruited and, despite a targeted recruitment push for underrepresented
+technologies, likely skews toward more technically engaged subscribers, who may be more
+likely to have upgraded CPE or enabled available AQM features; if so, our estimates are
+conservative relative to the full subscriber population. Geographic coverage, while
+spanning 12 countries, is concentrated in urban and suburban areas, and rural access
+characteristics, particularly for DSL and satellite, may differ materially. Finally, our
+loaded-latency protocol uses a single synthetic bulk flow per cycle; real household
+traffic often involves multiple concurrent flows with different scheduling priorities,
+which could produce either more or less severe inflation than we observe, depending on
+CPE queue management. We view longitudinal tracking of the same panel through AQM and
+L4S rollout, together with multi-flow loading protocols, as natural next steps.
+
+\section{Conclusion}
+\label{sec:conclusion}
+We presented a six-week, multi-vantage active-measurement study of loaded-latency
+behavior across six residential access technologies, introducing the Latency Inflation
+Ratio as a simple, comparable metric for quantifying access-link queueing delay under
+realistic load. Across 3{,}116 vantage points in 41 ISPs and 12 countries, we find that
+fiber access delivers substantially lower and more consistent loaded latency than cable,
+DSL, fixed wireless, satellite, or mobile access, and that fixed wireless and satellite
+technologies in particular exhibit heavy-tailed inflation that is not well summarized by
+median statistics alone. We hope this dataset and methodology support both future
+measurement work and more latency-aware benchmarking of residential access quality.
+
+\section*{Acknowledgments}
+We thank the volunteer participants of the Meridian Measurement Panel. Collector
+infrastructure was donated by Apex Cloud; panel recruitment was supported by a grant from
+the Meridian Research Foundation; Nimbus Networks contributed fixed-wireless vantage
+points from its volunteer subscriber base.
+
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}

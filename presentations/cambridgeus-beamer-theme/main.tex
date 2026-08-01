@@ -1,0 +1,204 @@
+\documentclass{beamer}
+
+% Choose CambridgeUS theme
+\usetheme{CambridgeUS}
+
+% Custom Color Definitions to complement the theme
+\definecolor{nexa-blue}{RGB}{41,128,185}
+\definecolor{nexa-red}{RGB}{192,57,43}
+\definecolor{nexa-grey}{RGB}{127,140,141}
+\definecolor{darkcharcoal}{RGB}{45,45,45}
+
+% Required Packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usepackage{fontawesome5}
+
+% TikZ Libraries
+\usetikzlibrary{positioning, calc, shapes.geometric, backgrounds}
+
+% Title, Subtitle, Author, and Institute
+\title[Nexa Data Orchestration]{Unifying Data Orchestration in Distributed Systems}
+\subtitle{Fostering Efficiency via the Nexa Framework}
+\author[Jenkins \& Chen]{Dr. Sarah Jenkins \and Prof. David Chen}
+\institute[Meridian Lab]{
+    Meridian Research Laboratories\\
+    Vertex Institute of Technology
+}
+\date[LetX 2026]{LetX Conference, August 2026}
+
+\begin{document}
+
+% Slide 1: Title Slide
+\begin{frame}
+    \titlepage
+\end{frame}
+
+% Slide 2: Table of Contents
+\begin{frame}{Outline}
+    \tableofcontents
+\end{frame}
+
+\section{Introduction}
+
+% Slide 3: Motivation & Research Challenges (with bullet builds)
+\begin{frame}{Motivation: Data Orchestration Challenges}
+    Distributed systems face significant orchestration overhead:
+    \begin{itemize}
+        \item<1-> \textbf{High Latency:} Communication delays between remote nodes.
+        \item<2-> \textbf{Data Inconsistency:} Conflicting updates in replicated databases.
+        \item<3-> \textbf{Resource Over-allocation:} Excess computing power used for routing tasks.
+        \item<4-> \textbf{Dynamic Topology:} Nodes joining and leaving the network seamlessly.
+    \end{itemize}
+\end{frame}
+
+% Slide 4: Research Objectives
+\begin{frame}{Research Objectives}
+    We focus on addressing these challenges through the Nexa framework:
+    \begin{itemize}
+        \item Optimize task distribution dynamically across networks.
+        \item Reduce node synchronization overhead by up to 40\%.
+        \item Support self-healing network structures in real-time.
+    \end{itemize}
+\end{frame}
+
+\section{Methodology}
+
+% Slide 5: Proposed Architecture (TikZ diagram)
+\begin{frame}{Methodology: Nexa Architecture}
+    The framework coordinates clients, coordinators, and work nodes:
+    \begin{center}
+    \begin{tikzpicture}[node distance=1.8cm, auto, >=stealth, thick]
+        \node[draw, rectangle, fill=nexa-blue!20, rounded corners, minimum width=2.5cm, minimum height=1cm, align=center] (client) {Client Request\\(Nexa Portal)};
+        \node[draw, circle, fill=nexa-red!20, minimum size=1.5cm, right=of client] (coordinator) {Coordinator};
+        \node[draw, rectangle, fill=nexa-grey!20, rounded corners, minimum width=2.3cm, minimum height=0.8cm, above right=of coordinator] (node1) {Worker Node A};
+        \node[draw, rectangle, fill=nexa-grey!20, rounded corners, minimum width=2.3cm, minimum height=0.8cm, below right=of coordinator] (node2) {Worker Node B};
+        
+        \draw[->] (client) -- (coordinator) node[midway, above] {\small Queue};
+        \draw[->] (coordinator) -- (node1) node[midway, above left] {\small Assign};
+        \draw[->] (coordinator) -- (node2) node[midway, below left] {\small Assign};
+        \draw[<->, dashed] (node1) -- (node2) node[midway, right] {\small Sync};
+    \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+% Slide 6: Flow Optimization (Math Equations)
+\begin{frame}{Mathematical Modeling: Flow Optimization}
+    Let $G = (V, E)$ represent the network topology. The communication cost function $\Phi(x)$ is defined as:
+    \begin{equation}
+        \Phi(x) = \sum_{e \in E} f_e(x_e) + \alpha \sum_{v \in V} d_v(y_v)
+    \end{equation}
+    where:
+    \begin{itemize}
+        \item $x_e$ represents the flow rate on edge $e \in E$.
+        \item $y_v$ represents the computational load on node $v \in V$.
+        \item $\alpha$ is a scaling factor balancing communication and processing costs.
+    \end{itemize}
+    We solve this optimization problem using a dual-decomposition approach.
+\end{frame}
+
+\section{Experimental Evaluation}
+
+% Slide 7: Experimental Setup
+\begin{frame}{Experimental Setup}
+    To evaluate the Nexa framework, we deployed a benchmark across multiple nodes:
+    \begin{itemize}
+        \item \faServer ~ \textbf{Infrastructure:} Vertex Cloud Services (50 virtual instances).
+        \item \faCogs ~ \textbf{Workload:} Synthetic request streams simulating web-tier access.
+        \item \faChartLine ~ \textbf{Baselines:} Compared against Apex Router and Meridian Flow.
+    \end{itemize}
+\end{frame}
+
+% Slide 8: Quantitative Results (booktabs table)
+\begin{frame}{Quantitative Results}
+    Performance comparison of the routing frameworks:
+    \begin{table}
+        \centering
+        \begin{tabular}{lccc}
+            \toprule
+            Framework & Latency (ms) & Throughput (req/s) & Efficiency (\%) \\
+            \midrule
+            Meridian Flow & 124.5 & 12,500 & 78.4 \\
+            Apex Router & 98.2 & 15,200 & 84.1 \\
+            \textbf{Nexa (Ours)} & \textbf{62.1} & \textbf{22,800} & \textbf{95.3} \\
+            \bottomrule
+        \end{tabular}
+        \caption{Comparison under peak network workloads}
+    \end{table}
+\end{frame}
+
+% Slide 9: Qualitative Insights (two-column layout)
+\begin{frame}{Qualitative Insights}
+    An analysis of trade-offs and deployment requirements:
+    \begin{columns}
+        \begin{column}{0.48\textwidth}
+            \textbf{System Benefits}
+            \begin{itemize}
+                \item \textbf{Low Complexity:} Light codebase, easy deployment.
+                \item \textbf{High Reliability:} Fault tolerant nodes prevent system halts.
+                \item \textbf{Extensible API:} Standardized protocols for Nexa extension.
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Deployment Considerations}
+            \begin{itemize}
+                \item Requires initialization overhead for node routing tables.
+                \item Memory footprints scale linearly with active nodes.
+                \item Initial cluster synchronization takes 1.2 seconds.
+            \end{itemize}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\section{Discussion \& Conclusion}
+
+% Slide 10: Discussion: Block / Alertblock / Exampleblock trio
+\begin{frame}{Case Study Analysis}
+    We highlight key operational states during our testing:
+    
+    \begin{block}{Normal Operation (State A)}
+        Network maintains equilibrium with zero message drops and efficient resource utilization.
+    \end{block}
+    
+    \begin{alertblock}{Network Partition Event (State B)}
+        Under network partition, the coordinator node enters recovery mode within 200 ms.
+    \end{alertblock}
+    
+    \begin{exampleblock}{Self-Healing Response (State C)}
+        Secondary routes are established to bypass failed nodes, restoring 98\% throughput.
+    \end{exampleblock}
+\end{frame}
+
+% Slide 11: Summary
+\begin{frame}{Summary \& Future Work}
+    \begin{itemize}
+        \item \textbf{Nexa Framework:} Successfully reduces latency by 36\% compared to Apex.
+        \item \textbf{Efficiency:} Achieved 95.3\% resource allocation efficiency.
+        \item \textbf{Future Scope:}
+        \begin{itemize}
+            \item Investigate decentralized coordinators for larger clusters.
+            \item Implement predictive traffic routing using local heuristics.
+        \end{itemize}
+    \end{itemize}
+\end{frame}
+
+% Slide 12: Closing / Thank You
+\begin{frame}[plain]
+    \begin{center}
+        \Huge \textcolor{nexa-blue}{Thank You!}
+        
+        \vspace{1.5cm}
+        
+        \large Questions \& Comments
+        
+        \vspace{1cm}
+        
+        \small
+        \faEnvelope ~ \texttt{sarah.jenkins@meridian-lab.org} \\
+        \faEnvelope ~ \texttt{david.chen@vertex-tech.edu}
+    \end{center}
+\end{frame}
+
+\end{document}

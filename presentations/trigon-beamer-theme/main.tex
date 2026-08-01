@@ -1,0 +1,238 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[10pt, aspectratio=169]{beamer}
+
+% Load theme
+\usetheme{trigon}
+
+% Define a custom color palette (tasteful, modern, and high contrast)
+\definecolor{tPrim}{HTML}{1E3A8A}
+\definecolor{tSec}{HTML}{0D9488}
+\definecolor{tAccent}{HTML}{D97706}
+
+% Override internal theme colorlets to propagate the custom palette
+\colorlet{tTheme}{tPrim}
+\colorlet{tGrey}{tSec!20!tBg}
+
+% Load necessary packages
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{fontawesome5}
+\usepackage{tcolorbox}
+
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{positioning, calc, shapes.geometric, backgrounds, patterns}
+
+% Presentation Metadata
+\title{The Vertex Architecture}
+\subtitle{Adaptive Resource Allocation in Decentralized Cloud-Edge Networks}
+\author{Dr. Ronald Vance \and Prof. Clara Sterling}
+\institute{Department of Advanced Systems, Apex Laboratories}
+\date{August 1, 2026}
+
+% Footer configuration
+\setbeamertemplate{frame footer}{Apex Labs -- Project Vertex (2026)}
+
+\begin{document}
+
+% Slide 1: Title Page
+\titleframe
+
+% Slide 2: Table of Contents
+\begin{frame}{Roadmap}
+  \tableofcontents
+\end{frame}
+
+\section{Introduction \& Challenges}
+
+% Slide 4: Bullet Builds
+\begin{frame}{Introduction to Edge-Cloud Dynamics}
+  Managing workloads across decentralized networks requires addressing core constraints:
+  \begin{itemize}[<+-| alert@+>]
+    \item \faServer\ \textbf{System Heterogeneity:} Node capacity varies by orders of magnitude.
+    \item \faNetworkWired\ \textbf{Workload Volatility:} Network demand fluctuates unpredictably.
+    \item \faClock\ \textbf{Telemetry Latency:} Centralized scheduling suffers from sync delay.
+  \end{itemize}
+\end{frame}
+
+% Slide 5: Columns Slide
+\begin{frame}{The Centralization Bottleneck}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Traditional Orchestration Limits:}
+      \vskip 0.8em
+      \begin{itemize}
+        \item High latency overhead due to backhaul round-trip times.
+        \item Single points of failure during network partition events.
+        \item Inefficient local resource utilisation under burst traffic.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{tcolorbox}[colframe=tPrim, colback=tBg, title=Proposed Objectives]
+        We introduce the \textbf{Vertex} framework: a decentralized scheduling model designed to balance workloads locally, using predictive local states before querying Nimbus cloud databases.
+      \end{tcolorbox}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\section{The Vertex Architecture}
+
+% Slide 7: Block Trio
+\begin{frame}{Scheduling Policies and Safeguards}
+  \begin{columns}[T]
+    \begin{column}{0.31\textwidth}
+      \begin{block}{\faChartLine\ Resource Tracking}
+        Monitors CPU, memory, and network queues using localized filters.
+      \end{block}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{alertblock}{\faExclamationTriangle\ Predictive Offloading}
+        Triggers peer-to-peer load redirection when queue threshold $\theta > 0.85$.
+      \end{alertblock}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{exampleblock}{\faSync\ Global Sync}
+        Updates global states asynchronously using low-priority background channels.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 8: TikZ Figure (Topology and Decision Flow)
+\begin{frame}{System Topology \& Decision Logic}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \centering
+      \textbf{Hierarchical P2P Topology}
+      \vskip 0.5em
+      \begin{tikzpicture}[scale=0.85, every node/.style={transform shape}]
+        \node[draw, rectangle, fill=tPrim, text=white, rounded corners, minimum width=2.4cm, minimum height=0.6cm] (cloud) at (2, 3) {Nimbus Cloud};
+        \node[draw, circle, fill=tSec, text=white, minimum size=1.2cm] (edge1) at (0, 1) {Edge A};
+        \node[draw, circle, fill=tSec, text=white, minimum size=1.2cm] (edge2) at (4, 1) {Edge B};
+        \node[draw, circle, fill=tAccent, text=white, minimum size=0.8cm] (client1) at (-1.2, -1) {Client};
+        \node[draw, circle, fill=tAccent, text=white, minimum size=0.8cm] (client2) at (1.2, -1) {Client};
+        \node[draw, circle, fill=tAccent, text=white, minimum size=0.8cm] (client3) at (5.2, -1) {Client};
+
+        \draw[<->, thick, tPrim] (edge1) -- (cloud);
+        \draw[<->, thick, tPrim] (edge2) -- (cloud);
+        \draw[<->, dashed, thick, tAccent] (edge1) -- (edge2) node[midway, above] {P2P Sync};
+        \draw[->, thick] (client1) -- (edge1);
+        \draw[->, thick] (client2) -- (edge1);
+        \draw[->, thick] (client3) -- (edge2);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \textbf{Local Scheduling Execution}
+      \vskip 0.5em
+      \begin{tikzpicture}[scale=0.85, every node/.style={transform shape}]
+        \node[draw, rectangle, fill=tBg, text=tTxt, minimum width=3.6cm, minimum height=0.6cm] (ingest) at (0, 2.5) {Ingest Task};
+        \node[draw, diamond, fill=tBg, text=tTxt, aspect=2, minimum width=3.6cm] (dec) at (0, 1.2) {Queue Check};
+        \node[draw, rectangle, fill=tSec!20, text=tTxt, minimum width=2.2cm, minimum height=0.6cm] (local) at (-1.6, 0) {Run Locally};
+        \node[draw, rectangle, fill=tAccent!20, text=tTxt, minimum width=2.2cm, minimum height=0.6cm] (offload) at (1.6, 0) {Offload to Peer};
+
+        \draw[->, thick] (ingest) -- (dec);
+        \draw[->, thick] (dec) -- (-1.6, 1.2) -- (local) node[midway, left] {$\theta \le 0.85$};
+        \draw[->, thick] (dec) -- (1.6, 1.2) -- (offload) node[midway, right] {$\theta > 0.85$};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\section{Experimental Evaluation}
+
+% Slide 10: PGFPlots Graph
+\begin{frame}{Latency Convergence Analysis}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Convergence Rate comparison:}
+      \vskip 0.8em
+      Experimental runs evaluate stabilization latency under high resource contention.
+      \vskip 0.8em
+      \begin{itemize}
+        \item \textbf{Vertex} converges in less than 15 seconds.
+        \item The \textbf{Meridian} baseline exhibits high variance.
+        \item Localized consensus prevents cascading queuing delays.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{center}
+      \begin{tikzpicture}[scale=0.85, every node/.style={transform shape}]
+        \begin{axis}[
+          xlabel={Time (seconds)},
+          ylabel={Avg Latency (ms)},
+          xmin=0, xmax=60,
+          ymin=0, ymax=120,
+          xtick={0,20,40,60},
+          ytick={0,30,60,90,120},
+          legend pos=north east,
+          grid=major,
+          width=7.5cm,
+          height=5.2cm
+        ]
+        \addplot[color=tPrim, mark=square, thick] coordinates {
+          (0,105) (10,45) (20,32) (30,30) (40,29) (50,28) (60,28)
+        };
+        \addlegendentry{Vertex}
+        
+        \addplot[color=tAccent, mark=o, thick] coordinates {
+          (0,115) (10,95) (20,80) (30,75) (40,78) (50,72) (60,74)
+        };
+        \addlegendentry{Meridian}
+        \end{axis}
+      \end{tikzpicture}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 11: Booktabs Table
+\begin{frame}{Quantitative Results}
+  Performance evaluation of end-to-end task completion times under varying load intensities.
+  \vskip 1.5em
+  \begin{table}
+    \centering
+    \begin{tabular}{lccc}
+      \toprule
+      Scheduling Method & Low Workload (ms) & Medium Workload (ms) & High Workload (ms) \\
+      \midrule
+      Centralised Gateway & 12.4 & 48.7 & 195.2 \\
+      Meridian Baseline   & 18.2 & 54.3 & 142.1 \\
+      \rowcolor{tSec!10} Vertex (Proposed)   & \textbf{9.8} & \textbf{22.4} & \textbf{64.5} \\
+      \bottomrule
+    \end{tabular}
+    \caption{Processing Latency Across Workload Profiles}
+  \end{table}
+\end{frame}
+
+\section{Conclusion \& Summary}
+
+% Slide 13: Summary
+\begin{frame}{Key Research Findings}
+  \begin{itemize}
+    \item \textbf{Decentralized Efficiency:} P2P sync reduces orchestration overhead by up to 54\% compared to central cloud architectures.
+    \item \textbf{Robust Scaling:} Execution overhead remains bounded as network nodes scale.
+    \item \textbf{Fault Tolerance:} The model sustains high packet loss ratios without service degradation.
+  \end{itemize}
+\end{frame}
+
+% Slide 14: Closing Slide
+{
+  \setbeamercolor{background canvas}{bg=tPrim}
+  \begin{frame}[plain]
+    \centering
+    \color{white}
+    \Huge \textbf{Thank You!}
+    \vskip 1.5em
+    \large \textbf{Questions \& Discussion}
+    \vskip 2.5em
+    \normalsize
+    Dr. Ronald Vance -- \texttt{rvance@apexlabs.net} \\
+    Prof. Clara Sterling -- \texttt{csterling@vertex.edu}
+  \end{frame}
+}
+
+\end{document}

@@ -1,0 +1,391 @@
+\documentclass[10pt,twocolumn]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{mathptmx}
+\usepackage{microtype}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{geometry}
+\usepackage[table]{xcolor}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{titlesec}
+\usepackage{filecontents}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{fancyhdr}
+\usepackage{enumitem}
+
+\geometry{letterpaper, left=1.9cm, right=1.9cm, top=2.3cm, bottom=2.4cm, columnsep=0.75cm, headheight=22pt}
+
+\usetikzlibrary{positioning,calc}
+\pgfplotsset{compat=1.18}
+
+\definecolor{DeepIndigo}{HTML}{2B2D6E}
+\definecolor{SlateGray}{HTML}{4A4E57}
+\definecolor{MerlotAccent}{HTML}{7A2048}
+\definecolor{PaperCream}{HTML}{FAF8F3}
+\definecolor{HairlineGray}{HTML}{D8D5CC}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=DeepIndigo,
+    filecolor=MerlotAccent,
+    urlcolor=DeepIndigo,
+    citecolor=DeepIndigo,
+    pdfauthor={Sofia Bergstrom, Daniel Osei, Priya Anand, Marcus Lindqvist},
+    pdftitle={Calibrated Thompson Sampling for Contextual Bandits with Heavy-Tailed Rewards},
+}
+
+\titleformat{\section}{\large\bfseries\color{DeepIndigo}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{SlateGray}}{\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{11pt}{5pt}
+\titlespacing*{\subsection}{0pt}{7pt}{3pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\color{SlateGray} Unofficial AISTATS Submission Template}
+\rhead{\small\color{SlateGray} Preliminary work --- do not distribute}
+\cfoot{\small\color{SlateGray}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{HairlineGray}\leaders\hrule height \headrulewidth\hfill}}
+
+\renewenvironment{abstract}{
+  \small
+  \noindent\textbf{\color{DeepIndigo}Abstract.}\ \itshape
+}{
+  \par\vspace{0.8em}
+}
+
+% --- BIBLIOGRAPHY FILE CONTENTS ---
+\begin{filecontents*}{\jobname.bib}
+@inproceedings{holt2021heavytail,
+  author    = {Holt, Rebecca and Vance, Marcus},
+  title     = {Robust Bandit Learning under Heavy-Tailed Reward Distributions},
+  booktitle = {Proceedings of the Apex Conference on Statistical Learning},
+  pages     = {318--327},
+  year      = {2021}
+}
+
+@article{bergstrom2023truncated,
+  author    = {Bergstrom, Sofia and Anand, Priya},
+  title     = {Truncated Mean Estimation for Sequential Decision Making},
+  journal   = {Journal of Vertex Statistical Science},
+  volume    = {29},
+  number    = {2},
+  pages     = {201--224},
+  year      = {2023},
+  publisher = {Vertex Press}
+}
+
+@inproceedings{osei2022calibration,
+  author    = {Osei, Daniel and Lindqvist, Marcus},
+  title     = {Calibrated Posterior Sampling for Contextual Decision Problems},
+  booktitle = {Proceedings of the Synapse Symposium on Machine Learning},
+  pages     = {87--96},
+  year      = {2022}
+}
+
+@article{chen2020thompson,
+  author    = {Chen, Wei and Rostova, Elena},
+  title     = {A Survey of Thompson Sampling Algorithms and Regret Guarantees},
+  journal   = {Nexa Journal of Machine Learning Research},
+  volume    = {21},
+  number    = {4},
+  pages     = {512--548},
+  year      = {2020}
+}
+
+@inproceedings{lindqvist2019linucb,
+  author    = {Lindqvist, Marcus and Pendelton, Arthur},
+  title     = {Linear Contextual Bandits Revisited: Confidence Sets and Robustness},
+  booktitle = {International Conference on Nimbus Learning Systems},
+  pages     = {1204--1213},
+  year      = {2019}
+}
+
+@article{anand2024moments,
+  author    = {Anand, Priya and Sterling, Alistair},
+  title     = {Finite-Moment Concentration Bounds for Online Estimation},
+  journal   = {Meridian Computational Statistics},
+  volume    = {15},
+  number    = {1},
+  pages     = {33--59},
+  year      = {2024}
+}
+
+@inproceedings{gomez2018exploration,
+  author    = {Gomez, Carlos and Tanaka, Kenji},
+  title     = {Exploration-Exploitation Trade-offs under Adversarial Noise},
+  booktitle = {Proceedings of the Nexa Workshop on Sequential Learning},
+  pages     = {145--154},
+  year      = {2018}
+}
+
+@article{rostova2021ucb,
+  author    = {Rostova, Elena and Holt, Rebecca},
+  title     = {Upper Confidence Bound Strategies for Non-Subgaussian Rewards},
+  journal   = {Apex Statistics Quarterly},
+  volume    = {44},
+  number    = {3},
+  pages     = {410--433},
+  year      = {2021}
+}
+
+@inproceedings{tanaka2023robust,
+  author    = {Tanaka, Kenji and Bergstrom, Sofia},
+  title     = {Robust Contextual Bandits via Median-of-Means Estimation},
+  booktitle = {Proceedings of the Vertex Machine Learning Workshop},
+  pages     = {59--68},
+  year      = {2023}
+}
+
+@article{davis2017regret,
+  author    = {Davis, Karen and Miller, James},
+  title     = {Minimax Regret Bounds for Structured Bandit Problems},
+  journal   = {Synapse Journal of Applied Probability},
+  volume    = {12},
+  number    = {2},
+  pages     = {77--101},
+  year      = {2017}
+}
+
+@inproceedings{sterling2020epsilon,
+  author    = {Sterling, Alistair and Davis, Karen},
+  title     = {On the Suboptimality of Epsilon-Greedy under Heavy Tails},
+  booktitle = {International Conference on Meridian Data Science},
+  pages     = {902--911},
+  year      = {2020}
+}
+
+@article{pendelton2022sparse,
+  author    = {Pendelton, Arthur and Gomez, Carlos},
+  title     = {Sparse Reward Bandits: A Unified Statistical Treatment},
+  journal   = {Nimbus Review of Machine Learning},
+  volume    = {8},
+  number    = {1},
+  pages     = {19--41},
+  year      = {2022}
+}
+\end{filecontents*}
+
+\begin{document}
+
+\twocolumn[
+  \begin{center}
+    \fcolorbox{MerlotAccent}{PaperCream}{%
+      \begin{minipage}{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}
+        \small\centering\color{MerlotAccent}
+        \textbf{UNOFFICIAL TEMPLATE:} This document is an independently produced formatting template and is \textbf{not affiliated with, endorsed by, or sponsored by AISTATS} or the Society for Artificial Intelligence and Statistics. Authors must consult the official AISTATS call for papers and the current year's style files before submission.
+      \end{minipage}%
+    }
+    \vspace{1.4em}
+    {\LARGE\bfseries\color{DeepIndigo} Calibrated Thompson Sampling for Contextual Bandits with Heavy-Tailed Rewards \par}
+    \vspace{1.3em}
+    {\large
+      \begin{tabular}{ccc}
+        \textbf{Sofia Bergstrom}$^{1}$ & \textbf{Daniel Osei}$^{2}$ & \textbf{Priya Anand}$^{1}$ \\[2pt]
+        $^{1}$Nexa Institute & $^{2}$Vertex University & $^{1}$Nexa Institute \\
+        \texttt{\small s.bergstrom@nexainstitute.org} & \texttt{\small d.osei@vertexu.edu} & \texttt{\small p.anand@nexainstitute.org}
+      \end{tabular}
+    \par}
+    \vspace{1.0em}
+    {\large
+      \begin{tabular}{c}
+        \textbf{Marcus Lindqvist}$^{3}$ \\[2pt]
+        $^{3}$Synapse AI Lab, Meridian Research \\
+        \texttt{\small m.lindqvist@meridianlab.ai}
+      \end{tabular}
+    \par}
+    \vspace{1.8em}
+  \end{center}
+]
+
+\begin{abstract}
+We study contextual bandit learning when rewards follow heavy-tailed distributions with only $(1+\epsilon)$ finite moments, a setting where standard sub-Gaussian assumptions used by UCB- and Thompson-sampling-style algorithms no longer hold. We propose \textbf{Calibrated Thompson Sampling for Heavy Tails} (\textbf{HT-CTS}), which replaces the Gaussian posterior update with a truncated-mean surrogate likelihood whose variance is calibrated online via a robust moment estimator, preserving the exploration behavior of Thompson sampling while controlling the influence of extreme observations. We derive a high-probability regret bound of order $\widetilde{O}\!\left(d\,T^{1/(1+\epsilon)}\right)$ and show it matches known lower bounds up to logarithmic factors. Across four synthetic environments with tail indices ranging from $\epsilon = 0.3$ to $\epsilon = 1.0$, HT-CTS reduces cumulative regret by 18--41\% relative to Gaussian Thompson sampling, LinUCB, and $\epsilon$-greedy baselines, with the largest gains observed under the heaviest tails. We further show that HT-CTS's calibration step adds negligible per-round overhead, making it practical for large-scale deployment.
+\end{abstract}
+
+\section{Introduction}
+Contextual bandit algorithms are widely used to make sequential decisions under uncertainty, from content recommendation to adaptive clinical trial design. Most theoretical guarantees for these algorithms --- including the regret bounds underlying LinUCB and Gaussian Thompson sampling --- rely on the assumption that reward noise is sub-Gaussian, so that a small number of confidence-interval or posterior-variance parameters suffice to control the probability of extreme deviations.
+
+In many applied settings, however, reward distributions are heavy-tailed: click-through economics, ad-auction revenue, and biological assay readouts routinely exhibit only a few finite moments. Under such conditions, sub-Gaussian confidence intervals are either invalid or so conservative that the resulting algorithm barely explores, while naive least-squares or Gaussian-posterior updates can be destabilized by a single extreme observation.
+
+This paper studies the contextual bandit problem under the weaker assumption that rewards have $(1+\epsilon)$ finite absolute moments for some $\epsilon \in (0, 1]$, following the heavy-tailed bandit literature initiated for the non-contextual case \citep{holt2021heavytail, rostova2021ucb}. We ask whether the randomized-exploration behavior that makes Thompson sampling attractive in practice --- smooth exploration, easy incorporation of prior knowledge, strong empirical performance --- can be preserved once the sub-Gaussian assumption is removed.
+
+Our contributions are:
+\begin{enumerate}[leftmargin=*]
+    \item We introduce \textbf{HT-CTS}, a Thompson-sampling variant that substitutes a truncated-mean surrogate likelihood for the standard Gaussian likelihood, with a truncation threshold that adapts online to a running estimate of the $(1+\epsilon)$-moment.
+    \item We prove a regret bound of order $\widetilde{O}(d\,T^{1/(1+\epsilon)})$ that recovers the familiar $\widetilde{O}(d\sqrt{T})$ rate as $\epsilon \to 1$, and we show the dependence on $T$ is unimprovable up to logarithmic factors.
+    \item We evaluate HT-CTS on four synthetic environments spanning a range of tail indices and context dimensions, and show consistent regret reductions over Gaussian Thompson sampling, LinUCB, UCB1, and $\epsilon$-greedy baselines.
+\end{enumerate}
+
+\section{Related Work}
+\textbf{Sub-Gaussian contextual bandits.} LinUCB and its variants \citep{lindqvist2019linucb} construct confidence ellipsoids around a ridge-regression estimate and select actions optimistically; their regret guarantees assume sub-Gaussian noise. Thompson sampling \citep{chen2020thompson} instead maintains a Bayesian posterior over the reward parameters and samples an action according to its posterior probability of optimality; empirically it often outperforms UCB-style methods, but existing analyses again lean on Gaussian or sub-Gaussian likelihoods.
+
+\textbf{Heavy-tailed bandits.} For the non-contextual multi-armed setting, robust mean estimators --- truncation, median-of-means, and Catoni's estimator --- have been used to build UCB-style algorithms with regret guarantees under only finite $(1+\epsilon)$ moments \citep{holt2021heavytail, rostova2021ucb, gomez2018exploration}. \citet{tanaka2023robust} extend median-of-means to the linear contextual case, obtaining an optimistic algorithm with robust confidence sets. \citet{anand2024moments} give sharper finite-sample concentration bounds for truncated estimators that we use directly in our analysis. To our knowledge, no prior work adapts randomized (Thompson-sampling-style) exploration, rather than optimism, to the heavy-tailed contextual setting.
+
+\textbf{Calibration in Bayesian bandits.} \citet{osei2022calibration} study posterior calibration for contextual bandits under model misspecification, showing that miscalibrated posterior variance can inflate regret even when the mean estimate is consistent. Our online moment-calibration step is inspired by this observation, but targets the distinct failure mode of heavy tails rather than model misspecification. \citet{sterling2020epsilon} and \citet{davis2017regret} provide complementary lower-bound and minimax analyses that we build on in Section~\ref{sec:method}.
+
+\section{Method}
+\label{sec:method}
+
+\subsection{Problem Setup}
+At each round $t = 1, \dots, T$, the learner observes a context $x_t \in \mathbb{R}^d$ for each of $K$ arms, selects an arm $a_t$, and receives a reward $r_t = \langle \theta^{\star}, x_{t, a_t} \rangle + \eta_t$, where $\theta^{\star} \in \mathbb{R}^d$ is an unknown parameter and $\eta_t$ is zero-mean noise satisfying only $\mathbb{E}\lvert \eta_t \rvert^{1+\epsilon} \le u$ for known constants $\epsilon \in (0,1]$ and $u > 0$; no higher moments are assumed to exist. The learner's goal is to minimize the cumulative pseudo-regret
+\begin{equation}
+R_T \;=\; \sum_{t=1}^{T} \Big( \langle \theta^{\star}, x_{t, a_t^{\star}} \rangle - \langle \theta^{\star}, x_{t, a_t} \rangle \Big),
+\label{eq:regret-def}
+\end{equation}
+where $a_t^{\star} = \arg\max_a \langle \theta^{\star}, x_{t,a} \rangle$ is the optimal arm at round $t$.
+
+\subsection{Robust Truncated-Mean Estimation}
+Standard Bayesian linear regression assumes Gaussian noise, so a single extreme reward can arbitrarily distort the posterior mean and variance. We instead form a \emph{robust surrogate reward} $\tilde{r}_t$ by truncating each observation at an adaptive threshold $b_t$:
+\begin{equation}
+\tilde{r}_t \;=\; \mathrm{sign}(r_t) \cdot \min\big(|r_t|,\, b_t\big), \qquad b_t = \left( \frac{u\, t}{\log(1/\delta)} \right)^{\frac{1}{1+\epsilon}}\!\!,
+\label{eq:truncation}
+\end{equation}
+so that $b_t$ grows with $t$, allowing the algorithm to trust larger observations as more evidence accumulates while still bounding the influence of any single round. The posterior over $\theta$ is updated using $\tilde{r}_t$ in place of $r_t$ in the usual Bayesian linear-regression recursion, with prior $\mathcal{N}(0, \sigma_0^2 I_d)$.
+
+\subsection{Online Moment Calibration}
+Because $u$ and $\epsilon$ are rarely known exactly in practice, HT-CTS maintains a running estimate $\hat{u}_t$ of the $(1+\epsilon)$-moment using a plug-in estimator over a sliding window of the $m$ most recent residuals, and substitutes $\hat{u}_t$ for $u$ in Equation~\ref{eq:truncation}. This calibration step is the source of the ``calibrated'' in HT-CTS: it lets the truncation threshold track the empirical tail behavior of the environment rather than relying on a fixed, potentially conservative, worst-case constant.
+
+\begin{table}[t]
+  \centering
+  \small
+  \caption{Synthetic environment parameters: number of arms $K$, context dimension $d$, tail index $\epsilon$, and noise scale $u$.}
+  \label{tab:envs}
+  \vspace{0.4em}
+  \begin{tabular}{lcccc}
+    \toprule
+    \textbf{Env.} & \textbf{$K$} & \textbf{$d$} & \textbf{$\epsilon$} & \textbf{$u$} \\
+    \midrule
+    Env.\ I   & 10 & 5  & 1.00 & 2.0 \\
+    Env.\ II  & 10 & 10 & 0.70 & 3.5 \\
+    Env.\ III & 20 & 10 & 0.50 & 5.0 \\
+    Env.\ IV  & 20 & 20 & 0.30 & 8.0 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Figure~\ref{fig:pipeline} summarizes the resulting decision loop: the context arrives, the robust estimator forms a calibrated truncated-mean update, the posterior is refreshed, and an action is drawn by Thompson sampling before the cycle repeats with the next observed reward.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+    scale=0.85,
+    every node/.style={transform shape, font=\small},
+    box/.style={rectangle, draw=DeepIndigo, fill=PaperCream, thick, rounded corners=3pt, minimum width=2.5cm, minimum height=0.85cm, align=center},
+    arrow/.style={->, >=stealth, thick, color=DeepIndigo}
+  ]
+    \node[box] (ctx) at (0,2.6) {Context $x_t$};
+    \node[box] (est) at (0,1.2) {Truncated-Mean\\Estimator (Eq.~\ref{eq:truncation})};
+    \node[box] (post) at (2.9,1.2) {Posterior\\Update};
+    \node[box, fill=MerlotAccent!12, draw=MerlotAccent] (sample) at (2.9,-0.2) {Thompson\\Sample $a_t$};
+    \node[box] (reward) at (0,-0.2) {Observe\\Reward $r_t$};
+
+    \draw[arrow] (ctx) -- (est);
+    \draw[arrow] (est) -- (post);
+    \draw[arrow] (post) -- (sample);
+    \draw[arrow] (sample) -- (reward);
+    \draw[arrow] (reward) -- (est);
+    \node at (1.45, 0.5) [font=\footnotesize, color=SlateGray] {calibrate $\hat u_t$};
+  \end{tikzpicture}
+  \caption{The HT-CTS decision loop. Rewards are truncated and used to update the posterior before Thompson sampling selects the next arm; the truncation threshold $b_t$ is recalibrated each round from recent residuals.}
+  \label{fig:pipeline}
+\end{figure}
+
+\subsection{Regret Bound}
+Combining the truncated-mean concentration inequality of \citet{anand2024moments} with a standard Thompson-sampling regret decomposition yields the following guarantee.
+
+\begin{equation}
+\mathbb{E}[R_T] \;\le\; C_1 \sqrt{d\,T \log(T/\delta)} \;+\; C_2 \left(\frac{u}{\epsilon}\right)^{\!\frac{1}{1+\epsilon}} T^{\frac{1}{1+\epsilon}}
+\label{eq:regret-bound}
+\end{equation}
+with probability at least $1-\delta$, where $C_1, C_2$ depend only on $K$ and problem-independent constants. As $\epsilon \to 1$ (finite variance), the second term reduces to $\widetilde{O}(\sqrt{T})$ and the bound recovers the familiar sub-Gaussian rate; as $\epsilon \to 0$, the exponent $1/(1+\epsilon)$ approaches $1$, reflecting the fundamental difficulty of learning from an almost-heavy-tailed distribution with only a first moment.
+
+\section{Experiments}
+We evaluate HT-CTS on four synthetic linear contextual bandit environments (Table~\ref{tab:envs}) with tail index $\epsilon$ ranging from $1.0$ (finite variance) down to $0.3$ (very heavy tails). Rewards are generated as $r_t = \langle \theta^\star, x_{t,a} \rangle + \eta_t$ with $\eta_t$ drawn from a Student-$t$ distribution whose degrees of freedom are set to match the target $(1+\epsilon)$-moment bound $u$. Contexts are sampled uniformly from the unit ball, and $\theta^\star$ is fixed per environment with $\|\theta^\star\|_2 = 1$.
+
+We compare HT-CTS against four baselines: \textbf{UCB1}, applied to a linear-arm discretization; \textbf{Gaussian Thompson Sampling (TS-G)}, the standard Bayesian linear-regression variant; \textbf{LinUCB} \citep{lindqvist2019linucb}; and \textbf{$\epsilon$-Greedy} with a decaying exploration rate, following the analysis of \citet{sterling2020epsilon}. All methods share the same ridge prior $\sigma_0^2 = 1$ and are run for $T = 20{,}000$ rounds, averaged over $50$ random seeds; we report mean cumulative regret with standard error.
+
+\section{Results}
+Figure~\ref{fig:regret} shows cumulative regret over time on Env.\ III ($\epsilon = 0.5$), the middle-difficulty setting. HT-CTS accumulates regret at a visibly slower rate than all baselines, with the gap widening as $t$ grows, consistent with the sublinear-but-slower-than-$\sqrt{T}$ behavior predicted by Equation~\ref{eq:regret-bound}.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=0.98\linewidth, height=4.6cm,
+      xlabel={Round $t$}, ylabel={Cumulative regret},
+      xlabel style={font=\small, color=SlateGray},
+      ylabel style={font=\small, color=SlateGray},
+      tick label style={font=\footnotesize},
+      legend style={font=\footnotesize, at={(0.03,0.97)}, anchor=north west, draw=HairlineGray},
+      axis line style={color=SlateGray},
+      grid=major, grid style={color=HairlineGray, line width=0.3pt},
+      xmin=0, xmax=20000, ymin=0,
+    ]
+      \addplot[color=DeepIndigo, thick] coordinates {
+        (0,0) (2000,410) (4000,690) (6000,910) (8000,1090)
+        (10000,1240) (12000,1370) (14000,1480) (16000,1580) (18000,1665) (20000,1740)
+      };
+      \addlegendentry{HT-CTS (ours)}
+      \addplot[color=MerlotAccent, thick, dashed] coordinates {
+        (0,0) (2000,620) (4000,1120) (6000,1560) (8000,1950)
+        (10000,2300) (12000,2620) (14000,2910) (16000,3180) (18000,3430) (20000,3660)
+      };
+      \addlegendentry{TS-Gaussian}
+      \addplot[color=SlateGray, thick, dash dot] coordinates {
+        (0,0) (2000,690) (4000,1260) (6000,1760) (8000,2210)
+        (10000,2620) (12000,3000) (14000,3350) (16000,3680) (18000,3990) (20000,4280)
+      };
+      \addlegendentry{LinUCB}
+      \addplot[color=SlateGray!55!black, thick, dotted] coordinates {
+        (0,0) (2000,760) (4000,1430) (6000,2040) (8000,2600)
+        (10000,3120) (12000,3610) (14000,4070) (16000,4500) (18000,4910) (20000,5300)
+      };
+      \addlegendentry{$\epsilon$-Greedy}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Cumulative regret on Env.\ III ($\epsilon = 0.5$, $d = 10$), averaged over 50 seeds. HT-CTS accumulates regret substantially more slowly than Gaussian Thompson sampling, LinUCB, and $\epsilon$-greedy under this heavy-tailed noise model.}
+  \label{fig:regret}
+\end{figure}
+
+Table~\ref{tab:results} reports final regret at $T = 20{,}000$ across all four environments. The advantage of HT-CTS grows monotonically as the tail index $\epsilon$ decreases, from an 18\% reduction over the best baseline at $\epsilon = 1.0$ to a 41\% reduction at $\epsilon = 0.3$, supporting the hypothesis that calibrated truncation matters most precisely when the sub-Gaussian assumption is most badly violated.
+
+\begin{table*}[t]
+  \centering
+  \small
+  \caption{Cumulative regret at $T = 20{,}000$ (mean $\pm$ standard error over 50 seeds; lower is better) across four synthetic environments with decreasing tail index $\epsilon$.}
+  \label{tab:results}
+  \vspace{0.4em}
+  \begin{tabular}{lcccc}
+    \toprule
+    \textbf{Method} & \textbf{Env.\ I ($\epsilon{=}1.0$)} & \textbf{Env.\ II ($\epsilon{=}0.7$)} & \textbf{Env.\ III ($\epsilon{=}0.5$)} & \textbf{Env.\ IV ($\epsilon{=}0.3$)} \\
+    \midrule
+    UCB1                & 2{,}410 $\pm$ 38 & 3{,}180 $\pm$ 52 & 4{,}690 $\pm$ 71 & 7{,}220 $\pm$ 104 \\
+    $\epsilon$-Greedy    & 2{,}260 $\pm$ 33 & 3{,}040 $\pm$ 49 & 5{,}300 $\pm$ 80 & 8{,}410 $\pm$ 122 \\
+    LinUCB               & 1{,}980 $\pm$ 29 & 2{,}710 $\pm$ 44 & 4{,}280 $\pm$ 66 & 6{,}930 $\pm$ 98  \\
+    TS-Gaussian           & 1{,}890 $\pm$ 27 & 2{,}550 $\pm$ 41 & 3{,}660 $\pm$ 58 & 5{,}940 $\pm$ 87  \\
+    \midrule
+    \rowcolor{DeepIndigo!8}
+    \textbf{HT-CTS (ours)} & \textbf{1{,}550} $\pm$ \textbf{22} & \textbf{1{,}960} $\pm$ \textbf{31} & \textbf{1{,}740} $\pm$ \textbf{25} & \textbf{2{,}730} $\pm$ \textbf{39} \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+Ablations (omitted for space) show that removing online moment calibration and instead fixing $b_t$ at a conservative worst-case constant recovers only about half of HT-CTS's improvement over TS-Gaussian, indicating that both the truncation mechanism and the adaptive calibration contribute materially to performance.
+
+\section{Discussion}
+The results support the central hypothesis of this paper: the randomized-exploration behavior of Thompson sampling does not need to be abandoned under heavy-tailed rewards, provided the likelihood update is made robust to extreme observations. Two design choices appear important. First, truncating rather than clipping-and-discarding preserves a usable gradient signal even from large-magnitude rewards, which matters when informative rewards and outliers are not easily distinguishable ex ante. Second, calibrating the truncation threshold online, rather than fixing it from a conservative worst-case bound on $u$, avoids the over-truncation that would otherwise slow learning in the early rounds before the moment estimate stabilizes.
+
+A limitation of our analysis is that the regret bound in Equation~\ref{eq:regret-bound} assumes $\epsilon$ is known; in practice we estimate it jointly with $u$, and our experiments suggest the resulting bound is empirically loose by roughly a constant factor rather than a different rate, but a fully data-driven analysis of joint $(\epsilon, u)$ estimation remains open. We also assume linear reward structure; extending the calibrated-truncation idea to nonlinear or kernelized reward models, in the spirit of \citet{pendelton2022sparse}, is a natural next step. Finally, all experiments here use synthetic noise; validating the calibration mechanism on reward logs with empirically heavy-tailed behavior (e.g.\ ad-auction revenue) is left to future work.
+
+\section{Conclusion}
+We introduced HT-CTS, a calibrated Thompson sampling algorithm for contextual bandits with heavy-tailed rewards, built around an online-calibrated truncated-mean surrogate likelihood. We proved a regret bound of order $\widetilde{O}(d\,T^{1/(1+\epsilon)})$ that interpolates smoothly between the sub-Gaussian rate and the fundamental limits of learning under minimal moment assumptions, and we showed empirically that the resulting algorithm outperforms Gaussian Thompson sampling and optimism-based baselines by a growing margin as tails become heavier. We believe calibrated truncation is a lightweight, broadly applicable modification for deploying randomized-exploration bandit algorithms in environments where reward tails cannot be assumed away.
+
+\bibliographystyle{plainnat}
+\bibliography{\jobname}
+
+\end{document}

@@ -1,0 +1,245 @@
+\documentclass{beamer}
+\usetheme{Berlin}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, shapes.geometric, backgrounds, patterns}
+\usepackage{fontawesome5}
+\usepackage{colortbl}
+
+% Custom Colors (No trailing spaces inside \definecolor values)
+\definecolor{SynapseBlue}{HTML}{1A365D}
+\definecolor{VertexTeal}{HTML}{0D9488}
+\definecolor{ApexSlate}{HTML}{475569}
+\definecolor{AlertOrange}{HTML}{EA580C}
+
+% Apply structure color to Beamer
+\usecolortheme[named=SynapseBlue]{structure}
+
+% Clear navigation symbols
+\setbeamertemplate{navigation symbols}{}
+
+\title[Synapse Energy Grid]{Autonomous Grid Optimization via the Synapse-Vertex Architecture}
+\subtitle{Real-Time Load Balancing and Decarbonization}
+\author[Dr. Sarah Jenkins]{Dr. Sarah Jenkins}
+\institute[MIT]{Department of Electrical Engineering\\Meridian Institute of Technology}
+\date[LetX 2026]{August 2026}
+
+\begin{document}
+
+% Slide 1: Title Slide
+\begin{frame}[plain]
+  \titlepage
+\end{frame}
+
+% Slide 2: Table of Contents
+\begin{frame}{Presentation Outline}
+  \tableofcontents
+\end{frame}
+
+\section{Introduction}
+\subsection{Motivation}
+
+% Slide 3: Motivation
+\begin{frame}{The Challenge of Modern Energy Grids}
+  The transition to zero-carbon energy grids introduces significant operational volatility:
+  \vspace{0.4cm}
+  \begin{itemize}
+    \item<1-> Rapid integration of intermittent renewable energy sources (solar and wind).
+    \item<2-> High peak-to-average load ratios leading to frequent localized grid instability.
+    \item<3-> Carbon-intensive legacy backup generators activated during peak demand hours.
+    \item<4-> Critical need for an autonomous, decentralized, and real-time balancing solution.
+  \end{itemize}
+\end{frame}
+
+\subsection{Synapse Microgrid}
+
+% Slide 4: Case Study
+\begin{frame}{Case Study: Synapse Microgrid Deployment}
+  A real-world testbed designed to demonstrate decentralized edge computing:
+  \vspace{0.4cm}
+  \begin{itemize}
+    \item Jointly developed by \textbf{Synapse Labs} and \textbf{Nexa Corp}.
+    \item Deployed in a high-density municipal zone with 12,000 smart nodes.
+    \item Core objective: Minimize grid stress and reduce carbon emissions automatically.
+    \item Powered by the \textbf{Vertex Framework} for fast, localized decision-making.
+  \end{itemize}
+\end{frame}
+
+\section{Methodology}
+\subsection{System Design}
+
+% Slide 5: Architecture
+\begin{frame}{Vertex Framework Architecture}
+  Decentralized control loop split between localized edge agents and a cloud orchestrator:
+  \vspace{0.1cm}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Core Components:}
+      \vspace{0.1cm}
+      \begin{itemize}
+        \item \textbf{Edge Observers}: Monitor local power draw and voltage fluctuations.
+        \item \textbf{Decision Agents}: Localized policy execution via reinforcement learning.
+        \item \textbf{Global Orchestrator}: Asynchronously updates global weights.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \begin{tikzpicture}[node distance=0.7cm, every node/.style={fill=white, draw=SynapseBlue, rounded corners, thick, align=center, font=\scriptsize}, scale=0.65, transform shape]
+        \node (global) [fill=VertexTeal!10] {Global Orchestrator\\(Nimbus Cloud)};
+        \node (agent) [below=of global, fill=SynapseBlue!10] {Vertex Decision Agent};
+        \node (edge) [below=of agent, fill=gray!10] {Edge Observer};
+        
+        \draw[->, thick, >=stealth, draw=SynapseBlue] (global.300) -- node[right, draw=none, fill=none, font=\tiny] {Model Weights} (agent.60);
+        \draw[->, thick, >=stealth, draw=SynapseBlue] (agent.120) -- node[left, draw=none, fill=none, font=\tiny] {Telemetry} (global.240);
+        \draw[->, thick, >=stealth, draw=SynapseBlue] (edge.90) -- node[right, draw=none, fill=none, font=\tiny] {State Update} (agent.270);
+        \draw[->, thick, >=stealth, draw=SynapseBlue] (agent.220) to[bend right=45] node[left, draw=none, fill=none, font=\tiny] {Control Action} (edge.140);
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\subsection{Performance Metrics}
+
+% Slide 6: Table
+\begin{frame}{Performance Comparison: Vertex vs. Apex}
+  Comparison of the proposed \textbf{Vertex Framework} against the legacy \textbf{Apex Engine} across major operational parameters:
+  \vspace{0.3cm}
+  
+  \centering
+  \footnotesize
+  \begin{tabular}{lccc}
+    \toprule
+    \textbf{Metric} & \textbf{Apex Engine} & \textbf{Vertex Framework} & \textbf{Delta (\%)} \\
+    \midrule
+    Latency (ms) & 124.5 & 12.8 & -89.7 \\
+    Peak Red. (MW) & 1.2 & 4.5 & +275.0 \\
+    Renewable Int. (\%) & 42.1 & 78.4 & +86.2 \\
+    Sync Time (s) & 5.0 & 0.2 & -96.0 \\
+    Carbon (t/yr) & 1,420 & 810 & -43.0 \\
+    \bottomrule
+  \end{tabular}
+\end{frame}
+
+\section{Evaluation}
+\subsection{Experimental Setup}
+
+% Slide 7: TikZ Plot
+\begin{frame}{Experimental Results: Grid Stability}
+  Real-time load balancing performance under high-volatility renewable input:
+  \vspace{0.2cm}
+  
+  \centering
+  \begin{tikzpicture}[scale=0.9, transform shape]
+    % Axes
+    \draw[->, thick] (0,0) -- (6.5,0) node[right, font=\tiny] {Time (Hours)};
+    \draw[->, thick] (0,0) -- (0,4.5) node[above, font=\tiny] {Grid Load (MW)};
+    
+    % X-ticks
+    \foreach \x/\label in {0/0, 1.5/6, 3/12, 4.5/18, 6/24} {
+      \draw (\x,1pt) -- (\x,-3pt) node[below, font=\tiny] {\label};
+    }
+    
+    % Y-ticks
+    \foreach \y/\label in {0/0, 1/10, 2/20, 3/30, 4/40} {
+      \draw (1pt,\y) -- (-3pt,\y) node[left, font=\tiny] {\label};
+    }
+    
+    % Grid lines (dashed, light gray)
+    \draw[dashed, gray!30] (0,1) -- (6,1);
+    \draw[dashed, gray!30] (0,2) -- (6,2);
+    \draw[dashed, gray!30] (0,3) -- (6,3);
+    \draw[dashed, gray!30] (0,4) -- (6,4);
+    
+    % Target Load Line (dashed red)
+    \draw[dashed, AlertOrange, thick] (0,2.5) -- (6,2.5) node[right, font=\tiny, align=left] {Optimal\\Capacity};
+    
+    % Apex Legacy Curve (high volatility)
+    \draw[thick, ApexSlate] plot[smooth, tension=0.6] coordinates {
+      (0,1.2) (1,3.8) (2,2.1) (3,4.2) (4,1.5) (5,3.9) (6,2.3)
+    } node[above, font=\tiny] {Apex Legacy};
+    
+    % Vertex Curve (smooth, near target)
+    \draw[very thick, VertexTeal] plot[smooth, tension=0.6] coordinates {
+      (0,2.2) (1,2.6) (2,2.4) (3,2.7) (4,2.3) (5,2.5) (6,2.4)
+    } node[right, font=\tiny] {Vertex Framework};
+    
+  \end{tikzpicture}
+\end{frame}
+
+\subsection{Comparative Analysis}
+
+% Slide 8: Trio Blocks
+\begin{frame}{Triad Performance Evaluation}
+  Validation and comparison of different operating regimes under stress:
+  \vspace{0.4cm}
+  
+  \begin{columns}[T]
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Stable Operation}
+        Under normal load conditions, Vertex operates with 99.9\% dispatch reliability.
+      \end{block}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{alertblock}{Critical Anomalies}
+        In extreme weather, edge latency can spike. Mitigated by Apex fallback.
+      \end{alertblock}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{exampleblock}{Optimal Scenario}
+        A 40\% solar surge was fully balanced in 150 ms with zero grid curtailment.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\section{Conclusion}
+\subsection{Future Work}
+
+% Slide 9: Future Work
+\begin{frame}{Future Work: Scaling with Nimbus Platform}
+  To scale the current architecture, we are exploring cloud-native integration:
+  \vspace{0.4cm}
+  \begin{itemize}
+    \item Integration with the \textbf{Nimbus Platform} for cross-region load balancing.
+    \item Deploying Vertex to 5 additional municipal grids (Apex-managed regions).
+    \item Upgrading the communication layer to support ultra-low latency protocols.
+  \end{itemize}
+\end{frame}
+
+\subsection{Summary}
+
+% Slide 10: Summary
+\begin{frame}{Key Contributions}
+  Our research demonstrates:
+  \vspace{0.4cm}
+  \begin{enumerate}
+    \item \textbf{Autonomous Balancing}: Successfully managed high-volatility grid configurations.
+    \item \textbf{High Efficiency}: Reduced latency by 89.7\% compared to legacy Apex implementations.
+    \item \textbf{Decarbonization}: Avoided 43.0\% of carbon emissions during peak loads.
+  \end{enumerate}
+  \vspace{0.4cm}
+  The Synapse-Vertex architecture represents a significant step towards fully decentralized, zero-carbon smart grids.
+\end{frame}
+
+% Slide 11: Closing
+\begin{frame}[plain]
+  \centering
+  \usebeamerfont{title}{\color{SynapseBlue}\Huge Thank You!}
+  \vspace{0.8cm}
+  
+  {\large Questions and Answers}
+  \vspace{1.2cm}
+  
+  \begin{tabular}{ll}
+    \faEnvelope & \href{mailto:s.jenkins@meridian.edu}{s.jenkins@meridian.edu} \\
+    \faGlobe & \href{https://vertex.meridian.edu}{vertex.meridian.edu} \\
+    \faPhone & +1 (555) 019-2834
+  \end{tabular}
+\end{frame}
+
+\end{document}
