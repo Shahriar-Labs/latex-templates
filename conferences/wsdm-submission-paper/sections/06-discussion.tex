@@ -1,0 +1,30 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\subsection{Ablations}
+
+Removing the reformulation edges from the session graph (keeping only click and
+co-session edges) drops NDCG@10 on NexaQL from $0.468$ to $0.429$, confirming that
+explicit reformulation structure carries signal beyond temporal adjacency. Replacing
+the contrastive objective in Eq.~\eqref{eq:contrastive} with a standard
+cross-entropy classification loss over the shortlist drops NDCG@10 to $0.417$,
+roughly halving CSG's margin over LongTail-BERT; hard negatives with lexical overlap
+appear to be the main source of this gain, matching the intuition in
+\citet{Csikos2021Reformulation} that surface-level negatives are otherwise easy for
+the model to ignore.
+
+\subsection{Failure Modes}
+
+CSG underperforms BM25 expansion on a small subset ($\approx$3\% of test sessions)
+where the true reformulation is a near-exact spelling correction with no semantic
+shift; the contrastive objective, tuned to separate semantically distinct queries,
+occasionally over-separates queries that differ by a single character. We view
+combining CSG with a lightweight edit-distance prior as promising future work.
+
+\subsection{Limitations}
+
+Our session graphs are built from a 90-second reformulation window, which is a
+reasonable default but was not tuned per-vertical; MeridianSessions, with generally
+shorter dwell times, may benefit from a tighter window. We also do not model
+cross-device sessions, which could recover additional long-tail signal at the cost of
+substantially more complex identity resolution.

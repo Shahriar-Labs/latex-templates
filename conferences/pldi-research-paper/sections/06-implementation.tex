@@ -1,0 +1,21 @@
+\section{Implementation}
+\label{sec:implementation}
+
+Our prototype adds 6.8 K lines of C++ and 1.1 K lines of runtime code to an
+LLVM-based strict functional-language compiler \cite{lattner2004llvm}. The
+front end lowers operations to three intrinsics: \texttt{effect.perform},
+\texttt{effect.resume}, and \texttt{effect.shape}. Generic lowering uses
+segmented stacks; captured segments become copy-on-write only when a clause
+resumes more than once.
+
+Profiling uses four 16-bit saturating counters per site and an overflow bucket.
+Compilation begins after 2,048 samples. Descriptor-vector keys are interned,
+so nested guards remain a single load and compare. Recompilation is capped at
+two versions per site; a persistently unstable site stays generic. Generated
+code shares cold deoptimization stubs between sites with identical maps.
+
+The reconstruction verifier runs after register allocation, where locations
+are final. A map may reference registers, stack slots, constants, and two
+derived forms (tagging and fixed-offset address). The garbage collector reads
+the same maps at safepoints. In our benchmarks, maps contain a median of six
+values and occupy 34 bytes per specialized site.

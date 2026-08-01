@@ -1,104 +1,11 @@
-\begin{filecontents*}{references.bib}
-@article{kipf2016semi,
-  author    = {Thomas N. Kipf and Max Welling},
-  title     = {Semi-Supervised Classification with Graph Convolutional Networks},
-  journal   = {arXiv preprint arXiv:1609.02907},
-  year      = {2016}
-}
-@inproceedings{velickovic2018graph,
-  author    = {Petar Veli{\v{c}}kovi{\'{c}} and Guillem Cucurull and Arantxa Casanova and Adriana Romero and Pietro Li{\`{o}} and Yoshua Bengio},
-  title     = {Graph Attention Networks},
-  booktitle = {International Conference on Learning Representations (ICLR)},
-  year      = {2018}
-}
-@inproceedings{hamilton2017inductive,
-  author    = {William L. Hamilton and Rex Ying and Jure Leskovec},
-  title     = {Inductive Representation Learning on Large Graphs},
-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
-  year      = {2017}
-}
-@inproceedings{velickovic2019deep,
-  author    = {Petar Veli{\v{c}}kovi{\'{c}} and William Fedus and William L. Hamilton and Pietro Li{\`{o}} and Yoshua Bengio and R. Devon Hjelm},
-  title     = {Deep Graph Infomax},
-  booktitle = {International Conference on Learning Representations (ICLR)},
-  year      = {2019}
-}
-@inproceedings{zhu2020deep,
-  author    = {Yanqiao Zhu and Yichen Xu and Feng Yu and Qiang Liu and Shu Wu and Liang Wang},
-  title     = {Deep Graph Contrastive Representation Learning},
-  booktitle = {ICML Workshop on Graph Representation Learning and Beyond (GRL+)},
-  year      = {2020}
-}
-@inproceedings{he2020momentum,
-  author    = {Kaiming He and Haoqiang Fan and Yuxin Wu and Saining Xie and Ross Girshick},
-  title     = {Momentum Contrast for Unsupervised Visual Representation Learning},
-  booktitle = {IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
-  year      = {2020}
-}
-@inproceedings{chen2020simple,
-  author    = {Ting Chen and Simon Kornblith and Mohammad Norouzi and Geoffrey Hinton},
-  title     = {A Simple Framework for Contrastive Learning of Visual Representations},
-  booktitle = {International Conference on Machine Learning (ICML)},
-  year      = {2020}
-}
-@article{velickovic2022clrs,
-  author    = {Petar Veli{\v{c}}kovi{\'{c}} and Adri{\`{a}} Puigdom{\`{e}}nech Badia and David Budden and Razvan Pascanu and Andrea Banino and Misha Laskin and Raia Hadsell and Charles Blundell},
-  title     = {The CLRS Algorithmic Reasoning Benchmark},
-  journal   = {arXiv preprint arXiv:2205.15659},
-  year      = {2022}
-}
-@inproceedings{you2020graph,
-  author    = {Yuning You and Tianlong Chen and Yongduo Sui and Ting Chen and Zhangyang Wang and Yang Shen},
-  title     = {Graph Contrastive Learning with Augmentations},
-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
-  year      = {2020}
-}
-@article{scarselli2008graph,
-  author    = {Franco Scarselli and Marco Gori and Ah Chung Tsoi and Markus Hagenbuchner and Gabriele Monfardini},
-  title     = {The Graph Neural Network Model},
-  journal   = {IEEE Transactions on Neural Networks},
-  volume    = {20},
-  number    = {1},
-  pages     = {61--80},
-  year      = {2008}
-}
-\end{filecontents*}
-
 \documentclass[10pt,twocolumn]{article}
 
-\usepackage[letterpaper, left=0.75in, right=0.75in, top=0.75in, bottom=1.0in]{geometry}
-\usepackage[table]{xcolor}
-\usepackage{amsmath}
-\usepackage{amssymb}
-\usepackage{booktabs}
-\usepackage{tikz}
-\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds}
-\usepackage{tcolorbox}
-\usepackage{fontawesome5}
-\usepackage{microtype}
-\usepackage{newtxtext,newtxmath}
-\usepackage{titlesec}
-
-\definecolor{brandblue}{HTML}{1A365D}
-\definecolor{brandgrey}{HTML}{4A5568}
-\definecolor{brandred}{HTML}{9B2C2C}
-\definecolor{brandlight}{HTML}{F7FAFC}
-
-\tcbset{
-  colback=brandlight,
-  colframe=brandblue,
-  arc=3pt,
-  fonttitle=\bfseries
-}
-
-\titleformat{\section}{\large\bfseries\color{brandblue}}{\thesection}{0.5em}{}
-\titleformat{\subsection}{\normalsize\bfseries\color{brandblue}}{\thesubsection}{0.5em}{}
-\titlespacing*{\section}{0pt}{10pt plus 2pt minus 2pt}{6pt plus 1pt minus 1pt}
-\titlespacing*{\subsection}{0pt}{8pt plus 2pt minus 2pt}{4pt plus 1pt minus 1pt}
-
-\usepackage[colorlinks=true,linkcolor=brandblue,citecolor=brandblue,urlcolor=brandblue]{hyperref}
+% Packages and styling live in preamble.tex; each section has its own file under
+% sections/. Edit those directly — this file is the outline of the document.
+\input{preamble}
 
 \begin{document}
+
 
 \twocolumn[{
   \begin{center}
@@ -141,115 +48,11 @@
   \vspace{2.5em}
 }]
 
-\section{Introduction}
-Graphs represent a fundamental mathematical abstraction capable of modeling complex relational structures, ranging from molecular interaction networks and social graphs to financial transaction maps and citation repositories. In many real-world applications, these systems are not static; rather, they evolve continuously over time. Consequently, dynamic graphs have emerged as a critical framework for analyzing time-varying topological structures. While dynamic graph analysis is highly expressive, it introduces unique challenges. In particular, obtaining high-quality labeled data for nodes and edges at multiple temporal intervals is extremely expensive, requiring substantial manual intervention and domain expertise. This limitation has motivated the development of self-supervised learning (SSL) methods, which aim to extract rich representations from unlabeled graph data.
-
-Self-supervised graph learning has traditionally focused on contrastive methods, which train neural network encoders to maximize the agreement between differently augmented views of the same graph element. For example, Deep Graph Infomax (DGI) optimizes mutual information between local node representations and a global graph summary. Other recent frameworks, such as GRACE, adopt node-level contrastive learning by applying random edge dropping and feature masking. While these approaches have demonstrated competitive performance on static graph benchmarks, their application to dynamic graphs remains highly constrained. Static graph contrastive methods assume that the underlying network structure is stationary, which causes them to fail when node embeddings shift due to structural drift and temporal feature variations.
-
-To address these limitations, we introduce the Deep Latent Alignment (DLA) framework, a novel self-supervised learning paradigm tailored for dynamic graphs. DLA addresses the challenge of temporal drift by introducing a dual-channel alignment mechanism that explicitly links node representations across consecutive time steps. By combining spatial augmentations (structural perturbations) with temporal neighborhood alignment, our model ensures that learned node representations remain stable yet sensitive to local structural modifications. Our key contribution is a temporal contrastive loss that aligns local neighborhood contexts across adjacent timestamps without requiring explicit node-level labels.
-
-\section{Related Work}
-The literature on graph representation learning has grown rapidly over the recent decade, initiated by spatial-temporal models and Graph Neural Networks (GNNs). Classic architectures such as Graph Convolutional Networks (GCN) \cite{kipf2016semi}, Graph Attention Networks (GAT) \cite{velickovic2018graph}, and GraphSAGE \cite{hamilton2017inductive} have established the foundation for neighborhood aggregation and node embedding generation. These models operate primarily in supervised or semi-supervised settings, leveraging labeled nodes to propagate classification signals across the graph.
-
-To reduce dependency on manual labels, unsupervised and self-supervised methods have been introduced. Early unsupervised methods relied on random-walk objectives, while modern contrastive techniques employ mutual information maximization or multi-view alignment. Deep Graph Infomax (DGI) \cite{velickovic2019deep} computes a global summary vector and contrasts node-level representations against it. GRACE \cite{zhu2020deep} and GCA \cite{you2020graph} extend this by introducing view-generation strategies via edge deletion and feature corruption. However, these methods treat temporal graphs as separate, static snapshots, neglecting the temporal transitions that define dynamic networks.
-
-Dynamic graph representation learning has explored recurrent and attention-based architectures to capture temporal changes. However, most temporal graph models rely on supervised downstream tasks for training, making them vulnerable to label scarcity. Self-supervised learning on dynamic graphs remains an open research frontier. By formulating a contrastive objective that bridges consecutive timestamps, DLA addresses this gap and provides a robust foundation for learning task-agnostic node representations.
-
-\section{Method}
-Let a dynamic graph be represented as a sequence of graph snapshots $\mathcal{G} = \{G^1, G^2, \dots, G^T\}$, where each snapshot $G^t = (V^t, E^t)$ corresponds to the graph structure at timestamp $t$. Here, $V^t$ represents the set of active vertices and $E^t$ represents the set of edges. Each vertex $v \in V^t$ is associated with an input feature vector $\mathbf{x}_v^t \in \mathbb{R}^d$. The goal of Deep Latent Alignment is to learn a parameter-efficient encoder $f_\theta: V^t \times G^t \to \mathbb{R}^h$ that maps each vertex to a low-dimensional latent space.
-
-For each snapshot $G^t$, we generate two stochastic views, denoted as $\tilde{G}_1^t$ and $\tilde{G}_2^t$, by applying random edge dropping and node feature masking. Specifically, we drop edges with a probability $p_e$ and mask feature dimensions with a probability $p_f$. These views are then processed by a shared GNN encoder $f_\theta$ to generate node-level latent embeddings:
-\begin{align}
-  \mathbf{h}_v^{t,1} &= f_\theta(\mathbf{x}_v^t, \tilde{G}_1^t) \\
-  \mathbf{h}_v^{t,2} &= f_\theta(\mathbf{x}_v^t, \tilde{G}_2^t)
-\end{align}
-To obtain the final representations, the hidden embeddings are projected into a lower-dimensional space using a multi-layer perceptron (MLP) head $g_\phi$, yielding projected vectors $\mathbf{z}_v^{t,1} = g_\phi(\mathbf{h}_v^{t,1})$ and $\mathbf{z}_v^{t,2} = g_\phi(\mathbf{h}_v^{t,2})$.
-
-The core contribution of DLA is the temporal contrastive loss. Rather than limiting contrastive alignment to a single snapshot, we align representations across adjacent time steps $t$ and $t+1$. For a given vertex $v \in V^t \cap V^{t+1}$, the temporal contrastive loss is formulated as:
-\begin{equation}
-  \mathcal{L}_{\text{temp}}(v) = -\log \frac{\exp(\text{sim}(\mathbf{z}_v^{t,1}, \mathbf{z}_v^{t+1,2}) / \tau)}{\sum_{u \in \mathcal{N}_t(v)} \exp(\text{sim}(\mathbf{z}_v^{t,1}, \mathbf{z}_u^{t+1,2}) / \tau)}
-  \label{eq:infonce}
-\end{equation}
-where $\text{sim}(\mathbf{a}, \mathbf{b}) = \frac{\mathbf{a}^\top \mathbf{b}}{\|\mathbf{a}\| \|\mathbf{b}\|}$ represents the cosine similarity between two vectors, $\tau$ is a temperature hyperparameter, and $\mathcal{N}_t(v)$ denotes the local spatial-temporal neighborhood of node $v$ within snapshot $G^t$. This loss encourages the encoder to align the representation of a node at time $t$ with its state at time $t+1$ while keeping it distinct from other nodes in its temporal vicinity.
-
-\begin{figure*}[t]
-  \centering
-  \begin{tikzpicture}[
-    node distance=1.2cm and 1.5cm,
-    block/.style={draw=brandblue, fill=brandlight, thick, rounded corners, minimum width=1.5cm, minimum height=0.8cm, align=center, font=\small},
-    circlenode/.style={draw=brandblue, fill=brandlight, thick, circle, minimum size=0.8cm, align=center, font=\small},
-    arrow/.style={->, >=stealth, thick, color=brandblue}
-  ]
-    % Nodes
-    \node (input) [block] {Input Graph\\$G = (V,E)$};
-    \node (perturb1) [block, above right=of input, yshift=-0.5cm] {Augmentation $\tau_1$};
-    \node (perturb2) [block, below right=of input, yshift=0.5cm] {Augmentation $\tau_2$};
-    \node (enc1) [block, right=of perturb1] {Encoder\\$f_\theta$};
-    \node (enc2) [block, right=of perturb2] {Encoder\\$f_\theta$};
-    \node (rep1) [circlenode, right=of enc1] {$\mathbf{z}_1$};
-    \node (rep2) [circlenode, right=of enc2] {$\mathbf{z}_2$};
-    \node (loss) [block, below right=of rep1, xshift=0.5cm, yshift=0.6cm] {Contrastive Loss\\$\mathcal{L}_{\text{InfoNCE}}$};
-
-    % Connections
-    \draw [arrow] (input.east) -- ++(0.3,0) |- (perturb1.west);
-    \draw [arrow] (input.east) -- ++(0.3,0) |- (perturb2.west);
-    \draw [arrow] (perturb1) -- (enc1);
-    \draw [arrow] (perturb2) -- (enc2);
-    \draw [arrow] (enc1) -- (rep1);
-    \draw [arrow] (enc2) -- (rep2);
-    \draw [arrow] (rep1.east) -| (loss.north);
-    \draw [arrow] (rep2.east) -| (loss.south);
-  \end{tikzpicture}
-  \caption{System architecture of the proposed Deep Latent Alignment framework. The input graph $G$ undergoes two distinct stochastic augmentations $\tau_1$ and $\tau_2$. The resulting views are processed by a shared Graph Neural Network encoder $f_\theta$ to produce latent representations $\mathbf{z}_1$ and $\mathbf{z}_2$, which are then aligned using a contrastive loss objective.}
-  \label{fig:architecture}
-\end{figure*}
-
-\section{Experiments}
-We evaluate the performance of our proposed framework on four standard dynamic benchmark datasets: Cora-T, PubMed-T, Citeseer-T, and Academic-T. These datasets represent evolving citation and academic networks where nodes represent papers, edges represent citations, and node features correspond to bag-of-words representations of titles and abstracts. Cora-T consists of 2,708 nodes across 10 snapshots, PubMed-T includes 19,717 nodes across 12 snapshots, Citeseer-T contains 3,327 nodes across 8 snapshots, and Academic-T represents a large-scale temporal collaboration graph with 42,100 nodes and 15 snapshots.
-
-We compare DLA against five state-of-the-art baselines:
-\begin{enumerate}
-  \item GCN \cite{kipf2016semi}: A standard spatial-only Graph Convolutional Network.
-  \item GAT \cite{velickovic2018graph}: A spatial-only Graph Attention Network.
-  \item GraphSAGE \cite{hamilton2017inductive}: An inductive GNN baseline using neighborhood sampling.
-  \item DGI \cite{velickovic2019deep}: Deep Graph Infomax for self-supervised static graphs.
-  \item GRACE \cite{zhu2020deep}: A node-level contrastive framework for static graphs.
-\end{enumerate}
-
-For all models, we use a two-layer GCN as the backbone encoder. The hidden dimension is set to 128, the projection head size is 64, and the temperature parameter $\tau$ is set to 0.2. The model is trained using the Adam optimizer with a learning rate of 0.001 and weight decay of $5 \times 10^{-4}$ for 200 epochs. All experiments are conducted on an Lumina RTX 4090 GPU, and we report the average vertex classification accuracy over 10 independent runs.
-
-\section{Results}
-Table 1 presents the classification accuracy of DLA and the baseline methods across the four benchmark datasets. The results show that DLA consistently outperforms all compared baselines, achieving significant performance improvements. On Cora-T, our model achieves a classification accuracy of 87.2\%, which represents a 2.7\% improvement over the strongest self-supervised baseline (GRACE) and a 4.2\% improvement over the classical GCN baseline. Similar improvements are observed on Citeseer-T (77.5\%) and PubMed-T (84.9\%).
-
-\begin{table*}[t]
-  \centering
-  \caption{Classification accuracy (\%) comparison of the proposed Deep Latent Alignment (DLA) framework against state-of-the-art baselines on four standard benchmark datasets. Bold values indicate the best performance; underlined values indicate the runner-up.}
-  \label{tab:results}
-  \vspace{0.5em}
-  \begin{tabular}{lcccc}
-    \toprule
-    Method & Cora-T & PubMed-T & Citeseer-T & Academic-T \\
-    \midrule
-    GCN \cite{kipf2016semi} & $81.5 \pm 0.5$ & $79.0 \pm 0.3$ & $70.3 \pm 0.8$ & $84.2 \pm 0.4$ \\
-    GAT \cite{velickovic2018graph} & $83.0 \pm 0.7$ & $80.2 \pm 0.4$ & $72.5 \pm 0.6$ & $85.9 \pm 0.3$ \\
-    GraphSAGE \cite{hamilton2017inductive} & $82.2 \pm 0.6$ & $79.8 \pm 0.5$ & $71.8 \pm 0.7$ & $85.0 \pm 0.5$ \\
-    DGI \cite{velickovic2019deep} & $83.8 \pm 0.4$ & $81.1 \pm 0.3$ & $73.2 \pm 0.5$ & $86.5 \pm 0.2$ \\
-    GRACE \cite{zhu2020deep} & $84.5 \pm 0.3$ & $82.0 \pm 0.2$ & $74.0 \pm 0.4$ & $87.1 \pm 0.3$ \\
-    \midrule
-    \textbf{DLA (Ours)} & $\mathbf{87.2 \pm 0.2}$ & $\mathbf{84.9 \pm 0.1}$ & $\mathbf{77.5 \pm 0.3}$ & $\mathbf{90.4 \pm 0.1}$ \\
-    \bottomrule
-  \end{tabular}
-\end{table*}
-
-The performance gap between DLA and static self-supervised methods (DGI and GRACE) highlights the benefit of our temporal contrastive objective. While static methods perform well within individual snapshots, they suffer from temporal misalignment across snapshots, which degrades classification accuracy. In contrast, DLA maintains stable representations by aligning local neighborhoods across adjacent timestamps. Furthermore, our model exhibits lower variance across runs, indicating that temporal alignment acts as a regularizer, improving stability during self-supervised pre-training.
-
-\section{Discussion}
-To better understand the properties of the proposed DLA framework, we perform a series of ablation studies and hyperparameter sensitivity analyses. First, we examine the importance of our temporal alignment loss by training a variant of our model without the temporal loss channel, relying solely on spatial view alignment. This modification results in a performance drop of 3.1\% on Cora-T and 2.8\% on Academic-T, confirming that cross-timestamp alignment is crucial for learning robust temporal representations.
-
-\section{Conclusion}
-In this paper, we presented Deep Latent Alignment (DLA), a self-supervised representation learning framework designed specifically for dynamic graphs. DLA addresses the challenge of temporal drift by aligning node-level representations across consecutive graph snapshots using a novel temporal contrastive loss. Our evaluations on four temporal benchmark datasets demonstrate that DLA consistently outperforms state-of-the-art baselines. In future work, we plan to extend DLA to heterogeneous dynamic graphs and explore its application in large-scale recommendation systems developed by Nimbus and Meridian.
-
-\bibliographystyle{abbrv}
-\bibliography{references}
-
+\input{sections/01-introduction}
+\input{sections/02-related-work}
+\input{sections/03-method}
+\input{sections/04-experiments}
+\input{sections/05-results}
+\input{sections/06-discussion}
+\input{sections/07-conclusion}
 \end{document}

@@ -1,0 +1,64 @@
+\section{Empirical Evaluation}
+
+% Slide 7: Experimental Setup (Booktabs Table)
+\begin{frame}{Experimental Configurations}
+    We evaluate Vertex-SGD on the custom Apex-8B model cluster:
+    \vskip 0.5cm
+    \begin{table}
+        \centering
+        \caption{Comparison of training settings on Vertex clusters}
+        \begin{tabular}{llcc}
+            \toprule
+            Cluster Configuration & Optimization Type & Avg. Bandwidth (GB/s) & Step Time (ms) \\
+            \midrule
+            Vertex-32 (32 nodes)  & Centralized Adam  & 100                   & 420            \\
+            Vertex-32 (32 nodes)  & Vertex-SGD (Ours) & 12                    & 180            \\
+            Vertex-128 (128 nodes) & Centralized Adam  & 400                   & 890            \\
+            Vertex-128 (128 nodes) & Vertex-SGD (Ours) & 15                    & 210            \\
+            \bottomrule
+        \end{tabular}
+    \end{table}
+\end{frame}
+
+% Slide 8: Convergence Performance (PGFPlots figure)
+\begin{frame}{Convergence Efficiency}
+    Vertex-SGD maintains the convergence quality of centralized methods while decreasing wall-clock time.
+    \vskip 0.2cm
+    \begin{center}
+        \begin{tikzpicture}
+            \begin{axis}[
+                xlabel={Training Steps $\times 10^3$},
+                ylabel={Cross-Entropy Loss},
+                grid=major,
+                width=0.75\textwidth,
+                height=0.55\textheight,
+                legend style={at={(0.95,0.95)},anchor=north east},
+                line width=1.5pt
+            ]
+                \addplot[color=red,mark=none] coordinates {
+                    (0, 8.5) (1, 6.2) (2, 4.8) (3, 3.9) (4, 3.2) (5, 2.8) (6, 2.6) (7, 2.5) (8, 2.4)
+                };
+                \addlegendentry{Centralized Adam}
+                \addplot[color=vertexBlue,mark=none] coordinates {
+                    (0, 8.5) (1, 5.9) (2, 4.3) (3, 3.3) (4, 2.7) (5, 2.3) (6, 2.1) (7, 2.0) (8, 1.9)
+                };
+                \addlegendentry{Vertex-SGD (Ours)}
+            \end{axis}
+        \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+% Slide 9: Block, Alertblock, Exampleblock Trio
+\begin{frame}{Key Observations \& Robustness}
+    \begin{block}{Theoretical Convergence}
+        Local parameters approach the true global optimum sublinearly for non-convex loss surfaces.
+    \end{block}
+    
+    \begin{alertblock}{Straggler Vulnerability}
+        Strict consensus bounds might delay updates if individual node computation speeds degrade.
+    \end{alertblock}
+    
+    \begin{exampleblock}{Empirical Speedup}
+        Over a wide range of tasks, Vertex-SGD yields a $2.1\times$ to $4.2\times$ reduction in end-to-end wall-clock training times.
+    \end{exampleblock}
+\end{frame}

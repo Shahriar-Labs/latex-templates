@@ -1,0 +1,46 @@
+\section{Artifact Appendix}
+\label{sec:artifact}
+
+This appendix records the intended evaluation contract for the prototype.  It
+is included in the review PDF for completeness and can be adapted to the
+conference's current artifact template after acceptance.
+
+\subsection{Claims supported by the artifact}
+
+The artifact supports the paper's three principal empirical claims: (1)
+phase-aware promotion lowers \ptail latency relative to reactive tiering, (2) copy
+credits bound migration bandwidth during prediction error, and (3) leases
+prevent speculative pages from accumulating in local memory.  It does not
+include proprietary CXL-device firmware and therefore reproduces the NUMA-based
+emulation rather than measurements on the pre-production device.
+
+\subsection{Contents and requirements}
+
+The package contains the kernel patch, controller, workload drivers, trace
+generator, analysis notebooks, raw counters, and a machine-readable manifest
+of software versions.  Reproduction requires a Linux host with two NUMA nodes,
+at least 192\,GiB of memory, 32 hardware threads, root access, and approximately
+600\,GiB of storage.  A reduced mode uses 32\,GiB and completes functional tests
+but does not reproduce performance numbers.
+
+\subsection{Evaluation workflow}
+
+The automated workflow builds the kernel and controller, verifies topology,
+calibrates the emulated far tier, runs a 15-minute smoke test, and then executes
+the randomized trial matrix.  A complete run takes approximately 28 machine
+hours.  Every plot and table in \cref{sec:evaluation} is regenerated from raw
+JSON records; scripts reject a trial if achieved load differs by more than 2\%
+or if the kernel reports lost samples.
+
+\subsection{Reproducibility safeguards}
+
+Configuration files record CPU affinity, firmware settings, kernel command
+line, frequency governor, memory-node mapping, workload commit, random seed,
+and trial order.  The runner restores the fast-tier budget and drops inactive
+file-cache pages between trials, but it never drops application data during a
+measurement.  Results include all valid trials rather than selecting the best
+run.  The analysis reports bootstrap intervals and retains the paired trial
+identifier used for each comparison.
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{main}

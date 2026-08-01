@@ -1,0 +1,23 @@
+\section{Safety Argument}
+\label{sec:safety}
+
+We model one extent because transitions on different extents commute. Manager
+log commitment provides a total order of \textsc{Prepared} records. The gate's
+advance operation provides a monotonic order of generations. The only step that
+creates authority for a new owner is token issuance, which occurs after both
+orders contain the transition. Thus, if owner $B$ has a valid token for
+$g+1$, the gate has already rejected every token for $g$ or below.
+
+Crash points partition into two cases. Before the gate advance, the durable
+\textsc{Prepared} record lets recovery return to $A$ or retry; no $B$ token is
+valid. After the advance, $A$ is fenced and recovery can only move forward to
+$B$. A crash between advance and token issuance temporarily leaves no owner but
+never two owners. This is the same safety-over-availability choice made by
+fencing-token protocols~\cite{burrows2006chubby}, applied at the memory fabric.
+
+The argument assumes a gate does not lose or roll back its durable generation.
+We protect the table with checksummed, double-buffered 4~KB pages and a monotonic
+boot counter. A torn page selects the older valid copy and replays its journal;
+if neither copy validates, the appliance refuses all access and requires
+manager-assisted reinitialization. This fail-closed behavior can reduce
+availability but preserves isolation.

@@ -1,0 +1,46 @@
+\section{Introduction}
+\label{sec:intro}
+
+Modern search systems resolve a query in stages: a fast first-stage
+retriever, typically a sparse index~\cite{kessler2021fusion} or a dense
+bi-encoder~\cite{aldana2020dpr}, recalls hundreds to thousands of candidate
+passages, and a second-stage re-ranker reorders that candidate set to
+maximize precision at the top of the list. Cross-encoders, which jointly
+encode the query and each candidate passage through a shared transformer,
+consistently produce the highest-quality re-ranking scores because
+self-attention can condition directly on token-level query--passage
+interactions~\cite{marchetti2020monobert}. That same joint encoding is what
+makes them expensive: every candidate requires a full forward pass over the
+concatenated query and passage, and this cost scales linearly with the
+number of candidates re-ranked per query.
+
+Bi-encoders sidestep this cost by encoding queries and passages
+independently, so passage embeddings can be pre-computed offline and reused
+across queries~\cite{aldana2020dpr}. The relevance score is then a cheap
+similarity between two fixed-size vectors. This efficiency comes at a
+quality cost: independent encoding cannot capture fine-grained token-level
+interactions, and bi-encoders reliably trail cross-encoders in ranking
+quality. Late-interaction models such as token-level maximum-similarity
+matching~\cite{solheim2020late} sit between these two extremes, but still
+require storing and scanning per-token passage representations at serving
+time, which is memory-intensive at large index sizes.
+
+This paper asks whether a re-ranker can be built that keeps the offline
+pre-computation property of bi-encoders while recovering most of the
+relevance quality of a cross-encoder teacher. We propose \textbf{CARD}: a
+shallow cross-attention head trained by distillation against a cross-encoder
+teacher, operating only on the frozen query and passage embeddings a
+bi-encoder already produces. Because the expensive joint reasoning is
+distilled into a small student head rather than performed online, CARD adds
+only a few milliseconds of re-ranking latency per candidate while closing
+most of the gap to the teacher.
+
+Our contributions are threefold. First, we describe the CARD architecture
+and its temperature-scaled distillation objective
+(\S\ref{sec:method}). Second, we evaluate CARD against sparse, dense, and
+late-interaction baselines, along with its own teacher, on three retrieval
+benchmarks, showing consistent quality recovery at a fraction of
+cross-encoder latency (\S\ref{sec:experiments}--\S\ref{sec:results}). Third,
+we analyze where CARD's distilled scores still diverge from the teacher,
+including a systematic gap on queries with high lexical ambiguity
+(\S\ref{sec:discussion}).

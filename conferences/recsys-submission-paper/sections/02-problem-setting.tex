@@ -1,0 +1,39 @@
+\section{Problem Setting}
+\label{sec:setting}
+
+Let $\mathcal{U}$ and $\mathcal{I}$ denote users and items.  For user $u$, the
+observed history before time $t$ is
+$H_{u,t}=((i_1,y_1),\ldots,(i_{t-1},y_{t-1}))$, where $i_j\in\mathcal{I}$ and
+$y_j$ is feedback.  A recommender $f_\theta$ maps $H_{u,t}$ and a candidate set
+$C_t$ to a score $s_\theta(u,i,t)$ for every $i\in C_t$.  Evaluation normally
+compares a ranked list $L_{u,t}^k$ with one or more relevant items $R_{u,t}$.
+
+We distinguish three distributions.  The \emph{preference distribution}
+$P^\star(y\mid u,i,t)$ describes latent relevance; the \emph{exposure policy}
+$\pi(i\mid u,t)$ determines which items can produce observed feedback; and the
+\emph{observation process} $P(o=1\mid u,i,t,y)$ determines whether that feedback
+is recorded.  A log is sampled from their composition, not from preference
+alone.  A shift operator $T_{q,\lambda}$ modifies one named mechanism $q$ at
+severity $\lambda\in[0,1]$ while holding declared invariants fixed.
+
+For a metric $M$ and evaluation distribution $D$, let
+$U_M(f,D)=\mathbb{E}_{x\sim D}[M(f,x)]$.  We report both shifted utility and the
+relative robustness loss
+\begin{equation}
+  \operatorname{RRL}_{M}(f,q,\lambda)
+  =\frac{U_M(f,D_0)-U_M(f,T_{q,\lambda}(D_0))}
+  {\max\{U_M(f,D_0),\epsilon\}},
+  \label{eq:rrl}
+\end{equation}
+where $D_0$ is the clean evaluation distribution and $\epsilon=10^{-8}$ prevents
+division by zero.  Relative loss reveals sensitivity, but must never replace the
+absolute shifted utility: a uniformly weak model can appear stable.
+
+\subsection{What counts as a valid shift?}
+
+A valid operator satisfies four requirements.  First, its target mechanism is
+named.  Second, $\lambda=0$ is an identity transformation.  Third, invariants
+are stated and checked; for example, a popularity shift should not silently
+change test-set size.  Fourth, the induced change is measured rather than
+assumed.  These requirements separate a controlled stress test from arbitrary
+data corruption.

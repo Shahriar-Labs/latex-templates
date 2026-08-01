@@ -1,0 +1,37 @@
+\section{Background and Motivation}
+\label{sec:background}
+
+\subsection{Why one global join choice is brittle}
+
+For relations $R$ and $S$, a conventional distributed hash join compares the
+cost of repartitioning both inputs with broadcasting a smaller build relation.
+A simplified model is
+\begin{align}
+ C_{\mathrm{rep}} &= (|R|+|S|)c_n + \max_w L_w c_h, \\
+ C_{\mathrm{bcast}}(R) &= (p-1)|R|c_n + |S|c_h,
+ \label{eq:costs}
+\end{align}
+where $p$ is the worker count, $c_n$ and $c_h$ are network and hash costs, and
+$L_w$ is the input assigned to worker $w$.  The usual model hides three
+problems.  First, $|R|$ may be an estimate taken before predicate evaluation.
+Second, $\max_w L_w$ is governed by key frequency rather than total size.
+Third, $p$ and $c_n$ can change while the query runs.
+
+A single choice is also unnecessarily coarse.  One date partition may contain
+a tiny filtered dimension fragment suitable for broadcast, while a neighboring
+partition contains a heavy key requiring replication of the probe-side work.
+Treating those regions alike sacrifices either network volume or balance.
+
+\subsection{Design requirements}
+
+We derive four requirements from these failures.  \textbf{R1: early evidence.}
+Adaptation should begin before a full shuffle or build completes.  \textbf{R2:
+locality.} Independent partitions may select different strategies.
+\textbf{R3: safe reversal.} A decision can change before commitment without
+replaying remote input.  \textbf{R4: bounded disruption.} Slow consumers and
+membership changes must reduce throughput, not exhaust memory or duplicate
+rows.
+
+These requirements rule out unbounded speculative execution.  \system{} never
+emits a speculative match: it may prepare multiple routing choices, but output
+begins only after one choice is committed for a partition epoch.

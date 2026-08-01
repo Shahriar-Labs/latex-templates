@@ -1,0 +1,88 @@
+\section{Results}
+\label{sec:results}
+Table~\ref{tab:results} summarizes per-technology LIR and loss statistics aggregated over
+the full campaign. Fiber access shows both the lowest median inflation ($0.06$) and the
+tightest tail ($p95 = 0.19$), consistent with symmetric, lightly buffered PON access
+architectures and comparatively little contention among subscribers sharing a given
+optical distribution point. Cable and DSL cluster together at roughly $3$--$4\times$
+fiber's median inflation, which we attribute to a combination of larger static buffers in
+deployed cable modems and, for DSL, older CPE that in our panel rarely had modern AQM
+enabled. Fixed wireless, satellite, and mobile technologies show the heaviest tails: LEO
+satellite's median LIR ($0.29$) is comparable to cable, but its 95th percentile ($1.35$)
+and loss rate ($1.86\%$) are the highest of any technology we measured, reflecting
+episodic contention and handoff effects between satellite beams.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Latency Inflation Ratio and loss rate by access technology, aggregated over the
+six-week campaign ($n = 3{,}116$ vantage points total).}
+\label{tab:results}
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+\textbf{Technology} & \textbf{$n$} & \textbf{Med. LIR} & \textbf{$p95$ LIR} & \textbf{Loss (\%)} \\
+\midrule
+Fiber (PON)     & 812   & 0.06 & 0.19 & 0.08 \\
+Cable (DOCSIS)  & 1{,}240 & 0.21 & 0.68 & 0.34 \\
+DSL (VDSL2)     & 356   & 0.24 & 0.71 & 0.41 \\
+FWA (5G)        & 289   & 0.33 & 1.12 & 0.97 \\
+Satellite (LEO) & 145   & 0.29 & 1.35 & 1.86 \\
+Mobile (4G/5G)  & 274   & 0.27 & 0.94 & 0.62 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:cdf} shows the full empirical distribution of per-probe median LIR for
+three representative technologies. The fiber curve rises steeply and saturates below
+$\mathrm{LIR}=0.3$, indicating that severe inflation is rare rather than merely
+low on average. Cable's distribution is shifted right and has a visibly longer tail,
+and fixed wireless shows the flattest, widest distribution of the three, with a
+non-trivial fraction of probes exceeding $\mathrm{LIR}=1.0$ even at the median-aggregation
+level shown here.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.85\linewidth,
+    height=5.4cm,
+    xlabel={Latency Inflation Ratio (LIR)},
+    ylabel={Empirical CDF},
+    xmin=0, xmax=1.5,
+    ymin=0, ymax=1,
+    grid=both,
+    grid style={line width=0.1pt, draw=gray!25},
+    major grid style={line width=0.2pt, draw=gray!35},
+    axis lines=left,
+    tick label style={font=\footnotesize},
+    label style={font=\footnotesize},
+    legend style={font=\footnotesize, at={(0.98,0.35)}, anchor=east, draw=gray!50},
+    legend cell align={left},
+]
+\addplot+[color=nexablue, mark=*, mark size=1.4pt, thick, mark options={fill=nexablue}]
+  coordinates {
+  (0.00,0.00) (0.02,0.08) (0.04,0.22) (0.06,0.42) (0.08,0.58)
+  (0.10,0.71) (0.15,0.85) (0.20,0.93) (0.30,0.98) (0.50,1.00)
+  };
+\addlegendentry{Fiber}
+
+\addplot+[color=synapseteal, mark=square*, mark size=1.4pt, thick, dashed, mark options={fill=synapseteal}]
+  coordinates {
+  (0.00,0.00) (0.05,0.04) (0.10,0.12) (0.15,0.22) (0.21,0.38)
+  (0.30,0.55) (0.45,0.72) (0.68,0.90) (0.90,0.96) (1.20,1.00)
+  };
+\addlegendentry{Cable}
+
+\addplot+[color=vertexcopper, mark=triangle*, mark size=1.6pt, thick, dotted, mark options={fill=vertexcopper}]
+  coordinates {
+  (0.00,0.00) (0.05,0.02) (0.10,0.06) (0.20,0.14) (0.33,0.28)
+  (0.50,0.45) (0.70,0.62) (0.90,0.75) (1.12,0.90) (1.50,1.00)
+  };
+\addlegendentry{FWA (5G)}
+\end{axis}
+\end{tikzpicture}
+\caption{Empirical CDF of per-probe median Latency Inflation Ratio for fiber, cable, and
+fixed wireless access. Fiber's distribution is concentrated at low LIR values; FWA shows
+the widest spread and heaviest tail.}
+\label{fig:cdf}
+\end{figure*}

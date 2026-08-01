@@ -1,0 +1,118 @@
+\section{Evaluation}
+
+% -----------------------------------------------------------------------------
+% 8. Evaluation design
+% -----------------------------------------------------------------------------
+\begin{frame}{Evaluation separates answer quality from operational safety}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.56\textwidth}
+      \begin{itemize}
+        \item \textbf{1,200 scenarios}: routine, ambiguous, outdated, and adversarial queries.
+        \item \textbf{Three systems}: generation only, retrieval augmented, and gated verification.
+        \item \textbf{Double review}: policy specialists label support and acceptable escalation.
+        \item \textbf{Update drill}: 10\% of source documents change midway through the test.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      \begin{block}{Primary measures}
+        \begin{itemize}
+          \item claim support rate,
+          \item unsafe-release rate,
+          \item useful-answer rate,
+          \item median latency.
+        \end{itemize}
+      \end{block}
+      \begin{exampleblock}{Evaluation principle}
+        A safe escalation counts as correct behavior, not as an unanswered query.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 9. Results plot
+% -----------------------------------------------------------------------------
+\begin{frame}{Verification sharply reduces unsupported releases}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.66\textwidth}
+      \centering
+      \begin{tikzpicture}
+        \begin{axis}[
+          ybar,
+          width=\linewidth,
+          height=0.60\textheight,
+          ymin=0,
+          ymax=25,
+          ylabel={Unsupported releases (\%)},
+          symbolic x coords={Routine,Ambiguous,Outdated,Adversarial},
+          xtick=data,
+          x tick label style={font=\scriptsize},
+          ymajorgrids,
+          grid style={ArborMist},
+          bar width=7pt,
+          enlarge x limits=0.18,
+          legend style={
+            at={(0.5,1.02)},
+            anchor=south,
+            legend columns=3,
+            draw=none,
+            font=\scriptsize
+          }
+        ]
+          \addplot[fill=ArborRed!75,draw=ArborRed] coordinates
+            {(Routine,6.8) (Ambiguous,14.7) (Outdated,20.9) (Adversarial,23.1)};
+          \addplot[fill=ArborBlue!65,draw=ArborBlue] coordinates
+            {(Routine,2.4) (Ambiguous,7.1) (Outdated,10.8) (Adversarial,12.4)};
+          \addplot[fill=ArborGreen!70,draw=ArborGreen] coordinates
+            {(Routine,0.7) (Ambiguous,1.8) (Outdated,2.1) (Adversarial,2.9)};
+          \legend{Generation only,Retrieval,Gated verification}
+        \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.30\textwidth}
+      \begin{exampleblock}{Result}
+        The release gate cuts unsupported answers by \textbf{85\%} relative to retrieval alone.
+      \end{exampleblock}
+      \begin{alertblock}{Trade-off}
+        Median latency rises by 310 ms because claims are checked before release.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 10. Results table
+% -----------------------------------------------------------------------------
+\begin{frame}{Safety improves without collapsing service usefulness}
+  \centering
+  \small
+  \renewcommand{\arraystretch}{1.25}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{3.7cm}cccc}
+    \toprule
+    \textbf{System} & \textbf{Supported} & \textbf{Unsafe} & \textbf{Useful} & \textbf{Latency} \\
+                    & \textbf{claims} & \textbf{release} & \textbf{outcome} & \textbf{p50} \\
+    \midrule
+    Generation only       & 84.2\% & 16.4\% & 91.8\% & 0.62 s \\
+    Retrieval augmented   & 93.7\% &  8.1\% & \textbf{94.1\%} & 0.88 s \\
+    \rowcolor{ArborMaize!20}
+    \textbf{Gated verification} & \textbf{98.6\%} & \textbf{1.2\%} & 92.9\% & 1.19 s \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.45cm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.47\textwidth}
+      \begin{block}{Why usefulness holds}
+        Targeted clarification recovers many ambiguous cases instead of refusing them outright.
+      \end{block}
+    \end{column}
+    \begin{column}{0.47\textwidth}
+      \begin{exampleblock}{Operational reading}
+        The small usefulness change buys a sevenfold reduction in unsafe releases.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+
+  \vfill
+  {\tiny Values are illustrative and included to demonstrate the presentation template.}
+\end{frame}

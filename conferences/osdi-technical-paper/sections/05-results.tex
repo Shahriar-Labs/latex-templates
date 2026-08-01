@@ -1,0 +1,20 @@
+\section{Results}
+Table~\ref{tab:results} summarizes p99 latency across all three workloads and configurations. Halcyon reduces p99 latency relative to the Reactive baseline by 38--61\%, and outperforms the Static policy on every workload, with the largest gap on \textsc{Graph-BFS}, whose access pattern shifts working sets faster than a fixed threshold can track.
+
+\begin{table}[t]
+\centering
+\caption{p99 latency by workload and migration policy, and Halcyon's reduction relative to the Reactive baseline.}
+\label{tab:results}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+\rowcolor{osdilight}
+Workload & Reactive & Halcyon & Reduction \\
+\midrule
+KV-Store      & 412 $\mu$s & 224 $\mu$s & 45.6\% \\
+Graph-BFS     & 891 $\mu$s & 349 $\mu$s & 60.8\% \\
+ML-Checkpoint & 267 $\mu$s & 165 $\mu$s & 38.2\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The improvement comes with a modest migration overhead: across all three workloads, migration traffic consumed under 4\% of fabric bandwidth, and the fraction of predicted migrations that turned out to be unnecessary (a page migrated but not subsequently accessed within its decay window) stayed below 12\%. \textsc{ML-Checkpoint} showed the lowest reduction of the three, consistent with its access pattern being the most regular and therefore the easiest for the Static baseline to approximate with a fixed threshold.

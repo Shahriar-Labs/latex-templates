@@ -1,0 +1,150 @@
+\section{Evidence}
+\subsection{Evaluation}
+
+% -----------------------------------------------------------------------------
+% 8. Experimental setup
+% -----------------------------------------------------------------------------
+\begin{frame}{A six-week replay tests both routine and disrupted operation}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.58\textwidth}
+      \begin{table}
+        \centering
+        \small
+        \begin{tabular}{@{}>{\bfseries}l l@{}}
+          \toprule
+          Scope & 48 intersections in 6 districts \\
+          Signals & loops, transit arrivals, phase state \\
+          Horizon & 5, 10, and 15 minutes \\
+          Replay & 30 routine + 12 disruption days \\
+          Baselines & local ARIMA; centralized GNN \\
+          Stressors & loss, drift, and 20\% sensor dropout \\
+          \bottomrule
+        \end{tabular}
+      \end{table}
+    \end{column}
+    \begin{column}{0.37\textwidth}
+      \begin{block}{Primary measure}
+        Mean absolute error for district travel time.
+      \end{block}
+      \begin{exampleblock}{Guardrails}
+        End-to-end latency, calibration error, and privacy budget.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+  \vfill
+  \footnotesize\color{PulseInk!80}
+  Values in this illustrative deck are synthetic but internally consistent.
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 9. Quantitative results
+% -----------------------------------------------------------------------------
+\begin{frame}{CivicPulse preserves accuracy while shrinking the decision path}
+  \centering
+  \small
+  \setlength{\tabcolsep}{7pt}
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    \textbf{Method} & \textbf{MAE (min)} & \textbf{P95 latency} & \textbf{Uplink/day} & \textbf{Raw data leaves edge} \\
+    \midrule
+    Local ARIMA & 3.84 & \textbf{0.4 s} & \textbf{0.2 GB} & No \\
+    Central GNN & \textbf{2.21} & 8.7 s & 31.6 GB & Yes \\
+    Federated average & 2.48 & 1.9 s & 1.4 GB & No \\
+    \rowcolor{PulseTeal!12}
+    \textbf{CivicPulse} & 2.29 & 1.3 s & 0.9 GB & No \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.55cm}
+  \begin{tikzpicture}
+    \node[metric] at (-4.2,0) {\Large\bfseries\color{PulseTeal}40\%\\[-1pt]\small lower error vs. local};
+    \node[metric] at (0,0) {\Large\bfseries\color{PulseBlue}6.7$\times$\\[-1pt]\small faster than central};
+    \node[metric] at (4.2,0) {\Large\bfseries\color{PulseAmber}97\%\\[-1pt]\small less uplink data};
+  \end{tikzpicture}
+\end{frame}
+
+\subsection{Stress behavior}
+
+% -----------------------------------------------------------------------------
+% 10. Resilience plot
+% -----------------------------------------------------------------------------
+\begin{frame}{Graceful degradation matters more than the best clean-data score}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.67\textwidth}
+      \centering
+      \begin{tikzpicture}
+        \begin{axis}[
+          width=\linewidth,
+          height=5.0cm,
+          xmin=0,xmax=40,
+          ymin=2.0,ymax=5.3,
+          xtick={0,10,20,30,40},
+          ytick={2,3,4,5},
+          xlabel={Unavailable sensors (\%)},
+          ylabel={Travel-time MAE (min)},
+          grid=major,
+          grid style={draw=PulseInk!12},
+          legend style={draw=none,fill=none,font=\scriptsize},
+          legend pos=north west,
+          tick label style={font=\scriptsize},
+          label style={font=\small}
+        ]
+          \addplot[color=PulseRed,mark=triangle*,line width=1.4pt]
+            coordinates {(0,2.21) (10,2.73) (20,3.51) (30,4.38) (40,5.08)};
+          \addlegendentry{Central GNN}
+          \addplot[color=PulseTeal,mark=square*,line width=1.6pt]
+            coordinates {(0,2.29) (10,2.45) (20,2.72) (30,3.13) (40,3.72)};
+          \addlegendentry{CivicPulse}
+        \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.29\textwidth}
+      \begin{exampleblock}{At 30\% dropout}
+        CivicPulse reduces error by \textbf{29\%} and flags 94\% of low-confidence forecasts.
+      \end{exampleblock}
+      \begin{alertblock}{Remaining risk}
+        Correlated outages can remove an entire corridor's evidence; human review remains necessary.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 11. Trade-offs
+% -----------------------------------------------------------------------------
+\begin{frame}{The design earns speed by accepting explicit trade-offs}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.31\textwidth}
+      \begin{exampleblock}{Strong fit}
+        \begin{itemize}
+          \item recurring corridors
+          \item constrained uplinks
+          \item strict data boundaries
+        \end{itemize}
+      \end{exampleblock}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Manage carefully}
+        \begin{itemize}
+          \item uneven district volume
+          \item concept drift
+          \item model-version skew
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{alertblock}{Escalate}
+        \begin{itemize}
+          \item mass sensor outage
+          \item unseen event pattern
+          \item unsafe phase proposal
+        \end{itemize}
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+
+  \vfill
+  \centering
+  \small
+  Privacy does not remove accountability: every promoted model retains a signed audit trail and rollback target.
+\end{frame}

@@ -1,0 +1,52 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Cost and resource type systems.}
+Static cost analysis for functional languages traces back to
+sized-type and potential-based amortized analyses, which assign a
+numeric potential to data structures and track its evolution through
+recursive calls~\cite{thorvaldsen2016abstract}. These systems achieve
+tight, often automatically inferred bounds for first-order recursive
+functions, but the higher-order case --- where a cost-carrying function
+value itself flows through the program --- generally requires either a
+restrictive stratification or full annotation at every closure
+allocation.
+
+\paragraph{Effect and coeffect systems.}
+Effect handlers with resource-aware installation
+disciplines~\cite{vantassel2023effect} and coeffect systems for
+reactive, resource-sensitive programs~\cite{marchetti2019coeffect} both
+track a lightweight algebraic summary of a computation's requirements
+alongside its type. \textsc{Bidir} borrows the algebraic-summary idea
+but specializes it to a single scalar-like cost monoid rather than a
+general effect row, which is what enables the bidirectional
+checked/synthesized split described in \cref{sec:method}.
+
+\paragraph{Gradual and mixed disciplines.}
+Gradual typing for ownership and region
+disciplines~\cite{halvorsen2020gradual,brandvold2020region} shows that
+mixing statically checked and dynamically checked fragments of a
+guarantee can substantially reduce annotation burden while preserving a
+soundness theorem for the statically checked fragment. \textsc{Bidir}
+follows this spirit for cost rather than ownership, but --- unlike a
+gradual system --- never inserts a run-time cast; every inferred bound
+is a compile-time guarantee, obtained instead by shifting the annotation
+requirement to module boundaries.
+
+\paragraph{Linear and session-typed resource control.}
+Linear capabilities~\cite{fennimore2017linear} and session-typed
+actors~\cite{nakashima2018session} constrain resource usage through the
+structure of the type itself, giving strong protocol guarantees for
+concurrent and distributed settings. These disciplines are complementary
+to \textsc{Bidir}: they primarily constrain \emph{how many times} and
+\emph{in what order} a resource is used, while \textsc{Bidir} constrains
+\emph{how much} of a scalar budget a computation consumes.
+
+\paragraph{Relational and refinement approaches.}
+Relational cost analysis~\cite{holsapple2021relational} and refinement
+types for incremental computation~\cite{casagrande2015refinement} both
+demonstrate that a bidirectional or relational structure can carry
+quantitative information through a type system with acceptable
+annotation cost; our evaluation methodology in \cref{sec:experiments}
+follows their practice of reporting inference coverage over a corpus
+rather than a handful of hand-picked examples.

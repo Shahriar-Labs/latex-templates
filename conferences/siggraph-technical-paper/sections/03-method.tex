@@ -1,0 +1,62 @@
+\section{Method}
+Let the refractive medium be defined within a bounded domain $\Omega \subset \mathbb{R}^3$. We parameterize the spatial variation of the index of refraction using a neural field $\eta_\theta(x): \Omega \to [1.0, \eta_{\text{max}}]$, where $\theta$ represents the parameters of a coordinate-based MLP. Light propagation in this inhomogeneous medium is governed by Fermat's principle of least time, which leads to the eikonal equation. The path of a light ray $x(s)$ parameterized by its arc length $s$ satisfies the second-order differential equation:
+\begin{equation}
+  \frac{d}{ds} \left( \eta_\theta(x(s)) \frac{dx(s)}{ds} \right) = \nabla \eta_\theta(x(s))
+  \label{eq:eikonal}
+\end{equation}
+where $\nabla \eta_\theta(x)$ is the spatial gradient of the refractive index field.
+
+To render an image, we cast rays from the camera sensor into the volume. We reformulate the second-order differential equation as a system of first-order ordinary differential equations (ODEs). Let $u = dx/ds$ be the unit tangent vector of the ray, and $p = \eta_\theta(x) u$ be the ray momentum. The system can be written as:
+\begin{equation}
+  \frac{dx}{ds} = \frac{p}{\eta_\theta(x)}, \quad \frac{dp}{ds} = \nabla \eta_\theta(x)
+\end{equation}
+We integrate this system numerically using a fourth-order Runge-Kutta (RK4) solver with a step size $\Delta s$. At each integration step, we query the neural field $\eta_\theta(x)$ and its spatial gradient $\nabla \eta_\theta(x)$ using automatic differentiation.
+
+Our network architecture consists of a multi-resolution hash grid followed by a shallow coordinate MLP. The hash grid interpolates local features at multiple scales, which are then concatenated and fed into the MLP to output the scalar value $\eta(x)$. The spatial gradient $\nabla \eta(x)$ is computed efficiently by backpropagating through the network with respect to the input coordinates. The network is optimized by minimizing a photometric loss:
+\begin{equation}
+  \mathcal{L}(\theta) = \frac{1}{|P|} \sum_{p \in P} \| I_\theta(p) - I_{\text{gt}}(p) \|^2 + \lambda \mathcal{R}(\theta)
+\end{equation}
+where $I_\theta(p)$ is the rendered pixel intensity, $I_{\text{gt}}(p)$ is the ground-truth intensity, and $\mathcal{R}(\theta)$ is a regularization term that penalizes high-frequency oscillations in the refractive index field. We set $\lambda = 10^{-4}$ in all our experiments.
+
+\begin{figure*}[t]
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.5cm and 1.5cm,
+    box/.style={draw, thick, rounded corners, minimum width=2.4cm, minimum height=1.1cm, align=center, fill=secondarycolor!5},
+    neural/.style={draw, thick, rounded corners, minimum width=2.4cm, minimum height=1.1cm, align=center, fill=primarycolor!10, draw=primarycolor},
+    arrow/.style={-latex, thick, draw=secondarycolor},
+    feedback/.style={-latex, thick, dashed, draw=accentcolor}
+  ]
+    % Nodes
+    \node[box] (scene) {Refractive Volume \\ $\eta(x)$};
+    \node[box, right=of scene] (renderer) {Differentiable \\ Ray Tracer};
+    \node[box, right=of renderer] (image) {Rendered Pixels \\ $I_{\theta}$};
+    \node[box, below=of image] (loss) {Photometric Loss \\ $\mathcal{L}(I_{\theta}, I_{\text{gt}})$};
+    \node[neural, left=of loss] (network) {Synapse-Field \\ MLP Parameters $\theta$};
+    
+    % Paths
+    \draw[arrow] (scene) -- (renderer);
+    \draw[arrow] (renderer) -- (image);
+    \draw[arrow] (image) -- (loss);
+    \draw[arrow] (loss) -- (network);
+    \draw[feedback] (network) -- (scene);
+    
+    % Labels (using calc library syntax explicitly and safely)
+    \path (scene) -- (renderer) coordinate[midway] (mid1);
+    \node[above] at (mid1) {\small Rays};
+    
+    \path (renderer) -- (image) coordinate[midway] (mid2);
+    \node[above] at (mid2) {\small Projection};
+    
+    \path (image) -- (loss) coordinate[midway] (mid3);
+    \node[right] at (mid3) {\small MSE};
+    
+    \path (loss) -- (network) coordinate[midway] (mid4);
+    \node[below] at (mid4) {\small Backpropagation};
+    
+    \path (network) -- (scene) coordinate[midway] (mid5);
+    \node[left] at (mid5) {\small Latent Update};
+  \end{tikzpicture}
+  \caption{Overview of our differentiable refractive rendering pipeline. The Vertex-Net representational field parameterizes the refractive index $\eta(x)$, which is queried by the differentiable path tracer to render synthetic observations. Gradients from the photometric loss $\mathcal{L}$ are backpropagated to update the neural parameters $\theta$.}
+  \label{fig:pipeline}
+\end{figure*}

@@ -1,0 +1,71 @@
+\section{Evaluation}
+\subsection{Experimental Setup}
+
+% Slide 7: TikZ Plot
+\begin{frame}{Experimental Results: Grid Stability}
+  Real-time load balancing performance under high-volatility renewable input:
+  \vspace{0.2cm}
+  
+  \centering
+  \begin{tikzpicture}[scale=0.9, transform shape]
+    % Axes
+    \draw[->, thick] (0,0) -- (6.5,0) node[right, font=\tiny] {Time (Hours)};
+    \draw[->, thick] (0,0) -- (0,4.5) node[above, font=\tiny] {Grid Load (MW)};
+    
+    % X-ticks
+    \foreach \x/\label in {0/0, 1.5/6, 3/12, 4.5/18, 6/24} {
+      \draw (\x,1pt) -- (\x,-3pt) node[below, font=\tiny] {\label};
+    }
+    
+    % Y-ticks
+    \foreach \y/\label in {0/0, 1/10, 2/20, 3/30, 4/40} {
+      \draw (1pt,\y) -- (-3pt,\y) node[left, font=\tiny] {\label};
+    }
+    
+    % Grid lines (dashed, light gray)
+    \draw[dashed, gray!30] (0,1) -- (6,1);
+    \draw[dashed, gray!30] (0,2) -- (6,2);
+    \draw[dashed, gray!30] (0,3) -- (6,3);
+    \draw[dashed, gray!30] (0,4) -- (6,4);
+    
+    % Target Load Line (dashed red)
+    \draw[dashed, AlertOrange, thick] (0,2.5) -- (6,2.5) node[right, font=\tiny, align=left] {Optimal\\Capacity};
+    
+    % Apex Legacy Curve (high volatility)
+    \draw[thick, ApexSlate] plot[smooth, tension=0.6] coordinates {
+      (0,1.2) (1,3.8) (2,2.1) (3,4.2) (4,1.5) (5,3.9) (6,2.3)
+    } node[above, font=\tiny] {Apex Legacy};
+    
+    % Vertex Curve (smooth, near target)
+    \draw[very thick, VertexTeal] plot[smooth, tension=0.6] coordinates {
+      (0,2.2) (1,2.6) (2,2.4) (3,2.7) (4,2.3) (5,2.5) (6,2.4)
+    } node[right, font=\tiny] {Vertex Framework};
+    
+  \end{tikzpicture}
+\end{frame}
+
+\subsection{Comparative Analysis}
+
+% Slide 8: Trio Blocks
+\begin{frame}{Triad Performance Evaluation}
+  Validation and comparison of different operating regimes under stress:
+  \vspace{0.4cm}
+  
+  \begin{columns}[T]
+    \begin{column}{0.31\textwidth}
+      \begin{block}{Stable Operation}
+        Under normal load conditions, Vertex operates with 99.9\% dispatch reliability.
+      \end{block}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{alertblock}{Critical Anomalies}
+        In extreme weather, edge latency can spike. Mitigated by Apex fallback.
+      \end{alertblock}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{exampleblock}{Optimal Scenario}
+        A 40\% solar surge was fully balanced in 150 ms with zero grid curtailment.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}

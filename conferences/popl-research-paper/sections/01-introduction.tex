@@ -1,0 +1,45 @@
+\section{Introduction}
+\label{sec:intro}
+
+Programmers reasoning about the resource behavior of higher-order code
+face a familiar tension. Fully annotated cost type systems give strong,
+checkable guarantees, but every closure, every partial application, and
+every point where a function value crosses a module boundary demands an
+explicit cost signature. In practice this annotation burden is heavy
+enough that resource-aware type systems see little uptake outside of
+specialized domains such as embedded control loops and cryptographic
+kernels, where the guarantee is worth the cost. At the other extreme,
+purely dynamic budget checks --- a counter decremented at each allocation
+site, tripped when it reaches zero --- offer no static assurance at all:
+a budget violation is discovered only when a specific input triggers it
+at run time.
+
+This paper describes \textsc{Bidir}, a bidirectional type discipline that
+narrows this gap for a large and common class of programs: those where
+resource-relevant structure is local, and only the \emph{interfaces}
+between components need an explicit contract. The design follows the
+familiar bidirectional recipe of separating a \emph{checking} judgment,
+which propagates an expected cost bound inward, from a
+\emph{synthesis} judgment, which computes a principal cost bound outward
+from the syntax of an expression. Function bodies are checked against a
+budget synthesized from their parameter and return types; call sites
+combine the synthesized cost of the callee with the checked cost of each
+argument. Crucially, only $\lambda$-abstractions that are stored, passed
+across an explicit module signature, or subject to unbounded recursion
+require a programmer-supplied annotation --- straight-line and
+first-order code is fully inferred.
+
+Our contributions are:
+\begin{enumerate}[leftmargin=1.35em,itemsep=1pt,topsep=2pt]
+  \item A declarative bidirectional cost discipline, parametrized over an
+    abstract commutative cost monoid $(\mathcal{C}, \oplus, \mathbf{0})$,
+    together with a subtyping-style bound relation $\sqsubseteq_{\mathcal{C}}$
+    (\cref{sec:method}).
+  \item A syntax-directed algorithm implementing the discipline, and a
+    proof of soundness and completeness relative to the declarative
+    system (\cref{sec:method}).
+  \item An evaluation on $482$ functions from three open-source
+    higher-order libraries, measuring inference coverage, annotation
+    burden, and checking-time overhead relative to a fully annotated
+    baseline and a budget-free typechecker (\cref{sec:experiments,sec:results}).
+\end{enumerate}

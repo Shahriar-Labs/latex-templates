@@ -1,0 +1,13 @@
+\section{Introduction}
+Contextual bandit algorithms are widely used to make sequential decisions under uncertainty, from content recommendation to adaptive clinical trial design. Most theoretical guarantees for these algorithms --- including the regret bounds underlying LinUCB and Gaussian Thompson sampling --- rely on the assumption that reward noise is sub-Gaussian, so that a small number of confidence-interval or posterior-variance parameters suffice to control the probability of extreme deviations.
+
+In many applied settings, however, reward distributions are heavy-tailed: click-through economics, ad-auction revenue, and biological assay readouts routinely exhibit only a few finite moments. Under such conditions, sub-Gaussian confidence intervals are either invalid or so conservative that the resulting algorithm barely explores, while naive least-squares or Gaussian-posterior updates can be destabilized by a single extreme observation.
+
+This paper studies the contextual bandit problem under the weaker assumption that rewards have $(1+\epsilon)$ finite absolute moments for some $\epsilon \in (0, 1]$, following the heavy-tailed bandit literature initiated for the non-contextual case \citep{holt2021heavytail, rostova2021ucb}. We ask whether the randomized-exploration behavior that makes Thompson sampling attractive in practice --- smooth exploration, easy incorporation of prior knowledge, strong empirical performance --- can be preserved once the sub-Gaussian assumption is removed.
+
+Our contributions are:
+\begin{enumerate}[leftmargin=*]
+    \item We introduce \textbf{HT-CTS}, a Thompson-sampling variant that substitutes a truncated-mean surrogate likelihood for the standard Gaussian likelihood, with a truncation threshold that adapts online to a running estimate of the $(1+\epsilon)$-moment.
+    \item We prove a regret bound of order $\widetilde{O}(d\,T^{1/(1+\epsilon)})$ that recovers the familiar $\widetilde{O}(d\sqrt{T})$ rate as $\epsilon \to 1$, and we show the dependence on $T$ is unimprovable up to logarithmic factors.
+    \item We evaluate HT-CTS on four synthetic environments spanning a range of tail indices and context dimensions, and show consistent regret reductions over Gaussian Thompson sampling, LinUCB, UCB1, and $\epsilon$-greedy baselines.
+\end{enumerate}

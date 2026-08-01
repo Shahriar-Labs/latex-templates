@@ -1,0 +1,41 @@
+\section{Problem Setup}
+\label{sec:setup}
+
+Let $P$ be a source distribution and $Q$ a target distribution on
+$\cX\times\cY$.  For a predictor $f\in\cF$, let
+$\ell(f(X),Y)\in[0,1]$ be a measurable loss and define
+\begin{equation}
+  \Risk_Q(f)=\E_{(X,Y)\sim Q}\!\left[\ell(f(X),Y)\right].
+  \label{eq:target-risk}
+\end{equation}
+The predictors $\cF_K=\{f_1,\ldots,f_K\}$ are trained without the certification
+sample $S=\{(X_i,Y_i)\}_{i=1}^n\stackrel{\mathrm{iid}}{\sim}P$.
+
+\begin{assumption}[Covariate shift]
+\label{ass:covariate}
+$P(Y\mid X)=Q(Y\mid X)$ almost surely, and $Q_X$ is absolutely continuous with
+respect to $P_X$.
+\end{assumption}
+
+The corresponding density ratio is $w(x)=dQ_X/dP_X(x)$.  By a change of measure,
+Assumption~\ref{ass:covariate} implies
+\begin{equation}
+  \Risk_Q(f)=\E_P\!\left[w(X)\ell(f(X),Y)\right].
+  \label{eq:change-measure}
+\end{equation}
+
+\begin{assumption}[Auditable overlap and ratio error]
+\label{ass:ratio}
+An estimator $\wh w:\cX\to[0,B]$, fitted independently of $S$, satisfies
+\begin{equation}
+  \E_{X\sim P_X}\abs{\wh w(X)-w(X)}\leq \varepsilon_w
+  \label{eq:ratio-error}
+\end{equation}
+for declared constants $B<\infty$ and $\varepsilon_w\geq0$.
+\end{assumption}
+
+Independence can be obtained with a three-way split: predictor training, ratio
+estimation using unlabeled source and target inputs, and certification.  The error
+budget $\varepsilon_w$ may come from domain knowledge, a separate validation study,
+or a high-probability bound for a particular ratio estimator.  Treating an
+unvalidated estimate as though $\varepsilon_w=0$ is not justified.

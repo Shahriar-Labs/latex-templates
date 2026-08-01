@@ -1,0 +1,49 @@
+\section{Introduction}
+\label{sec:intro}
+
+Operators of shared container fleets face a persistent tension: dense
+bin-packing lowers infrastructure cost, but it also increases queueing delay
+for latency-sensitive tenants whenever aggregate demand spikes. The standard
+response is to schedule with a fixed utilization ceiling --- for example,
+never placing new work on a node above 65\% CPU --- so that transient bursts
+have somewhere to go. This works, but it leaves a large, permanently idle
+margin on every node in the fleet, and the ceiling has to be chosen
+conservatively because it cannot see workload-specific queueing behavior.
+
+The alternative family of schedulers, exemplified by batch-sampling and
+power-of-two-choices approaches~\cite{holm2018batch,chen2019placement},
+picks placement targets by comparing a small number of candidate nodes and
+routing to whichever looks least loaded at decision time. These systems are
+fast and scale well, but the load signal they compare on --- typically queue
+length or recent CPU samples --- is a lagging indicator. By the time a node
+looks loaded, tenants already sharing it have usually already seen a latency
+spike.
+
+Our observation is that both problems stem from using a single, static proxy
+for load. What operators actually care about is \emph{predicted future tail
+latency}, and that quantity can be estimated online from signals the
+scheduler already has access to: recent p99 latency history, current queue
+depth, and the marginal cost of migrating work away from a node under
+pressure. \textsc{Tempo} scores every placement decision against a cost
+function that combines these signals with weights that adapt every
+scheduling epoch based on how well the previous epoch's predictions held up.
+
+This paper makes three contributions:
+
+\begin{itemize}[noitemsep,topsep=2pt,leftmargin=1.4em]
+  \item An online tail-latency predictor lightweight enough to run inside
+    the scheduler's hot path on every placement decision (Section~\ref{sec:method}).
+  \item A self-tuning cost function that adjusts its own packing-versus-latency
+    trade-off without workload-specific configuration (Section~\ref{sec:method}).
+  \item An evaluation on a 480-node testbed showing that combining
+    predicted latency with adaptive weighting outperforms both
+    throughput-first and latency-first baselines simultaneously
+    (Sections~\ref{sec:experiments}--\ref{sec:results}).
+\end{itemize}
+
+The remainder of the paper is organized as follows. Section~\ref{sec:related}
+positions Tempo against prior cluster schedulers. Section~\ref{sec:method}
+describes the predictor and the cost function. Section~\ref{sec:experiments}
+describes our testbed and workloads. Section~\ref{sec:results} presents
+results. Section~\ref{sec:discussion} discusses limitations, and
+Section~\ref{sec:conclusion} concludes.

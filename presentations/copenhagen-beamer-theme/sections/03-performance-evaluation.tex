@@ -1,0 +1,80 @@
+\section{Performance \& Evaluation}
+
+% Slide 8: Experimental Setup & Workloads
+\begin{frame}{Experimental Setup \& Workloads}
+  We evaluated the Synapse ML protocol across three distinct cluster configurations:
+  \vspace{0.3cm}
+  \begin{table}
+    \centering
+    \footnotesize
+    \setlength{\tabcolsep}{5pt}
+    \begin{tabular}{lccc}
+      \toprule
+      Configuration & Active Nodes & Target Model & Dataset Size \\
+      \midrule
+      Synapse-Lite & 50 & MobileNetV3 & 1.2M Samples \\
+      Synapse-Standard & 250 & ResNet-50 & 5.0M Samples \\
+      Synapse-Enterprise & 1000 & GPT-Small (Fictional) & 20.0M Tokens \\
+      \bottomrule
+    \end{tabular}
+    \caption{Experimental environment configurations and target architectures.}
+  \end{table}
+  \vspace{0.2cm}
+  All clusters operate on simulated network latency bounds ranging from 10ms to 500ms to mimic realistic edge conditions.
+\end{frame}
+
+% Slide 9: Performance Results
+\begin{frame}{Performance Metrics \& Convergence}
+  \begin{block}{Throughput Optimization}
+    Synapse ML yields a $3.4\times$ improvement in gradient processing speeds compared to vanilla asynchronous federated learning schemes on edge networks.
+  \end{block}
+  \begin{exampleblock}{Convergence Validation}
+    Models trained under Synapse ML converged to baseline accuracies within 4.5\% of the centralized equivalents (e.g., ImageNet classification).
+  \end{exampleblock}
+  \begin{alertblock}{Bandwidth Limitation Notice}
+    When node uplink bandwidth falls below 5 Mbps, the compression ratio dynamically scales down to maintain synchronization rates.
+  \end{alertblock}
+\end{frame}
+
+% Slide 10: Scalability Analysis
+\begin{frame}{Scalability Analysis}
+  Comparing system scaling throughput against baseline models:
+  \begin{center}
+    \begin{tikzpicture}
+      \begin{axis}[
+        width=0.85\textwidth,
+        height=5.0cm,
+        xlabel={Number of Edge Nodes},
+        ylabel={Throughput (kSPS)},
+        xmin=0, xmax=1000,
+        ymin=0, ymax=1000,
+        xtick={0,200,400,600,800,1000},
+        ytick={0,200,400,600,800,1000},
+        legend pos=north west,
+        ymajorgrids=true,
+        grid style=dashed,
+        font=\small
+      ]
+      \addplot[
+        color=SynapseNavy,
+        mark=square,
+        line width=1.5pt,
+      ]
+      coordinates {
+        (50,60)(250,280)(500,530)(750,780)(1000,940)
+      };
+      \addlegendentry{Synapse ML}
+      
+      \addplot[
+        color=SynapseCyan,
+        mark=triangle,
+        line width=1.5pt,
+      ]
+      coordinates {
+        (50,55)(250,200)(500,340)(750,420)(1000,460)
+      };
+      \addlegendentry{Baseline (Meridian v1)}
+      \end{axis}
+    \end{tikzpicture}
+  \end{center}
+\end{frame}

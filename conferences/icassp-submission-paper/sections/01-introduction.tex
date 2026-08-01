@@ -1,0 +1,56 @@
+\section{Introduction}
+\label{sec:intro}
+
+Speech separation recovers individual talkers from a single-channel mixture.
+Time-domain systems such as Conv-TasNet~\cite{luo2019convtasnet} and dual-path
+recurrent networks~\cite{luo2020dprnn} established strong separation quality,
+while transformer models further improved long-range modeling
+\cite{subakan2021sepformer}.  Most high-accuracy systems, however, use
+bidirectional processing or attend to a complete utterance.  Their reported
+throughput can be fast, yet they cannot emit audio promptly in a live call,
+hearing device, or interactive voice interface.
+
+A streaming separator faces three coupled difficulties.  First, strictly causal
+processing removes future evidence that helps resolve short ambiguities.  Second,
+independent chunk processing causes boundary artifacts and speaker permutation.
+Third, caching every prior feature makes memory and compute grow with stream
+duration.  Causal convolution controls memory but often needs a deep stack for a
+long receptive field; windowed attention fixes compute but discards evidence
+outside its window.
+
+We address these limitations with \model, shown conceptually in
+Fig.~\ref{fig:overview}.  Each short-time Fourier transform (STFT) chunk passes
+through local spectral blocks, a cross-band mixer, and a grouped recurrent core.
+Only a fixed-size state crosses chunk boundaries.  A two-stage training objective
+combines utterance-level scale-invariant signal-to-distortion ratio (SI-SDR) with
+extra emphasis near overlap-add boundaries.  Our contributions are:
+
+\begin{itemize}
+  \setlength{\itemsep}{0pt}
+  \setlength{\topsep}{2pt}
+  \setlength{\leftmargin}{1.25em}
+  \item a causal separator whose compute and memory per chunk remain constant;
+  \item a lightweight cross-band/state-carrying block designed for stable speaker
+        assignment over long streams; and
+  \item a controlled evaluation of quality, latency, CPU cost, and state behavior.
+\end{itemize}
+
+\begin{figure}[t]
+  \centering
+  \setlength{\fboxsep}{4pt}
+  \small
+  \fbox{\parbox[c][0.32in][c]{0.18\columnwidth}{\centering Causal\\STFT}}
+  $\rightarrow$
+  \fbox{\parbox[c][0.32in][c]{0.22\columnwidth}{\centering Spectral\\encoder}}
+  $\rightarrow$
+  \fbox{\parbox[c][0.32in][c]{0.22\columnwidth}{\centering Stateful\\separator}}
+  $\rightarrow$
+  \fbox{\parbox[c][0.32in][c]{0.18\columnwidth}{\centering Masks\\+ iSTFT}}
+  \\[-1pt]
+  \hspace{0.25\columnwidth}\rule{0.43\columnwidth}{0.35pt}
+  \raisebox{-2pt}{$\looparrowleft$}\; persistent state $\mathbf{s}_{k-1}$
+  \caption{Streaming inference.  Chunk $k$ consumes the previous compact state
+  and returns separated samples plus state $\mathbf{s}_k$; no earlier feature
+  maps are cached.}
+  \label{fig:overview}
+\end{figure}

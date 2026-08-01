@@ -1,0 +1,33 @@
+\section{Correctness and Cost Bounds}
+\label{sec:correctness}
+
+We state the invariants required of any implementation.
+
+\begin{description}
+  \item[Routing completeness.] Every source batch is assigned to at least one
+  consumer in its committed epoch.
+  \item[Probe uniqueness.] For every input tuple and non-replicated routing
+  key, exactly one task group owns the probe work in a committed epoch.
+  \item[Build--probe agreement.] All matching tuples share at least one task
+  group; heavy-key tags distinguish intentional build replication from probe
+  ownership.
+  \item[Visibility.] A task may expose join output only for a committed epoch,
+  and output identifiers are unique across retries.
+\end{description}
+
+Together, routing completeness and build--probe agreement prevent lost
+matches.  Probe uniqueness and visibility prevent duplicate matches.  These
+properties reduce join correctness to the local join implementation, assuming
+deterministic predicates and a stable input snapshot.
+
+Let $B=\sum_i B_i$, $K$ be in-flight credit, $W$ sketch state, and $M$ migration
+credit.  The operator's non-hash-table buffering is bounded by
+\begin{equation}
+ \operatorname{mem}_{\mathrm{buffer}} \le B+K+W+M.
+ \label{eq:memory}
+\end{equation}
+All terms are configuration limits.  Hash tables have separate budgets and use
+conventional partitioned spill~\cite{graefe1993query}.  Migration can
+temporarily move a batch twice, but
+deduplication prevents double execution and the reserved pool guarantees that
+handoff does not wait behind regular traffic.

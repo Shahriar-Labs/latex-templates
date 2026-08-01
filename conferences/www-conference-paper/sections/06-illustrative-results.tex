@@ -1,0 +1,70 @@
+\section{Illustrative Results}
+\label{sec:results}
+
+Table~\ref{tab:results} is a worked example of a complete main-results table.
+It intentionally emphasizes a pattern the proposed protocol is designed to
+reveal: a Web agent can attain strong answer accuracy and citation completeness
+while still using evidence that was unavailable at question time.  Chronos
+trades a small amount of coverage for higher temporal validity and citation
+precision.
+
+\begin{table*}[t]
+  \caption{Illustrative test results.  Higher is better for all columns except
+  selective risk (Risk).  Values are fabricated for typesetting demonstration
+  and must not be interpreted as empirical findings.  Best values are bold.}
+  \label{tab:results}
+  \centering
+  \small
+  \begin{tabular}{@{}lrrrrrrr@{}}
+    \toprule
+    System & Ans. & Comp. & Prec. & Temp. & Coverage & Risk$\downarrow$ & $U$ \\
+    \midrule
+    Closed-book & 48.2 & 0.0  & 0.0  & 100.0 & 100.0 & 51.8 & 39.3 \\
+    BM25+Gen    & 59.7 & 46.8 & 61.4 & 84.1  & 94.7  & 37.0 & 62.3 \\
+    Dense RAG   & 64.5 & 63.1 & 69.8 & 86.7  & 93.5  & 31.0 & 69.8 \\
+    Web agent   & \textbf{68.9} & 88.4 & 74.2 & 79.6 & \textbf{96.2} & 28.4 & 76.1 \\
+    Chronos     & 68.1 & \textbf{93.5} & \textbf{86.7} & \textbf{98.9}
+                & 89.4 & \textbf{23.8} & \textbf{84.1} \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+\subsection{Ablation Reporting}
+
+Table~\ref{tab:ablation} illustrates an ablation that changes one component at a
+time.  Removing temporal filtering directly reduces temporal validity.  Removing
+duplicate pooling primarily reduces citation precision, consistent with copied
+pages being mistaken for independent corroboration.  Removing the abstention
+head increases coverage but worsens selective risk.  In a real paper, these
+interpretations should be supported by confidence intervals and error analysis,
+not only point estimates.
+
+\begin{table}[t]
+  \caption{Illustrative Chronos ablation.  $\Delta U$ is relative to the full
+  worked-example system; values are not empirical claims.}
+  \label{tab:ablation}
+  \centering
+  \small
+  \begin{tabular}{@{}lrrr@{}}
+    \toprule
+    Variant & Prec. & Temp. & $\Delta U$ \\
+    \midrule
+    Full Chronos             & 86.7 & 98.9 & 0.0 \\
+    -- temporal filter       & 82.4 & 80.7 & $-5.2$ \\
+    -- evidence graph        & 78.5 & 96.8 & $-3.7$ \\
+    -- duplicate pooling     & 80.1 & 98.6 & $-2.2$ \\
+    -- abstention objective  & 84.9 & 98.7 & $-1.4$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Error Analysis}
+
+A useful error taxonomy separates failures of retrieval, temporal metadata,
+entailment, provenance, generation, and annotation.  Three difficult cases
+deserve particular scrutiny.  First, an undated page may be crawled after
+$t_q$ even though its content existed earlier.  Second, a page may be revised in
+place without a public version history.  Third, primary sources can disagree
+during fast-moving events.  Chronos treats these as uncertainty signals rather
+than forcing false precision.  Real evaluations should publish category counts
+and representative, privacy-reviewed examples.

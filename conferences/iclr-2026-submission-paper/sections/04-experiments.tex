@@ -1,0 +1,24 @@
+\section{Experiments}
+We evaluate the performance of Meridian-Net on two benchmarks: a synthetic graph classification task and an image classification task under heterogeneous client distributions.
+
+\subsection{Experimental Setup}
+Our experiments are designed to test the framework in a realistic decentralized scenario. We simulate $N=10$ client nodes connected via a peer-to-peer network.
+
+\paragraph{Datasets.}
+We evaluate on the following benchmarks:
+\begin{enumerate}[label=\lbrack\arabic*\rbrack]
+  \item \textbf{Vertex Graph Classification (VGC-10K):} A synthetic dataset containing 10,000 graphs of varying topologies (scale-free, random, and small-world). Graphs are distributed heterogeneously among the 10 clients based on their structural characteristics.
+  \item \textbf{Vertex Image Net (VIN-100):} A computer vision benchmark with 100 classes. The images are distributed across clients such that each client possesses data from only 10 classes, representing high label asymmetry and data heterogeneity.
+\end{enumerate}
+
+\paragraph{Baselines.}
+We compare Meridian-Net against:
+\begin{enumerate}[label=\lbrack\arabic*\rbrack]
+  \item \textbf{Centralized Baseline:} A model trained on the union of all datasets on a single compute node.
+  \item \textbf{Federated Averaging (FedAvg):} The standard centralized federated learning algorithm.
+  \item \textbf{Decentralized SGD (DSGD):} A standard peer-to-peer learning approach with a fixed ring topology.
+  \item \textbf{Apex-Net \cite{nimbus2025large}:} A state-of-the-art DSSL framework that uses fixed graph heuristics.
+\end{enumerate}
+
+\paragraph{Implementation Details.}
+For VGC-10K, the encoder $f_{\theta_i}$ is a 3-layer Graph Convolutional Network (GCN) with a hidden dimension of 128. For VIN-100, we use a ResNet-18 architecture. The learning rate is initialized at $10^{-3}$ and decayed using a cosine schedule. We set $\lambda_1 = 0.1$ and $\lambda_2 = 0.5$.

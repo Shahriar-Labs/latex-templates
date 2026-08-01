@@ -1,0 +1,56 @@
+\section{Results}
+Table~\ref{tab:results} reports IPC and L2 MPKI for the stride-prefetcher baseline and for SpecGate across all six kernels. SpecGate improves IPC on every irregular kernel, with the largest gain on pointer-chase (45.2\%), where the baseline stride prefetcher issues almost no useful requests and SpecGate's trigger table captures the list's stable, if non-constant, successor pattern. On the stream-copy control, where the stride prefetcher is already near-optimal, SpecGate adds a modest 2.8\% by catching a small number of triggers the stride prefetcher's fixed degree misses.
+
+\begin{table*}[t]
+  \centering
+  \caption{IPC and L2 MPKI for the stride-prefetcher baseline versus SpecGate across the IrregBench kernels.}
+  \label{tab:results}
+  \begin{tabular}{lcccccc}
+    \toprule
+    \textbf{Workload} & \textbf{Base IPC} & \textbf{SpecGate IPC} & \textbf{Speedup (\%)} & \textbf{Base MPKI} & \textbf{SpecGate MPKI} & \textbf{$\Delta$MPKI} \\
+    \midrule
+    graph-bfs      & 0.71 & 0.93 & 30.9 & 18.4 & 13.6 & $-4.8$ \\
+    sparse-mm      & 0.88 & 1.04 & 18.2 & 12.1 & 9.0  & $-3.1$ \\
+    hash-join      & 0.65 & 0.86 & 32.3 & 21.7 & 16.1 & $-5.6$ \\
+    pointer-chase  & 0.42 & 0.61 & 45.2 & 27.9 & 21.0 & $-6.9$ \\
+    tree-walk      & 0.77 & 0.95 & 23.4 & 15.2 & 11.3 & $-3.9$ \\
+    stream-copy    & 1.42 & 1.46 & 2.8  & 3.6  & 3.2  & $-0.4$ \\
+    \midrule
+    \textbf{Geo. mean} & --- & --- & \textbf{24.5} & --- & --- & \textbf{$-4.1$} \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+Figure~\ref{fig:speedup} visualizes the per-workload speedup from Table~\ref{tab:results}. The correlation between baseline IPC and achieved speedup is negative: kernels that suffer the most under the stride prefetcher (pointer-chase, hash-join) benefit the most from confidence gating, because they are precisely where the baseline was issuing few, if any, correct prefetches to begin with.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      ybar,
+      bar width=11pt,
+      width=0.98\columnwidth,
+      height=4.6cm,
+      ylabel={Speedup (\%)},
+      symbolic x coords={bfs,mm,join,chase,walk,copy},
+      xtick=data,
+      x tick label style={font=\scriptsize},
+      nodes near coords,
+      every node near coord/.append style={font=\tiny},
+      ymin=0, ymax=52,
+      axis x line*=bottom,
+      axis y line*=left,
+      enlarge x limits=0.18,
+      ymajorgrids=true,
+      grid style={dashed, archgray!30},
+      tick label style={font=\scriptsize},
+      label style={font=\small}
+    ]
+      \addplot[fill=archrust!75] coordinates {(bfs,30.9) (mm,18.2) (join,32.3) (chase,45.2) (walk,23.4) (copy,2.8)};
+    \end{axis}
+  \end{tikzpicture}
+  \caption{IPC speedup of SpecGate over the stride-prefetcher baseline for each IrregBench kernel.}
+  \label{fig:speedup}
+\end{figure}
+
+Beyond IPC, we track prefetch accuracy directly: across the four most irregular kernels, the fraction of issued prefetches that are later touched by a demand access rises from 41.3\% under the ungated trigger table to 68.7\% under SpecGate, confirming that the confidence gate is suppressing the entries responsible for most of the wasted traffic rather than uniformly reducing issuance.

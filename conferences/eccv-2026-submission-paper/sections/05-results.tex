@@ -1,0 +1,44 @@
+\section{Results}
+\label{sec:results}
+
+\begin{table*}[t]
+\centering
+\caption{Comparison on MeridianVOS and ApexTrack-400. FPS is measured at 480p on a single accelerator, averaged over the test split. Best result per column in \textbf{bold}.}
+\label{tab:results}
+\small
+\begin{tabular}{lccccccc}
+\toprule
+& \multicolumn{3}{c}{MeridianVOS} & \multicolumn{3}{c}{ApexTrack-400} & \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+Method & $\mathcal{J}$ (\%) & $\mathcal{F}$ (\%) & $\mathcal{J}\&\mathcal{F}$ & $\mathcal{J}$ (\%) & $\mathcal{F}$ (\%) & $\mathcal{J}\&\mathcal{F}$ & FPS \\
+\midrule
+STCN-lite~\cite{castillo2022stcn}   & 82.1 & 84.6 & 83.4 & 74.8 & 76.2 & 75.5 & 22.4 \\
+XMem-S~\cite{adebayo2024xmem}       & 83.4 & 85.9 & 84.7 & 76.1 & 77.5 & 76.8 & 27.1 \\
+AOT-T~\cite{nathan2024aot}          & 84.0 & 86.3 & 85.2 & 76.9 & 78.0 & 77.5 & 25.8 \\
+\midrule
+\textbf{\methodname{} (ours)} & \textbf{84.3} & \textbf{86.7} & \textbf{85.5} & \textbf{77.6} & \textbf{78.9} & \textbf{78.3} & \textbf{70.6} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Table~\ref{tab:results} summarizes the main comparison. \methodname{} matches or slightly exceeds all three dense-attention baselines on both benchmarks while running at $2.6$--$3.2\times$ their frame rate. The gain is largest on ApexTrack-400, where frequent occlusion produces long stretches in which most stored memory slots are stale; a sparse, content-dependent neighborhood avoids wasting attention capacity on those slots, whereas dense attention must down-weight them at every query.
+
+\begin{table}[t]
+\centering
+\caption{Ablation on MeridianVOS. Removing cross-modal fusion or the coverage loss $\mathcal{L}_{\mathrm{cov}}$ degrades $\mathcal{J}\&\mathcal{F}$; a fixed sparsity budget without learned relevance is worse still.}
+\label{tab:ablation}
+\small
+\begin{tabular}{lcc}
+\toprule
+Variant & $\mathcal{J}\&\mathcal{F}$ & FPS \\
+\midrule
+Full \methodname{} & \textbf{85.5} & 70.6 \\
+w/o $\mathcal{L}_{\mathrm{cov}}$ & 84.1 & 71.0 \\
+w/o cross-modal fusion (appearance only) & 82.9 & 73.4 \\
+Fixed stride pattern, $k=32$ & 80.6 & 69.8 \\
+Dense attention (no sparsity) & 85.6 & 24.1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:ablation} isolates each component. The coverage loss contributes $1.4$ points of $\mathcal{J}\&\mathcal{F}$ at negligible frame-rate cost, confirming that it prevents the predictor from collapsing onto a narrow appearance-only neighborhood. Replacing cross-modal fusion with an appearance-only memory costs a further $1.2$ points, and a fixed geometric sparsity pattern --- the closest prior approach~\cite{park2023sparse} adapted to our memory layout --- loses $4.9$ points relative to the full model, which suggests that content-dependent selection, not sparsity alone, is responsible for most of the accuracy retained. Notably, removing sparsity altogether (dense attention over the full joint memory) recovers only $0.1$ additional points of $\mathcal{J}\&\mathcal{F}$ at roughly one third the frame rate, indicating that the sparse neighborhood already captures nearly all attention mass that matters for the final mask.

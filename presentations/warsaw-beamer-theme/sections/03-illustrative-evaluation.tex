@@ -1,0 +1,134 @@
+\section{Illustrative evaluation}
+
+% -----------------------------------------------------------------------------
+% 7. Evaluation protocol
+% -----------------------------------------------------------------------------
+\begin{frame}{The evaluation stresses the failure modes that matter operationally}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.53\textwidth}
+      \begin{enumerate}
+        \item Replay 500 synthetic storm sequences across 24 virtual gateways.
+        \item Vary sensor loss, packet delay, and cloud availability independently.
+        \item Compare cloud-only, threshold-only, and edge-fusion policies.
+        \item Record decision latency, alert stability, and calibration error.
+      \end{enumerate}
+    \end{column}
+    \begin{column}{0.43\textwidth}
+      \begin{block}{Stress envelope}
+        \begin{tabular}{@{}>{\bfseries}l r@{}}
+          \toprule
+          Sensor dropout & 0--40\% \\
+          Link delay & 20--800 ms \\
+          Cloud outage & 0--30 min \\
+          Gateway budget & 2 W \\
+          \bottomrule
+        \end{tabular}
+      \end{block}
+      \vspace{0.2cm}
+      \scriptsize\color{AstraInk!75}
+      All values in this section are illustrative template data, not field-study claims.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 8. Latency plot
+% -----------------------------------------------------------------------------
+\begin{frame}{Local inference keeps latency bounded as the network degrades}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.70\textwidth}
+      \centering
+      \begin{tikzpicture}
+        \begin{axis}[
+          width=0.94\linewidth,
+          height=0.58\textheight,
+          xmin=0,xmax=800,
+          ymin=0,ymax=1050,
+          xlabel={Injected network delay (ms)},
+          ylabel={Median decision latency (ms)},
+          xtick={0,200,400,600,800},
+          ytick={0,250,500,750,1000},
+          grid=major,
+          grid style={draw=AstraInk!12},
+          axis line style={draw=AstraInk!60},
+          tick label style={font=\scriptsize},
+          label style={font=\small},
+          legend style={
+            at={(0.03,0.97)},anchor=north west,
+            draw=none,fill=white,fill opacity=0.88,
+            text opacity=1,font=\scriptsize
+          }
+        ]
+          \addplot[AstraRed,very thick,mark=square*] coordinates {
+            (0,120) (200,320) (400,520) (600,720) (800,920)
+          };
+          \addlegendentry{Cloud-only}
+          \addplot[AstraAmber,very thick,mark=triangle*] coordinates {
+            (0,86) (200,91) (400,94) (600,101) (800,109)
+          };
+          \addlegendentry{Threshold-only}
+          \addplot[AstraTeal,very thick,mark=*] coordinates {
+            (0,98) (200,103) (400,108) (600,116) (800,124)
+          };
+          \addlegendentry{Edge fusion}
+        \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.26\textwidth}
+      \begin{exampleblock}{Key result}
+        Edge fusion stays below \textbf{125 ms} across the full delay sweep.
+      \end{exampleblock}
+      \vspace{0.18cm}
+      \small
+      Threshold rules are slightly faster, but the next test asks whether their alerts remain dependable.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 9. Comparison table
+% -----------------------------------------------------------------------------
+\begin{frame}{Speed matters only when alerts remain stable and calibrated}
+  \centering
+  \small
+  \renewcommand{\arraystretch}{1.28}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{3.25cm}ccc}
+    \toprule
+    \textbf{Policy} &
+    \textbf{Latency} &
+    \textbf{Alert flips}$\,\downarrow$ &
+    \textbf{Calibration error}$\,\downarrow$ \\
+    \midrule
+    Cloud-only & 520 ms & 4.8\% & 0.061 \\
+    Threshold-only & \textbf{94 ms} & 12.6\% & 0.142 \\
+    \rowcolor{AstraTeal!12}
+    \textbf{Edge fusion} & 108 ms & \textbf{3.1\%} & \textbf{0.038} \\
+    \bottomrule
+  \end{tabular}
+
+  \vspace{0.45cm}
+  \begin{block}{Interpretation}
+    The edge policy gives up 14 ms relative to a simple threshold, then recovers substantially better stability and confidence calibration.
+  \end{block}
+
+  \vfill
+  \scriptsize\color{AstraInk!75}
+  Illustrative medians at 400 ms injected delay; lower values are better.
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 10. Trade-offs
+% -----------------------------------------------------------------------------
+\begin{frame}{Resilience improves, but deployment still requires guardrails}
+  \begin{block}{What the architecture handles well}
+    It maintains a short decision path, exposes uncertainty, and records why each alert crossed the policy threshold.
+  \end{block}
+
+  \begin{alertblock}{What can still fail}
+    Correlated sensor faults can create confident but wrong evidence; local models can also drift if reconnection is rare.
+  \end{alertblock}
+
+  \begin{exampleblock}{Operational guardrail}
+    Combine plausibility checks, model-expiry limits, and a human-review path for ambiguous or unusually severe events.
+  \end{exampleblock}
+\end{frame}

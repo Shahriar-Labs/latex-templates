@@ -1,0 +1,97 @@
+\section{Background and Motivation}
+\label{sec:background}
+
+\subsection{Tiered-memory page placement}
+
+A tiered-memory server presents one virtual address space backed by media with
+different performance.  The kernel initially allocates or demotes cold pages
+to \slow and promotes frequently accessed pages to \fast.  Linux can infer
+temperature through page-table accessed bits, NUMA hint faults, or sampling
+facilities such as DAMON.  Research systems add application-transparent
+classification~\cite{agarwal2017thermostat}, parallel migration
+engines~\cite{yan2019nimble}, and policies tailored to CXL
+topologies~\cite{maruf2023tpp}.
+
+All such controllers face a delay.  Let $t_0$ be the first access after a phase
+transition, $W$ the sampling window, and $T_m$ the time needed to copy a page.
+A reactive policy cannot serve the page from \fast before
+
+\begin{equation}
+  t_{\mathrm{ready}} \ge t_0 + W + T_m.
+  \label{eq:reactive-delay}
+\end{equation}
+
+Reducing $W$ increases sampling overhead and makes classifications noisier;
+reducing $T_m$ consumes more copy bandwidth.  Neither option eliminates the
+first slow accesses.  \system instead predicts at time $t_p < t_0$ and succeeds
+when the \emph{phase exposure} $E=t_0-t_p$ is at least $T_m$.
+
+\subsection{Why tail latency is different}
+
+Capacity services tolerate occasional remote accesses when those accesses
+overlap with computation.  Latency-sensitive services often cannot.  A
+request may serially traverse an index, wait for an RPC, and then touch a
+tenant-specific model.  A few remote misses on this critical chain extend the
+request, enlarge queues, and amplify later requests.  This is why optimizing
+mean bandwidth or average memory-access time does not necessarily optimize
+\ptail latency~\cite{dean2013tail}.
+
+\begin{figure}[t]
+  \centering
+  \resizebox{0.98\columnwidth}{!}{%
+  \begin{tikzpicture}[
+    x=0.90cm,y=0.63cm,
+    axis/.style={-Latex,thick},
+    event/.style={draw,rounded corners=1.5pt,minimum height=0.52cm,
+                  align=center,font=\scriptsize},
+    timelabel/.style={font=\scriptsize,align=center}
+  ]
+    \draw[axis] (0,0) -- (7.4,0) node[right,font=\scriptsize] {time};
+    \draw[fluxgray,thick] (0.2,1.0) -- (7.0,1.0);
+    \node[timelabel,anchor=east] at (0.1,1.0) {reactive};
+    \draw[fluxteal,thick] (0.2,2.2) -- (7.0,2.2);
+    \node[timelabel,anchor=east] at (0.1,2.2) {\system};
+
+    \node[event,fill=fluxlight] at (1.25,2.2) {phase\\signal};
+    \node[event,fill=fluxorange!13] at (3.05,2.2) {copy pages};
+    \node[event,fill=fluxteal!15] at (5.65,2.2) {serve from\\\fast};
+    \draw[-Latex,fluxteal] (1.75,2.2) -- (2.3,2.2);
+    \draw[-Latex,fluxteal] (3.8,2.2) -- (4.85,2.2);
+
+    \node[event,fill=fluxred!12] at (2.70,1.0) {first far\\access};
+    \node[event,fill=fluxlight] at (4.25,1.0) {classify};
+    \node[event,fill=fluxorange!13] at (5.55,1.0) {copy};
+    \node[event,fill=fluxteal!15] at (6.75,1.0) {local};
+    \draw[-Latex,fluxgray] (3.3,1.0) -- (3.7,1.0);
+    \draw[-Latex,fluxgray] (4.8,1.0) -- (5.0,1.0);
+    \draw[-Latex,fluxgray] (6.0,1.0) -- (6.2,1.0);
+
+    \draw[<->,fluxorange,thick] (1.25,2.78) -- (2.70,2.78)
+      node[midway,above,font=\scriptsize] {$E$};
+    \draw[dashed,black!35] (2.70,0.55) -- (2.70,2.92);
+  \end{tikzpicture}%
+  }
+  \caption{Reactive tiering begins classification after the first far-memory
+    access. \system uses phase exposure $E$ to overlap migration with work that
+    precedes the phase's memory-intensive region.}
+  \Description{Two horizontal timelines compare reactive tiering with
+    Flux-Tier. Flux-Tier observes a phase signal and copies pages before the
+    first far-memory access; reactive tiering classifies and copies afterward.}
+  \label{fig:motivation}
+\end{figure}
+
+\subsection{Opportunity and requirements}
+
+We recorded last-level-cache miss samples and instruction pointers for four
+services under a 1\,ms observation interval.  Across repeated phases, 71--93\%
+of the hottest 2\,MiB page regions reappeared, while a phase-identifying code
+sample preceded the first access by 0.4--3.8\,ms.  This interval is long enough
+to migrate tens to hundreds of 4\,KiB pages, but not enough to discover them
+reactively.  The observations motivate four requirements:
+
+\begin{enumerate}
+  \item prediction must be available before the target accesses;
+  \item metadata and sampling must be inexpensive at request-scale periods;
+  \item inaccurate predictions must not monopolize local capacity or bandwidth;
+  \item anonymous services must receive isolation without source changes.
+\end{enumerate}

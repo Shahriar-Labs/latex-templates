@@ -1,0 +1,23 @@
+\section{Implementation}
+\label{sec:implementation}
+
+Our prototype design targets a vectorized execution engine.  Readers produce
+64--256\,KiB batches, and radix partitioning operates on selection vectors to
+avoid copying payload columns.  The router and consumer communicate through
+single-producer queues per connection; asynchronous network completion returns
+credit.  Build tables use open addressing for dense ordinary partitions and a
+separate chained representation for replicated heavy keys.  Code generation
+specializes hash, equality, and residual predicates, following the broad
+principle of compiling data-centric pipelines~\cite{neumann2011efficient}.
+
+The policy coordinator is off the tuple path.  It receives fixed-size sketch
+deltas, queue-delay samples, and membership notifications.  To avoid a single
+global lock, partitions are sharded across coordinator event loops.  A policy
+record is tens of bytes; batching records amortizes metadata-service writes.
+
+Elastic scale-out changes the consistent-hash worker map only at an epoch
+boundary.  Existing partitions need not migrate unless their upper cost bound
+improves by more than hysteresis $\delta$.  Scale-in first revokes regular
+credits from departing workers and then uses the same migration protocol as a
+mode change.  Query cancellation bypasses migration and releases all query-local
+state after downstream acknowledgment.

@@ -1,0 +1,41 @@
+\section{Introduction}
+
+Web search engines routinely observe queries for which they have little or no
+historical click evidence. Head queries benefit from dense click-through data that
+lets ranking and reformulation models learn robust relevance signals, but the long
+tail --- queries issued a handful of times a month, or once ever --- offers almost
+none of that signal. Reformulation systems trained primarily on head-query behavior
+tend to propose surface-level rewrites (synonym substitution, spelling correction)
+that fail to capture the intent shifts users actually make in sparse-click sessions,
+such as narrowing a broad exploratory query into a specific navigational one.
+
+We argue that the session, rather than the individual query, is the right unit of
+supervision for long-tail reformulation. Even when a single query has never been seen
+before, the \emph{session} it appears in --- the sequence of prior queries, clicked
+results, and dwell signals --- is often locally dense enough to support learning. Our
+approach, CSG, builds a session graph that connects queries to the documents they
+click and to one another via reformulation edges, then learns representations with a
+contrastive objective that treats within-session reformulation pairs as positives and
+cross-session queries with superficial token overlap as hard negatives.
+
+This paper makes the following contributions:
+
+\begin{itemize}[leftmargin=*,itemsep=1pt,topsep=2pt]
+  \item A session graph construction procedure that unifies query, document, and
+    reformulation nodes into a single heterogeneous structure amenable to message
+    passing (\S\ref{sec:method}).
+  \item A contrastive training objective, Eq.~\eqref{eq:contrastive}, that is robust
+    to the extreme click sparsity of long-tail sessions, together with a ranking head
+    for scoring candidate reformulations, Eq.~\eqref{eq:score}.
+  \item An evaluation on two session benchmarks showing consistent gains over
+    click-model, learning-to-rank, and transformer-retrieval baselines, with ablations
+    isolating which components drive the improvement (\S\ref{sec:experiments},
+    \S\ref{sec:results}).
+\end{itemize}
+
+The remainder of the paper is organized as follows. \S\ref{sec:related} surveys prior
+work on session modeling, click models, and contrastive representation learning for
+information retrieval. \S\ref{sec:method} describes the CSG architecture and training
+objective. \S\ref{sec:experiments} details our experimental setup, and
+\S\ref{sec:results} reports results. \S\ref{sec:discussion} analyzes ablations and
+failure cases, and \S\ref{sec:conclusion} concludes.

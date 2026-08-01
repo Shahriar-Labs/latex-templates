@@ -1,0 +1,40 @@
+\section{Introduction}
+
+Document-level machine translation has narrowed the gap with human
+translators on high-resource pairs, yet low-resource settings remain
+stubbornly difficult: limited parallel data forces models toward
+sentence-level training objectives, and the resulting systems translate each
+sentence in near-isolation. The consequence is a familiar failure mode --
+individually fluent sentences that, read together, disagree on pronoun
+gender, drift in verb tense, or translate the same named entity two different
+ways within a paragraph.
+
+Prior work addresses this either by retraining with document-level context
+windows \citep{nakamura2021survey} or by augmenting decoding with auxiliary
+discourse features \citep{lindqvist2021probing}. Both approaches require
+either large amounts of document-aligned parallel data or architectural
+changes to the base model -- both scarce resources precisely in the
+low-resource languages where the problem is most severe.
+
+We take a retrieval-based, model-agnostic approach instead. Our method,
+\textsc{DiscoRerank}, treats discourse consistency as a reranking signal
+rather than a training objective. Given a document already partially
+translated, we retrieve prior sentence pairs from the same document that are
+lexically and semantically close to the current source sentence, encode them
+with a frozen bi-encoder, and use the resulting discourse-similarity score to
+rerank the $n$-best list produced by an off-the-shelf beam search decoder.
+Because \textsc{DiscoRerank} never touches model weights, it is applicable to
+any pretrained translation system with beam-search decoding, including
+systems too small or too data-starved to support document-level fine-tuning.
+
+\vspace{2pt}
+\noindent Our contributions are threefold:
+\begin{itemize}[leftmargin=1.1em,itemsep=1pt,topsep=2pt]
+  \item A retrieval-and-rerank formulation of document-level consistency
+    that requires no retraining of the base translation model;
+  \item A discourse agreement metric, adapted from pronoun and terminology
+    consistency literature, for automatic evaluation without human raters;
+  \item An empirical study across three low-resource pairs showing
+    consistent gains in coherence and chrF, together with ablations
+    isolating retrieval depth and encoder choice.
+\end{itemize}

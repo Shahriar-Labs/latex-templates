@@ -1,0 +1,50 @@
+\section{Architecture}
+
+% Slide 5: System Architecture
+\begin{frame}{Apex System Architecture}
+    The framework decouples global task assignment from local trajectory optimization:
+    
+    \vspace{0.3cm}
+    \centering
+    \begin{tikzpicture}[
+        node distance=2cm and 2.5cm,
+        orchestrator/.style={rectangle, draw=ApexNavy, fill=ApexNavy!10, thick, rounded corners, minimum width=3.5cm, minimum height=1cm, align=center, font=\bfseries\small},
+        agent/.style={circle, draw=ApexTeal, fill=ApexTeal!10, thick, minimum size=1.8cm, align=center, font=\bfseries\footnotesize},
+        comm/.style={draw=ApexBlue, <->, >=stealth, thick, dashed, shorten >=1pt, shorten <=1pt},
+        path/.style={draw=red!70!black, <->, >=stealth, thick, dotted}
+    ]
+        \node[orchestrator] (orch) at (0, 2) {Apex Orchestrator\\(Central Coordination)};
+        \node[agent] (ag1) at (-2.5, -0.5) {Agent A\\(Nexa Drone)};
+        \node[agent] (ag2) at (2.5, -0.5) {Agent B\\(Vertex Rover)};
+        
+        \draw[comm] (orch) -- (ag1) node[midway, left, font=\tiny, text=ApexGrey] {Control / Telemetry};
+        \draw[comm] (orch) -- (ag2) node[midway, right, font=\tiny, text=ApexGrey] {Control / Telemetry};
+        \draw[path] (ag1) -- (ag2) node[midway, below, font=\tiny, text=red!70!black] {Collision Avoidance Constraint};
+    \end{tikzpicture}
+\end{frame}
+
+% Slide 6: Distributed Pathfinding Algorithm
+\begin{frame}{Decentralized MPC and Coordination}
+    \begin{columns}[T]
+        \begin{column}{0.48\textwidth}
+            \textbf{Algorithmic Pipeline:}
+            \begin{itemize}
+                \item Local trajectory generation via MPC
+                \item Peer-to-peer conflict detection
+                \item Consensus-based priority assignment
+                \item Trajectory repair and adjustment
+            \end{itemize}
+        \end{column}
+        \begin{column}{0.48\textwidth}
+            \textbf{Local Optimization Model:}
+            \begin{equation*}
+                \min_{u} \sum_{t=0}^{H} \|x_t - x_{\text{goal}}\|^2_Q + \|u_t\|^2_R
+            \end{equation*}
+            Subject to:
+            \begin{align*}
+                x_{t+1} &= f(x_t, u_t) \\
+                \|x_t - x^j_t\| &\ge d_{\text{min}}, \quad \forall j
+            \end{align*}
+        \end{column}
+    \end{columns}
+\end{frame}

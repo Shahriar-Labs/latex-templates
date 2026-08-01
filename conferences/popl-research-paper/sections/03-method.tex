@@ -1,0 +1,69 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{Cost Monoid and Judgments}
+
+\textsc{Bidir} is parametrized by a commutative cost monoid
+$(\mathcal{C}, \oplus, \mathbf{0})$ equipped with a preorder
+$\sqsubseteq_{\mathcal{C}}$ that is monotone in $\oplus$. Instantiating
+$\mathcal{C}$ to $(\mathbb{N}, +, 0)$ with the usual order yields an
+allocation-count budget; instantiating it to $(\mathbb{N}, \max, 0)$
+yields a heap high-water-mark budget. The discipline is stated once,
+against the abstract monoid, and specialized only at the top level.
+
+The system has two judgments. The \emph{synthesis} judgment
+$\Gamma \vdash e \Rightarrow \tau \mid c$ says that, under context
+$\Gamma$, expression $e$ synthesizes type $\tau$ with cost $c$. The
+\emph{checking} judgment $\Gamma \vdash e \Leftarrow \tau \mid c$ says
+that $e$ checks against expected type $\tau$ within budget $c$. The two
+are connected by the usual bidirectional subsumption rule, extended with
+a cost-side check:
+\begin{equation}
+  \label{eq:subsumption}
+  \frac{
+    \Gamma \vdash e \Rightarrow \tau' \mid c' \qquad
+    \tau' \le \tau \qquad
+    c' \sqsubseteq_{\mathcal{C}} c
+  }{
+    \Gamma \vdash e \Leftarrow \tau \mid c
+  }
+  \;\;\textsc{(Subsume)}
+\end{equation}
+
+Function application synthesizes by combining the callee's synthesized
+cost, the argument's checked cost against the callee's declared
+parameter budget, and a constant $c_{\mathrm{app}}$ for the call itself:
+$\Gamma \vdash e_1\,e_2 \Rightarrow \tau_2 \mid c_1 \oplus c_2 \oplus
+c_{\mathrm{app}}$, where $\Gamma \vdash e_1 \Rightarrow \tau_1 \to^{c_a}
+\tau_2 \mid c_1$ and $\Gamma \vdash e_2 \Leftarrow \tau_1 \mid c_2$ with
+$c_2 \sqsubseteq_{\mathcal{C}} c_a$.
+
+\subsection{Annotation Placement}
+
+An abstraction $\lambda x.\,e$ \emph{synthesizes} a cost arrow type
+$\tau_1 \to^{c} \tau_2$ by checking $e$ against $\tau_2$ under a
+budget $c$ that is itself synthesized bottom-up from $e$'s subterms,
+\emph{provided} the abstraction is not stored in a recursive binding,
+passed across a signature boundary, or captured in a data structure. In
+each of those three boundary cases, \textsc{Bidir} instead requires the
+programmer to supply an explicit annotation $\tau_1 \to^{\hat{c}} \tau_2$,
+against which the body is checked; this is the only point at which the
+declarative system consults a user-written cost term.
+
+\subsection{Soundness and Completeness}
+
+\begin{itemize}[leftmargin=1.3em,itemsep=1pt,topsep=2pt]
+  \item \emph{Soundness.} If $\Gamma \vdash e \Leftarrow \tau \mid c$ is
+    derivable in the algorithmic system, then $\Gamma \vdash e \Leftarrow
+    \tau \mid c$ is derivable in the declarative system, by induction on
+    the algorithmic derivation and monotonicity of $\oplus$ in
+    $\sqsubseteq_{\mathcal{C}}$.
+  \item \emph{Completeness.} If $\Gamma \vdash e \Leftarrow \tau \mid c$
+    is derivable declaratively and every boundary abstraction in $e$
+    carries its required annotation, the algorithm synthesizes some
+    $c' \sqsubseteq_{\mathcal{C}} c$, by induction on typing derivations
+    with a case split on \textsc{Subsume}.
+\end{itemize}
+
+Full proofs, including the well-founded induction measure used for the
+recursive-binding case, are given in the extended version.

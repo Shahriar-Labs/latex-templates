@@ -1,0 +1,11 @@
+\section{Related Work}
+\label{sec:related}
+\textbf{Search-based and genetic repair.} Early APR systems mutate the buggy program guided by a fitness function derived from the test suite~\cite{blackwood2017genprog,okafor2023searchapr}. These approaches generate large candidate pools but provide no principled ranking beyond test-suite pass/fail, motivating downstream ranking layers such as ours.
+
+\textbf{Learning-based generation.} Neural approaches synthesize patches directly, either by sequence-to-sequence translation of the buggy statement or by span infilling over a masked hunk~\cite{marchetti2022neuralrepair,delgado2022llmcode}. RankGen is complementary to this line of work: it consumes whatever candidates such a generator produces and reorders them.
+
+\textbf{Patch correctness and overfitting.} A substantial body of work shows that test-suite-passing patches frequently overfit to the visible tests~\cite{oyelaran2020overfitting}. Classifier-based approaches learn to separate correct from overfitting patches using static and dynamic features~\cite{alvarez2019classifier}. RankGen incorporates a subset of these features as one term in its score rather than as a standalone classifier, which we find improves calibration when combined with retrieval and likelihood signals.
+
+\textbf{Retrieval and embeddings for code.} Retrieval-augmented generation has been explored for general code synthesis~\cite{nakamura2020rag} and for embedding-based patch or code search~\cite{park2019embeddings}. We build directly on this idea but apply it specifically to ranking, not generation, and combine it with a language-model prior in a single interpretable scoring function.
+
+\textbf{Fault localization and benchmarks.} Our pipeline consumes off-the-shelf spectrum-based fault localization~\cite{tanaka2021faultloc} and evaluates against community benchmarks~\cite{feldman2018quirkbugs,singh2023faultline}, plus a benchmark we curate ourselves (\S\ref{sec:setup}). Surveys of the broader APR landscape provide additional context on the taxonomy of generation strategies we build on~\cite{osei2021survey}.

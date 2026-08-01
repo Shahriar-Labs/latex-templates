@@ -1,0 +1,35 @@
+\section{Discussion and Limitations}
+\label{sec:discussion}
+
+\paragraph{What the controller can guarantee.}
+Bounded intervals provide a maximum observation age when the node has enough
+energy for one sample per $\tau_{\max}$.  They do \emph{not} guarantee event
+recall: an event shorter than $\tau_{\min}$, a failed sensor, or an inadequate
+feature can still be missed.  The budget governor also cannot create energy.
+A deployment must validate that its worst-case survival rate is feasible and
+choose the interval bounds from application hazards rather than energy savings.
+
+\paragraph{Multivariate and semantic signals.}
+Our implementation schedules from one scalar feature.  Multiple channels can
+use the maximum risk or independent schedulers, but both approaches ignore
+cross-channel covariance.  A small learned representation could expose a more
+useful scalar, echoing embedded inference systems such as
+MCUNet~\cite{lin2020mcunet}; doing so would add training, calibration, and model
+drift concerns.  We leave joint uncertainty with bounded embedded cost to
+future work.
+
+\paragraph{Adversarial conditions.}
+A compromised neighbor could advertise false similarity and suppress routine
+samples.  Event and age guards limit but do not eliminate this attack.  Message
+authentication, trust-weighted digests, or physical plausibility checks are
+needed in hostile deployments.  Energy-denial attacks are likewise outside our
+model.  \system's interpretable state makes these cases observable, not solved.
+
+\paragraph{From replay to deployment.}
+Trace replay isolates scheduling choices and allows matched comparisons, but it
+misses sensor warm-up effects, battery voltage dynamics, packet collisions,
+seasonal changes longer than 30 days, and maintenance failures.  The energy
+table is a model, not direct power-analyzer evidence.  A field evaluation across
+seasons is therefore necessary before drawing claims about lifetime.  Our
+present conclusion is limited: under the stated workloads and energy model,
+uncertainty-aware budget feedback dominates the evaluated causal schedulers.

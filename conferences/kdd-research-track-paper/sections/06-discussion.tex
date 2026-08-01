@@ -1,0 +1,22 @@
+\section{Discussion}
+\textbf{Ablations.} Removing type-aware projections (sharing $W$ across all
+types) drops \textsc{NexaCommerce} AUC-ROC from 90.1 to 85.9, roughly half
+the total gain over \textsc{NodeFlow}. Removing time-decay sampling in favor
+of uniform sampling drops it to 87.3, confirming both components contribute
+independently rather than one subsuming the other.
+
+\textbf{Limitations.} Performance gains are smallest on node types with
+fewer than 50 observed interactions (e.g.\ newly onboarded sellers), where
+the type-specific projection has little data to specialize on; a
+shrinkage prior toward the shared representation may help and is left to
+future work. \sysname{} also assumes edge timestamps are reasonably
+accurate — datasets with coarse, batched timestamps (e.g.\ daily rollups)
+see the time-decay sampler degrade toward uniform sampling, eroding its
+advantage over \textsc{TempoGAT}.
+
+\textbf{Threats to validity.} All three benchmark graphs were constructed
+for this study rather than drawn from an external, independently
+maintained suite, so absolute numbers should not be compared across papers
+without re-running baselines under identical splits, in the spirit of the
+reproducibility concerns raised by Osei and
+Lindgren~\cite{osei2022benchmark}.

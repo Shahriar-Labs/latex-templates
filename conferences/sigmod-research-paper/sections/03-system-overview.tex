@@ -1,0 +1,62 @@
+\section{System Overview}
+\label{sec:overview}
+
+Figure~\ref{fig:architecture} shows the data path.  Storage readers convert
+pages into vectorized morsels and attach a source offset.  Local samplers update
+cardinality, distinct-count, and heavy-hitter sketches.  A lightweight
+coordinator merges only sketches and resource signals; it does not see tuples.
+The resulting policy is installed at exchange routers using an epoch number.
+Downstream build/probe tasks pull batches using credits, creating backpressure
+at the router rather than in unbounded network queues.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+      font=\scriptsize,
+      node distance=3.5mm and 4.5mm,
+      box/.style={draw=fluxgray,rounded corners=1.5pt,fill=white,
+        minimum height=6.5mm,align=center,inner xsep=4pt},
+      source/.style={box,fill=fluxlight},
+      decision/.style={box,draw=fluxblue,very thick,fill=fluxblue!7},
+      data/.style={-{Latex[length=2mm]},semithick,draw=fluxgray},
+      control/.style={-{Latex[length=2mm]},densely dashed,draw=fluxorange}
+    ]
+    \node[source] (r) {$R$ readers};
+    \node[source,below=of r] (s) {$S$ readers};
+    \node[box,right=of r] (sr) {sample +\\radix buffer};
+    \node[box,right=of s] (ss) {sample +\\radix buffer};
+    \node[decision,right=8mm of $(sr)!0.5!(ss)$] (router)
+      {epoch router\\local / broadcast / shuffle};
+    \node[box,right=of router] (exec) {build + probe\\task groups};
+    \node[box,above=8mm of router,fill=fluxorange!10,draw=fluxorange]
+      (policy) {policy coordinator\\sketches + credits};
+
+    \draw[data] (r) -- (sr);
+    \draw[data] (s) -- (ss);
+    \draw[data] (sr) -- (router);
+    \draw[data] (ss) -- (router);
+    \draw[data] (router) -- (exec);
+    \draw[control] (sr.north) |- (policy.west);
+    \draw[control] (ss.south) |- ++(0,-2.5mm) -|
+      ([xshift=-4mm]policy.south) -- (policy.south);
+    \draw[control] (policy) -- (router);
+    \draw[control] (exec.north) |- (policy.east);
+  \end{tikzpicture}
+  \caption{\system{} separates the tuple data path (solid) from compact
+  control messages (dashed).  Policy is scoped by partition and epoch.}
+  \Description{Two storage-reader pipelines feed samplers and radix buffers.
+  Both feed an epoch router, then build and probe task groups.  A policy
+  coordinator exchanges sketches and credits with the pipeline.}
+  \label{fig:architecture}
+\end{figure}
+
+The adaptation unit is a \emph{logical partition} $i$, normally a storage
+partition or a coarse radix range.  Its state is
+\[
+ q_i=\langle e_i,m_i,n^R_i,n^S_i,H_i,b_i,d_i\rangle,
+\]
+where $e_i$ is an epoch, $m_i$ is the current mode, $n^R_i$ and $n^S_i$ are
+observed bytes, $H_i$ is a heavy-hitter summary, $b_i$ is buffered data, and
+$d_i$ is a monotonically increasing decision sequence.  State transitions are
+logged in a small query-local metadata service.  Bulk tuples remain in worker
+memory or spill storage.

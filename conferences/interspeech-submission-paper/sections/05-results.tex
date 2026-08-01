@@ -1,0 +1,66 @@
+\section{Results}
+Table~\ref{tab:main-results} summarizes WER and latency across the three evaluation conditions. CBCI
+outperforms both the causal baseline and the uniform look-ahead system at matched latency in every
+condition, and recovers the majority of the gap to the offline upper bound.
+
+\begin{table}[t]
+\centering
+\caption{Word error rate (\%) and algorithmic latency across evaluation conditions on \textsc{Meridian-Conv}. Lower WER is better.}
+\label{tab:main-results}
+\footnotesize
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{System} & \textbf{Clean} & \textbf{Reverb} & \textbf{Babble 5dB} \\
+\midrule
+Causal baseline        & 8.9  & 11.4 & 15.2 \\
+Uniform look-ahead      & 8.1  & 10.6 & 14.0 \\
+\textbf{CBCI (ours)}    & \textbf{7.4} & \textbf{9.6}  & \textbf{12.7} \\
+\midrule
+Offline (upper bound)  & 6.2  & 8.0  & 10.5 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:latency-tradeoff} plots WER against algorithmic latency as the look-ahead buffer $B$ is
+varied at inference time for a single CBCI checkpoint, compared against uniform look-ahead models that
+each require separate training runs. The buffer-annealed CBCI checkpoint traces a strictly better
+frontier, particularly in the 100--250\,ms latency band relevant to live captioning.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.95\linewidth,
+  height=4.6cm,
+  xlabel={Algorithmic latency (ms)},
+  ylabel={WER (\%)},
+  xlabel style={font=\footnotesize},
+  ylabel style={font=\footnotesize},
+  tick label style={font=\footnotesize},
+  legend style={font=\footnotesize,at={(0.97,0.95)},anchor=north east,draw=isgray!40},
+  grid=major,
+  grid style={isgray!15},
+  axis lines=left,
+  ymin=6, ymax=12,
+]
+\addplot[color=isblue,mark=*,thick] coordinates {
+  (0,8.9) (60,8.3) (120,7.8) (160,7.4) (240,7.0) (320,6.8)
+};
+\addlegendentry{CBCI (single ckpt.)}
+\addplot[color=isamber,mark=square*,thick,dashed] coordinates {
+  (0,8.9) (60,8.6) (120,8.3) (160,8.1) (240,7.7) (320,7.4)
+};
+\addlegendentry{Uniform look-ahead}
+\end{axis}
+\end{tikzpicture}
+\caption{Latency-accuracy trade-off on the clean condition. Each uniform look-ahead point requires a
+separately trained model; CBCI sweeps $B$ at inference time from one checkpoint.}
+\label{fig:latency-tradeoff}
+\end{figure}
+
+\subsection{Ablations}
+Removing buffer annealing (training with fixed $B{=}160$\,ms only) degrades WER by 0.4 absolute when
+evaluated at $B{=}80$\,ms, confirming that annealing is responsible for graceful degradation at unseen
+buffer sizes. Restricting $\mathcal{S}$ to a single layer recovers only 38\% of the full CBCI gain,
+while extending $\mathcal{S}$ to all 18 layers matches the 6-layer configuration on WER but doubles peak
+memory during training, indicating diminishing returns beyond the greedily selected set.

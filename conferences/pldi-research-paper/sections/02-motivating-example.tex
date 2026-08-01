@@ -1,0 +1,75 @@
+\section{Motivating Example}
+\label{sec:motivation}
+
+\Cref{lst:example} sketches a stream pipeline that reads bytes through an
+abstract effect. The library owns \lstinline|checksum| but not the client
+handler. In the common client, \lstinline|Read| copies a byte from a buffer and
+resumes exactly once. A generic implementation nevertheless walks to
+\lstinline|io|, packages the suffix beginning at line~3 as a heap continuation,
+and invokes it indirectly for every byte.
+
+\begin{lstlisting}[float,caption={A separately compiled handler on a hot path.},label={lst:example}]
+fun checksum(n) =
+  let acc = 0 in
+  for i = 0 .. n-1 do
+    acc = mix(acc, perform Read(i))
+  return acc
+
+handle checksum(length(buf)) with io {
+  Read(i, k) -> resume k buf[i]
+  return x   -> x
+}
+\end{lstlisting}
+
+After profiling, \system observes a stable descriptor
+$s=\langle\textit{io},\textit{Read},1,v\rangle$: handler identity, clause
+identity, single resumption, and version $v$. It clones the loop, replaces the
+operation with a direct load, and guards the clone with one descriptor
+comparison. The generic loop remains available. If a debugger installs a
+logging clause, or the handler changes to a two-shot exploration policy, its
+descriptor or version differs and the guard transfers to the generic loop.
+
+This approach differs from an inline cache on the operation call. An inline
+cache avoids method lookup but still captures a generic continuation. \system
+specializes the \emph{region between operation and resumption}, which makes the
+continuation a direct control-flow edge. That transformation accounts for 63\%
+of the measured speedup (\cref{sec:ablation}).
+
+\begin{figure*}[t]
+  \centering
+  \begin{tikzpicture}[
+    node distance=8mm and 9mm,
+    box/.style={draw,rounded corners=2pt,minimum height=8mm,align=center,
+                font=\small,inner xsep=7pt},
+    hot/.style={box,fill=aegisteal!10,draw=aegisteal},
+    cold/.style={box,fill=black!3,draw=black!45},
+    test/.style={diamond,draw=aegisgold,fill=aegisgold!10,aspect=2.2,
+                 align=center,font=\small,inner sep=1.5pt},
+    arrow/.style={-{Latex[length=2.2mm]},thick},
+    note/.style={font=\footnotesize,align=center,text=black!65}
+  ]
+    \node[cold] (source) {generic operation\\search, capture, dispatch};
+    \node[test,right=18mm of source] (guard) {shape $=s$?};
+    \node[hot,above right=7mm and 14mm of guard] (fast) {specialized region\\direct clause + direct resume};
+    \node[cold,below right=7mm and 14mm of guard] (generic) {generic region\\unchanged semantics};
+    \node[cold,right=16mm of fast] (cont) {continuation\\of caller};
+    \node[cold,right=16mm of generic] (materialize) {materialize frames\\from reconstruction map};
+    \node[note,below=3mm of materialize] (map) {$R_p$: live SSA values $\mapsto$ source frames};
+
+    \draw[arrow] (source) -- node[above,font=\footnotesize]{profile + clone} (guard);
+    \draw[arrow,aegisteal] (guard) -- node[above left,font=\footnotesize]{yes} (fast);
+    \draw[arrow,aegisred] (guard) -- node[below left,font=\footnotesize]{no} (generic);
+    \draw[arrow] (fast) -- (cont);
+    \draw[arrow] (generic) -- (materialize);
+    \draw[arrow] (materialize.east) -| (cont.south);
+    \draw[dashed,draw=black!45] (map) -- (materialize);
+  \end{tikzpicture}
+  \caption{The \system pipeline. The fast path is valid only while its handler
+  shape matches. A failed guard reconstructs the generic continuation; it does
+  not restart the computation.}
+  \Description{A flow diagram starts at a generic effect operation and a shape
+  guard. A matching shape enters a direct specialized region, while a mismatch
+  enters a generic region and materializes continuation frames using a
+  reconstruction map. Both paths rejoin at the caller continuation.}
+  \label{fig:overview}
+\end{figure*}

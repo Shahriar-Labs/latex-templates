@@ -1,0 +1,21 @@
+\section{Experiments}
+\label{sec:experiments}
+
+\paragraph{Data.} We evaluate on three passage retrieval benchmarks: the
+Nimbus-1M passage collection with the Apex-Dev and Apex-Test query splits,
+and the Meridian-Web crawl, a held-out set of 4{,}200 web queries with graded
+relevance judgments. All three follow the standard train/dev/test protocol
+used in prior re-ranking work~\cite{lindberg2023calibrate}.
+
+\paragraph{Models.} The first-stage retriever is a dense bi-encoder trained
+with in-batch and mined hard negatives~\cite{solano2022hardneg}, shared
+across all re-ranking methods for a controlled comparison. We compare: BM25
+(sparse baseline, no re-ranking), the bi-encoder score alone (no re-ranking),
+a late-interaction re-ranker~\cite{solheim2020late}, the cross-encoder
+teacher~\cite{marchetti2020monobert}, and two CARD variants: the full model
+(2-head cross-attention) and CARD-small (single-head, half hidden width).
+
+\paragraph{Metrics.} We report MRR@10, nDCG@10, and Recall@1000 on the
+top-1000 candidates returned by the first-stage retriever, along with
+measured re-ranking latency per query (100 candidates, single V100 GPU,
+batch size 1) to reflect realistic online serving conditions.

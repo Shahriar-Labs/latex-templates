@@ -1,0 +1,58 @@
+\section{Approach}
+
+\textsc{RepairLLM} operates in three stages, illustrated in
+Figure~\ref{fig:overview}.
+
+\begin{figure}[h]
+\centering
+{\footnotesize\color{muted}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{Stage 1} & \textbf{Stage 2} & \textbf{Stage 3} \\
+\hline
+Fault Localisation & Patch Generation & Patch Validation \\
+(spectrum-based)   & (LLM + retrieval)   & (mutation analysis) \\
+\hline
+\end{tabular}
+}
+\caption{High-level overview of the \textsc{RepairLLM} pipeline.}
+\label{fig:overview}
+\end{figure}
+
+\subsection{Fault Localisation}
+
+Given a test suite where some tests fail, we compute the Ochiai
+suspiciousness score for each statement in the program:
+
+\begin{equation}
+  \text{suspiciousness}(s) = \frac{\text{failed}(s)}
+    {\sqrt{\text{total\_failed} \cdot (\text{failed}(s) + \text{passed}(s))}}
+  \label{eq:ochiai}
+\end{equation}
+
+Statements are ranked by suspiciousness, and the top-$k$ statements
+($k{=}10$ in our experiments) form the fault-localisation window passed
+to the patch-generation stage.
+
+\subsection{Patch Generation}
+
+We construct a prompt containing: (1) the buggy method and its enclosing
+class, (2) the top-$k$ suspicious statements highlighted with inline
+comments, (3) passing and failing test cases as few-shot examples, and
+(4) up to five semantically similar methods retrieved from the project
+repository using a code-embedding index.
+
+The LLM generates a set of candidate patches, each represented as a
+unified diff. We restrict the output to the buggy method to keep the
+search space tractable.
+
+\subsection{Dual Validation}
+
+Each candidate patch is first validated against the project's test suite.
+Patches that pass all tests are then subjected to mutation analysis:
+we seed artificial faults into the patched code and measure whether the
+test suite detects them. Patches that survive mutation testing with a
+score below a threshold ($\theta{=}0.85$) are rejected as likely
+overfitting~\cite{smith2015generating}.
+
+% ── 4. Experimental Setup ───────────────────────────────────

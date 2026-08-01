@@ -1,0 +1,81 @@
+\section{Results and Analysis}
+\label{sec:results}
+
+\begin{table}[t]
+\caption{Libri2Mix test results.  ``NC'' denotes a noncausal full-utterance
+system; lower RTF is better.}
+\label{tab:main}
+\centering
+\small
+\setlength{\tabcolsep}{3.2pt}
+\begin{tabular}{lccccc}
+\toprule
+System & Causal & Params & MAC/s & SI-SDRi & RTF \\
+       &        & (M)    & (G)   & (dB)    &     \\
+\midrule
+Conv-TasNet       & yes & 1.91 & 5.8 & 11.5 & 0.21 \\
+Causal DPRNN      & yes & 2.64 & 7.1 & 12.2 & 0.24 \\
+Causal TF-GridNet & yes & 3.12 & 8.6 & 12.8 & 0.29 \\
+SepFormer         & no  & 25.7 &  --- & 16.8 & NC   \\
+\model{}          & yes & 1.84 & 4.2 & \textbf{13.1} & \textbf{0.13} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Separation quality and efficiency}
+
+Table~\ref{tab:main} summarizes clean-condition results.  \model{} exceeds the
+parameter-matched Conv-TasNet by 1.6 dB and causal DPRNN by 0.9 dB.  Relative to
+causal TF-GridNet, it gains 0.3 dB with 41\% fewer parameters and 51\% lower RTF.
+The noncausal SepFormer remains 3.7 dB better, quantifying the cost of strict
+streaming.  \model{} obtains STOI scores of 0.942 and 0.871 on clean and noisy
+tests, respectively; corresponding causal TF-GridNet scores are 0.936 and 0.858.
+Peak working memory is 31 MB and remains within measurement noise from 10 s to
+30 min inputs, as predicted by Eq.~\eqref{eq:transition}.
+
+\begin{table}[t]
+\caption{Ablation study on Libri2Mix.  All variants remain causal.}
+\label{tab:ablation}
+\centering
+\small
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lccc}
+\toprule
+Variant & Params (M) & SI-SDRi (dB) & Boundary error \\
+\midrule
+Full \model{}                 & 1.84 & \textbf{13.1} & \textbf{0.021} \\
+Reset state every chunk       & 1.84 & 12.3 & 0.034 \\
+No cross-band mixer           & 1.71 & 12.6 & 0.025 \\
+No boundary-weighted loss     & 1.84 & 12.8 & 0.039 \\
+Dense instead of grouped GRU  & 2.73 & 13.2 & 0.021 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+\subsection{Ablations and long-stream stability}
+
+The ablations in Table~\ref{tab:ablation} isolate the main components.
+Resetting recurrent state at every chunk causes the largest loss, confirming
+that gains do not arise solely from the spectral frontend.  The cross-band mixer
+adds 0.5 dB for 0.13 M parameters.  Removing boundary weighting raises the mean
+absolute error in the 8 ms region around chunk joins by 86\% and produces
+audible clicks, even though its aggregate SI-SDR effect is modest.  A dense GRU
+adds 0.9 M parameters for only 0.1 dB, supporting grouped recurrence as the
+better efficiency trade-off.
+
+We also concatenate test mixtures into streams of 1, 5, and 30 min without
+resetting state.  SI-SDRi is 13.1, 13.0, and 12.9 dB; output permutations occur
+in 0.4\%, 0.5\%, and 0.6\% of speaker-active 10 s windows.  Resetting state every
+4 s increases the swap rate to 3.8\%.  The small degradation on very long
+streams is concentrated at extended silences, suggesting that silence-aware
+state updates are a useful direction.
+
+\subsection{Latency trade-off}
+
+Changing only the analysis window from 32 to 16 ms lowers latency but reduces
+SI-SDRi from 13.1 to 12.5 dB because low-frequency resolution is weakened.  A
+64 ms window reaches 13.4 dB at twice the latency.  The 32 ms operating point
+therefore provides the best compromise for conversational use.  Since processing
+RTF is 0.13, a chunk finishes well before the next one arrives on the measured
+CPU; end-to-end latency is dominated by framing rather than compute.

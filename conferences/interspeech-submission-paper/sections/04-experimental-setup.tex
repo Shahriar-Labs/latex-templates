@@ -1,0 +1,21 @@
+\section{Experimental Setup}
+\label{sec:experiments}
+\subsection{Data}
+We construct a simulated multi-accent conversational benchmark, \textsc{Meridian-Conv}, by combining
+scripted and spontaneous conversational recordings across eight simulated accent groups. The training
+partition contains 2,400 hours; the evaluation partition contains held-out speakers across three
+matched noise conditions: clean, moderate reverberation (RT60 $\approx$ 0.4\,s), and babble noise at
+5\,dB SNR, following the reverberant augmentation protocol of \citet{andersson2021noise}.
+
+\subsection{Model and Training}
+The backbone is an 18-layer Conformer encoder (512-dim, 8 heads) paired with a Transducer decoder,
+initialized from a self-supervised checkpoint in the style of \citet{schmidt2023wav2vec}. All models are
+trained with the same optimizer, learning-rate schedule, and total step budget; only the attention
+masking policy differs across conditions. We compare four systems: (i) a fully causal baseline, (ii)
+uniform look-ahead applied to every layer with the same total latency budget as CBCI, (iii) CBCI, and
+(iv) a fully offline bidirectional upper bound with unrestricted attention.
+
+\subsection{Metrics}
+We report word error rate (WER), algorithmic latency in milliseconds, and real-time factor (RTF) on a
+single reference accelerator. WER is computed with standard text normalization applied uniformly across
+systems.

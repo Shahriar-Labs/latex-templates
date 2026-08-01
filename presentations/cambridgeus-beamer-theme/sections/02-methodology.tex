@@ -1,0 +1,34 @@
+\section{Methodology}
+
+% Slide 5: Proposed Architecture (TikZ diagram)
+\begin{frame}{Methodology: Nexa Architecture}
+    The framework coordinates clients, coordinators, and work nodes:
+    \begin{center}
+    \begin{tikzpicture}[node distance=1.8cm, auto, >=stealth, thick]
+        \node[draw, rectangle, fill=nexa-blue!20, rounded corners, minimum width=2.5cm, minimum height=1cm, align=center] (client) {Client Request\\(Nexa Portal)};
+        \node[draw, circle, fill=nexa-red!20, minimum size=1.5cm, right=of client] (coordinator) {Coordinator};
+        \node[draw, rectangle, fill=nexa-grey!20, rounded corners, minimum width=2.3cm, minimum height=0.8cm, above right=of coordinator] (node1) {Worker Node A};
+        \node[draw, rectangle, fill=nexa-grey!20, rounded corners, minimum width=2.3cm, minimum height=0.8cm, below right=of coordinator] (node2) {Worker Node B};
+        
+        \draw[->] (client) -- (coordinator) node[midway, above] {\small Queue};
+        \draw[->] (coordinator) -- (node1) node[midway, above left] {\small Assign};
+        \draw[->] (coordinator) -- (node2) node[midway, below left] {\small Assign};
+        \draw[<->, dashed] (node1) -- (node2) node[midway, right] {\small Sync};
+    \end{tikzpicture}
+    \end{center}
+\end{frame}
+
+% Slide 6: Flow Optimization (Math Equations)
+\begin{frame}{Mathematical Modeling: Flow Optimization}
+    Let $G = (V, E)$ represent the network topology. The communication cost function $\Phi(x)$ is defined as:
+    \begin{equation}
+        \Phi(x) = \sum_{e \in E} f_e(x_e) + \alpha \sum_{v \in V} d_v(y_v)
+    \end{equation}
+    where:
+    \begin{itemize}
+        \item $x_e$ represents the flow rate on edge $e \in E$.
+        \item $y_v$ represents the computational load on node $v \in V$.
+        \item $\alpha$ is a scaling factor balancing communication and processing costs.
+    \end{itemize}
+    We solve this optimization problem using a dual-decomposition approach.
+\end{frame}

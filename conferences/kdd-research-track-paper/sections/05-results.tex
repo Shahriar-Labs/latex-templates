@@ -1,0 +1,65 @@
+\section{Results}
+\label{sec:results}
+Table~\ref{tab:results} reports link-prediction AUC-ROC on all three
+datasets, along with parameter count in millions. \sysname{} is the best
+performer on every dataset and uses fewer parameters than three of the four
+baselines, since type-specific projections are lower rank than the shared
+wide layers those baselines rely on.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Link-prediction AUC-ROC (\%) and parameter count.
+Best result per column in \textbf{bold}.}
+\label{tab:results}
+\begin{tabular}{lcccc}
+\toprule
+\rowcolor{kddblue!10}
+Method & Nexa & Synapse & Vertex & Params (M) \\
+\midrule
+GraphPulse & 81.4 & 78.9 & 83.2 & 4.1 \\
+HetEmbed   & 84.7 & 80.1 & 85.6 & 6.8 \\
+TempoGAT   & 86.2 & 82.4 & 84.9 & 5.9 \\
+NodeFlow   & 87.0 & 83.6 & 86.7 & 7.4 \\
+\midrule
+\textbf{\sysname{} (ours)} & \textbf{90.1} & \textbf{87.0} & \textbf{89.8} & \textbf{4.7} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:results} shows how AUC-ROC on \textsc{SynapseSocial}
+responds to embedding dimension $d$. \sysname{} reaches within 0.4 points
+of its peak accuracy at $d=64$, while \textsc{NodeFlow} requires $d=256$ to
+approach a comparable score, consistent with our parameter-efficiency claim
+in Table~\ref{tab:results}.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\columnwidth, height=4.4cm,
+  xlabel={Embedding dimension $d$},
+  ylabel={AUC-ROC (\%)},
+  xtick={16,32,64,128,256},
+  ymin=74, ymax=90,
+  legend style={font=\scriptsize,at={(0.98,0.05)},anchor=south east,draw=kddgray},
+  label style={font=\small},
+  tick label style={font=\scriptsize},
+  grid=major, grid style={gray!20},
+  every axis plot/.append style={thick,mark size=1.6pt},
+]
+\addplot[color=kddblue,mark=*] coordinates
+  {(16,82.1) (32,86.0) (64,88.9) (128,89.7) (256,90.1)};
+\addlegendentry{\sysname{}}
+\addplot[color=kddgold,mark=square*] coordinates
+  {(16,76.5) (32,79.8) (64,82.0) (128,83.6) (256,84.4)};
+\addlegendentry{NodeFlow}
+\addplot[color=kddgray,mark=triangle*] coordinates
+  {(16,75.2) (32,78.1) (64,80.3) (128,82.4) (256,83.1)};
+\addlegendentry{TempoGAT}
+\end{axis}
+\end{tikzpicture}
+\caption{AUC-ROC vs.\ embedding dimension on \textsc{SynapseSocial}.
+\sysname{} saturates at lower dimension than either baseline.}
+\label{fig:results}
+\end{figure}

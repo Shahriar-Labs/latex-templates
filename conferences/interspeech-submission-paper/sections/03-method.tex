@@ -1,0 +1,35 @@
+\section{Method}
+\subsection{Chunked Bidirectional Context Injection}
+Let the input acoustic sequence be partitioned into non-overlapping chunks $c_1, \dots, c_T$ of $L$
+frames each. A standard chunk-causal Conformer restricts attention in every layer so that queries in
+chunk $c_t$ may attend only to keys and values in $c_1, \dots, c_t$. CBCI relaxes this constraint for a
+subset of layers $\mathcal{S} \subseteq \{1, \dots, N\}$, chosen among the upper half of the $N$-layer
+stack, by additionally exposing a bounded future buffer $c_{t+1}[1{:}B]$ of the first $B$ frames of the
+next chunk:
+\begin{equation}
+\label{eq:cbci-mask}
+M_\ell(i, j) =
+\begin{cases}
+0 & \text{if } j \le i, \\
+0 & \text{if } \ell \in \mathcal{S} \text{ and } i < j \le i + B, \\
+-\infty & \text{otherwise,}
+\end{cases}
+\end{equation}
+where $M_\ell$ is the additive attention mask at layer $\ell$, and $i, j$ index frames in
+chunk-relative time. Layers not in $\mathcal{S}$ retain a strictly causal mask ($B{=}0$). The
+algorithmic latency contributed by CBCI is $B \cdot \delta$, where $\delta$ is the frame stride,
+independent of $|\mathcal{S}|$, since future frames are consumed once when they arrive and cached for
+all layers in $\mathcal{S}$.
+
+\subsection{Buffer-Annealed Training}
+Training with a fixed $B$ overfits the model to that specific latency budget. We instead sample
+$B \sim \mathrm{Uniform}\{0, \dots, B_{\max}\}$ per mini-batch during the second half of training,
+after the model has converged under a causal-only warm-up phase. This curriculum lets the same
+checkpoint be deployed at multiple latency points by adjusting $B$ at inference time, avoiding the need
+to train and store separate models per latency target.
+
+\subsection{Layer Selection}
+We select $\mathcal{S}$ via a lightweight search: starting from an empty set, we greedily add the layer
+whose inclusion yields the largest validation WER reduction per unit of additional parameter-touching
+overhead, stopping once marginal gains fall below 0.05 absolute WER. In our 18-layer encoder, this
+consistently selects layers 11--16.

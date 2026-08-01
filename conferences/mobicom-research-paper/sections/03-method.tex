@@ -1,0 +1,46 @@
+\section{Method}
+\subsection{Problem Setting}
+We consider a body-worn mmWave radio with a phased array of $N$ elements and a codebook of $K$ candidate beam directions $\{\theta_1,\dots,\theta_K\}$. At each control interval, the system must decide whether the currently selected beam $\theta_t$ still satisfies the link's minimum signal-to-noise ratio $\mathrm{SNR}_{\min}$, and if not, select a replacement.
+
+\subsection{Gait-Phase-Aware Angular Predictor}
+TrailBeam samples a 6-axis inertial measurement unit (IMU) at 50~Hz from a wrist- or chest-worn housing co-located with the radio. A lightweight gait-phase estimator, adapted from~\cite{demirci2020gait}, produces a phase signal $\phi_t \in [0, 2\pi)$ and a per-step amplitude estimate $A_t$ from the vertical acceleration channel using a zero-crossing detector with a 200~ms refractory window. We model the wearer-relative beam angle as the sum of a slowly varying heading term and a periodic sway term driven by $\phi_t$:
+\begin{equation}
+\hat{\theta}_{t+\Delta} \;=\; \theta_t \;+\; \omega_t \Delta \;+\; A_t \sin\!\big(\phi_t + \Omega \Delta\big),
+\label{eq:beam-predict}
+\end{equation}
+where $\omega_t$ is the low-pass-filtered angular velocity of the wearer's heading, $\Omega$ is the estimated gait angular frequency, and $\Delta$ is the prediction horizon. The first two terms recover the standard constant-velocity Kalman predictor used in prior inertial-assisted trackers~\cite{kowalczyk2021kalman}; the third term is TrailBeam's addition, and it is what lets the system anticipate the next sway extremum rather than merely react once the beam has already drifted.
+
+\subsection{Re-Alignment Policy}
+Given the predicted angle $\hat{\theta}_{t+\Delta}$ and the half-power beamwidth $\beta$ of the active beam, TrailBeam triggers a re-alignment request when the predicted angular error exceeds a margin:
+\[
+\lvert \hat{\theta}_{t+\Delta} - \theta_t \rvert \; > \; \gamma \beta, \qquad 0 < \gamma < 1,
+\]
+with $\gamma = 0.6$ chosen from a held-out calibration set to trade false triggers against missed drift. When triggered, TrailBeam does not perform a full $K$-beam sweep; instead it probes only the $3$ codebook entries nearest to $\hat{\theta}_{t+\Delta}$, falling back to a full sweep only if none of the three meets $\mathrm{SNR}_{\min}$.
+
+\subsection{System Architecture}
+Figure~\ref{fig:arch} shows the processing pipeline. The IMU and gait-phase estimator run continuously on a low-power microcontroller; the angular predictor and re-alignment policy run at 50~Hz and issue narrowed probe requests to the beam-steering controller, which mediates the phased-array front end.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=6mm and 6mm,
+  box/.style={draw=steelblue, thick, rounded corners=2pt, fill=steelblue!6, align=center, minimum height=8mm, font=\small},
+  arrow/.style={-Stealth, thick, steelblue}
+]
+\node[box] (imu) {IMU\\[-2pt]\footnotesize 50 Hz};
+\node[box, right=of imu] (gait) {Gait-Phase\\[-2pt]\footnotesize Estimator};
+\node[box, below=of gait] (pred) {Angular\\[-2pt]\footnotesize Predictor (Eq.~1)};
+\node[box, left=of pred] (policy) {Re-Alignment\\[-2pt]\footnotesize Policy};
+\node[box, below=of policy, fill=mutedteal!12, draw=mutedteal] (ctrl) {Beam Steering\\[-2pt]\footnotesize Controller};
+\node[box, below=of pred, fill=mutedteal!12, draw=mutedteal] (rf) {mmWave\\[-2pt]\footnotesize Phased Array};
+
+\draw[arrow] (imu) -- (gait);
+\draw[arrow] (gait) -- (pred);
+\draw[arrow] (pred) -- (policy);
+\draw[arrow] (policy) -- (ctrl);
+\draw[arrow] (pred) -- (rf);
+\draw[arrow] (ctrl) -- (rf);
+\end{tikzpicture}
+\caption{TrailBeam processing pipeline: gait-phase-aware prediction drives a narrowed re-alignment policy instead of periodic full sweeps.}
+\label{fig:arch}
+\end{figure}

@@ -1,0 +1,93 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{Overview}
+
+CARD assumes a standard two-stage pipeline: a bi-encoder produces a query
+embedding $\mathbf{E}_q \in \mathbb{R}^{n \times d}$ and, offline, a passage
+embedding $\mathbf{E}_p \in \mathbb{R}^{m \times d}$ for every indexed
+passage, where $n$ and $m$ are token counts and $d$ is the hidden dimension.
+Both encoders are frozen during CARD training; only a shallow cross-attention
+head and a scoring layer are learned on top of these fixed representations.
+
+\subsection{Cross-attention head}
+
+Given the token-level query and passage embeddings, the head computes a
+single layer of query-to-passage cross-attention followed by a passage-side
+pooling step:
+\[
+\mathbf{A} = \operatorname{softmax}\!\left(\frac{\mathbf{E}_q W_Q \,(\mathbf{E}_p W_K)^\top}{\sqrt{d_k}}\right)(\mathbf{E}_p W_V),
+\]
+where $W_Q, W_K, W_V \in \mathbb{R}^{d \times d_k}$ are learned projections
+and $\mathbf{A} \in \mathbb{R}^{n \times d_k}$ is the attended representation
+of each query token over the passage. Mean-pooling $\mathbf{A}$ over the
+query dimension and concatenating with the pooled bi-encoder similarity
+yields the student relevance score
+\begin{equation}
+s_S(q,p) = \mathbf{w}^\top\big[\,\bar{\mathbf{A}} \,;\, \mathbf{E}_q^{\text{cls}} \cdot \mathbf{E}_p^{\text{cls}}\,\big] + b,
+\label{eq:score}
+\end{equation}
+where $\bar{\mathbf{A}}$ is the mean-pooled attention output, $\mathbf{E}_q^{\text{cls}}
+\cdot \mathbf{E}_p^{\text{cls}}$ is the standard bi-encoder dot-product
+similarity, and $\mathbf{w}, b$ are learned parameters. Because $\mathbf{E}_p$
+is fixed and pre-computed, the only per-query, per-candidate cost at serving
+time is the single cross-attention layer over already-cached embeddings.
+
+\subsection{Distillation objective}
+
+Let $s_T(q,p)$ denote the score produced by the frozen cross-encoder teacher.
+CARD is trained with a temperature-scaled distillation loss combined with the
+original binary relevance label $y$:
+\begin{multline}
+\mathcal{L}_{\text{CARD}} = \alpha \, \mathrm{KL}\!\left(\sigma\!\left(\frac{s_T(q,p)}{\tau}\right)
+\,\middle\|\, \sigma\!\left(\frac{s_S(q,p)}{\tau}\right)\right) \\
+{}+ (1-\alpha)\,\mathrm{CE}\big(y,\, s_S(q,p)\big),
+\label{eq:distill}
+\end{multline}
+where $\sigma(\cdot)$ is the sigmoid function, $\tau$ is the distillation
+temperature, and $\alpha \in [0,1]$ balances soft-label matching against the
+teacher and hard-label supervision from the original ranking data. We use
+$\tau = 2.0$ and $\alpha = 0.7$ throughout, chosen by grid search on a held-out
+development split (\S\ref{sec:experiments}).
+
+Figure~\ref{fig:pipeline} summarizes the resulting serving-time pipeline: a
+first-stage retriever recalls candidates using pre-computed passage
+embeddings, and the CARD head re-scores each candidate using only the
+already-cached embeddings and a single lightweight attention pass, with the
+teacher cross-encoder appearing only during offline training.
+
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=6mm and 6mm,
+  box/.style={rectangle, rounded corners=2pt, draw=sigirblue, thick,
+    fill=sigirlight, minimum height=8mm, text width=2.05cm, align=center,
+    font=\scriptsize},
+  teacher/.style={box, draw=sigirgray, fill=white, dashed, text width=2.6cm},
+  arr/.style={-{Latex[length=2mm]}, thick, sigirblue},
+  darr/.style={-{Latex[length=2mm]}, thick, dashed, sigirgray}
+]
+\node[box] (q) {Query $q$};
+\node[box, right=of q] (bq) {Bi-encoder $\mathbf{E}_q$};
+\node[box, below=of q] (p) {Passage cache $\mathbf{E}_p$};
+\node[box, right=of p] (cand) {Retrieved candidates};
+\node[box, right=of cand, yshift=8mm, text width=2.3cm] (card) {CARD cross-attention head};
+\node[box, right=of card, text width=1.6cm] (score) {Score $s_S(q,p)$};
+\node[teacher, above=8mm of card] (teacher) {Teacher cross-encoder (training only)};
+
+\draw[arr] (q) -- (bq);
+\draw[arr] (p) -- (cand);
+\draw[arr] (bq) |- (card);
+\draw[arr] (cand) |- (card);
+\draw[arr] (card) -- (score);
+\draw[darr] (teacher) -- node[right, font=\tiny, sigirgray] {distillation, Eq.~\ref{eq:distill}} (card);
+\end{tikzpicture}%
+}
+\caption{CARD serving-time pipeline. Query and passage embeddings are
+produced by a frozen bi-encoder; the passage side is pre-computed offline.
+Only the lightweight cross-attention head runs per candidate at query time.
+The cross-encoder teacher (dashed) supervises the head during training and
+is never invoked at serving time.}
+\label{fig:pipeline}
+\end{figure}

@@ -1,0 +1,129 @@
+\section{Evaluation}
+\label{sec:evaluation}
+
+We ask four questions:
+
+\begin{description}
+  \item[RQ1:] Does guarded specialization improve steady-state performance?
+  \item[RQ2:] Which part of the design produces the improvement?
+  \item[RQ3:] What are its code-size and compilation costs?
+  \item[RQ4:] How does it behave when handler shapes change?
+\end{description}
+
+\subsection{Methodology}
+
+The benchmark suite contains 18 programs in five groups: parsers, asynchronous
+services, probabilistic models, search workloads, and effect microbenchmarks.
+Programs range from 0.8 to 41 K source lines and execute between $1.7\times
+10^6$ and $2.1\times10^9$ operations. We compare \emph{Generic}, which uses
+segmented-stack handlers, with \emph{Cache}, which adds a polymorphic inline
+cache but retains generic continuation capture, and \system.
+
+Measurements use a 16-core 3.4 GHz x86-64 machine with 64 GiB of memory,
+frequency scaling disabled. Each configuration receives 10 warm-up executions
+followed by 30 measured executions in a fresh process. We report geometric
+means and 95\% bootstrap confidence intervals, following established guidance
+for managed-language experiments \cite{georges2007statistically}. Builds and
+inputs are pinned by a declarative environment \cite{dolstra2010nixos}.
+
+\begin{table}[t]
+  \caption{Performance and specialization coverage. Time is normalized to
+  Generic; lower is better. Parentheses show 95\% confidence intervals.}
+  \label{tab:results}
+  \centering
+  \small
+  \setlength{\tabcolsep}{4.5pt}
+  \begin{tabular}{lrrrr}
+    \toprule
+    Group & $n$ & Cache & \system & Searches removed \\
+    \midrule
+    Parsing       & 4 & 0.91 & \textbf{0.63} & 89\% \\
+    Async         & 4 & 0.94 & \textbf{0.72} & 81\% \\
+    Probabilistic & 3 & 0.88 & \textbf{0.58} & 96\% \\
+    Search        & 3 & 0.96 & \textbf{0.79} & 74\% \\
+    Micro         & 4 & 0.73 & \textbf{0.41} & 95\% \\
+    \midrule
+    Geo. mean     & 18 & 0.88 & \textbf{0.68} & 87\% \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Steady-State Performance}
+
+\Cref{tab:results} answers RQ1. \system is faster than Generic on all 18
+programs, with speedups from 1.08$\times$ to 2.41$\times$ and a geometric mean
+of 1.46$\times$. It outperforms Cache on 16 programs. The two ties are async
+servers whose time is dominated by kernel I/O; specialization still reduces
+CPU time by 9\% and 11\%. Benefits track eliminated handler searches only
+loosely ($r=0.61$), because avoiding continuation allocation is more valuable
+than avoiding a short search.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[x=0.68cm,y=3.0cm,font=\scriptsize]
+    \draw[->] (0,0) -- (8.4,0) node[right]{program};
+    \draw[->] (0,0) -- (0,1.12) node[above,align=center]{normalized\\time};
+    \foreach \y/\lab in {0.25/{0.25},0.5/{0.50},0.75/{0.75},1/{1.00}} {
+      \draw[black!15] (0,\y) -- (8.1,\y);
+      \node[left] at (0,\y) {\lab};
+    }
+    \foreach \x/\name/\cache/\aegis in {
+      0.7/P1/.89/.62,2.2/A1/.95/.73,3.7/B1/.86/.56,
+      5.2/S1/.97/.81,6.7/M1/.72/.42} {
+      \fill[aegisgold!75] (\x,0) rectangle +(0.38,\cache);
+      \fill[aegisteal!85] (\x+0.42,0) rectangle +(0.38,\aegis);
+      \node[below] at (\x+0.4,-0.035) {\name};
+    }
+    \draw[dashed,thick,black!55] (0,1) -- (8.1,1);
+    \fill[aegisgold!75] (5.4,1.02) rectangle +(0.25,0.07);
+    \node[anchor=west] at (5.72,1.055) {Cache};
+    \fill[aegisteal!85] (6.65,1.02) rectangle +(0.25,0.07);
+    \node[anchor=west] at (6.97,1.055) {\system};
+  \end{tikzpicture}
+  \caption{Representative normalized execution times. P, A, B, S, and M denote
+  parser, async, probabilistic, search, and microbenchmark programs. Generic is
+  the dashed line at 1.0.}
+  \Description{A grouped bar chart for five representative programs compares
+  an inline cache with Aegis. All bars are below the generic baseline, and the
+  Aegis bar is lower in every group.}
+  \label{fig:performance}
+\end{figure}
+
+\subsection{Ablation Study}
+\label{sec:ablation}
+
+We disable one optimization at a time. Specializing dispatch while leaving
+capture generic retains only 37\% of \system's benefit. Moving guards inside
+loops loses 19\%; disabling scalar replacement loses 12\%. Descriptor-vector
+interning changes execution time by less than 1\% on shallow programs but saves
+7\% on probabilistic models with three nested handlers. Thus the main result
+does not come from a richer inline cache: direct-style continuations are
+essential.
+
+\subsection{Cost and Dynamic Behavior}
+
+Specialization increases text size by 3.7\% geometrically (range 0.8--8.9\%)
+and compilation time by 6.2\% (RQ3). Reconstruction metadata adds 0.4\% to
+binary size. Peak compiler memory rises by 4.5\%. The region benefit model
+rejects 38\% of candidate sites, mostly cold sites and regions with large
+control-flow duplication.
+
+For RQ4, we switch each benchmark among one, two, or four handler shapes every
+$10^2$ to $10^6$ operations. A failed guard costs 31 ns (median) including
+reconstruction. With phases of at least $10^4$ operations, \system adapts after
+one recompilation and retains 91\% of its stable-workload speedup. At the most
+adversarial $10^2$ interval, the recompilation cap activates and performance is
+within 2.6\% of Generic. No workload creates more than two specialized versions
+per site.
+
+\subsection{Threats to Validity}
+
+The prototype targets one strict language and x86-64; different continuation
+representations or weaker memory models may change costs. Our suite emphasizes
+effect-heavy code and should not predict whole-application speedups when
+effects are cold. Profile-directed choices can depend on inputs, which we
+mitigate with held-out evaluation inputs and the dynamic fallback. Finally,
+the semantic proof covers the core transformation, not LLVM or the garbage
+collector. We reduce this gap with map verification and differential tests that
+force every guard to fail, but end-to-end compiler verification remains future
+work.

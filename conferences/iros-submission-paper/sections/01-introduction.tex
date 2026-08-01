@@ -1,0 +1,24 @@
+\section{Introduction}
+Legged platforms are increasingly deployed for inspection and search tasks in environments
+that defeat wheeled locomotion: collapsed structures, forested slopes, and industrial sites
+mid-renovation. In these settings the dominant failure mode is not gross planning error but
+local foothold mis-placement -- a leg lands on a loose rock, an unsupported tile edge, or a
+root hidden beneath leaf litter, and the resulting slip propagates into a stumble or fall.
+Elevation-map-based foothold planners~\cite{singh2018survey,tanaka2023perception} handle
+open, well-observed terrain well, but degrade sharply near occlusion boundaries, where a
+single missing depth return can shift the estimated ground height by several centimeters.
+
+Prior work addresses this gap along two lines. The first improves the map itself, fusing
+multiple viewpoints or temporal windows to fill occluded regions~\cite{tanaka2023perception}.
+The second bypasses maps for reactive, force-driven recovery after a stumble has already
+begun~\cite{oduya2020reactive}. Both are valuable but incomplete: better maps still contain
+residual noise near clutter, and reactive recovery only engages after contact quality has
+already degraded. We target the interval between the two -- refining a foothold using recent
+contact history \emph{before} the leg commits to stance.
+
+This paper contributes: (i) \textsc{ContactRefine}, a foothold refinement module that jointly
+conditions on local elevation and a short window of per-leg contact force history; (ii) a
+contrastive training objective that requires no manual terrain labels, using slip and
+force-spike events recorded during teleoperated data collection as implicit supervision; and
+(iii) a $1{,}400$-trial physical evaluation across five terrain classes showing consistent
+stumble-rate and cost-of-transport improvements with negligible added latency.

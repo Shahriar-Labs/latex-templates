@@ -1,0 +1,28 @@
+\section{Problem Formulation}
+
+Let the robot receive a depth frame $D_t$, base state $\vect{x}_t$, joint state
+$\vect{q}_t$, and binary foot contacts $\vect{c}_t$. Frames may be absent according to a
+dropout mask $d_t\in\{0,1\}$. We seek a local map on grid
+$\mathcal{G}\subset\R^2$ with cell size $s=0.05$~m. For cell $i$, the estimator produces
+height $\hat h_{t,i}$ and risk $r_{t,i}\in[0,1]$. Risk is defined operationally as
+\begin{equation}
+\begin{aligned}
+ r_{t,i}\approx\Pr\!\bigl(&\lvert \hat h_{t,i}-h^{\star}_{t,i}\rvert>\epsilon_h
+ \\[-2pt]
+ &\lor\ i\ \text{is non-traversable}\mid\mathcal{O}_{1:t}\bigr),
+\end{aligned}
+ \label{eq:risk}
+\end{equation}
+where $h^{\star}$ is the latent surface, $\epsilon_h=0.06$~m, and
+$\mathcal{O}_{1:t}$ is the available observation history. This event-based definition makes
+$r_{t,i}$ directly useful to planning, unlike an unscaled variance.
+
+At each control update the planner selects body inputs $\vect{u}_{0:T-1}$ and footholds
+$\vect{p}_{1:K}$ over horizon $T$. A plan is feasible if dynamics, reachability, friction,
+and clearance constraints hold and its aggregate contact risk stays below $\delta$:
+\begin{equation}
+ 1-\prod_{k=1}^{K}\bigl(1-r(\vect{p}_k)\bigr) \leq \delta.
+ \label{eq:chance}
+\end{equation}
+The independence approximation in Eq.~\eqref{eq:chance} is conservative only when local
+errors are weakly correlated; Sec.~\ref{sec:limitations} discusses this limitation.

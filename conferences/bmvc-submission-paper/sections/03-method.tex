@@ -1,0 +1,60 @@
+\section{Method}
+The overall pipeline of the proposed LCT is illustrated in Figure~\ref{fig:architecture}. The model comprises three primary components: a Synapse Encoder, an Adaptive Feature Pyramid, and a Latent Context Transformer.
+
+\subsection{Synapse Encoder}
+Given an input image $I \in \mathbb{R}^{H \times W \times 3}$, we first extract multi-scale convolutional features. The encoder produces hierarchical feature maps at different resolutions:
+\begin{equation}
+    F_i = \text{Conv}_i(F_{i-1}), \quad i \in \{1, 2, 3, 4\}
+\end{equation}
+where $F_0 = I$, and each feature map $F_i$ has a spatial dimension of $\frac{H}{2^i} \times \frac{W}{2^i}$.
+
+\subsection{Adaptive Feature Pyramid}
+We aggregate these multi-scale features into a unified pyramid structure $F_{\text{pyr}}$. Rather than simple summation, we use an adaptive gate mechanism that filters features according to their scale significance.
+
+\subsection{Latent Context Transformer}
+To avoid quadratic complexity, we project the high-resolution features into a low-dimensional latent space. The self-attention is computed over these latent tokens:
+\begin{equation}
+    \text{Attention}(Q, K, V) = \text{softmax}\left(\frac{Q K^T}{\sqrt{d_k}}\right) V
+\end{equation}
+where the queries $Q$, keys $K$, and values $V$ are derived from the compressed latent tokens. The output is then upsampled and combined with local features via skip connections to reconstruct the output image $\hat{I}$.
+
+\subsection{Loss Function}
+We train the entire network end-to-end using a joint objective function. The total loss $\mathcal{L}_{\text{total}}$ is defined as:
+\begin{equation}
+    \mathcal{L}_{\text{total}} = \alpha \mathcal{L}_{\text{MSE}}(I, \hat{I}) + \beta \mathcal{L}_{\text{feat}}(F_{\text{pyr}}, \hat{F}_{\text{pyr}}) + \gamma \mathcal{R}(\theta),
+    \label{eq:loss}
+\end{equation}
+where $\mathcal{L}_{\text{MSE}}$ is the mean squared error, $\mathcal{L}_{\text{feat}}$ is the feature reconstruction loss in the latent space, and $\mathcal{R}(\theta)$ represents the $L_2$ regularization on the network parameters $\theta$. We empirically set the hyperparameters to $\alpha = 1.0$, $\beta = 0.5$, and $\gamma = 10^{-5}$ in all experiments.
+
+\begin{figure*}[t]
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[
+        node distance=1.2cm and 1.5cm,
+        box/.style={draw=bmvcblue, fill=bmvcblue!5, thick, rounded corners=2pt, minimum width=2.4cm, minimum height=1cm, align=center, font=\small},
+        feat/.style={draw=bmvcgray, fill=bmvcgray!10, thick, rounded corners=2pt, minimum width=2.2cm, minimum height=0.8cm, align=center, font=\small},
+        arrow/.style={-latex, thick, bmvcblue}
+    ]
+        % Nodes
+        \node (input) [align=center, font=\small] {Input Image\\$I \in \mathbb{R}^{H \times W \times 3}$};
+        \node (encoder) [box, right=of input] {Synapse Encoder\\(Multi-scale CNN)};
+        \node (pyramid) [feat, right=of encoder] {Adaptive Feature\\Pyramid ($F_{\text{pyr}}$)};
+        \node (transformer) [box, right=of pyramid] {Latent Context\\Transformer (LCT)};
+        \node (decoder) [box, right=of transformer] {Meridian Decoder\\(Upsampling)};
+        \node (output) [align=center, right=of decoder, font=\small] {Reconstructed Image\\$\hat{I} \in \mathbb{R}^{H \times W \times 3}$};
+
+        % Arrows
+        \draw [arrow] (input) -- (encoder);
+        \draw [arrow] (encoder) -- (pyramid);
+        \draw [arrow] (pyramid) -- (transformer);
+        \draw [arrow] (transformer) -- (decoder);
+        \draw [arrow] (decoder) -- (output);
+        
+        % Annotations
+        \node[above=0.2cm of pyramid, font=\footnotesize\color{bmvcgray}] {Feature Extraction};
+        \node[above=0.2cm of transformer, font=\footnotesize\color{bmvcgray}] {Latent Attention};
+    \end{tikzpicture}
+    }
+    \caption{Architecture schematic of the proposed Latent Contextual Transformer (LCT). The input image is first passed through a multi-scale Synapse Encoder to produce hierarchical feature representations. These features are aligned via our Adaptive Feature Pyramid, processed by the LCT module for global relation modeling, and finally decoded by the Meridian Decoder to reconstruct the high-fidelity output image.}
+    \label{fig:architecture}
+\end{figure*}

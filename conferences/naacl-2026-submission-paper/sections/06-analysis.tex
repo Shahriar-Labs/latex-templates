@@ -1,0 +1,64 @@
+\section{Analysis}
+\label{sec:analysis}
+
+\subsection{Ablation study}
+
+Table~\ref{tab:ablation} isolates the main design choices. Removing the
+uncertainty trigger hurts both speed and accuracy: irrelevant examples enter
+otherwise easy decisions. Removing the entity constraint causes the largest
+ECR increase. A fixed interpolation weight performs worse than the learned
+gate, indicating that retrieval usefulness varies substantially by context.
+
+\begin{table}[t]
+  \centering
+  \caption{Illustrative ablations. Values are test-set scores.}
+  \label{tab:ablation}
+  \small
+  \begin{tabular}{lrrr}
+    \toprule
+    System & chrF & ECR $\downarrow$ & Latency \\
+    \midrule
+    \method{} full             & \textbf{84.9} & \textbf{4.9} & 1.17$\times$ \\
+    $-$ uncertainty trigger    & 83.5 & 6.5 & 1.41$\times$ \\
+    $-$ entity constraint      & 84.2 & 8.4 & 1.16$\times$ \\
+    Fixed gate ($g=0.3$)       & 83.8 & 6.9 & 1.17$\times$ \\
+    Random memory              & 81.9 & 7.6 & 1.18$\times$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Qualitative behavior}
+
+The example in Table~\ref{tab:example} illustrates the intended behavior. The
+base model replaces a place name with a frequent common noun. A retrieved
+example contains the same name in a different context; the entity constraint
+preserves it while the model normalizes the surrounding spelling. This audit
+record is useful, but it is not a proof of correctness: an annotator should
+review high-impact decisions.
+
+\begin{table}[t]
+  \centering
+  \caption{Schematic example; forms are invented to avoid representing a real
+  community inaccurately.}
+  \label{tab:example}
+  \small
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabular}{>{\bfseries}p{0.18\columnwidth}p{0.72\columnwidth}}
+    \toprule
+    Input & mi goin Luma tnite \\
+    ByT5 & I am going later tonight. \\
+    Evidence & we reach Luma before noon $\rightarrow$ We reach Luma before noon. \\
+    Ours & I am going to Luma tonight. \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Robustness}
+
+We perturb test inputs with keyboard-neighbor substitutions, character
+deletions, and code-switched distractors. At a 10\% character perturbation
+rate, ByT5 loses 6.2 chrF while \method loses 4.4. The advantage disappears
+when more than half of the retrieved neighbors are deliberately mismatched,
+which motivates provenance checks and memory curation in deployment.
+
+% -----------------------------------------------------------------------------

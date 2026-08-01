@@ -1,0 +1,65 @@
+\section{Design}
+\label{sec:design}
+
+\subsection{Handler Shapes}
+
+Every runtime handler carries an immutable pointer to a shape descriptor. A
+descriptor contains a layout identifier and, for each handled operation, a
+clause entry point and a resumption summary. Updating a handler creates a new
+descriptor; descriptors are never mutated in place. Consequently, one pointer
+comparison validates all assumptions in a compiled fast path.
+
+\begin{definition}[Handler shape]
+A handler shape for an operation $o$ is a tuple
+$s_o=\langle \ell,c,m,v\rangle$, where $\ell$ identifies the handler layout,
+$c$ identifies the operation clause, $m\in\{0,1,\omega\}$ bounds how often the
+clause resumes, and $v$ is a monotonically increasing implementation version.
+\end{definition}
+
+The multiplicity $m$ is conservative. Untrusted single-shot clauses receive a
+dynamic check; the runtime assigns $m=\omega$ when it cannot certify their
+behavior. The optimizer uses a single-shot representation only for $m\leq1$.
+Layout and version make closure offsets and inlined clause code safe. Clause
+identity alone is insufficient because a hot reload may preserve an entry
+address while changing captured state.
+
+\subsection{Selecting Regions}
+
+Profiles attach a small heavy-hitter table to each operation site. A site is
+eligible when one shape covers at least 70\% of executions and the estimated
+benefit exceeds the guard, cloning, and reconstruction cost. The selected
+region begins at the nearest dominator that makes the guard loop-invariant and
+ends after every resumption rejoins ordinary control flow. This usually moves a
+single guard outside a loop, as in \cref{lst:example}.
+
+Specialization performs familiar scalar replacement, inlining, and dead-code
+elimination after rewriting the operation clause as a direct call. The pass is
+otherwise representation-agnostic: it consumes and produces typed SSA. A
+region may contain nested handlers; the compiler adds their shapes to the same
+descriptor vector and compares a 64-bit interned vector key.
+
+\subsection{Reconstruction Maps}
+\label{sec:reconstruction}
+
+Every guard point $p$ has a reconstruction map $R_p$. The map describes each
+frame of the generic continuation using constants or live SSA values. For
+example, after scalar-replacing the checksum accumulator, $R_p$ records the
+current loop index, accumulator, buffer, and generic return address. Values
+that are dead in the source continuation are omitted.
+
+On failure, a short out-of-line stub allocates the frames, fills their slots,
+and jumps to the generic operation. This resembles on-stack replacement
+\cite{delia2018osr}, with two important restrictions: deoptimization occurs
+only at operation boundaries, and the target is always a point in the same
+source function. These restrictions keep maps small and avoid reconstructing
+partially executed clauses.
+
+\subsection{Invalidation and Concurrency}
+
+Shape descriptors are immutable and reclaimed with the handler object. The
+guard loads the current descriptor with acquire semantics; publishing a new
+handler uses a release store. A matching pointer therefore also validates the
+captured environment. No compiled code is patched. Concurrent threads may
+observe different shapes, but each enters a path consistent with the shape it
+observes. Modules that mutate captured values retain ordinary synchronization;
+\system assumes only that the descriptor truthfully describes code and layout.

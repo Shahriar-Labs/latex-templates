@@ -1,0 +1,40 @@
+\section{2. The Meridian Architecture}
+
+% Slide 5: System Overview (TikZ)
+\begin{frame}{Meridian System Overview}
+  \begin{center}
+    \begin{tikzpicture}[
+      node distance = 1.0cm and 1.5cm,
+      every node/.style = {align=center, font=\small},
+      core/.style = {rectangle, draw=meridianblue, fill=meridianblue!10, thick, rounded corners=3pt, minimum width=2.4cm, minimum height=0.9cm},
+      edge/.style = {circle, draw=meridianteal, fill=meridianteal!10, thick, minimum size=1.3cm},
+      client/.style = {rectangle, draw=meridiangold, fill=meridiangold!10, thick, rounded corners=3pt, minimum width=2.0cm, minimum height=0.9cm}
+    ]
+      % Nodes
+      \node[core] (orch) {\textbf{Meridian Orchestrator}\\(Vertex Core)};
+      \node[edge, left=of orch] (nodeA) {\textbf{Synapse A}};
+      \node[edge, above=of orch] (nodeB) {\textbf{Nexa B}};
+      \node[edge, right=of orch] (nodeC) {\textbf{Nimbus C}};
+      \node[client, below=of orch] (client) {\textbf{Client Request}};
+
+      % Connections
+      \draw[<->, thick, meridianblue] (orch) -- (nodeA) node[midway, above, font=\tiny] {Sync};
+      \draw[<->, thick, meridianblue] (orch) -- (nodeB) node[midway, left, font=\tiny] {Sync};
+      \draw[<->, thick, meridianblue] (orch) -- (nodeC) node[midway, above, font=\tiny] {Sync};
+      \draw[->, thick, meridiangold] (client) -- (orch) node[midway, right, font=\tiny] {Submit};
+    \end{tikzpicture}
+  \end{center}
+\end{frame}
+
+% Slide 6: Resource Allocation Protocol
+\begin{frame}{Resource Allocation Protocol}
+  Our protocol maximizes throughput across heterogeneous nodes:
+  \begin{enumerate}
+    \item \textbf{Discovery:} Edge nodes broadcast resource availability (RAM, CPU).
+    \item \textbf{Estimation:} The orchestrator models latency based on network telemetry.
+    \item \textbf{Partitioning:} Vertex-partitioning divides the workload dynamically.
+    \item \textbf{Execution:} Jobs are dispatched with optimistic scheduling.
+  \end{enumerate}
+\end{frame}
+
+% Section 3

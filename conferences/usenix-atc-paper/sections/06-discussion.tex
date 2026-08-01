@@ -1,0 +1,30 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\textbf{Where Tempo helps least.} At low aggregate load (below 50\% in our
+experiments), the three schedulers are nearly indistinguishable, since
+there is enough slack everywhere that placement quality does not matter.
+Tempo's benefit is concentrated in the operating region most operators
+actually worry about: 60--90\% utilization, where every scheduling decision
+has a real opportunity cost.
+
+\textbf{Overhead.} The recursive least-squares update is $O(1)$ per node
+per epoch, but scheduler overhead still scales linearly with feasible-set
+size, so Tempo's constant-factor cost matters more on very large clusters
+with permissive affinity rules that leave thousands of nodes feasible per
+pod. We have not tested Tempo beyond 480 nodes, and expect the overhead
+column in Table~\ref{tab:results} to grow, though the predictor itself
+remains cheap per node.
+
+\textbf{Predictor staleness.} Because the predictor is trained online from
+the previous epoch's outcome, a sudden workload shift (a new tenant onboarding
+at scale, for instance) can leave Tempo scheduling against a stale model for
+one or two epochs (500\,ms in our deployment) before the weights catch up.
+We did not observe this causing instability in our experiments, but we have
+not stress-tested adversarial workload shifts designed to exploit the lag.
+
+\textbf{Fairness.} Tempo optimizes for aggregate tail latency, not
+per-tenant fairness. A tenant with an unusually latency-sensitive workload
+benefits from Tempo's caution, but so does every other tenant sharing the
+same nodes; Tempo does not currently support per-tenant latency budgets,
+which we consider the most valuable direction for follow-on work.

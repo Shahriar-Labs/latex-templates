@@ -1,0 +1,84 @@
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Data and Study Cohorts}
+
+For every dataset, declare its origin, license or data-use agreement, cohort
+construction, inclusion and exclusion criteria, acquisition equipment and
+protocols, annotation procedure, quality control, and ethics approval or the
+reason approval was not required.  Report counts at the patient level and
+explain missing data.  Table~\ref{tab:cohort} is a compact reporting pattern;
+all values in an actual submission must be computed from the final cohort.
+
+\begin{table}
+  \caption{Cohort information that should be reported for each partition.  The
+  entries describe the statistic to provide rather than fabricated study data.}
+  \label{tab:cohort}
+  \centering
+  \begin{tabular}{@{}lllll@{}}
+    \toprule
+    Partition & Patients & Images & Sites & Intended role \\
+    \midrule
+    Training   & final count & final count & site count & parameter fitting \\
+    Validation & final count & final count & site count & model selection \\
+    Internal test & final count & final count & site count & in-domain estimate \\
+    External test & final count & final count & site count & transportability \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Partition data by patient before any patch extraction or augmentation.  When
+multiple centers are available, preserve an external center or acquisition
+period for testing whenever that choice matches the intended use.  Fit
+normalization parameters only on the training set.  If cross-validation is
+used, state whether the same folds and preprocessing are shared by all methods.
+
+\subsection{Comparators, Metrics, and Statistical Analysis}
+
+Compare against the most relevant published approach, a strong standardized
+baseline, and ablations that isolate each claimed contribution.  Use the same
+data, augmentation, tuning budget, and evaluation code for all trainable
+methods whenever possible.  Report computational cost when the contribution
+changes memory, latency, or parameter count.
+
+Choose a primary endpoint before inspecting the test results.  For
+segmentation, overlap measures such as Dice should be complemented by a
+boundary measure when surface accuracy matters; class imbalance may motivate a
+generalized Dice formulation~\cite{sudre2017generalised}.  Report distributions
+or confidence intervals, not only means.  Paired bootstrap intervals over
+patients provide one practical choice: sample patients with replacement,
+recompute the paired difference for each resample, and use its empirical
+quantiles.  Correct for multiple comparisons when several primary hypotheses
+are tested, and accompany significance tests with effect sizes.
+
+\subsection{Results}
+
+Present the primary result first and keep metric direction explicit.  The table
+layout in Table~\ref{tab:results} separates model selection from evaluation and
+shows the minimum information needed to interpret a comparison.  Replace the
+descriptive cells with estimates and uncertainty intervals obtained from the
+locked test analysis.
+
+\begin{table}
+  \caption{Recommended primary-results layout.  An actual manuscript should
+  report numerical estimates with patient-level uncertainty intervals.}
+  \label{tab:results}
+  \centering
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    Method & Dice $\uparrow$ & Surface distance $\downarrow$
+           & Parameters & Runtime \\
+    \midrule
+    Standardized baseline & estimate & estimate & count & seconds/case \\
+    Proposed method       & estimate & estimate & count & seconds/case \\
+    Without component A   & estimate & estimate & count & seconds/case \\
+    Without component B   & estimate & estimate & count & seconds/case \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The accompanying text should quantify the effect rather than repeat every
+cell.  State whether the main comparison supports the prespecified hypothesis,
+then describe ablations, external validation, and subgroup analyses.  Negative
+or inconclusive findings are part of the scientific result and should not be
+hidden.

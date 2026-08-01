@@ -1,0 +1,65 @@
+\section{Correctness}
+\label{sec:correctness}
+
+We relate a generic configuration $C$ to a transformed configuration $C'$ by
+$C\approx C'$. Ordinary values are structurally related. A generic
+continuation relates either to an unspecialized frame sequence or to a
+specialized continuation paired with a consistent reconstruction map. Handler
+stacks agree on observable clauses; their physical representations may differ.
+
+\begin{lemma}[Successful guard]
+If $C\approx C'$, the next source operation has shape $s$, and the transformed
+guard matches $s$, then the direct clause and residual continuation take a
+finite number of steps to some $D'$ such that the corresponding generic clause
+takes steps to $D$ and $D\approx D'$.
+\end{lemma}
+
+\begin{proof}
+The descriptor equality establishes clause, layout, version, and multiplicity.
+Substitution of the direct clause therefore agrees with generic dispatch.
+For multiplicity zero the continuations are unobserved. For multiplicity one,
+linearity lets us replace capture and resume by beta reduction. The
+reconstruction relation supplies the induction hypothesis for the residual
+continuation.
+\end{proof}
+
+\begin{lemma}[Failed guard]
+If $C\approx C'$ at guard point $p$, the guard fails, and
+$R_p,\rho'\simeq K$, then deoptimization reaches a generic configuration $D$
+such that $C\longrightarrow_g^{*}D$ and $D\approx D$.
+\end{lemma}
+
+\begin{proof}
+Materialization creates, from oldest to youngest, exactly the frames described
+by $R_p$. Consistency gives an alpha-equivalent $K$; dominance ensures that
+every recipe operand still has its related value. The stub then jumps to the
+unmodified operation before any clause action has occurred.
+\end{proof}
+
+\begin{theorem}[Semantic preservation]
+For every closed well-typed program $e$, if $C_0$ and $C'_0$ are the initial
+configurations of $e$ and $\trace_s(e)$, then:
+\begin{enumerate}
+  \item if $C'_0\longrightarrow_a^{*}v'$, there exists $v$ such that
+        $C_0\longrightarrow_g^{*}v$ and $v\approx v'$; and
+  \item if $C'_0$ diverges, then $C_0$ diverges or takes infinitely many
+        administrative handler steps.
+\end{enumerate}
+The result holds for arbitrary shape changes between operation boundaries.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By coinduction on $C\approx C'$. Pure reductions commute with the
+transformation. At a guard, apply the successful- or failed-guard lemma. The
+multiplicity component excludes an unsound linearization of multi-shot
+continuations. Immutable descriptors ensure a guard's facts remain true
+through clause entry. Shape changes affect only later guards, where the failed
+case applies. Stuttering accounts for descriptor tests and frame
+materialization. The mechanized development proves the corresponding
+small-step simulation for all rules of \lang.
+\end{proof}
+
+The theorem is deliberately a partial-correctness statement: \system preserves
+the source language's behavior but cannot repair a data race inside a handler.
+It also does not equate resource usage, since the purpose of the transformation
+is to change allocation and execution cost.

@@ -1,0 +1,42 @@
+\section{Method}
+\textsc{ContactRefine} sits between the high-level foothold planner and the swing-leg
+controller. Given the planner's nominal foothold $p_0 \in \mathbb{R}^2$ (in the horizontal
+plane of the leg's home frame), a local elevation patch $E \in \mathbb{R}^{16\times 16}$
+centered at $p_0$, and the trailing contact-force window $F \in \mathbb{R}^{T\times 3}$ for
+that leg over the previous $T=8$ swing cycles, the module predicts an offset
+$\delta \in \mathbb{R}^2$, $\lVert \delta \rVert \le 4\,\text{cm}$, giving the refined foothold
+$p^\ast = p_0 + \delta$.
+
+\subsection{Architecture}
+$E$ is encoded by a $3$-layer convolutional stack (channels $16\!\to\!32\!\to\!32$, stride 2,
+ReLU) into a $64$-dimensional terrain embedding $z_E$. $F$ is encoded by a single-layer GRU
+into a $32$-dimensional contact embedding $z_F$. The two embeddings are concatenated and
+passed through a $2$-layer MLP (hidden width $96$) with a $\tanh$ output scaled to the
+$4\,\text{cm}$ search radius, giving $\delta$.
+
+\subsection{Contrastive Contact Objective}
+Rather than requiring hand-labeled "good" and "bad" footholds, we mine supervision from
+recorded outcomes: a foothold is a positive example if the resulting stance produced peak
+vertical force within $[0.8, 1.2]\times$ the platform's steady-state load and no slip event
+was flagged by the foot-slip detector; it is a negative example if a slip event or a force
+spike exceeding $2.0\times$ steady-state load was recorded within $50\,\text{ms}$ of touchdown.
+For an anchor patch embedding $z_i$ with positive foothold embedding $z_i^{+}$ and a batch of
+negatives $\{z_j^{-}\}_{j=1}^{K}$, we minimize
+\begin{equation}
+\resizebox{0.92\linewidth}{!}{$\displaystyle
+\mathcal{L}_{\text{contact}} = -\log \frac{\exp\!\big(\mathrm{sim}(z_i, z_i^{+})/\tau\big)}
+{\exp\!\big(\mathrm{sim}(z_i, z_i^{+})/\tau\big) + \sum_{j=1}^{K}\exp\!\big(\mathrm{sim}(z_i, z_j^{-})/\tau\big)}
+$}
+\label{eq:contrastive}
+\end{equation}
+where $\mathrm{sim}(\cdot,\cdot)$ is cosine similarity and $\tau = 0.07$ is a temperature
+fixed across all experiments. The offset head is trained jointly with an auxiliary
+$\ell_2$ regression loss toward the empirical positive foothold nearest $p_0$, weighted at
+$0.3$ relative to $\mathcal{L}_{\text{contact}}$, which we found stabilizes early training
+before enough contrastive pairs have accumulated.
+
+\subsection{Deployment}
+At inference, \textsc{ContactRefine} runs once per swing phase on the platform's onboard
+compute (a Nimbus NX-4 module), consuming the most recent elevation patch and contact window
+and returning $\delta$ before the swing trajectory is finalized. The module adds no additional
+sensing requirements beyond what the baseline planner already uses.

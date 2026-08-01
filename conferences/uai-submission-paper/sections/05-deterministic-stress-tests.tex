@@ -1,0 +1,70 @@
+\section{Deterministic Stress Tests}
+\label{sec:experiments}
+
+This section evaluates the algebra of the certificate rather than claiming an
+empirical comparison.  Every table entry is obtained by direct substitution into
+\cref{eq:certificate}; no random trial or hidden dataset is involved.  This is
+useful because the dominant tradeoffs can be inspected before collecting labels.
+
+\subsection{Sample size and systematic ratio error}
+
+Fix $K=20$, $\delta=0.05$, $B=2$, and an observed weighted loss
+$\wh R_k=0.073$.  \Cref{tab:sample-size} reports
+$U_k=\wh R_k+\varepsilon_w+$radius (all values are below one).  Quadrupling $n$
+halves the statistical radius, as predicted, but it leaves the ratio-error term
+unchanged.
+
+\begin{table}[t]
+\centering
+\caption{Exact values of \cref{eq:certificate} as $n$ and
+$\varepsilon_w$ vary.}
+\label{tab:sample-size}
+\small
+\setlength{\tabcolsep}{4.4pt}
+\begin{tabular}{rrrrr}
+\toprule
+$n$ & radius & $U_k$ ($\varepsilon_w=0$) & $.015$ & $.050$ \\
+\midrule
+  500 & .155 & .228 & .243 & .278 \\
+ 2000 & .077 & .150 & .165 & .200 \\
+ 8000 & .039 & .112 & .127 & .162 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Overlap and model multiplicity}
+
+For $n=2000$ and $\delta=0.05$, \cref{tab:overlap} isolates the statistical
+radius.  Doubling the ratio cap doubles uncertainty, whereas multiplying the model
+count by fifty has a smaller, logarithmic effect.  Large $B$ is therefore a warning
+about unsupported target regions, not merely a nuisance tuning parameter.
+
+\begin{table}[t]
+\centering
+\caption{Hoeffding radius $B\sqrt{\log(K/\delta)/(2n)}$.}
+\label{tab:overlap}
+\small
+\setlength{\tabcolsep}{7pt}
+\begin{tabular}{rccc}
+\toprule
+& \multicolumn{3}{c}{$B$} \\
+\cmidrule(lr){2-4}
+$K$ & $1$ & $2$ & $4$ \\
+\midrule
+   2 & .030 & .061 & .121 \\
+  20 & .039 & .077 & .155 \\
+ 200 & .046 & .091 & .182 \\
+1000 & .050 & .100 & .199 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{What a deployment decision looks like}
+
+Consider a risk tolerance $\tau=0.15$ and the first column of
+\cref{tab:sample-size}.  With $n=500$, a candidate having weighted loss $.073$
+cannot be certified even if the ratio is known exactly.  At $n=2000$, the bound is
+approximately $.150$ before ratio error and becomes infeasible for any positive
+$\varepsilon_w$.  At $n=8000$, an error budget as large as $.038$ remains feasible.
+The calculation gives a concrete data-acquisition target: gather more certification
+labels, improve overlap, validate the ratio more tightly, or decline deployment.

@@ -1,0 +1,40 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Machine-learning evaluation usually treats a held-out source sample as a proxy for
+future performance.  That proxy fails when deployment changes the distribution of
+inputs.  Examples include a medical model transferred between hospitals, a vision
+model exposed to a new sensor, or a ranking system serving a new region.  Dataset
+shift is therefore not merely a predictive problem; it is a problem of deciding
+whether the available evidence supports deployment \citep{quionero2009dataset}.
+
+Under \emph{covariate shift}, the conditional law of the outcome given the input is
+stable while the input marginal changes.  Importance weighting then identifies the
+target risk from labeled source data.  Classical work develops density-ratio
+estimators and weighted learning procedures \citep{sugiyama2007direct}; weighted
+conformal methods similarly recover predictive coverage under shift
+\citep{tibshirani2019conformal}.  In contrast, we focus on a narrower operational
+question:
+\begin{quote}
+\small
+Given several already-trained predictors, can a held-out source sample certify
+that the chosen predictor's target risk is below a stated tolerance?
+\end{quote}
+
+The distinction matters.  An unbiased or consistent estimator need not be a valid
+upper bound, and selecting the smallest estimate among many candidates invalidates
+a pointwise guarantee.  Our construction addresses both issues with a simultaneous
+concentration bound.  It makes the following contributions:
+\begin{itemize}
+  \item a distribution-free target-risk certificate for bounded losses and an
+        independently estimated, clipped density ratio;
+  \item a uniform version that remains valid after selecting among a finite model
+        family, plus a variance-adaptive refinement; and
+  \item an auditable deployment rule and deterministic stress tests that expose
+        the effects of sample size, overlap, and multiplicity.
+\end{itemize}
+
+The message is deliberately modest.  A certificate cannot repair a violation of
+covariate shift or a lack of overlap.  It instead converts explicit assumptions
+into a finite-sample statement and becomes conservative when those assumptions are
+weak.

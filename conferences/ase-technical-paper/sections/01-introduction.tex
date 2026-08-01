@@ -1,0 +1,11 @@
+\section{Introduction}
+Automated program repair promises to turn a failing test suite directly into a candidate fix, but the practical bottleneck has shifted from \emph{generating} plausible patches to \emph{selecting} the correct one among many. A typical search-based or learning-based generator emits tens to hundreds of candidates that pass the visible tests yet only a minority match the developer's intended fix~\cite{oyelaran2020overfitting,alvarez2019classifier}. Developers reviewing a ranked list therefore pay an attention tax proportional to how far the correct patch sits from the top of that list.
+
+This paper studies patch ranking as a first-class problem, independent of which generator produced the candidates. We introduce \textsc{RankGen}, a scorer that blends three complementary signals: (1) retrieval similarity against an index of accepted historical patches, (2) the likelihood a pretrained code language model assigns to the candidate conditioned on its surrounding context, and (3) a small set of static features that are known to correlate with overfitting, such as patch size relative to the fault footprint. Section~\ref{sec:approach} formalizes the combination as a single scoring function (Equation~\ref{eq:score}) and describes how each term is estimated.
+
+Our contributions are:
+\begin{itemize}[leftmargin=1.1em,itemsep=0.1em,topsep=0.2em]
+  \item A retrieval-augmented ranking formulation that is generator-agnostic and adds negligible latency.
+  \item An empirical study across three benchmarks (\S\ref{sec:setup}) showing consistent gains in correct-patch rate at fixed candidate budgets.
+  \item An ablation and error analysis (\S\ref{sec:results}, \S\ref{sec:discussion}) isolating when retrieval similarity helps and when it actively misleads the ranker.
+\end{itemize}

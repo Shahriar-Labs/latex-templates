@@ -1,0 +1,12 @@
+\section{Introduction}
+Semi-supervised video object segmentation (VOS) asks a model to propagate an initial object mask through an entire video given only the annotation on the first frame. The dominant recipe stores encoded features from previously segmented frames in a memory bank and retrieves them at every query location through dense cross-attention~\cite{castillo2022stcn,adebayo2024xmem}. Dense retrieval is accurate because every query can, in principle, attend to the single most informative memory slot, but its cost grows linearly with the number of stored frames and quadratically with spatial resolution, which makes long, high-resolution sequences impractical on a single accelerator.
+
+A natural remedy is sparsity: restrict each query to a small, relevant subset of memory. Prior sparse-attention work in dense prediction largely targets a single modality, either appearance or motion, and applies a fixed sparsity pattern chosen at design time~\cite{park2023sparse,osei2021efficient}. We observe that appearance and motion cues are useful at different times during a video --- appearance dominates near object boundaries after a long static period, while motion dominates during fast, non-rigid deformation --- so a single fixed pattern under-uses one modality or the other throughout the sequence.
+
+\methodname{} addresses this with a \emph{shared} sparse index: a lightweight relevance predictor scores memory slots using both appearance and motion embeddings jointly, and only the highest-scoring slots are expanded into full attention keys and values. Because the index is shared, the model can shift emphasis between modalities frame-by-frame without maintaining two separate retrieval pipelines. Our contributions are:
+
+\begin{itemize}[leftmargin=*,itemsep=2pt,topsep=2pt]
+\item A cross-modal relevance predictor that produces a single sparse index over a joint appearance-motion memory bank, avoiding duplicate retrieval passes.
+\item A similarity-gated attention kernel (Eq.~\ref{eq:sparse-attn}) that provably reduces attention FLOPs while bounding the drop in retrieved-key coverage.
+\item An empirical study on two benchmarks showing that \methodname{} reaches $2.6\times$ the frame rate of dense-attention baselines at matched or better mean intersection-over-union.
+\end{itemize}

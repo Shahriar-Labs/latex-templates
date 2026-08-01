@@ -1,0 +1,26 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Gate collapse.} At sparsity coefficients $\lambda > 3\times
+10^{-3}$, we observe that the mean gate activation $\mathbb{E}_t[\|g_t\|_1/d]$
+collapses toward zero within the first 10\% of training and does not
+recover, even though downstream long-range accuracy would benefit from a
+higher gate value. This mirrors dead-unit phenomena reported for other
+learned routing mechanisms \cite{winslow2022scaling} and suggests that
+sparsity regularization for retrieval gates needs a warm-up schedule or a
+floor on minimum activation, rather than a constant penalty from step zero.
+
+\paragraph{Where SCG does not help.} On short-document evaluation (context
+$\le 2K$ tokens, not shown in Table~\ref{tab:results}), SCG offers no
+efficiency advantage over Dense attention and adds a small fixed overhead
+from the gate computation itself. We therefore recommend SCG specifically
+for training and serving regimes where context length routinely exceeds the
+local window size $w$.
+
+\paragraph{Limitations.} Our evaluation is restricted to English text and to
+a single 1.3B-parameter scale; we have not verified that the sparsity
+coefficient $\lambda$ transfers without retuning at larger scales, and
+\cite{delgado2020perplexity} note more broadly that perplexity alone
+under-measures long-range understanding, so task-level evaluation (e.g.,
+long-document QA) remains necessary before drawing capability claims from
+Table~\ref{tab:results} alone.

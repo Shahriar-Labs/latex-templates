@@ -1,0 +1,40 @@
+\section{The SpecGate Architecture}
+Figure~\ref{fig:architecture} shows where SpecGate sits relative to the rest of the memory hierarchy. On an L1D miss, the miss address is used to index the Prefetch Trigger Table (PTT), a set-associative structure that records, for each recently observed trigger address, the delta to the address that followed it and a 3-bit saturating confidence counter. If the lookup hits, the predicted address (trigger $+$ delta) is passed to the Confidence Gate before it may enter the L2 Prefetch Queue.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+    block/.style={draw=archnavy, thick, rounded corners=2pt, fill=archnavy!6,
+                  minimum width=2.1cm, minimum height=0.8cm, align=center, font=\scriptsize},
+    gate/.style={draw=archrust, thick, rounded corners=2pt, fill=archrust!12,
+                 minimum width=2.1cm, minimum height=0.8cm, align=center, font=\scriptsize},
+    lbl/.style={font=\tiny, midway, above, text=archgray}
+  ]
+    \node[block] (fd) {Fetch \& Decode};
+    \node[block, right=0.8cm of fd] (ooo) {OoO Core};
+    \node[block, right=0.8cm of ooo] (l1d) {L1D Cache};
+    \node[block, below=1.15cm of fd] (ptt) {Prefetch Trigger Table};
+    \node[gate, right=0.8cm of ptt] (gate) {Confidence Gate};
+    \node[block, right=0.8cm of gate] (l2) {L2 Prefetch Queue};
+
+    \draw[->] (fd) -- (ooo);
+    \draw[->] (ooo) -- (l1d);
+    \draw[->] (l1d) -- (ptt) node[lbl, pos=0.5, right=1pt] {miss};
+    \draw[->] (ptt) -- (gate) node[lbl] {trigger + $\delta$};
+    \draw[->] (gate) -- (l2) node[lbl] {issue};
+    \draw[->] (gate.north) to[out=100,in=-80] node[lbl]{suppress} (l1d.south);
+  \end{tikzpicture}
+  \caption{SpecGate sits between the L1D miss path and the L2 prefetch queue. The Confidence Gate consults the trigger table's per-entry counter before a predicted address is allowed to issue.}
+  \label{fig:architecture}
+\end{figure}
+
+\subsection{Confidence Update Rule}
+Each PTT entry $a$ maintains a confidence estimate $c_t(a) \in [0,1]$, initialized at $0.5$ on allocation. When a previously issued prefetch for entry $a$ resolves --- meaning the predicted line is later touched by a demand access ($\mathrm{hit}(a)=1$) or evicted unused ($\mathrm{hit}(a)=0$) --- the estimate is updated with an exponentially weighted moving average:
+\begin{equation}
+  c_{t+1}(a) = \alpha \, c_t(a) + (1-\alpha)\,\mathbb{1}[\mathrm{hit}(a)]
+  \label{eq:confidence}
+\end{equation}
+where $\alpha \in (0,1)$ controls the memory of the estimator; we use $\alpha = 0.75$, which weights roughly the last four resolutions most heavily while still adapting within a few tens of misses. In hardware, Equation~\ref{eq:confidence} is implemented as a 3-bit saturating counter that increments on a hit and decrements on a miss, an integer approximation of the same exponential decay.
+
+\subsection{Gating Decision}
+A predicted address is forwarded to the L2 prefetch queue only if $c_t(a) \geq \theta$, where $\theta$ is a fixed threshold (we use $\theta = 0.5$, the counter's reset midpoint). Entries below threshold are still tracked and still updated on resolution --- they are simply not allowed to issue --- so a trigger that starts unreliable can earn its way back above threshold as the access pattern stabilizes. This asymmetry between tracking and issuing is what distinguishes SpecGate from throttling schemes~\cite{gem2019} that disable a whole prefetcher rather than individual trigger entries.

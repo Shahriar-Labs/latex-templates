@@ -1,0 +1,41 @@
+\section{Related Work}
+\label{sec:related}
+
+\textbf{Cluster-level schedulers.} Shared-state and two-level schedulers
+such as those described by Chen et al.~\cite{chen2015omega} and Vasquez and
+Holm~\cite{vasquez2016mesoslike} decouple resource offering from placement
+policy, letting frameworks bid for resources independently. Tempo operates
+at the placement-policy layer and could sit underneath either architecture;
+our contribution is orthogonal to the offer-vs-assign split those systems
+address.
+
+\textbf{Latency-aware placement.} Raman and Okafor~\cite{raman2020tail}
+show that shared caches and network contention, not just CPU scheduling,
+dominate tail latency in multi-tenant fleets, and propose isolating
+latency-sensitive tenants onto dedicated node pools. This sidesteps the
+packing problem rather than solving it; Tempo instead tries to make dense
+co-location safe by predicting when it will hurt.
+
+\textbf{Sampling-based load balancing.} Batch-sampling
+schedulers~\cite{holm2018batch} and multi-resource packers such as
+Ferro and Tan's~\cite{ferro2019tetris} extension of bin-packing heuristics
+to vector resource demands both use point-in-time load samples. We compare
+directly against a power-of-two-choices baseline in
+Section~\ref{sec:results} and find that Tempo's predictive signal
+outperforms it once utilization crosses roughly 60\%.
+
+\textbf{Predictive autoscaling.} Tan and Ferro~\cite{tan2022predictive}
+apply lightweight latency models to horizontal autoscaling decisions at
+the fleet level. Tempo applies a structurally similar predictor, but at
+the much finer grain of individual placement decisions rather than
+fleet-wide capacity changes, and folds migration cost into the same model.
+
+\textbf{Speculative execution and stragglers.} Raman and
+Holm~\cite{raman2023straggler} address tail latency caused by individual
+slow tasks via speculative re-execution. That mechanism is complementary
+to Tempo: stragglers within an already-placed job are a separate problem
+from deciding where to place work in the first place. Serverless-specific
+placement work by Okafor et al.~\cite{okafor2020serverless} and
+cluster-manager retrospectives by Okafor and Raman~\cite{okafor2017borgish}
+and Ferro and Chen~\cite{ferro2021elastic} inform our choice of which
+signals are cheap enough to compute inside a hot scheduling path.

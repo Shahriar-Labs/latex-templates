@@ -1,0 +1,49 @@
+\section{Method}
+
+\subsection{Problem Setting}
+Let a source document $D = (s_1, \dots, s_T)$ be translated sentence by
+sentence in order. At step $t$, a base NMT system produces an $n$-best list
+$\mathcal{H}_t = \{h_t^{(1)}, \dots, h_t^{(n)}\}$ via beam search, each with
+model log-likelihood $\log p_\theta(h_t^{(i)} \mid s_t)$. Standard decoding
+selects $h_t^{(1)}$, the top-scoring hypothesis, discarding document context
+entirely. \textsc{DiscoRerank} instead selects a hypothesis by combining
+translation likelihood with a discourse-consistency score computed against
+already-translated sentences $(s_1, h_1), \dots, (s_{t-1}, h_{t-1})$.
+
+\subsection{Discourse Retrieval}
+For source sentence $s_t$, we retrieve the top $k$ prior sentence pairs in
+the same document under cosine similarity of a frozen bi-encoder embedding
+$f(\cdot)$:
+\[
+  \mathcal{R}_t = \operatorname*{arg\,top\text{-}k}_{j < t}\; \cos\!\big(f(s_t),\, f(s_j)\big).
+\]
+Retrieval is restricted to the current document, so $\mathcal{R}_t$ is empty
+for $t \le k$ and grows in size as the document proceeds -- early sentences
+fall back to the base decoder's top hypothesis.
+
+\subsection{Discourse-Consistency Scoring}
+Each retrieved pair $(s_j, h_j) \in \mathcal{R}_t$ contributes a
+terminology-and-pronoun consistency vote against a candidate hypothesis
+$h_t^{(i)}$. We define the discourse score $g(h_t^{(i)})$ as the average
+agreement across retrieved pairs on (a) shared named-entity translations and
+(b) pronoun-antecedent gender/number agreement, each computed with
+rule-based aligners over the source and target sides. The final reranking
+score is
+
+\begin{equation}
+\label{eq:rerank}
+  \operatorname{score}\big(h_t^{(i)}\big) \;=\; \log p_\theta\big(h_t^{(i)} \mid s_t\big) \;+\; \lambda \cdot g\big(h_t^{(i)}\big),
+\end{equation}
+
+\noindent where $\lambda \geq 0$ trades off fluency against discourse
+consistency. We select $h_t^\star = \arg\max_i \operatorname{score}(h_t^{(i)})$
+as the final translation for sentence $t$, and $\lambda$ is tuned once per
+language pair on a small development split (Section~\ref{sec:experiments}).
+
+\subsection{Why Reranking, Not Retraining}
+Because $g(\cdot)$ operates only on decoded hypotheses and $\lambda$ is a
+single scalar, \textsc{DiscoRerank} requires no gradient updates to
+$\theta$. The bi-encoder $f(\cdot)$ is pretrained once, off the target
+domain, and frozen thereafter. This keeps the method usable in the exact
+regime where document-level fine-tuning is least practical: language pairs
+with too little document-aligned data to support it.

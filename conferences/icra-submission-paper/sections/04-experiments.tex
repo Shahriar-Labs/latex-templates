@@ -1,0 +1,31 @@
+\section{Experiments}
+We validated our framework in both simulation and physical field tests. The simulator represents a dense pine forest with tree densities ranging from 0.1 to 0.5 trees per square meter.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.2cm and 1.2cm,
+    block/.style={draw, fill=icramutedblue!10, rectangle, minimum height=2.2em, minimum width=6.5em, rounded corners, align=center, font=\small, draw=icramutedblue},
+    sensor/.style={draw, fill=green!10, rectangle, minimum height=2.2em, minimum width=6.5em, rounded corners, align=center, font=\small, draw=green!70!black},
+    cloud/.style={draw, fill=orange!10, ellipse, minimum height=2.5em, minimum width=6.5em, align=center, font=\small, draw=orange},
+    arrow/.style={thick,->,>=stealth, draw=icradarkgray}
+  ]
+    % Nodes
+    \node[sensor] (lidar) {LiDAR Sensor};
+    \node[block, right=of lidar] (vgm) {Vertex-Graph\\Mapping};
+    \node[block, right=of vgm] (planner) {Topological\\Planner};
+    \node[block, below=of planner, yshift=-0.2cm] (controller) {Flight\\Controller};
+    \node[cloud, below=of vgm, yshift=-0.2cm] (uav) {Synapse-V4\\UAV};
+
+    % Arrows
+    \draw[arrow] (lidar) -- node[above, font=\scriptsize] {Point Cloud} (vgm);
+    \draw[arrow] (vgm) -- node[above, font=\scriptsize] {Graph} (planner);
+    \draw[arrow] (planner) -- node[right, font=\scriptsize] {Setpoints} (controller);
+    \draw[arrow] (controller) -- (uav);
+    \draw[arrow] (uav.west) -| node[left, pos=0.8, font=\scriptsize] {State Estimate} (vgm.south);
+  \end{tikzpicture}
+  \caption{System architecture of the proposed autonomous navigation framework. The Synapse-V4 platform utilizes solid-state LiDAR data to construct the Vertex-Graph, which guides the topological path planner.}
+  \label{fig:architecture}
+\end{figure}
+
+The physical experiments were conducted using the Synapse-V4 quadrotor platform developed by Nexa Technologies \cite{nexa2024forest}. The drone is equipped with an Apex-200 companion computer (featuring a quad-core 2.4~GHz processor) and a single forward-facing Nexa Solid-State LiDAR. The sensor provides a 120-degree horizontal field of view at 20~Hz.

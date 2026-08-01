@@ -1,0 +1,51 @@
+\section{Formal Model}
+\label{sec:formal}
+
+We formalize the essential transformation using \lang, a call-by-value
+calculus with integers, functions, operations, and deep handlers. Values and
+computations are:
+
+\begin{align*}
+v &::= n \mid x \mid \lambda x.e \mid h \\
+e &::= v \mid e\;e \mid \op_i(v) \mid
+      \handle\ e\ \with\ h \mid \resume\ k\ v .
+\end{align*}
+
+A handler $h$ maps operation labels to clauses $\lambda(x,k).e$ and has a
+return clause. A machine configuration has the form
+\[
+  C = \langle e,\rho,\heaps,\handlers,\contexts\rangle .
+\]
+Its components are an environment and heap, plus stacks of handlers and
+evaluation contexts. The generic transition $\longrightarrow_g$ searches $\handlers$ for an
+operation, captures the corresponding suffix of $\contexts$, and evaluates the
+clause. Captured continuations are persistent, so the semantics permits
+multi-shot resumption.
+
+For a profiled shape $s$, transformation $\trace_s(e)$ produces a guarded
+term. At operation site $p$, the interesting rule is:
+
+\begin{equation}
+\begin{aligned}
+\trace_s(\op_i(v)) ={}& \guard_s(\handlers,i, \\
+  &\mathsf{direct}_{s,i}(v,k_s),\deopt(p,R_p)).
+\end{aligned}
+\label{eq:transform}
+\end{equation}
+
+where $k_s$ is the residual direct-style continuation. If $s.m=0$, the
+continuation is dead; if $s.m=1$, it is a linear function. No direct rule is
+generated for $s.m=\omega$. Transformed configurations additionally contain a
+map store $\trace$ and step under $\longrightarrow_a$.
+
+\begin{definition}[Reconstruction consistency]
+$R_p$ is consistent with source context $K$ and specialized environment
+$\rho'$ (written $R_p,\rho'\simeq K$) when materializing each frame recipe in
+$R_p$ yields a context alpha-equivalent to $K$, and corresponding free
+variables contain related values.
+\end{definition}
+
+The compiler constructs maps backward from the generic target, then verifies
+them with an SSA data-flow check. Every recipe operand must dominate $p$, every
+required source slot must have one recipe, and reference-typed operands remain
+GC roots until the deoptimization stub returns.

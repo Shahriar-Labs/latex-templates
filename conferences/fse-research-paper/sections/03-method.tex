@@ -1,0 +1,49 @@
+\section{Method}
+In this section, we present the architecture of Meridian-Spec, which consists of three main stages: trace collection, Vertex filtering, and temporal contract synthesis. Figure \ref{fig:architecture} provides an architectural overview.
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.2cm and 1.0cm,
+    box/.style={draw=primarycolor, thick, fill=white, rounded corners=3pt, minimum width=2.0cm, minimum height=0.8cm, align=center, font=\small},
+    arrow/.style={draw=primarycolor, thick, ->, >=stealth}
+  ]
+    \node (source) [box] {Microservice\\Traces};
+    \node (filter) [box, right=of source] {Vertex\\Filtering};
+    \node (miner) [box, below=of filter] {Meridian\\Miner};
+    \node (output) [box, left=of miner] {Interface\\Contracts};
+    
+    \draw [arrow] (source) -- (filter);
+    \draw [arrow] (filter) -- (miner);
+    \draw [arrow] (miner) -- (output);
+    \draw [arrow] (output) -- (source);
+    
+    \node[font=\scriptsize\itshape, anchor=south] at ($(source.east)!0.5!(filter.west)$) {Log Stream};
+    \node[font=\scriptsize\itshape, anchor=west] at ($(filter.south)!0.5!(miner.north)$) {Refined Data};
+    \node[font=\scriptsize\itshape, anchor=north] at ($(miner.west)!0.5!(output.east)$) {Model Extraction};
+    \node[font=\scriptsize\itshape, anchor=east] at ($(output.north)!0.5!(source.south)$) {Feedback};
+  \end{tikzpicture}
+  \caption{Architectural overview of the proposed Meridian-Spec framework. The system processes raw microservice traces via Vertex Filtering, executes contract mining, and generates formal interface specifications.}
+  \label{fig:architecture}
+\end{figure}
+
+\subsection{Trace Representation}
+Let $T$ be a distributed trace, defined as a set of events $e_i = (s_i, a_i, t_i, d_i)$, where $s_i$ is the source service, $a_i$ is the API action, $t_i$ is the timestamp, and $d_i$ is the set of causal dependencies (e.g., predecessor events).
+
+We model the probability of a trace $T$ under a given interface specification model $M$ as:
+\begin{equation}
+  P(T \mid M) = \prod_{i=1}^{|T|} P(e_i \mid e_1, \dots, e_{i-1}; M)
+  \label{eq:probability}
+\end{equation}
+Our mining goal is to find the model $M$ that maximizes this probability across all observed traces.
+
+\subsection{Vertex Filtering}
+To isolate meaningful interactions from concurrent noise, we construct a directed acyclic graph (DAG) of request flows. The Vertex Filtering stage prunes independent concurrent paths by verifying explicit dataflow dependencies, retaining only causally linked events.
+
+\subsection{Specification Synthesis}
+Using the filtered trace DAG, we extract temporal properties of the form $A \Rightarrow \Diamond B$, which asserts that the occurrence of action $A$ eventually implies the occurrence of action $B$ within the same transaction. The support score $S$ for such a rule is calculated as:
+\begin{equation}
+  S(A \Rightarrow \Diamond B) = \frac{|\{T \mid A \text{ and } B \text{ occur in } T \text{ and } t_A < t_B\}|}{|\{T \mid A \text{ occurs in } T\}|}
+  \label{eq:support}
+\end{equation}
+Only rules with a support score higher than a threshold $\theta$ are included in the generated contracts.

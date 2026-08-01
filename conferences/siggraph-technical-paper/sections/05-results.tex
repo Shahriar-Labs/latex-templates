@@ -1,0 +1,20 @@
+\section{Results}
+Table \ref{tab:results} summarizes the quantitative results on the Nimbus benchmark. Our method, Vertex-Net, achieves a PSNR of 31.54 dB, outperforming the grid-based baseline by over 9 dB and the Synapse-Volumetric model by 4.65 dB. This significant gap is due to the non-linear ray tracer, which correctly models the complex light paths. Models that assume straight-line transport (such as Synapse-Volumetric) fail to reconstruct the internal details, leading to blurred boundaries and inaccurate refractive index values.
+
+\begin{table*}[t]
+  \centering
+  \caption{Quantitative comparison of reconstruction accuracy on the Nimbus Refractive Benchmark. We report Peak Signal-to-Noise Ratio (PSNR $\uparrow$), Structural Similarity Index (SSIM $\uparrow$), and chamfer distance ($D_{\text{C}} \downarrow$).}
+  \label{tab:results}
+  \begin{tabular}{l c c c}
+    \toprule
+    Method & PSNR (dB) $\uparrow$ & SSIM $\uparrow$ & $D_{\text{C}}$ (mm) $\downarrow$ \\
+    \midrule
+    Grid-based Refraction & 22.45 & 0.812 & 4.12 \\
+    Meridian Renderer & 24.12 & 0.854 & 3.05 \\
+    Synapse-Volumetric & 26.89 & 0.891 & 1.88 \\
+    \textbf{Ours (Vertex-Net)} & \textbf{31.54} & \textbf{0.942} & \textbf{0.74} \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+Qualitative results are illustrated in Figure \ref{fig:pipeline}. As shown in the figure, our differentiable ray tracer successfully computes gradients through curved rays, updating the Vertex-Net field to match the refractive boundaries. The grid-based baseline suffers from severe discretization artifacts, which manifest as blocky boundaries. In contrast, our hybrid representation yields smooth, continuous index of refraction distributions, matching the ground-truth profiles closely.

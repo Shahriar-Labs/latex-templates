@@ -1,0 +1,51 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{Overview}
+
+SCG replaces the attention input at each layer with a gated combination of
+two signals: a \emph{local} hidden state produced by standard causal
+attention over a short window of size $w$, and a \emph{retrieved} state
+summarizing a bounded cache of the $m$ most recent chunk summaries. The gate
+decides, per token, how much of the retrieved signal to admit.
+
+\subsection{Local and retrieved states}
+
+For a token at position $t$ with hidden state $h_t \in \mathbb{R}^d$, the
+local state $\ell_t$ is computed by standard multi-head causal attention
+restricted to the window $[t-w, t]$. The sequence is additionally divided
+into non-overlapping chunks of size $c$; after each chunk is processed, its
+final hidden state is written into a first-in-first-out cache of capacity
+$m$. The retrieved state $r_t$ is a single attention read over the $m$
+cached chunk summaries, using $h_t$ as the query:
+\begin{equation}
+r_t = \sum_{i=1}^{m} \operatorname{softmax}_i\!\left(\frac{h_t^\top K_i}{\sqrt{d}}\right) V_i,
+\label{eq:retrieval}
+\end{equation}
+where $K_i, V_i$ are learned key/value projections of the $i$-th cached
+summary. Because $m$ is small (we use $m=32$ throughout), this read costs
+$O(m)$ rather than $O(t)$.
+
+\subsection{The gate}
+
+The gate $g_t \in (0,1)^d$ is a per-channel sigmoid over a linear projection
+of the concatenated local and retrieved states:
+\begin{equation}
+g_t = \sigma\!\left(W_g \,[\, \ell_t \,;\, r_t \,] + b_g\right), \qquad
+\tilde{h}_t = g_t \odot r_t + (1 - g_t) \odot \ell_t,
+\label{eq:gate}
+\end{equation}
+where $\odot$ denotes elementwise product and $[\,\cdot\,;\,\cdot\,]$ is
+concatenation along the feature dimension. $\tilde{h}_t$ is then fed into the
+layer's feed-forward block as in a standard transformer layer. When $g_t
+\to 0$ everywhere, SCG reduces exactly to sliding-window attention with
+window $w$; this fallback behavior is what allows SCG to degrade gracefully
+rather than fail catastrophically when long-range context is unhelpful.
+
+\subsection{Sparsity regularization}
+
+To keep the retrieval pathway cheap in expectation, we add an $\ell_1$
+penalty on the mean gate activation, $\mathcal{L}_{\text{sparse}} =
+\lambda \cdot \mathbb{E}_t[\|g_t\|_1 / d]$, added to the standard
+cross-entropy loss with coefficient $\lambda$. Section~\ref{sec:discussion}
+discusses the trade-off between $\lambda$ and long-range recall.

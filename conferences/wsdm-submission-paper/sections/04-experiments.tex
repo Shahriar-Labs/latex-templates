@@ -1,0 +1,29 @@
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Datasets}
+
+We evaluate on two session benchmarks. \textbf{NexaQL} is a sample of 2.4M sessions
+from a general web search log, stratified so that 40\% of test-set queries are
+long-tail (fewer than five historical occurrences). \textbf{MeridianSessions} is a
+smaller, denser benchmark of 310K sessions drawn from a vertical shopping search
+engine, used to test transfer to a narrower domain. Both are split temporally into
+train/validation/test with a two-week gap to avoid session leakage, following the
+protocol of \citet{Delacroix2020Evaluation}.
+
+\subsection{Baselines}
+
+We compare against \textbf{BM25} query expansion, \textbf{RankNet-Session}
+\citep{Whitfield2016RankNet} adapted to session features, \textbf{GraphRank}
+\citep{Rajan2021GraphRank}, and \textbf{LongTail-BERT}, a transformer bi-encoder
+fine-tuned with the contrastive pretraining recipe of
+\citet{Lindqvist2020Contrastive}. All baselines are retuned on our splits with the
+same candidate shortlist as CSG for a fair comparison.
+
+\subsection{Implementation Details}
+
+The graph encoder uses hidden dimension $d{=}256$, $L{=}3$ relational graph
+convolution layers, and dropout $0.1$. We train with Adam at learning rate
+$3\times10^{-4}$, batch size $512$ sessions, and temperature $\tau$ initialized at
+$0.07$ and learned. Training runs for $20$ epochs with early stopping on validation
+NDCG@10; all reported results are averaged over five seeds.

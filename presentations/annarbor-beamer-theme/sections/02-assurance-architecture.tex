@@ -1,0 +1,106 @@
+\section{Assurance architecture}
+
+% -----------------------------------------------------------------------------
+% 5. Architecture
+% -----------------------------------------------------------------------------
+\begin{frame}{The release gate sits between generation and delivery}
+  \centering
+  \begin{tikzpicture}[node distance=0.9cm and 0.75cm]
+    % Draw connections first so they remain behind the nodes.
+    \draw[flow] (-4.75,0.65) -- (-3.35,0.25);
+    \draw[flow] (-4.75,-0.65) -- (-3.35,-0.25);
+    \draw[flow] (-0.65,0) -- (0.05,0);
+    \draw[flow] (2.75,0) -- (3.40,0);
+    \draw[audit] (1.40,-0.62) -- (1.40,-1.55);
+
+    \node[evidence] at (-5.25,0.72) {Policy\\library};
+    \node[evidence] at (-5.25,-0.72) {Case\\context};
+    \node[stage,fill=ArborBlue!7] at (-2.00,0) {Retrieve + rank\\dated evidence};
+    \node[stage,fill=ArborMaize!20] at (1.40,0) {Draft + verify\\claim by claim};
+    \node[stage,fill=ArborGreen!9] at (4.75,0) {Release policy\\answer or escalate};
+    \node[stage,minimum width=3.05cm,fill=ArborMist] at (1.40,-2.10)
+      {Immutable audit record};
+
+    \begin{scope}[on background layer]
+      \node[
+        draw=ArborTeal!55,
+        fill=ArborTeal!3,
+        rounded corners=5pt,
+        fit={(-5.95,1.36) (2.88,-1.00)},
+        inner sep=4pt
+      ] {};
+    \end{scope}
+    \node[font=\scriptsize\bfseries,text=ArborTeal] at (-1.50,1.58)
+      {CONTROLLED EVIDENCE BOUNDARY};
+  \end{tikzpicture}
+
+  \vspace{0.12cm}
+  \small
+  Unsupported claims never reach the delivery channel; uncertain cases follow a defined escalation path.
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 6. Decision rule
+% -----------------------------------------------------------------------------
+\begin{frame}{A bounded score makes the release policy explicit}
+  For answer $a$ with claims $c_1,\ldots,c_m$, define
+  \begin{equation*}
+    Q(a)
+    = \sum_{i=1}^{m} w_i\,s(c_i,e_i)
+      - \lambda U(a)
+      - \gamma A(a),
+    \qquad
+    \sum_{i=1}^{m} w_i=1,
+  \end{equation*}
+  where
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item $s(c_i,e_i)\in[0,1]$: support from cited evidence,
+        \item $U(a)$: unresolved ambiguity or missing context,
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item $A(a)$: source-age penalty after a policy update,
+        \item $\lambda,\gamma$: risk-calibrated penalties.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \begin{block}{Release rule}
+    Deliver only when $Q(a)\geq\tau$, every high-impact claim has direct support, and no source is outside its validity window; otherwise ask for context or escalate.
+  \end{block}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 7. Verification trace
+% -----------------------------------------------------------------------------
+\begin{frame}{The audit trace explains both the answer and the refusal}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.52\textwidth}
+      \centering
+      \begin{tikzpicture}[node distance=0.33cm]
+        \node[evidence,minimum width=5.4cm,align=left] (q)
+          {\textbf{Question}\quad ``Do I qualify after moving counties?''};
+        \node[evidence,minimum width=5.4cm,align=left,below=of q] (p)
+          {\textbf{Passage}\quad residency rule, version 2026.07};
+        \node[evidence,minimum width=5.4cm,align=left,below=of p] (c)
+          {\textbf{Claim}\quad eligibility requires a new application};
+        \node[evidence,minimum width=5.4cm,align=left,below=of c] (v)
+          {\textbf{Verdict}\quad supported; county date still missing};
+        \draw[flow] (q) -- (p);
+        \draw[flow] (p) -- (c);
+        \draw[flow] (c) -- (v);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{block}{What the user sees}
+        A concise answer, a next action, and citations to the governing policy.
+      \end{block}
+      \begin{alertblock}{What blocks release}
+        The move date determines which version applies, so the assistant asks one targeted question.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+\end{frame}

@@ -1,0 +1,221 @@
+\section{Evaluation}
+\label{sec:evaluation}
+
+Our evaluation answers four questions:
+
+\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=3pt]
+  \item Does \system reduce energy at matched event recall?
+  \item Does its budget hold during event storms and energy droughts?
+  \item How much do uncertainty, feedback, and coordination contribute?
+  \item Where does the approach fail?
+\end{enumerate}
+
+\subsection{Methodology}
+
+\paragraph{Workloads.}
+Table~\ref{tab:workloads} describes five 30-day workloads.  Temp and Humidity
+use trace-aligned generators calibrated to the Corex Berkeley lab data
+set~\cite{madden2004tinydb}.  Soil follows seasonal and rain transitions
+reported by SensorScope~\cite{barrenetxea2008sensorscope}.  Vibration embeds
+short transients in colored noise, and Air combines slow occupancy drift with
+step-like ventilation events.  Generators fix random seeds and emit a full-rate
+reference stream.  This setup tests policies under controlled events; it does
+not claim to reproduce the end-to-end accuracy of those deployments.
+
+\begin{table}[t]
+  \caption{Trace-replay workloads.  Duration is 30 days each.}
+  \label{tab:workloads}
+  \centering
+  \small
+  \begin{tabular}{@{}llrr@{}}
+    \toprule
+    Workload & Dominant behavior & Events & Base rate \\
+    \midrule
+    Temp & diurnal + occupancy step & 186 & 1\,Hz \\
+    Humidity & coupled slow drift & 121 & 1\,Hz \\
+    Soil & rain onset + recession & 74 & 0.2\,Hz \\
+    Vibration & 4--18\,s transients & 412 & 10\,Hz \\
+    Air & drift + ventilation step & 203 & 1\,Hz \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Baselines.}
+\textsc{Periodic} uses the fastest fixed period that reaches at least 95\%
+event recall on each workload.  \textsc{Residual} halves its interval when
+absolute prediction error crosses a threshold and doubles it after four stable
+samples.  \textsc{Variance} maps a rolling 16-sample variance to the same
+interval bounds.  \textsc{Oracle} samples densely within ground-truth event
+windows and at $\tau_{\max}$ otherwise; it is a non-causal lower bound, not a
+deployable competitor.  All causal policies use the same event detector,
+interval limits, energy table, radio batching, and initial samples.
+
+\paragraph{Metrics.}
+An event is recalled if a sampled stream triggers the reference detector before
+the event ends plus a 30\,s grace period.  Delay is measured from reference
+onset.  Daily energy includes sleep, sensor, MCU, and radio energy.  Reported
+values are medians over 20 generator seeds; error bars are 5th--95th
+percentiles.  Unless stated otherwise, the target budget is 2.4\,kJ/day,
+$B_c=0.2\Energy$, and packets batch up to four observations.
+
+\subsection{Energy--fidelity trade-off}
+
+Figure~\ref{fig:mainresults}a sweeps each policy's aggressiveness across all
+workloads.  At 95\% recall, \system uses 1.92\,kJ/day, 54\% less than
+\textsc{Periodic}, 26\% less than \textsc{Residual}, and 21\% less than
+\textsc{Variance}.  Its gap to the non-causal oracle is 0.36\,kJ/day.  The gain
+comes from long steady intervals without committing to them during rising
+uncertainty.
+
+At the default operating point, the per-workload reduction over periodic
+sampling ranges from 47\% on Vibration to 63\% on Humidity
+(Figure~\ref{fig:mainresults}b).  Vibration leaves the least opportunity because
+short events force a 2\,s floor both during and after a trigger.  Humidity is
+predictable enough to remain near $\tau_{\max}$ for 71\% of replay time.
+
+\begin{figure*}[t]
+  \centering
+  \begin{tikzpicture}
+  \begin{groupplot}[
+    group style={group size=2 by 1,horizontal sep=1.35cm},
+    width=.47\textwidth,height=5.2cm,
+    grid=major,grid style={gray!20},
+    tick label style={font=\scriptsize},label style={font=\small},
+    title style={font=\small\bfseries},
+    legend style={font=\scriptsize,draw=none,fill=none}]
+  \nextgroupplot[
+    title={(a) Aggregate Pareto frontier},
+    xlabel={Daily energy (kJ)},ylabel={Event recall (\%)},
+    xmin=1.15,xmax=4.8,ymin=80,ymax=100,
+    legend columns=2,legend pos=south east]
+    \addplot+[color=black,mark=x,thick] coordinates {(3.05,82.0) (3.48,89.0) (4.16,95.0) (4.62,98.1)};
+    \addlegendentry{Periodic}
+    \addplot+[color=tsorange,mark=square*,thick,dashed] coordinates {(1.72,82.2) (2.03,89.4) (2.59,95.0) (3.37,98.0)};
+    \addlegendentry{Residual}
+    \addplot+[color=tsgreen,mark=triangle*,thick,dashdotted] coordinates {(1.65,82.1) (1.94,89.7) (2.43,95.0) (3.15,98.1)};
+    \addlegendentry{Variance}
+    \addplot+[color=tsblue,mark=*,very thick] coordinates {(1.38,82.4) (1.55,90.1) (1.92,95.0) (2.61,98.0)};
+    \addlegendentry{\system}
+    \addplot+[color=tsgray,mark=diamond*,thick,dotted] coordinates {(1.21,83.0) (1.34,90.0) (1.56,95.0) (1.98,98.1)};
+    \addlegendentry{Oracle}
+  \nextgroupplot[
+    title={(b) Energy reduction at $\geq$95\% recall},
+    ybar,bar width=9pt,
+    symbolic x coords={Temp,Humidity,Soil,Vibration,Air},xtick=data,
+    x tick label style={rotate=20,anchor=east,font=\scriptsize},
+    ylabel={Reduction vs. periodic (\%)},ymin=0,ymax=70,
+    nodes near coords,nodes near coords style={font=\scriptsize},
+    enlarge x limits=.13]
+    \addplot+[fill=tsblue!72,draw=tsblue] coordinates
+      {(Temp,55) (Humidity,63) (Soil,58) (Vibration,47) (Air,52)};
+  \end{groupplot}
+  \end{tikzpicture}
+  \caption{Main trace-replay results.  (a) \system shifts the energy--recall
+  frontier toward the oracle.  (b) Savings persist across all workloads at a
+  matched recall target.}
+  \Description{Two charts. The first plots recall against daily energy and
+  shows TideSense closest to an oracle. The second shows TideSense reducing
+  energy by 47 to 63 percent across five workloads.}
+  \label{fig:mainresults}
+\end{figure*}
+
+\subsection{Budget adherence and delay}
+
+We stress the controller with a six-hour event storm followed by an 18-hour
+quiet period and cut harvested power by 40\% at noon.  Figure~\ref{fig:budget}
+shows that a risk-only variant exceeds the day budget by 31\%; \system incurs a
+brief energy debt, gradually stretches routine intervals, and finishes within
+2.8\% of budget.  It does not immediately jump to $\tau_{\max}$, which would
+turn an energy correction into a fidelity cliff.
+
+Across normal workloads, median detection delay is 5.7\,s and the 99th
+percentile is 18.4\,s, compared with 4.1 and 13.2\,s for the matched-recall
+periodic baseline.  The extra 5.2\,s in the tail buys a 54\% energy reduction.
+During the synthetic drought, 99th-percentile delay rises to 24.7\,s but remains
+below the 30\,s grace bound.  No workload violates $\tau_{\max}$.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=\columnwidth,height=4.9cm,
+      xmin=0,xmax=24,ymin=0,ymax=3.45,
+      xlabel={Time (hour)},ylabel={Cumulative energy (kJ)},
+      grid=major,grid style={gray!20},
+      tick label style={font=\scriptsize},label style={font=\small},
+      legend style={font=\scriptsize,draw=none,fill=none,at={(.03,.97)},anchor=north west}]
+      \addplot+[color=tsblue,very thick,mark=none] coordinates
+        {(0,0) (3,.25) (6,.55) (9,1.05) (12,1.52) (15,1.88) (18,2.11) (21,2.28) (24,2.33)};
+      \addlegendentry{\system}
+      \addplot+[color=tsorange,thick,dashed,mark=none] coordinates
+        {(0,0) (3,.25) (6,.56) (9,1.10) (12,1.68) (15,2.17) (18,2.55) (21,2.88) (24,3.14)};
+      \addlegendentry{No governor}
+      \addplot+[color=black,thin,dotted,domain=0:24,samples=2] {0.1*x};
+      \addlegendentry{2.4 kJ budget}
+      \draw[gray!60,dash pattern=on 2pt off 2pt] (axis cs:12,0) -- (axis cs:12,3.45)
+        node[pos=.92,left,font=\scriptsize,rotate=90]{harvest cut};
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Cumulative energy during an event storm and a 40\% harvest cut.
+  Budget feedback repays early debt without an abrupt sampling-rate change.}
+  \Description{Cumulative energy chart over 24 hours. TideSense ends near the
+  2.4 kilojoule budget, while the version without a governor rises to 3.14
+  kilojoules. A vertical marker shows a harvest cut at hour 12.}
+  \label{fig:budget}
+\end{figure}
+
+\subsection{Ablation and overhead}
+
+Table~\ref{tab:ablation} removes one component at a time at the default budget.
+Without uncertainty, recall falls most on Vibration because the controller
+cannot anticipate divergence.  Without surprise, confident bias persists
+through Soil drift.  Removing the governor improves recall slightly but breaks
+the budget.  Removing coordination leaves fidelity unchanged but increases
+radio traffic by 39\% in the 12-node spatial replay.  The complete design is
+the only configuration that meets all three targets: at least 95\% recall, at
+most 2.4\,kJ/day, and no more than 65 packets/node/day.
+
+\begin{table}[t]
+  \caption{Component ablation (median across workloads).  Bold values meet the
+  corresponding target.}
+  \label{tab:ablation}
+  \centering
+  \small
+  \begin{tabular}{@{}lrrr@{}}
+    \toprule
+    Configuration & Recall & Energy & Packets \\
+     & (\%) & (kJ/day) & (/node/day) \\
+    \midrule
+    Complete \system & \textbf{96.1} & \textbf{2.33} & \textbf{61} \\
+    No uncertainty & 91.8 & \textbf{2.18} & \textbf{57} \\
+    No surprise & 93.2 & \textbf{2.21} & \textbf{59} \\
+    No governor & \textbf{97.0} & 3.05 & 78 \\
+    No coordination & \textbf{96.2} & 2.47 & 100 \\
+    Age guard only & 84.7 & \textbf{1.89} & \textbf{53} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The scheduler itself accounts for 0.7\% of node energy at the 2\,s floor and
+less than 0.05\% at the median 74\,s interval.  Its flash image is 6.8\,KiB,
+RAM state is 184 bytes, and the exponential table is 128 bytes.  A digest adds
+four bytes every $K=8$ routine reports.  Even if no report is suppressed, this
+increases radio energy by 2.1\%; in the spatial replay, suppression more than
+offsets that cost after the first hour.
+
+\subsection{Sensitivity and robustness}
+
+We vary each default parameter while holding the rest fixed.  For
+$\rho\in[0.88,0.98]$, recall changes by at most 1.6 percentage points and energy
+by 7.3\%.  Increasing $\kappa$ from 3 to 7 moves the operating point along the
+Pareto frontier rather than causing instability.  Bucket capacities below
+0.05$\Energy$ react to individual events and add 11\% interval churn; capacities
+above 0.5$\Energy$ respond too slowly to the noon harvest cut.  The chosen
+0.2$\Energy$ is not universally optimal, but every value from 0.12 to
+0.31$\Energy$ stays within 5\% of the default energy--delay product.
+
+We independently drop 0--60\% of neighbor digests.  Savings decrease smoothly
+from 39 to 17\%, while event recall varies by less than 0.3 points because
+missing digests remove the redundancy discount.  Clock offsets up to one
+digest epoch have the same fail-open behavior.  At 80\% loss, coordination is
+nearly ineffective but never worse than the no-coordination ablation.

@@ -1,0 +1,34 @@
+\section{Experimental Design}
+
+\subsection{Platforms and Environments}
+
+Simulation uses a 12-DoF, 32-kg quadruped in 1,200 procedurally generated $12\times8$~m
+courses. Obstacles include steps (0.08--0.28~m), gaps (0.10--0.35~m), ramps
+($5$--$28^{\circ}$), and compliant patches. Dynamics randomize mass ($\pm12\%$), friction
+($0.35$--$1.1$), latency (0--35~ms), and camera extrinsics ($\pm1.5^{\circ}$).
+
+Hardware evaluation uses the same controller on a 31-kg electric quadruped with a forward
+stereo camera at 30~Hz, state estimation at 400~Hz, and MPC at 50~Hz. Twelve physical
+courses combine pallets, foam blocks, gravel, and a three-step staircase. Each of four
+sensing conditions is repeated once per course, yielding 48 trials and 2.7~km of travel.
+An intervention is counted when a safety operator touches the stop control or supports the
+robot. Trials end after a fall, two interventions, or the 25-m goal.
+
+\subsection{Baselines and Metrics}
+
+We compare: (i) \textbf{Reactive}, which uses only the latest elevation frame;
+(ii) \textbf{DecayMap}, an exponential temporal filter whose confidence decays with age;
+(iii) \textbf{Memory-only}, the recurrent estimator without the risk head; and
+(iv) \method{}. All methods share locomotion tracking, state estimation, candidate
+footholds, and compute budget. Primary metrics are course success and operator
+interventions. We also report velocity normalized by the no-dropout command, height mean
+absolute error (MAE), and risk calibration.
+
+\subsection{Implementation Details}
+
+The memory encoder has four residual blocks with channels $(24,32,48,64)$; the recurrent
+state has 64 channels at quarter resolution and 1.8 million parameters. We train for 180k
+steps with AdamW, batch size 16, initial learning rate $3\times10^{-4}$, and cosine decay.
+Loss weights $(\lambda_h,\lambda_n,\lambda_r,\lambda_t)=(1.0,0.25,0.6,0.15)$ are selected
+once on validation data. The map spans $6.4\times4.8$~m. Estimation takes 5.8~ms on an
+embedded GPU; candidate evaluation and MPC take 4.1 and 7.6~ms, respectively.

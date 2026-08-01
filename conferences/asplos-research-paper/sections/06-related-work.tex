@@ -1,0 +1,31 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Tiered memory.}
+Thermostat combines hardware sampling and software profiling to place pages
+across DRAM and slower memory~\cite{agarwal2017thermostat}.  Nimble accelerates
+migration and exchange for tiered systems~\cite{yan2019nimble}; HeMem scales
+classification to large memories~\cite{raybuck2021hemem}.  TPP adapts Linux
+placement to CXL-enabled topologies and uses NUMA balancing to promote hot
+pages~\cite{maruf2023tpp}.  \system is complementary to these mechanisms: its
+contribution is prediction before the access window, plus resource controls
+that make speculation safe for latency-sensitive tenants.
+
+\paragraph{Far and disaggregated memory.}
+Infiniswap exposes remote memory through block-level swapping over
+RDMA~\cite{guo2017infiniswap}.  AIFM integrates far memory with application
+objects and asynchronous APIs~\cite{ruan2020aifm}; other runtimes reconsider
+allocation and data structures for disaggregated memory~\cite{calciu2021ribbon}.
+Those approaches can exploit semantics unavailable to a transparent kernel.
+\system instead targets unmodified applications and coherent load/store CXL
+memory.  Its phase predictor could also inform an application-integrated
+runtime, but the copy and fault costs would differ.
+
+\paragraph{Datacenter latency management.}
+Tail amplification motivates per-request load balancing and redundancy
+techniques~\cite{dean2013tail}.  Systems such as Shenango isolate CPU resources
+for latency-critical work~\cite{ousterhout2019shenango}, while fast RPC stacks
+reduce software overhead~\cite{kalia2019erpc}.  \system addresses a different
+shared resource---local-memory capacity and migration bandwidth---but follows
+the same principle: a throughput-efficient average policy is insufficient when
+rare interference lies on a request's critical path.

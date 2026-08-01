@@ -1,0 +1,21 @@
+\section{Method}
+Our proposed Vertex-Graph Mapping algorithm builds a local topological map directly from raw point cloud data. Let $P = \{p_1, p_2, \dots, p_N\}$ be the point cloud returned by the onboard solid-state LiDAR sensor. The algorithm operates in three main stages: vertex generation, edge evaluation, and graph pruning.
+
+\subsection{Vertex Generation}
+We extract potential vertices by clustering regional point densities. A point $p_i$ is classified as a boundary point if its local neighborhood lacks geometric continuity. Once boundaries are identified, we compute the centroid of adjacent free-space spheres. These centroids define the candidate vertices $V = \{v_1, v_2, \dots, v_M\}$. Each vertex $v_i \in V$ is associated with a clearance radius $r(v_i)$ representing the distance to the nearest obstacle.
+
+\subsection{Edge Evaluation}
+For any pair of vertices $v_i, v_j \in V$, we evaluate the feasibility of a traversable edge $e_{ij}$. The weight $W(e_{ij})$ of the edge is defined by the traversal distance and the minimum clearance along the linear path. We model the clearance cost function as:
+\begin{equation}
+  C(e_{ij}) = \int_{0}^{1} \frac{\alpha}{\| \gamma(t) - O_k \|^2} dt
+  \label{eq:clearance}
+\end{equation}
+where $\gamma(t) = (1-t)v_i + tv_j$ represents the line segment connecting the vertices, $O_k$ is the position of the nearest obstacle, and $\alpha$ is a user-defined scaling parameter. An edge is added to the graph only if $C(e_{ij})$ remains below a critical safety threshold $C_{\text{max}}$.
+
+\subsection{Graph Pruning}
+To prevent exponential growth of the graph, we apply a local cycle-breaking routine. If multiple pathways exist between $v_i$ and $v_j$ within a spatial radius, we retain only the pathway that minimizes the cumulative cost:
+\begin{equation}
+  J = \sum_{k} W(e_k) + \beta \max_{k} \left( \frac{1}{r(v_k)} \right)
+  \label{eq:cost}
+\end{equation}
+where $\beta$ balances the path length against the narrowness of the corridor.

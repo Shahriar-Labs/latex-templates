@@ -1,0 +1,53 @@
+\section{Additional Derivations}
+\label{app:derivations}
+
+\subsection{A bound with a random ratio-error guarantee}
+
+Assumption~\ref{ass:ratio} states a deterministic error budget after conditioning
+on the fitted ratio estimator.  Often the ratio procedure instead supplies
+\begin{equation}
+  \Pp\!\left(
+    \E_{P_X}\abs{\wh w(X)-w(X)}\leq\varepsilon_w
+  \right)\geq1-\delta_w.
+  \label{eq:random-ratio}
+\end{equation}
+If ratio fitting data and certification data are independent, combine
+\cref{eq:random-ratio} with \cref{thm:certificate} using a union bound.  With
+probability at least $1-\delta_w-\delta_c$, simultaneously for all $k$,
+\begin{equation}
+  \Risk_Q(f_k)\leq \wh R_k+\varepsilon_w
+  +B\sqrt{\frac{\log(K/\delta_c)}{2n}}.
+\end{equation}
+This form prevents the confidence used to validate the ratio from disappearing
+inside a nominally deterministic constant.
+
+\subsection{Bias introduced by clipping}
+
+Let $\wt w(x)=\min\{w(x),B\}$ and abbreviate
+$\ell_f=\ell(f(X),Y)$.  Even with the true ratio available, clipping changes the
+estimand.  Since $0\leq\ell_f\leq1$,
+\begin{align}
+  \Risk_Q(f)-\E_P[\wt w(X)\ell_f]
+  &=\E_P[(w(X)-B)_+\ell_f]\\
+  &\leq\E_P[(w(X)-B)_+].
+\end{align}
+Thus the clipping tail $\E_P[(w-B)_+]$ is a valid contribution to
+$\varepsilon_w$.  The expression also shows why reporting only the cap $B$ is
+insufficient: the amount of target mass represented by clipped observations
+matters.
+
+\subsection{Prespecified groups}
+
+For groups $G_1,\ldots,G_m\subseteq\cX$ with $Q_X(G_j)>0$, conditional group risk
+can be written as a ratio,
+\begin{equation}
+  \Risk_{Q,j}(f)=
+  \frac{\E_P[w(X)\mathbf{1}\{X\in G_j\}\ell(f(X),Y)]}
+       {\E_P[w(X)\mathbf{1}\{X\in G_j\}]}.
+\end{equation}
+Certifying this quantity requires simultaneous control of both numerator and
+denominator; plugging a noisy denominator into \cref{eq:certificate} is not valid.
+A conservative construction uses an upper confidence bound for the numerator and a
+strictly positive lower confidence bound for the denominator, with failure
+probability allocated across all $mK$ pairs.  Small target group mass makes the
+denominator bound weak, correctly reflecting limited evidence.

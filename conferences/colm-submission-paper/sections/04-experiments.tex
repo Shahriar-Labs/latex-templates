@@ -1,0 +1,21 @@
+\section{Experiments}
+\label{sec:experiments}
+
+\paragraph{Data.} We train on a 320B-token mixture of long-form web text,
+books, and technical documents, following the long-document benchmark
+protocol of \cite{castellano2018benchmark}. Evaluation uses three held-out
+corpora: \textsc{PG19} (public-domain books), \textsc{ArXiv} (full-text
+papers), and \textsc{Books3-Long} (a filtered subset retaining only documents
+exceeding 32K tokens).
+
+\paragraph{Models.} All models share a 1.3B-parameter decoder-only backbone
+($d_{\text{model}}=2048$, 24 layers, 16 heads) and differ only in the
+attention mechanism: \emph{Dense} (full causal attention), \emph{Sliding}
+(window-only, $w=1024$), \emph{Retrieval} (hard top-$k$ retrieval as in
+\cite{park2022retrieval}, $k=32$), and \emph{SCG} (ours, $w=1024$, $m=32$,
+$c=256$). All models are trained under an identical optimizer, batch size,
+and token budget for controlled comparison.
+
+\paragraph{Metrics.} We report held-out perplexity (PPL, lower is better) at
+context lengths of 4K, 16K, and 64K tokens, along with measured attention
+FLOPs and single-GPU decode throughput (tokens/second) at 64K context.

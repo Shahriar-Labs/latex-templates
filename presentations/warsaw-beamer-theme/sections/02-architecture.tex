@@ -1,0 +1,81 @@
+\section{Architecture}
+
+% -----------------------------------------------------------------------------
+% 5. Architecture
+% -----------------------------------------------------------------------------
+\begin{frame}{The critical path ends at the edge gateway}
+  \centering
+  \begin{tikzpicture}[node distance=1.05cm and 1.15cm]
+    % Edges are declared before nodes so they remain visually behind them.
+    \coordinate (sensors-anchor) at (-5.1,0);
+    \coordinate (gateway-anchor) at (-2.05,0);
+    \coordinate (fusion-anchor) at (1.25,0);
+    \coordinate (action-anchor) at (4.55,0);
+
+    \draw[dataflow] (-4.48,0.70) -- (-3.33,0.25);
+    \draw[dataflow] (-4.48,0.00) -- (-3.33,0.00);
+    \draw[dataflow] (-4.48,-0.70) -- (-3.33,-0.25);
+    \draw[dataflow] (-0.77,0) -- (-0.10,0);
+    \draw[dataflow] (2.60,0) -- (3.22,0);
+    \draw[dataflow] (4.55,-0.70) -- (4.55,-1.55);
+    \draw[feedback] (1.25,0.72) to[bend left=36] (-2.05,0.70);
+
+    \node[sensor] at (-5.1,0.82) {Rain};
+    \node[sensor] at (-5.1,0) {Depth};
+    \node[sensor] at (-5.1,-0.82) {Flow};
+    \node[stage,fill=AstraTeal!8] at (gateway-anchor) {Edge gateway\\clean + infer};
+    \node[stage,fill=AstraBlue!8] at (fusion-anchor) {Risk fusion\\score + confidence};
+    \node[stage,fill=AstraAmber!10] at (action-anchor) {Action policy\\alert + rationale};
+    \node[font=\tiny,text=AstraAmber,fill=white,inner sep=1pt] at (-0.40,1.22)
+      {cloud model sync};
+    \node[stage,minimum width=3.3cm,fill=AstraMist] at (4.55,-2.15)
+      {Operators and local channels};
+
+    \begin{scope}[on background layer]
+      \node[draw=AstraTeal!50,fill=AstraTeal!4,rounded corners=5pt,
+        fit={(-5.78,1.48) (-0.62,-1.48)},inner sep=4pt] {};
+    \end{scope}
+
+    \node[font=\scriptsize\bfseries,text=AstraTeal] at (-3.2,-1.68)
+      {LOCAL CRITICAL PATH};
+  \end{tikzpicture}
+
+  \vspace{0.15cm}
+  \small
+  The cloud improves coordination; the gateway preserves continuity.
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 6. Decision model
+% -----------------------------------------------------------------------------
+\begin{frame}{Risk combines hazard, confidence, and the cost of waiting}
+  For gateway $g$ at time $t$, the policy evaluates a bounded risk score
+  \begin{equation*}
+    R_{g,t}
+    = \sigma\!\left(
+      \boldsymbol{w}^{\mathsf T}\boldsymbol{x}_{g,t}
+      - \lambda u_{g,t}
+      + \gamma \Delta_{g,t}
+    \right),
+    \qquad \sigma(z)=\frac{1}{1+e^{-z}},
+  \end{equation*}
+  where
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item $\boldsymbol{x}_{g,t}$: recent sensor features,
+        \item $u_{g,t}\in[0,1]$: uncertainty from missing or stale evidence,
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item $\Delta_{g,t}$: estimated cost of deferring a decision,
+        \item $\lambda,\gamma$: policy-controlled trade-offs.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \begin{block}{Action rule}
+    Issue a local alert when $R_{g,t}\geq\tau$ and confidence exceeds the operational floor; otherwise request corroboration or escalate to a human operator.
+  \end{block}
+\end{frame}

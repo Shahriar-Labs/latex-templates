@@ -1,0 +1,42 @@
+\section{Limitations and Discussion}
+\label{sec:limits}
+
+\paragraph{Emulation fidelity.}
+Remote NUMA memory reproduces coherent access, page migration, and a stable
+latency gap, but it does not reproduce every CXL controller queue or fabric
+interaction.  Our bandwidth throttle models aggregate limits, not device
+backpressure on individual traffic classes.  Results should therefore be read
+as evidence about the policy under the measured latency/bandwidth envelope,
+not as a characterization of all CXL devices.  Evaluation on pooled, shared
+hardware is necessary before deployment.
+
+\paragraph{Phase visibility.}
+Code signatures work when execution changes before data demand.  They offer no
+advance signal for a single tight loop whose working set changes entirely with
+input values.  \system intentionally falls back to reactive tiering in this
+case.  Data-semantic hints or compiler annotations could help, but would trade
+transparency for coverage.
+
+\paragraph{Page granularity.}
+Predicting 2\,MiB regions makes metadata small, while copying selected 4\,KiB
+pages limits amplification.  This compromise is less effective for sparse
+accesses spread across many regions.  Dynamically sized regions and huge-page
+promotion are promising extensions, provided they do not introduce long
+nonpreemptible copies.
+
+\paragraph{Security and privacy.}
+Instruction-pointer and address samples can reveal control-flow and access
+patterns.  Our implementation keeps raw samples in kernel memory, hashes
+instruction pointers before table insertion, never shares predictor state
+between cgroups, and clears tables on cgroup destruction.  These measures
+reduce exposure but do not eliminate side channels caused by shared bandwidth.
+A production system should integrate the credit controller with stronger
+memory-bandwidth isolation and disable cross-security-domain borrowing.
+
+\paragraph{Operational policy.}
+Administrators must choose which cgroups are latency-sensitive and set their
+weights and local-residency ceilings.  The defaults avoid application changes,
+but they cannot infer business priority.  Cluster schedulers already manage
+resource classes and memory requests~\cite{verma2015large}; exporting \system's
+prediction accuracy and migration debt would let them make more informed
+placement decisions.

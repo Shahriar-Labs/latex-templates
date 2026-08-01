@@ -1,0 +1,46 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Sequential recommenders estimate what a user will choose next from an ordered
+interaction history.  Progress is commonly measured by withholding the final
+interaction from a historical sequence and ranking it among sampled or complete
+catalog candidates.  This protocol supports repeatable comparison, but it also
+quietly assumes that the mechanisms producing the past will continue to produce
+the future.  In a deployed service, that assumption is fragile: a promotion can
+reverse item popularity, users can acquire new interests, the logging policy can
+hide relevant alternatives, and new items can enter before they have interaction
+histories.
+
+These changes are not interchangeable.  A model that is insensitive to a
+popularity reversal may still fail when preferences drift; a model that handles
+catalog churn may rely heavily on a biased exposure policy.  Collapsing all
+changes into a single temporal test set makes a failure difficult to diagnose.
+It can also encourage a broad claim---``robust to distribution shift''---from a
+narrow experiment.  Prior work has shown that recommendation evaluation depends
+on exposure and selection processes~\cite{Schnabel2016,Saito2020}, that standard
+offline protocols can produce inconsistent conclusions~\cite{Cremonesi2010},
+and that accuracy alone misses dimensions such as calibration, diversity, and
+popularity bias~\cite{Steck2018,Abdollahpouri2019}.
+
+We introduce \emph{ShiftBench}, a protocol organized around a simple principle:
+each empirical claim should identify the uncertainty it tests.
+Rather than prescribing a new recommender, ShiftBench specifies how to transform
+an evaluation environment, verify that transformation, and report the resulting
+trade-offs.  The protocol makes four contributions:
+
+\begin{enumerate}[leftmargin=*,itemsep=2pt,topsep=3pt]
+  \item We define five independently controlled shift operators with explicit
+  severity parameters, invariants, and diagnostic tests.
+  \item We connect ranking utility to robustness loss, worst-group performance,
+  calibration, and coverage in a single reporting schema.
+  \item We propose a claim card that binds each conclusion to a shift, severity
+  interval, metric, user population, uncertainty estimate, and abstention rule.
+  \item We provide a fully specified synthetic dry run that demonstrates how to
+  audit the protocol without presenting synthetic values as deployment evidence.
+\end{enumerate}
+
+ShiftBench is deliberately model-agnostic.  It can evaluate matrix-factorization
+baselines, recurrent models such as GRU4Rec~\cite{Hidasi2016}, self-attentive
+models such as SASRec~\cite{Kang2018}, and bidirectional sequence models such as
+BERT4Rec~\cite{Sun2019}.  Its purpose is not to crown a universal winner, but to
+make the boundary of a robustness claim visible.

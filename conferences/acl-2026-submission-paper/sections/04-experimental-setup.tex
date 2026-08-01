@@ -1,0 +1,50 @@
+\section{Experimental Setup}
+We evaluate our model on the Meridian language family, which consists of five closely related dialects (denoted Merd-A through Merd-E). Monolingual and parallel evaluation corpora were compiled by the Nexa NLP Research Group \citep{nexa2024large}.
+
+We use Nimbus-BERT \citep{pendelton2024nimbus} as the backbone model. Nimbus-BERT is a lightweight architecture featuring 6 transformer layers and 8 attention heads, making it ideal for low-resource deployment. We compare our approach against three standard baselines:
+\begin{itemize}
+    \item \textbf{Baseline Model}: A standard translation model trained solely on the target monolingual data via back-translation.
+    \item \textbf{Unsupervised NMT}: The adversarial alignment model proposed by \citet{zhang2025crosslingual}.
+    \item \textbf{Multilingual BERT (mBERT)}: A pre-trained multilingual model fine-tuned on the small parallel seed data.
+\end{itemize}
+
+Dataset statistics are shown in Table~\ref{tab:datasets}. All models are optimized using Adam with a learning rate of $2 \times 10^{-5}$ and a batch size of 32. We set $\lambda = 0.1$ and use $\sigma^2 = 1.0$ for the topological regularizer.
+
+\begin{table}[h]
+  \centering
+  \small
+  \caption{Dataset statistics for the target dialects (fictional Meridian language family) showing the number of available monolingual sentences ($N_{\text{mono}}$) and parallel evaluation pairs ($N_{\text{eval}}$).}
+  \label{tab:datasets}
+  \vspace{0.5em}
+  \begin{tabular}{lcc}
+    \toprule
+    \textbf{Dialect} & \textbf{$N_{\text{mono}}$} & \textbf{$N_{\text{eval}}$} \\
+    \midrule
+    Merd-A & 45,000 & 1,000 \\
+    Merd-B & 32,000 & 800 \\
+    Merd-C & 12,000 & 500 \\
+    Merd-D & 50,000 & 1,000 \\
+    Merd-E & 18,000 & 600 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{table*}[t]
+  \centering
+  \small
+  \caption{Experimental results of Synaptic Latent Mapping (SLM) compared to baseline models on five low-resource dialects of the Meridian language family. We report BLEU score (higher is better) and standard error ($\pm$ s.e.) across five runs with random seeds.}
+  \label{tab:results}
+  \vspace{0.5em}
+  \begin{tabular}{lccccc}
+    \toprule
+    \textbf{Model} & \textbf{Merd-A} & \textbf{Merd-B} & \textbf{Merd-C} & \textbf{Merd-D} & \textbf{Merd-E} \\
+    \midrule
+    Baseline Model & 12.4 $\pm$ 0.3 & 10.1 $\pm$ 0.4 & 8.9 $\pm$ 0.5 & 11.2 $\pm$ 0.2 & 9.7 $\pm$ 0.4 \\
+    Unsupervised NMT & 14.1 $\pm$ 0.2 & 11.5 $\pm$ 0.3 & 9.4 $\pm$ 0.4 & 12.8 $\pm$ 0.3 & 11.0 $\pm$ 0.3 \\
+    Multilingual BERT & 15.6 $\pm$ 0.2 & 13.2 $\pm$ 0.2 & 11.1 $\pm$ 0.3 & 14.5 $\pm$ 0.2 & 12.4 $\pm$ 0.2 \\
+    \midrule
+    \textbf{SLM (Ours)} & \textbf{18.2} $\pm$ \textbf{0.1} & \textbf{16.4} $\pm$ \textbf{0.2} & \textbf{13.5} $\pm$ \textbf{0.1} & \textbf{17.1} $\pm$ \textbf{0.1} & \textbf{15.3} $\pm$ \textbf{0.2} \\
+    \quad + Finetuning & \textbf{19.8} $\pm$ \textbf{0.1} & \textbf{17.9} $\pm$ \textbf{0.1} & \textbf{15.2} $\pm$ \textbf{0.2} & \textbf{18.6} $\pm$ \textbf{0.2} & \textbf{16.8} $\pm$ \textbf{0.1} \\
+    \bottomrule
+  \end{tabular}
+\end{table*}

@@ -1,0 +1,58 @@
+\section{Background and Motivation}
+\label{sec:background}
+
+\subsection{System setting}
+
+We consider a rack-scale pool composed of compute nodes and memory appliances.
+An appliance exports fixed-size 2~MB \emph{extents}; a compute node may map
+4~KB pages within an extent. The data path is either CXL-style load/store or
+one-sided RDMA. As in prior far-memory work~\cite{aguilera2018remote,
+amaro2020fastswap}, the CPU on the memory appliance is not involved in ordinary
+accesses. A replicated pool manager assigns extents, issues access tokens, and
+balances capacity. It is not on the load/store path.
+
+Our fault model allows crash-stop compute nodes, manager replicas, and memory
+appliances; messages may be delayed, reordered, or duplicated. An appliance's
+DRAM is lost on power failure, but its small nonvolatile generation table
+survives restart. The network may partition and later heal. We assume a
+majority of manager replicas remains available and use crash-tolerant consensus
+for manager metadata~\cite{ongaro2014raft}. Byzantine behavior and malicious
+firmware are outside our model. Applications are responsible for durability of
+their data; \system protects ownership and isolation, not application contents.
+
+\subsection{The reconfiguration gap}
+
+Consider moving extent $e$ from compute node $A$ to $B$. Four actions are
+necessary: stop $A$, copy live pages, authorize $B$, and publish $B$'s mapping.
+No order makes crashes harmless. Revoking $A$ first can make the only live copy
+unavailable. Publishing $B$ first permits concurrent writers. Updating only
+the manager first leaves hardware enforcing old authority; updating hardware
+first leaves durable metadata describing the old state.
+
+This interval is the \emph{reconfiguration gap}. It appears in more operations
+than migration: allocating an extent from a free list, reclaiming memory from a
+failed node, changing tenant keys, and evacuating an appliance all cross it.
+Traditional distributed file systems close related gaps with locks and logs
+~\cite{thekkath1997frangipani}, while persistent-memory systems order data and
+metadata writes within one machine~\cite{volos2011mnemosyne,xu2016nova}. A
+disaggregated-memory mapping spans independent machines and a hardware access
+control boundary, so neither technique alone is sufficient.
+
+\subsection{Why scanning and synchronous logging fall short}
+
+Our measurements of a straightforward rebuild illustrate the scale mismatch.
+Reading a 16-byte owner record for every 2~MB extent in a 16~TB pool takes
+11.8~s with batched RDMA; validating mappings at 32 compute nodes raises this
+to 16.4~s. The time is paid even if the failed manager interrupted no operation.
+Conversely, synchronously appending a replicated record for every 4~KB mapping
+raises the median fault-service time from 7.3 to 31.6~$\mu$s and saturates the
+leader near 2.1 million mappings/s. The result is a false choice between slow
+recovery and an expensive common path.
+
+\paragraph{Design goals.}
+\system therefore targets four properties: (1) exclusive ownership despite
+arbitrary crash points; (2) recovery proportional to incomplete operations;
+(3) no manager or consensus traffic on ordinary memory accesses; and (4)
+incremental deployment on appliances with a small durable table. It does not
+make volatile remote memory persistent, mask application bugs, or provide
+transactions across application objects.

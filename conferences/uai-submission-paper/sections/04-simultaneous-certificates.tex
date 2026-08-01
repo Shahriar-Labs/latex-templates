@@ -1,0 +1,135 @@
+\section{Simultaneous Certificates}
+\label{sec:method}
+
+For each candidate define the estimated weighted risk
+\begin{equation}
+  \wh R_k=\frac{1}{n}\sum_{i=1}^{n}
+  \wh w(X_i)\ell(f_k(X_i),Y_i).
+  \label{eq:empirical-risk}
+\end{equation}
+The following result is the core certificate.
+
+\begin{theorem}[Finite-family target-risk certificate]
+\label{thm:certificate}
+Under Assumptions~\ref{ass:covariate}--\ref{ass:ratio}, for any
+$\delta\in(0,1)$, with probability at least $1-\delta$ over $S$, simultaneously
+for every $k\in\{1,\ldots,K\}$,
+\begin{equation}
+  \Risk_Q(f_k)\leq U_k
+  :=\min\!\left\{1,\ \wh R_k+\varepsilon_w
+       +B\sqrt{\frac{\log(K/\delta)}{2n}}\right\}.
+  \label{eq:certificate}
+\end{equation}
+Consequently, the inequality remains valid for any data-dependent index
+$\wh k=\wh k(S)$ taking values in $\{1,\ldots,K\}$.
+\end{theorem}
+
+\begin{proof}
+Fix $k$ and condition on the fitted predictors and ratio estimator.  Put
+$Z_{ik}=\wh w(X_i)\ell(f_k(X_i),Y_i)\in[0,B]$.  Hoeffding's inequality gives
+\[
+  \Pp\!\left(\E_P[Z_{ik}]-\wh R_k>B
+  \sqrt{\frac{\log(K/\delta)}{2n}}\right)\leq\frac{\delta}{K}.
+\]
+Moreover, boundedness of the loss and \cref{eq:ratio-error} imply
+\[
+  \E_P[w\ell_k]
+  \leq \E_P[\wh w\ell_k]+\E_P\abs{w-\wh w}
+  \leq \E_P[Z_{ik}]+\varepsilon_w.
+\]
+Apply a union bound over $k$ and use \cref{eq:change-measure}.  Clipping the upper
+bound at one is valid because the loss lies in $[0,1]$.  Since all $K$ inequalities
+hold on one event, substituting the selected index $\wh k(S)$ preserves the claim.
+\end{proof}
+
+The radius scales as $B\sqrt{\log(K/\delta)/n}$.  Thus poor source--target overlap
+is costly through $B$, while searching a larger finite family has only logarithmic
+cost.  The additive $\varepsilon_w$ term does not vanish with more certification
+labels; better labels cannot compensate for an unvalidated ratio estimator.
+
+\subsection{Variance-adaptive refinement}
+
+Hoeffding's bound ignores that the observed weighted losses may have low variance.
+Let
+\[
+  V_k=\frac{1}{n-1}\sum_{i=1}^{n}(Z_{ik}-\wh R_k)^2,
+  \qquad n\geq2.
+\]
+An empirical-Bernstein inequality \citep{maurer2009empirical} yields the alternative
+certificate
+\begin{align}
+  \rho_k^{\mathrm{EB}}
+  &=\sqrt{\frac{2V_k\log(2K/\delta)}{n}}
+    +\frac{7B\log(2K/\delta)}{3(n-1)}, \nonumber\\
+  U_k^{\mathrm{EB}}
+  &=\min\!\left\{1,\ \wh R_k+\varepsilon_w+\rho_k^{\mathrm{EB}}\right\}.
+  \label{eq:eb-certificate}
+\end{align}
+The same union-bound argument makes \cref{eq:eb-certificate} simultaneous.  A
+predeclared choice of the smaller of \cref{eq:certificate} and
+\cref{eq:eb-certificate} requires allocating failure probability to both bounds;
+one may replace $\delta$ by $\delta/2$ in each and take their minimum.
+
+\subsection{Certified model selection}
+
+Suppose $a_k$ is a utility score computed without $S$ (for example, target-input
+coverage for an abstaining predictor), and $\tau$ is the maximum acceptable target
+risk.  Define
+\begin{equation}
+  \wh k\in\argmax_{k:U_k\leq\tau}a_k,
+  \label{eq:selection}
+\end{equation}
+returning ``no certified model'' if the feasible set is empty.  By
+\cref{thm:certificate}, any returned model satisfies
+$\Risk_Q(f_{\wh k})\leq\tau$ with probability at least $1-\delta$.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[x=0.61cm,y=14.5cm,>=stealth]
+  \draw[->,darkgray] (-0.1,0) -- (5.45,0) node[right] {\scriptsize $n$};
+  \draw[->,darkgray] (0,-0.004) -- (0,0.245)
+    node[above] {\scriptsize radius};
+  \foreach \x/\lab in {0/250,1/500,2/1k,3/2k,4/4k,5/8k}
+    \draw[darkgray] (\x,0) -- (\x,-0.005) node[below] {\tiny \lab};
+  \foreach \y/\lab in {0.05/.05,0.10/.10,0.15/.15,0.20/.20}
+    \draw[darkgray] (0,\y) -- (-0.08,\y) node[left] {\tiny \lab};
+  \draw[densely dotted,gray] (0,0.05) -- (5.15,0.05);
+  \draw[densely dotted,gray] (0,0.10) -- (5.15,0.10);
+  \draw[densely dotted,gray] (0,0.15) -- (5.15,0.15);
+  \draw[densely dotted,gray] (0,0.20) -- (5.15,0.20);
+  \draw[very thick,boundblue]
+    plot[smooth] coordinates {(0,0.219) (1,0.155) (2,0.1095)
+                              (3,0.0774) (4,0.0547) (5,0.0387)};
+  \foreach \x/\y in {0/.219,1/.155,2/.1095,3/.0774,4/.0547,5/.0387}
+    \fill[boundblue] (\x,\y) circle (1.25pt);
+\end{tikzpicture}
+\caption{Deterministic evaluation of the Hoeffding radius in
+\cref{eq:certificate} for $B=2$, $K=20$, and $\delta=0.05$.  The curve is not
+experimental data; it displays the exact bound as $n$ varies.}
+\label{fig:radius}
+\end{figure}
+
+\begin{figure*}[t]
+\centering
+\fcolorbox{boundblue}{lightblue}{%
+\begin{minipage}{0.94\textwidth}
+\textbf{Algorithm 1: Split, certify, and select}\par
+\vspace{2pt}
+\begin{enumerate}[leftmargin=1.6em,label=\arabic*.,itemsep=1pt,topsep=1pt]
+  \item Split all available data before fitting: use labeled source data to train
+        $f_1,\ldots,f_K$; independent unlabeled source/target inputs to fit
+        $\wh w$; and a labeled source sample $S$ only for certification.
+  \item Declare $B$, $\varepsilon_w$, $\delta$, and the acceptable risk $\tau$.
+        Clip the fitted ratio into $[0,B]$ and document how $\varepsilon_w$ was
+        obtained.
+  \item On $S$, compute $Z_{ik}=\wh w(X_i)\ell(f_k(X_i),Y_i)$, $\wh R_k$, and
+        either $U_k$ from \cref{eq:certificate} or a multiplicity-adjusted
+        combination with \cref{eq:eb-certificate}.
+  \item Return the feasible candidate with greatest independently measured utility,
+        as in \cref{eq:selection}; otherwise abstain from deployment.
+\end{enumerate}
+\end{minipage}}
+\caption{The certification data are touched only in Step 3.  Adding candidates
+after inspecting their certification losses invalidates the stated value of $K$.}
+\label{fig:algorithm}
+\end{figure*}

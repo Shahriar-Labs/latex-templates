@@ -1,0 +1,57 @@
+\section{Implementation}
+\label{sec:implementation}
+
+We implement the scheduler as a portable C module with no dynamic allocation.
+The platform model corresponds to a Cortex-M4F node with an SHT31-class
+environmental sensor, an ADXL362-class accelerometer, and a sub-GHz radio.
+Table~\ref{tab:platform} lists the energy values used in replay.  Values include
+regulator loss and are deliberately rounded to avoid false precision.
+
+\begin{table}[t]
+  \caption{Platform energy model used by trace replay.}
+  \label{tab:platform}
+  \centering
+  \small
+  \begin{tabular}{@{}lrr@{}}
+    \toprule
+    Operation & Duration & Energy \\
+    \midrule
+    MCU wake + scheduler & 1.8\,ms & 0.041\,mJ \\
+    Temperature/humidity sample & 6.5\,ms & 0.29\,mJ \\
+    Accelerometer feature window & 250\,ms & 1.84\,mJ \\
+    24-byte radio transmit & 5.2\,ms & 0.71\,mJ \\
+    24-byte radio receive & 7.0\,ms & 0.53\,mJ \\
+    Deep sleep & --- & 38\,$\mu$W \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Timing.}
+The wake timer is absolute rather than relative, preventing processing latency
+from accumulating as drift.  Sensor completion interrupts place the feature in
+a two-entry queue; if the scheduler overruns, the next deadline is measured
+from acquisition time.  The implementation uses saturating arithmetic for the
+bucket and covariance and commits its 184-byte state every 32 observations.
+
+\paragraph{Budget metering.}
+A coulomb counter, when present, supplies measured energy debits.  Otherwise
+it uses an operation table like Table~\ref{tab:platform}, updated by the gateway
+only when firmware or battery chemistry changes.  A low-pass estimate of
+harvested power adjusts $p_b$ no faster than once per hour, avoiding positive
+feedback from transient sunlight.
+
+\paragraph{Cold start and faults.}
+For the first eight observations the node samples at
+$\min(10\,\mathrm{s},\tau_{\max})$ and initializes error scale with the median
+absolute successive difference.  Numerical faults reset only the predictor,
+not the budget balance.  Three consecutive sensor timeouts exponentially back
+off the physical sensor while continuing watchdog beacons.  A stale digest,
+gateway outage, or failed radio cannot delay local sampling.
+
+\paragraph{Complexity.}
+An update uses 38 scalar multiplies, one exponential lookup, and constant
+memory.  A 64-entry lookup table approximates $e^{-x}$ with less than 0.8\%
+relative error across the controller's range.  At 48\,MHz the measured code
+path is represented in our model as 1.8\,ms, below 0.1\% of a 2\,s minimum
+interval.  The event detector and feature extractor are outside this cost and
+are charged separately.

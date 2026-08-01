@@ -1,0 +1,28 @@
+\section{Related Work}
+\label{sec:related}
+
+Hash and sort-merge joins have a long systems history; Graefe surveys the
+implementation trade-offs that remain relevant to partitioning and spill
+~\cite{graefe1993query}.  Main-memory studies revisit those trade-offs under
+modern processors and parallelism~\cite{blanas2011design,balkesen2013main}.
+\system{} builds on partitioned hashing but changes routing at partition
+granularity during execution.
+
+Adaptive query processing uses observations to revise execution in the
+presence of uncertain statistics~\cite{deshpande2007adaptive}.  Eddies route
+tuples adaptively among operators~\cite{avni2000eddies}, and later systems
+interleave planning with execution~\cite{trummer2019skinner}.  Our focus is
+complementary: a fixed binary join with a bounded buffer, explicit distributed
+migration, and skew-aware routing.
+
+Parallel database engines use exchange operators, work stealing, and fine-grain
+tasks to balance CPU work.  Morsel-driven execution demonstrates the value of
+NUMA-aware scheduling and small work units~\cite{leis2014morsel}.  Vectorized
+execution amortizes interpretation and function-call overhead
+~\cite{boncz2005monetdb}.  \system{} assumes these mechanisms and adds a
+control plane for deciding where join work should run.
+
+Distributed streaming systems provide epoch, barrier, and backpressure ideas
+for stateful dataflows.  \system{} adapts those ideas to a finite relational
+operator: stable source offsets and epoch visibility make mode changes
+recoverable without turning every tuple into a durable log record.

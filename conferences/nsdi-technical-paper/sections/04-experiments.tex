@@ -1,0 +1,18 @@
+\section{Experiments}
+We evaluate the performance of Meridian using a prototype written in Rust and deployed on a distributed cloud testbed. We use Nimbus Cloud Services \cite{nimbus2024cloud} to instantiate virtual machines across five global regions: US East, US West, Europe West, Asia East, and South America. Each region hosts up to 2,000 simulated clients, giving a total of 10,000 active nodes.
+
+The network characteristics between the regions are configured using Linux traffic control (\texttt{tc}) to mimic WAN latency and packet loss. Latencies range from 15\,ms (intra-region) to 250\,ms (inter-region), with packet loss rates varying between 0.5\% (low congestion) and 5.0\% (high congestion). Clients move within a shared virtual space of size $2000 \times 2000$ meters using a waypoint mobility model with speeds ranging from 1 to 10 meters per second.
+
+We compare Meridian against two baseline protocols:
+\begin{itemize}
+    \item \textbf{Apex System} \cite{apex2022routing}: A decentralized gossip-based state replication protocol.
+    \item \textbf{Nexa Routing} \cite{nexa2023scaling}: A peer-to-peer publish-subscribe protocol with static spatial partitioning.
+\end{itemize}
+
+\subsection{Evaluation Metrics}
+The evaluation metrics include:
+\begin{itemize}
+    \item \textbf{Bandwidth Consumption}: The total data rate (in Mbps) transmitted by each client.
+    \item \textbf{Mean Latency}: The average time required for a state update to propagate from its source to all interested observers.
+    \item \textbf{Packet Delivery Ratio (PDR)}: The fraction of transmitted packets that are successfully received and processed before their deadline.
+\end{itemize}

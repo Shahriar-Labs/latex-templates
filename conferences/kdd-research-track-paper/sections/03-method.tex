@@ -1,0 +1,68 @@
+\section{Method}
+\label{sec:method}
+\subsection{Problem Formulation}
+Let $G = (V, E, \phi, \psi, \tau)$ be a heterogeneous temporal graph, where
+$\phi: V \to \mathcal{A}$ maps nodes to a set of types $\mathcal{A}$,
+$\psi: E \to \mathcal{R}$ maps edges to relation types $\mathcal{R}$, and
+$\tau: E \to \mathbb{R}$ assigns each edge a timestamp. Given a query node
+$v$ at reference time $t$, \sysname{} produces an embedding
+$z_v^t \in \mathbb{R}^d$ by aggregating over the time-decayed neighborhood
+$N_t(v) = \{u : (u,v) \in E,\ \tau(u,v) \le t\}$.
+
+\subsection{Type-Aware Encoder}
+Each node type $a \in \mathcal{A}$ owns a projection matrix
+$W_a \in \mathbb{R}^{d \times d_{\text{in}}}$. A neighbor $u$ of type
+$\phi(u)$ contributes a message $m_u = W_{\phi(u)} x_u$, where $x_u$ is its
+input feature vector. Messages are combined with a shared multi-head
+attention layer so that type-specific projections stay disjoint while the
+attention weights are learned jointly across types, letting the model
+transfer attention patterns learned on data-rich types (e.g.\ \emph{item})
+to data-sparse ones (e.g.\ \emph{seller}).
+
+\subsection{Time-Decayed Sampling}
+Neighbors are drawn with sampling probability
+$p(u \mid v, t) \propto \exp\!\big(-\lambda\,(t - \tau(u,v))\big)$,
+where $\lambda$ controls how quickly influence decays; we set $\lambda$
+per-dataset via the validation split (Section~\ref{sec:experiments}). This
+keeps the neighborhood size bounded — Figure~\ref{fig:arch} sketches the
+resulting pipeline from raw edges to the final embedding.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=6mm and 6mm,
+  box/.style={draw=kddblue,fill=kddblue!8,rounded corners=2pt,
+              minimum height=8mm,minimum width=27mm,align=center,
+              font=\footnotesize},
+  arr/.style={-{Stealth[length=2mm]},kddblue,thick}
+]
+\node[box] (input) {Heterogeneous\\temporal edges};
+\node[box, below=of input] (sample) {Time-decayed\\neighbor sampler};
+\node[box, below=of sample] (encode) {Type-aware\\attention encoder};
+\node[box, below=of encode, fill=kddgold!15, draw=kddgold] (embed) {Embedding $z_v^t$};
+\draw[arr] (input) -- (sample);
+\draw[arr] (sample) -- (encode);
+\draw[arr] (encode) -- (embed);
+\end{tikzpicture}
+\caption{\sysname{} pipeline: edges are sampled with exponential time decay,
+routed through type-specific projections, then fused by shared attention.}
+\label{fig:arch}
+\end{figure}
+
+\subsection{Contrastive Objective}
+For an anchor interaction between node $i$ and a temporally adjacent
+partner $i^+$, and a batch of $N$ negatives drawn uniformly from the same
+type, we minimize the InfoNCE-style loss
+\begin{equation}
+\mathcal{L}_{\text{con}} = -\log
+\frac{\exp\!\big(\mathrm{sim}(z_i, z_{i^+}) / \tau_s\big)}
+     {\sum_{j=1}^{N} \exp\!\big(\mathrm{sim}(z_i, z_j) / \tau_s\big)},
+\label{eq:contrastive}
+\end{equation}
+where $\mathrm{sim}(\cdot,\cdot)$ is cosine similarity and $\tau_s$ is a
+learned temperature, initialized at $\tau_s = 0.07$. Sampling positives from
+real temporal adjacency, rather than synthetic augmentation, means the
+objective directly reflects the recency structure the downstream tasks care
+about. Encoding a node's neighborhood costs $O(k \log k)$ for a sampled
+neighborhood of size $k$, dominated by the decay-weighted sort; end-to-end
+training on the largest benchmark graph runs in $O(|E| \log k)$.

@@ -1,0 +1,65 @@
+\section{Results}
+\label{sec:results}
+
+Table~\ref{tab:results} reports ranking quality on both benchmarks. CSG outperforms
+every baseline on both datasets, with the margin widening on the long-tail stratum
+of NexaQL, consistent with our hypothesis that session-graph structure is most
+valuable exactly where per-query click history is thinnest.
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Reformulation ranking quality on the full test set of each benchmark. Best
+result per column in bold; CSG is our method.}
+\label{tab:results}
+\begin{tabular}{lcccccc}
+\toprule
+& \multicolumn{3}{c}{\textbf{NexaQL}} & \multicolumn{3}{c}{\textbf{MeridianSessions}} \\
+\cmidrule(lr){2-4} \cmidrule(lr){5-7}
+\textbf{Method} & NDCG@10 & MRR & Recall@20 & NDCG@10 & MRR & Recall@20 \\
+\midrule
+BM25 expansion              & 0.312 & 0.284 & 0.441 & 0.356 & 0.318 & 0.489 \\
+RankNet-Session \citep{Whitfield2016RankNet} & 0.358 & 0.331 & 0.487 & 0.402 & 0.365 & 0.531 \\
+GraphRank \citep{Rajan2021GraphRank}         & 0.391 & 0.360 & 0.512 & 0.428 & 0.389 & 0.556 \\
+LongTail-BERT \citep{Lindqvist2020Contrastive} & 0.407 & 0.374 & 0.529 & 0.441 & 0.401 & 0.568 \\
+\midrule
+\rowcolor{wsdmblue!8}
+\textbf{CSG (ours)} & \textbf{0.468} & \textbf{0.427} & \textbf{0.583} & \textbf{0.487} & \textbf{0.444} & \textbf{0.611} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Figure~\ref{fig:bars} breaks down NDCG@10 on NexaQL by query frequency stratum. The
+gap between CSG and the strongest baseline, LongTail-BERT, is largest in the sparsest
+bucket ($<5$ historical occurrences), where CSG improves NDCG@10 by 8.4 points versus
+a 3.1-point gap in the head-query bucket.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  ybar,
+  bar width=9pt,
+  width=\linewidth,
+  height=4.4cm,
+  ymin=0,ymax=0.6,
+  ylabel={NDCG@10},
+  symbolic x coords={$<$5,5--50,$>$50},
+  xtick=data,
+  xlabel={Historical query frequency},
+  enlarge x limits=0.28,
+  legend style={at={(0.5,1.18)},anchor=north,legend columns=-1,font=\scriptsize,draw=none},
+  ylabel style={font=\scriptsize},
+  xlabel style={font=\scriptsize},
+  tick label style={font=\scriptsize},
+  axis line style={wsdmgray},
+  ]
+\addplot[fill=wsdmgray!55,draw=wsdmgray] coordinates {($<$5,0.352) (5--50,0.421) ($>$50,0.489)};
+\addplot[fill=wsdmaccent!85,draw=wsdmaccent!60!black] coordinates {($<$5,0.436) (5--50,0.464) ($>$50,0.502)};
+\legend{LongTail-BERT,CSG (ours)}
+\end{axis}
+\end{tikzpicture}
+\caption{NDCG@10 on NexaQL by query frequency stratum. CSG's advantage grows as
+click history becomes sparser.}
+\label{fig:bars}
+\end{figure}

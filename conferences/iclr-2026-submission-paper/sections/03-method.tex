@@ -1,0 +1,75 @@
+\section{Method}
+In this section, we present the mathematical formulation of Meridian-Net and describe the decentralized optimization procedure.
+
+\begin{figure*}[t]
+  \centering
+  \begin{tikzpicture}[
+    node distance=0.8cm and 1.2cm,
+    box/.style={draw, rectangle, rounded corners=1mm, minimum width=2.0cm, minimum height=1.0cm, align=center, fill=bglight, draw=primarycolor, line width=0.8pt},
+    data/.style={draw, cylinder, shape border rotate=90, minimum width=1.0cm, minimum height=1.0cm, align=center, fill=black!5, draw=secondarycolor, line width=0.8pt},
+    arrow/.style={-latex, thick, primarycolor, line width=1pt},
+    comm/.style={latex-latex, dashed, secondarycolor, line width=0.8pt}
+  ]
+    % Nodes for Client 1
+    \node[data] (dataA) {Local Data\\ $\mathcal{D}_1$};
+    \node[box, right=of dataA] (encA) {Local Encoder\\ $f_{\theta_1}$};
+    \node[box, right=of encA] (repA) {Latent Rep.\\ $\mathbf{z}_1 \in \mathbb{R}^d$};
+    
+    % Nodes for Client 2
+    \node[data, below=1.8cm of dataA] (dataB) {Local Data\\ $\mathcal{D}_2$};
+    \node[box, right=of dataB] (encB) {Local Encoder\\ $f_{\theta_2}$};
+    \node[box, right=of encB] (repB) {Latent Rep.\\ $\mathbf{z}_2 \in \mathbb{R}^d$};
+    
+    % Flow arrows
+    \draw[arrow] (dataA) -- (encA);
+    \draw[arrow] (encA) -- (repA);
+    \draw[arrow] (dataB) -- (encB);
+    \draw[arrow] (encB) -- (repB);
+    
+    % Interaction / Latent Graph
+    \coordinate (middle) at ($(repA)!0.5!(repB)$);
+    \node[draw, circle, fill=primarycolor!10, draw=primarycolor, minimum size=1.6cm, right=1.5cm of middle, align=center, line width=1pt] (graph) {Latent\\ Graph\\ $\mathcal{G}$};
+    
+    \draw[comm] (repA) -- node[above, sloped, font=\scriptsize] {Consensus} (graph);
+    \draw[comm] (repB) -- node[below, sloped, font=\scriptsize] {Consensus} (graph);
+    
+    % Client borders
+    \draw[dotted, secondarycolor, line width=0.8pt] ($(dataA.west)+(-0.3,0.7)$) rectangle ($(repA.east)+(0.3,-0.7)$);
+    \node[font=\small\bfseries, primarycolor] at ($(encA.north)+(0,0.4)$) {Client Node 1 (Nexa Computing)};
+    
+    \draw[dotted, secondarycolor, line width=0.8pt] ($(dataB.west)+(-0.3,0.7)$) rectangle ($(repB.east)+(0.3,-0.7)$);
+    \node[font=\small\bfseries, primarycolor] at ($(encB.south)+(0,-0.4)$) {Client Node 2 (Synapse Labs)};
+    
+  \end{tikzpicture}
+  \caption{Architectural overview of the Meridian-Net framework. Client nodes process their respective local datasets $\mathcal{D}_i$ via custom encoders $f_{\theta_i}$ to generate representations $\mathbf{z}_i$. The global latent graph structure $\mathcal{G}$ is updated in a decentralized fashion by sharing only structural embeddings, preserving data privacy while maintaining computational efficiency.}
+  \label{fig:architecture}
+\end{figure*}
+
+\subsection{System Model and Problem Formulation}
+Consider a network of $N$ distributed client nodes, where each node $i \in \{1, \dots, N\}$ possesses a local unlabeled dataset $\mathcal{D}_i$. Let $f_{\theta_i}: \mathcal{X} \to \mathbb{R}^d$ denote the local encoder parameterized by $\theta_i$. The goal is to learn parameters $\theta_i$ such that the resulting representations are useful for downstream tasks.
+
+Let $X \in \mathbb{R}^{N \times d}$ be the matrix of average node representations, where the $i$-th row $\mathbf{x}_i = \mathbb{E}_{x \sim \mathcal{D}_i}[f_{\theta_i}(x)]$ represents the global embedding profile of node $i$. We define the latent relationship between nodes using an adjacency matrix $A \in \mathbb{R}^{N \times N}$, where $A_{ij} \ge 0$ measures the structural similarity between client $i$ and client $j$, and $\sum_{j=1}^N A_{ij} = 1$.
+
+We formulate the decentralized SSL task as the joint minimization of local SSL losses and global graph regularization:
+\begin{equation}
+  \min_{\Theta, A \in \mathcal{A}} \mathcal{L}(\Theta, A) = \sum_{i=1}^N \mathcal{L}_{\text{self}}(\theta_i) + \lambda_1 \|A\|_* + \lambda_2 \sum_{i,j=1}^N A_{ij} \|\mathbf{x}_i - \mathbf{x}_j\|_2^2
+  \label{eq:objective}
+\end{equation}
+where $\Theta = \{\theta_1, \dots, \theta_N\}$, $\mathcal{L}_{\text{self}}(\theta_i)$ is the local self-supervised loss (e.g., InfoNCE), $\|A\|_*$ is the nuclear norm of the adjacency matrix enforcing low-rank structure, and $\lambda_1, \lambda_2 > 0$ are hyperparameters. The third term is a Laplacian regularizer that forces nodes with similar representations to be closely connected in the latent graph $A$.
+
+\subsection{Alternating Dual-Optimization}
+Since the objective in Equation~\ref{eq:objective} is non-convex and couples $\Theta$ and $A$, we employ an alternating optimization scheme.
+
+\paragraph{Step 1: Local Representation Update ($\Theta$-step).}
+With the adjacency matrix $A$ fixed, each client $i$ updates its local model parameters $\theta_i$. The gradient of the objective with respect to $\theta_i$ is given by:
+\begin{equation}
+  \nabla_{\theta_i} \mathcal{L} = \nabla_{\theta_i} \mathcal{L}_{\text{self}}(\theta_i) + 2 \lambda_2 \sum_{j=1}^N A_{ij} (\mathbf{x}_i - \mathbf{x}_j) \nabla_{\theta_i} \mathbf{x}_i
+\end{equation}
+Each client estimates this gradient locally by sharing representation vectors $\mathbf{x}_j$ with its neighbors as determined by the non-zero entries of $A_{i\cdot}$.
+
+\paragraph{Step 2: Latent Graph Refinement ($A$-step).}
+With the representations $\mathbf{x}_i$ fixed, we optimize the global latent graph structure $A$. Let $D \in \mathbb{R}^{N \times N}$ be the distance matrix where $D_{ij} = \|\mathbf{x}_i - \mathbf{x}_j\|_2^2$. The optimization problem reduces to:
+\begin{equation}
+  \min_{A \in \mathcal{A}} \lambda_1 \|A\|_* + \lambda_2 \text{Tr}(A^T D)
+\end{equation}
+This step is solved periodically at a global consensus level. To preserve privacy and reduce communication, clients only transmit low-dimensional representations $\mathbf{x}_i$ to a distributed consensus pool, rather than raw model weights $\theta_i$ or dataset samples $\mathcal{D}_i$.

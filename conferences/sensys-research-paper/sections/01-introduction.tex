@@ -1,0 +1,57 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Long-lived sensor deployments operate under a basic mismatch: the environment
+is bursty, but their schedules are static.  A bridge can remain quiescent for
+hours before a short vibration transient; indoor air quality changes slowly
+until a door opens; and soil moisture drifts until rain produces a step.  A
+deployment configured for the transient repeatedly measures predictable steady
+state.  One configured for the steady state discovers the event too late.
+This tension is especially costly on energy-harvesting and hard-to-service
+nodes, where a sampling decision consumes not only sensor energy but also CPU
+wake-up and radio-tail energy~\cite{lorincz2004sensor,lin2010energy}.
+
+Adaptive sampling is not new.  Prior systems use prediction error, compressive
+sensing, event triggers, or application-specific rules to vary a sampling
+rate~\cite{deshpande2004model,raghunathan2006energyscavenging,jain2004duality,lu2010smart}.  Three practical gaps remain.  First, a residual is meaningful only when paired with the model's uncertainty: a
+2$^\circ$ error can be routine during a volatile afternoon and alarming at
+night.  Second, a locally sensible rate can still exhaust a finite daily energy
+budget after an extended event.  Third, correlated nodes often make the same
+decision and report redundant evidence.  Existing techniques commonly address
+one gap while treating the others as configuration problems.
+
+We ask a narrower systems question: \emph{can a node allocate a fixed energy
+budget to the moments at which one additional observation is most likely to
+matter?}  \system answers with a closed-loop scheduler whose state fits in 184
+bytes and whose update requires 1.7k integer-equivalent operations.  It
+combines a constant-velocity predictor with an exponentially weighted error
+model.  The resulting risk score controls a continuous sampling interval.  A
+token bucket stretches that interval when the node spends energy too quickly,
+while hard age and change-point guards retain responsiveness.  Finally, a
+four-byte neighbor digest discounts observations that are likely to be
+spatially redundant.
+
+The design intentionally avoids a heavyweight learned policy.  This makes the
+decision path inspectable, permits safe bounds on sample age, and lets one set
+an energy budget without retraining.  The trade-off is that \system is a
+scheduler, not a semantic event classifier: it decides \emph{when} to observe,
+then invokes the deployment's existing detector.
+
+This paper makes three contributions:
+
+\begin{itemize}[leftmargin=*,itemsep=2pt,topsep=3pt]
+  \item We formulate sampling as online, risk-weighted budget allocation and
+  derive a bounded interval controller that combines uncertainty, surprise,
+  staleness, and spatial redundancy (\S\ref{sec:design}).
+  \item We design a budget governor and neighbor protocol that tolerate energy
+  droughts, event storms, loss, and cold starts without requiring a gateway in
+  the control loop (\S\ref{sec:implementation}).
+  \item We provide a trace-driven evaluation spanning five signal regimes and
+  report energy, event recall, delay, traffic, sensitivity, and failure modes
+  (\S\ref{sec:evaluation}).
+\end{itemize}
+
+All results in this manuscript are from deterministic trace replay and the
+hardware energy model in Table~\ref{tab:platform}; they are not presented as a
+field deployment.  This distinction makes the evidence reproducible and keeps
+the conclusions scoped to scheduling behavior.

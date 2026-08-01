@@ -1,0 +1,77 @@
+\section{Chronos}
+\label{sec:method}
+
+Figure~\ref{fig:pipeline} summarizes the proposed pipeline.  Its interfaces are
+model-agnostic: each component can be replaced without changing the temporal
+split or evaluation protocol.
+
+\subsection{Temporal Retrieval}
+
+Chronos first removes documents that violate Eq.~\eqref{eq:eligibility}.  A
+hybrid retriever combines lexical score $b_i$, dense similarity $r_i$, and a
+freshness prior.  For decay rate $\lambda_q$ determined by the question type,
+the freshness of document $d_i$ is
+\begin{equation}
+  f_i(q)=\exp\!\left[-\lambda_q
+  \max\left(0,t_q-t_i^{\mathrm{avail}}\right)\right].
+  \label{eq:freshness}
+\end{equation}
+The retrieval score is
+\begin{equation}
+  s_i^{\mathrm{ret}} = \alpha b_i + \beta r_i + \gamma f_i(q).
+  \label{eq:retrieval}
+\end{equation}
+Stable questions use $\lambda_q\approx0$; rapidly changing questions use a
+larger value.  The coefficients are tuned only on the development period.
+
+\subsection{Evidence Graph Construction}
+
+For the top $K$ passages, Chronos forms a typed graph
+$G_q=(V_q,E_q)$.  Each node stores passage text, source domain, timestamps,
+retrieval scores, and source type.  Edges take one of four labels:
+\emph{supports}, \emph{contradicts}, \emph{derived-from}, or
+\emph{near-duplicate}.  A lightweight pairwise classifier proposes semantic
+edges; URL canonicalization, content hashes, and outbound links propose
+provenance edges.  Thresholds are fixed on development data.
+
+Let $z_i^{(0)}$ be the representation of passage $i$.  A relation-aware update
+aggregates neighboring evidence:
+\begin{equation}
+ z_i^{(\ell+1)} = \sigma\!\left(W_0^{(\ell)}z_i^{(\ell)}+
+ \sum_{r\in\mathcal{R}}\frac{1}{|N_r(i)|}
+ \sum_{j\in N_r(i)}W_r^{(\ell)}z_j^{(\ell)}\right).
+ \label{eq:message}
+\end{equation}
+An empty neighborhood contributes zero.  Near-duplicate clusters are pooled
+before selection, preventing a copied claim from receiving multiple votes.
+
+\subsection{Evidence Selection and Claim Planning}
+
+The selector assigns passage $i$ the score
+\begin{equation}
+ s_i^{\mathrm{sel}} = u^\top z_i^{(L)}
+ + \eta s_i^{\mathrm{ret}} + \rho a_i - \kappa c_i,
+ \label{eq:selection}
+\end{equation}
+where $a_i$ estimates source authority and $c_i$ measures contradiction with
+higher-authority evidence.  A greedy budgeted selector retains at most $B$
+tokens while encouraging domain diversity.  A planner then predicts atomic
+claims and links each planned claim to selected passages.  If the best support
+score is below threshold $\tau$, the planner marks the claim unsupported; if a
+required claim is unsupported, the system abstains.
+
+\subsection{Attribution-Constrained Generation}
+
+The generator receives the question, question time, planned claims, and passage
+identifiers.  Training minimizes
+\begin{equation}
+ \mathcal{L} = \mathcal{L}_{\mathrm{ans}}
+ + \mu\mathcal{L}_{\mathrm{cite}}
+ + \nu\mathcal{L}_{\mathrm{time}}
+ + \xi\mathcal{L}_{\mathrm{abstain}},
+ \label{eq:loss}
+\end{equation}
+combining answer likelihood, correct claim--citation alignment, penalties for
+future evidence, and calibrated abstention.  At inference time, citations are
+emitted immediately after the claims they support.  Unsupported sentences are
+removed rather than presented without evidence.

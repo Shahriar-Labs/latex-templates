@@ -1,0 +1,26 @@
+\section{Method}
+The architecture of Meridian consists of three primary components: the Hierarchical Overlay Coordinator, the Predictive Synchronization Engine, and the Perceptual Utility Estimator. 
+
+We model the virtual world as a set of entities $\mathcal{E}$, where each entity $e \in \mathcal{E}$ possesses a state vector $\mathbf{x}_e(t) \in \mathbb{R}^d$ representing its position, velocity, and orientation at time $t$. Clients are represented by a set of nodes $\mathcal{N}$. Each node $i \in \mathcal{N}$ controls a single client entity and maintains a local cache of the states of all other entities in its interest area.
+
+\subsection{Hierarchical Overlay Coordinator}
+Nodes are dynamically clustered based on network latency and spatial proximity in the virtual world. For each cluster, a cluster head (CH) is elected based on its upstream bandwidth and stability. CHs are responsible for aggregating state updates from local nodes and forwarding them to neighboring clusters. This hierarchical structure avoids the $O(N^2)$ message complexity of flat peer-to-peer networks. To handle transient node failures, we adapt fault-tolerant overlay consensus mechanisms inspired by Miller and Rostova \cite{miller2023fault}.
+
+\subsection{Predictive Synchronization Engine}
+To minimize packet transmission, Meridian runs identical prediction models on both the owner of an entity and all subscribing remote nodes. Let $P_i(t)$ be the predicted state of node $i$ calculated at time $t$. The actual state is $S_i(t)$. Node $i$ transmits a state correction packet only when the prediction error exceeds a dynamic threshold $\theta_i(t)$:
+\[
+  \|S_i(t) - P_i(t)\| > \theta_i(t)
+\]
+We define the synchronized state update function as:
+\begin{equation}
+  S_i(t) = \alpha \cdot P_i(t) + (1 - \alpha) \cdot \sum_{j \in \mathcal{N}(i)} \omega_{ij} S_j(t - \tau_{ij})
+  \label{eq:state_sync}
+\end{equation}
+where $\alpha \in [0,1]$ is a smoothing factor, $\omega_{ij}$ represents the coupling weight between node $i$ and node $j$, and $\tau_{ij}$ is the transmission latency between the nodes. The summation aggregates historical state updates from neighboring overlay nodes to smooth out jitter and compensate for missing packets.
+
+\subsection{Perceptual Utility Estimator}
+The threshold $\theta_i(t)$ is not constant. Instead, it is dynamically computed using a perceptual utility function. Our dynamic update rates build on the wireless congestion models of Vance and Sterling \cite{vance2024adaptive}. Let $d(i, j)$ be the Euclidean distance between node $i$ and node $j$ in the virtual space. The visual relevance $R_{ij}$ of node $j$'s entity to node $i$ is defined as:
+\[
+  R_{ij} = \frac{\cos(\phi_{ij})}{(d(i, j) + 1)^\gamma}
+\]
+where $\phi_{ij}$ is the angle between node $i$'s view direction and the vector pointing to node $j$, and $\gamma$ is a distance decay parameter. If an entity is close and in the center of the viewer's field of view, its relevance is high, and the error threshold is set very low to ensure high fidelity. For distant or peripheral entities, the threshold is increased, drastically reducing update rates.

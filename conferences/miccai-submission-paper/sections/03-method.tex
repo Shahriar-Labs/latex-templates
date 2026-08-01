@@ -1,0 +1,73 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{Problem Formulation}
+
+Let $\mathcal{D}=\{(x_i,y_i,p_i,s_i)\}_{i=1}^{N}$ denote a dataset of $N$
+observations, where $x_i\in\mathbb{R}^{H\times W\times D\times C}$ is an image,
+$y_i\in\{0,1,\ldots,K\}^{H\times W\times D}$ is its reference annotation,
+$p_i$ identifies the patient, and $s_i$ identifies the acquisition site.  A
+model $f_{\theta}$ produces class probabilities
+$q_i=f_{\theta}(x_i)$, with $q_{ivk}$ denoting the probability of class $k$ at
+voxel $v$.  Defining patient and site identifiers explicitly makes the unit of
+independence clear and prevents image-level splitting from leaking information
+between partitions.
+
+For a segmentation example, a combined cross-entropy and soft Dice objective
+can be written as
+\begin{equation}
+\label{eq:loss}
+\begin{array}{rl}
+\displaystyle \mathcal{L}(\theta)={}
+&\displaystyle -\frac{1}{|V|}\sum_{v\in V}\sum_{k=1}^{K} y_{vk}\log q_{vk} \\[2pt]
+&\displaystyle +\lambda\left(1-
+\frac{2\sum_{v\in V}\sum_{k=1}^{K}q_{vk}y_{vk}+\epsilon}
+{\sum_{v\in V}\sum_{k=1}^{K}q_{vk}^{2}
++\sum_{v\in V}\sum_{k=1}^{K}y_{vk}^{2}+\epsilon}\right),
+\end{array}
+\end{equation}
+where $V$ is the set of voxels, $\lambda$ controls the contribution of the Dice
+term, and $\epsilon>0$ provides numerical stability.  Every symbol should be
+defined on first use, and the manuscript should state how multiclass and empty
+reference cases are handled.
+
+\subsection{Model and Inference}
+
+Describe the model at a level from which an independent researcher could
+reimplement it: input representation, dimensionality, encoder and decoder,
+normalization, nonlinearities, skip connections, output parameterization, and
+parameter count.  A schematic should add information beyond the prose.  The
+compact example in Fig.~\ref{fig:pipeline} emphasizes the boundary between
+training-only operations and evaluation.
+
+\begin{figure}
+  \centering
+  \setlength{\fboxsep}{4pt}
+  \begin{tabular}{c@{\quad$\longrightarrow$\quad}c
+                  @{\quad$\longrightarrow$\quad}c
+                  @{\quad$\longrightarrow$\quad}c}
+    \fbox{\parbox[c][1.0cm][c]{0.145\textwidth}{\centering Patient-level\\partition}} &
+    \fbox{\parbox[c][1.0cm][c]{0.145\textwidth}{\centering Preprocess\\training data}} &
+    \fbox{\parbox[c][1.0cm][c]{0.145\textwidth}{\centering Fit and select\\model}} &
+    \fbox{\parbox[c][1.0cm][c]{0.145\textwidth}{\centering Locked test\\evaluation}}
+  \end{tabular}
+  \caption{A leakage-aware experimental workflow.  Statistics used for
+  preprocessing and model selection are estimated without access to the test
+  set; the locked model is evaluated once on each predefined test cohort.}
+  \label{fig:pipeline}
+\end{figure}
+
+Report all inference-time operations, including resampling, sliding-window
+overlap, ensembling, test-time augmentation, thresholding, and connected
+component processing.  If these choices were tuned, identify the partition on
+which tuning occurred.
+
+\subsection{Training and Reproducibility}
+
+State the software framework and version, hardware, optimizer, learning-rate
+schedule, batch size, epoch or iteration budget, augmentation distribution,
+initialization, checkpoint-selection rule, and random seeds.  Report whether
+mixed precision, pretrained weights, or external data were used.  A public or
+anonymous repository should include training and evaluation commands,
+environment specifications, model weights where permissible, and code that
+recreates every reported table.

@@ -1,0 +1,85 @@
+% Packages, colours and custom commands for this template.
+% !TeX program = pdflatex
+% !BIB program = bibtex
+%
+% Self-contained, unofficial SIGMOD research-paper example.
+% Before a real submission, download the current ACM Primary Article Template
+% and verify the venue's page limit, anonymity policy, and submission options.
+%
+% Review-to-camera-ready checklist:
+%   1. Remove the `anonymous,review` class options.
+%   2. Replace the anonymous author block with complete author metadata.
+%   3. Insert the rights, DOI, ISBN, and conference metadata supplied by ACM.
+%   4. Replace the illustrative system, data, and results with audited evidence.
+
+
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{balance}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,fit,positioning}
+
+% ACM inserts rights and bibliographic metadata after acceptance.  These
+% settings avoid inventing publication identifiers in the review example.
+\setcopyright{none}
+\settopmatter{printacmref=true,printfolios=true}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+
+\acmConference[SIGMOD 'XX]{ACM International Conference on Management of Data}
+  {Month DD--DD, 20XX}{City, Country}
+\acmBooktitle{ACM International Conference on Management of Data
+  (SIGMOD 'XX), Month DD--DD, 20XX, City, Country}
+\acmYear{20XX}
+\copyrightyear{20XX}
+\acmDOI{}
+\acmISBN{}
+
+\newcommand{\system}{\textsc{FluxJoin}}
+\newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\vect}[1]{\boldsymbol{#1}}
+
+\definecolor{fluxblue}{HTML}{285F9E}
+\definecolor{fluxteal}{HTML}{188977}
+\definecolor{fluxorange}{HTML}{D8782D}
+\definecolor{fluxgray}{HTML}{65717E}
+\definecolor{fluxlight}{HTML}{EEF3F7}
+
+\title[FluxJoin]{FluxJoin: Skew-Resilient Adaptive Joins for
+  Disaggregated Cloud Databases}
+
+% The `anonymous` class option suppresses identifying information in review.
+\author{Anonymous Author(s)}
+\affiliation{%
+  \institution{Institution withheld for double-blind review}
+  \country{Country withheld for double-blind review}}
+
+\begin{abstract}
+Disaggregated databases execute joins while compute, memory, and storage vary
+independently.  A plan selected from a stale sample can therefore choose the
+wrong build side, overload a small set of workers under key skew, or move data
+that could have been filtered locally.  Existing adaptive schemes typically
+repair one of these failures after a blocking boundary.  We present
+\system{}, a join operator that makes bounded, reversible decisions throughout
+execution.  It combines a symmetric radix pipeline, mergeable heavy-hitter
+sketches, and credit-based exchange.  Each partition begins in a low-cost
+sampling state and independently commits to broadcast, repartition, or local
+completion when the observed evidence exceeds a confidence threshold.  A
+compact migration protocol changes strategy without replaying input or
+duplicating output.  We describe the operator, its safety invariants, and an
+evaluation methodology covering skew, estimation error, network variability,
+and elasticity.  In the illustrative results included to demonstrate this
+template, \system{} lowers median runtime by 1.7--2.4$\times$ and p99 network
+queueing by 3.1$\times$ relative to static repartition joins.  These numbers
+are examples, not empirical claims; a submission must replace them with
+measurements from a reproducible implementation.
+\end{abstract}
+
+\ccsdesc[500]{Information systems~Join algorithms}
+\ccsdesc[500]{Information systems~Parallel and distributed DBMSs}
+\ccsdesc[300]{Information systems~Database query processing}
+
+\keywords{adaptive query processing, distributed joins, data skew,
+  disaggregated databases, elasticity}

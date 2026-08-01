@@ -1,0 +1,63 @@
+\section{The Vertex Architecture}
+
+% Slide 7: Block Trio
+\begin{frame}{Scheduling Policies and Safeguards}
+  \begin{columns}[T]
+    \begin{column}{0.31\textwidth}
+      \begin{block}{\faChartLine\ Resource Tracking}
+        Monitors CPU, memory, and network queues using localized filters.
+      \end{block}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{alertblock}{\faExclamationTriangle\ Predictive Offloading}
+        Triggers peer-to-peer load redirection when queue threshold $\theta > 0.85$.
+      \end{alertblock}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \begin{exampleblock}{\faSync\ Global Sync}
+        Updates global states asynchronously using low-priority background channels.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 8: TikZ Figure (Topology and Decision Flow)
+\begin{frame}{System Topology \& Decision Logic}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \centering
+      \textbf{Hierarchical P2P Topology}
+      \vskip 0.5em
+      \begin{tikzpicture}[scale=0.85, every node/.style={transform shape}]
+        \node[draw, rectangle, fill=tPrim, text=white, rounded corners, minimum width=2.4cm, minimum height=0.6cm] (cloud) at (2, 3) {Nimbus Cloud};
+        \node[draw, circle, fill=tSec, text=white, minimum size=1.2cm] (edge1) at (0, 1) {Edge A};
+        \node[draw, circle, fill=tSec, text=white, minimum size=1.2cm] (edge2) at (4, 1) {Edge B};
+        \node[draw, circle, fill=tAccent, text=white, minimum size=0.8cm] (client1) at (-1.2, -1) {Client};
+        \node[draw, circle, fill=tAccent, text=white, minimum size=0.8cm] (client2) at (1.2, -1) {Client};
+        \node[draw, circle, fill=tAccent, text=white, minimum size=0.8cm] (client3) at (5.2, -1) {Client};
+
+        \draw[<->, thick, tPrim] (edge1) -- (cloud);
+        \draw[<->, thick, tPrim] (edge2) -- (cloud);
+        \draw[<->, dashed, thick, tAccent] (edge1) -- (edge2) node[midway, above] {P2P Sync};
+        \draw[->, thick] (client1) -- (edge1);
+        \draw[->, thick] (client2) -- (edge1);
+        \draw[->, thick] (client3) -- (edge2);
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centering
+      \textbf{Local Scheduling Execution}
+      \vskip 0.5em
+      \begin{tikzpicture}[scale=0.85, every node/.style={transform shape}]
+        \node[draw, rectangle, fill=tBg, text=tTxt, minimum width=3.6cm, minimum height=0.6cm] (ingest) at (0, 2.5) {Ingest Task};
+        \node[draw, diamond, fill=tBg, text=tTxt, aspect=2, minimum width=3.6cm] (dec) at (0, 1.2) {Queue Check};
+        \node[draw, rectangle, fill=tSec!20, text=tTxt, minimum width=2.2cm, minimum height=0.6cm] (local) at (-1.6, 0) {Run Locally};
+        \node[draw, rectangle, fill=tAccent!20, text=tTxt, minimum width=2.2cm, minimum height=0.6cm] (offload) at (1.6, 0) {Offload to Peer};
+
+        \draw[->, thick] (ingest) -- (dec);
+        \draw[->, thick] (dec) -- (-1.6, 1.2) -- (local) node[midway, left] {$\theta \le 0.85$};
+        \draw[->, thick] (dec) -- (1.6, 1.2) -- (offload) node[midway, right] {$\theta > 0.85$};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+\end{frame}

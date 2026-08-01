@@ -1,0 +1,107 @@
+\section{Method}
+\label{sec:method}
+
+Let an input sequence be $\vect{x}=(x_1,\ldots,x_m)$ and its standardized
+target be $\vect{y}=(y_1,\ldots,y_n)$. A base encoder--decoder with parameters
+$\theta$ defines
+\begin{equation}
+  p_{\theta}(y_t\mid \vect{y}_{<t},\vect{x}).
+  \label{eq:base}
+\end{equation}
+The memory $\mathcal{M}=\{(\vect{s}_j,\vect{t}_j)\}_{j=1}^{N}$ contains
+community-verified source and target pairs. We learn the base model on the
+parallel training split and construct the memory only from that split.
+
+\begin{figure}[t]
+  \centering
+  \resizebox{\columnwidth}{!}{%
+  \begin{tikzpicture}[
+    font=\footnotesize,
+    node distance=5mm and 4mm,
+    block/.style={draw=naaclblue,rounded corners=2pt,fill=naacllight,
+      align=center,minimum height=7mm,inner xsep=4pt},
+    memory/.style={draw=naaclgold!85!black,rounded corners=2pt,
+      fill=naaclgold!9,align=center,minimum height=7mm,inner xsep=4pt},
+    gate/.style={draw=naaclgreen!85!black,rounded corners=2pt,
+      fill=naaclgreen!8,align=center,minimum height=7mm,inner xsep=4pt},
+    arrow/.style={-{Stealth[length=2mm]},thick,draw=naaclgray}
+  ]
+    \node[block,minimum width=25mm] (input) {Dialect input\\$\vect{x}$};
+    \node[block,minimum width=27mm,right=of input] (base) {Byte-level\\generator};
+    \node[block,minimum width=27mm,right=of base] (unc) {Uncertainty\\$u_t$};
+    \node[memory,minimum width=29mm,below=of unc] (ret) {Verified memory\\top-$k$ evidence};
+    \node[gate,minimum width=27mm,left=of ret] (gate) {Safety gate\\$g_t$};
+    \node[block,minimum width=25mm,left=of gate] (out) {Normalized text\\$\hat{\vect{y}}$};
+    \draw[arrow] (input) -- (base);
+    \draw[arrow] (base) -- (unc);
+    \draw[arrow] (unc) -- node[right]{query} (ret);
+    \draw[arrow] (ret) -- (gate);
+    \draw[arrow] (base.south) |- (gate.north);
+    \draw[arrow] (gate) -- (out);
+  \end{tikzpicture}
+  }
+  \caption{\method retrieves verified examples only for uncertain spans. The
+  safety gate can accept, blend, or reject memory evidence.}
+  \label{fig:architecture}
+\end{figure}
+
+\subsection{Uncertainty-triggered retrieval}
+
+At decoding step $t$, normalized token entropy is
+\begin{equation}
+  u_t = -\frac{1}{\log |V|}
+        \sum_{v\in V}p_{\theta}(v)\log p_{\theta}(v),
+  \label{eq:entropy}
+\end{equation}
+where $V$ is the byte vocabulary and conditioning variables are omitted for
+clarity. We retrieve only if $u_t>\tau$ or if the current source span is
+outside the frequent training lexicon. The query vector concatenates the
+encoder state for the span with its left and right context. Cosine similarity
+selects the top-$k$ source examples; a softmax over their similarities yields
+weights $a_j$.
+
+Each retrieved target proposes its aligned output token. The memory
+distribution is
+\begin{equation}
+  p_{\mathcal{M}}(v)=\sum_{j=1}^{k}a_j\,
+  \mathbb{I}[\operatorname{align}(\vect{t}_j)=v].
+  \label{eq:memory}
+\end{equation}
+When retrieval is not triggered, $p_{\mathcal{M}}$ is unused and inference is
+identical to the base model.
+
+\subsection{Evidence safety gate}
+
+Retrieval quality alone does not establish that an example is safe to copy.
+For each step we compute a feature vector
+\begin{equation}
+  \vect{z}_t=[u_t;\,r_t;\,d_t;\,e_t;\,c_t],
+\end{equation}
+containing uncertainty $u_t$, top retrieval similarity $r_t$, the top-two
+similarity margin $d_t$, an entity-compatibility bit $e_t$, and agreement
+$c_t$ between the generator and memory distributions. The interpolation gate
+is
+\begin{align}
+  g_t &= \sigma(\vect{w}^{\top}\vect{z}_t+b), \\
+  p(y_t) &= (1-g_t)p_{\theta}(y_t)+g_t p_{\mathcal{M}}(y_t).
+  \label{eq:gate}
+\end{align}
+If a source span is tagged as an entity and the retrieved example changes its
+normalized character skeleton, we force $e_t=0$ and cap $g_t$ at $0.1$.
+
+\subsection{Training objective}
+
+We train the generator with label-smoothed negative log likelihood and the
+gate with binary supervision indicating whether the memory's top proposal is
+correct. A Brier penalty encourages calibrated decisions:
+\begin{equation}
+  \mathcal{L}=\mathcal{L}_{\mathrm{NLL}}
+  +\lambda_g\mathcal{L}_{\mathrm{gate}}
+  +\lambda_b\frac{1}{n}\sum_{t=1}^{n}(g_t-q_t)^2,
+  \label{eq:loss}
+\end{equation}
+where $q_t\in\{0,1\}$ denotes a correct memory proposal. Encoder parameters
+are shared between generation and retrieval; memory keys are refreshed after
+each epoch.
+
+% -----------------------------------------------------------------------------

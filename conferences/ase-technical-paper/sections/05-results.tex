@@ -1,0 +1,58 @@
+\section{Results}
+\label{sec:results}
+Table~\ref{tab:results} reports plausible and correct rates at $k{=}10$ across all three benchmarks. \textsc{RankGen} improves the correct rate by 8--17.5 percentage points depending on the benchmark, with the largest absolute gain on QuirkBugs, whose small single-line defects make retrieval similarity especially informative.
+
+\begin{table}[t]
+\centering
+\caption{Repair effectiveness at a top-10 candidate budget. Plausible: passes the held-out test suite. Correct: manually verified equivalent to the developer patch.}
+\label{tab:results}
+\small
+\setlength{\tabcolsep}{3.6pt}
+\begin{tabular}{@{}llccc@{}}
+\toprule
+\rowcolor{aseblue!10}
+Benchmark & Method & Plausible (\%) & Correct (\%) & Time (s) \\
+\midrule
+\multirow{2}{*}{RepairBench} & Baseline & 41.2 & 22.6 & 38.4 \\
+ & Ours & \textbf{58.7} & \textbf{34.9} & 41.1 \\
+\midrule
+\multirow{2}{*}{QuirkBugs} & Baseline & 55.0 & 40.0 & 12.7 \\
+ & Ours & \textbf{72.5} & \textbf{57.5} & 14.0 \\
+\midrule
+\multirow{2}{*}{FaultLine-140} & Baseline & 33.6 & 19.3 & 51.9 \\
+ & Ours & \textbf{47.1} & \textbf{29.3} & 55.6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:topk} shows how the correct-patch rate scales with the candidate budget $k$, averaged across all three benchmarks. The gap between \textsc{RankGen} and the baseline is largest at small $k$, which is precisely the regime that matters for a developer reviewing a short ranked list.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  ybar,
+  bar width=6pt,
+  width=\linewidth,
+  height=4.3cm,
+  ylabel={Correct patches (\%)},
+  xlabel={Top-$k$ candidates},
+  symbolic x coords={1,5,10,20,50},
+  xtick=data,
+  ymin=0, ymax=60,
+  legend style={font=\tiny,at={(0.5,1.16)},anchor=south,legend columns=-1,draw=none},
+  enlarge x limits=0.15,
+  axis line style={aseblue},
+  tick label style={font=\tiny},
+  label style={font=\small},
+]
+\addplot[fill=aseblue,draw=aseblue] coordinates {(1,18) (5,29) (10,35) (20,41) (50,47)};
+\addplot[fill=aseaccent,draw=aseaccent] coordinates {(1,11) (5,19) (10,24) (20,28) (50,33)};
+\legend{Ours, Baseline}
+\end{axis}
+\end{tikzpicture}
+\caption{Correct-patch rate as a function of candidate budget $k$, averaged over the three benchmarks.}
+\label{fig:topk}
+\end{figure}
+
+\textbf{Ablation.} Removing the retrieval term ($\lambda_1{=}0$) drops the average correct rate by 6.1 points; removing the language-model term drops it by 8.7 points; removing the overfitting prior drops it by 3.4 points. All three terms contribute, and the language-model likelihood is individually the strongest single signal, consistent with prior findings that generation confidence correlates with correctness~\cite{delgado2022llmcode}.

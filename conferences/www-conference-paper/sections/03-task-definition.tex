@@ -1,0 +1,61 @@
+\section{Task Definition}
+\label{sec:task}
+
+Let a Web snapshot be $\mathcal{D}=\{d_1,\ldots,d_n\}$.  Document $d_i$ has a
+publication time $t_i^{\mathrm{pub}}$ when available, a crawl time
+$t_i^{\mathrm{crawl}}$, an optional revision time $t_i^{\mathrm{rev}}$, and a
+provenance record $p_i$.  A document is \emph{eligible} for a question issued at
+$t_q$ only if
+\begin{equation}
+  t_i^{\mathrm{avail}} =
+  \min\bigl(t_i^{\mathrm{pub}},t_i^{\mathrm{crawl}}\bigr) \leq t_q,
+  \label{eq:eligibility}
+\end{equation}
+where missing publication times default to crawl time.  The benchmark retains
+the raw fields so alternative policies can be audited.
+
+Write $\mathcal{K}(a)=\{k_1,\ldots,k_m\}$ for the atomic claims in answer $a$.
+A citation assignment maps each claim to zero or more documents:
+\begin{equation}
+  C: \mathcal{K}(a)\longrightarrow 2^{\mathcal{D}}.
+  \label{eq:citation-map}
+\end{equation}
+A valid prediction should satisfy three conditions:
+
+\begin{enumerate}
+  \item \textbf{Correctness:} each verifiable claim agrees with the reference
+    answer scoped to $t_q$;
+  \item \textbf{Attribution:} at least one cited passage entails each supported
+    claim; and
+  \item \textbf{Temporal validity:} no cited evidence becomes available after
+    $t_q$.
+\end{enumerate}
+
+Questions with no conclusive eligible evidence are labeled
+$y_q^{\mathrm{ans}}=0$.  A calibrated system should abstain on these items rather
+than manufacture a definitive answer.
+
+\begin{figure*}[t]
+  \centering
+  \small
+  \begin{tabular}{@{}c@{\hspace{0.8em}$\longrightarrow$\hspace{0.8em}}c@{\hspace{0.8em}$\longrightarrow$\hspace{0.8em}}c@{\hspace{0.8em}$\longrightarrow$\hspace{0.8em}}c@{}}
+    \fbox{\parbox[c][3.9em][c]{0.19\textwidth}{\centering
+      \textbf{1. Temporal retrieval}\\eligible passages at $t_q$}}
+    &
+    \fbox{\parbox[c][3.9em][c]{0.19\textwidth}{\centering
+      \textbf{2. Evidence graph}\\support, conflict, provenance}}
+    &
+    \fbox{\parbox[c][3.9em][c]{0.19\textwidth}{\centering
+      \textbf{3. Claim planning}\\atomic claims and abstention}}
+    &
+    \fbox{\parbox[c][3.9em][c]{0.19\textwidth}{\centering
+      \textbf{4. Generation}\\answer with claim citations}}
+  \end{tabular}
+  \caption{Chronos pipeline.  Temporal filtering occurs before scoring, so
+  evidence published after the question cannot influence retrieval, graph
+  construction, or generation.}
+  \Description{A four-stage left-to-right pipeline: temporal retrieval feeds an
+  evidence graph, which feeds claim planning, which feeds generation of a cited
+  answer.}
+  \label{fig:pipeline}
+\end{figure*}

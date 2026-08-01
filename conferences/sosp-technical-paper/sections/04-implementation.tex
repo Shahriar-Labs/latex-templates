@@ -1,0 +1,32 @@
+\section{Implementation}
+\label{sec:implementation}
+
+Our prototype contains 18.7~K lines of Rust and 3.9~K lines of C. The manager is
+a Rust service whose three replicas use a Raft log. A sharded extent map lets
+unrelated transitions proceed concurrently; each shard has a 64-bit epoch to
+detect a stale leader. We batch up to 128 prepares or 256 stabilization records
+per log append. Snapshots use copy-on-write runs, so compaction does not pause
+allocations.
+
+The Linux 6.8 client is a kernel module exposing a \texttt{/dev/tessera}
+device. It maps registered RDMA regions into a process or backs a private
+\texttt{mmap} region with demand paging. A per-mm radix tree stores local
+4~KB-to-extent offsets. Migration write-protects the source PTEs, drains CPU
+stores with a TLB shootdown, copies dirtied pages, and acknowledges quiescence.
+The module caches tokens per extent and renews them asynchronously; a data-path
+operation never waits for renewal while a current token remains valid.
+
+Our appliance is an x86 server with 512~GB of DRAM and a Mellanox ConnectX-6
+NIC. An eBPF/XDP shim validates a compact token identifier on the first packet
+of an RDMA region and programs an NIC memory key scoped to the extent. This
+emulates the generation check expected from a CXL fabric manager. The durable
+generation table resides on an Corex Optane P1600X device; group commit flushes
+up to 64 adjacent updates. A gate advance takes 8.4~$\mu$s median and
+19.7~$\mu$s at p99. CXL-native hardware should remove the control packet but is
+not required for the protocol.
+
+\paragraph{Engineering around wraparound.}
+Generations are unsigned 64-bit integers and never reset when an extent becomes
+free. At one million transitions per second on one extent, wraparound would
+take more than 584,000 years. We nonetheless treat reaching $2^{64}-1$ as an
+appliance retirement condition rather than defining wrap semantics.

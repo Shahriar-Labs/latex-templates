@@ -1,0 +1,73 @@
+\section{Results}
+\subsection{Overall Comparison}
+Table~\ref{tab:results} summarizes results averaged across all 72 trials. TrailBeam reduces median re-alignment latency by 41\% and 90th-percentile latency by 37\% relative to Periodic Sweep, while using 34\% less energy per re-alignment. Against the reactive IMU-Only Kalman baseline, TrailBeam still improves median latency by 22\%, which we attribute to the sway term in \eq{eq:beam-predict} anticipating gait-driven drift rather than only smoothing past observations. Link-alignment accuracy for TrailBeam trails the oracle by only 2.1 percentage points.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\caption{Beam-realignment performance averaged over 72 walking trials across three indoor routes.}
+\label{tab:results}
+\begin{tabular}{lcccc}
+\toprule
+\rowcolor{steelblue!10}
+\textbf{Method} & \textbf{Med.} & \textbf{p90} & \textbf{Align.} & \textbf{Energy} \\
+\rowcolor{steelblue!10}
+ & \textbf{(ms)} & \textbf{(ms)} & \textbf{Acc. (\%)} & \textbf{(mJ)} \\
+\midrule
+Periodic Sweep      & 11.4 & 18.9 & 90.2 & 6.8 \\
+IMU-Only Kalman      & 8.2  & 14.1 & 93.7 & 5.1 \\
+TrailBeam (Ours)     & 6.4  & 11.9 & 96.4 & 4.5 \\
+\midrule
+Oracle (Genie-Aided) & 4.1  & 7.6  & 98.5 & 3.9 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Sensitivity to Walking Speed}
+Figure~\ref{fig:latency} plots median re-alignment latency as a function of walking speed, pooled across routes. The gap between TrailBeam and both baselines widens as speed increases, since faster gait produces larger and faster sway that a reactive tracker increasingly lags behind, while TrailBeam's phase term continues to anticipate the sway extremum.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.85\textwidth,
+  height=5.2cm,
+  xlabel={Walking speed (m/s)},
+  ylabel={Median re-alignment latency (ms)},
+  xmin=0.5, xmax=2.0,
+  ymin=0, ymax=20,
+  grid=major,
+  grid style={gray!20},
+  legend pos=north west,
+  legend style={font=\footnotesize, draw=gray!40},
+  label style={font=\small},
+  tick label style={font=\small},
+  axis line style={gray!60},
+]
+\addplot[thick, color=papergray, mark=square*, mark size=1.6pt] coordinates {
+  (0.5,9.8) (0.8,10.5) (1.1,11.4) (1.4,12.6) (1.7,13.9) (2.0,15.2)
+};
+\addlegendentry{Periodic Sweep}
+
+\addplot[thick, color=mutedteal, mark=triangle*, mark size=1.8pt] coordinates {
+  (0.5,6.9) (0.8,7.5) (1.1,8.2) (1.4,9.4) (1.7,10.6) (2.0,12.1)
+};
+\addlegendentry{IMU-Only Kalman}
+
+\addplot[thick, color=steelblue, mark=*, mark size=1.8pt] coordinates {
+  (0.5,5.6) (0.8,5.9) (1.1,6.4) (1.4,6.9) (1.7,7.5) (2.0,8.3)
+};
+\addlegendentry{TrailBeam (Ours)}
+
+\addplot[thick, dashed, color=inkblack, mark=none] coordinates {
+  (0.5,3.7) (0.8,3.9) (1.1,4.1) (1.4,4.4) (1.7,4.8) (2.0,5.3)
+};
+\addlegendentry{Oracle}
+\end{axis}
+\end{tikzpicture}
+\caption{Median re-alignment latency versus walking speed, pooled across routes R1--R3. TrailBeam's advantage over reactive baselines grows with speed.}
+\label{fig:latency}
+\end{figure*}
+
+\subsection{Ablation}
+Removing the gait-phase term from \eq{eq:beam-predict} (equivalent to IMU-Only Kalman) accounts for roughly 60\% of TrailBeam's latency improvement over Periodic Sweep, with the narrowed 3-beam probe policy contributing the remainder. Neither component alone matches the full system.

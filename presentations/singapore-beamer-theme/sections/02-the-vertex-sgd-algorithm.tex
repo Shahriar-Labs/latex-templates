@@ -1,0 +1,50 @@
+\section{The Vertex-SGD Algorithm}
+
+% Slide 5: The Optimization Loop (Equations)
+\begin{frame}{The Vertex-SGD Optimization Protocol}
+    Let $x_i^{(t)}$ represent the local parameter weights of node $i$ at step $t$.
+    
+    The local update consists of a gradient step followed by neighbor consensus:
+    
+    \begin{equation}
+        x_i^{(t+1/2)} = x_i^{(t)} - \eta g_i\left(x_i^{(t)}\right)
+    \end{equation}
+    
+    \begin{equation}
+        x_i^{(t+1)} = \sum_{j \in \mathcal{N}_i} W_{ij} x_j^{(t+1/2)}
+    \end{equation}
+    
+    \vskip 0.5cm
+    \begin{itemize}
+        \item $\eta > 0$ is the local learning rate.
+        \item $g_i$ is the stochastic gradient computed on node $i$'s local batch.
+        \item $W \in \mathbb{R}^{n \times n}$ is a doubly stochastic gossip matrix.
+        \item $\mathcal{N}_i$ is the set of physical neighbors of node $i$.
+    \end{itemize}
+\end{frame}
+
+% Slide 6: Network Topology (TikZ figure)
+\begin{frame}{Communication Topology \& Adjacency}
+    The network graph determines the speed of consensus convergence.
+    \vskip 0.5cm
+    \begin{center}
+        \begin{tikzpicture}[
+            node distance=2.2cm, 
+            auto, 
+            thick, 
+            main node/.style={circle,draw=vertexNavy,fill=vertexLight,minimum size=1.4cm,font=\sffamily\bfseries\small}
+        ]
+            \node[main node] (1) {Node A};
+            \node[main node] (2) [right=of 1] {Node B};
+            \node[main node] (3) [below=of 2] {Node C};
+            \node[main node] (4) [below=of 1] {Node D};
+            
+            \path[draw, <->, bend left=15, color=vertexBlue, line width=1.2pt]
+                (1) edge node[above] {$W_{AB}$} (2)
+                (2) edge node[right] {$W_{BC}$} (3)
+                (3) edge node[below] {$W_{CD}$} (4)
+                (4) edge node[left] {$W_{DA}$} (1)
+                (1) edge node[above left] {$W_{AC}$} (3);
+        \end{tikzpicture}
+    \end{center}
+\end{frame}

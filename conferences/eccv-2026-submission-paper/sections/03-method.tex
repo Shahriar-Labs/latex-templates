@@ -1,0 +1,53 @@
+\section{Method}
+\methodname{} follows the encode--retrieve--decode structure common to memory-based VOS (Fig.~\ref{fig:architecture}), replacing the retrieval step with a cross-modal sparse variant.
+
+\subsection{Joint Appearance-Motion Memory}
+For frame $t$, an appearance encoder $E_a$ and a motion encoder $E_m$ produce feature maps that are projected into a shared embedding space of dimension $d$ and concatenated per spatial location into a single memory slot $\mathbf{m}_i \in \mathbb{R}^{d}$. The memory bank $\mathcal{M} = \{\mathbf{m}_i\}_{i=1}^{N}$ therefore has one entry per spatial location per stored frame, rather than one bank for appearance and a second for motion.
+
+\subsection{Cross-Modal Sparse Attention}
+For a query location $q$ with embedding $\mathbf{q} \in \mathbb{R}^{d}$, a lightweight relevance predictor $g_\theta$ scores every memory slot with a low-rank bilinear form, and only slots whose score exceeds a per-query adaptive threshold $\tau_q$ are retained as the neighborhood $\mathcal{N}(q)$. Attention is then computed only over $\mathcal{N}(q)$:
+\begin{equation}
+\label{eq:sparse-attn}
+\alpha_{qi} = \frac{\exp\!\left(\mathbf{q}^{\top}\mathbf{k}_i / \sqrt{d}\right)\cdot \mathbb{1}\!\left[g_\theta(\mathbf{q}, \mathbf{m}_i) > \tau_q\right]}{\displaystyle\sum_{j \in \mathcal{N}(q)} \exp\!\left(\mathbf{q}^{\top}\mathbf{k}_j / \sqrt{d}\right)}\,.
+\end{equation}
+The threshold $\tau_q$ is set so that $|\mathcal{N}(q)|$ never exceeds a fixed budget $k$, which bounds worst-case attention cost at $O(Nk)$ instead of $O(N^2)$. We find $k$ as small as $32$ out of memory banks holding several thousand slots is sufficient once relevance scoring is trained end-to-end (Sec.~\ref{sec:experiments}), because $g_\theta$ quickly learns to route appearance-dominant queries toward appearance-rich slots and motion-dominant queries toward motion-rich slots without an explicit modality label.
+
+\subsection{Training Objective}
+We train $g_\theta$ jointly with the segmentation decoder using a combination of the standard cross-entropy mask loss $\mathcal{L}_{\mathrm{mask}}$ and an auxiliary coverage loss $\mathcal{L}_{\mathrm{cov}}$ that penalizes the predictor when it excludes a slot that a dense attention oracle (computed on a random 10\% of training steps only, for efficiency) would have weighted highly:
+\begin{equation}
+\mathcal{L} = \mathcal{L}_{\mathrm{mask}} + \lambda \, \mathcal{L}_{\mathrm{cov}}, \qquad \lambda = 0.1 .
+\end{equation}
+Without $\mathcal{L}_{\mathrm{cov}}$ the predictor collapses to a narrow, purely appearance-driven neighborhood; the ablation in Sec.~\ref{sec:results} quantifies this effect.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=6mm and 6mm,
+  block/.style={rectangle, rounded corners=2pt, draw=meridianblue, fill=meridianblue!8,
+                minimum width=2.5cm, minimum height=0.8cm, align=center, font=\scriptsize},
+  mem/.style={cylinder, shape border rotate=90, draw=apexteal, fill=apexteal!12,
+              minimum width=1.7cm, minimum height=0.8cm, align=center, font=\scriptsize},
+  arrow/.style={-{Latex[length=1.8mm]}, thick, meridianblue}
+]
+  \node[block] (frame) {Video frame $t$};
+  \node[block, below=of frame] (enc) {Appearance / motion encoders};
+  \node[mem, below=of enc] (mem) {Joint memory bank $\mathcal{M}$};
+  \node[block, below=of mem] (sparse) {Relevance predictor $g_\theta$ + sparse attention};
+  \node[block, below=of sparse] (dec) {Mask decoder};
+  \node[block, below=of dec] (out) {Output mask $t$};
+
+  \draw[arrow] (frame) -- (enc);
+  \draw[arrow] (enc) -- (mem);
+  \draw[arrow] (enc.east) -- ++(0.9,0) |- (sparse.east);
+  \draw[arrow] (mem) -- (sparse);
+  \draw[arrow] (sparse) -- (dec);
+  \draw[arrow] (dec) -- (out);
+  \draw[arrow] (out.west) -- ++(-1.0,0) |- (mem.west);
+
+  \begin{scope}[on background layer]
+    \node[fill=softgray!8, rounded corners=3pt, fit=(frame)(enc)(mem)(sparse)(dec)(out), inner sep=6pt] {};
+  \end{scope}
+\end{tikzpicture}
+\caption{\methodname{} pipeline. Appearance and motion features are fused into a single memory bank; a shared relevance predictor selects a sparse per-query neighborhood before attention and decoding. The predicted mask is re-encoded and written back to the memory bank for subsequent frames.}
+\label{fig:architecture}
+\end{figure}

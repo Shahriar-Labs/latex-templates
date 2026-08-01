@@ -1,116 +1,11 @@
 \documentclass[10pt,twocolumn]{article}
-\usepackage[utf8]{inputenc}
-\usepackage[letterpaper, margin=0.75in, top=1in, bottom=1in]{geometry}
-\usepackage{amsmath,amssymb,amsfonts}
-\usepackage{booktabs}
-\usepackage{tikz}
-\usetikzlibrary{positioning,calc}
-\usepackage{tcolorbox}
-\usepackage{microtype}
-\usepackage{hyperref}
-\usepackage{filecontents}
-\usepackage[square,numbers]{natbib}
 
-% Document settings
-\setlength{\columnsep}{0.25in}
-
-% Colors
-\definecolor{primaryblue}{RGB}{24,78,136}
-\definecolor{darkgray}{RGB}{60,60,60}
-\definecolor{lightgray}{RGB}{245,245,245}
-\definecolor{bordergray}{RGB}{200,200,200}
-
-\hypersetup{
-    colorlinks=true,
-    linkcolor=primaryblue,
-    citecolor=primaryblue,
-    urlcolor=primaryblue
-}
-
-\begin{filecontents*}{\jobname.bib}
-@article{pendelton2024linear,
-  author    = {Arthur Pendelton and Beatrice Vance},
-  title     = {Linear Typestate Tracking for Memory-Safe Actor Systems},
-  journal   = {Journal of Object Technology},
-  volume    = {23},
-  number    = {2},
-  pages     = {101--125},
-  year      = {2024},
-  publisher = {Nexa Press}
-}
-@inproceedings{vance2023gradual,
-  author    = {Beatrice Vance and Charles Meridian},
-  title     = {Gradual Typestates for Asynchronous API Protocols},
-  booktitle = {Proceedings of the ACM on Programming Languages (PACMPL)},
-  series    = {OOPSLA '23},
-  pages     = {45--68},
-  year      = {2023}
-}
-@inproceedings{meridian2022synapse,
-  author    = {Charles Meridian and Arthur Pendelton},
-  title     = {The Synapse Language: Design and Implementation of Actor Protocols},
-  booktitle = {International Conference on Compiler Construction (CC)},
-  pages     = {201--212},
-  year      = {2022}
-}
-@article{smith2021typestate,
-  author    = {Carol Smith and Bob Chen},
-  title     = {Typestate Verification for Asynchronous Programs},
-  journal   = {Software: Practice and Experience},
-  volume    = {51},
-  number    = {8},
-  pages     = {1723--1745},
-  year      = {2021}
-}
-@inproceedings{chen2020session,
-  author    = {Bob Chen and David Nimbus},
-  title     = {Session Types and Actor Behaviours: A Comparative Study},
-  booktitle = {European Conference on Object-Oriented Programming (ECOOP)},
-  pages     = {89--111},
-  year      = {2020}
-}
-@inproceedings{nimbus2019vertex,
-  author    = {David Nimbus and Arthur Pendelton},
-  title     = {The Vertex Virtual Machine: High-Performance Execution of Linear Code},
-  booktitle = {International Symposium on Memory Management (ISMM)},
-  pages     = {33--42},
-  year      = {2019}
-}
-@article{apex2018actors,
-  author    = {Alice Vance and Bob Meridian},
-  title     = {Actor-Based Typestate Checkers for Distributed Systems},
-  journal   = {Formal Aspects of Computing},
-  volume    = {30},
-  number    = {4},
-  pages     = {455--478},
-  year      = {2018}
-}
-@inproceedings{meridian2017capsules,
-  author    = {Charles Meridian},
-  title     = {Capsules: Safe Data Sharing in Parallel Object-Oriented Languages},
-  booktitle = {ACM SIGPLAN Conference on Programming Language Design and Implementation (PLDI)},
-  pages     = {15--28},
-  year      = {2017}
-}
-@inproceedings{vance2016checking,
-  author    = {Beatrice Vance and Arthur Pendelton and Carol Smith},
-  title     = {Static Verification of Typestates using SMT Solvers},
-  booktitle = {International Conference on Verification, Model Checking, and Abstract Interpretation (VMCAI)},
-  pages     = {312--330},
-  year      = {2016}
-}
-@article{smith2015aliasing,
-  author    = {Carol Smith},
-  title     = {Aliasing Control in Object-Oriented Languages},
-  journal   = {ACM Computing Surveys},
-  volume    = {47},
-  number    = {3},
-  pages     = {39:1--39:35},
-  year      = {2015}
-}
-\end{filecontents*}
+% Packages and styling live in preamble.tex; each section has its own file under
+% sections/. Edit those directly — this file is the outline of the document.
+\input{preamble}
 
 \begin{document}
+
 
 \twocolumn[
   \begin{center}
@@ -140,89 +35,11 @@
   \end{center}
 ]
 
-
-\section{Introduction}
-Asynchronous actor systems have emerged as a dominant programming paradigm for building highly scalable, distributed, and concurrent applications. In this model, independent computational entities called actors communicate solely through asynchronous message passing. While this model decouples state and execution, it introduces a significant challenge: verifying that actors adhere to their communication protocols at runtime. A protocol violation, such as an actor receiving a message it cannot handle in its current state, can lead to message drops, unexpected crashes, or silent data corruption.
-
-To address these challenges, we present Synapse, a modern object-oriented programming language designed for actor-based systems. Synapse implements a linear typestate system that tracks the protocol states of actors at compile time. By representing actor references as linear resources, the Synapse compiler ensures that actors undergo valid state transitions via message exchanges. We build on prior work in typestate verification and session types, adapting these concepts to the specific requirements of asynchronous actor networks. Our primary contribution is a practical typestate verification framework that integrates seamlessly with object-oriented abstractions, offering robust compile-time safety guarantees with minimal developer annotation overhead.
-
-\section{Related Work}
-Typestate verification was first introduced by Strom and Yemini to track the initialization state of variables. Since then, many researchers have extended typestate analysis to object-oriented programming. Plural, developed by Bierhoff and Aldrich, uses fractional permissions to verify protocol compliance in Java-like languages. While Plural supports complex aliasing patterns, its annotation burden is substantial. In contrast, Synapse prioritizes simplicity by using a strict linear type system for actor references, avoiding the complexity of fractional permissions.
-
-Session types, pioneered by Honda et al., provide another formalism for verifying communication protocols. Session types specify the sequence and types of messages exchanged between two endpoints. While session types are expressive, integrating them into general-purpose object-oriented systems often requires complex compiler machinery. Synapse bridges this gap by encoding actor behaviors as state transitions in a conventional typestate framework. This approach allows developers to specify protocols using state transition tables directly inside class definitions, providing a more intuitive programming model. Recent work on the Vertex virtual machine by Nimbus and Pendelton~\cite{nimbus2019vertex} has explored high-performance execution of linear code; Synapse builds on this platform to offer both safety and execution efficiency.
-
-\section{Method}
-In Synapse, every actor class defines a finite state machine that specifies its protocol. An actor transition is triggered when it receives a message or invokes a state-changing method. To prevent alias-related protocol violations, actor references are treated as linear resources. A linear reference cannot be duplicated or discarded; it must be consumed exactly once. This restriction guarantees that there is a single, authoritative reference to each actor, making static state tracking possible.
-
-Let $\Gamma$ represent the typing environment. The syntax of Synapse is shown below. We define the core typing relation $\Gamma \vdash e : \tau$, where $e$ is an expression and $\tau$ is its type. The typing rule for actor message sending is formulated in Equation~\ref{eq:typestate-transition}.
-
-\begin{equation}
-\label{eq:typestate-transition}
-\frac{\Gamma \vdash a : \text{Actor}(S) \quad \Gamma \vdash m : \text{Msg}(T) \quad T \in \text{Transitions}(S, S')}{\Gamma \vdash \text{send}(a, m) : \text{Actor}(S') \times \text{Unit}}
-\end{equation}
-
-In this rule, the send operation consumes an actor $a$ in state $S$ and a message $m$ of type $T$. The function $\text{Transitions}(S, S')$ determines whether state $S'$ is reachable from state $S$ via message $T$. If the transition is valid, the operation returns a new linear reference to the actor in state $S'$, along with a unit value. This linear consumption prevents the programmer from sending subsequent messages to $a$ under the assumption that it is still in state $S$.
-
-\begin{figure}[h]
-\centering
-\begin{tikzpicture}[node distance=2.2cm and 2.4cm]
-  \node[draw=primaryblue, fill=primaryblue!5, circle, thick, minimum size=1.5cm, font=\sffamily\small, align=center] (uninit) {\textbf{Uninit}};
-  \node[draw=primaryblue, fill=primaryblue!5, circle, thick, minimum size=1.5cm, font=\sffamily\small, align=center, right=of uninit] (ready) {\textbf{Ready}};
-  \node[draw=primaryblue, fill=primaryblue!5, circle, thick, minimum size=1.5cm, font=\sffamily\small, align=center, right=of ready] (proc) {\textbf{Proc}};
-  \node[draw=primaryblue, fill=primaryblue!5, circle, thick, minimum size=1.5cm, font=\sffamily\small, align=center, below=of ready] (term) {\textbf{Term}};
-  
-  \path[->, >=stealth, thick, draw=darkgray, text=black, font=\scriptsize\sffamily] 
-    (uninit) edge node[above] {init()} (ready)
-    (ready) [bend left=25] edge node[above] {send(msg)} (proc)
-    (proc) [bend left=25] edge node[below] {process()} (ready)
-    (ready) edge node[right] {close()} (term);
-\end{tikzpicture}
-\caption{The lifecycle state machine of an actor protocol in Synapse. Edges represent transition-triggering actions.}
-\label{fig:statemachine}
-\end{figure}
-
-\section{Experiments}
-We implemented the Synapse compiler as a frontend to the Vertex Virtual Machine. The compiler performs linear typestate checking during the semantic analysis phase. To evaluate the overhead of compile-time verification, we compiled several benchmark suites representing typical server workloads. The benchmarks were executed on a system equipped with an 8-core CPU and 16 GB of RAM, running the Vertex runtime.
-
-We compared Synapse against a Baseline compiler (which lacks typestate checking) and the Apex framework (which performs dynamic, runtime-based checks). We measured three metrics: compilation time, static verification time, and memory overhead during compiler execution. The benchmarks vary in complexity, from simple message passing (Vertex-A) to complex nested actor protocols (Synapse-B and Nexa-C).
-
-\section{Results}
-Our experimental results are summarized in Table~\ref{tab:results}. As shown, the Synapse compiler introduces a negligible overhead during compilation. On average, verification times range from 12.4 ms for simple actor interactions to 56.1 ms for large-scale benchmarks. Compared to the Baseline compiler, Synapse adds less than 15\% to compilation time, which is significantly faster than the Apex framework.
-
-Furthermore, because Synapse resolves all protocol state checks at compile time, the generated bytecode runs at native speed without any runtime checks. In contrast, the Apex framework, which relies on dynamic contract monitoring, exhibits a performance penalty of 8\% to 12\% during execution (not shown in the table). This confirms that compile-time linear typestate checking is a viable approach for production systems.
-
-\begin{table}[t]
-\centering
-\caption{Performance and verification metrics across different compiler configurations on three benchmark suites.}
-\label{tab:results}
-\begin{tabular}{l cccc}
-\toprule
-Config & Benchmark & Time (s) & Verif. (ms) & Mem. (MB) \\
-\midrule
-Baseline  & Vertex-A  & 14.5 & --    & 120.4 \\
-Synapse   & Vertex-A  & 15.1 & 12.4  & 122.1 \\
-Apex      & Vertex-A  & 18.2 & 45.1  & 135.8 \\
-\midrule
-Baseline  & Synapse-B & 28.3 & --    & 210.5 \\
-Synapse   & Synapse-B & 29.1 & 24.8  & 214.2 \\
-Apex      & Synapse-B & 34.6 & 98.2  & 240.1 \\
-\midrule
-Baseline  & Nexa-C    & 45.2 & --    & 340.9 \\
-Synapse   & Nexa-C    & 46.8 & 56.1  & 348.3 \\
-Apex      & Nexa-C    & 55.4 & 210.4 & 392.5 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\section{Discussion}
-The results demonstrate that static typestate tracking is highly effective at preventing protocol violations. However, the strict linearity requirement does impose some constraints on programming style. In Synapse, developers cannot easily share actor references across multiple execution contexts. While this prevents aliasing issues, it can make certain patterns, such as load balancing or multicast routing, more difficult to implement.
-
-To address these limitations, we are currently exploring borrowing mechanisms similar to those found in the Rust programming language. Borrowing would allow temporary non-linear access to actor references, enabling richer sharing patterns without sacrificing type safety. Additionally, integrating alias analysis could relax the strict linearity constraint, letting the compiler prove safety even in the presence of limited sharing. We believe these extensions will make Synapse more expressive while maintaining its safety guarantees.
-
-\section{Conclusion}
-In this paper, we presented Synapse, an object-oriented programming language that uses linear typestates to verify asynchronous actor protocols at compile time. By tracking actor states statically, the Synapse compiler guarantees protocol conformance and prevents deadlocks and message drops. We demonstrated the feasibility of our approach through the Synapse compiler and evaluated its performance on the Vertex Virtual Machine. Our evaluation shows that static typestate checking incurs minimal compilation overhead while providing strong safety guarantees. In future work, we plan to extend Synapse with borrowing and state-dependent typing to support more complex communication patterns.
-
-\bibliographystyle{abbrv}
-\bibliography{\jobname}
-
+\input{sections/01-introduction}
+\input{sections/02-related-work}
+\input{sections/03-method}
+\input{sections/04-experiments}
+\input{sections/05-results}
+\input{sections/06-discussion}
+\input{sections/07-conclusion}
 \end{document}

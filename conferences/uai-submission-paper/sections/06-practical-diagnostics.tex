@@ -1,0 +1,31 @@
+\section{Practical Diagnostics}
+\label{sec:diagnostics}
+
+The theorem's probability statement is only as meaningful as its assumptions.
+Before issuing a certificate, we recommend the following audit.
+
+\paragraph{Check support, not only average fit.}
+Inspect the distribution of $\wh w(X)$ on held-out source inputs and the fraction
+clipped at $B$.  Frequent clipping suggests that the numerical guarantee is tied to
+a poor approximation of $w$; this should increase $\varepsilon_w$ or stop the
+analysis.  Compare source and target representations using domain-relevant plots
+and two-sample diagnostics \citep{gretton2012kernel}.
+
+\paragraph{Probe conditional stability.}
+Covariate shift asserts equality of $P(Y\mid X)$ and $Q(Y\mid X)$, which cannot in
+general be verified from unlabeled target inputs.  Small, carefully sampled target
+label audits are more informative than elaborate marginal tests.  If conditional
+shift is plausible, add a separately justified sensitivity budget
+$\varepsilon_{\mathrm{cond}}$ to the right side of \cref{eq:certificate}.
+
+\paragraph{Preserve the holdout.}
+The model family, loss, clipping level, and bound variant must be fixed before
+examining certification outcomes.  If the sample is reused iteratively, the simple
+union bound no longer describes the search.  Fresh data, nested splitting, or tools
+for adaptive data analysis are then needed.
+
+\paragraph{Choose the loss to match the harm.}
+For classification error, $\ell=\mathbf{1}\{f(X)\neq Y\}$ is immediate.  Cost-
+sensitive or subgroup-weighted harms can also be normalized to $[0,1]$.  A low
+average loss does not imply low risk for every subgroup; certify each prespecified
+group separately and include those certificates in the multiplicity budget.

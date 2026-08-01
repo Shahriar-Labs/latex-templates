@@ -1,0 +1,14 @@
+\section{The SynapticProp Architecture}
+\label{sec:method}
+We model the neuromorphic interconnect as a directed graph $G = (V, E)$, where $V$ represents the neuromorphic cores and $E$ represents the physical communication channels. Each node $i \in V$ maintains a hidden state $h_i^{(t)}$ representing its current congestion level and packet queue status. At each routing epoch, nodes exchange messages with their direct neighbors.
+The state update equation for node $i$ at iteration $t+1$ is given by:
+\begin{equation}
+h_i^{(t+1)} = \sigma \left( W h_i^{(t)} + \sum_{j \in \mathcal{N}(i)} \alpha_{ij}^{(t)} V h_j^{(t)} \right)
+\label{eq:state_update}
+\end{equation}
+where $W$ and $V$ are weight matrices, $\mathcal{N}(i)$ is the set of neighboring nodes for node $i$, $\sigma(\cdot)$ is a non-linear activation function, and $\alpha_{ij}^{(t)} = \text{dynamic attention weight}$. The attention weights are calculated as:
+\begin{equation}
+\alpha_{ij}^{(t)} = \frac{\exp\left( \mathbf{a}^T [h_i^{(t)} \parallel h_j^{(t)}] \right)}{\sum_{k \in \mathcal{N}(i)} \exp\left( \mathbf{a}^T [h_i^{(t)} \parallel h_k^{(t)}] \right)}
+\label{eq:attention}
+\end{equation}
+Here, $\parallel$ denotes concatenation, and $\mathbf{a}$ is a learnable vector. Because of the limited memory on neuromorphic cores, we quantize the weights $W$ and $V$ to 4-bit integers and approximate the exponential functions using lookup tables.

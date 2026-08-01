@@ -1,0 +1,30 @@
+\section{Results}
+\label{sec:results}
+Our experimental results demonstrate that Nexa can support enterprise workloads with minimal performance degradation. 
+
+\subsection{Latency Analysis}
+Figure~\ref{fig:architecture} illustrates that the handshake involves multiple round-trips. We measured the total time from session initiation to access grant. The results are summarized in Table~\ref{tab:results}.
+
+\begin{table*}[t]
+\centering
+\caption{Handshake performance and memory overhead of different Nexa policy profiles. Latencies represent the mean of 1,000 runs.}
+\label{tab:results}
+\vspace{0.5em}
+\begin{tabular}{lcccc}
+\toprule
+Profile & Handshake (ms) & Cryptographic (ms) & Memory (KB) & CPU Workload (\%) \\
+\midrule
+Nexa-Lite & 12.4 & 4.2 & 128 & 2.1 \\
+Nexa-Standard & 18.2 & 8.9 & 256 & 4.5 \\
+Synapse-Secure & 24.5 & 14.1 & 512 & 7.8 \\
+Nimbus-Max & 38.9 & 22.4 & 1024 & 12.3 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The baseline latency for a connection without attestation is 8.5 ms. Nexa-Lite introduces an additional 3.9 ms of latency, primarily due to ECDSA signature verification. Synapse-Secure increases latency to 24.5 ms, which is acceptable for session establishment.
+
+\subsection{Resource Utilization}
+As shown in Table~\ref{tab:results}, memory consumption scales linearly with the complexity of the policy. Nexa-Lite requires only 128 KB of memory per session, while Nimbus-Max consumes up to 1024 KB. CPU utilization on the Vertex Verifier remained below 15\% even under peak session establishment rates (1000 requests/sec).
+
+We also investigated the throughput of the Nexa Gateway. Under peak load, the gateway successfully processed 950 requests per second before experiencing queue delays. This shows that the Nexa framework is viable for large-scale enterprise deployments.

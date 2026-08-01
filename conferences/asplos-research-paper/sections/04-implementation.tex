@@ -1,0 +1,31 @@
+\section{Implementation}
+\label{sec:implementation}
+
+Our prototype comprises 3,840 lines of C in Linux 6.8 and a 610-line privileged
+controller.  The kernel component adds phase tables to memory cgroups, extends
+the existing asynchronous NUMA migration worker, and exports counters through
+\texttt{cgroupfs}.  No page-table format, scheduler ABI, or application binary
+changes are required.
+
+\paragraph{Sampling.}
+One performance-monitoring event samples retired load misses and another
+samples branches.  The controller reads per-CPU rings every 250\,\us and passes
+coalesced records to the target cgroup's kernel worker.  Sampling periods adapt
+between 8K and 128K events to keep CPU overhead below 1\%.  An mm sequence
+number rejects samples whose address mapping changed before processing.
+
+\paragraph{Migration.}
+Candidates are filtered with a nonblocking page-table walk.  The kernel
+migration API receives batches of up to 64 base pages, with at most four
+batches submitted per NUMA node.  Pages with elevated reference counts,
+writeback, explicit
+pinning, or device mappings are skipped.  A skipped page does not consume a
+credit.  Migration completion updates benefit estimates using actual elapsed
+copy time.
+
+\paragraph{Topology and calibration.}
+At boot, a 40\,ms microbenchmark measures dependent-load latency and sustainable
+copy bandwidth between every CPU and memory node.  \system stores an asymmetric
+matrix because the preferred tier can differ across sockets.  We repeat the
+probe after memory hotplug and expose an administrator override for virtualized
+hosts where direct measurement is misleading.

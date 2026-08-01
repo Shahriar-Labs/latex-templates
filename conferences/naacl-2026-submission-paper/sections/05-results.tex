@@ -1,0 +1,97 @@
+\section{Results}
+\label{sec:results}
+
+\begin{table*}[t]
+  \centering
+  \caption{Illustrative test results averaged over three seeds. Parentheses
+  show standard deviation. Best values are bold. $\dagger$ marks a significant
+  chrF difference from ByT5 under paired bootstrap resampling ($p<0.05$).}
+  \label{tab:main-results}
+  \small
+  \setlength{\tabcolsep}{7pt}
+  \begin{tabular}{lcccccc}
+    \toprule
+    Model & chrF $\uparrow$ & WER $\downarrow$ & EM $\uparrow$ & ECR $\downarrow$
+          & ECE $\downarrow$ & Rel. latency \\
+    \midrule
+    Identity copy             & 71.4 & 24.8 & 31.6 & \textbf{0.0} & --  & 0.03$\times$ \\
+    Character Transformer     & 79.1 (0.3) & 17.5 & 45.2 & 9.8 & 8.7 & 0.72$\times$ \\
+    mT5                       & 80.2 (0.4) & 16.8 & 46.7 & 8.9 & 7.4 & 1.08$\times$ \\
+    ByT5                      & 82.6 (0.2) & 14.9 & 50.8 & 7.1 & 6.8 & 1.00$\times$ \\
+    \textsc{AlwaysRetrieve}  & 83.1 (0.3) & 14.5 & 51.6 & 7.8 & 6.1 & 1.42$\times$ \\
+    \method                   & \textbf{84.9} (0.2)$^{\dagger}$ & \textbf{13.2}
+                              & \textbf{54.7} & 4.9 & \textbf{3.9} & 1.17$\times$ \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+\subsection{Overall performance}
+
+Table~\ref{tab:main-results} shows that \method improves chrF by 2.3 points
+and exact match by 3.9 points over ByT5. Retrieval at every step produces only
+a 0.5 chrF gain and increases entity corruption, supporting selective rather
+than unconditional use of memory. \method reduces ECR from 7.1 to 4.9, a 31\%
+relative reduction. Its 17\% latency overhead is also smaller than
+\textsc{AlwaysRetrieve}'s 42\% overhead because only 29\% of spans trigger a
+lookup.
+
+\subsection{Performance by variety}
+
+The gain is largest on Coastal, the smallest and most divergent variety
+(Table~\ref{tab:variety}). This pattern is consistent with the memory supplying
+examples where parametric learning is weakest. North shows a smaller gain but
+retains the best absolute score. No variety loses performance.
+
+\begin{table}[t]
+  \centering
+  \caption{chrF by variety. $\Delta$ compares \method{} with ByT5.}
+  \label{tab:variety}
+  \small
+  \begin{tabular}{lrrr}
+    \toprule
+    Variety & ByT5 & \method & $\Delta$ \\
+    \midrule
+    North   & 86.5 & 88.0 & +1.5 \\
+    Central & 82.8 & 85.1 & +2.3 \\
+    Coastal & 77.4 & 80.9 & +3.5 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Calibration and coverage}
+
+Figure~\ref{fig:calibration} plots accuracy against reported confidence. The
+base model is over-confident in the two lowest-confidence bins. The Brier term
+and retrieval features move \method closer to the diagonal, reducing ECE from
+6.8 to 3.9. At a gate threshold of 0.7, accepted memory proposals are 91\%
+accurate and cover 18\% of output positions.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=0.98\columnwidth,
+      height=0.70\columnwidth,
+      xmin=0,xmax=1,ymin=0,ymax=1,
+      xlabel={Mean confidence},ylabel={Empirical accuracy},
+      grid=major,grid style={draw=naaclgray!18},
+      legend style={font=\scriptsize,at={(0.03,0.97)},anchor=north west,
+                    draw=none,fill=white},
+      tick label style={font=\scriptsize},
+      label style={font=\small}
+    ]
+      \addplot[dashed,naaclgray,thick] coordinates {(0,0) (1,1)};
+      \addlegendentry{Ideal}
+      \addplot[mark=square*,naaclred,thick] coordinates
+        {(0.10,0.04) (0.30,0.18) (0.50,0.39) (0.70,0.63) (0.90,0.87)};
+      \addlegendentry{ByT5}
+      \addplot[mark=*,naaclblue,thick] coordinates
+        {(0.10,0.08) (0.30,0.27) (0.50,0.47) (0.70,0.68) (0.90,0.89)};
+      \addlegendentry{\method}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Reliability diagram on the illustrative test set.}
+  \label{fig:calibration}
+\end{figure}
+
+% -----------------------------------------------------------------------------

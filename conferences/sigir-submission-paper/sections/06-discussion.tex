@@ -1,0 +1,26 @@
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{Where distillation helps most.} The largest quality gains from
+CARD over the plain bi-encoder appear on queries with high lexical overlap
+across multiple candidate passages, where independent encoding cannot
+distinguish passages that differ only in how a shared term is used in
+context. This is consistent with the token-level matching motivation behind
+late-interaction and cross-encoder architectures more broadly.
+
+\paragraph{Teacher choice matters.} Replacing the cross-encoder teacher with
+a smaller distilled cross-encoder as an intermediate teacher
+(self-distillation) reduced CARD's nDCG@10 by 0.011 relative to distilling
+directly from the full teacher, suggesting that distillation chains lose
+signal at each hop and that CARD should be trained from the strongest
+available teacher rather than a cheaper proxy, even though training-time
+teacher cost does not affect serving latency.
+
+\paragraph{Limitations.} Our evaluation covers English web and passage
+retrieval collections only; we have not verified that the distillation
+temperature and loss weighting transfer without retuning to other domains
+such as legal or biomedical retrieval, where relevance judgments are sparser
+and passage lengths differ substantially. The survey of distillation methods
+for ranking~\cite{fakhoury2022survey} notes more broadly that distillation
+gains are sensitive to the capacity gap between teacher and student, and our
+own ablation over cross-attention depth supports that observation directly.

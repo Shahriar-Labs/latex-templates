@@ -1,0 +1,21 @@
+\section{Discussion}
+\label{sec:discussion}
+
+The gap between \textsc{Bidir}'s $91.3\%$ no-annotation coverage and
+\textsc{Full-Annot}'s trivial $100\%$ annotation baseline is explained
+almost entirely by the boundary placement rule of
+\cref{sec:method}: any $\lambda$-abstraction that is stored, exported
+across a signature, or captured recursively needs a signature regardless
+of how simple its body is. We view this as a feature rather than a
+limitation --- it means every annotation \textsc{Bidir} does ask for is
+one that documents an actual interface, not an incidental syntactic
+artifact of writing a closure. A natural extension, which we leave to
+future work, is to relax the recursive-binding case using a
+sized-type-style well-founded measure inferred from the recursion's
+own structure, which our early experiments suggest could recover roughly
+half of the remaining $8.7\%$ without a corresponding soundness cost.
+The $1.8\times$ median checking overhead is dominated by the
+subtyping-style comparison $\sqsubseteq_{\mathcal{C}}$ at each
+application site; a memoized variant of this comparison is the most
+promising target for closing the gap with \textsc{Full-Annot}'s $1.19\times$
+overhead observed in \Cref{fig:coverage}.

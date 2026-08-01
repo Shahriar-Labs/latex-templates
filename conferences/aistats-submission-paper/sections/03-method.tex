@@ -1,0 +1,75 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{Problem Setup}
+At each round $t = 1, \dots, T$, the learner observes a context $x_t \in \mathbb{R}^d$ for each of $K$ arms, selects an arm $a_t$, and receives a reward $r_t = \langle \theta^{\star}, x_{t, a_t} \rangle + \eta_t$, where $\theta^{\star} \in \mathbb{R}^d$ is an unknown parameter and $\eta_t$ is zero-mean noise satisfying only $\mathbb{E}\lvert \eta_t \rvert^{1+\epsilon} \le u$ for known constants $\epsilon \in (0,1]$ and $u > 0$; no higher moments are assumed to exist. The learner's goal is to minimize the cumulative pseudo-regret
+\begin{equation}
+R_T \;=\; \sum_{t=1}^{T} \Big( \langle \theta^{\star}, x_{t, a_t^{\star}} \rangle - \langle \theta^{\star}, x_{t, a_t} \rangle \Big),
+\label{eq:regret-def}
+\end{equation}
+where $a_t^{\star} = \arg\max_a \langle \theta^{\star}, x_{t,a} \rangle$ is the optimal arm at round $t$.
+
+\subsection{Robust Truncated-Mean Estimation}
+Standard Bayesian linear regression assumes Gaussian noise, so a single extreme reward can arbitrarily distort the posterior mean and variance. We instead form a \emph{robust surrogate reward} $\tilde{r}_t$ by truncating each observation at an adaptive threshold $b_t$:
+\begin{equation}
+\tilde{r}_t \;=\; \mathrm{sign}(r_t) \cdot \min\big(|r_t|,\, b_t\big), \qquad b_t = \left( \frac{u\, t}{\log(1/\delta)} \right)^{\frac{1}{1+\epsilon}}\!\!,
+\label{eq:truncation}
+\end{equation}
+so that $b_t$ grows with $t$, allowing the algorithm to trust larger observations as more evidence accumulates while still bounding the influence of any single round. The posterior over $\theta$ is updated using $\tilde{r}_t$ in place of $r_t$ in the usual Bayesian linear-regression recursion, with prior $\mathcal{N}(0, \sigma_0^2 I_d)$.
+
+\subsection{Online Moment Calibration}
+Because $u$ and $\epsilon$ are rarely known exactly in practice, HT-CTS maintains a running estimate $\hat{u}_t$ of the $(1+\epsilon)$-moment using a plug-in estimator over a sliding window of the $m$ most recent residuals, and substitutes $\hat{u}_t$ for $u$ in Equation~\ref{eq:truncation}. This calibration step is the source of the ``calibrated'' in HT-CTS: it lets the truncation threshold track the empirical tail behavior of the environment rather than relying on a fixed, potentially conservative, worst-case constant.
+
+\begin{table}[t]
+  \centering
+  \small
+  \caption{Synthetic environment parameters: number of arms $K$, context dimension $d$, tail index $\epsilon$, and noise scale $u$.}
+  \label{tab:envs}
+  \vspace{0.4em}
+  \begin{tabular}{lcccc}
+    \toprule
+    \textbf{Env.} & \textbf{$K$} & \textbf{$d$} & \textbf{$\epsilon$} & \textbf{$u$} \\
+    \midrule
+    Env.\ I   & 10 & 5  & 1.00 & 2.0 \\
+    Env.\ II  & 10 & 10 & 0.70 & 3.5 \\
+    Env.\ III & 20 & 10 & 0.50 & 5.0 \\
+    Env.\ IV  & 20 & 20 & 0.30 & 8.0 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Figure~\ref{fig:pipeline} summarizes the resulting decision loop: the context arrives, the robust estimator forms a calibrated truncated-mean update, the posterior is refreshed, and an action is drawn by Thompson sampling before the cycle repeats with the next observed reward.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+    scale=0.85,
+    every node/.style={transform shape, font=\small},
+    box/.style={rectangle, draw=DeepIndigo, fill=PaperCream, thick, rounded corners=3pt, minimum width=2.5cm, minimum height=0.85cm, align=center},
+    arrow/.style={->, >=stealth, thick, color=DeepIndigo}
+  ]
+    \node[box] (ctx) at (0,2.6) {Context $x_t$};
+    \node[box] (est) at (0,1.2) {Truncated-Mean\\Estimator (Eq.~\ref{eq:truncation})};
+    \node[box] (post) at (2.9,1.2) {Posterior\\Update};
+    \node[box, fill=MerlotAccent!12, draw=MerlotAccent] (sample) at (2.9,-0.2) {Thompson\\Sample $a_t$};
+    \node[box] (reward) at (0,-0.2) {Observe\\Reward $r_t$};
+
+    \draw[arrow] (ctx) -- (est);
+    \draw[arrow] (est) -- (post);
+    \draw[arrow] (post) -- (sample);
+    \draw[arrow] (sample) -- (reward);
+    \draw[arrow] (reward) -- (est);
+    \node at (1.45, 0.5) [font=\footnotesize, color=SlateGray] {calibrate $\hat u_t$};
+  \end{tikzpicture}
+  \caption{The HT-CTS decision loop. Rewards are truncated and used to update the posterior before Thompson sampling selects the next arm; the truncation threshold $b_t$ is recalibrated each round from recent residuals.}
+  \label{fig:pipeline}
+\end{figure}
+
+\subsection{Regret Bound}
+Combining the truncated-mean concentration inequality of \citet{anand2024moments} with a standard Thompson-sampling regret decomposition yields the following guarantee.
+
+\begin{equation}
+\mathbb{E}[R_T] \;\le\; C_1 \sqrt{d\,T \log(T/\delta)} \;+\; C_2 \left(\frac{u}{\epsilon}\right)^{\!\frac{1}{1+\epsilon}} T^{\frac{1}{1+\epsilon}}
+\label{eq:regret-bound}
+\end{equation}
+with probability at least $1-\delta$, where $C_1, C_2$ depend only on $K$ and problem-independent constants. As $\epsilon \to 1$ (finite variance), the second term reduces to $\widetilde{O}(\sqrt{T})$ and the bound recovers the familiar sub-Gaussian rate; as $\epsilon \to 0$, the exponent $1/(1+\epsilon)$ approaches $1$, reflecting the fundamental difficulty of learning from an almost-heavy-tailed distribution with only a first moment.

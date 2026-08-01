@@ -1,0 +1,71 @@
+\section{Method}
+\label{sec:method}
+Let $\mathbf{x} \in \mathbb{R}^d$ be the input context representation. The goal of the Deep Synaptic Router $\mathcal{R}$ is to allocate routing weights $w_i \ge 0$ to a set of $K$ agents $\mathcal{A} = \{a_1, a_2, \dots, a_K\}$ such that $\sum_{i=1}^{K} w_i = 1$.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.2cm and 0.8cm,
+    block/.style={
+      draw=academicblue,
+      thick,
+      fill=academicblue!5,
+      rounded corners,
+      minimum width=2cm,
+      minimum height=0.8cm,
+      align=center,
+      font=\small\sffamily
+    },
+    router/.style={
+      draw=academicgray,
+      thick,
+      fill=academicgray!10,
+      diamond,
+      aspect=2,
+      minimum width=2.2cm,
+      align=center,
+      font=\small\sffamily
+    },
+    arrow/.style={
+      -{Stealth[scale=1.0]},
+      thick,
+      draw=academicgray
+    },
+    activearrow/.style={
+      -{Stealth[scale=1.0]},
+      ultra thick,
+      draw=academicblue
+    }
+  ]
+    % Nodes
+    \node (input) [block] {Input Context \\ $\mathbf{x} \in \mathbb{R}^d$};
+    \node (router) [router, below=of input] {Router $\mathcal{R}$};
+    
+    \node (agent2) [block, below=of router] {Synapse Agent \\ (Core Logic)};
+    \node (agent1) [block, left=of agent2] {Nexa Agent \\ (Syntax)};
+    \node (agent3) [block, right=of agent2] {Vertex Agent \\ (Semantics)};
+    
+    % Paths
+    \draw [arrow] (input) -- (router);
+    
+    \draw [activearrow] (router) -| node[above, pos=0.7] {$w_1 = 0.72$} (agent1);
+    \draw [activearrow] (router) -- node[right] {$w_2 = 0.18$} (agent2);
+    \draw [arrow] (router) -| node[above, pos=0.7] {$w_3 = 0.10$} (agent3);
+    
+  \end{tikzpicture}
+  \caption{Dynamic routing architecture of Deep Synaptic Routing (DSR). The Router $\mathcal{R}$ dynamically distributes computation weights $w_i$ to different specialized agents based on the input context.}
+  \label{fig:dsr_architecture}
+\end{figure}
+
+The layout of the DSR architecture is shown in Figure~\ref{fig:dsr_architecture}. The router computes the allocation weights using a softmax gating layer parameterized by a weight matrix $W \in \mathbb{R}^{K \times d}$:
+\begin{equation}
+  w_i = \text{softmax}(W \cdot \mathbf{x})_i = \frac{\exp(W_i^\top \mathbf{x})}{\sum_{j=1}^{K} \exp(W_j^\top \mathbf{x})}
+  \label{eq:routing_softmax}
+\end{equation}
+
+To avoid agent collapse, we introduce a routing regularization loss term $\mathcal{L}_{\text{route}}$ defined as:
+\begin{equation}
+  \mathcal{L}_{\text{route}} = \alpha \sum_{i=1}^{K} p_i \log p_i + \beta \sum_{j=1}^{M} \| \mathcal{A}_j \|_2
+  \label{eq:routing_loss}
+\end{equation}
+where $p_i$ is the empirical load of agent $i$, $\mathcal{A}_j$ denotes the parameters of agent $j$, and $\alpha, \beta$ are scaling coefficients. The first term penalizes unbalanced utilization (entropy regularization), while the second term enforces sparsity constraint.

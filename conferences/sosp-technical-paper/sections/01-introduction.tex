@@ -1,0 +1,62 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Fast fabrics have made memory disaggregation a plausible alternative to
+provisioning DRAM for each server's peak. Systems such as Infiniswap,
+LegoOS, and AIFM show that remote memory can support unmodified or lightly
+modified applications at useful performance~\cite{gu2017infiniswap,
+shan2018legoos,ruan2020aifm}. Emerging CXL fabrics go further by permitting
+processors to load from pooled memory through coherent, hardware-managed
+paths~\cite{cxl2022spec}. In both settings, the attractive data path is simple:
+once a mapping is installed, a compute node accesses memory without consulting
+a centralized service.
+
+The control path is not simple. Allocating, migrating, or reclaiming pooled
+memory changes three pieces of state: the allocator's ownership record, the
+memory appliance's access-control entry, and the compute node's page table.
+They reside in different failure domains and become visible in different
+orders. A crash in the middle may leave two nodes able to name the same physical
+extent, leave an extent unreachable, or resurrect a mapping whose contents
+have already been reassigned. These are not merely leaks. A stale writer can
+silently corrupt another tenant's memory after the fabric has resumed service.
+
+The usual remedies are poorly matched to memory. One remedy reconstructs
+ownership by scanning the pool and all surviving page tables. Recovery then
+grows with installed capacity, even when only one 2~MB extent was moving.
+Another remedy commits every mapping transition through a replicated log.
+Although appropriate for control-plane decisions, a round of consensus for
+short-lived mappings amplifies allocation latency and manager load. Replicating
+the data itself, as in in-memory storage systems~\cite{dragojevic2014farm,
+ousterhout2015ramcloud}, changes both the cost and the semantics of a capacity
+pool.
+
+\system starts from a narrower question: \emph{what is the minimum durable
+information needed to make a mapping change failure-atomic?} Its answer is a
+small prepared record containing the old owner, new owner, and next generation.
+The record does not describe every page. It marks the one transition whose
+visibility may be ambiguous. A memory appliance grants access only to a signed
+token containing that generation. Before reusing an extent, the manager
+advances the appliance's generation; all older tokens become unusable even if
+a partitioned compute node later returns. Once the new mapping is published,
+the manager converts the prepared record to a compact stable owner entry.
+
+This separation creates a useful asymmetry. Allocation, migration, balancing,
+and failure handling use replicated control state, but ordinary loads, stores,
+and remote reads remain entirely outside consensus. At recovery, the manager
+examines the bounded set of prepared records and asks appliances which
+generation is authoritative. It does not scan application data or enumerate
+all page tables.
+
+This paper makes four contributions:
+
+\begin{itemize}[leftmargin=1.25em]
+  \item We identify the \emph{reconfiguration gap} in disaggregated memory:
+  the interval in which durable ownership and hardware reachability disagree.
+  \item We design a token and generation protocol that closes this gap while
+  preserving a one-sided, consensus-free memory-access path.
+  \item We give recovery rules and invariants covering compute-node,
+  manager, and memory-appliance failures, including delayed nodes and repeated
+  failures during recovery.
+  \item We implement and evaluate \system on RDMA hardware with a CXL-like
+  access-control shim, showing sub-second recovery and low steady-state cost.
+\end{itemize}

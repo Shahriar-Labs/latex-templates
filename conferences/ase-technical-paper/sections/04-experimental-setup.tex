@@ -1,0 +1,11 @@
+\section{Experimental Setup}
+\label{sec:setup}
+\textbf{Benchmarks.} We evaluate on three defect collections: \emph{RepairBench}, a set of 210 real-world defects we curate for this study from seven open-source Java projects; \emph{QuirkBugs}~\cite{feldman2018quirkbugs}, a small, well-studied collection of 42 single-line defects; and \emph{FaultLine-140}~\cite{singh2023faultline}, a 160-defect multilingual benchmark spanning Java and Python.
+
+\textbf{Baseline.} Our baseline ranks candidates by test-suite pass count followed by a simple textual-similarity tiebreak, matching common practice in prior ranking work~\cite{nakamura2020rag} without the retrieval-index or overfitting-prior terms.
+
+\textbf{Candidate generator.} Both the baseline and \textsc{RankGen} consume candidates from the same masked span-infilling generator, holding the generation strategy fixed so that all measured differences are attributable to ranking.
+
+\textbf{Metrics.} We report the \emph{plausible} rate (fraction of defects for which some candidate in the top-$k$ passes the full held-out test suite) and the \emph{correct} rate (fraction for which the top-$k$ list contains a patch manually verified as semantically equivalent to the developer fix), together with average wall-clock ranking time per defect.
+
+\textbf{Implementation.} The retrieval index uses 256-dimensional embeddings from a code encoder trained by the generator's own pretraining pipeline; approximate nearest-neighbor search uses a graph-based index with $k{=}20$. Weights $\lambda_1,\lambda_2,\lambda_3$ are tuned on a validation split disjoint from all reported test defects.

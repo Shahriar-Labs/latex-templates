@@ -1,0 +1,62 @@
+\section{Introduction}
+\label{sec:introduction}
+
+CXL-attached memory offers a practical way to expand server capacity without
+populating every processor memory channel.  A host can access a Type-3 device
+through ordinary loads and stores, and future fabrics can pool capacity across
+machines~\cite{cxl30}.  The capacity is useful, but not free: additional hops,
+controllers, and media increase access latency and constrain bandwidth.  The
+operating system must therefore decide which pages remain in scarce local DRAM
+(\fast) and which pages reside in larger CXL memory (\slow).
+
+Existing tiering systems make this decision from recent page temperature.
+They periodically sample accesses, classify hot pages, and migrate them toward
+the fast tier~\cite{agarwal2017thermostat,yan2019nimble,raybuck2021hemem,
+maruf2023tpp}.  This reactive loop is effective for long, stationary phases.
+It is less effective for services whose memory demand changes at request or
+pipeline boundaries.  By the time a burst has generated enough samples to
+classify its pages as hot, the burst may already have completed on the slow
+tier.  Average throughput can remain healthy even while the few requests that
+encounter such transitions dominate tail latency~\cite{dean2013tail}.
+
+This paper asks whether the kernel can act \emph{before} the first expensive
+miss without requiring programmers to mark phases or objects.  Our key
+observation is that many services revisit execution contexts---parser loops,
+index probes, compaction workers, and model operators---before revisiting the
+same groups of pages.  Sampled instruction pointers thus provide an early but
+noisy phase signal.  A compact history can associate that signal with a
+working-set fingerprint and pre-promote a small set of pages.  The mechanism
+must nevertheless be conservative: an inaccurate predictor can evict the
+foreground working set or saturate the migration path, producing precisely the
+tail spikes it is intended to avoid.
+
+We introduce \system, phase-aware memory tiering for latency-sensitive
+services.  \system runs inside the Linux memory-management path and operates at
+the granularity of a cgroup.  It observes sampled instruction pointers and
+accessed pages, learns recurring phase signatures, and predicts the next
+working set.  A migration-credit controller admits speculative promotions only
+when the expected value exceeds their estimated interference cost.  Finally, a
+deadline-aware reclaim policy lends local DRAM to predicted pages for a bounded
+lease, preventing stale predictions from becoming permanent allocations.
+
+The paper makes three contributions:
+
+\begin{itemize}
+  \item We identify \emph{phase exposure}---the interval between recognizable
+        execution and the first slow-tier access---as a resource that reactive
+        page-temperature policies leave unused.
+  \item We design a phase predictor and credit-bounded promotion mechanism that
+        converts this interval into early migrations while preserving a safe
+        reactive fallback.
+  \item We implement the design in Linux and evaluate latency, throughput,
+        bandwidth, fairness, and prediction-error sensitivity on eight
+        application mixes.  \system lowers \ptail latency by up to 58\% and bounds
+        wasted migrations to 6.2\% of available copy bandwidth.
+\end{itemize}
+
+\paragraph{Scope.}
+Our prototype manages volatile, cache-coherent expansion memory.  It does not
+provide persistence semantics, device-level wear management, or fabric-wide
+admission control.  The evaluation uses a calibrated NUMA emulation because
+the tested CXL device does not expose programmable latency; \cref{sec:limits}
+discusses the implications.

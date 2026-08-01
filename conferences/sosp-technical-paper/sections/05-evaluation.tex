@@ -1,0 +1,184 @@
+\section{Evaluation}
+\label{sec:evaluation}
+
+We ask four questions: (1) What steady-state overhead does \system impose?
+(2) How quickly does it recover from failures? (3) Does its metadata and
+recovery work scale with incomplete transitions rather than pool capacity?
+(4) What utilization does safe reconfiguration permit?
+
+\subsection{Methodology}
+
+Our testbed has 32 dual-socket compute servers, each with two 24-core AMD EPYC
+7402 CPUs and 128~GB local DRAM, plus eight 512~GB memory appliances. Two
+100~Gb/s RoCEv2 links connect each machine to redundant switches. We cap local
+memory so 25--75\% of each workload's working set is remote. Manager replicas
+run on three separate servers. Reported results are medians of seven 10-minute
+runs; error bars show the 5th and 95th percentiles.
+
+We use five workloads: Redis 7.2 with 64 million 1~KB values; RocksDB 8.9 with a
+480~GB database and YCSB-A; Graph500 breadth-first search at scale 29; a
+PyTorch recommendation model with a 1.1~TB embedding table; and a synthetic
+allocator that repeatedly maps, touches, and frees extents. The applications
+use the same local mapping API under all systems.
+
+We compare against \baseline, which uses identical data-path code but rebuilds
+ownership by scanning appliances and client maps after a control-plane failure,
+and \textsc{SyncLog}, which commits every 4~KB mapping change to the replicated
+log. \textsc{Local} fits the working set in local DRAM and is an upper bound,
+not a capacity-equivalent configuration.
+
+\subsection{Steady-state overhead}
+
+\Cref{fig:throughput} reports throughput normalized to a version with the same
+remote-memory data path but no failure-atomic control plane. \system sustains
+96.2--99.3\% of that throughput (2.1\% geometric-mean overhead). Redis and the
+recommendation model are most sensitive because they allocate during the run;
+Graph500 performs almost all control operations during initialization. In
+contrast, \textsc{SyncLog} loses 12--39\% by logging fine-grain mappings and
+shows a 4.3$\times$ increase in p99 allocation latency. Token checking adds
+83~ns to the first access that binds an RDMA memory key and is absent from
+subsequent accesses.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+  \begin{axis}[
+    ybar,
+    width=\columnwidth,
+    height=5.0cm,
+    ymin=0.55,ymax=1.06,
+    ylabel={Normalized throughput},
+    symbolic x coords={Redis,RocksDB,Graph500,Recommender,Allocator},
+    xtick=data,
+    x tick label style={rotate=28,anchor=east,font=\scriptsize},
+    yticklabel style={font=\scriptsize},
+    ylabel style={font=\scriptsize},
+    legend style={font=\scriptsize,at={(0.5,1.02)},anchor=south,
+      legend columns=-1,draw=none},
+    bar width=5pt,
+    enlarge x limits=0.09,
+    grid=major,
+    grid style={draw=black!12},
+  ]
+    \addplot[fill=tesserateal,draw=tesserateal!80!black]
+      coordinates {(Redis,0.973) (RocksDB,0.981) (Graph500,0.993)
+                   (Recommender,0.962) (Allocator,0.987)};
+    \addplot[fill=tesseraorange,draw=tesseraorange!80!black]
+      coordinates {(Redis,0.712) (RocksDB,0.784) (Graph500,0.881)
+                   (Recommender,0.741) (Allocator,0.609)};
+    \legend{\system,\textsc{SyncLog}}
+  \end{axis}
+  \end{tikzpicture}
+  \caption{Application throughput normalized to the same remote-memory data
+  path without failure-atomic control. \system keeps transitions at extent
+  granularity and stays within 3.8\% of the baseline.}
+  \Description{A grouped bar chart shows Tessera near normalized throughput
+  one for five workloads, while SyncLog ranges from 0.61 to 0.88.}
+  \label{fig:throughput}
+\end{figure}
+
+\subsection{Recovery latency}
+
+We inject failures after a uniformly random transition phase while running
+RocksDB and the allocator. Recovery ends when new allocations and affected
+mappings are available. \Cref{tab:recovery} summarizes the results.
+
+\begin{table}[t]
+  \centering
+  \caption{Recovery time under injected failures. Values are median / p99.
+  \baseline scans 4~TB of installed memory; \system resolves 1,024 prepared
+  transitions unless noted.}
+  \label{tab:recovery}
+  \small
+  \begin{tabular}{@{}lrr@{}}
+    \toprule
+    Failure & \baseline & \system \\
+    \midrule
+    Manager leader       & 11.8 / 13.6 s & 184 / 267 ms \\
+    Compute node         & 14.2 / 18.1 s & 391 / 614 ms \\
+    Appliance soft reboot& 12.0 / 14.4 s & 438 / 691 ms \\
+    Failure during recovery & 16.7 / 21.3 s & 622 / 948 ms \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+A manager failure is dominated by leader election and two parallel batches of
+generation queries. Compute-node recovery additionally fences 2,048 owned
+extents. The appliance reboot includes rebuilding NIC keys from the durable
+generation table. A second failure during recovery repeats idempotent work but
+does not trigger a pool scan. Across all cases, we observe no accepted request
+with a stale token in 4.1 million injected transition failures.
+
+Recovery causes a short availability dip but little cluster-wide disruption.
+For a failed compute node, unaffected Redis clients lose 3.6\% throughput for
+one 100~ms interval; p99 latency returns to its pre-failure range within
+620~ms. \baseline blocks new allocations for the entire scan and loses
+19--27\% throughput during its recovery window.
+
+\subsection{Scaling with ambiguity, not capacity}
+
+\Cref{fig:scaling} varies installed pool size while holding 1,024 incomplete
+transitions, then varies transitions in a fixed 4~TB pool. \system recovery is
+nearly flat as capacity grows from 512~GB to 16~TB (171--193~ms). It grows
+linearly with prepared records until parallel gate-query batches saturate one
+manager core: 84~ms for 64 records, 612~ms for 16,384. \baseline instead grows
+linearly with installed capacity and is insensitive to ambiguity.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+  \begin{axis}[
+    width=\columnwidth,
+    height=5.0cm,
+    xmode=log,
+    log basis x=2,
+    ymode=log,
+    log basis y=10,
+    xlabel={Installed capacity (TB)},
+    ylabel={Recovery time (ms)},
+    xmin=0.45,xmax=18,
+    ymin=70,ymax=25000,
+    xtick={0.5,1,2,4,8,16},
+    xticklabels={0.5,1,2,4,8,16},
+    grid=major,
+    grid style={draw=black!12},
+    label style={font=\scriptsize},
+    tick label style={font=\scriptsize},
+    legend style={font=\scriptsize,draw=none,at={(0.03,0.97)},anchor=north west},
+  ]
+    \addplot[color=tesserateal,very thick,mark=*]
+      coordinates {(0.5,171) (1,176) (2,179) (4,184) (8,188) (16,193)};
+    \addplot[color=tesserared,very thick,mark=square*]
+      coordinates {(0.5,1750) (1,3220) (2,6180) (4,11800) (8,23100) (16,46200)};
+    \legend{\system,\baseline}
+  \end{axis}
+  \end{tikzpicture}
+  \caption{Manager recovery with 1,024 prepared records. \system tracks the
+  ambiguous transitions, so its work is independent of installed capacity;
+  scanning grows linearly.}
+  \Description{A log-log line chart shows Tessera recovery nearly flat around
+  180 milliseconds as capacity increases, while RecoverAll rises linearly from
+  1.75 to 46.2 seconds.}
+  \label{fig:scaling}
+\end{figure}
+
+The ownership snapshot is 31.4~MB at 4~TB and 122.8~MB at 16~TB. Restoring it
+is overlapped with leader election; its sequential read takes 14--51~ms. At
+64 compute nodes, the manager sustains 3.8 million extent operations/s with
+batching and 0.92 million without. Gate storage is 3.0~MB per 512~GB appliance.
+
+\subsection{Packing efficiency and migration}
+
+Safe fencing would be of limited use if coarse extents stranded capacity.
+Under a 24-hour trace replay derived from the five workloads, best-fit placement
+without failures reaches 94\% pool utilization. \system reaches 91\%; the gap
+comes from staging extents and prepared records withheld during transitions.
+Limiting each tenant to 128 concurrent transitions caps unavailable capacity at
+256~MB and changes migration completion time by less than 7\%.
+
+Live migration of a 2~MB extent takes 241~$\mu$s median when 10\% of pages are
+dirty and 1.7~ms when every page is dirty. Generation advancement contributes
+8.4~$\mu$s. Disabling copy pipelining raises the all-dirty case to 2.9~ms;
+disabling batched stabilization adds 17\% manager CPU. These ablations support
+the design choice to keep safety at extent granularity while tracking liveness
+and copying at page granularity.

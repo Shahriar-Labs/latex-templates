@@ -1,0 +1,28 @@
+\section{Introduction}
+Real-time captioning, voice assistants, and simultaneous interpretation systems all depend on streaming
+ASR, where hypotheses must be emitted with bounded delay as audio arrives. The dominant recipe for
+streaming ASR pairs a causal or chunk-causal encoder with a frame-synchronous decoder, most commonly a
+Conformer-Transducer variant \citep{okonkwo2024conformer,fischer2020ctc}. Causal encoders, however,
+systematically underperform their offline counterparts because they cannot attend to future frames that
+disambiguate coarticulated phones, resolve word boundaries in fast speech, and stabilize pitch tracking
+for tonal languages \citep{schmidt2023wav2vec}.
+
+A common mitigation is to allow a small, fixed look-ahead window --- effectively delaying emission by a
+few hundred milliseconds --- so that the encoder can peek slightly into the future
+\citep{martinez2022rnnt}. Existing look-ahead schemes typically apply this window uniformly across all
+Conformer layers, which either wastes context (shallow layers rarely need it) or under-provisions it
+(deep layers need more temporal reach to resolve long coarticulation effects). We instead ask: \emph{can
+look-ahead be injected selectively, layer by layer, so that a fixed latency budget is spent where it
+helps most?}
+
+We answer this with \textbf{CBCI}, which restricts bidirectional attention to a narrow, learned subset
+of upper Conformer layers while keeping lower layers strictly causal. This paper makes three
+contributions:
+\begin{enumerate}[leftmargin=1.4em,itemsep=1pt,topsep=2pt]
+  \item A chunked attention mask that injects bounded future context into selected layers only, with a
+  formal characterization of the resulting algorithmic latency.
+  \item A training curriculum that anneals the look-ahead buffer size, improving robustness when the
+  buffer is shrunk or grown at inference time.
+  \item An evaluation on simulated multi-accent conversational speech showing consistent WER reduction
+  across noise conditions at a fraction of the latency cost of full bidirectional context.
+\end{enumerate}

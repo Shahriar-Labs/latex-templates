@@ -1,0 +1,80 @@
+\section{Results}
+In this section, we present the experimental results to address our research questions.
+
+\subsection{Specification Quality (RQ1)}
+Table \ref{tab:evaluation} reports the precision, recall, and F1-score of the mined specifications across the three datasets.
+
+\begin{table}[h]
+  \caption{Evaluation of Meridian-Spec compared to baseline models on Nexa, Vertex, and Synapse datasets.}
+  \label{tab:evaluation}
+  \centering
+  \small
+  \begin{tabular}{l c c c c}
+    \toprule
+    \textbf{System} & \textbf{Dataset} & \textbf{Precision} & \textbf{Recall} & \textbf{F1} \\
+    \midrule
+    Synapse-Mine \cite{williams2021synapse} & Nexa & 0.78 & 0.69 & 0.73 \\
+    Vertex-Trace \cite{zhang2023vertex} & Nexa & 0.82 & 0.75 & 0.78 \\
+    \textbf{Meridian-Spec} & Nexa & \textbf{0.91} & \textbf{0.88} & \textbf{0.89} \\
+    \midrule
+    Synapse-Mine \cite{williams2021synapse} & Vertex & 0.74 & 0.62 & 0.67 \\
+    Vertex-Trace \cite{zhang2023vertex} & Vertex & 0.85 & 0.81 & 0.83 \\
+    \textbf{Meridian-Spec} & Vertex & \textbf{0.93} & \textbf{0.90} & \textbf{0.91} \\
+    \midrule
+    Synapse-Mine \cite{williams2021synapse} & Synapse & 0.71 & 0.65 & 0.68 \\
+    Vertex-Trace \cite{zhang2023vertex} & Synapse & 0.80 & 0.74 & 0.77 \\
+    \textbf{Meridian-Spec} & Synapse & \textbf{0.89} & \textbf{0.86} & \textbf{0.87} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Meridian-Spec consistently achieves higher precision and recall than both baseline systems. On the Vertex dataset, Meridian-Spec reaches an F1-score of 0.91, outperforming Vertex-Trace by 8\% and Synapse-Mine by 24\%. This indicates that Vertex-based log filtering successfully removes spurious concurrent trace relationships.
+
+\subsection{Execution Time (RQ2)}
+Figure \ref{fig:performance} displays the execution time of Meridian-Spec and Vertex-Trace as trace length increases from 1,000 to 10,000 events.
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=\columnwidth,
+      height=5cm,
+      xlabel={Trace Length ($10^3$ events)},
+      ylabel={Mining Time (s)},
+      xmin=1, xmax=10,
+      ymin=0, ymax=100,
+      xtick={1,3,5,7,9},
+      ytick={0,20,40,60,80,100},
+      legend pos=north west,
+      ymajorgrids=true,
+      grid style=dashed,
+      title={\small Execution Time vs. Trace Volume},
+      title style={yshift=-1.5ex}
+    ]
+      \addplot[
+        color=primarycolor,
+        mark=square,
+        thick
+      ]
+      coordinates {
+        (1, 12)(2, 18)(3, 25)(4, 33)(5, 42)(6, 52)(7, 63)(8, 75)(9, 88)(10, 98)
+      };
+      \addlegendentry{Meridian-Spec}
+      
+      \addplot[
+        color=secondarycolor,
+        mark=o,
+        dashed,
+        thick
+      ]
+      coordinates {
+        (1, 25)(2, 38)(3, 50)(4, 63)(5, 75)(6, 88)(7, 100)
+      };
+      \addlegendentry{Vertex-Trace}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Comparison of mining overhead between Meridian-Spec and Vertex-Trace as a function of request trace length.}
+  \label{fig:performance}
+\end{figure}
+
+Although Meridian-Spec performs extra Vertex Filtering, its overall execution time is lower than that of Vertex-Trace. This efficiency stems from the pruned DAG size, which reduces the search space for rule synthesis in the subsequent phase.

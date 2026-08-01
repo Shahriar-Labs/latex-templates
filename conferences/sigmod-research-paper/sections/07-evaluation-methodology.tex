@@ -1,0 +1,171 @@
+\section{Evaluation Methodology}
+\label{sec:evaluation}
+
+This section demonstrates a SIGMOD-style evaluation structure.  The values in
+Tables~\ref{tab:workloads}--\ref{tab:ablation} and
+Figure~\ref{fig:skew} are \emph{illustrative placeholders}; they are internally
+consistent examples for layout and must not be cited as measured findings.
+
+\subsection{Questions, systems, and metrics}
+
+The evaluation is organized around four questions: (Q1) Does adaptation help
+when estimates are correct?  (Q2) How does runtime degrade with cardinality and
+skew error?  (Q3) Does credit control reduce tail queueing under bandwidth
+variation?  (Q4) What are the overheads of sketches, decision logging, and
+migration?
+
+We compare \system{} with \textsc{Repart}, a static repartition hash join, and
+\textsc{Static}, an optimizer-selected broadcast/repartition join.  A third
+baseline, \textsc{Stage Adapt}, may replan after its build stage.
+All variants share readers, serialization, hash tables, spill code, and
+compiler settings.  We report end-to-end wall time, shuffled and spilled bytes,
+peak memory, p50/p99 queue delay, CPU time, and output checksum.  Each point
+should include at least five isolated trials with confidence intervals and the
+raw per-run data.
+
+\begin{table}[t]
+  \caption{Illustrative workload matrix.  ``Error'' multiplies the optimizer's
+  estimated filtered cardinality.}
+  \label{tab:workloads}
+  \centering
+  \small
+  \begin{tabular}{@{}lrrrr@{}}
+    \toprule
+    Workload & Input & Select. & Max freq. & Error \\
+    \midrule
+    Retail    & 1.8\,TB & 0.08 & 12.0\% & $8\times$ \\
+    Telemetry & 3.2\,TB & 0.31 &  0.7\% & $4\times$ \\
+    Payments  & 0.9\,TB & 0.14 & 21.5\% & $16\times$ \\
+    Uniform   & 2.0\,TB & 1.00 &  0.002\% & $1\times$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Table~\ref{tab:workloads} spans selective broadcast opportunities, nearly
+uniform inputs, and severe heavy keys.  A complete artifact would specify data
+licenses or generators, schema and predicates, storage layout, warm/cold cache
+policy, cluster instance types, network limits, software revisions, and query
+seeds.  Estimates must be perturbed independently from actual data so that an
+``adaptive'' result does not accidentally benefit from a changed workload.
+
+\subsection{Illustrative end-to-end results}
+
+\begin{table*}[t]
+  \caption{Illustrative end-to-end results; lower is better.  Parentheses show
+  speedup relative to \textsc{Repart}.  These are formatting examples, not
+  empirical claims.}
+  \label{tab:main-results}
+  \centering
+  \small
+  \begin{tabular}{@{}llrrrr@{}}
+    \toprule
+    Workload & System & Runtime (s) & Shuffle (GB) & Peak/worker (GB) & p99 queue (ms) \\
+    \midrule
+    Retail
+      & \textsc{Repart}     & 184 & 1470 & 21.8 & 410 \\
+      & \textsc{Static}     & 153 & 1160 & 24.3 & 362 \\
+      & \textsc{StageAdapt} & 126 &  882 & 22.5 & 211 \\
+      & \system{}           &  \textbf{78} (2.36$\times$) & \textbf{391} & \textbf{17.9} & \textbf{118} \\
+    \addlinespace
+    Telemetry
+      & \textsc{Repart}     & 231 & 2498 & 28.4 & 287 \\
+      & \textsc{Static}     & 218 & 2350 & 28.8 & 275 \\
+      & \textsc{StageAdapt} & 189 & 2074 & 25.7 & 188 \\
+      & \system{}           & \textbf{134} (1.72$\times$) & \textbf{1781} & \textbf{22.1} & \textbf{93} \\
+    \addlinespace
+    Payments
+      & \textsc{Repart}     & 167 &  744 & 33.6 & 622 \\
+      & \textsc{Static}     & 161 &  701 & 35.1 & 590 \\
+      & \textsc{StageAdapt} & 121 &  612 & 25.9 & 314 \\
+      & \system{}           &  \textbf{71} (2.35$\times$) & \textbf{356} & \textbf{18.5} & \textbf{147} \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+In the worked example, \system{} benefits most on Retail by broadcasting only
+the selective partitions and on Payments by splitting its dominant key.  The
+Telemetry result is smaller because repartition remains appropriate for most
+ranges.  On the omitted Uniform control, the intended outcome is statistical
+parity with \textsc{Repart}; a slowdown there would expose adaptation overhead
+rather than resilience.
+
+Figure~\ref{fig:skew} varies the fraction of input belonging to the hottest key
+while holding total bytes and selectivity fixed.  The static join's bottleneck
+grows with skew.  The stage-adaptive baseline reacts only after the build
+boundary, whereas per-key routing keeps the illustrative \system{} curve much
+flatter.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[x=0.29cm,y=0.036cm,font=\scriptsize]
+    % axes and grid
+    \draw[fluxgray!35] (0,0) grid[xstep=5,ystep=20] (20,100);
+    \draw[-{Latex[length=2mm]}] (0,0) -- (21,0)
+      node[below right] {hot-key share (\%)};
+    \draw[-{Latex[length=2mm]}] (0,0) -- (0,108)
+      node[above] {runtime (s)};
+    \foreach \x in {0,5,10,15,20}
+      \draw (\x,1.5) -- (\x,-1.5) node[below=1pt] {\x};
+    \foreach \y in {20,40,60,80,100}
+      \draw (0.35,\y) -- (-0.35,\y) node[left=1pt] {\y};
+    % illustrative series
+    \draw[very thick,fluxgray]
+      plot coordinates {(0,54)(5,63)(10,76)(15,91)(20,104)};
+    \draw[very thick,fluxorange,dashed]
+      plot coordinates {(0,57)(5,61)(10,69)(15,78)(20,88)};
+    \draw[very thick,fluxblue]
+      plot coordinates {(0,58)(5,59)(10,61)(15,64)(20,68)};
+    \foreach \p in {(0,54),(5,63),(10,76),(15,91),(20,104)}
+      \fill[fluxgray] \p circle (1.3pt);
+    \foreach \p in {(0,57),(5,61),(10,69),(15,78),(20,88)}
+      \fill[fluxorange] \p circle (1.3pt);
+    \foreach \p in {(0,58),(5,59),(10,61),(15,64),(20,68)}
+      \fill[fluxblue] \p circle (1.3pt);
+    \draw[fill=white,draw=fluxgray] (1.0,82) rectangle (10.8,104);
+    \draw[very thick,fluxgray] (1.8,98) -- (3.5,98)
+      node[right,black] {\textsc{Repart}};
+    \draw[very thick,fluxorange,dashed] (1.8,92) -- (3.5,92)
+      node[right,black] {\textsc{Stage Adapt}};
+    \draw[very thick,fluxblue] (1.8,86) -- (3.5,86)
+      node[right,black] {\system{}};
+  \end{tikzpicture}
+  \caption{Illustrative sensitivity to heavy-key skew (lower is better).}
+  \Description{Line chart of runtime against hot-key share.  Static
+  repartition runtime rises sharply, stage-adaptive runtime rises moderately,
+  and FluxJoin remains comparatively flat.}
+  \label{fig:skew}
+\end{figure}
+
+\subsection{Overhead and ablation}
+
+\begin{table}[t]
+  \caption{Illustrative ablation on Payments.  The full design is the only row
+  combining early choice, skew isolation, and bounded queueing.}
+  \label{tab:ablation}
+  \centering
+  \small
+  \begin{tabular}{@{}lrrr@{}}
+    \toprule
+    Variant & Time (s) & Shuffle (GB) & p99 (ms) \\
+    \midrule
+    Full \system{}           & \textbf{71} & \textbf{356} & \textbf{147} \\
+    no heavy-key split       & 109 & 354 & 481 \\
+    one global decision      &  94 & 477 & 193 \\
+    no migration reserve     &  78 & 356 & 266 \\
+    unbounded exchange       &  73 & 356 & 538 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The ablation distinguishes volume from balance: removing heavy-key splitting
+hardly changes shuffled bytes but concentrates work and queue delay.  A global
+decision transfers more bytes because it cannot broadcast only selective
+partitions.  Removing the migration reserve mostly affects tail delay during a
+mode change.  Unbounded exchange slightly reduces median time in this example
+but makes queueing and memory behavior unacceptable.
+
+A real overhead study should also report summary bytes, coordinator CPU,
+decision latency, metadata writes, spill amplification, and steady-state cost
+when the static plan is already optimal.  Fault injection should terminate a
+reader, router, consumer, and coordinator at each migration phase, validating
+both output checksum and bounded recovery time.

@@ -1,0 +1,40 @@
+\section{Introduction}
+Graphs that mix multiple node and edge types while also evolving over time are
+now the default, not the exception, in industrial data mining: a marketplace
+graph links \emph{users}, \emph{items}, and \emph{sellers} through
+\emph{purchase}, \emph{view}, and \emph{return} edges that all carry
+timestamps; a citation graph links \emph{papers}, \emph{authors}, and
+\emph{venues} through relations that accumulate over decades. Two lines of
+prior work address pieces of this problem. Heterogeneous graph neural
+networks~\cite{tesfaye2019han,oyelaran2023heterogeneous} model type structure
+well but typically collapse the temporal axis into a single static snapshot.
+Temporal graph networks~\cite{brandt2022temporal,marceau2021dysat} capture
+dynamics faithfully but assume a homogeneous node/edge type, or treat type as
+a low-cardinality categorical feature bolted onto an otherwise
+type-agnostic encoder. In practice this means practitioners either discard
+timestamps or discard type, and both discards cost accuracy.
+
+We introduce \sysname{}, an encoder-plus-objective pair designed to avoid
+this trade-off. The encoder applies type-specific projection heads before a
+shared attention layer, so that messages from a \emph{seller} node are never
+averaged with messages from an \emph{item} node using the same weights. The
+sampler that feeds this encoder applies an exponential time-decay to
+candidate neighbors, so that a purchase from three years ago contributes
+less to a node's representation than one from three hours ago without
+discarding it outright. Training uses a self-supervised contrastive
+objective (Equation~\ref{eq:contrastive}) rather than a downstream label,
+which lets the same pretrained encoder transfer across link prediction,
+node classification, and anomaly-scoring heads.
+
+Our contributions are:
+\begin{itemize}
+  \item A type-aware, time-decayed encoder that unifies heterogeneous and
+        temporal graph representation learning under one architecture
+        (Section~\ref{sec:method}).
+  \item A contrastive pretraining objective requiring no labels, using
+        temporally local interactions as positive pairs.
+  \item An empirical study on three benchmark graphs showing consistent
+        gains over five fictionalized-for-this-template baselines, plus
+        ablations isolating each architectural component
+        (Sections~\ref{sec:experiments}--\ref{sec:results}).
+\end{itemize}

@@ -1,0 +1,58 @@
+\section{Method}
+We formalize the cross-lingual mapping problem as follows. Let $\mathcal{X} \subset \mathbb{R}^d$ represent the latent space of the source language (e.g., English), and let $\mathcal{Y} \subset \mathbb{R}^d$ denote the latent space of the target language. We assume the existence of a high-capacity source model pre-trained on abundant data, and a lightweight target model trained only on limited monolingual text.
+
+Our goal is to learn a mapping function $\Phi: \mathcal{X} \to \mathcal{Y}$ that projects source representations into the target space. To do this, we optimize the objective:
+\begin{equation}
+\mathcal{L}(\Phi) = \mathbb{E}_{x \sim \mathcal{X}} \left[ \| \Phi(x) - \Psi(x) \|^2 \right] + \lambda \, \mathcal{R}_{\text{topo}}(\Phi)
+\label{eq:objective}
+\end{equation}
+where $\Psi(x)$ is an initial anchor mapping obtained from a small set of pivot words, and $\mathcal{R}_{\text{topo}}(\Phi)$ is a topological regularization term.
+
+The topological regularizer ensures that the local neighborhood structure in the source space is preserved after projection. Specifically, we define:
+\begin{equation}
+\mathcal{R}_{\text{topo}}(\Phi) = \sum_{i,j} w_{ij} \, d_{\mathcal{Y}}(\Phi(x_i), \Phi(x_j))
+\label{eq:regularization}
+\end{equation}
+where $w_{ij} = \exp(-\|x_i - x_j\|^2 / \sigma^2)$ represents the similarity between source tokens $x_i$ and $x_j$, and $d_{\mathcal{Y}}$ measures the distance in the target space. By minimizing this term, we prevent the mapping from collapsing distinct semantic regions into single points, a common failure mode in low-resource alignment.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+    scale=0.85,
+    every node/.style={transform shape, font=\small},
+    box/.style={rectangle, draw=NavyBlue, fill=WarmGray, thick, rounded corners=3pt, minimum width=2.4cm, minimum height=0.8cm, align=center},
+    netnode/.style={circle, draw=MutedTeal, fill=WarmGray, thick, minimum size=0.6cm},
+    arrow/.style={->, >=stealth, thick, color=NavyBlue},
+    dashedarrow/.style={->, >=stealth, dashed, thick, color=MutedTeal}
+  ]
+    % Source Space (left)
+    \node[box] (src_enc) at (0,3) {\textbf{Source Encoder}\\(English Space $\mathcal{X}$)};
+    \node[netnode] (x1) at (-0.8,1.5) {$x_1$};
+    \node[netnode] (x2) at (0.8,1.5) {$x_2$};
+    \draw[arrow] (src_enc) -- (x1);
+    \draw[arrow] (src_enc) -- (x2);
+    
+    % Target Space (right)
+    \node[box] (tgt_enc) at (4.5,3) {\textbf{Target Encoder}\\(Target Space $\mathcal{Y}$)};
+    \node[netnode] (y1) at (3.7,1.5) {$y_1$};
+    \node[netnode] (y2) at (5.3,1.5) {$y_2$};
+    \draw[arrow] (tgt_enc) -- (y1);
+    \draw[arrow] (tgt_enc) -- (y2);
+    
+    % Aligner / Mapping (center)
+    \node[box, fill=LightRed!40, draw=AlertRed] (map) at (2.25,0) {\textbf{Synaptic Mapping} $\Phi$\\$\mathcal{L}_{\text{topo}}$ Regularization};
+    
+    % Connections from points to mapping
+    \draw[dashedarrow] (x1.south) .. controls +(0,-0.5) and +(-0.5,0.5) .. (map.north west);
+    \draw[dashedarrow] (x2.south) .. controls +(0,-0.5) and +(-0.2,0.5) .. (map.north);
+    \draw[dashedarrow] (y1.south) .. controls +(0,-0.5) and +(0.2,0.5) .. (map.north);
+    \draw[dashedarrow] (y2.south) .. controls +(0,-0.5) and +(0.5,0.5) .. (map.north east);
+    
+    % Labels
+    \node at (2.25,3.3) [font=\footnotesize, color=Charcoal] {Parallel Corpora $\emptyset$};
+    \draw[<->, >=stealth, dotted, thick] (src_enc) -- (tgt_enc);
+    
+  \end{tikzpicture}
+  \caption{Topological projection pipeline in Synaptic Latent Mapping (SLM). Source and target language embeddings are projected into a joint manifold space without requiring parallel training data.}
+  \label{fig:slm_pipeline}
+\end{figure}

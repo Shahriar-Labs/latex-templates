@@ -1,0 +1,44 @@
+\section{Method}
+\label{sec:method}
+\subsection{Measurement Architecture}
+Our measurement panel, which we refer to as the Meridian Measurement Panel, consists of
+lightweight software probes running on volunteer home routers and companion single-board
+devices. Each probe is opt-in, reports only aggregated latency statistics rather than raw
+packet contents, and is paired at enrollment with self-reported and ISP-confirmed access
+technology and nominal plan speed. Probes communicate with a small set of geographically
+distributed collector nodes over UDP and TLS-protected control channels; collectors never
+initiate connections into the home network.
+
+\subsection{Loaded/Idle Probing Protocol}
+Each measurement cycle consists of three phases. In the idle phase, a probe issues 30
+lightweight UDP echo probes at 200\,ms intervals while no other flows are active on the
+link, and records the median round-trip time as $\mathrm{RTT}^{\text{idle}}$. In the load
+phase, the probe opens a synthetic bulk TCP transfer toward a nearby collector, ramps it
+to saturate the measured link in either the downstream or upstream direction, and
+continues issuing the same UDP echo probes in parallel, recording the median as
+$\mathrm{RTT}^{\text{loaded}}$. In the cooldown phase, the bulk transfer is torn down and
+the link is allowed to drain before the next cycle begins. Downstream- and
+upstream-saturating cycles are run in alternation to characterize both directions.
+
+\subsection{Latency Inflation Ratio}
+We define the Latency Inflation Ratio for probe $i$ and cycle $j$ as the fractional
+increase in round-trip time observed when the access link is saturated, relative to its
+idle baseline:
+\begin{equation}
+  \mathrm{LIR}_{i,j} \;=\; \frac{\mathrm{RTT}_{i,j}^{\text{loaded}} - \mathrm{RTT}_{i,j}^{\text{idle}}}{\mathrm{RTT}_{i,j}^{\text{idle}}}
+  \label{eq:lir}
+\end{equation}
+A probe experiencing no additional queueing delay under load has $\mathrm{LIR}\approx 0$,
+while a probe whose loaded RTT doubles has $\mathrm{LIR}=1$. We compute
+Equation~\eqref{eq:lir} per cycle and aggregate to a per-probe median and 95th-percentile
+over the full campaign, requiring at least $n \geq 30$ valid cycle pairs per probe for
+inclusion. Cycles with packet loss exceeding $5\%$ during the idle phase, indicative of an
+already-congested or otherwise unhealthy link, are discarded to avoid conflating baseline
+instability with load-induced inflation.
+
+\subsection{Ethics and Privacy}
+Panel enrollment is opt-in and reviewed under Nexa University's human-subjects protocol.
+Probes record only timing metadata and coarse ISP/technology labels; no packet payloads,
+destination hostnames outside the measurement infrastructure, or household-identifying
+information are collected. Reported results are aggregated at the technology and ISP
+level throughout this paper.

@@ -1,0 +1,40 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Efficient attention.} Linear and sub-quadratic attention variants
+approximate the softmax kernel to avoid materializing the full attention
+matrix \cite{ferro2020longformer,halvorsen2023longctx}. These methods reduce
+asymptotic cost uniformly across all tokens, which is efficient but agnostic
+to token-level need: a token that only requires local context pays the same
+approximate-attention cost as one that needs to look back 50K tokens.
+
+\paragraph{Sparse and windowed attention.} Sliding-window and dilated
+attention patterns \cite{brantley2021sliding} restrict the receptive field
+to a fixed neighborhood, often combined with a small number of global tokens.
+SCG can be seen as a data-dependent generalization of this idea: instead of a
+fixed window plus fixed global slots, the gate learns which historical states
+are worth attending to for each token.
+
+\paragraph{Mixture-of-experts and adaptive compute.} Mixture-of-depths and
+mixture-of-experts architectures \cite{oduya2023mixture,winslow2022scaling}
+route tokens to different computational paths, showing that adaptive
+per-token compute allocation improves the quality-cost frontier. SCG applies
+a similar routing philosophy specifically to the question of \emph{which
+historical states} a token should condition on, rather than which expert
+subnetwork should process it.
+
+\paragraph{Retrieval and external memory.} Retrieval-augmented models
+\cite{park2022retrieval} and hierarchical chunking schemes
+\cite{sundaram2019hierarchical} externalize long-range context into a
+retrievable store, typically with a hard top-$k$ selection step that is not
+differentiable with respect to the retrieval decision itself. SCG retrieves
+from a bounded in-sequence cache rather than an external index, and its gate
+is fully differentiable, allowing retrieval usefulness to be learned jointly
+with the language modeling objective rather than tuned separately.
+
+\paragraph{Gating mechanisms.} Learned gates for selective state propagation
+have a long history in recurrent architectures
+\cite{obiora2019gating,marasovic2024gated}. Our contribution is not the gate
+itself but its placement: a cache-conditioned gate inserted immediately
+before a short-window attention block, sized to make the FLOPs savings from
+narrowing the attention window outweigh the gate's own (small) overhead.

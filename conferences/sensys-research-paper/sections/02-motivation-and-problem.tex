@@ -1,0 +1,76 @@
+\section{Motivation and Problem}
+\label{sec:motivation}
+
+\subsection{Why one sampling rate is insufficient}
+
+We begin with a seven-day replay of three representative signals.  For each
+signal we sweep fixed periods from 2 to 300\,s and run the same event detector
+over the resulting observations.  Figure~\ref{fig:motivation} shows that no
+period dominates.  Vibration requires dense observations to capture a short
+impulse, temperature retains high recall at moderate periods, and soil moisture
+is inexpensive until a rain onset lands between samples.  Provisioning every
+signal for the worst case spends 2.3--4.1$\times$ the energy needed by an oracle
+that knows transition windows in advance.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=\columnwidth,height=4.8cm,
+      xmode=log,log basis x=10,
+      xmin=1.7,xmax=360,ymin=0.45,ymax=1.02,
+      xlabel={Fixed sampling period (s)},ylabel={Event recall},
+      grid=both,minor grid style={gray!12},major grid style={gray!25},
+      legend style={font=\scriptsize,draw=none,fill=none,at={(0.03,0.04)},anchor=south west},
+      tick label style={font=\scriptsize},label style={font=\small}]
+      \addplot+[color=tsblue,mark=*,thick] coordinates
+        {(2,1.00) (5,.99) (10,.97) (20,.91) (30,.84) (60,.69) (120,.55) (300,.48)};
+      \addlegendentry{Vibration}
+      \addplot+[color=tsorange,mark=square*,thick,dashed] coordinates
+        {(2,1.00) (5,1.00) (10,.99) (20,.98) (30,.97) (60,.93) (120,.85) (300,.68)};
+      \addlegendentry{Temperature}
+      \addplot+[color=tsgreen,mark=triangle*,thick,dashdotted] coordinates
+        {(2,1.00) (5,.99) (10,.99) (20,.97) (30,.95) (60,.89) (120,.78) (300,.61)};
+      \addlegendentry{Soil moisture}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Fixed sampling exposes a workload-dependent energy--fidelity
+  trade-off.  Recall is measured against events detected in the full-rate
+  trace; higher is better.}
+  \Description{Line chart of event recall versus fixed sampling period for
+  vibration, temperature, and soil moisture. Recall falls fastest for
+  vibration as the sampling period increases.}
+  \label{fig:motivation}
+\end{figure}
+
+Prediction error alone does not close this gap.  Before an event, the most
+useful quantity is often uncertainty: error can only be measured \emph{after} a
+sample is taken.  Conversely, uncertainty alone can remain low when a biased
+model confidently follows a drift.  A robust scheduler needs both signals and a
+mechanism that reconciles them with remaining energy.
+
+\subsection{Objective and assumptions}
+
+Node $i$ chooses observation times $\mathcal{T}_i$ over a horizon $H$.  A
+sample at time $t$ has energy cost $e_s(t)$, including sensing, computation, and
+amortized communication.  Let $m_k\in\{0,1\}$ indicate whether ground-truth
+event $k$ is missed, and let $d_k$ be its detection delay.  We seek a causal
+policy $\pi$ that approximately solves
+
+\begin{equation}
+\label{eq:objective}
+  \argmin_{\pi}\; \sum_k \left(\lambda_m m_k+\lambda_d d_k\right)
+  \quad \text{s.t.}\quad
+  \sum_{t\in\mathcal{T}_i} e_s(t) \leq B_i(H),
+\end{equation}
+
+where $B_i(H)$ is energy available from the battery and harvester.  Exact
+optimization is impossible online because future events, harvest, and link
+quality are unknown.  \system therefore tracks a short-horizon surrogate for
+the marginal value of a sample and enforces the constraint through feedback.
+
+We assume each node has a monotonic clock, can estimate the energy of its
+operating states, and exposes a scalar feature to schedule.  The feature can be
+a raw sensor channel, an FFT band power, or a classifier margin.  Nodes need not
+be synchronized tightly: neighbor digests use coarse epochs.  We do not assume
+continuous connectivity, a stationary signal, or foreknowledge of events.

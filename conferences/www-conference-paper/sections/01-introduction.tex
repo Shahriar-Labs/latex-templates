@@ -1,0 +1,42 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Retrieval-augmented language models connect generated answers to external
+collections rather than relying only on parametric memory
+\cite{lewis2020rag,karpukhin2020dpr}.  When the collection is the open Web, this
+connection offers both reach and risk.  A search result can be current when it
+is indexed but obsolete when the answer is read.  Two apparently independent
+pages can derive from a common source, and a highly ranked page can contradict
+a primary source published later.  A fluent answer with several hyperlinks is
+therefore not necessarily a verifiable answer.
+
+Natural Questions emphasizes answer accuracy in open-domain question answering
+\cite{kwiatkowski2019natural}.  KILT studies knowledge-intensive tasks
+\cite{petroni2021kilt}.  Browser-assisted systems also show that models can
+gather and cite Web evidence \cite{nakano2021webgpt}.  These advances
+do not eliminate a central evaluation ambiguity: which version of a fact should
+be considered correct at a specified time?  A benchmark that ignores time may
+reward a system for retrieving information published after the question, or
+penalize a system for returning an answer that was correct when the question was
+asked.
+
+We frame verifiable Web question answering as a temporally scoped prediction
+problem.  Given a question $q$, a question time $t_q$, and a Web snapshot whose
+documents carry publication and crawl metadata, a system must produce an answer
+$a$ and a set of citations $C$.  Each atomic claim in $a$ should be supported by
+at least one source that was available by $t_q$.  When the available evidence is
+insufficient or contradictory, abstention is a valid output.
+
+This paper makes four contributions:
+
+\begin{itemize}
+  \item We formalize temporal, citation-aware Web question answering and
+    distinguish publication, crawl, revision, and question times.
+  \item We introduce an evidence-graph architecture that represents agreement,
+    contradiction, provenance, and duplication before answer generation.
+  \item We prevent using evidence published after the question and measure
+    citation quality and selective prediction alongside answer correctness.
+  \item We provide a fully specified worked example showing how to report data,
+    baselines, ablations, uncertainty, limitations, and reproducibility details
+    in an ACM Web Conference manuscript.
+\end{itemize}

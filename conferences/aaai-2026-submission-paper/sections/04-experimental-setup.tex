@@ -1,0 +1,60 @@
+\section{Experimental Setup}
+\label{sec:experiments}
+We evaluate SynapticProp using the Meridian-X Core Emulator \citep{chen2023meridian}, which simulates a network of 1024 neuromorphic cores running spiking neural networks. We generate traffic patterns representing realistic workloads, including multi-modal sensor fusion tasks and deep neural network inference. We compare SynapticProp against three baseline methods:
+\begin{itemize}
+    \item \textbf{Dijkstra-Static}: Standard shortest-path routing based on static link weights \citep{thompson2022dynamic}.
+    \item \textbf{Meridian-SPF}: A dynamically updated shortest-path-first algorithm that updates link weights periodically.
+    \item \textbf{Vertex-GNN}: A full-precision graph convolutional network that does not utilize quantization or dynamic attention.
+\end{itemize}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+    scale=0.85,
+    every node/.style={transform shape},
+    core/.style={rectangle, draw=primaryblue!80, fill=primaryblue!5, thick, minimum size=0.7cm, font=\small\bfseries},
+    activecore/.style={rectangle, draw=secondaryaccent!80, fill=secondaryaccent!15, thick, minimum size=0.7cm, font=\small\bfseries},
+    router/.style={circle, draw=charcoal!80, fill=charcoal!5, inner sep=1pt, minimum size=0.4cm, font=\scriptsize},
+    link/.style={draw=charcoal!60, thick, ->, >=stealth},
+    activelink/.style={draw=secondaryaccent, line width=1.5pt, ->, >=stealth}
+]
+    % Draw a grid of neuromorphic cores and routers
+    \foreach \x in {1,2,3} {
+        \foreach \y in {1,2,3} {
+            \node (R-\x-\y) at (2*\x, 2*\y) [router] {R};
+            \node (C-\x-\y) at (2*\x-0.6, 2*\y-0.6) [core] {C};
+            \draw [draw=charcoal!40, dashed] (C-\x-\y) -- (R-\x-\y);
+        }
+    }
+    
+    % Draw horizontal and vertical links between routers
+    \foreach \x in {1,2,3} {
+        \foreach \y [count=\ny from 2] in {1,2} {
+            \draw [link] (R-\x-\y) -- (R-\x-\ny);
+            \draw [link] (R-\x-\ny) -- (R-\x-\y);
+        }
+    }
+    \foreach \y in {1,2,3} {
+        \foreach \x [count=\nx from 2] in {1,2} {
+            \draw [link] (R-\x-\y) -- (R-\nx-\y);
+            \draw [link] (R-\nx-\y) -- (R-\x-\y);
+        }
+    }
+    
+    % Highlight active route
+    \node at (2*1-0.6, 2*1-0.6) [activecore] {C};
+    \node at (2*3-0.6, 2*3-0.6) [activecore] {C};
+    
+    \draw [activelink] (R-1-1) -- (R-2-1);
+    \draw [activelink] (R-2-1) -- (R-2-2);
+    \draw [activelink] (R-2-2) -- (R-3-2);
+    \draw [activelink] (R-3-2) -- (R-3-3);
+    
+    % Labels
+    \node [anchor=south] at (R-1-1.north) {\scriptsize Source};
+    \node [anchor=south] at (R-3-3.north) {\scriptsize Dest};
+    
+\end{tikzpicture}
+\caption{Routing topology emulator showing active dynamic path generation (red arrows) between Source and Destination neuromorphic cores using SynapticProp.}
+\label{fig:routing}
+\end{figure}

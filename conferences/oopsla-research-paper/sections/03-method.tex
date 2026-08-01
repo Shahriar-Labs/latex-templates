@@ -1,0 +1,29 @@
+\section{Method}
+In Synapse, every actor class defines a finite state machine that specifies its protocol. An actor transition is triggered when it receives a message or invokes a state-changing method. To prevent alias-related protocol violations, actor references are treated as linear resources. A linear reference cannot be duplicated or discarded; it must be consumed exactly once. This restriction guarantees that there is a single, authoritative reference to each actor, making static state tracking possible.
+
+Let $\Gamma$ represent the typing environment. The syntax of Synapse is shown below. We define the core typing relation $\Gamma \vdash e : \tau$, where $e$ is an expression and $\tau$ is its type. The typing rule for actor message sending is formulated in Equation~\ref{eq:typestate-transition}.
+
+\begin{equation}
+\label{eq:typestate-transition}
+\frac{\Gamma \vdash a : \text{Actor}(S) \quad \Gamma \vdash m : \text{Msg}(T) \quad T \in \text{Transitions}(S, S')}{\Gamma \vdash \text{send}(a, m) : \text{Actor}(S') \times \text{Unit}}
+\end{equation}
+
+In this rule, the send operation consumes an actor $a$ in state $S$ and a message $m$ of type $T$. The function $\text{Transitions}(S, S')$ determines whether state $S'$ is reachable from state $S$ via message $T$. If the transition is valid, the operation returns a new linear reference to the actor in state $S'$, along with a unit value. This linear consumption prevents the programmer from sending subsequent messages to $a$ under the assumption that it is still in state $S$.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[node distance=2.2cm and 2.4cm]
+  \node[draw=primaryblue, fill=primaryblue!5, circle, thick, minimum size=1.5cm, font=\sffamily\small, align=center] (uninit) {\textbf{Uninit}};
+  \node[draw=primaryblue, fill=primaryblue!5, circle, thick, minimum size=1.5cm, font=\sffamily\small, align=center, right=of uninit] (ready) {\textbf{Ready}};
+  \node[draw=primaryblue, fill=primaryblue!5, circle, thick, minimum size=1.5cm, font=\sffamily\small, align=center, right=of ready] (proc) {\textbf{Proc}};
+  \node[draw=primaryblue, fill=primaryblue!5, circle, thick, minimum size=1.5cm, font=\sffamily\small, align=center, below=of ready] (term) {\textbf{Term}};
+  
+  \path[->, >=stealth, thick, draw=darkgray, text=black, font=\scriptsize\sffamily] 
+    (uninit) edge node[above] {init()} (ready)
+    (ready) [bend left=25] edge node[above] {send(msg)} (proc)
+    (proc) [bend left=25] edge node[below] {process()} (ready)
+    (ready) edge node[right] {close()} (term);
+\end{tikzpicture}
+\caption{The lifecycle state machine of an actor protocol in Synapse. Edges represent transition-triggering actions.}
+\label{fig:statemachine}
+\end{figure}

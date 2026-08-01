@@ -1,0 +1,172 @@
+\section{Design}
+\label{sec:design}
+
+\subsection{Overview}
+
+\Cref{fig:architecture} shows the architecture.  Each managed cgroup owns a
+\emph{phase sketch}, a fixed-size table relating execution signatures to page
+regions.  Hardware samples flow through the kernel perf ring buffer; a worker
+coalesces them into an epoch signature.  On a confident signature match, the
+predictor proposes regions to the promotion engine.  A global credit controller
+limits copy traffic, and per-cgroup leases bound occupancy.  Conventional
+access-based promotion remains active for unrecognized phases.
+
+\begin{figure*}[t]
+  \centering
+  \begin{tikzpicture}[
+    node distance=0.72cm and 0.72cm,
+    block/.style={draw=fluxblue,thick,rounded corners=2pt,fill=fluxblue!7,
+                  minimum width=2.55cm,minimum height=0.88cm,align=center,
+                  font=\small},
+    control/.style={draw=fluxorange,thick,rounded corners=2pt,
+                    fill=fluxorange!10,minimum width=2.55cm,
+                    minimum height=0.88cm,align=center,font=\small},
+    mem/.style={draw=fluxteal,thick,rounded corners=2pt,fill=fluxteal!10,
+                minimum width=2.30cm,minimum height=0.95cm,align=center,
+                font=\small},
+    arrow/.style={-Latex,thick,draw=fluxgray},
+    edgelabel/.style={font=\scriptsize,text=fluxgray,fill=white,inner sep=1pt}
+  ]
+    \node[block] (perf) {IP + address\\samples};
+    \node[block,right=of perf] (sig) {epoch signature\\and phase sketch};
+    \node[control,right=of sig] (pred) {confidence and\\benefit estimator};
+    \node[control,right=of pred] (credit) {migration-credit\\controller};
+    \node[block,below=1.05cm of sig] (fallback) {reactive hot-page\\scanner};
+    \node[mem,right=0.60cm of fallback] (dram) {local DRAM\\\fast};
+    \node[mem,right=1.20cm of dram] (cxl) {CXL memory\\\slow};
+    \node[control,right=0.60cm of cxl] (lease) {lease expiry and\\deadline-aware reclaim};
+
+    \draw[arrow] (perf) -- (sig);
+    \draw[arrow] (sig) -- (pred);
+    \draw[arrow] (pred) -- (credit);
+    \draw[arrow] (credit) |- (cxl) node[edgelabel,pos=0.28] {admit};
+    \draw[arrow] (cxl) -- (dram) node[edgelabel,midway,below] {promote};
+    \draw[arrow] (dram) to[bend left=32]
+      node[edgelabel,midway,above] {demote} (cxl);
+    \draw[arrow] (perf) |- (fallback);
+    \draw[arrow] (fallback) -- (dram);
+    \draw[arrow] (lease) -- (cxl);
+    \draw[arrow,dashed] (pred.south) -- ++(0,-0.35cm) -| (lease.north);
+
+    \node[draw=black!25,dashed,rounded corners=3pt,
+          fit=(sig)(pred)(credit)(fallback)(dram)(cxl)(lease),
+          inner sep=8pt,label={[font=\small\bfseries,text=fluxblue]above:\system}]
+          {};
+  \end{tikzpicture}
+  \caption{\system data and control paths.  Prediction augments rather than
+    replaces reactive hot-page discovery.  Credits bound migration bandwidth;
+    leases bound speculative occupancy.}
+  \Description{A block diagram shows instruction-pointer and address samples
+    entering an epoch signature and phase sketch, then a confidence estimator
+    and migration-credit controller. Predicted and reactive paths move pages
+    between local DRAM and CXL memory; leases govern reclaim.}
+  \label{fig:architecture}
+\end{figure*}
+
+\subsection{Phase signatures}
+
+An epoch contains $n$ sampled tuples $(i,a,r)$: instruction pointer $i$,
+virtual address $a$, and read/write bit $r$.  We discard kernel addresses and
+hash the remaining instruction pointers into a 128-bit Bloom-style signature
+$S$.  We deliberately omit addresses from $S$ so that address-space layout
+randomization and allocator variation do not prevent a match.  The signature
+distance is normalized Hamming distance,
+
+\begin{equation}
+  d(S_x,S_y)=\frac{\operatorname{popcount}(S_x\oplus S_y)}
+                   {\operatorname{popcount}(S_x\lor S_y)+1}.
+  \label{eq:distance}
+\end{equation}
+
+The phase table is a 64-entry, four-way set-associative structure per cgroup.
+Each entry stores a signature, an exponentially weighted transition count,
+the eight most frequently touched 2\,MiB regions in the next two epochs, and a
+4-bit confidence counter.  Regions identify sets of base pages; \system never
+promotes a huge page unless all constituent base pages are resident and the
+copy engine can migrate it without blocking.
+
+On each epoch boundary, the nearest entry with $d<0.18$ receives an update.  A
+miss installs a new entry only after the signature appears twice, filtering
+one-off control paths.  Confidence increments when at least half of the
+predicted regions enter the next epoch's top set and decrements otherwise.
+The fixed-size table is essential: at 416 bytes per entry, predictor metadata
+is 26\,KiB per actively managed cgroup, independent of its address-space size.
+
+\subsection{Benefit and confidence}
+
+A signature match does not automatically trigger migration.  For candidate
+region $q$, the predictor estimates benefit
+
+\begin{equation}
+  B(q)=P(q\mid S)\,N_q\,(L_{\slow}-L_{\fast})-C_{\mathrm{copy}}(q),
+  \label{eq:benefit}
+\end{equation}
+
+where $P(q\mid S)$ is the entry's hit ratio, $N_q$ is its decayed access count,
+and $L_{\slow}-L_{\fast}$ is the measured latency gap.  The copy cost combines
+expected bandwidth occupancy and the cost of displacing the coldest local
+pages.  A candidate is eligible only if $B(q)>0$, confidence is at least 9 of
+15, and the destination page is not already resident in \fast.
+
+The estimates need not be cycle-accurate.  Their purpose is to rank candidates
+and reject clearly harmful moves.  The credit controller supplies the hard
+safety bound described next.
+
+\subsection{Credit-bounded promotion}
+
+Copy engines share memory channels with foreground loads.  \system models each
+4\,KiB migration as one credit.  Every 100\,\us, the system replenishes at rate
+
+\begin{equation}
+  R = \frac{\beta\,BW_{\mathrm{idle}}\,\Delta t}{4096},
+  \label{eq:credits}
+\end{equation}
+
+where $BW_{\mathrm{idle}}$ is currently unused channel bandwidth and
+$\beta=0.35$ caps the fraction made available to prediction.  Credits can
+accumulate for at most 2\,ms, preventing an idle period from authorizing a later
+burst.  Each cgroup receives a weighted share, but unused shares are
+work-conservingly borrowed.  Reactive promotions use a distinct reserve equal
+to 10\% of copy capacity, ensuring that bad prediction cannot disable the
+fallback path.
+
+\begin{lstlisting}[float=t,caption={Promotion at an epoch boundary.},
+                   label={lst:promotion}]
+procedure ON_EPOCH(cgroup g, signature S):
+  e <- nearest(g.phase_table, S)
+  if e = none or e.confidence < 9 then return
+  for each q in rank_by_benefit(e.regions) do
+    if benefit(q) <= 0 then continue
+    pages <- cold_pages(q, g.fast_residency)
+    cost <- copy_credits(pages)
+    if cost <= g.credits and lease_slot(g) then
+      migrate_async(pages, M_fast)
+      g.credits <- g.credits - cost
+      attach_lease(pages, now + lease_length(e))
+\end{lstlisting}
+
+\subsection{Leases and deadline-aware reclaim}
+
+Promoted pages receive a lease of two predicted phase durations, clamped to
+1--20\,ms.  During the lease, ordinary background reclaim may select the page
+only if \fast falls below its 3\% emergency reserve.  A sampled access renews
+the lease; expiry merely removes protection and does not force a migration.
+Pages then compete under the regular multigenerational LRU policy.
+
+Each cgroup additionally has a local-residency ceiling.  A prediction that
+would exceed the ceiling must nominate expired pages from the same cgroup
+before borrowing globally.  This rule prevents a noisy tenant from converting
+shared \fast into a private cache.  Under acute pressure, the emergency path
+ignores every lease and reclaims in ordinary LRU order, so \system cannot cause
+an out-of-memory failure by pinning data.
+
+\subsection{Failure handling}
+
+Prediction is an optimization, not a correctness requirement.  Process exit,
+unmap, and cgroup deletion cancel queued copies through existing migration
+reference counts.  A copy racing with a write uses Linux's normal page
+migration protocol and page-table locks.  If the destination fills, migration
+returns \texttt{-ENOMEM}; the page remains mapped in \slow.  Sampling loss,
+perf-ring overflow, or confidence decay disables prediction for that cgroup
+until two stable signatures recur.  Thus every failure returns to the baseline
+reactive policy.

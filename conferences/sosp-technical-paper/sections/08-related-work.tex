@@ -1,0 +1,36 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Disaggregated and far memory.}
+Infiniswap uses RDMA-backed remote swap and decentralized placement
+~\cite{gu2017infiniswap}; Fastswap studies far memory's effect on cluster job
+throughput~\cite{amaro2020fastswap}. LegoOS distributes operating-system
+services across disaggregated hardware~\cite{shan2018legoos}, while Remote
+Regions and AIFM expose application-aware interfaces that reduce paging
+overhead~\cite{aguilera2018remote,ruan2020aifm}. These systems primarily
+optimize placement and access. \system is complementary: it specifies how
+ownership survives control-plane and endpoint failures without scanning the
+pool. CXL adds coherent pooling and fabric-management mechanisms
+~\cite{cxl2022spec}; generation fencing supplies the failure-atomic handoff
+that a fabric manager can enforce.
+
+\paragraph{Remote-memory data structures and kernel bypass.}
+FaRM and HERD demonstrate low-latency transactions and key-value access over
+RDMA~\cite{dragojevic2014farm,kalia2014herd}. Arrakis removes the kernel from
+the data plane by giving applications protected hardware resources
+~\cite{peter2014arrakis}. Caladan similarly separates a fast data path from a
+control plane at microsecond timescales~\cite{fried2020caladan}. \system adopts
+this separation, but its unit of protection is a reconfigurable memory extent
+and its focus is failure recovery rather than request scheduling.
+
+\paragraph{Logs, fencing, and persistent metadata.}
+Shared logs such as CORFU order distributed updates~\cite{balakrishnan2012corfu},
+and consensus provides a durable manager order~\cite{ongaro2014raft}. Chubby
+popularized sequencers and fencing tokens for distributed locks
+~\cite{burrows2006chubby}; \system binds the sequence directly to appliance
+access control. Frangipani combines distributed locks with a write-ahead log
+~\cite{thekkath1997frangipani}. Persistent-memory systems including Mnemosyne,
+NOVA, and RECIPE carefully order local persistent updates
+~\cite{volos2011mnemosyne,xu2016nova,lee2019recipe}. \system addresses a
+different atomicity boundary spanning replicated manager state, volatile
+compute mappings, and appliance-enforced access.

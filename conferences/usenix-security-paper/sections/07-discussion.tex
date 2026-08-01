@@ -1,0 +1,11 @@
+\section{Discussion}
+\label{sec:discussion}
+While Nexa provides strong security guarantees and acceptable latency, several deployment challenges remain.
+
+\subsection{Side-Channel Vulnerabilities}
+Our analysis indicates that older Vertex Secure Enclave hardware is susceptible to microarchitectural cache attacks, as described by Garcia and Lewis~\cite{garcia2022sidechannel}. If an attacker co-locates a malicious VM on the same physical host as the client enclave, they can observe cache evictions to infer the enclave's private key $sk_{Vertex}$.
+
+To mitigate this threat, we recommend enabling cache partitioning features or deploying the software-level cache flushing techniques proposed in Nimbus-Shield~\cite{wright2022nimbus}. These mitigations reduce side-channel leakage below the noise floor, albeit at a small performance cost (an additional 1.2 ms latency).
+
+\subsection{Scalability and High Availability}
+For larger enterprise deployments, the Vertex Verifier can become a single point of failure. Deploying multiple replicated verifiers using the Meridian routing protocol~\cite{taylor2022meridian} can distribute the attestation load and ensure high availability. Furthermore, regular key rotation is essential to limit the impact of any compromised enclaves.

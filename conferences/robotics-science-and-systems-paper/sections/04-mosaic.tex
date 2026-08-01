@@ -1,0 +1,96 @@
+\section{MOSAIC}
+
+\subsection{Evidence-Preserving Terrain Memory}
+
+Depth pixels are back-projected, transformed into the current base frame, and splatted into
+a measurement map $Z_t=[H_t^{z},V_t^{z}]$, containing mean height and empirical variance.
+Previous memory is warped by planar odometry, $\bar{\vect m}_{t-1}=W(\vect m_{t-1},
+\vect{x}_{t-1:t})$. A gated convolutional update then computes
+\begin{align}
+ \vect g_t &= \sigma\!\left(f_g[Z_t,\bar{\vect m}_{t-1},A_t,C_t]\right),\\
+ \vect m_t &= \vect g_t\odot f_z(Z_t,C_t)
+            +(1-\vect g_t)\odot\bar{\vect m}_{t-1},
+ \label{eq:memory}
+\end{align}
+where $A_t$ is per-cell observation age and $C_t$ is a sparse contact map. If $d_t=0$,
+$Z_t$ is masked and the update propagates memory while increasing age. Unlike a standard
+ConvGRU, the gate receives explicit evidence age, preventing unchanged hidden state from
+being interpreted as fresh evidence.
+
+When foot $j$ establishes a stable contact, forward kinematics yields
+$\tilde h_j$. We update nearby cells using a Gaussian kernel $k_j(i)$ and contact variance
+$\sigma_c^2$:
+\begin{equation}
+ \hat h'_{t,i}=\frac{w_{t,i}\hat h_{t,i}+
+ k_j(i)\sigma_c^{-2}\tilde h_j}{w_{t,i}+k_j(i)\sigma_c^{-2}}.
+ \label{eq:contact}
+\end{equation}
+The same event reduces local risk only after slip and impact checks pass.
+
+\subsection{Calibrated Risk Head}
+
+Two decoder heads predict height $\hat H_t$ and risk logit $L_t$. Training sequences contain
+random rectangular occluders, dropped frames, motion blur, and depth-dependent noise. The
+risk label is one if the event in Eq.~\eqref{eq:risk} occurs within the cell. The loss is
+\begin{equation}
+\begin{aligned}
+ \mathcal{L}={}&\lambda_h\lVert M\odot(\hat H-H^\star)\rVert_1
+ +\lambda_n\mathcal{L}_{\mathrm{normal}}\\
+ &+\lambda_r\operatorname{BCE}(L,Y)
+ +\lambda_t\lVert\hat H_t-W(\hat H_{t-1})\rVert_1,
+\end{aligned}
+ \label{eq:loss}
+\end{equation}
+where $M$ marks valid ground truth. After training, a scalar temperature $\tau$ is fitted on
+a held-out validation set and $R=\sigma(L/\tau)$. We report expected calibration error
+(ECE) with 15 equal-mass bins and the Brier score; lower is better for both.
+
+\subsection{Risk-Constrained Foothold Control}
+
+The MPC stage extends a conventional centroidal objective with map terms:
+\begin{equation}
+ J=J_{\mathrm{track}}+\lambda_eJ_{\mathrm{effort}}
+ +\sum_{k=1}^{K}\left[
+ \lambda_s\lVert\nabla\hat H(\vect p_k)\rVert_2^2
+ +\lambda_r\,\phi(r(\vect p_k))\right],
+ \label{eq:objective}
+\end{equation}
+where $\phi(r)=-\log(1-r+10^{-4})$. Candidate contacts violating
+Eq.~\eqref{eq:chance} are removed before continuous trajectory refinement. If no feasible
+candidate remains for three replans, the robot lowers its body, shortens step length, and
+turns toward the lowest-risk visible sector. This deterministic fallback avoids asking the
+learned map to hallucinate a route through wholly unobserved space.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\columnwidth,height=4.25cm,
+  ybar,bar width=5.5pt,
+  ymin=0,ymax=30,
+  ylabel={Interventions (\%)},
+  symbolic x coords={Nominal,Random,Structured,Dust},
+  xtick=data,
+  xticklabel style={font=\scriptsize,rotate=18,anchor=east},
+  yticklabel style={font=\scriptsize},
+  ylabel style={font=\small},
+  legend style={font=\scriptsize,draw=none,fill=none,at={(0.5,1.02)},anchor=south,
+                legend columns=3},
+  axis line style={rssgray},
+  grid=major,grid style={rssgray!15},
+  enlarge x limits=0.16
+]
+\addplot[fill=rssgray!55,draw=rssgray] coordinates
+  {(Nominal,5.0) (Random,14.6) (Structured,21.7) (Dust,27.1)};
+\addplot[fill=rssteal!65,draw=rssteal] coordinates
+  {(Nominal,4.6) (Random,10.2) (Structured,13.8) (Dust,18.5)};
+\addplot[fill=rssorange!78,draw=rssorange] coordinates
+  {(Nominal,4.2) (Random,6.5) (Structured,7.9) (Dust,11.3)};
+\legend{Reactive,Memory-only,\method{}}
+\end{axis}
+\end{tikzpicture}
+\caption{Illustrative hardware intervention rate across sensing conditions. Structured
+dropout removes every fourth 0.8-s camera interval; dust uses a scattering overlay plus
+real missing-depth masks.}
+\label{fig:interventions}
+\end{figure}

@@ -1,0 +1,21 @@
+\section{Discussion and Limitations}
+\label{sec:discussion}
+
+\system{} does not repair a poor global join order.  A locally efficient join
+can still materialize an intermediate relation that a different order would
+avoid.  The operator can provide observations to a higher-level reoptimizer,
+but coordinating that feedback is outside this work.
+
+The confidence model also assumes that observed prefixes are informative after
+stratification by storage partition.  Correlated physical order can delay a
+heavy key until after commitment.  Conservative upper bounds and the buffer cap
+preserve correctness and memory safety, but not optimality.  Randomized page
+sampling or storage-level summaries may reduce this risk at additional I/O or
+maintenance cost.
+
+Very high output cardinality is another boundary.  Splitting a heavy key
+balances the work needed to enumerate matches but cannot avoid the intrinsic
+$f_R(x)f_S(x)$ output.  The scheduler must reserve downstream capacity or spill
+output.  Finally, the metadata service is logically centralized.  Sharding
+improves throughput, but a production system must quantify failover pauses and
+garbage collection across many concurrent queries.

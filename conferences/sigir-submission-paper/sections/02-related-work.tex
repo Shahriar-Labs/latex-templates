@@ -1,0 +1,40 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Sparse and dense first-stage retrieval.} Term-based retrieval
+remains a strong and cheap recall mechanism, particularly when fused with
+dense signals~\cite{kessler2021fusion}. Dense passage retrieval trains a
+dual encoder with a contrastive objective so that relevant query--passage
+pairs are close in embedding space~\cite{aldana2020dpr}, and subsequent work
+has focused heavily on the construction of informative hard negatives during
+training~\cite{solano2022hardneg}.
+
+\paragraph{Late interaction.} Rather than collapsing a passage into a single
+vector, late-interaction models keep per-token representations and compute a
+maximum-similarity aggregation between query and passage
+tokens~\cite{solheim2020late}. This recovers some of the fine-grained
+matching signal cross-encoders provide, but the storage and scanning cost
+grows with passage length, and CARD's ablations in
+\S\ref{sec:results} compare directly against this family.
+
+\paragraph{Cross-encoder re-ranking.} Full cross-encoder re-rankers built on
+pretrained transformers remain the quality reference point for multi-stage
+ranking~\cite{marchetti2020monobert}. Their latency has motivated a line of
+work on making multi-stage pipelines cheaper without discarding the
+cross-encoder's quality signal entirely, including score calibration across
+stages~\cite{lindberg2023calibrate} and efficient long-document variants of
+the cross-encoder itself~\cite{obinna2021longdoc}.
+
+\paragraph{Knowledge distillation for ranking.} Distilling a strong
+cross-encoder teacher into a cheaper student has been studied broadly, with
+approaches ranging from distilling into a smaller cross-encoder to
+distilling directly into bi-encoder embeddings~\cite{renner2021distill,
+fakhoury2022survey}. CARD differs from embedding-only distillation in that
+the student retains a small cross-attention computation at inference time;
+we find in \S\ref{sec:results} that this residual joint computation, however
+small, is responsible for most of the quality recovered over a pure
+bi-encoder student. The underlying cross-attention mechanism follows the
+formulation of query-conditioned token matching introduced for fine-grained
+text matching~\cite{voss2019crossattn}, and re-ranking pipelines built on
+learned query reformulation~\cite{vong2022reform} are complementary to CARD
+rather than competing with it.

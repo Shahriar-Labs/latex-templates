@@ -1,0 +1,48 @@
+\section{Method}
+Let a dynamic graph be represented as a sequence of graph snapshots $\mathcal{G} = \{G^1, G^2, \dots, G^T\}$, where each snapshot $G^t = (V^t, E^t)$ corresponds to the graph structure at timestamp $t$. Here, $V^t$ represents the set of active vertices and $E^t$ represents the set of edges. Each vertex $v \in V^t$ is associated with an input feature vector $\mathbf{x}_v^t \in \mathbb{R}^d$. The goal of Deep Latent Alignment is to learn a parameter-efficient encoder $f_\theta: V^t \times G^t \to \mathbb{R}^h$ that maps each vertex to a low-dimensional latent space.
+
+For each snapshot $G^t$, we generate two stochastic views, denoted as $\tilde{G}_1^t$ and $\tilde{G}_2^t$, by applying random edge dropping and node feature masking. Specifically, we drop edges with a probability $p_e$ and mask feature dimensions with a probability $p_f$. These views are then processed by a shared GNN encoder $f_\theta$ to generate node-level latent embeddings:
+\begin{align}
+  \mathbf{h}_v^{t,1} &= f_\theta(\mathbf{x}_v^t, \tilde{G}_1^t) \\
+  \mathbf{h}_v^{t,2} &= f_\theta(\mathbf{x}_v^t, \tilde{G}_2^t)
+\end{align}
+To obtain the final representations, the hidden embeddings are projected into a lower-dimensional space using a multi-layer perceptron (MLP) head $g_\phi$, yielding projected vectors $\mathbf{z}_v^{t,1} = g_\phi(\mathbf{h}_v^{t,1})$ and $\mathbf{z}_v^{t,2} = g_\phi(\mathbf{h}_v^{t,2})$.
+
+The core contribution of DLA is the temporal contrastive loss. Rather than limiting contrastive alignment to a single snapshot, we align representations across adjacent time steps $t$ and $t+1$. For a given vertex $v \in V^t \cap V^{t+1}$, the temporal contrastive loss is formulated as:
+\begin{equation}
+  \mathcal{L}_{\text{temp}}(v) = -\log \frac{\exp(\text{sim}(\mathbf{z}_v^{t,1}, \mathbf{z}_v^{t+1,2}) / \tau)}{\sum_{u \in \mathcal{N}_t(v)} \exp(\text{sim}(\mathbf{z}_v^{t,1}, \mathbf{z}_u^{t+1,2}) / \tau)}
+  \label{eq:infonce}
+\end{equation}
+where $\text{sim}(\mathbf{a}, \mathbf{b}) = \frac{\mathbf{a}^\top \mathbf{b}}{\|\mathbf{a}\| \|\mathbf{b}\|}$ represents the cosine similarity between two vectors, $\tau$ is a temperature hyperparameter, and $\mathcal{N}_t(v)$ denotes the local spatial-temporal neighborhood of node $v$ within snapshot $G^t$. This loss encourages the encoder to align the representation of a node at time $t$ with its state at time $t+1$ while keeping it distinct from other nodes in its temporal vicinity.
+
+\begin{figure*}[t]
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.2cm and 1.5cm,
+    block/.style={draw=brandblue, fill=brandlight, thick, rounded corners, minimum width=1.5cm, minimum height=0.8cm, align=center, font=\small},
+    circlenode/.style={draw=brandblue, fill=brandlight, thick, circle, minimum size=0.8cm, align=center, font=\small},
+    arrow/.style={->, >=stealth, thick, color=brandblue}
+  ]
+    % Nodes
+    \node (input) [block] {Input Graph\\$G = (V,E)$};
+    \node (perturb1) [block, above right=of input, yshift=-0.5cm] {Augmentation $\tau_1$};
+    \node (perturb2) [block, below right=of input, yshift=0.5cm] {Augmentation $\tau_2$};
+    \node (enc1) [block, right=of perturb1] {Encoder\\$f_\theta$};
+    \node (enc2) [block, right=of perturb2] {Encoder\\$f_\theta$};
+    \node (rep1) [circlenode, right=of enc1] {$\mathbf{z}_1$};
+    \node (rep2) [circlenode, right=of enc2] {$\mathbf{z}_2$};
+    \node (loss) [block, below right=of rep1, xshift=0.5cm, yshift=0.6cm] {Contrastive Loss\\$\mathcal{L}_{\text{InfoNCE}}$};
+
+    % Connections
+    \draw [arrow] (input.east) -- ++(0.3,0) |- (perturb1.west);
+    \draw [arrow] (input.east) -- ++(0.3,0) |- (perturb2.west);
+    \draw [arrow] (perturb1) -- (enc1);
+    \draw [arrow] (perturb2) -- (enc2);
+    \draw [arrow] (enc1) -- (rep1);
+    \draw [arrow] (enc2) -- (rep2);
+    \draw [arrow] (rep1.east) -| (loss.north);
+    \draw [arrow] (rep2.east) -| (loss.south);
+  \end{tikzpicture}
+  \caption{System architecture of the proposed Deep Latent Alignment framework. The input graph $G$ undergoes two distinct stochastic augmentations $\tau_1$ and $\tau_2$. The resulting views are processed by a shared Graph Neural Network encoder $f_\theta$ to produce latent representations $\mathbf{z}_1$ and $\mathbf{z}_2$, which are then aligned using a contrastive loss objective.}
+  \label{fig:architecture}
+\end{figure*}

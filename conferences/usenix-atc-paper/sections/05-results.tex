@@ -1,0 +1,81 @@
+\section{Results}
+\label{sec:results}
+
+\begin{table}[t]
+\centering
+\small
+\caption{Steady-state performance at 80\% offered load, averaged over five runs.}
+\label{tab:results}
+\begin{tabular}{lrrrr}
+\toprule
+\textbf{Policy} & \textbf{p50} & \textbf{p99} & \textbf{Tput.} & \textbf{Ovh.} \\
+ & \textbf{(ms)} & \textbf{(ms)} & \textbf{(kreq/s)} & \textbf{(\%)} \\
+\midrule
+Least-Loaded    & 6.1  & 88.4 & 41.2 & 0.4 \\
+PowerOfTwo      & 5.4  & 61.7 & 46.8 & 0.6 \\
+Tempo (ours)    & \textbf{4.8} & \textbf{47.5} & \textbf{52.1} & 1.1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:results} summarizes steady-state behavior at 80\% offered
+load, the region where the three schedulers diverge most. Tempo reduces
+p99 latency by 41\% relative to Least-Loaded and by 23\% relative to
+PowerOfTwo, while also sustaining higher throughput, because its packing
+decisions free up headroom that the other two policies waste on
+already-quiet nodes. Tempo's scheduler-side CPU overhead is roughly double
+that of PowerOfTwo, almost entirely attributable to the recursive
+least-squares update in Equation~\ref{eq:predictor}; at 1.1\% of one core
+per scheduler instance, we consider this cost negligible relative to the
+latency win.
+
+Figure~\ref{fig:latency-load} shows p99 latency as offered load increases
+from 30\% to 90\% of fleet capacity. Below 50\% load the three policies are
+statistically indistinguishable, since no policy is forced to make a hard
+trade-off yet. Above roughly 60\% load, Least-Loaded's latency grows
+sharply as its conservative placement runs out of genuinely idle nodes,
+while Tempo continues to track a much flatter curve by anticipating
+contention before utilization-based signals would flag it.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.98\linewidth,
+    height=4.6cm,
+    xlabel={Offered load (\% of fleet capacity)},
+    ylabel={p99 latency (ms)},
+    xmin=30, xmax=90,
+    ymin=0, ymax=140,
+    legend pos=north west,
+    legend style={font=\footnotesize, draw=gray!40},
+    label style={font=\footnotesize},
+    tick label style={font=\footnotesize},
+    grid=major,
+    grid style={gray!20},
+    axis line style={gray!70},
+]
+\addplot[color=usenixblue!60,mark=square*,mark size=1.4pt,thick]
+  coordinates {(30,9)(40,11)(50,15)(60,24)(70,45)(80,88)(90,131)};
+\addlegendentry{Least-Loaded}
+
+\addplot[color=accentgold,mark=triangle*,mark size=1.6pt,thick]
+  coordinates {(30,8)(40,10)(50,13)(60,19)(70,31)(80,62)(90,104)};
+\addlegendentry{PowerOfTwo}
+
+\addplot[color=usenixblue,mark=*,mark size=1.4pt,thick]
+  coordinates {(30,8)(40,9)(50,11)(60,15)(70,22)(80,48)(90,69)};
+\addlegendentry{Tempo (ours)}
+\end{axis}
+\end{tikzpicture}
+\caption{Tail latency versus offered load. Tempo's predictive placement
+delays the onset of latency inflation relative to both baselines.}
+\label{fig:latency-load}
+\end{figure}
+
+We also measured sensitivity to the adaptation rate of
+$\alpha(t),\beta(t),\gamma(t)$. Disabling adaptation (fixing the weights at
+their converged values from a single workload mix) degrades p99 latency by
+roughly 12\% when the workload composition is changed mid-run, confirming
+that the online adjustment described in Section~\ref{sec:method}, not just
+the predictor itself, contributes to Tempo's robustness across workloads.

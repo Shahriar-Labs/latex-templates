@@ -1,0 +1,58 @@
+\section{System Design}
+
+Figure~\ref{fig:architecture} shows a minimal decomposition that can be adapted
+to a query engine, storage service, streaming system, or learned data component.
+Requests cross a narrow admission interface; planning selects an execution
+strategy; execution interacts with state; and telemetry closes the control
+loop.  A real manuscript should define the contract at every arrow and specify
+whether each component is new, modified, or reused.
+
+\begin{figure}[H]
+  \centering
+  \setlength{\fboxsep}{6pt}
+  \fbox{%
+    \begin{minipage}{0.92\columnwidth}
+      \centering
+      \textbf{Workload} $\longrightarrow$ \textbf{Admission}
+      $\longrightarrow$ \textbf{Planner}\\[5pt]
+      \hfill $\downarrow$ decisions \hfill\\[-1pt]
+      \textbf{Telemetry} $\longleftarrow$ \textbf{Executor}
+      $\longleftrightarrow$ \textbf{State}\\[4pt]
+      \small Metrics feed the next planning interval.
+    \end{minipage}%
+  }
+  \caption{Illustrative system decomposition.  Each arrow should correspond
+  to a documented interface and each box to a measured cost center.}
+  \Description{A block diagram. Workload flows through admission and planning.
+  The planner sends decisions to an executor, which accesses state. Telemetry
+  from execution feeds subsequent planning intervals.}
+  \label{fig:architecture}
+\end{figure}
+
+\subsection{Mechanism}
+
+A precise mechanism description can be organized as a sequence of invariants:
+
+\begin{enumerate}
+  \item Admission validates a request and records the workload class used by
+        the evaluation.
+  \item Planning enumerates legal alternatives, estimates their cost under
+        budget $B$, and selects a strategy with deterministic tie breaking.
+  \item Execution preserves the stated transaction or consistency semantics
+        while collecting separately attributable overheads.
+  \item Telemetry updates only the state visible to the next declared control
+        interval, preventing accidental look-ahead in experiments.
+\end{enumerate}
+
+This level of detail lets readers distinguish the conceptual contribution from
+engineering choices and gives implementers enough information to reproduce the
+critical path.
+
+\subsection{Complexity and correctness}
+
+For every algorithm, report time, memory, communication, and persistent-storage
+costs in terms of named workload quantities.  If a component maintains an
+invariant, state it formally and provide either a proof or a bounded argument.
+For an empirical systems contribution, tests that deliberately violate
+preconditions are useful evidence that the implementation fails safely rather
+than silently changing semantics.

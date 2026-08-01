@@ -1,0 +1,50 @@
+\section{Design}
+\label{sec:design}
+
+\subsection{Overview}
+Halcyon sits between the virtual memory subsystem and an RDMA-attached remote memory pool, as shown in Figure~\ref{fig:arch}. Each compute node runs a kernel module that intercepts page faults and periodic access-bit samples, and a userspace migration daemon that owns the RDMA queue pairs to the remote pool. The kernel module never issues network operations directly; it only updates per-page hotness state and enqueues migration candidates for the daemon to evaluate, keeping the fault path free of network latency.
+
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=6mm and 10mm,
+  box/.style={draw=osdiblue, thick, rounded corners=2pt, fill=osdilight,
+              minimum width=2.5cm, minimum height=0.9cm, align=center, font=\small},
+  sub/.style={draw=osdiaccent, thick, rounded corners=2pt, fill=white,
+              minimum width=2.1cm, minimum height=0.7cm, align=center, font=\scriptsize},
+  lbl/.style={font=\scriptsize\color{osdigray}}
+]
+  \node[box] (app) {Application};
+  \node[box, below=of app] (runtime) {Halcyon Kernel Module};
+  \node[sub, below=4mm of runtime, xshift=-1.3cm] (predictor) {Predictor};
+  \node[sub, below=4mm of runtime, xshift=1.3cm] (daemon) {Migration Daemon};
+  \node[box, below=10mm of runtime] (local) {Local DRAM Tier};
+  \node[box, right=22mm of local, fill=white] (remote) {Remote Memory Pool};
+
+  \draw[-{Latex[length=2mm]}, osdiblue] (app) -- (runtime);
+  \draw[-{Latex[length=2mm]}, osdiblue] (runtime) -- (predictor);
+  \draw[-{Latex[length=2mm]}, osdiblue] (runtime) -- (daemon);
+  \draw[-{Latex[length=2mm]}, osdiblue] (predictor) -- (local);
+  \draw[-{Latex[length=2mm]}, osdiaccent] (daemon.east) -| (remote.north);
+  \draw[{Latex[length=2mm]}-{Latex[length=2mm]}, osdigray, dashed] (local) -- node[lbl, above] {RDMA fabric} (remote);
+\end{tikzpicture}%
+}
+\caption{Halcyon architecture. The predictor scores pages on the fault path; the migration daemon issues one-sided RDMA operations against the remote pool without blocking application threads.}
+\label{fig:arch}
+\end{figure}
+
+\subsection{Hotness scoring}
+Every tracked page $p$ carries an exponentially decayed access count $a(p)$ and a timestamp of last access $\tau(p)$. On each fault or sampled access, Halcyon updates the running score and evaluates it against the estimated network cost of migration, $C_{\mathrm{net}}(p)$, which is derived from current queue depth on the RDMA fabric and the page's size class. The score used to trigger migration is
+
+\begin{equation}
+\label{eq:hotness}
+H(p,t) \;=\; \alpha \, a(p) \, e^{-\lambda \left(t - \tau(p)\right)} \;-\; \beta \, C_{\mathrm{net}}(p),
+\end{equation}
+
+\noindent where $\alpha$ and $\beta$ weight predicted benefit against migration cost and $\lambda$ controls how quickly a page's history decays once accesses stop. A page is enqueued for promotion when $H(p,t)$ crosses an adaptive threshold $\theta_t$, recomputed every epoch from the fabric's observed utilization so that Halcyon backs off automatically when the network is contended rather than competing with foreground RDMA traffic. Demotion uses the same score run in reverse: local pages whose $H(p,t)$ falls below a lower threshold for $k$ consecutive epochs become eviction candidates, ranked by $C_{\mathrm{net}}(p)$ so that cheap-to-migrate pages are evicted first.
+
+We deliberately kept Equation~\ref{eq:hotness} linear in its inputs. Early prototypes used a small gradient-boosted model trained on access traces, which improved offline prediction accuracy by roughly 6\% but added enough per-fault latency that the net effect on tail latency was negative once deployed on the fault path.
+
+\subsection{Migration engine}
+The migration daemon batches candidate pages from the predictor's queue and issues one-sided RDMA reads or writes depending on migration direction, using registered memory regions on both ends to avoid a copy through the remote node's CPU. Batching amortizes the fixed cost of posting a work request across several pages when the predictor produces bursts of candidates, which is common at workload phase transitions. A page is only unmapped from its source tier after the daemon confirms the RDMA operation has completed, so a fault racing a migration in flight is served from whichever tier still holds a valid mapping rather than blocking on the migration itself.

@@ -1,0 +1,212 @@
+\section{Evaluation}
+\label{sec:evaluation}
+
+We ask five questions:
+
+\begin{enumerate}
+  \item Does phase-aware promotion reduce end-to-end tail latency?
+  \item What throughput, CPU, bandwidth, and capacity costs does it impose?
+  \item Which design components produce the improvement?
+  \item How robust is the policy to inaccurate or nonrepeating phases?
+  \item Does credit and lease enforcement isolate competing tenants?
+\end{enumerate}
+
+\subsection{Methodology}
+
+\paragraph{Platform.}
+Experiments use a dual-socket server with two 32-core processors, 512\,GiB of
+DDR5, and Linux 6.8.  We reserve one socket's 256\,GiB as \fast and use the
+other socket to emulate \slow.  CPU affinity keeps application threads on the
+fast-tier socket.  Measured dependent-load latency is 92\,ns for \fast.  We
+insert an additional 78\,ns delay for \slow and throttle its copy bandwidth to
+32\,GB/s, matching the range measured on our pre-production CXL Type-3 device.
+The emulation preserves cache coherence and kernel migration behavior but does
+not model fabric congestion from other hosts.
+
+\paragraph{Workloads.}
+\Cref{tab:workloads} summarizes eight server mixes.  Each foreground service
+runs at 65--75\% of its independently measured saturation load.  A background
+analytics or compaction job expands the combined footprint to 1.6--2.2 times
+the 96\,GiB local-memory budget.  Phase repetition ranges from strongly cyclic
+(recommendation inference) to intentionally shuffled (graph service).
+
+\begin{table}[t]
+  \caption{Workload mixes and their memory demand.  Footprints include the
+    foreground service and its background pressure generator.}
+  \label{tab:workloads}
+  \centering
+  \small
+  \begin{tabular}{@{}llrr@{}}
+    \toprule
+    Mix & Foreground / background & Footprint & Target \\
+        &                           & (GiB)     & load \\
+    \midrule
+    KV-R   & key--value / scan       & 154 & 1.8 Mops/s \\
+    KV-W   & key--value / compaction & 171 & 1.2 Mops/s \\
+    SQL    & OLTP / hash join        & 188 & 420 ktxn/s \\
+    REC    & recommendation / train  & 203 & 58 kq/s \\
+    GRAPH  & graph API / BFS         & 162 & 310 kq/s \\
+    CACHE  & object cache / scrub    & 149 & 2.1 Mops/s \\
+    RPC    & RPC fanout / sort       & 211 & 690 kq/s \\
+    MIXED  & KV + SQL / analytics    & 217 & 70\% peak \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\paragraph{Baselines.}
+\emph{Local-only} caps the application at 96\,GiB and therefore represents an
+infeasible performance upper bound for larger footprints.  \emph{First-touch}
+uses the kernel's default allocation and reclaim.  \emph{Reactive} samples
+access bits and promotes hot pages every 10\,ms, approximating contemporary
+transparent CXL tiering.  \emph{Oracle} knows the next phase's hot regions but
+uses the same copy credits and leases as \system.  Unless stated otherwise,
+\system uses 1\,ms epochs, an 18\% signature-distance threshold, and 35\% of
+idle copy bandwidth.
+
+\paragraph{Procedure.}
+After a five-minute warmup, we measure ten 90-second trials per configuration,
+randomizing order.  Reported latency is aggregated from server-side request
+timestamps; throughput comes from completed operations.  Error bars are 95\%
+bootstrap confidence intervals over trials.  We compare configurations using
+paired trials with identical request and phase traces.
+
+\subsection{End-to-end results}
+
+\Cref{fig:latency} reports \ptail request latency normalized to Reactive.  \system
+improves every workload, reducing the tail by 31--58\% (44\% geometric mean).
+It approaches Oracle within 7\% on REC and KV-R, whose phases recur regularly.
+The gap grows to 19\% on GRAPH because data-dependent traversals share similar
+code signatures but touch different vertices.  First-touch performs worst: it
+does not recover local capacity quickly enough after the background job changes
+phase.
+
+\begin{figure*}[t]
+  \centering
+  \begin{tikzpicture}[x=1.12cm,y=3.0cm,font=\scriptsize]
+    \draw[-Latex] (-0.25,0) -- (8.35,0) node[right] {workload};
+    \draw[-Latex] (0,0) -- (0,1.65) node[above,rotate=90,anchor=south]
+      {normalized $p_{99}$ latency};
+    \foreach \y/\lab in {0.0/0.0,0.5/0.5,1.0/1.0,1.5/1.5} {
+      \draw[black!15] (0,\y) -- (8.05,\y);
+      \node[anchor=east] at (-0.08,\y) {\lab};
+    }
+    \draw[dashed,black!55] (0,1) -- (8.05,1);
+    \foreach \i/\work/\a/\b/\c in {
+      0/KV-R/1.34/0.52/0.47,
+      1/KV-W/1.29/0.61/0.54,
+      2/SQL/1.41/0.57/0.50,
+      3/REC/1.52/0.42/0.39,
+      4/GRAPH/1.21/0.69/0.58,
+      5/CACHE/1.26/0.63/0.56,
+      6/RPC/1.37/0.55/0.49,
+      7/MIXED/1.45/0.48/0.43} {
+      \fill[fluxgray!65] (0.22+\i,0) rectangle +(0.20,\a);
+      \fill[fluxteal!85] (0.44+\i,0) rectangle +(0.20,\b);
+      \fill[fluxorange!80] (0.66+\i,0) rectangle +(0.20,\c);
+      \node[anchor=north] at (0.53+\i,-0.035) {\work};
+    }
+    \node[draw=none,fill=fluxgray!65,minimum width=0.23cm,minimum height=0.16cm]
+      at (1.65,1.58) {};
+    \node[anchor=west] at (1.82,1.58) {First-touch};
+    \node[draw=none,fill=fluxteal!85,minimum width=0.23cm,minimum height=0.16cm]
+      at (3.30,1.58) {};
+    \node[anchor=west] at (3.47,1.58) {\system};
+    \node[draw=none,fill=fluxorange!80,minimum width=0.23cm,minimum height=0.16cm]
+      at (4.72,1.58) {};
+    \node[anchor=west] at (4.89,1.58) {Oracle};
+  \end{tikzpicture}
+  \caption{$p_{99}$ request latency normalized to Reactive (lower is better).
+    Reactive is the dashed line.  Confidence intervals are smaller than 0.04
+    and omitted for readability.}
+  \Description{A grouped bar chart for eight workloads. Flux-Tier bars range
+    from 0.42 to 0.69 times Reactive latency, Oracle bars are slightly lower,
+    and First-touch bars range from 1.21 to 1.52 times Reactive latency.}
+  \label{fig:latency}
+\end{figure*}
+
+Median latency falls by a smaller 9--22\%, confirming that \system primarily
+removes phase-transition outliers rather than accelerating every request.
+Application throughput remains between 97.0\% and 101.8\% of Reactive.  The
+slight gains arise when early promotion shortens queueing episodes; the worst
+case, GRAPH, loses 3.0\% because its uncertain phases still consume some copy
+bandwidth before confidence decays.
+
+\subsection{Where the time goes}
+
+We decompose critical-path memory stall time using sampled load latency.  Under
+Reactive, 38\% of sampled far-memory stalls occur in the first 5\,ms following
+a detected phase transition.  \system eliminates 72\% of those stalls, but only
+18\% of stalls later in a phase, where both systems have already promoted hot
+pages.  The result supports the central hypothesis: timing, not simply the
+eventual choice of pages, differentiates the policies.
+
+Across workloads, the predictor recognizes a phase 1.6\,ms before its first
+target-region access at the median and 0.44\,ms at the tenth percentile.  A
+64-page batch migrates in 0.31\,ms at the median.  Consequently, 79\% of useful
+predicted pages arrive before first use; another 12\% arrive during the phase
+and still avoid later misses.
+
+\subsection{Overheads}
+
+System costs appear in \cref{tab:overheads}.  Phase sampling and signature
+construction consume 0.43--0.91\% of one core per managed cgroup.  Memory overhead is below
+0.01\% of application footprint.  \system moves more data than Reactive because
+it sometimes copies pages that do not become hot; the hard credit limit keeps
+copy traffic below 11.4\,GB/s on our 32\,GB/s emulated link.
+
+\begin{table}[t]
+  \caption{Geometric-mean overhead and worst case across all workload mixes.}
+  \label{tab:overheads}
+  \centering
+  \small
+  \begin{tabular}{@{}lrr@{}}
+    \toprule
+    Metric & Geomean & Maximum \\
+    \midrule
+    CPU utilization (one core) & 0.62\% & 0.91\% \\
+    Predictor metadata / cgroup & 28.4 KiB & 31.7 KiB \\
+    Copy bandwidth              & 8.7 GB/s & 11.4 GB/s \\
+    Wasted copy bandwidth       & 3.5\% & 6.2\% \\
+    Fast-tier occupancy uplift  & 1.9\% & 3.0\% \\
+    Page-fault time uplift      & 0.4\% & 0.8\% \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The control path adds no work to a cache hit or TLB hit.  Its only synchronous
+kernel action occurs at an epoch boundary; page walks and copies execute in
+workers.  We observe no statistically significant change in involuntary
+context switches or scheduler run-queue delay.
+
+\subsection{Ablation study}
+
+We remove one component at a time.  Replacing phase prediction with a 1\,ms
+reactive scanner improves over the 10\,ms baseline but recovers only 34\% of
+\system's \ptail gain and consumes 2.7 times more sampling CPU.  Disabling copy
+credits improves REC by a further 3\% in isolation but degrades MIXED by 18\%
+when migrations contend with foreground traffic.  Removing leases leaves tail
+latency unchanged for one phase, then increases it by 12--27\% as false-positive
+pages accumulate in \fast.  Finally, hashing addresses into the phase signature
+reduces match rate by 21\% after allocator churn.  These results justify the
+separation of code-derived identity, address-derived working set, credits, and
+leases.
+
+\subsection{Prediction error and nonrepeating phases}
+
+We inject errors by replacing a fraction of predicted region lists with a list
+from another phase.  At 10\% injection, \ptail latency rises 4\% and wasted bandwidth
+rises from 3.5\% to 5.9\%.  At 30\%, confidence counters disable most speculative
+copies after three epochs; performance converges to within 2\% of Reactive.
+At 100\% nonrepeating phases, \system recognizes no stable entry, adds 0.38\%
+CPU overhead, and matches Reactive latency within the confidence interval.
+This graceful fallback is more important than peak predictor accuracy.
+
+\subsection{Multitenant isolation}
+
+We co-run three KV tenants with weights 4:2:1 and give the lowest-weight tenant
+an adversarial phase trace that alternates every epoch.  Without per-cgroup
+credits, the adversary receives 41\% of migration bandwidth and raises the
+highest-weight tenant's \ptail latency by 23\%.  With \system, measured bandwidth
+shares are 56:29:15, within two percentage points of their weights, and the
+victim's \ptail increases by 3.1\%.  Emergency reclaim triggers twice in a
+20-minute run and clears expired leases within 1.4\,ms.

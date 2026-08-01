@@ -1,0 +1,111 @@
+\section{CivicPulse design}
+\subsection{Architecture}
+
+% -----------------------------------------------------------------------------
+% 5. Architecture
+% -----------------------------------------------------------------------------
+\begin{frame}{The real-time path ends inside each district}
+  \centering
+  \begin{tikzpicture}
+    % Draw connections first so nodes remain visually dominant.
+    \draw[flow] (-4.45,0.68) -- (-3.22,0.24);
+    \draw[flow] (-4.45,0.00) -- (-3.22,0.00);
+    \draw[flow] (-4.45,-0.68) -- (-3.22,-0.24);
+    \draw[flow] (-0.55,0) -- (0.18,0);
+    \draw[flow] (2.88,0) -- (3.52,0);
+    \draw[sync] (1.53,0.62) to[bend left=34] (-1.88,0.62);
+
+    \node[sensor] at (-5.05,0.82) {Loop};
+    \node[sensor] at (-5.05,0.00) {Bus};
+    \node[sensor] at (-5.05,-0.82) {Signal};
+    \node[module,fill=PulseTeal!8] at (-1.88,0) {Edge gateway\\clean + encode};
+    \node[module,fill=PulseBlue!8] at (1.53,0) {District model\\forecast + confidence};
+    \node[module,fill=PulseAmber!10] at (4.86,0) {Control policy\\phase + advisory};
+
+    \node[font=\tiny,text=PulseAmber,fill=white,inner sep=1pt] at (-0.15,1.18)
+      {private model update};
+
+    \begin{scope}[on background layer]
+      \node[draw=PulseTeal!50,fill=PulseTeal!3,rounded corners=5pt,
+        fit={(-5.72,1.45) (-0.48,-1.45)},inner sep=4pt] {};
+    \end{scope}
+    \node[font=\scriptsize\bfseries,text=PulseTeal] at (-3.08,-1.65)
+      {DISTRICT DATA BOUNDARY};
+  \end{tikzpicture}
+
+  \vspace{0.2cm}
+  \small
+  Aggregation improves the shared model; it never becomes a dependency for live control.
+\end{frame}
+
+\subsection{Learning objective}
+
+% -----------------------------------------------------------------------------
+% 6. Objective
+% -----------------------------------------------------------------------------
+\begin{frame}{One objective balances accuracy, delay, and privacy}
+  District $k$ optimizes a local forecasting loss $F_k$; the coordinator combines updates as
+  \begin{equation*}
+    \min_{\boldsymbol{w}}
+    \underbrace{\sum_{k=1}^{K} p_k F_k(\boldsymbol{w})}_{\text{forecast error}}
+    + \lambda\underbrace{\lVert\boldsymbol{w}\rVert_2^2}_{\text{stability}},
+    \qquad
+    \widetilde{\boldsymbol{g}}_k
+    = \operatorname{clip}_{C}(\boldsymbol{g}_k)
+      + \mathcal{N}(\boldsymbol{0},\sigma^2 C^2\mathbf{I}).
+  \end{equation*}
+
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item $p_k$: weight based on usable observations,
+        \item $C$: bound on one district's influence,
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item $\sigma$: calibrated privacy noise,
+        \item $\lambda$: resistance to unstable updates.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \begin{exampleblock}{Control contract}
+    Publish a forecast only when latency is below $2$ seconds and calibrated confidence exceeds the district threshold.
+  \end{exampleblock}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 7. Update cycle
+% -----------------------------------------------------------------------------
+\begin{frame}{The update cycle separates urgent inference from patient learning}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.54\textwidth}
+      \begin{enumerate}
+        \item \textbf{Observe:} align recent counts, speeds, and signal states.
+        \item \textbf{Infer:} predict the next three 5-minute intervals locally.
+        \item \textbf{Protect:} clip, noise, and encrypt the scheduled update.
+        \item \textbf{Aggregate:} combine updates robustly across available districts.
+        \item \textbf{Adopt:} promote a model only after local safety checks pass.
+      \end{enumerate}
+    \end{column}
+    \begin{column}{0.41\textwidth}
+      \begin{tikzpicture}[x=0.78cm,y=0.78cm]
+        \node[circle,draw=PulseTeal,fill=PulseTeal!10,line width=1pt,
+          minimum size=1.20cm,font=\tiny\bfseries] (n90) at (90:2.15) {Observe};
+        \node[circle,draw=PulseBlue,fill=PulseBlue!10,line width=1pt,
+          minimum size=1.20cm,font=\tiny\bfseries] (n18) at (18:2.15) {Infer};
+        \node[circle,draw=PulseAmber,fill=PulseAmber!10,line width=1pt,
+          minimum size=1.20cm,font=\tiny\bfseries] (n-54) at (-54:2.15) {Protect};
+        \node[circle,draw=PulseNavy,fill=PulseNavy!10,line width=1pt,
+          minimum size=1.20cm,font=\tiny\bfseries] (n-126) at (-126:2.15) {Aggregate};
+        \node[circle,draw=PulseRed,fill=PulseRed!10,line width=1pt,
+          minimum size=1.20cm,font=\tiny\bfseries] (n162) at (162:2.15) {Adopt};
+        \draw[-{Latex[length=2mm]},thick,draw=PulseInk!60]
+          (n90) -- (n18) -- (n-54) -- (n-126) -- (n162) -- (n90);
+        \node[align=center,font=\small\bfseries,text=PulseNavy] at (0,0)
+          {every\\10 min};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+\end{frame}

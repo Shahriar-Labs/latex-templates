@@ -1,0 +1,86 @@
+\section{Results}
+
+Table~\ref{tab:main} reports chrF and discourse agreement across all three
+pairs. \textsc{DiscoRerank} improves discourse agreement over every baseline
+on every pair, with the largest gain on Quechua--Spanish (+5.1 DA over
+Beam-1), the pair with the smallest bitext and thus the weakest implicit
+document modeling in the base system. chrF gains are smaller but consistent,
+indicating that discourse-aware reranking does not trade off surface fluency
+to obtain coherence.
+
+\begin{table}[t]
+\centering
+\small
+\caption{chrF and discourse agreement (DA, \%) across three low-resource
+pairs. Best result per column in \textbf{bold}.}
+\label{tab:main}
+\begin{tabular}{@{}l l cc@{}}
+\toprule
+\textbf{Pair} & \textbf{System} & \textbf{chrF} & \textbf{DA} \\
+\midrule
+\multirow{4}{*}{bn--en}
+ & Beam-1        & 41.2 & 68.4 \\
+ & Beam-avg      & 41.5 & 69.1 \\
+ & Concat-ctx    & 41.9 & 71.8 \\
+ & \textsc{DiscoRerank} & \textbf{43.0} & \textbf{75.6} \\
+\midrule
+\multirow{4}{*}{sw--en}
+ & Beam-1        & 44.7 & 70.9 \\
+ & Beam-avg      & 44.9 & 71.4 \\
+ & Concat-ctx    & 45.3 & 73.5 \\
+ & \textsc{DiscoRerank} & \textbf{46.1} & \textbf{76.7} \\
+\midrule
+\multirow{4}{*}{qu--es}
+ & Beam-1        & 33.8 & 61.2 \\
+ & Beam-avg      & 34.0 & 61.9 \\
+ & Concat-ctx    & 34.4 & 64.7 \\
+ & \textsc{DiscoRerank} & \textbf{35.7} & \textbf{66.3} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Ablations}
+Figure~\ref{fig:ablation} varies retrieval depth $k$ from 1 to 10 on the
+sw--en development split. Discourse agreement rises sharply through $k=4$ and
+plateaus thereafter, while chrF is comparatively flat, suggesting that a
+handful of nearby discourse anchors captures most of the available
+consistency signal and additional retrieved context contributes mostly
+redundant votes.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.95\linewidth,
+  height=4.6cm,
+  xlabel={Retrieval depth $k$},
+  ylabel={Score},
+  xmin=1, xmax=10,
+  ymin=68, ymax=78,
+  xtick={1,2,4,6,8,10},
+  legend style={font=\scriptsize,at={(0.97,0.05)},anchor=south east,draw=none,fill=none},
+  label style={font=\small},
+  tick label style={font=\scriptsize},
+  axis lines=left,
+  grid=major,
+  grid style={dashed,gray!25},
+]
+\addplot[color=emnlpblue,thick,mark=*,mark size=1.4pt] coordinates {
+  (1,71.4) (2,73.8) (3,75.5) (4,76.4) (5,76.6) (6,76.7) (8,76.6) (10,76.5)
+};
+\addlegendentry{Discourse agreement}
+\addplot[color=emnlpred,thick,mark=square*,mark size=1.4pt] coordinates {
+  (1,44.9) (2,45.4) (3,45.8) (4,46.0) (5,46.1) (6,46.1) (8,46.0) (10,46.0)
+};
+\addlegendentry{chrF (rescaled $+31$)}
+\end{axis}
+\end{tikzpicture}
+\caption{Effect of retrieval depth $k$ on discourse agreement and chrF
+(sw--en development split). Gains saturate around $k=4$--5.}
+\label{fig:ablation}
+\end{figure}
+
+We further find that encoder choice matters less than retrieval depth: a
+distilled multilingual bi-encoder reaches within 0.6 DA points of a larger
+encoder at roughly one-eighth the inference cost, making
+\textsc{DiscoRerank} practical to run on CPU alongside decoding.

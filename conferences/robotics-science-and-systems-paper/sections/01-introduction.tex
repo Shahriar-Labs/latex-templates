@@ -1,0 +1,76 @@
+\section{Introduction}
+
+Legged machines can traverse gaps, stairs, and debris that defeat wheeled platforms, but
+their mobility depends on a fragile perception--planning interface. State-of-the-art
+locomotion systems combine learned policies \cite{hwangbo2019skills,miki2022wild} or
+model-predictive control (MPC) \cite{grandia2023perceptive} with a robot-centric terrain
+map. Most controllers consume the map as if its cells were equally current and reliable.
+In practice, a swinging leg occludes the camera, dust erases depth returns, and rapid body
+motion moves important footholds outside the field of view. The map remains numerically
+dense while the evidence supporting it quietly expires.
+
+This paper studies the following question: \emph{how should a legged robot move when its
+best geometric map may be wrong?} Our answer is \method{}, a short-horizon terrain memory
+whose output is a pair $(\hat{H},R)$: an estimated elevation map and a calibrated risk map.
+The representation makes missing evidence explicit, incorporates contact events as local
+geometric measurements, and permits the controller to choose whether uncertain progress is
+worth the predicted failure probability.
+
+The system, summarized in Fig.~\ref{fig:overview}, contributes:
+\begin{itemize}
+  \item a recurrent, robot-centric fusion model that preserves terrain evidence across
+        asynchronous observations without freezing stale geometry;
+  \item a cell-wise risk target derived from reconstruction error, visibility age, and
+        contact inconsistency, calibrated for use as a control cost; and
+  \item a risk-constrained foothold objective with a simple fallback behavior that remains
+        stable when the entire forward view is unavailable.
+\end{itemize}
+The numerical results in this example manuscript are clearly illustrative, but the
+experimental protocol, equations, reporting structure, and implementation details are
+specified to make the document a complete, adaptable research-paper source.
+
+\begin{figure*}[t]
+\centering
+\resizebox{0.98\textwidth}{!}{%
+\begin{tikzpicture}[
+  x=1cm,y=1cm,
+  block/.style={rounded corners=2pt,draw=rssnavy,thick,fill=white,
+                minimum height=1.05cm,minimum width=2.45cm,align=center,font=\small},
+  data/.style={rounded corners=2pt,draw=rssteal,thick,fill=rssmint,
+               minimum height=.75cm,minimum width=1.65cm,align=center,font=\scriptsize},
+  arrow/.style={-{Latex[length=2.1mm]},thick,color=rssgray},
+  risk/.style={rounded corners=2pt,draw=rssorange,thick,fill=rssorange!10,
+               minimum height=.82cm,minimum width=2.1cm,align=center,font=\small}
+]
+  \node[data] (depth) at (0,1.2) {Depth\ image};
+  \node[data] (state) at (0,0) {Body state\ \& contacts};
+  \node[block] (warp) at (3,0.6) {Egomotion warp\\and evidence fusion};
+  \node[block] (memory) at (6.15,0.6) {Recurrent terrain\\memory $\vect{m}_t$};
+  \node[data] (height) at (9.1,1.35) {Elevation\\$\hat H_t$};
+  \node[risk] (risk) at (9.1,-0.15) {Calibrated risk\\$R_t$};
+  \node[block,minimum width=2.75cm] (mpc) at (12.5,0.6)
+       {Risk-constrained\\foothold MPC};
+  \node[data,minimum width=1.8cm] (cmd) at (15.3,0.6) {Footsteps \&\\body command};
+
+  \draw[arrow] (depth) -- (warp);
+  \draw[arrow] (state) -- (warp);
+  \draw[arrow] (warp) -- (memory);
+  \draw[arrow] (memory) -- (height);
+  \draw[arrow] (memory) -- (risk);
+  \draw[arrow] (height) -- (mpc);
+  \draw[arrow] (risk) -- (mpc);
+  \draw[arrow] (mpc) -- (cmd);
+  \draw[arrow,rssorange] (state.south) -- ++(0,-.65) -| node[pos=.72,below,
+       font=\scriptsize,color=rssgray]{contact correction} (memory.south);
+
+  \begin{scope}[on background layer]
+    \node[fit=(depth)(state)(warp),fill=rsslight,rounded corners=4pt,inner sep=8pt] {};
+    \node[fit=(memory)(height)(risk),fill=rssteal!6,rounded corners=4pt,inner sep=8pt] {};
+  \end{scope}
+\end{tikzpicture}
+}
+\caption{\textbf{System overview.} \method{} converts asynchronous exteroceptive and
+proprioceptive observations into separate geometry and risk maps. Contact events correct
+local elevation, while the controller explicitly limits accumulated foothold risk.}
+\label{fig:overview}
+\end{figure*}

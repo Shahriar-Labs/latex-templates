@@ -1,0 +1,73 @@
+\section{Adaptive Join Design}
+\label{sec:design}
+
+\subsection{Symmetric sampling and summaries}
+
+Each reader hashes join keys into $2^k$ coarse radix ranges.  During sampling,
+the first $s$ bytes from both inputs are retained in range buffers instead of
+being sent immediately.  For every range, workers maintain a mergeable
+distinct-count sketch and a weighted heavy-hitter sketch.  A worker transmits a
+summary after either $\Delta_b$ new bytes or $\Delta_t$ time, whichever occurs
+first.  Summary traffic is thus independent of tuple width to first order.
+
+For a candidate mode $m$, the coordinator estimates cost $\widehat C_{i,m}$
+and uncertainty $u_{i,m}$.  It commits to the current winner $m^*$ when
+\begin{equation}
+ \widehat C_{i,m^*}+\lambda u_{i,m^*}
+ < \min_{m\ne m^*}\bigl(\widehat C_{i,m}-\lambda u_{i,m}\bigr)-\delta,
+ \label{eq:confidence}
+\end{equation}
+or when buffered data reaches a hard cap $B_i$.  Here $\lambda$ controls the
+confidence interval and $\delta$ prevents oscillation between nearly equal
+choices.  At the cap, the system selects the feasible mode with the lowest
+upper confidence bound.  This rule bounds memory even when evidence remains
+ambiguous.
+
+\subsection{Partition strategies}
+
+\textbf{Local completion} is available when compatible fragments are already
+co-located and expected work fits the local task budget.  \textbf{Broadcast}
+sends the smaller filtered fragment to the task groups holding the other side.
+The router broadcasts only the affected logical partition, not the entire
+relation.  \textbf{Repartition} hashes ordinary keys across the active worker
+set.
+
+Heavy keys follow a fourth routing rule inside any selected mode.  For a key
+$x$ with estimated frequencies $f_R(x)$ and $f_S(x)$, the smaller side is
+replicated across $g_x$ task groups and the larger side is range-split among
+them.  The fan-out
+\begin{equation}
+ g_x=\min\!\left(p,\max\!\left(1,
+   \left\lceil\frac{\max(f_R(x),f_S(x))}{\tau}\right\rceil\right)\right)
+ \label{eq:fanout}
+\end{equation}
+targets at most $\tau$ heavy-key tuples per group.  A composite routing tag
+$\langle e_i,x,j\rangle$ ensures that replicated build rows and split probe
+rows meet at exactly the intended groups.
+
+\subsection{Credit-based exchange}
+
+Each consumer grants byte credits to upstream routers.  Sending a batch
+atomically consumes credit; releasing or spilling that batch returns credit.
+Credits are divided into regular, heavy-key, and migration pools so that a
+skewed key cannot starve control progress.  If all data credits are exhausted,
+readers pause at morsel boundaries.  This mechanism propagates congestion to
+storage without holding thread stacks or allowing network queues to grow with
+input size.
+
+\subsection{Versioned migration}
+\label{sec:migration}
+
+A mode change uses four steps.  (1) The coordinator appends a \code{prepare}
+record carrying $(i,e+1,m')$ and obtains a decision sequence.  (2) Routers stop
+assigning new batches under epoch $e$ after their current vector.  (3) Each
+router forwards buffered batches with stable identifiers
+$\langle\textit{source},\textit{offset},i,e+1\rangle$ and reports its high-water
+mark.  (4) After every live router acknowledges, the coordinator commits
+$(i,e+1)$; consumers may then produce matches for the new epoch.
+
+Consumers deduplicate batch identifiers during handoff.  The deduplication set
+is bounded because entries below the minimum committed high-water mark can be
+discarded.  A failed router is replaced from durable source offsets and the
+last committed policy record.  Uncommitted destination state is discarded by
+epoch, not merged into visible output.

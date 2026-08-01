@@ -1,0 +1,60 @@
+\section{The assurance case}
+\subsection{Validation ladder}
+
+% -----------------------------------------------------------------------------
+% 8. Validation
+% -----------------------------------------------------------------------------
+\begin{frame}{Validation moves from execution to interpretation}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.47\textwidth}
+      \begin{enumerate}
+        \item \textbf{Integrity}\quad Inputs and outputs match their checksums.
+        \item \textbf{Executability}\quad The environment rebuilds and the workflow completes.
+        \item \textbf{Determinism}\quad Repeated runs meet the declared tolerance.
+      \end{enumerate}
+    \end{column}
+    \begin{column}{0.47\textwidth}
+      \begin{enumerate}
+        \setcounter{enumi}{3}
+        \item \textbf{Robustness}\quad Controlled perturbations reveal sensitivity.
+        \item \textbf{Traceability}\quad Every claim links to a checked artifact.
+        \item \textbf{Reviewability}\quad A new reader can follow the trail without private context.
+      \end{enumerate}
+    \end{column}
+  \end{columns}
+
+  \vfill
+  \begin{exampleblock}{Acceptance rule}
+    Publish only when every required rung passes; otherwise place the owned
+    exception beside the claim.
+  \end{exampleblock}
+\end{frame}
+
+\subsection{Failure controls}
+
+% -----------------------------------------------------------------------------
+% 9. Failure modes
+% -----------------------------------------------------------------------------
+\begin{frame}{Controls should target the way the trail actually breaks}
+  \small
+  \renewcommand{\arraystretch}{1.25}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.27\textwidth}
+                  >{\raggedright\arraybackslash}p{0.30\textwidth}
+                  >{\raggedright\arraybackslash}p{0.34\textwidth}}
+    \toprule
+    \textbf{Failure mode} & \textbf{Observable signal} & \textbf{Control} \\
+    \midrule
+    Mutable input data & Same path, different checksum &
+      Content-addressed snapshots and schema checks \\
+    Environment drift & Rebuild changes the dependency graph &
+      Locked dependencies and a captured runtime image \\
+    Untracked parameter edit & Metric changes without a code change &
+      Canonical manifest and fingerprint comparison \\
+    Selective reporting & Output exists without its rejected alternatives &
+      Append-only run registry and declared selection rule \\
+    Unsupported conclusion & Claim has no direct artifact link &
+      Claim-to-evidence review before release \\
+    \bottomrule
+  \end{tabular}
+
+\end{frame}

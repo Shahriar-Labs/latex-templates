@@ -1,0 +1,119 @@
+\section{The architecture}
+\subsection{Experiment flow}
+
+% -----------------------------------------------------------------------------
+% 5. Architecture
+% -----------------------------------------------------------------------------
+\begin{frame}{One manifest connects intent to evidence}
+  \centering
+  \begin{tabular}{>{\centering\arraybackslash}p{0.17\textwidth}
+                  >{\centering\arraybackslash}p{0.035\textwidth}
+                  >{\centering\arraybackslash}p{0.17\textwidth}
+                  >{\centering\arraybackslash}p{0.035\textwidth}
+                  >{\centering\arraybackslash}p{0.17\textwidth}
+                  >{\centering\arraybackslash}p{0.035\textwidth}
+                  >{\centering\arraybackslash}p{0.17\textwidth}}
+    \color{SzegedBlue}\bfseries Question &
+    \color{SzegedGold}$\boldsymbol{\rightarrow}$ &
+    \color{SzegedBlue}\bfseries Specification &
+    \color{SzegedGold}$\boldsymbol{\rightarrow}$ &
+    \color{SzegedBlue}\bfseries Execution &
+    \color{SzegedGold}$\boldsymbol{\rightarrow}$ &
+    \color{SzegedBlue}\bfseries Evidence \\
+    \small hypothesis and scope &&
+    \small manifest and tests &&
+    \small isolated run &&
+    \small metrics and artifacts
+  \end{tabular}
+
+  \vspace{0.5cm}
+
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{The manifest declares}
+        Inputs, parameters, code revision, environment contract, random seed,
+        expected outputs, and validation rules.
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{exampleblock}{The run record returns}
+        Resolved identities, timestamps, logs, checksums, metrics, outputs, and the
+        verdict of every validation rule.
+      \end{exampleblock}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\subsection{Identity}
+
+% -----------------------------------------------------------------------------
+% 6. Run identity
+% -----------------------------------------------------------------------------
+\begin{frame}{A run fingerprint makes silent changes visible}
+  For a computational run $r$, define its identity from the resolved experiment
+  state:
+  \begin{equation*}
+    \phi(r)
+      = H\!\left(
+          h_{\mathrm{code}}\,\Vert\,
+          h_{\mathrm{data}}\,\Vert\,
+          h_{\mathrm{env}}\,\Vert\,
+          \theta\,\Vert\,s
+        \right),
+  \end{equation*}
+  where $\theta$ is the canonical parameter set, $s$ is the random seed, and
+  $H$ is a collision-resistant hash.
+
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \begin{block}{Same fingerprint}
+        The declared computational state is identical and the run is eligible for
+        a replay comparison.
+      \end{block}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{alertblock}{Different fingerprint}
+        Something material changed; compare manifests before comparing outcomes.
+      \end{alertblock}
+    \end{column}
+  \end{columns}
+
+  \vfill
+  \small\color{SzegedInk!82}
+  A fingerprint identifies the declared state; validation still determines whether
+  the run behaved as expected.
+\end{frame}
+
+\subsection{Manifest}
+
+% -----------------------------------------------------------------------------
+% 7. Manifest
+% -----------------------------------------------------------------------------
+\begin{frame}{The manifest answers the reviewer before the reviewer asks}
+  \centering
+  \small
+  \renewcommand{\arraystretch}{1.14}
+  \begin{tabular}{>{\raggedright\arraybackslash}p{0.20\textwidth}
+                  >{\raggedright\arraybackslash}p{0.36\textwidth}
+                  >{\raggedright\arraybackslash}p{0.33\textwidth}}
+    \toprule
+    Artifact & What is captured & Reviewer test \\
+    \midrule
+    \taglabel{INTENT}\ \textbf{Plan} &
+      hypothesis, scope, exclusions, acceptance rule &
+      Does the result answer the declared question? \\
+    \taglabel{INPUT}\ \textbf{Data} &
+      immutable ID, schema, lineage, license &
+      Can the exact input be recovered? \\
+    \taglabel{RUN}\ \textbf{Runtime} &
+      locked dependencies, platform, seed &
+      Can the computation replay under contract? \\
+    \taglabel{OUTPUT}\ \textbf{Evidence} &
+      logs, metrics, artifacts, checksums, tests &
+      Do outputs pass the declared validation? \\
+    \taglabel{CLAIM}\ \textbf{Claim map} &
+      claim, evidence link, limitations, owner &
+      Is the conclusion supported without hidden steps? \\
+    \bottomrule
+  \end{tabular}
+\end{frame}

@@ -1,0 +1,51 @@
+\section{Experimental Setup}
+\label{sec:setup}
+
+\subsection{Controlled benchmark}
+
+\dataset{} is an illustrative benchmark with three anonymized varieties:
+North, Central, and Coastal. Each contains conversational messages paired
+with meaning-preserving standardizations. Table~\ref{tab:data} summarizes the
+split. Speakers, conversations, and near-duplicates are disjoint across
+splits. A 5,000-pair memory is sampled from the training partition only.
+Named entities are annotated on development and test examples.
+
+\begin{table}[t]
+  \centering
+  \caption{Illustrative \dataset{} split statistics. ``Changed'' is the
+  percentage of target sentences differing from the input.}
+  \label{tab:data}
+  \small
+  \begin{tabular}{lrrr}
+    \toprule
+    Variety & Train & Dev/Test & Changed \\
+    \midrule
+    North   & 18,400 & 1,200/1,500 & 63\% \\
+    Central & 11,700 &   900/1,200 & 71\% \\
+    Coastal &  7,900 &   700/1,000 & 76\% \\
+    \midrule
+    Total   & 38,000 & 2,800/3,700 & 68\% \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Models and optimization}
+
+We compare identity copying, a character-level Transformer, multilingual T5,
+and a byte-level T5 baseline. The two retrieval systems use the same
+byte-level backbone: \textsc{AlwaysRetrieve} interpolates at every step,
+whereas \method uses Equations~\ref{eq:entropy}--\ref{eq:gate}. All neural
+models have approximately 300M parameters. We train for at most 20 epochs with
+AdamW, learning rate $3\times10^{-5}$, batch size 64, and early stopping on
+development chrF. We set $k=8$, $\tau=0.42$, $\lambda_g=0.5$, and
+$\lambda_b=0.1$ on the development set. Results report the mean of three
+seeds; paired bootstrap confidence intervals use 1,000 resamples.
+
+\subsection{Metrics}
+
+We report corpus chrF, word error rate (WER; lower is better), exact sentence
+match (EM), and entity corruption rate (ECR; lower is better). ECR is the
+fraction of source entities whose surface form is changed when the reference
+preserves it. Expected calibration error (ECE) uses ten equal-mass bins.
+
+% -----------------------------------------------------------------------------

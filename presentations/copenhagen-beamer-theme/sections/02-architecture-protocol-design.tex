@@ -1,0 +1,67 @@
+\section{Architecture \& Protocol Design}
+
+% Slide 5: The Synapse Protocol Stack
+\begin{frame}{The Synapse Protocol Stack}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \textbf{Key Layered Modules:}
+      \begin{itemize}
+        \item \textbf{Consensus Layer:} Filters updates to block malicious gradients.
+        \item \textbf{Aggregation Layer:} Runs asynchronous federated averaging.
+        \item \textbf{Transport Layer:} Compresses weights via quantization.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{center}
+        \begin{tikzpicture}[
+          layer/.style={rectangle, draw=SynapseNavy, fill=SynapseNavy!10, rounded corners, minimum width=3.8cm, minimum height=0.55cm, align=center, font=\scriptsize\sffamily},
+          arrow/.style={-stealth, thick, SynapseCharcoal}
+        ]
+          \node (app) [layer] {Application Layer \\ (Vertex / Nimbus CLI)};
+          \node (agg) [layer, below=0.2cm of app] {Aggregation Layer \\ (Asynchronous FedAvg)};
+          \node (cons) [layer, below=0.2cm of agg] {Consensus Layer \\ (Proof-of-Accuracy)};
+          \node (trans) [layer, below=0.2cm of cons] {Transport Layer \\ (Quantized Gradient)};
+          
+          \draw [arrow] (app) -- (agg);
+          \draw [arrow] (agg) -- (cons);
+          \draw [arrow] (cons) -- (trans);
+        \end{tikzpicture}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 6: Mathematical Formulation
+\begin{frame}{Mathematical Formulation}
+  In Synapse ML, we formulate the global objective function as:
+  \begin{equation}
+    \min_{w \in \mathbb{R}^d} F(w) = \sum_{k=1}^K p_k F_k(w)
+  \end{equation}
+  where $K$ is the total active edge nodes, and $p_k = n_k / N$ (with $N = \sum_{k=1}^K n_k$) represents the node weighting factor.
+  Under our asynchronous protocol, the weight update at step $t+1$ is defined as:
+  \begin{equation}
+    w_{t+1} = w_t - \eta \nabla F_k(w_{t - \tau_k(t)})
+  \end{equation}
+  where $\tau_k(t)$ is the gradient staleness factor.
+\end{frame}
+
+% Slide 7: Algorithmic Framework
+\begin{frame}{Asynchronous Aggregation Algorithm}
+  \textbf{Synapse Server-Side Update Protocol}
+  \hrule\vspace{0.2cm}
+  \begin{enumerate}
+    \item \textbf{Initialize} global model parameters $w_0$ and node contribution vector $c_0$.
+    \item \textbf{On receiving} local update $g_k$ from node $k$ at time $t$:
+    \begin{enumerate}
+      \item Calculate the dynamic staleness parameter: $\tau = t - t_{sent}$.
+      \item Compute learning rate scaling factor: $\alpha(\tau) = \frac{\alpha_0}{1 + \gamma \tau}$.
+      \item Update global parameters:
+      \begin{equation*}
+        w_{t+1} \leftarrow w_t - \alpha(\tau) \cdot g_k
+      \end{equation*}
+    \end{enumerate}
+    \item \textbf{Broadcast} the updated global weights $w_{t+1}$ back to node $k$.
+    \item \textbf{Repeat} until target validation accuracy $\epsilon$ is reached.
+  \end{enumerate}
+  \hrule
+\end{frame}

@@ -1,0 +1,60 @@
+\section{Architecture of the Nexa Engine}
+The overall architecture of the Nexa engine is designed to minimize data movement and maximize parallel execution of vertex-centric computations. As shown in Figure~\ref{fig:architecture}, Nexa consists of a 2D grid of Processing Elements (PEs) interconnected by a high-bandwidth Network-on-Chip (NoC).
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+    pe/.style={draw, rectangle, fill=iscablue!5, minimum width=1.1cm, minimum height=1.1cm, align=center, font=\footnotesize\bfseries, rounded corners=2pt},
+    arrow/.style={<->, >=stealth, thick, color=iscablue}
+  ]
+    % Draw 2x2 grid of PEs
+    \node[pe] (pe00) at (0, 1.8) {PE \\ (0,0)};
+    \node[pe] (pe01) at (2.2, 1.8) {PE \\ (0,1)};
+    \node[pe] (pe10) at (0, 0) {PE \\ (1,0)};
+    \node[pe] (pe11) at (2.2, 0) {PE \\ (1,1)};
+    
+    % Draw bidirectional connections
+    \draw[arrow] (pe00) -- (pe01);
+    \draw[arrow] (pe00) -- (pe10);
+    \draw[arrow] (pe01) -- (pe11);
+    \draw[arrow] (pe10) -- (pe11);
+    
+    % Highlight PE(1,1) with a red rectangle
+    \draw[red!80!black, dashed, thick, rounded corners=2pt] ($(pe11.south west)+(-0.1,-0.1)$) rectangle ($(pe11.north east)+(0.1,0.1)$);
+    
+    % Expanded PE box
+    \draw[draw=iscagrey, fill=white, thick, rounded corners=3pt] (-1.0, -3.8) rectangle (3.2, -1.5);
+    
+    % Label inside the box
+    \node[font=\scriptsize\bfseries\color{iscablue}] at (1.1, -1.8) {Detailed PE Microarchitecture};
+    
+    % Elements inside expanded PE
+    \node[draw, rectangle, fill=iscablue!10, minimum width=1.6cm, minimum height=0.9cm, font=\scriptsize\bfseries, align=center, rounded corners=2pt] (vcu) at (0.0, -2.8) {Vertex \\ Compute};
+    \node[draw, rectangle, fill=iscaaccent!10, minimum width=1.6cm, minimum height=0.9cm, font=\scriptsize\bfseries, align=center, rounded corners=2pt] (swc) at (2.2, -2.8) {Weight \\ Cache};
+    
+    \draw[arrow] (vcu) -- (swc);
+    
+    % Dashed lines from PE(1,1) to expanded box corners
+    \draw[dashed, red!80!black, thin] ($(pe11.south west)+(-0.1,-0.1)$) -- (-1.0, -1.5);
+    \draw[dashed, red!80!black, thin] ($(pe11.south east)+(0.1,-0.1)$) -- (3.2, -1.5);
+    
+  \end{tikzpicture}
+  \caption{Nexa 2D Mesh Multi-Core Architecture and Processing Element (PE) Microarchitecture.}
+  \label{fig:architecture}
+\end{figure}
+
+Each PE is a self-contained compute tile consisting of two main modules:
+\begin{enumerate}
+  \item \textbf{Vertex Compute Unit (VCU):} The VCU is responsible for updating the membrane potential of the local neurons and generating output spikes. The membrane potential update follows the Leaky Integrate-and-Fire (LIF) model.
+  \item \textbf{Synaptic Weight Cache (SWC):} The SWC is a high-speed SRAM cache that stores the synaptic weights of the incoming connections to the local neurons.
+\end{enumerate}
+
+The update equation for a neuron's membrane potential $V_i(t)$ at time $t$ is expressed as:
+$V_i(t + \Delta t) = f(V_i(t), I_i(t))$, where $I_i(t)$ represents the incoming synaptic currents. Formally, we implement the following discretized Leaky Integrate-and-Fire equation:
+\begin{equation}
+  V_i(t + \Delta t) = V_i(t) + \frac{\Delta t}{\tau_m} \left( E_L - V_i(t) + R_m \sum_{j} w_{j,i} s_j(t) \right)
+  \label{eq:membrane_potential}
+\end{equation}
+where $\tau_m$ is the membrane time constant, $E_L$ is the resting potential, $R_m$ is the membrane resistance, $w_{j,i}$ is the synaptic weight from pre-synaptic neuron $j$ to post-synaptic neuron $i$, and $s_j(t) \in \{0, 1\}$ indicates whether neuron $j$ generated a spike at time $t$.
+
+To hide the latency of fetching $w_{j,i}$ from the SWC, the VCU utilizes a look-ahead prefetching queue. When a spike packet is received from the NoC, the cache controller immediately initiates a prefetch for the corresponding synaptic weights, allowing the computation to proceed without stalling the pipeline.

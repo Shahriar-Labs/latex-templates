@@ -1,0 +1,62 @@
+\section{Experimental Results}
+We present the primary evaluation results of Nexa in terms of throughput, energy efficiency, and area overhead.
+
+\subsection{Throughput and Energy Efficiency}
+Table~\ref{tab:results} summarizes the performance comparison of Nexa against the baseline architectures. Nexa achieves a peak throughput of 840.4 GSOPS (Giga Synaptic Operations Per Second) at 1.20 GHz, which represents a 6.75x speedup over the GPU baseline and a 3.42x speedup over the ASIC-based Apex accelerator. This performance improvement is primarily due to the decentralized spike routing protocol, which avoids global synchronization bottlenecks, and the look-ahead prefetching in the SWC.
+
+\begin{table*}[t]
+  \centering
+  \caption{Comparison of Nexa with State-of-the-Art Neural Simulation Baselines.}
+  \label{tab:results}
+  \begin{tabular}{lccccc}
+    \toprule
+    \textbf{Architecture} & \textbf{Node} & \textbf{Area} & \textbf{Freq.} & \textbf{Throughput} & \textbf{Efficiency} \\
+     & (nm) & (mm$^2$) & (GHz) & (GSOPS) & (pJ/SOP) \\
+    \midrule
+    GPU Baseline (Nexa-G) & 7 & N/A & 1.40 & 124.5 & 350.2 \\
+    ASIC Baseline (Apex) & 16 & 12.4 & 0.80 & 245.8 & 84.1 \\
+    Meridian v2 & 14 & 18.2 & 1.00 & 310.2 & 62.4 \\
+    \midrule
+    \textbf{Nexa Core (This Work)} & 7 & 8.5 & 1.20 & 840.4 & 12.8 \\
+    \bottomrule
+  \end{tabular}
+\end{table*}
+
+Furthermore, Nexa demonstrates exceptional energy efficiency. By keeping synaptic weight accesses local to the on-chip SWC, Nexa minimizes energy-expensive off-chip HBM accesses. Specifically, Nexa consumes only 12.8 pJ per Synaptic Operation (pJ/SOP), compared to 350.2 pJ/SOP for the GPU baseline and 84.1 pJ/SOP for the Apex accelerator. This translates to an energy reduction of over 27x and 6.5x, respectively.
+
+\subsection{Cache Hit Rate and Memory Traffic}
+To analyze the impact of the look-ahead prefetching in the SWC, we measure the cache hit rate across the three workloads. Figure~\ref{fig:results_chart} illustrates the relative energy consumption per spike for each workload compared to the baseline.
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      ybar,
+      bar width=12pt,
+      width=0.95\columnwidth,
+      height=5.2cm,
+      ylabel={Energy (nJ / Spike)},
+      xlabel={Workloads},
+      symbolic x coords={S1-Sparse, S2-Medium, S3-Dense},
+      xtick=data,
+      nodes near coords,
+      nodes near coords align={vertical},
+      ymin=0, ymax=12,
+      legend style={at={(0.5,-0.25)}, anchor=north, legend columns=-1},
+      axis x line*=bottom,
+      axis y line*=left,
+      enlarge x limits=0.25,
+      ymajorgrids=true,
+      grid style={dashed, gray!30},
+      every node near coord/.append style={font=\tiny}
+    ]
+      \addplot[fill=iscablue!70] coordinates {(S1-Sparse, 2.1) (S2-Medium, 4.3) (S3-Dense, 8.7)};
+      \addplot[fill=iscaaccent!70] coordinates {(S1-Sparse, 0.4) (S2-Medium, 0.9) (S3-Dense, 1.8)};
+      \legend{Baseline, Nexa}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Normalized energy consumption per spike across different workloads.}
+  \label{fig:results_chart}
+\end{figure}
+
+For the S1-Sparse workload, Nexa achieves a cache hit rate of 94.2\%, which remains above 89.5\% even for the highly irregular S3-Dense workload. This high hit rate validates our prefetching strategy, which successfully anticipates post-synaptic accesses based on incoming routing tables.

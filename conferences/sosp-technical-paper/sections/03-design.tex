@@ -1,0 +1,241 @@
+\section{Design}
+\label{sec:design}
+
+\subsection{Overview}
+
+\Cref{fig:architecture} shows the architecture. Each compute node runs a
+kernel client that requests extents, installs mappings, and caches signed
+tokens. Three manager replicas maintain a replicated transition log and a
+compacted ownership map. Each memory appliance contains a \emph{gate}: a small
+access-control unit that checks the extent identifier, tenant, and generation
+carried by a token. The gate's generation table is nonvolatile; application
+data remains ordinary volatile DRAM.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+    x=1cm,y=1cm,
+    box/.style={draw=tesserablue, thick, rounded corners=2pt,
+      fill=tesseralight, minimum height=0.62cm, align=center,
+      font=\scriptsize},
+    small/.style={draw=tesserateal, thick, rounded corners=2pt,
+      fill=white, minimum height=0.50cm, align=center,
+      font=\scriptsize},
+    arr/.style={-{Latex[length=1.7mm]}, thick, draw=tesserablue},
+    data/.style={{Latex[length=1.7mm]}-{Latex[length=1.7mm]},
+      very thick, draw=tesseraorange}
+  ]
+    \node[box, minimum width=2.35cm] (c1) at (-1.55,1.62)
+      {Compute node $A$\\kernel client};
+    \node[box, minimum width=2.35cm] (c2) at (1.55,1.62)
+      {Compute node $B$\\kernel client};
+    \node[box, minimum width=3.10cm] (mgr) at (0,0.28)
+      {Replicated pool manager\\log $+$ ownership map};
+    \node[box, minimum width=3.65cm] (mem) at (0,-1.26)
+      {Memory appliance\\pooled DRAM};
+    \node[small, minimum width=1.25cm] (gate) at (0,-0.74)
+      {generation gate};
+
+    \draw[arr] (c1.south) -- node[left,font=\tiny] {lease, token} (mgr.north west);
+    \draw[arr] (c2.south) -- node[right,font=\tiny] {lease, token} (mgr.north east);
+    \draw[arr] (mgr.south) -- node[right,font=\tiny] {prepare / fence} (gate.north);
+    \draw[data] (c1.south east) to[bend left=15]
+      node[above right,font=\tiny,rotate=-28] {load/store or RDMA} (mem.north west);
+    \draw[data] (c2.south west) to[bend right=15]
+      node[above left,font=\tiny,rotate=28] {load/store or RDMA} (mem.north east);
+  \end{tikzpicture}
+  \caption{\system keeps the replicated manager off the data path. The memory
+  appliance gate accepts an access only when its token generation matches the
+  durable generation for the target extent.}
+  \Description{Two compute nodes access a memory appliance directly. Both
+  exchange control messages with a replicated manager, which configures a
+  generation gate in front of the appliance's pooled DRAM.}
+  \label{fig:architecture}
+\end{figure}
+
+The central object is an \emph{ownership token}
+
+\begin{equation}
+  \token = \operatorname{Sign}_{K_a}
+  \left(\langle \extent,\generation,\owner,t_{\mathrm{exp}},r\rangle\right),
+  \label{eq:token}
+\end{equation}
+
+where $K_a$ is an appliance-specific key, $t_{\mathrm{exp}}$ is an expiration
+time, and $r$ is a permission mask. A gate accepts $\token$ only if its signature
+is valid, it has not expired, and $\generation$ equals the durable generation
+$G_a[\extent]$. Tokens are capabilities, but generations---not wall-clock
+leases---provide the safety boundary. Expiration bounds resource retention and
+key exposure; it is not needed to prevent a stale write after reuse.
+
+\subsection{State and invariants}
+
+For each extent, manager metadata is in one of four states:
+
+\begin{center}
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+State & Meaning \\
+\midrule
+\textsc{Free} & no compute node may access the extent \\
+\textsc{Owned}$(o,g)$ & owner $o$ may use generation $g$ \\
+\textsc{Prepared}$(o,n,g{+}1)$ & transition from $o$ to $n$ is incomplete \\
+\textsc{Lost}$(g)$ & contents unavailable; generation retained \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The appliance stores only $G_a[e]$ and a tenant-key identifier. Stable owner
+state is compacted in the manager; only \textsc{Prepared} records must remain in
+the replicated log. The protocol maintains two invariants.
+
+\begin{invariant}[Exclusive authority]
+For every extent $e$, all accesses accepted by its gate at a logical instant
+name the same owner and the gate's current generation $G_a[e]$.
+\end{invariant}
+
+\begin{invariant}[Recoverable boundary]
+If manager metadata and the appliance generation disagree for $e$, the manager
+contains a durable \textsc{Prepared} record that identifies both adjacent
+generations and both candidate owners.
+\end{invariant}
+
+The first invariant prevents stale access; the second makes recovery local.
+Together they avoid a global scan. Notice that duplicated or delayed messages
+cannot roll a generation backward: the appliance implements
+$\operatorname{advance}(e,g')$ only when $g'>G_a[e]$.
+
+\subsection{Failure-atomic transition}
+\label{sec:transition}
+
+Changing ownership from $A$ to $B$ follows four phases, illustrated in
+\Cref{fig:protocol}.
+
+\begin{enumerate}[leftmargin=1.45em]
+  \item \textbf{Prepare.} The manager commits
+  \textsc{Prepared}$(A,B,g{+}1)$ to its replicated log. It stops renewing
+  $A$'s lease and asks $A$ to quiesce writes.
+  \item \textbf{Transfer.} If data must survive the move, $A$ or a copy engine
+  transfers live pages to a staging extent. Dirty-page tracking permits one
+  final bounded copy after quiescence.
+  \item \textbf{Fence and publish.} The manager advances the appliance to
+  $g{+}1$. This single durable write invalidates every token issued for $g$.
+  It then issues $B$ a token and waits for $B$ to install the mapping.
+  \item \textbf{Stabilize.} After $B$ acknowledges publication, the manager
+  replaces \textsc{Prepared} with \textsc{Owned}$(B,g{+}1)$ and releases any
+  staging extent.
+\end{enumerate}
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+    node distance=3.2mm,
+    state/.style={draw=tesserablue, rounded corners=2pt, thick,
+      minimum width=1.52cm, minimum height=0.58cm, fill=tesseralight,
+      align=center, font=\scriptsize},
+    edge/.style={-{Latex[length=1.5mm]}, thick, draw=tesserablue},
+    note/.style={font=\tiny, align=center, text=tesseragray}
+  ]
+    \node[state] (owned) {Owned\\$(A,g)$};
+    \node[state, right=of owned] (prep) {Prepared\\$(A,B,g{+}1)$};
+    \node[state, right=of prep] (fence) {Fenced\\$G_a[e]=g{+}1$};
+    \node[state, right=of fence] (new) {Owned\\$(B,g{+}1)$};
+    \draw[edge] (owned) -- node[note,above] {log} (prep);
+    \draw[edge] (prep) -- node[note,above] {advance} (fence);
+    \draw[edge] (fence) -- node[note,above] {publish} (new);
+    \draw[edge, dashed, draw=tesserared] (prep.south) to[bend right=24]
+      node[note,below] {abort if gate still at $g$} (owned.south);
+    \draw[edge, dashed, draw=tesserared] (fence.south) to[bend right=22]
+      node[note,below] {complete after fence} (new.south);
+  \end{tikzpicture}
+  \caption{Ownership transition and recovery choices. Before the generation
+  advances, recovery may abort; afterward it must complete the transition.
+  No recovery edge moves the appliance generation backward.}
+  \Description{A state machine moves from old ownership through prepared and
+  fenced states to new ownership. A failure before fencing can return to the
+  old owner; a failure after fencing proceeds to the new owner.}
+  \label{fig:protocol}
+\end{figure}
+
+Quiescence improves availability but is not trusted for safety. A failed or
+partitioned $A$ may continue issuing requests. Once the gate durably advances,
+those requests carry $g$ and fail. Likewise, issuing $B$'s token only after the
+advance means $A$ and $B$ never possess simultaneously valid generations.
+
+\begin{lemma}[No stale reuse]
+After an extent transitions from generation $g$ to $g{+}1$, no access using a
+token issued before the transition is accepted.
+\end{lemma}
+
+\begin{proof}
+Every pre-transition token names a generation at most $g$. The gate accepts
+only a token whose generation equals its durable entry. The transition changes
+that entry monotonically to $g{+}1$ before issuing a new token; retries and
+restarts cannot decrease it. Therefore no pre-transition token can satisfy the
+gate check.
+\end{proof}
+
+\subsection{Recovery}
+\label{sec:recovery}
+
+A newly elected manager first restores its compact ownership snapshot and then
+replays the suffix of the transition log. Stable \textsc{Owned} extents need no
+work. For each \textsc{Prepared} record it reads the appliance generation:
+
+\begin{itemize}[leftmargin=1.25em]
+  \item If $G_a[e]=g$, fencing never became durable. Recovery may abort the
+  operation, renew $A$, and delete staging state. If $A$ failed, it instead
+  continues the transition to a replacement owner.
+  \item If $G_a[e]=g+1$, old tokens are already invalid. Recovery reissues an
+  idempotent token to $B$, asks $B$ to install or confirm the mapping, and
+  stabilizes the record.
+  \item If the appliance is unavailable, the extent remains \textsc{Prepared}
+  and is excluded from allocation. Other extents recover independently.
+  \item If the appliance reports a larger generation, a later transition was
+  committed by a previous leader. Recovery replays forward from the log and
+  never restores the older owner.
+\end{itemize}
+
+Repeated failures are harmless because every action is idempotent: log entries
+have unique operation identifiers, gate advances are monotonic, token issuance
+is deterministic for an operation, and mapping acknowledgments include the
+generation. With $q$ prepared records and $p$ available appliances, recovery
+requires $O(q)$ metadata reads in $O(\lceil q/p\rceil)$ parallel rounds. Pool
+capacity does not appear in the bound.
+
+\paragraph{Compute-node failure.}
+Failure detection stops lease renewal and prevents new allocations. The manager
+advances each extent formerly owned by the node before placing it on a recovery
+queue. Applications that replicate data can attach a replacement and continue;
+otherwise the extent becomes \textsc{Lost}. In both cases, isolation is restored
+before reuse.
+
+\paragraph{Memory-appliance failure.}
+When volatile contents disappear, the persistent generation table prevents old
+tokens from becoming valid after reboot. The manager increments generations in
+batches and marks extents \textsc{Lost}; application replicas or checkpoints
+reconstruct data. An appliance that merely restarts without losing DRAM can
+rejoin after the manager validates its boot identifier and generation digest.
+
+\subsection{Leases, time, and partitions}
+
+Leases allow the manager to reclaim metadata for unreachable nodes without
+retaining unbounded session state. They are deliberately not the fencing
+mechanism. Clock skew can make two parties disagree about whether a lease has
+expired, but it cannot make the gate accept a mismatched generation. During a
+manager partition, a minority cannot commit \textsc{Prepared} records or issue
+new generations. Existing mappings keep working until their token expiry;
+clients renew through a majority. We set token lifetime to 30~s and renew at
+10~s in the prototype, trading partition tolerance against revocation latency
+for extents that are never explicitly fenced.
+
+\subsection{Compaction and metadata cost}
+
+Stable ownership is encoded as sorted runs of adjacent extents with the same
+owner and generation epoch. A background compactor snapshots these runs and
+truncates log prefixes after all replicas install the snapshot. Prepared
+records are pinned until stabilization. The in-memory index is 24 bytes per
+extent; the appliance needs an 8-byte generation and 4-byte key identifier.
+With 2~MB extents, this is 0.0017\% raw metadata before replication. Fine-grain
+4~KB mappings remain local to the compute node and need not enter manager state.

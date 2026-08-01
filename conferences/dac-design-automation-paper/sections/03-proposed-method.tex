@@ -1,0 +1,52 @@
+\section{Proposed Method}
+\label{sec:method}
+The core architecture of Vertex-Flow comprises a hierarchical network of processing elements connected to a global weight buffer. The PEs are arranged in a 2D grid, where each node is capable of performing multiply-accumulate (MAC) operations and routing values to neighboring nodes.
+
+\subsection{PE Microarchitecture}
+Each PE contains a local register file for weights, an input register for activations, and an output accumulator. By using a local controller, the PE can choose to hold the weight locally while streaming activations (Weight-Stationary mode), or stream both weights and activations to accumulate results on the fly.
+
+\subsection{Dynamic Dataflow Routing}
+The primary innovation in Vertex-Flow is the dynamic configuration of data paths. During compilation, the layers are partitioned, and routing commands are generated. Let $E_{\text{tot}}$ represent the energy required to execute a layer, which we model as:
+\begin{equation}
+  E_{\text{tot}} = \sum_{l=1}^{L} \left( N_{\text{mac}}^{(l)} \cdot E_{\text{op}} + N_{\text{rd}}^{(l)} \cdot E_{\text{mem}} + N_{\text{rt}}^{(l)} \cdot E_{\text{noc}} \right)
+  \label{eq:energy}
+\end{equation}
+where $N_{\text{mac}}^{(l)}$ is the number of MAC operations in layer $l$, $E_{\text{op}}$ is the energy consumption of a single MAC operation, $N_{\text{rd}}^{(l)}$ is the count of buffer reads with memory energy $E_{\text{mem}}$, and $N_{\text{rt}}^{(l)}$ represents the number of NoC routing hops with routing energy $E_{\text{noc}}$. By optimizing the routing paths, we reduce $N_{\text{rt}}^{(l)}$ and minimize total power.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+    scale=0.85,
+    pe/.style={draw=dacprimary, fill=dacaccent!5, thick, minimum size=1.1cm, font=\bfseries\sffamily\small, align=center},
+    mem/.style={draw=dacprimary, fill=gray!5, thick, minimum width=2.2cm, minimum height=0.6cm, font=\sffamily\small, align=center},
+    arrow/.style={->, >=stealth, thick, draw=dacprimary}
+  ]
+    % PEs
+    \node[pe] (pe00) at (0,2) {PE \\ (0,0)};
+    \node[pe] (pe01) at (2.0,2) {PE \\ (0,1)};
+    \node[pe] (pe10) at (0,0) {PE \\ (1,0)};
+    \node[pe] (pe11) at (2.0,0) {PE \\ (1,1)};
+    
+    % Buffers
+    \node[mem] (wbuf) at (1.0,3.6) {Weight Buffer (Synapse)};
+    \node[mem] (abuf) at (-2.0,1) {Activation\\Buffer};
+    \node[mem] (obuf) at (4.0,1) {Accumulation\\Buffer};
+    
+    % Connections
+    \draw[arrow] (wbuf.south) -- ++(0,-0.3) -| (pe00.north);
+    \draw[arrow] (wbuf.south) -- ++(0,-0.3) -| (pe01.north);
+    
+    \draw[arrow] (abuf.east) -- ++(0.25,0) |- (pe00.west);
+    \draw[arrow] (abuf.east) -- ++(0.25,0) |- (pe10.west);
+    
+    \draw[arrow] (pe01.east) -| (obuf.north);
+    \draw[arrow] (pe11.east) -| (obuf.south);
+    
+    \draw[arrow] (pe00.east) -- (pe01.west);
+    \draw[arrow] (pe10.east) -- (pe11.west);
+    \draw[arrow] (pe00.south) -- (pe10.north);
+    \draw[arrow] (pe01.south) -- (pe11.north);
+  \end{tikzpicture}
+  \caption{Microarchitecture of the Vertex-Flow PE array with dynamic routing. Activation and weight streams are managed locally.}
+  \label{fig:pe_array}
+\end{figure}

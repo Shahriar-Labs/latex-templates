@@ -1,0 +1,40 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Written language varies across regions, communities, and media. Search,
+translation, and accessibility systems nevertheless often expect a single
+standardized form. Dialect normalization---rewriting a non-standard input into
+that form without changing its content---can bridge this mismatch, but it is
+especially difficult for the communities that have the least labeled data.
+The same spelling may be a dialect marker in one context and a person or place
+name in another; aggressive correction therefore trades recall for semantic
+damage.
+
+Multilingual pretraining transfers useful abstractions across languages
+\citep{devlin2019bert,conneau2020xlmr}, and byte-level models reduce reliance
+on brittle tokenization \citep{xue2022byt5}. Yet neither mechanism gives a
+model explicit access to the few verified transformations that a community
+has already annotated. Retrieval augmentation can supply such evidence at
+inference time \citep{lewis2020rag,khandelwal2021knnmt}, but naive retrieval
+creates a new failure mode: a superficially similar example can override a
+correct model prediction.
+
+We address this tension with \method, shown in Figure~\ref{fig:architecture}.
+The system treats retrieval as a selective intervention. A byte-level encoder--
+decoder first produces a distribution and an uncertainty estimate. Only
+uncertain spans query a compact memory of verified normalization pairs. A gate
+then combines generation and memory scores using retrieval relevance, model
+uncertainty, and named-entity compatibility. Every copied form remains linked
+to the example that supported it, providing a lightweight audit trail.
+
+This illustrative study makes three contributions:
+\begin{itemize}
+  \item an uncertainty-triggered retrieval policy that avoids needless memory
+        lookups for confident spans;
+  \item an evidence gate that jointly scores relevance, local agreement, and
+        entity preservation; and
+  \item a controlled evaluation protocol covering accuracy, calibration,
+        robustness, and harm-relevant entity corruption.
+\end{itemize}
+
+% -----------------------------------------------------------------------------

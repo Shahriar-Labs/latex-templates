@@ -1,0 +1,79 @@
+\section{Results}
+\label{sec:results}
+
+Table~\ref{tab:results} summarizes perplexity, compute, and throughput at 64K
+context. SCG matches Dense attention within 0.05 PPL on \textsc{PG19} and
+\textsc{ArXiv} while using 42\% fewer attention FLOPs, and it outperforms
+both Sliding and Retrieval baselines at equal or lower compute cost.
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Perplexity and efficiency at 64K context length. Best PPL per column in bold; SCG is our method.}
+\label{tab:results}
+\begin{tabular}{lccccc}
+\toprule
+Model & Attn.\ FLOPs (rel.) & PG19 PPL $\downarrow$ & ArXiv PPL $\downarrow$ & Books3-Long PPL $\downarrow$ & Throughput (tok/s) $\uparrow$ \\
+\midrule
+Dense               & 1.00 & \textbf{14.62} & 9.87  & 16.94 & 1{,}040 \\
+Sliding ($w{=}1024$) & 0.09 & 16.88          & 11.42 & 19.61 & 2{,}210 \\
+Retrieval ($k{=}32$) & 0.14 & 15.31          & 10.20 & 17.88 & 1{,}870 \\
+\rowcolor{colmlight}
+SCG (ours)           & 0.58 & 14.67          & \textbf{9.83} & \textbf{16.79} & \textbf{2{,}390} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Figure~\ref{fig:scaling} plots perplexity against context length for Dense,
+Sliding, and SCG on \textsc{PG19}. Sliding attention degrades steadily as
+context grows past its fixed window, since it has no mechanism to recover
+information beyond $w$ tokens back. Dense attention improves monotonically
+with context but at ever-increasing cost. SCG tracks Dense closely across
+the full range while its attention cost grows only with $\log$-scale cache
+maintenance, not with sequence length directly.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\columnwidth, height=4.4cm,
+  xlabel={Context length (tokens, log scale)},
+  ylabel={Perplexity (PG19)},
+  xmode=log,
+  log basis x={2},
+  xtick={4096,16384,65536},
+  xticklabels={4K,16K,64K},
+  ymin=13.5, ymax=19,
+  grid=major,
+  grid style={colmgray!25},
+  axis lines=left,
+  label style={font=\scriptsize, color=colmgray},
+  tick label style={font=\scriptsize, color=colmgray},
+  legend style={font=\scriptsize, draw=none, fill=none, at={(0.02,0.02)}, anchor=south west},
+  legend cell align={left}
+]
+\addplot[thick, colmnavy, mark=*, mark size=1.4pt] coordinates {
+  (4096,14.91) (16384,14.75) (65536,14.62)
+};
+\addlegendentry{Dense}
+\addplot[thick, colmgray, mark=square*, mark size=1.4pt, dashed] coordinates {
+  (4096,15.02) (16384,16.10) (65536,16.88)
+};
+\addlegendentry{Sliding}
+\addplot[thick, colmteal, mark=triangle*, mark size=1.6pt] coordinates {
+  (4096,15.00) (16384,14.81) (65536,14.67)
+};
+\addlegendentry{SCG (ours)}
+\end{axis}
+\end{tikzpicture}
+\caption{Perplexity vs.\ context length on \textsc{PG19}. SCG tracks Dense
+attention while Sliding attention's fixed window causes it to fall
+progressively further behind as context grows.}
+\label{fig:scaling}
+\end{figure}
+
+Ablating the cache capacity $m$ shows diminishing returns past $m=32$: moving
+to $m=64$ improves \textsc{ArXiv} PPL by only 0.02 while increasing retrieval
+FLOPs by 2$\times$, suggesting that a small, well-gated cache captures most of
+the recoverable long-range signal for the corpora we study, consistent with
+the token-sparsity argument of \cite{oduya2023mixture}.

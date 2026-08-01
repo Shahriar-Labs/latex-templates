@@ -1,0 +1,86 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{Problem formulation}
+
+Let $x[t]=s_1[t]+s_2[t]+n[t]$ be a monaural mixture.  The system receives
+consecutive chunks $\mathbf{x}_k\in\R^L$ and estimates
+$\hat{\mathbf{s}}_{1,k},\hat{\mathbf{s}}_{2,k}$ before chunk $k+1$ arrives.
+With sampling rate $f_s$, analysis window $W$, and no look-ahead, algorithmic
+latency is $W/f_s$.  The separator is a transition function
+\begin{equation}
+  (\hat{\mathbf{S}}_k,\mathbf{s}_k)
+  = f_\theta(\mathbf{X}_k,\mathbf{s}_{k-1}),
+  \label{eq:transition}
+\end{equation}
+where $\mathbf{X}_k$ is the complex STFT, $\mathbf{s}_k\in\R^D$ is persistent
+state, and $D$ is independent of the number of processed chunks.
+
+\subsection{Causal spectral encoder}
+
+We compute a 512-point STFT using a 32 ms square-root Hann window and 8 ms hop at
+16 kHz.  Right padding is prohibited.  Real and imaginary components are
+concatenated and projected to $C=96$ channels.  Four depthwise-separable blocks
+apply kernels of size $3\times5$ in time and frequency, causal padding in time,
+and symmetric padding in frequency.  Each block uses gated linear units and
+channel normalization computed independently at each time index, avoiding
+statistics from future frames.
+
+Local kernels cannot efficiently connect distant harmonics.  After every second
+block, a cross-band mixer pools the encoded tensor
+$\mathbf{H}_k\in\R^{T\times F\times C}$ into $G=16$ logarithmic frequency groups.
+For time index $t$ and group $g$, it computes
+\begin{align}
+ \mathbf{q}_{t,g} &= \sum_{f\in\mathcal{B}_g} a_{g,f}\mathbf{H}_{t,f},
+ &\sum_{f\in\mathcal{B}_g}a_{g,f}&=1, \\
+ \widetilde{\mathbf{H}}_{t,f} &= \mathbf{H}_{t,f}
+   + \mathbf{W}_o[\mathbf{q}_{t,g(f)};\bar{\mathbf{q}}_t],
+ \label{eq:mixer}
+\end{align}
+where $\bar{\mathbf{q}}_t$ is the mean over groups.  This creates a global
+spectral path at linear cost in $F$.
+
+\subsection{State-carrying separator}
+
+The recurrent core contains three grouped gated recurrent unit (GRU) layers.
+Channels are split into four groups; adjacent layers cyclically shift group
+membership so information is eventually shared.  At chunk $k$, layer $\ell$
+updates
+\begin{equation}
+ \mathbf{h}^{\ell}_{k,t}
+ = \operatorname{GRU}^{\ell}(\mathbf{z}^{\ell}_{k,t},
+   \mathbf{h}^{\ell}_{k,t-1}), \qquad
+ \mathbf{h}^{\ell}_{k,0}=\mathbf{s}^{\ell}_{k-1}.
+ \label{eq:gru}
+\end{equation}
+The final state becomes $\mathbf{s}^{\ell}_k=\mathbf{h}^{\ell}_{k,T}$.  During
+training, gradients span four chunks and are then detached.  At inference, state
+is retained until an explicit stream reset.  A linear decoder produces two
+bounded complex ratio masks.  Masked spectra are converted to waveforms by
+causal inverse STFT and overlap-add.
+
+Speaker order is selected for the first training chunk using utterance-level
+permutation-invariant training and then fixed for all later chunks.  This
+``select once, carry thereafter'' rule discourages within-utterance output swaps
+without requiring speaker embeddings.
+
+\subsection{Training objective}
+
+For target $\mathbf{s}$ and estimate $\hat{\mathbf{s}}$, define
+\begin{equation}
+ \sisdr(\hat{\mathbf{s}},\mathbf{s})
+ =10\log_{10}\frac{\norm{\alpha\mathbf{s}}^2}
+ {\norm{\hat{\mathbf{s}}-\alpha\mathbf{s}}^2+\epsilon},\quad
+ \alpha=\frac{\langle\hat{\mathbf{s}},\mathbf{s}\rangle}
+ {\norm{\mathbf{s}}^2+\epsilon}.
+\end{equation}
+The main loss is negative SI-SDR under the selected permutation.  We add a
+multi-resolution spectral loss $\mathcal{L}_{\mathrm{spec}}$ at 16, 32, and
+64 ms windows.  To suppress periodic clicks, samples within one hop of a chunk
+boundary receive twice the weight in an $L_1$ reconstruction term
+$\mathcal{L}_{\mathrm{bdry}}$.  The total objective is
+\begin{equation}
+ \mathcal{L}=-\sisdr+0.25\mathcal{L}_{\mathrm{spec}}
+             +0.10\mathcal{L}_{\mathrm{bdry}}.
+ \label{eq:loss}
+\end{equation}

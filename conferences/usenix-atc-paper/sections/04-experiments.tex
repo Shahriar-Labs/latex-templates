@@ -1,0 +1,24 @@
+\section{Experiments}
+\label{sec:experiments}
+
+We evaluate Tempo on a 480-node testbed (dual-socket, 64 vCPU, 256\,GiB RAM
+per node) running a container orchestrator with the scheduler replaced by
+Tempo or one of two baselines. All nodes share a common overlay network and
+a common distributed block store, matching the shared-infrastructure
+assumptions of the systems we compare against.
+
+\textbf{Baselines.} \emph{Least-Loaded} places every pod on the node with
+the lowest instantaneous CPU utilization among the feasible set.
+\emph{PowerOfTwo} samples two candidate nodes per placement and picks the
+one with the shorter queue, following the batch-sampling design
+of~\cite{holm2018batch}.
+
+\textbf{Workload.} We generate a mixed workload of 65\% interactive RPC
+services (open-loop Poisson arrivals, 5\,ms median service time) and 35\%
+batch analytics jobs (bursty arrivals, service times ranging from 200\,ms
+to 4\,s). Offered load is ramped from 30\% to 90\% of aggregate fleet
+capacity over a 40-minute run, repeated five times per scheduler.
+
+\textbf{Metrics.} We report p50 and p99 end-to-end request latency for the
+RPC tenants, aggregate throughput in requests per second, and mean
+scheduler CPU overhead as a percentage of one core.

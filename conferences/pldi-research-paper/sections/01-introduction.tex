@@ -1,0 +1,54 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Algebraic effects separate the request for an operation from its
+interpretation. A parser can \lstinline|perform choose()| without knowing
+whether choice will backtrack, sample, log, or abort; a surrounding handler
+supplies that policy. This separation has become a practical basis for
+exceptions, asynchronous I/O, probabilistic programming, and lightweight
+concurrency. It also frustrates conventional optimization. At each operation,
+the implementation may need to search the dynamic handler stack, capture an
+unknown portion of the continuation, and preserve that continuation for
+multi-shot use. Even when the common handler simply increments a counter and
+resumes once, generic machinery remains on the hot path.
+
+Whole-program inlining can expose a handler and recover direct control flow,
+but only if the optimizer can see through module boundaries and dynamic
+selection. Real systems routinely fail both conditions: libraries abstract
+over handlers, applications load handlers as plug-ins, and incremental
+compilation prevents a global fixed point. The key observation behind this
+paper is that specialization does not require the handler to be immutable. It
+requires only a cheap way to validate the assumptions under which a fast path
+was generated, plus a correct route back to the general semantics.
+
+\system realizes that observation using \emph{handler shapes}. A shape is a
+versioned descriptor of the clauses relevant to one operation site. The
+compiler profiles shapes, emits direct-style code for the dominant shape, and
+guards entry to that code. Specialized continuations are ordinary functions;
+the compiler retains a reconstruction map from their live values to a generic
+continuation frame. On guard failure, the runtime materializes those frames and
+continues at the original operation. This is deoptimization
+\cite{holzle1992debugging,fluckiger2018correctness} applied at an effect
+boundary rather than at a function or loop boundary.
+
+The design has three less-obvious requirements. First, a guard must cover the
+\emph{clause and its resumption contract}, not merely a handler object's
+address. Second, deoptimization must be valid after partial evaluation has
+changed the representation of the continuation. Third, a multi-shot clause
+must never enter a single-shot fast path, even transiently. Our shape protocol
+and proof make each requirement explicit.
+
+This paper makes the following contributions:
+
+\begin{itemize}
+  \item We identify a minimal, constant-time shape test that enables
+        specialization across separately compiled effect handlers
+        (\cref{sec:design}).
+  \item We give a source-to-source transformation for deep, multi-shot handlers
+        and a reconstruction relation for deoptimization (\cref{sec:formal}).
+  \item We prove semantic preservation by forward simulation, including shape
+        changes at operation boundaries (\cref{sec:correctness}).
+  \item We implement the design in an LLVM-based compiler and evaluate its
+        speed, code-size cost, and behavior under changing workloads
+        (\cref{sec:evaluation}).
+\end{itemize}

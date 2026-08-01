@@ -1,0 +1,30 @@
+\section{Discussion and Limitations}
+\label{sec:discussion}
+
+\paragraph{Volatile data remains volatile.}
+\system makes ownership metadata crash-consistent; it does not make pooled
+DRAM durable. An application requiring data survival must replicate, log, or
+checkpoint its contents. Systems such as FaRM and RAMCloud already provide
+such mechanisms~\cite{dragojevic2014farm,ousterhout2015ramcloud}; \system can
+manage their underlying extents but does not replace their recovery protocols.
+
+\paragraph{Availability under long partitions.}
+A client separated from a manager majority can use its current token but cannot
+renew forever. Increasing token lifetime improves availability and increases
+the time needed for passive revocation. Explicit generation fencing is not
+affected, provided the manager can reach the appliance. A partition separating
+both client and appliance from the majority is intentionally unavailable for
+reconfiguration.
+
+\paragraph{Hardware trust and multitenancy.}
+The protocol relies on correct gate enforcement and protects against stale or
+buggy clients, not a compromised appliance. Cryptographic tokens separate
+tenants, but traffic analysis and shared-fabric side channels remain. A
+production CXL implementation should integrate generation checks with the
+fabric manager's isolation domain and audit firmware updates.
+
+\paragraph{Extent granularity.}
+Two-megabyte ownership amortizes metadata and fencing, but internal
+fragmentation hurts small sparse regions. A hybrid allocator could dedicate
+packed extents to small allocations while retaining one generation per extent.
+Our current prototype does not migrate subextent ownership between tenants.

@@ -1,0 +1,80 @@
+\section{Evaluation Protocol}
+\label{sec:evaluation}
+
+\subsection{Worked Benchmark Construction}
+
+The worked example uses a hypothetical collection, \textsc{ChronosQA}, solely
+to demonstrate reporting structure.  Table~\ref{tab:data} defines 6,000
+questions across four volatility strata.  Each question includes a timestamp,
+a concise reference answer, atomic reference claims, eligible and future
+evidence, and an answerability label.  Pages are canonicalized, but all
+versions are retained.  Annotators judge claim entailment, source independence,
+and whether evidence available at $t_q$ supports a unique answer.
+
+\begin{table}[t]
+  \caption{Illustrative \textsc{ChronosQA} composition.  Counts are sample data,
+  not measurements from a released benchmark.}
+  \label{tab:data}
+  \centering
+  \small
+  \begin{tabular}{@{}lrrr@{}}
+    \toprule
+    Volatility stratum & Train & Dev & Test \\
+    \midrule
+    Stable facts        & 1,600 & 200 & 200 \\
+    Annual change       & 1,200 & 150 & 150 \\
+    Monthly change      &   800 & 100 & 100 \\
+    Event-driven change & 1,200 & 150 & 150 \\
+    \midrule
+    Total               & 4,800 & 600 & 600 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Splits are chronological rather than random.  All training questions precede
+development questions, which precede test questions.  The retrieval index for
+each question is reconstructed as of $t_q$.  Pages from the same canonical URL
+or duplicate cluster remain within one split to reduce leakage.  Annotation
+guidelines require two independent judgments; disagreements are adjudicated by
+a third annotator.  A real study should report agreement, compensation,
+demographics relevant to the task, and institutional review requirements.
+
+\subsection{Baselines}
+
+The example compares five configurations:
+
+\begin{itemize}
+  \item \textbf{Closed-book} answers from parametric memory without retrieval;
+  \item \textbf{BM25+Gen} retrieves lexical matches and generates without
+    explicit citation supervision;
+  \item \textbf{Dense RAG} uses dense retrieval and a standard
+    retrieval-augmented generator \cite{lewis2020rag};
+  \item \textbf{Web agent} iteratively searches and cites pages, following the
+    browser-assisted paradigm \cite{nakano2021webgpt}; and
+  \item \textbf{Chronos} applies temporal filtering, evidence graphs, and
+    attribution-constrained generation.
+\end{itemize}
+
+All retrieval systems receive the same snapshot.  Generator size, maximum
+evidence tokens, decoding parameters, and query budget are matched where
+possible.  Hyperparameters are selected once on the development period.
+
+\subsection{Metrics and Statistical Analysis}
+
+Answer correctness (Ans.) is the macro average of token F1 and exact match.
+Citation completeness (Comp.) is the fraction of verifiable output claims with
+at least one citation.  Citation precision (Prec.) is the fraction of citations
+whose passages entail the associated claim.  Temporal validity (Temp.) is the
+fraction of citations eligible under Eq.~\eqref{eq:eligibility}.  Selective risk
+is the error rate among answered questions at a fixed coverage.
+
+The primary utility score is declared before evaluation:
+\begin{equation}
+ U = 0.40\,\mathrm{Ans.}+0.20\,\mathrm{Comp.}
+   +0.20\,\mathrm{Prec.}+0.20\,\mathrm{Temp.}
+ \label{eq:utility}
+\end{equation}
+with every component scaled to $[0,100]$.  We report paired bootstrap 95\%
+confidence intervals over questions and apply Holm correction when comparing
+multiple systems.  Component metrics remain primary evidence because a weighted
+aggregate can hide qualitatively different failures.

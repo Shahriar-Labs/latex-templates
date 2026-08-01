@@ -1,0 +1,69 @@
+\section{Results}
+Table~\ref{tab:results} summarizes performance across all five terrain classes.
+\textsc{ContactRefine} reduces stumble rate relative to the elevation-only baseline on every
+terrain class, with the largest gain on rubble ($21.4\% \to 7.1\%$), where map noise near
+fragment edges is most severe. The learned-encoder baseline improves over elevation-only but
+trails \textsc{ContactRefine} on all classes except wet tile, where contact-force history is
+less informative since slip there is governed by surface friction rather than geometry.
+
+\begin{table}[t]
+\centering
+\caption{Stumble rate (\%) and cost of transport by terrain class, averaged over $280$ trials per cell.}
+\label{tab:results}
+\footnotesize
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Terrain} & \textbf{Elev.-only} & \textbf{React.} & \textbf{Learn.-enc.} & \textbf{Ours} \\
+\midrule
+Rubble        & 21.4 & 15.8 & 12.9 & \textbf{7.1} \\
+Loose gravel  & 18.6 & 14.2 & 10.5 & \textbf{6.6} \\
+Wet tile      & 12.1 & 9.7  & \textbf{7.4}  & 7.8 \\
+Staircase     & 16.3 & 12.0 & 9.8  & \textbf{4.9} \\
+Root trail    & 21.0 & 16.9 & 13.7 & \textbf{4.6} \\
+\midrule
+Mean          & 17.9 & 13.7 & 10.9 & \textbf{6.2} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:cot} plots mean cost of transport against stumble rate for all four methods,
+pooled across terrain classes. \textsc{ContactRefine} occupies the lower-left region of the
+plot, indicating it does not trade efficiency for stability -- a pattern we did not assume in
+advance, since foothold corrections that avoid slip can in principle require less economical
+leg trajectories.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.95\linewidth,
+  height=5.1cm,
+  xlabel={Stumble rate (\%)},
+  ylabel={Cost of transport},
+  xmin=0, xmax=20,
+  ymin=0.28, ymax=0.42,
+  axis lines=left,
+  tick label style={font=\scriptsize},
+  label style={font=\scriptsize},
+  legend style={font=\scriptsize, at={(0.97,0.05)}, anchor=south east, draw=none, fill=none},
+  grid=major,
+  grid style={gray!15}
+]
+\addplot[only marks, mark=*, mark size=2.6pt, color=irosamber] coordinates {(17.9,0.401)};
+\addlegendentry{Elevation-only}
+\addplot[only marks, mark=square*, mark size=2.4pt, color=irosgray] coordinates {(13.7,0.379)};
+\addlegendentry{Reactive}
+\addplot[only marks, mark=triangle*, mark size=2.8pt, color=irosteal] coordinates {(10.9,0.352)};
+\addlegendentry{Learned-encoder}
+\addplot[only marks, mark=diamond*, mark size=2.8pt, color=irosnavy] coordinates {(6.2,0.336)};
+\addlegendentry{Ours}
+\end{axis}
+\end{tikzpicture}
+\caption{Cost of transport versus stumble rate, pooled across all five terrain classes.
+Lower-left is better on both axes.}
+\label{fig:cot}
+\end{figure}
+
+Added latency for \textsc{ContactRefine} was $1.8\,\text{ms}\pm0.3\,\text{ms}$ per swing phase
+on the onboard compute, within the timing budget of the $500\,\text{Hz}$ control loop; the
+learned-encoder baseline added $2.6\,\text{ms}$ owing to its larger terrain backbone.

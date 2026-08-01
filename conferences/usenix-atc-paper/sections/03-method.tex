@@ -1,0 +1,60 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{Overview}
+
+Tempo runs as a drop-in replacement for the placement stage of a
+Kubernetes-style scheduler. Each scheduling epoch $t$ (we use 250\,ms in our
+deployment), Tempo re-evaluates a cost $C_i(t)$ for every candidate node $i$
+in the feasible set for the pending pod, and places the pod on
+$\arg\min_i C_i(t)$. The feasible set is produced by ordinary predicate
+filtering (resource requests, affinity, taints) exactly as in a conventional
+scheduler; Tempo only replaces the scoring step.
+
+\subsection{Cost function}
+
+The core of Tempo is a per-node cost that combines three terms: predicted
+tail latency, spare capacity, and migration cost.
+
+\begin{equation}
+\label{eq:cost}
+C_i(t) \;=\; \alpha(t)\, \hat{L}^{99}_i(t) \;+\; \beta(t)\,\bigl(1 - U_i(t)\bigr) \;+\; \gamma(t)\, M_i(t)
+\end{equation}
+
+Here $\hat{L}^{99}_i(t)$ is the predicted p99 latency node $i$ would exhibit
+if the pending pod were placed on it, $U_i(t) \in [0,1]$ is current CPU
+utilization, and $M_i(t)$ is an estimate of the disruption cost of later
+having to evict work from $i$ under memory or CPU pressure. Lower cost is
+better, so the $(1 - U_i(t))$ term rewards packing onto already-busy nodes
+\emph{unless} the latency term $\hat{L}^{99}_i(t)$ signals that doing so is
+risky.
+
+The predictor $\hat{L}^{99}_i(t)$ is a exponentially-weighted online
+regression over three inputs sampled at 1\,Hz from each node: current queue
+depth $q_i$, CPU steal time $s_i$, and a short window of realized p99
+latency $L^{99}_i$. We fit
+
+\begin{equation}
+\label{eq:predictor}
+\hat{L}^{99}_i(t+1) \;=\; w_0 L^{99}_i(t) + w_1 q_i(t) + w_2 s_i(t)
+\end{equation}
+
+with weights $w_0, w_1, w_2$ updated by recursive least squares after every
+epoch, using the realized latency at $t+1$ as the training target. Because
+the model has only three features, a full update costs under
+10\,microseconds per node on commodity hardware, which keeps Tempo's
+scheduling-loop overhead below the noise floor of the underlying container
+runtime (Section~\ref{sec:discussion}).
+
+\subsection{Adaptive weighting}
+
+The coefficients $\alpha(t)$, $\beta(t)$, $\gamma(t)$ in
+Equation~\ref{eq:cost} are not fixed. At the end of every epoch, Tempo
+computes the prediction error $e(t) = |\hat{L}^{99}(t) - L^{99}_{\text{observed}}(t)|$
+averaged across nodes that received a placement in that epoch. If $e(t)$
+exceeds a rolling threshold, $\alpha(t{+}1)$ is increased relative to
+$\beta(t{+}1)$, causing Tempo to weight latency safety more heavily and pack
+less aggressively until predictions stabilize again. This lets a single
+deployment of Tempo run unmodified across workloads with very different
+latency sensitivity, from batch analytics ($\alpha$ settles low) to
+interactive RPC tenants ($\alpha$ settles high).

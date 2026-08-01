@@ -1,0 +1,190 @@
+\section{Design}
+\label{sec:design}
+
+Figure~\ref{fig:architecture} summarizes the control loop.  Every observation
+updates a predictor and an error scale.  Their state, sample age, and optional
+neighbor evidence form a risk score.  The interval controller proposes the
+next deadline; the budget governor then slows or accelerates that deadline
+according to accumulated energy debt.  A watchdog enforces hard safety bounds.
+
+\begin{figure*}[t]
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tikzpicture}[
+      font=\small,
+      node distance=7mm and 9mm,
+      block/.style={draw,rounded corners=2pt,minimum height=9mm,minimum width=25mm,align=center,fill=tspale},
+      guard/.style={draw,diamond,aspect=2.2,inner sep=1.5pt,align=center,fill=orange!12},
+      line/.style={-{Latex[length=2mm]},thick},
+      feedback/.style={-{Latex[length=2mm]},thick,dashed,color=tsgray}]
+    \node[block,fill=blue!9] (sensor) {Sensor / feature\\front end};
+    \node[block,right=of sensor] (predict) {Predictor\\$\hat{x},P$};
+    \node[block,right=of predict] (risk) {Risk fusion\\$u_t$};
+    \node[block,right=of risk] (interval) {Interval map\\$\tau_t^{\star}$};
+    \node[block,right=of interval] (budget) {Budget governor\\$b_t,g_t$};
+    \node[guard,right=of budget] (watch) {Safety\\guard};
+    \node[block,right=of watch,fill=green!10] (timer) {Wake timer\\and radio};
+    \draw[line] (sensor) -- node[above,font=\scriptsize]{sample} (predict);
+    \draw[line] (predict) -- node[above,font=\scriptsize]{state} (risk);
+    \draw[line] (risk) -- (interval);
+    \draw[line] (interval) -- (budget);
+    \draw[line] (budget) -- (watch);
+    \draw[line] (watch) -- (timer);
+    \draw[feedback] (timer.south) -- ++(0,-8mm) -| node[pos=.25,below,font=\scriptsize]{energy debit} (budget.south);
+    \draw[feedback] (timer.north) -- ++(0,7mm) -| node[pos=.25,above,font=\scriptsize]{next observation} (sensor.north);
+    \node[block,below=13mm of risk,minimum width=31mm,fill=yellow!12] (neighbor) {Neighbor digest\\$q_t,a_t$};
+    \draw[line] (neighbor) -- (risk);
+    \node[draw,dotted,rounded corners,fit=(predict)(risk)(interval),inner sep=4mm,label={[font=\scriptsize]below:184-byte scheduler state}] {};
+  \end{tikzpicture}
+  }
+  \caption{\system's data and control paths.  Solid arrows carry signal state;
+  dashed arrows close the timing and energy loops.  The scheduler never blocks
+  on neighbor or gateway communication.}
+  \Description{Block diagram from sensor front end through predictor, risk
+  fusion, interval map, budget governor, safety guard, and wake timer. A
+  neighbor digest enters risk fusion, while energy and next-observation arrows
+  form feedback loops.}
+  \label{fig:architecture}
+\end{figure*}
+
+\subsection{Compact uncertainty model}
+
+For a scalar scheduling feature $x_t$, the node uses a constant-velocity state
+$z_t=[x_t,\dot{x}_t]^\mathsf{T}$.  Between irregular observations separated by
+$\Delta t$, it predicts
+
+\begin{equation}
+\hat{z}_{t|t^-}=
+\begin{bmatrix}1&\Delta t\\0&1\end{bmatrix}\hat{z}_{t^-},\qquad
+P_{t|t^-}=A P_{t^-}A^\mathsf{T}+Q(\Delta t).
+\end{equation}
+
+The observation update is the usual two-state Kalman correction, but \system
+adapts measurement scale from the clipped residual
+$r_t=x_t-\hat{x}_{t|t^-}$.  With forgetting factor $\rho$,
+
+\begin{equation}
+\label{eq:residual}
+  s_t^2=\rho s_{t^-}^2+(1-\rho)\min(r_t^2,c^2s_{t^-}^2).
+\end{equation}
+
+Clipping prevents a single event from inflating uncertainty for hours.  We use
+$\rho=0.94$ and $c=4$ by default.  Fixed-point implementations store $P$ and
+$s^2$ in Q16.16; positive diagonal floors prevent collapse after long steady
+periods.
+
+\subsection{Risk fusion}
+
+At time $t$, four normalized terms estimate the value of sampling:
+
+\begin{align}
+U_t &= \min\!\left(1,\sqrt{P_{xx,t}}/\sigma_U\right), &
+S_t &= \min\!\left(1,|r_{t^-}|/(c s_{t^-})\right),\\
+A_t &= \min\!\left(1,(t-t_{\mathrm{last}})/\tau_{\max}\right), &
+D_t &= q_t\exp(-a_t/\tau_n).
+\end{align}
+
+$U_t$ measures forecast uncertainty, $S_t$ retains recent surprise, and $A_t$
+prevents starvation.  $D_t$ is a redundancy discount: $q_t$ is the similarity
+to the freshest neighbor digest and $a_t$ its age.  Missing or stale digests set
+$D_t=0$, making coordination fail open.  The fused risk is
+
+\begin{equation}
+\label{eq:risk}
+u_t=\operatorname{clip}_{[0,1]}
+ \left(w_U U_t+w_S S_t+w_A A_t-w_D D_t\right).
+\end{equation}
+
+The weights sum to one before the discount.  We use
+$w_U=.42$, $w_S=.28$, $w_A=.30$, and $w_D=.20$.  These defaults were selected
+on a workload disjoint from evaluation and are held fixed across traces.
+Unlike a threshold controller,
+the continuous score avoids oscillating between two rates.
+
+\subsection{From risk to an interval}
+
+The unconstrained interval decays exponentially with risk:
+
+\begin{equation}
+\label{eq:interval}
+\tau_t^{\star}=\tau_{\min}+
+(\tau_{\max}-\tau_{\min})\exp(-\kappa u_t),
+\end{equation}
+
+with $\kappa=4.6$.  Exponential mapping dedicates most resolution to the
+high-risk region, where a small delay matters.  The application specifies
+$\tau_{\min}$ from its shortest relevant event and $\tau_{\max}$ from its
+maximum tolerable staleness.  We use 2 and 300\,s.
+
+The mapping is intentionally monotone and bounded.  If two histories differ
+only in having larger $U_t$, $S_t$, or $A_t$, the one with higher risk cannot be
+sampled later.  More importantly, even a wrongly confident model receives an
+observation within $\tau_{\max}$.
+
+\subsection{Energy-budget feedback}
+\label{sec:budget}
+
+A risk-only controller can spend a day's energy in an hour-long disturbance.
+We regulate expenditure with a token bucket $b_t\in[-B_c,B_c]$.  Tokens arrive
+at target power $p_b$ and measured or modeled operation energy $e_t$ removes
+them:
+
+\begin{equation}
+\label{eq:bucket}
+b_t=\operatorname{clip}_{[-B_c,B_c]}
+\left(b_{t^-}+p_b\Delta t-e_t\right).
+\end{equation}
+
+Negative balance creates a multiplicative slowdown
+\[
+  g_t=\exp\!\left(\eta\max(0,-b_t/B_c)\right).
+\]
+Positive balance does not speed the node
+beyond the risk-selected rate; it is reserve for future events.  The scheduled
+interval is
+
+\begin{equation}
+\label{eq:finalinterval}
+\tau_t=\min\!\left(\tau_{\max},
+\max\!\left(\tau_{\min},g_t\tau_t^{\star}\right)\right).
+\end{equation}
+
+Two overrides protect fidelity.  A detector trigger pins $\tau_t$ to
+$\tau_{\min}$ for a confirmation window $W$, while $A_t=1$ forces a sample even
+under energy debt.  Thus the budget is a soft horizon constraint, not a reason
+to violate application safety bounds.  If available energy is insufficient
+even for one sample per $\tau_{\max}$, the node reports infeasibility rather
+than silently degrading.
+
+\subsection{Spatial suppression}
+
+Every $K$th report includes a four-byte digest: a 12-bit quantized feature, a
+10-bit slope, a 6-bit uncertainty bin, and a 4-bit epoch.  A node compares the
+digest with its own prediction and estimates $q_t$ from normalized feature and
+slope distance.  It suppresses only routine reports; event onset and recovery
+messages are never suppressed.  Digests are piggybacked on existing frames, so
+coordination adds no packet when traffic already exists.
+
+This mechanism differs from cluster-head aggregation~\cite{heinzelman2000energy}
+and model-driven acquisition~\cite{deshpande2004model}: there is no elected
+leader and no shared global model.  A node can reboot, move, or lose all
+neighbors and still run the same local policy.
+
+\begin{algorithm}[t]
+\small
+\caption{One \system scheduler update}
+\label{alg:scheduler}
+\DontPrintSemicolon
+\KwIn{observation $x_t$, elapsed time $\Delta t$, operation energy $e_t$}
+\KwOut{next interval $\tau_t$}
+Predict $\hat{z}_{t|t^-}$ and $P_{t|t^-}$ over $\Delta t$\;
+$r_t\leftarrow x_t-\hat{x}_{t|t^-}$; update $s_t^2$ using Eq.~\eqref{eq:residual}\;
+Correct $\hat{z}_t,P_t$ with $x_t$\;
+Read freshest neighbor digest; set $D_t\leftarrow0$ if stale\;
+Compute $u_t$ using Eq.~\eqref{eq:risk}\;
+$\tau_t^\star\leftarrow\tau_{\min}+(\tau_{\max}-\tau_{\min})e^{-\kappa u_t}$\;
+$b_t\leftarrow\operatorname{clip}(b_{t^-}+p_b\Delta t-e_t)$\;
+$\tau_t\leftarrow\operatorname{clip}(e^{\eta\max(0,-b_t/B_c)}\tau_t^\star)$\;
+\If{event pending or maximum age reached}{$\tau_t\leftarrow\tau_{\min}$}
+Arm wake timer for $\tau_t$ and persist scheduler state\;
+\end{algorithm}

@@ -1,0 +1,58 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{Session Graph Construction}
+
+For each session $s$, we construct a heterogeneous graph $G_s = (V_s, E_s)$ with two
+node types --- query nodes $Q_s$ and document nodes $D_s$ --- and three edge types:
+\emph{click} edges between a query and the documents it received clicks on,
+\emph{co-session} edges between temporally adjacent queries, and \emph{reformulation}
+edges between a query and the immediately following query when the user's intent is
+judged unresolved (operationalized as a click followed by a same-session repeat
+search within a 90-second window). Query nodes are initialized with subword
+embeddings pooled over the query string; document nodes are initialized with title
+and snippet embeddings from a frozen bi-encoder.
+
+\subsection{Graph Encoder}
+
+We apply $L{=}3$ layers of relational message passing over $G_s$, producing a
+contextual embedding $\mathbf{q}_i \in \mathbb{R}^d$ for every query node $i$ that
+aggregates information from its clicked documents and neighboring queries in the
+session. Unlike a purely sequential encoder, this lets a query late in the session
+influence, and be influenced by, an earlier query connected through a shared clicked
+document even if the two are not adjacent in time.
+
+\subsection{Contrastive Objective}
+
+Given an anchor query $i$ and its true reformulation target $i^+$ (the next query in
+the same session), we treat all other queries in the training batch as negatives and
+minimize the InfoNCE-style loss
+
+\begin{equation}
+\mathcal{L}_{\mathrm{sess}} \;=\; -\log
+\frac{\exp\!\big(\mathrm{sim}(\mathbf{q}_i, \mathbf{q}_{i^+}) / \tau\big)}
+     {\displaystyle\sum_{j=1}^{N} \exp\!\big(\mathrm{sim}(\mathbf{q}_i, \mathbf{q}_j) / \tau\big)},
+\label{eq:contrastive}
+\end{equation}
+
+where $\mathrm{sim}(\cdot,\cdot)$ is cosine similarity, $\tau$ is a learned
+temperature, and $N$ is the batch size. Crucially, negatives are drawn to include
+queries that share surface tokens with the anchor but come from unrelated sessions,
+which forces the encoder to rely on session-graph structure rather than lexical
+overlap alone.
+
+\subsection{Reformulation Scoring}
+
+At inference time, given a partial session ending at query $i$ and a candidate
+reformulation $c$ drawn from a retrieved shortlist, we score $c$ as
+
+\begin{equation}
+\mathrm{score}(i, c) \;=\; \sigma\!\Big(\mathbf{w}^{\top}
+  \big[\mathbf{q}_i \,;\, \mathbf{q}_c \,;\, \mathbf{q}_i \odot \mathbf{q}_c\big]
+  + b\Big),
+\label{eq:score}
+\end{equation}
+
+with $\sigma$ the logistic function, $\mathbf{w}$ and $b$ learned parameters, and
+$\odot$ the elementwise product. Candidates are ranked by $\mathrm{score}(i,\cdot)$
+and the top-$k$ are returned as suggested reformulations.

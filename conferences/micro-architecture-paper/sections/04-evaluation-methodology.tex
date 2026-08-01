@@ -1,0 +1,14 @@
+\section{Evaluation Methodology}
+We model SpecGate in ArchSim, an in-house cycle-accurate simulator for a 4-wide out-of-order core with a 224-entry reorder buffer, a 32 KB 8-way L1D, a 1 MB 16-way shared L2, and a single DDR4-2400 channel. The baseline configuration includes a standard stride prefetcher with degree 2; SpecGate is added as a 512-entry, 4-way PTT (2 KB total, including confidence counters) placed alongside the baseline prefetcher, with the stride prefetcher's own requests left ungated.
+
+\subsection{Workloads}
+We use IrregBench, a set of six microarchitecture kernels chosen to stress irregular addressing without the noise of a full application:
+\begin{itemize}
+  \item \textbf{graph-bfs} --- breadth-first traversal over a scale-free graph with $2^{20}$ vertices.
+  \item \textbf{sparse-mm} --- sparse matrix--vector product in compressed row format.
+  \item \textbf{hash-join} --- an in-memory hash join over two 16 M-row tables.
+  \item \textbf{pointer-chase} --- a randomized linked-list walk sized to exceed the L2.
+  \item \textbf{tree-walk} --- lookups against an unbalanced binary search tree.
+  \item \textbf{stream-copy} --- a regular streaming copy included as a stride-friendly control.
+\end{itemize}
+Each kernel runs for one billion committed instructions after a 100-million-instruction warmup during which cache and prefetcher state is allowed to stabilize before statistics collection begins.

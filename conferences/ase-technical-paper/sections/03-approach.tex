@@ -1,0 +1,43 @@
+\section{Approach}
+\label{sec:approach}
+\textsc{RankGen} is a post-hoc scoring layer applied to a candidate set $\mathcal{P} = \{p_1, \dots, p_n\}$ produced by any upstream generator, given a buggy context $c$ (the surrounding function together with the failing test names). Figure~\ref{fig:pipeline} shows the full pipeline: fault localization narrows the edit location, a candidate generator proposes patches, and \textsc{RankGen} reorders them before the top-$k$ are sent to the test verifier.
+
+\begin{figure}[t]
+\centering
+\resizebox{\columnwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=7mm and 8mm,
+  box/.style={draw=aseblue,thick,rounded corners,fill=aselight,align=center,minimum height=8mm,minimum width=19mm,font=\scriptsize},
+  ret/.style={draw=asegray,thick,rounded corners,fill=white,align=center,minimum height=8mm,minimum width=19mm,font=\scriptsize},
+  arr/.style={-{Latex[length=1.8mm]},thick,aseblue}
+]
+\node[box] (bug) {Buggy\\Program};
+\node[box, right=of bug] (fl) {Fault\\Localizer};
+\node[box, right=of fl] (gen) {Candidate\\Generator};
+\node[box, below=of gen] (rank) {Ranking\\Scorer};
+\node[ret, left=of rank] (ret) {Retrieval\\Index};
+\node[box, right=of rank] (ver) {Test\\Verifier};
+
+\draw[arr] (bug) -- (fl);
+\draw[arr] (fl) -- (gen);
+\draw[arr] (gen) -- (rank);
+\draw[arr] (ret) -- (rank);
+\draw[arr] (rank) -- (ver);
+\end{tikzpicture}}
+\caption{Pipeline overview. \textsc{RankGen} (the ranking scorer) is generator-agnostic and consults a retrieval index built from historical accepted patches.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Scoring function}
+For a candidate patch $p$, context $c$, and retrieval corpus $\mathcal{R}$, we define the score
+\begin{equation}
+\label{eq:score}
+\mathrm{score}(p) \;=\; \lambda_1\,\mathrm{sim}(p,\mathcal{R}) \;+\; \lambda_2\,\log P_{\theta}(p \mid c) \;+\; \lambda_3\,\pi(p)
+\end{equation}
+where $\mathrm{sim}(p,\mathcal{R}) \in [0,1]$ is the maximum cosine similarity between an embedding of $p$ and the embeddings of the $k$-nearest patches retrieved from $\mathcal{R}$, $P_{\theta}(p\mid c)$ is the likelihood assigned by a masked span-infilling model $\theta$, and $\pi(p) \in [0,1]$ is an overfitting prior computed from static features (patch size, number of edited statements, and structural distance from the fault-localization ranking). The weights satisfy $\lambda_1 + \lambda_2 + \lambda_3 = 1$ and are fit on a held-out validation split via grid search.
+
+\subsection{Retrieval index}
+The corpus $\mathcal{R}$ is built once per project from its commit history: every commit whose message matches a bug-fix heuristic and whose diff touches a single function is embedded and indexed. At inference time we retrieve the $k{=}20$ nearest neighbors of each candidate using approximate nearest-neighbor search, which keeps retrieval latency under 40ms per candidate even for indices exceeding $10^5$ entries.
+
+\subsection{Overfitting prior}
+The prior $\pi(p)$ reuses the intuition that overfitting patches tend to be small, syntactically shallow edits that happen to satisfy the visible assertions without generalizing~\cite{oyelaran2020overfitting}. We fit a lightweight logistic model over five static features rather than the larger feature sets used by dedicated classifiers~\cite{alvarez2019classifier}, trading a small amount of standalone accuracy for a term that composes cleanly with $\mathrm{sim}$ and $\log P_\theta$ inside Equation~\ref{eq:score}.

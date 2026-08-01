@@ -1,0 +1,78 @@
+\section{Methodology}
+
+% Slide 5: Proposed Architecture (TikZ)
+\begin{frame}{Proposed Architecture}{Decentralized Peer-to-Peer Control}
+  \centering
+  \begin{tikzpicture}[scale=0.85, every node/.style={transform shape}]
+    % Styles within tikzpicture
+    \tikzset{
+      agent/.style={draw=VertexBlue, fill=VertexBlue!10, rounded corners, minimum width=2.5cm, minimum height=1.0cm, align=center, thick},
+      local/.style={draw=VertexTeal, fill=VertexTeal!10, circle, minimum size=1.1cm, align=center, thick, font=\small},
+      hub/.style={draw=VertexCoral, fill=VertexCoral!10, rounded corners, minimum width=3.2cm, minimum height=1.0cm, align=center, thick},
+      link/.style={draw=VertexBlue!60, <->, >=stealth, thick},
+      flow/.style={draw=VertexTeal, ->, >=stealth, dashed, thick}
+    }
+
+    % Nodes
+    \node[hub] (hub) at (0, 0) {Global Consensus Hub \\ \small (Sparse Policy Update)};
+    
+    \node[agent] (node1) at (-4, -2.2) {Vertex Edge Node 1 \\ \small Agent $\pi_{\theta_1}$};
+    \node[agent] (node2) at (4, -2.2) {Vertex Edge Node 2 \\ \small Agent $\pi_{\theta_2}$};
+    
+    \node[local] (solar1) at (-5.4, -4.2) {Solar\\PV};
+    \node[local] (bat1) at (-4.0, -4.2) {Battery};
+    \node[local] (load1) at (-2.6, -4.2) {Load};
+    
+    \node[local] (solar2) at (2.6, -4.2) {Wind};
+    \node[local] (bat2) at (4.0, -4.2) {Battery};
+    \node[local] (load2) at (5.4, -4.2) {Load};
+
+    % Connections
+    \draw[link] (hub) -- (node1) node[midway, left, font=\scriptsize] {Consensus};
+    \draw[link] (hub) -- (node2) node[midway, right, font=\scriptsize] {Consensus};
+    
+    \draw[flow] (solar1) -- (node1);
+    \draw[flow] (bat1) -- (node1);
+    \draw[flow] (load1) -- (node1);
+    
+    \draw[flow] (solar2) -- (node2);
+    \draw[flow] (bat2) -- (node2);
+    \draw[flow] (load2) -- (node2);
+
+    \draw[link, dashed, bend left=15] (node1) to node[midway, above, font=\scriptsize] {P2P Gossip} (node2);
+  \end{tikzpicture}
+\end{frame}
+
+% Slide 6: Mathematical Formulation
+\begin{frame}{Mathematical Formulation}{Objective Function and Constraints}
+  \small
+  We formulate the microgrid optimization as a Decentralized Partially Observable Markov Decision Process (Dec-POMDP).
+  
+  \begin{block}{Objective Function}
+    Minimize total operational cost across all nodes $N$ over planning horizon $T$:
+    \[
+      \min_{\boldsymbol{a}} \mathbb{E} \left[ \sum_{t=1}^{T} \sum_{i=1}^{N} \left( C_i^{\text{grid}}(P_{i,t}^{\text{grid}}) + C_i^{\text{deg}}(P_{i,t}^{\text{bat}}) + \beta_i L_{i,t}^{\text{shed}} \right) \right]
+    \]
+  \end{block}
+  
+  \begin{block}{Key Operational Constraints}
+    \begin{align*}
+      P_{i,t}^{\text{gen}} + P_{i,t}^{\text{bat}} + P_{i,t}^{\text{grid}} &= P_{i,t}^{\text{load}} - L_{i,t}^{\text{shed}} \quad &\forall i, t \quad &\text{(Power Balance)} \\
+      S_{i,t+1} &= S_{i,t} + \eta_i P_{i,t}^{\text{bat}} \Delta t \quad &\forall i, t \quad &\text{(Battery SoC Dynamics)}
+    \end{align*}
+  \end{block}
+\end{frame}
+
+% Slide 7: Algorithmic Approach
+\begin{frame}{Algorithmic Approach}{Decentralized Actor, Centralized Critic}
+  To solve the Dec-POMDP, we utilize a Multi-Agent Deep Deterministic Policy Gradient (MADDPG) variant:
+  \vspace{0.2cm}
+  \begin{itemize}
+    \item \textbf{Centralized Training}: Critics have access to the joint state $\boldsymbol{s} = (s_1, \dots, s_N)$ and joint action $\boldsymbol{a} = (a_1, \dots, a_N)$ during training.
+    \item \textbf{Decentralized Execution}: During deployment, each agent $\pi_{\theta_i}$ acts using only its local observation $o_i$.
+    \item \textbf{Policy Update}:
+    \[
+      \nabla_{\theta_i} J(\theta_i) = \mathbb{E}_{\boldsymbol{s}, \boldsymbol{a} \sim \mathcal{D}} \left[ \nabla_{\theta_i} \pi_{\theta_i}(a_i | o_i) \nabla_{a_i} Q_i^{\boldsymbol{\psi}}(\boldsymbol{s}, a_1, \dots, a_N) \bigr|_{a_i = \pi_{\theta_i}(o_i)} \right]
+    \]
+  \end{itemize}
+\end{frame}

@@ -1,0 +1,41 @@
+\section{Results}
+\label{sec:results}
+
+Table~\ref{tab:results} reports quality and latency across all six methods.
+CARD recovers 97.8\% of the teacher's nDCG@10 (0.409 vs.\ 0.415) at roughly
+one-sixth of its latency, and it outperforms the late-interaction baseline
+on every quality metric while remaining substantially cheaper. CARD-small
+trades a further 3.6 points of nDCG@10 for the lowest latency among all
+non-trivial re-rankers, making it attractive when candidate sets are large
+or latency budgets are tight.
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Re-ranking quality and latency on the pooled Nimbus/Apex/Meridian
+test splits. Best value per column among proposed methods in bold;
+the teacher row is shown in italics as an upper bound, not a deployable
+system.}
+\label{tab:results}
+\begin{tabular}{lcccc}
+\toprule
+Method & MRR@10 & nDCG@10 & Recall@1000 & Latency (ms/query) \\
+\midrule
+BM25 (no re-rank)          & 0.187 & 0.221 & 0.857 & 8 \\
+Bi-encoder (no re-rank)    & 0.311 & 0.348 & 0.912 & 3 \\
+Late interaction~\cite{solheim2020late} & 0.336 & 0.375 & 0.921 & 118 \\
+\textit{Cross-encoder teacher~\cite{marchetti2020monobert}} & \textit{0.372} & \textit{0.415} & \textit{0.941} & \textit{620} \\
+\rowcolor{sigirlight}
+CARD (ours)                & \textbf{0.365} & \textbf{0.409} & \textbf{0.939} & 95 \\
+CARD-small (ours)          & 0.352 & 0.395 & 0.930 & \textbf{34} \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Breaking results down by query length, the gap between CARD and the teacher
+widens on queries longer than 12 tokens (nDCG@10 gap of 0.014 vs.\ 0.005 for
+shorter queries), which we attribute to the single cross-attention layer
+having less capacity to resolve interactions among multiple query aspects
+simultaneously. Increasing CARD's cross-attention depth from one layer to two
+recovers roughly half of this gap but increases latency by 40\%, which we
+did not find worthwhile given the pipeline's overall latency budget.

@@ -1,0 +1,43 @@
+\section{Introduction}
+\label{sec:intro}
+
+Transformer language models scale predictably with parameters and data
+\cite{winslow2022scaling}, but the self-attention operation that underlies
+their in-context reasoning scales quadratically with sequence length. As
+practitioners push context windows from a few thousand tokens toward
+$10^5$--$10^6$ tokens to support document-level summarization, repository-scale
+code understanding, and long-horizon agent transcripts, the cost of dense
+attention becomes the dominant bottleneck in both training and serving.
+
+A large body of work addresses this cost through structural approximations:
+sliding-window attention restricts each token to a local neighborhood
+\cite{brantley2021sliding}, linear-time reformulations trade exactness for
+asymptotic efficiency \cite{ferro2020longformer}, and retrieval-augmented
+approaches externalize long-range memory into a non-parametric store
+\cite{park2022retrieval}. These approaches are effective but typically make a
+\emph{static} commitment: the window size, the linear kernel, or the retrieval
+depth is fixed ahead of time, independent of whether a given token actually
+needs long-range context. Many tokens --- function words, local syntax,
+repeated boilerplate --- need none at all, while a small fraction of tokens
+(coreference resolution, callback references, cross-section citations)
+depend critically on information tens of thousands of tokens away.
+
+This paper asks whether a model can learn, cheaply, \emph{which} tokens need
+long-range context and route compute accordingly. We propose \textbf{Sparse
+Contextual Gating (SCG)}: a per-token, per-layer gate that mixes a small
+retrieved set of historical hidden states with the token's local recurrent
+summary before the result is handed to a short-window self-attention block.
+The gate is a single linear projection followed by a sigmoid, trained
+end-to-end with the rest of the network, and it is cheap enough that its
+overhead is dwarfed by the attention FLOPs it removes.
+
+Our contributions are threefold. First, we describe the SCG mechanism and its
+integration into a standard decoder-only transformer (\S\ref{sec:method}).
+Second, we evaluate SCG against dense, sliding-window, and retrieval-augmented
+baselines on three long-document corpora at context lengths from 4K to 64K
+tokens, showing consistent perplexity parity or improvement at substantially
+reduced attention cost (\S\ref{sec:experiments}--\S\ref{sec:results}).
+Third, we analyze when gating helps and when it does not, including a
+failure mode we call \emph{gate collapse}, where the learned gate saturates
+toward pure local attention under aggressive sparsity regularization and
+silently discards long-range recall (\S\ref{sec:discussion}).

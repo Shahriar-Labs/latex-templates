@@ -1,0 +1,45 @@
+\section{Method}
+\textbf{Overview.} The architecture of SynapSeg consists of three main components: a multi-scale backbone encoder, a sparse affinity propagation module, and a decoupled decoder. Given an input image $I \in \mathbb{R}^{H \times W \times 3}$, the backbone encoder extracts a hierarchy of feature maps $\{F_1, F_2, F_3, F_4\}$, where $F_l \in \mathbb{R}^{\frac{H}{2^l} \times \frac{W}{2^l} \times C_l}$ represents the features at scale $l$. These feature maps are then passed to the sparse affinity propagation module.
+
+\textbf{Sparse Affinity Propagation.} To capture long-range context without the quadratic cost of dense attention, we compute sparse affinity matrices. Let $F_l$ and $F_k$ be feature maps at two different scales. We define a sparse routing graph where each pixel in $F_l$ only connects to a set of anchor points in $F_k$ \cite{smith2021deep}. The affinity between a pixel feature $f_i \in F_l$ and an anchor feature $a_j \in F_k$ is computed as:
+\begin{equation}
+A_{ij} = \frac{\exp(f_i^T a_j / \sqrt{d})}{\sum_k \exp(f_i^T a_k / \sqrt{d})}
+\end{equation}
+By restricting connections to a sparse set of anchor points, we reduce the computational complexity from $\mathcal{O}(N^2)$ to $\mathcal{O}(M N)$, where $M \ll N$ is the number of anchors.
+
+\textbf{Localized Contrastive Affinity Loss.} To ensure that the sparse affinity matrices capture meaningful semantic structures across resolutions, we introduce a localized contrastive affinity loss. For a given patch, let $A_i$ and $A_j$ be the affinity matrices computed at different scales. We define the contrastive loss as:
+\begin{equation}
+\mathcal{L}_{\text{aff}}(A_i, A_j) = -\log \frac{\exp(\text{sim}(A_i, A_j) / \tau)}{\sum_{k \in \mathcal{N}(i)} \exp(\text{sim}(A_i, A_k) / \tau)}
+\label{eq:contrastive}
+\end{equation}
+where $\text{sim}(\cdot,\cdot)$ is the cosine similarity, $\tau$ is a temperature parameter, and $\mathcal{N}(i)$ denotes the set of neighboring spatial patches. This loss forces the model to align affinity distributions across different resolutions, preventing scale-induced drift \cite{kim2024local}.
+
+\textbf{Decoupled Decoder.} Finally, the propagated features are fused and fed into a decoupled decoder. Unlike standard decoders that perform joint spatial and channel upsampling, our decoder processes spatial affinity and channel representations separately, further reducing parameters and memory overhead.
+
+\begin{figure}[t]
+  \centering
+  \resizebox{\columnwidth}{!}{%
+  \begin{tikzpicture}[
+    node distance=1.2cm and 0.8cm,
+    box/.style={draw=academicblue, fill=academicblue!5!white, thick, rounded corners, minimum width=1.5cm, minimum height=0.8cm, align=center, font=\small},
+    arrow/.style={-latex, thick, academicblue}
+  ]
+    \node[box] (input) {Input\\Image};
+    \node[box, right=of input] (backbone) {Backbone\\Encoder};
+    \node[box, right=of backbone] (affinity) {Sparse Affinity\\Propagation};
+    \node[box, right=of affinity] (decoder) {Decoupled\\Decoder};
+    \node[box, below=0.8cm of affinity] (contrastive) {Contrastive\\Affinity Loss};
+
+    \draw[arrow] (input) -- (backbone);
+    \draw[arrow] (backbone) -- (affinity);
+    \draw[arrow] (affinity) -- (decoder);
+    \draw[arrow] (backbone.south) -- ++(0,-0.3) -| (contrastive.west);
+    \draw[arrow] (affinity.south) -- (contrastive.north);
+    
+    \node[right=0.2cm of decoder, font=\small\bfseries, align=center] (output) {Output\\Map};
+    \draw[arrow] (decoder) -- (output);
+  \end{tikzpicture}
+  }
+  \caption{Overview of the SynapSeg framework. Multi-scale feature maps from the Backbone Encoder are routed through the Sparse Affinity Propagation module. A local Contrastive Affinity Loss is applied to align representations across resolutions.}
+  \label{fig:framework}
+\end{figure}

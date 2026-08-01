@@ -1,0 +1,32 @@
+\section{Experimental Setup}
+\label{sec:setup}
+
+\subsection{Data and metrics}
+
+We use the ``min'' 16 kHz version of Libri2Mix~\cite{cosentino2020librimix},
+which provides clean two-speaker mixtures with standard train, development, and
+test partitions.  Training examples are random 4 s crops.  We apply speed
+perturbation in $[0.95,1.05]$, gain in $[-5,5]$ dB, and room responses simulated
+with image-source dimensions sampled from 3--10 m.  For a noisy test, we add
+WHAM! noise~\cite{wichern2019wham} at 0--15 dB signal-to-noise ratio.  No test
+speaker occurs in training.
+
+We report SI-SDR improvement (SI-SDRi)~\cite{leroux2019sdr}, short-time objective
+intelligibility (STOI), parameter count, multiply--accumulate operations (MACs)
+per second, and real-time factor (RTF).  RTF is measured single-threaded on an
+Apple M2 CPU with batch size one after 20 warm-up utterances.  Algorithmic
+latency excludes device buffering and equals the analysis window.
+
+\subsection{Optimization and baselines}
+
+Models are trained for 150 epochs with AdamW, initial learning rate
+$3\times10^{-4}$, weight decay $10^{-2}$, gradient norm capped at 5, and cosine
+decay after a five-epoch warm-up.  The batch contains eight 4 s examples.  We
+retain the checkpoint with highest development SI-SDRi and evaluate it once.
+
+We compare against Conv-TasNet~\cite{luo2019convtasnet}, causal DPRNN
+\cite{luo2020dprnn}, and a causalized TF-GridNet~\cite{wang2023tfgridnet} in which
+all bidirectional modules are replaced by forward GRUs.  Every streaming model
+uses the same 32 ms analysis window and is retrained with the same augmentation.
+SepFormer~\cite{subakan2021sepformer} is included as a noncausal quality
+reference and has access to the full utterance.

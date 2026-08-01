@@ -1,0 +1,53 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Disaggregation lets a cloud database scale compute without rewriting durable
+storage, but it removes assumptions on which conventional join planning rests.
+The optimizer may compile a query before a compute pool expands.  Pages fetched
+from remote storage can arrive at a different rate than the sample predicted,
+and a single popular key can redirect most intermediate tuples to one worker.
+The physical plan is consequently asked to remain efficient under cardinality,
+skew, bandwidth, and parallelism errors at the same time.
+
+Static optimizers remain essential: they explore join order, select access
+paths, and expose useful global structure.  Yet even accurate estimates are not
+guarantees.  Classical adaptive query processing revises a plan using runtime
+observations~\cite{deshpande2007adaptive}; modern systems can also interleave
+planning and execution to reduce sensitivity to estimation error
+~\cite{trummer2019skinner}.  Existing techniques often place adaptation at an
+operator or stage boundary.  A distributed join that discovers skew after a
+shuffle has already paid the dominant network and queueing costs.
+
+This paper asks a narrower question: \emph{can one join operator adapt early
+enough to avoid a bad transfer, yet preserve bounded memory and exactly-once
+output while its workers change?}  \system{} answers with partition-scoped,
+reversible decisions.  Both inputs first pass through a symmetric sampling
+pipeline.  Mergeable sketches expose heavy keys without centralizing raw data.
+A controller then selects among three execution modes for each partition:
+broadcast the smaller fragment, repartition both fragments, or finish locally
+when storage placement makes exchange unnecessary.  Decisions become durable
+only after a versioned barrier; tuples buffered before that barrier migrate
+through an idempotent handoff protocol.
+
+\system{} is deliberately an operator, not a replacement optimizer.  The
+optimizer supplies a candidate join, predicates, and soft resource budgets;
+the operator handles errors local to that join.  This separation makes the
+mechanism usable inside vectorized, morsel-driven engines
+~\cite{leis2014morsel} and keeps global plan search outside the critical path.
+
+The paper makes four contributions:
+
+\begin{itemize}[leftmargin=*,itemsep=2pt,topsep=3pt]
+  \item a partition-level adaptive join that chooses broadcast, repartition,
+    or local completion from continuous evidence rather than a single sample;
+  \item mergeable statistics and a confidence rule that bound decision delay
+    while isolating heavy hitters from the regular hash domain;
+  \item a versioned migration protocol with explicit safety invariants for
+    exactly-once output, bounded buffering, and elastic worker membership; and
+  \item an evaluation protocol that separates performance gains due to
+    cardinality correction, skew handling, and backpressure.
+\end{itemize}
+
+All quantitative values below are clearly labeled illustrative so the file can
+serve as a complete, compilable template without masquerading as a completed
+study.

@@ -1,0 +1,61 @@
+\section{Method}
+\label{sec:method}
+We begin by describing the Nexa system model, the threat model under consideration, and the cryptographic details of the Synapse attestation handshake.
+
+\subsection{System Model}
+The Nexa architecture consists of three principal entities:
+\begin{itemize}
+    \item \textbf{Synapse Client:} A client endpoint that requests access to enterprise applications. The client must run inside a verified software state.
+    \item \textbf{Nexa Policy Gateway:} An enforcement point that intercepts client requests. It forwards attestation evidence to the verifier before granting access.
+    \item \textbf{Vertex Verifier:} A trusted attestation server that verifies the client's hardware measurements against known-good baselines.
+\end{itemize}
+
+A high-level view of the interaction between these entities is illustrated in Figure~\ref{fig:architecture}.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+      node distance=1.2cm and 1.8cm,
+      block/.style={
+          draw=secblue,
+          thick,
+          fill=graybg,
+          rounded corners=3pt,
+          minimum width=2.2cm,
+          minimum height=1.0cm,
+          align=center,
+          font=\scriptsize\sffamily
+      },
+      line/.style={
+          draw=secblue!80!black,
+          thick,
+          -latex
+      },
+      lbl/.style={
+          font=\tiny\sffamily,
+          color=black!80
+      }
+  ]
+      % Nodes
+      \node[block] (client) {\textbf{Synapse Client} \\ (Endpoint)};
+      \node[block, right=1.6cm of client] (gateway) {\textbf{Nexa Gateway} \\ (Policy Center)};
+      \node[block, below=1.2cm of gateway] (server) {\textbf{Vertex Verifier} \\ (Attestation Auth)};
+      
+      % Paths
+      \draw[line] (client.east) -- node[above, lbl] {1. Req Access} (gateway.west);
+      \draw[line] (gateway.south) -- node[right, lbl] {2. Challenge} (server.north);
+      \draw[line] (server.west) -| node[pos=0.35, above, lbl] {3. Attest Report} (client.south);
+  \end{tikzpicture}
+  \caption{High-level architectural diagram of the Nexa remote attestation framework, showing the interaction between the Synapse Client, Nexa Policy Gateway, and Vertex Verifier.}
+  \label{fig:architecture}
+\end{figure}
+
+\subsection{Threat Model}
+We assume an active network adversary capable of sniffing, modifying, and replaying packets between all entities. The adversary may also control compromised endpoints within the network, attempting to spoof valid attestation reports. We assume the hardware implementation of the Vertex Secure Enclaves is trusted, but we consider side-channel attacks on the enclave host memory.
+
+\subsection{Cryptographic Protocol}
+The Nexa protocol uses a challenge-response protocol. The Vertex Verifier generates a nonce $R_{Synapse}$ and sends it to the Client. The Client measures its state, signs it using its enclave private key $sk_{Vertex}$, and returns the signature $\sigma$. The signature is defined as:
+\begin{equation}
+    \sigma = \mathcal{S}_{sk_{Vertex}} \left( H \left( M_{Nexa} \mathbin{\parallel} R_{Synapse} \right) \right)
+\end{equation}
+where $H$ is a secure hash function (SHA-256), $M_{Nexa}$ represents the measurement registers of the enclave, and $\mathcal{S}$ is an ECDSA signature function. The Nexa Gateway validates the signature using the corresponding public key $pk_{Vertex}$ cached during registration.

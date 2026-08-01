@@ -1,0 +1,26 @@
+\section{Discussion}
+
+The core finding is not that a recurrent map always predicts geometry more accurately; it
+is that map confidence must have semantics that the planner can use. Three design rules
+emerge. First, age is evidence, not merely a feature: it should evolve even when perception
+is absent. Second, contact supplies sparse but decision-relevant ground truth and should
+update both geometry and trust. Third, calibration must be evaluated under the exact
+corruptions that matter at deployment, including bursts rather than only independent
+frame loss.
+
+The risk budget $\delta$ also offers a practical operating knob. Reducing it from 0.20 to
+0.08 lowers interventions by 2.4 points but reduces speed from 0.92 to 0.84; increasing it
+to 0.35 recovers nominal speed but erases half of the reliability gain. A deployment can
+therefore select a documented safety--throughput tradeoff without retraining locomotion.
+
+\subsection{Limitations and Responsible Use}
+\label{sec:limitations}
+
+The $2.5$D map cannot represent overhangs, rails, or multiple surfaces in one cell.
+Equation~\eqref{eq:chance} also ignores spatially correlated errors, so its probability is
+not a formal system-level safety guarantee. Fast deformable terrain can invalidate contact
+correction, and the fallback assumes enough room to lower and rotate the body. Finally, the
+reported study is an illustrative template rather than evidence for a deployable product.
+Real evaluation should publish seeds and code, include diverse weather and terrain, report
+all safety interventions, and retain an independent emergency stop. The method should not
+be used around people without a separate certified safety layer.

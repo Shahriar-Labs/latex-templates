@@ -1,0 +1,86 @@
+\section{Results}
+The primary results are summarized in Table~\ref{tab:results}. Meridian-Net achieves an accuracy of $83.9\%$ on the graph classification benchmark, which is within $0.3\%$ of the centralized upper bound. On the highly heterogeneous image classification task (VIN-100), Meridian-Net achieves $79.1\%$ accuracy, outperforming the closest decentralized baseline, Apex-Net, by $4.0\%$ absolute accuracy.
+
+\begin{table}[t]
+  \centering
+  \caption{Performance evaluation of Meridian-Net against baseline methods on graph classification and Vertex Image Net. Accuracy ($\%$) is reported as the mean and standard deviation over five random seeds. Communication costs represent cumulative data transferred (GB) to reach convergence.}
+  \label{tab:results}
+  \begin{tabular}{lccc}
+    \toprule
+    \textbf{Method} & \textbf{Graph Acc. (\%)} & \textbf{Image Acc. (\%)} & \textbf{Comm. (GB)} \\
+    \midrule
+    Centralized Baseline & $84.2 \pm 0.3$ & $79.8 \pm 0.4$ & $0.0$\textsuperscript{\textdagger} \\
+    Federated Avg (FedAvg) & $76.4 \pm 0.9$ & $71.2 \pm 1.2$ & $154.3$ \\
+    Decentralized SGD & $78.1 \pm 0.7$ & $73.5 \pm 0.9$ & $98.6$ \\
+    Apex-Net \cite{nimbus2025large} & $80.3 \pm 0.5$ & $75.1 \pm 0.6$ & $72.4$ \\
+    \midrule
+    \textbf{Meridian-Net (Ours)} & $\mathbf{83.9 \pm 0.4}$ & $\mathbf{79.1 \pm 0.5}$ & $\mathbf{28.1}$ \\
+    \bottomrule
+  \end{tabular}\\{}
+  \small \textsuperscript{\textdagger}Centralized compute does not require node-to-node communication.
+\end{table}
+
+\subsection{Convergence and Communication Analysis}
+In addition to accuracy improvements, Meridian-Net significantly reduces the network communication volume. Figure~\ref{fig:convergence} shows the test accuracy of VIN-100 as a function of the cumulative data transferred during training. Thanks to the adaptive latent graph learning, Meridian-Net converges after exchanging only $28.1$ GB of data, compared to $98.6$ GB for DSGD and $154.3$ GB for FedAvg. This represents a $71.5\%$ and $81.7\%$ reduction in communication volume, respectively.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      xlabel={Communication Rounds},
+      ylabel={Test Accuracy (\%)},
+      xmin=0, xmax=100,
+      ymin=40, ymax=90,
+      xtick={0,20,40,60,80,100},
+      ytick={40,50,60,70,80,90},
+      legend pos=south east,
+      ymajorgrids=true,
+      grid style=dashed,
+      width=0.48\textwidth,
+      height=6cm,
+      every axis legend/.code={\setlength{\labelsep}{0.1cm}},
+      label style={font=\small},
+      tick label style={font=\small},
+      legend style={font=\scriptsize}
+    ]
+      % Meridian-Net (Ours)
+      \addplot[
+        color=primarycolor,
+        mark=square*,
+        thick,
+        mark size=1.5pt
+      ]
+      coordinates {
+        (0, 42.1) (10, 58.3) (20, 68.7) (30, 75.2) (40, 79.4) (50, 81.6) (60, 82.8) (70, 83.3) (80, 83.6) (90, 83.8) (100, 83.9)
+      };
+      \addlegendentry{Meridian-Net (Ours)}
+      
+      % Apex-Net
+      \addplot[
+        color=secondarycolor,
+        mark=triangle*,
+        thick,
+        mark size=1.5pt
+      ]
+      coordinates {
+        (0, 42.1) (10, 52.4) (20, 61.8) (30, 68.1) (40, 72.3) (50, 75.2) (60, 77.1) (70, 78.5) (80, 79.3) (90, 79.9) (100, 80.3)
+      };
+      \addlegendentry{Apex-Net \cite{nimbus2025large}}
+      
+      % DSGD
+      \addplot[
+        color=accentcolor,
+        mark=circle*,
+        thick,
+        mark size=1.5pt
+      ]
+      coordinates {
+        (0, 42.1) (10, 48.9) (20, 55.4) (30, 61.2) (40, 66.0) (50, 69.8) (60, 72.4) (70, 74.3) (80, 75.8) (90, 77.2) (100, 78.1)
+      };
+      \addlegendentry{Decentralized SGD}
+      
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Convergence rate comparison on the Vertex Graph Classification (VGC-10K) benchmark. Test accuracy is plotted against the number of communication rounds.}
+  \label{fig:convergence}
+\end{figure}

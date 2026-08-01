@@ -1,0 +1,35 @@
+\section{Background and Related Work}
+\label{sec:related}
+
+\subsection{Retrieval-Augmented Question Answering}
+
+Dense passage retrieval learns question and passage representations in a shared
+space \cite{karpukhin2020dpr}.  Retrieval-augmented generation conditions a
+generator on retrieved documents \cite{lewis2020rag}, while Fusion-in-Decoder
+aggregates evidence from multiple passages inside the decoder
+\cite{izacard2021fid}.  KILT evaluates retrieval and generation jointly across
+knowledge-intensive tasks \cite{petroni2021kilt}.  Chronos builds on this
+retrieve--then--generate pattern but makes temporal eligibility and claim-level
+attribution first-class objects.
+
+\subsection{Web-Grounded Generation and Attribution}
+
+WebGPT showed that a model can use a text-based browser to collect references
+for long-form answers \cite{nakano2021webgpt}.  Self-reflective retrieval can
+teach a generator when to retrieve and how to critique its own output
+\cite{asai2024selfrag}.  Citation presence alone, however, does not guarantee
+that a cited passage entails the adjacent claim.  FActScore responds to a
+related problem by decomposing long-form text into atomic facts and verifying
+them against a knowledge source \cite{min2023factscore}.  We adopt atomic claims
+as the unit of attribution, but evaluate them against time-eligible Web
+evidence rather than a single static knowledge base.
+
+\subsection{Freshness, Provenance, and Duplication}
+
+Web content changes at heterogeneous rates.  Some claims remain stable for
+years; others, such as office holders, prices, and safety notices, can change
+within hours.  The original Web search literature already treated link
+structure as evidence about authority \cite{brin1998anatomy}.  For generative
+systems, authority must be combined with time and provenance.  Chronos therefore
+separates corroboration from repetition: near-identical passages connected to a
+shared upstream source should not count as independent support.
