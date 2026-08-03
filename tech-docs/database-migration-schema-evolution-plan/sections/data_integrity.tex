@@ -1,0 +1,49 @@
+\section{Data Integrity \& Verification}
+
+To ensure no data corruption occurs during the transformation from unstructured JSONB to relational records, DBAs must run strict integrity checks. The target validation rate is set at $100\%$ row parity.
+
+\subsection{Verification Methodology}
+We employ three verification layers:
+\begin{enumerate}
+    \item \textbf{Row Count Verification}: Ensures the number of records in the legacy database matches the target database.
+    \item \textbf{Cryptographic Checksum Checks}: Computes and compares MD5/SHA-256 hashes of critical columns (amounts, dates) in batches.
+    \item \textbf{Random Sample Check}: Validates a subset of 10,000 user profiles using a bidirectional primary-key query test.
+\end{enumerate}
+
+\subsection{Data Verification Queries}
+The following query validates transactional parity across schemas:
+
+\begin{lstlisting}[language=sql, caption={Query to verify primary keys and transaction values match.}]
+WITH source_stats AS (
+    SELECT COUNT(*) as src_count, COALESCE(SUM(amount), 0) as src_sum
+    FROM ledger_transactions
+),
+target_stats AS (
+    SELECT COUNT(*) as tgt_count, COALESCE(SUM(amount), 0) as tgt_sum
+    FROM ledger_transactions_v2
+)
+SELECT 
+    src_count, tgt_count, (src_count = tgt_count) as count_match,
+    src_sum, tgt_sum, (src_sum = tgt_sum) as sum_match
+FROM source_stats, target_stats;
+\end{lstlisting}
+
+\subsection{Verification Performance Metrics}
+During dry-runs in the Vertex QA lab, the validation process demonstrated the performance characteristics listed below.
+
+\begin{table}[h]
+\small
+\centering
+\begin{tabularx}{\textwidth}{L{4cm} C{2.5cm} C{2.5cm} Y}
+\toprule
+\textbf{Validation Type} & \textbf{Data Scope} & \textbf{Time Spent} & \textbf{Validation Status} \\
+\midrule
+Row Count Validation & 140M records & 42 seconds & Passed \\
+Cryptographic Checksum & 140M records & 18.5 minutes & Passed \\
+Sample Account Query & 10K records & 1.2 seconds & Passed \\
+JSONB Extraction Check & 1.2M profiles & 4.5 minutes & Passed \\
+\bottomrule
+\end{tabularx}
+\caption{Dry-run verification metrics.}
+\label{tab:validation_metrics}
+\end{table}

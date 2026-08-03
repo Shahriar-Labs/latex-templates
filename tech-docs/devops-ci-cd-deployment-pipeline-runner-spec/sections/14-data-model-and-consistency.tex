@@ -1,0 +1,47 @@
+\section{Data model and consistency}
+
+\subsection{Core entities}
+
+\begin{table}[htbp]
+\centering
+\caption{Core persisted entities}
+\label{tab:data-model}
+\begin{tabularx}{\textwidth}{@{}L{0.22\textwidth}Y Y@{}}
+  \toprule
+  \thead{Entity} & \thead{Key attributes} & \thead{Retention / consistency} \\
+  \midrule
+  Pipeline run & Tenant, repository, event, revision, plan digest, state, actor & Strong state transitions; 90 days default \\
+  Job & Run, dependencies, pool, policy, state, outputs & Strong state transitions; follows run \\
+  Attempt / lease & Job, runner, fencing token, expiry, result, reason & Strong lease ownership; follows run \\
+  Artifact & Tenant, digest, size, media type, provenance, retention & Immutable; policy-driven retention \\
+  Cache entry & Namespace, key, version, digest, size, last access & Eventual index; evictable \\
+  Environment request & Environment, artifact, plan, evidence, policy, state & Strong; at least production retention \\
+  Approval & Request, actor, decision, bound digests, expiry & Append-only; seven years for production default \\
+  Audit event & Actor, action, resource, outcome, context, integrity link & Append-only/WORM; seven years default \\
+  \bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Transaction boundaries}
+
+Creation of a run, its plan, and initial jobs is one logical transaction. Job state
+transition and outbox event creation occur in the same database transaction. Lease
+claim atomically checks readiness, eligibility summary, attempt count, and absence of
+an active lease. Artifact metadata becomes available only after object verification.
+Approval mutation and environment-request transition are atomic.
+
+An outbox publisher provides at-least-once event delivery. Consumers are idempotent and
+store their last applied event identifier or version. Read models may be eventually
+consistent; authorization, lease ownership, approvals, and deployment gates always use
+the authoritative store.
+
+\subsection{Data protection}
+
+Sensitive fields are classified and encrypted using envelope encryption with managed
+keys. Tenant identifiers are present in every logical key and query predicate. Database
+roles separate application mutation, read models, audit export, and break-glass access.
+Production access is just in time, approved, recorded, and limited to named cases.
+Backups are encrypted, integrity-tested, and subject to the same retention and access
+policy as source data.
+
+% -----------------------------------------------------------------------------

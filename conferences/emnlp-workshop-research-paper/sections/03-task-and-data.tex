@@ -1,0 +1,57 @@
+\section{Task and Data}
+\label{sec:task-data}
+
+The AfricaNLP Entity Normalization Shared Task asks systems to (i) detect
+named-entity mentions in raw text and (ii) map each mention to a canonical
+form drawn from a language-specific gazetteer, or to a
+\texttt{NIL} bucket if no gazetteer entry applies. Canonical forms are
+scored under exact match after normalization; a mention that is detected
+but normalized to the wrong gazetteer entry counts as an error, matching
+the entity-linking convention rather than the looser span-overlap
+convention used in plain NER.
+
+\subsection{Languages and Sources}
+The task covers four languages: Swahili (\textit{swa}), Hausa
+(\textit{hau}), Yoruba (\textit{yor}), and Amharic (\textit{amh}). Source
+text is drawn from newswire and public government press releases,
+de-identified and redistributed by the organizers under a research-use
+license. Six entity types are annotated in every language: person (PER),
+organization (ORG), location (LOC), date (DATE), nationality-or-ethnic
+group (NORP), and a residual miscellaneous class (MISC).
+
+\subsection{Splits}
+Table~\ref{tab:data} summarizes the released splits. Test data was drawn
+from a two-month window strictly after the training and development
+collection period, so surface forms and named entities that appear only in
+current events are systematically under-represented in training --
+a deliberate design choice by the organizers to penalize systems that
+merely memorize the training gazetteer.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Shared-task data statistics. Entity types is the number of
+distinct annotated categories, constant across languages.}
+\label{tab:data}
+\begin{tabular}{@{}lrrrc@{}}
+\toprule
+\textbf{Language} & \textbf{Train} & \textbf{Dev} & \textbf{Test} & \textbf{Types} \\
+\midrule
+Swahili (swa) & 18{,}420 & 2{,}301 & 2{,}305 & 6 \\
+Hausa (hau)   & 15{,}760 & 1{,}970 & 1{,}968 & 6 \\
+Yoruba (yor)  & 12{,}980 & 1{,}622 & 1{,}625 & 6 \\
+Amharic (amh) &  9{,}540 & 1{,}192 & 1{,}190 & 6 \\
+\midrule
+\textbf{Total} & \textbf{56{,}700} & \textbf{7{,}085} & \textbf{7{,}088} & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Gazetteers}
+Each language ships with a curated gazetteer of canonical entity forms
+(3{,}200--6{,}400 entries per language, largest for Swahili) contributed by
+volunteer annotators and cross-checked by the organizers. Gazetteer
+coverage of test-set gold entities ranges from 71\% (Amharic) to 89\%
+(Swahili) -- the remaining mentions require a system to either fuzzy-match
+a near-variant already in the gazetteer or correctly abstain into the
+\texttt{NIL} bucket, which is itself scored.

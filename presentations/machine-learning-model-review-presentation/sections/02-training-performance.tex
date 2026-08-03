@@ -1,0 +1,54 @@
+\section{Training Dynamics}
+\subsection{Convergence Curve}
+
+\begin{frame}{Training Dynamics \& Convergence}{Loss Trends and Optimization Schedulers}
+  Meridian-II was trained with AdamW on 1.6T tokens, showing clean convergence and stability.
+  
+  \vspace{0.2cm}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Training Diagnostics:}
+      \begin{itemize}
+        \item \textbf{Scheduler:} Cosine learning rate decay with a 2k step warm-up phase.
+        \item \textbf{Stability:} Initial loss spikes were successfully mitigated via dynamic gradient clipping.
+        \item \textbf{Validation Alignment:} Overfitting was checked up to 100k steps; validation loss remains closely coupled with training loss~\cite{jenkins2025tensor}.
+      \end{itemize}
+    \end{column}
+    \hfill
+    \begin{column}{0.48\textwidth}
+      \centering
+      \begin{tikzpicture}[scale=0.85]
+        \begin{axis}[
+          width=6.0cm,
+          height=4.0cm,
+          grid=both,
+          grid style={line width=.1pt, draw=gray!10},
+          major grid style={line width=.2pt, draw=gray!30},
+          xlabel={Training Steps (k)},
+          ylabel={Cross-Entropy Loss},
+          xmin=0, xmax=100,
+          ymin=1.5, ymax=4.5,
+          xtick={0, 20, 40, 60, 80, 100},
+          ytick={1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5},
+          legend pos=north east,
+          legend style={font=\tiny, draw=none, fill=none},
+          axis x line=bottom,
+          axis y line=left,
+          every tick label/.append style={font=\tiny},
+          label style={font=\scriptsize}
+        ]
+          \addplot[color=accentTeal, line width=1.5pt] coordinates {
+            (0, 4.20) (10, 3.10) (20, 2.50) (40, 2.10) (60, 1.95) (80, 1.87) (100, 1.82)
+          };
+          \addlegendentry{Train Loss}
+          \addplot[color=accentIndigo, dashed, line width=1.5pt] coordinates {
+            (0, 4.25) (10, 3.20) (20, 2.60) (40, 2.22) (60, 2.08) (80, 2.01) (100, 1.98)
+          };
+          \addlegendentry{Val Loss}
+        \end{axis}
+      \end{tikzpicture}
+      \par\vspace{0.1cm}
+      {\scriptsize\color{textMuted}Figure 1: Cross-entropy loss curve over 100k training steps.}
+    \end{column}
+  \end{columns}
+\end{frame}

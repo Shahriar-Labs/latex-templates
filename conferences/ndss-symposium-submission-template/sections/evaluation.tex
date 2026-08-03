@@ -1,0 +1,65 @@
+We implemented a prototype of Synapse and evaluated its performance on a testbed consisting of Raspberry Pi 4 nodes acting as Edge Gateways and ESP32 microcontrollers acting as IoT devices. The global ledger was simulated using a local Hyperledger Fabric network running on Vertex server instances.
+
+\subsection{Latency and Scalability}
+We measured the verification latency as the time elapsed from the initial gateway challenge to the final consensus block creation on the ledger. As shown in Figure~\ref{fig:latency}, the verification latency of Synapse remains extremely low even as the network scales. While Vertex-Trust~\cite{vertextrust2022} experiences exponential latency growth due to global consensus overhead, Synapse's localized PoS keeps latency under 10 milliseconds.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        xlabel={Number of Active IoT Nodes},
+        ylabel={Verification Latency (ms)},
+        xmin=0, xmax=1000,
+        ymin=0, ymax=100,
+        xtick={0,200,400,600,800,1000},
+        ytick={0,20,40,60,80,100},
+        legend pos=north west,
+        grid=both,
+        grid style={line width=.1pt, draw=gray!10},
+        major grid style={line width=.2pt, draw=gray!20},
+        width=\linewidth,
+        height=6cm
+    ]
+    \addplot[
+        color=accent,
+        mark=square,
+        thick
+    ]
+    coordinates {
+        (100, 12.5)(200, 15.2)(400, 22.4)(600, 31.8)(800, 45.1)(1000, 60.3)
+    };
+    \addlegendentry{Vertex-Trust}
+
+    \addplot[
+        color=secondary,
+        mark=*,
+        thick
+    ]
+    coordinates {
+        (100, 2.1)(200, 2.3)(400, 3.1)(600, 4.2)(800, 5.8)(1000, 7.5)
+    };
+    \addlegendentry{Synapse (Ours)}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Scalability evaluation comparing verification latency of Synapse against Vertex-Trust~\cite{vertextrust2022} as the number of active network nodes scales up to 1,000.}
+  \label{fig:latency}
+\end{figure}
+
+\subsection{Comparison with Alternatives}
+Table~\ref{tab:comparison} compares Synapse against three alternative architectures: a centralized baseline, Nexa Crypt (a threshold-attestation scheme), and Vertex-Trust~\cite{vertextrust2022}. Synapse achieves the highest throughput of 1,540 transactions per second (tx/s) and the lowest latency (4.2 ms), while providing high resilience to collusion attacks.
+
+\begin{table*}[t]
+  \centering
+  \caption{Security and Performance Trade-offs of Decentralized Trust Verification Systems.}
+  \label{tab:comparison}
+  \begin{tabular}{lcccc}
+    \toprule
+    \textbf{Scheme} & \textbf{Throughput (tx/s)} & \textbf{Latency (ms)} & \textbf{Bandwidth (KB)} & \textbf{Resilience} \\
+    \midrule
+    Baseline & 120 & 45.2 & 12.8 & Low \\
+    Nexa Crypt & 450 & 22.1 & 8.4 & Medium \\
+    Vertex-Trust & 890 & 14.8 & 4.1 & High \\
+    \textbf{Synapse} & \textbf{1,540} & \textbf{4.2} & \textbf{1.2} & \textbf{Very High} \\
+    \bottomrule
+  \end{tabular}
+\end{table*}

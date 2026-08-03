@@ -1,0 +1,74 @@
+%% sections/monitoring_reporting.tex
+%% SCADA requirements, data acquisition, and reporting cadence
+
+\section{Monitoring, Data Acquisition \& Reporting}
+
+\subsection{SCADA System Requirements}
+
+The plant's Supervisory Control and Data Acquisition (\textsc{scada}) system shall be supplied
+by \textbf{Apex Digital Systems} and shall meet the requirements of IEC~61724-1:2021
+Classification~A (highest accuracy tier). Key specifications:
+
+\begin{itemize}[leftmargin=1.4em, itemsep=3pt]
+  \item \textbf{Data resolution}: \SI{1}{\minute} intervals for all primary sensors;
+        \SI{15}{\minute} intervals for energy meters.
+  \item \textbf{Data availability}: $\geq 99.0\%$ uptime of the data acquisition backbone
+        over any rolling 30-day period.
+  \item \textbf{Time synchronisation}: \textsc{ntp}-referenced, $\leq \SI{1}{\second}$ drift.
+  \item \textbf{Cybersecurity}: Conformant to IEC~62443-3-3 Security Level~2.
+  \item \textbf{Remote access}: Encrypted \textsc{vpn} tunnel to Nexa Engineering portal;
+        read access granted to Synapse asset management team.
+\end{itemize}
+
+\subsection{Required Instrumentation}
+
+\begin{table}[H]
+  \centering
+  \caption{Mandatory Instrumentation — Meridian Flats Solar Park}
+  \label{tab:instruments}
+  \begin{tabular}{@{} l l l c @{}}
+    \toprule
+    \rowcolor{SolarMist}
+    \textbf{Instrument} & \textbf{Parameter} & \textbf{Accuracy} & \textbf{Qty} \\
+    \midrule
+    Pyranometer (class A) & POA irradiance         & $\pm\SI{2}{\percent}$  & 6 \\
+    Pyranometer (class A) & GHI irradiance         & $\pm\SI{2}{\percent}$  & 2 \\
+    Pyrheliometer         & DNI                    & $\pm\SI{1}{\percent}$  & 1 \\
+    Module temperature    & Back-of-module temp.   & $\pm\SI{1}{\celsius}$  & 12 \\
+    Ambient temperature   & Ambient air temp.      & $\pm\SI{0.5}{\celsius}$ & 4 \\
+    Wind speed/direction  & Anemometer (at hub ht) & $\pm\SI{3}{\percent}$  & 3 \\
+    Revenue-grade meter   & Net AC energy (MWh)    & Class~0.2              & 1 \\
+    Soiling sensor        & Soiling ratio          & $\pm\SI{0.5}{\percent}$ & 4 \\
+    String monitor        & DC string current/V    & $\pm\SI{0.5}{\percent}$ & 132 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Reporting Requirements}
+
+Nimbus Field Services shall deliver the following mandatory reports to Synapse Infrastructure
+Holdings and Nexa Solar Energy Solutions:
+
+\begin{enumerate}[leftmargin=1.6em, itemsep=4pt]
+  \item \textbf{Daily Report} — automated: energy generation, availability, active alarms,
+        soiling index. Delivered by 07:00 local time each calendar day.
+
+  \item \textbf{Monthly Technical Report} — within 10~business days of month end: detailed
+        energy summary, \textsc{pr} calculation, inverter performance, fault log, maintenance
+        completed, and financial reconciliation for \textsc{ld} tracking.
+
+  \item \textbf{Annual Performance Report} — within 30~business days of year-end anniversary:
+        full degradation assessment, shading analysis update, 5-year energy forecast revision,
+        and warranty claim status.
+
+  \item \textbf{Event-Triggered Report} — within 48~hours of: single-inverter downtime
+        $>4$~hours, \textsc{scada} data loss $>2$~hours, grid fault or curtailment event
+        $>1\%$ of daily energy budget, or any physical security incident.
+\end{enumerate}
+
+\reqbox{Data Retention Obligation}{%
+  All raw \SI{1}{\minute} \textsc{scada} data shall be retained for a minimum of \textbf{25~years}
+  in a geographically redundant cloud archive (Apex Cloud Vaulting Service or equivalent).
+  Synapse Infrastructure Holdings retains unrestricted rights to all operational data generated
+  at the Meridian Flats site.
+}

@@ -1,0 +1,78 @@
+\section{Pharmacokinetics \& Statistical Modeling}
+\label{sec:pharmacokinetics}
+
+\subsection{Pharmacokinetic Parameter Estimation}
+
+Pharmacokinetic analysis of plasma and urine concentrations of SYN-409 will be performed using non-compartmental analysis (NCA) methods \citep{gibaldi2007pk}. Calculations will be executed using Phoenix WinNonlin\textsuperscript{\textregistered} version 8.3 or validated PK packages in R (version 4.3.2). 
+
+The following PK parameters will be estimated from individual concentration-time data:
+\begin{itemize}
+  \item \textbf{$C_{\max}$:} Maximum observed plasma concentration, obtained directly from the raw data.
+  \item \textbf{$t_{\max}$:} Time to reach maximum plasma concentration, obtained directly from the raw data.
+  \item \textbf{$\lambda_{\text{z}}$:} Terminal elimination rate constant, estimated by linear regression of the terminal log-linear phase of the concentration-time curve.
+  \item \textbf{$t_{1/2}$:} Terminal elimination half-life, calculated as:
+    \begin{equation}
+      t_{1/2} = \frac{\ln(2)}{\lambda_{\text{z}}}
+    \end{equation}
+  \item \textbf{$\text{AUC}_{0-t}$:} Area under the plasma concentration-time curve from time zero to the last quantifiable concentration, calculated using the linear-up log-down trapezoidal rule.
+  \item \textbf{$\text{AUC}_{0-\infty}$:} Area under the plasma concentration-time curve extrapolated to infinity, calculated as:
+    \begin{equation}
+      \text{AUC}_{0-\infty} = \text{AUC}_{0-t} + \frac{C_t}{\lambda_{\text{z}}}
+    \end{equation}
+    where $C_t$ is the last quantifiable concentration.
+  \item \textbf{$\text{CL}/F$:} Apparent total clearance after oral administration, calculated as Dose / $\text{AUC}_{0-\infty}$.
+  \item \textbf{$V_{\text{z}}/F$:} Apparent volume of distribution during the terminal elimination phase, calculated as $\text{CL}/F / \lambda_{\text{z}}$.
+\end{itemize}
+
+\subsection{Dose Proportionality Analysis}
+
+To assess the dose proportionality of SYN-409 over the 10~mg to 600~mg dose range, a power model will be fitted to the primary parameters ($C_{\max}$ and $\text{AUC}_{0-\infty}$):
+\begin{equation}
+  \ln(\text{Parameter}) = \beta_0 + \beta_1 \cdot \ln(\text{Dose}) + \varepsilon
+\end{equation}
+where $\beta_1$ represents the dose-proportionality coefficient. True dose proportionality is concluded if the $90\%$ confidence interval for $\beta_1$ falls entirely within the interval $[0.90, 1.10]$.
+
+\subsection{Expected PK Profiles}
+
+Figure~\ref{fig:pk_profile} displays the expected pharmacokinetic profiles for two dose levels of SYN-409 based on preclinical scaling studies and physiological parameters.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.85\textwidth,
+    height=6.5cm,
+    axis lines=left,
+    xlabel={Time Post-Dose (h)},
+    ylabel={Plasma Concentration (ng/mL)},
+    xmin=0, xmax=24,
+    ymin=0, ymax=450,
+    xtick={0,2,4,6,8,12,16,20,24},
+    ytick={0,100,200,300,400},
+    legend pos=north east,
+    grid=both,
+    grid style={line width=.1pt, draw=gray!10},
+    major grid style={line width=.2pt, draw=gray!20},
+    every axis x label/.style={at={(current axis.right of origin)},anchor=north,yshift=-5pt},
+    every axis y label/.style={at={(current axis.above origin)},anchor=south,rotate=90,xshift=5pt},
+    title={\textbf{Simulated SYN-409 Concentration-Time Profile (Single Dose)}}
+]
+    % Dose 100 mg
+    \addplot[thick, color=secondary, smooth, domain=0:24, samples=100] 
+        {350*(exp(-0.15*x) - exp(-1.2*x))};
+    \addlegendentry{SYN-409 100 mg (Expected)}
+    
+    % Dose 30 mg
+    \addplot[thick, color=accent, smooth, domain=0:24, samples=100] 
+        {105*(exp(-0.15*x) - exp(-1.2*x))};
+    \addlegendentry{SYN-409 30 mg (Expected)}
+    
+    % Tmax/Cmax annotation for 100 mg
+    \draw[dashed, color=primary!60] (axis cs:2.08, 0) -- (axis cs:2.08, 231.2);
+    \draw[dashed, color=primary!60] (axis cs:0, 231.2) -- (axis cs:2.08, 231.2);
+    \node[anchor=south west, font=\scriptsize, color=primary] at (axis cs:2.08, 231.2) {$C_{\max} \approx 231.2\text{ ng/mL}$ at $t_{\max} \approx 2\text{ h}$};
+\end{axis}
+\end{tikzpicture}
+\caption{Predicted pharmacokinetic profile of SYN-409 based on preclinical scaling models. Continuous curves represent compartment model simulations.}
+\label{fig:pk_profile}
+\end{figure}

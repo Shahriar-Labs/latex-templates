@@ -1,0 +1,32 @@
+\section{Introduction}
+
+\subsection{Purpose}
+The Apex Enterprise Platform runs its production workloads --- the Vertex core application, the Synapse data and analytics platform, and the Nexa customer portal --- on a single shared Kubernetes cluster operated by Apex Platform Engineering. This document specifies the architecture of that cluster: how nodes are pooled and scaled, how pod networking and ingress are implemented, how stateful services persist data safely, and how the security controls that bound every namespace are enforced. It is written for the engineers who deploy into the cluster and the engineers who operate it, and it is the reference against which cluster changes are reviewed.
+
+\subsection{Scope}
+This specification covers the production cluster \texttt{apex-prod-mer1} in Meridian Cloud's \texttt{mer-east-1} region. It is explicitly scoped to platform-level concerns rather than any single application's internal design.
+
+\begin{itemize}[itemsep=2pt]
+  \item \textbf{In scope:} node pool composition and autoscaling, the CNI and IP address plan, ingress and TLS termination, storage classes and backup policy, and the security baseline (RBAC, admission control, network policy, secrets).
+  \item \textbf{Out of scope:} application-level deployment manifests, CI/CD pipeline internals, and the staging and development clusters, which follow a reduced variant of this baseline documented separately.
+\end{itemize}
+
+\subsection{Audience}
+Primary readers are platform engineers on the Apex infrastructure team, service owners on Vertex, Synapse, and Nexa who need to understand the guarantees the cluster provides, and auditors reviewing the security posture of production workloads.
+
+\subsection{Related Documents}
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}L l l@{}}
+\toprule
+\rowcolor{primary}
+\textcolor{white}{\textbf{Document}} & \textcolor{white}{\textbf{Reference}} & \textcolor{white}{\textbf{Owner}} \\
+\midrule
+Meridian Cloud Landing Zone Design & APX-CLD-LZ-014 & Platform Engineering \\
+\rowcolor{rowgray}
+Incident Response \& On-Call Runbook & APX-OPS-RUN-009 & Site Reliability \\
+Data Classification \& Retention Policy & APX-SEC-POL-002 & Security Engineering \\
+\rowcolor{rowgray}
+Vertex, Synapse \& Nexa Service Catalogue & APX-SVC-CAT-021 & Product Engineering \\
+\bottomrule
+\end{tabularx}
+\end{center}

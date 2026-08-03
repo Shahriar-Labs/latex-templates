@@ -1,0 +1,79 @@
+\section{Test Environment \& Setup}
+
+\subsection{Physical Test Environment}
+All hardware verification must be conducted within an Electrostatic Discharge (ESD) protected validation laboratory. The ambient temperature of the testing room must be regulated to $22^\circ\text{C} \pm 3^\circ\text{C}$ with relative humidity kept between $30\%$ and $60\%$ to ensure repeatable thermal baselines for active chip operations. Nexa-compliant electrostatic wrist straps and grounded dissipative table mats are mandatory for all test operators.
+
+\subsection{Hardware Instrumentation Setup}
+The hardware validation setup integrates logic analysis, signal capture, power monitoring, and diagnostic software execution. The key physical instruments utilized in this plan are:
+\begin{itemize}
+    \item \textbf{Apex LogicPro 128-Channel Logic Analyzer}: Configured to sample digital signals up to 2.5\,GS/s, enabling capture of transient timing faults on high-speed buses.
+    \item \textbf{Vertex DSO 4\,GHz Oscilloscope}: Equipped with active differential probes to assess analog signal integrity and eye diagrams.
+    \item \textbf{Synapse Programmable Power Supply}: Delivers stable, low-noise DC power rails ($0.9\text{V}$, $1.2\text{V}$, $1.8\text{V}$, and $3.3\text{V}$) with precision current-sensing.
+    \item \textbf{Host Controller PC}: Runs the Apex Test Orchestrator suite, generating test patterns, configuring instruments, and logging validation outputs.
+\end{itemize}
+
+Figure~\ref{fig:test_setup} illustrates the interconnect topology of the test environment.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm and 2cm,
+    block/.style={
+        rectangle,
+        draw=brandprimary,
+        fill=brandbg,
+        thick,
+        align=center,
+        minimum width=2.8cm,
+        minimum height=1.2cm,
+        rounded corners=4pt
+    },
+    instr/.style={
+        rectangle,
+        draw=brandsecondary,
+        fill=brandsecondary!5,
+        thick,
+        align=center,
+        minimum width=2.8cm,
+        minimum height=1.2cm,
+        rounded corners=4pt
+    },
+    line/.style={
+        draw,
+        -latex,
+        thick,
+        color=brandmuted
+    },
+    bus/.style={
+        draw,
+        latex-latex,
+        ultra thick,
+        color=brandhighlight
+    }
+]
+    % Nodes
+    \node[block] (pc) {\textbf{Host PC} \\ \small Test Control};
+    \node[instr, right=of pc] (la) {\textbf{Logic Analyzer} \\ \small Apex LogicPro};
+    \node[block, below=of la] (target) {\textbf{Nimbus-5 Board} \\ \small Target SoC (DUT)};
+    \node[instr, left=of target] (scope) {\textbf{Oscilloscope} \\ \small Vertex DSO};
+    \node[instr, below=of pc] (pwr) {\textbf{Power Supply} \\ \small Synapse Programmable};
+
+    % Connections
+    \draw[line] (pc) -- node[above, text=brandprimary] {\small USB/GPIB} (la);
+    \draw[line] (pc) -- node[left, text=brandprimary] {\small Ethernet} (pwr);
+    \draw[line] (pwr) |- (target);
+    \draw[bus] (la) -- node[right, text=brandsecondary] {\small Probe Bus} (target);
+    \draw[line] (target) -- node[above, text=brandsecondary] {\small Probe} (scope);
+    \draw[line] (pc) |- (scope);
+\end{tikzpicture}
+\caption{System test setup and instrument connections.}
+\label{fig:test_setup}
+\end{figure}
+
+\subsection{Logic Analyzer Configuration}
+The Apex LogicPro logic analyzer must be calibrated before executing test cycles. The default configuration parameters for data capture are defined as follows:
+\begin{itemize}
+    \item \textbf{Sampling Mode}: State mode synchronized to the DUT system clock up to 400\,MHz, or asynchronous timing mode at 2.5\,GS/s.
+    \item \textbf{Trigger Condition}: Configured to trigger on JTAG state transition sequence (TMS low to high) or PCIe packet framing errors.
+    \item \textbf{Signal Mapping}: Pre-configured template \texttt{nimbus5\_evb\_v2.xml} mapping the 128 physical probe channels to JTAG, SPI, I2C, and DDR controller control lines.
+\end{itemize}

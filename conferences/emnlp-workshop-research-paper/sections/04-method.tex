@@ -1,0 +1,72 @@
+\section{Method}
+\label{sec:method}
+
+\sys{VertexTag} is a four-stage pipeline: a shared encoder, a span
+detector, a candidate generator, and a neural reranker. Figure~\ref{fig:architecture}
+shows the full pipeline; we describe each stage below.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=0.5cm and 0.9cm,
+  box/.style={rectangle, rounded corners=2pt, draw=wsindigo, thick,
+    fill=wslight, text width=3.4cm, align=center, minimum height=0.85cm,
+    font=\small},
+  arrow/.style={-{Latex[length=2mm,width=1.6mm]}, thick, wsteal}
+]
+\node[box] (input) {Input sentence};
+\node[box, below=of input] (encoder) {Shared multilingual encoder};
+\node[box, below=of encoder] (span) {Span detector (CRF layer)};
+\node[box, below=of span] (cand) {Candidate generator: gazetteer lookup + fuzzy match};
+\node[box, below=of cand] (rerank) {Neural reranker};
+\node[box, below=of rerank] (output) {Normalized entity};
+
+\draw[arrow] (input) -- (encoder);
+\draw[arrow] (encoder) -- (span);
+\draw[arrow] (span) -- (cand);
+\draw[arrow] (cand) -- (rerank);
+\draw[arrow] (rerank) -- (output);
+\end{tikzpicture}
+\caption{\sys{VertexTag} pipeline. The encoder is shared across all four
+languages; the candidate generator and reranker are the two components
+studied in the ablation in Section~\ref{sec:analysis}.}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Shared Encoder}
+We fine-tune a single multilingual masked-language-model encoder
+(mBERT-style, 12 layers) jointly on all four languages, rather than
+training four monolingual encoders. Pooling training data across
+languages is especially valuable for Amharic, our lowest-resource
+language, which benefits from parameter sharing with the three larger
+languages during fine-tuning.
+
+\subsection{Span Detector}
+A linear-chain CRF layer is placed on top of the encoder's token
+representations to detect entity spans and assign a coarse type (one of
+the six categories in Section~\ref{sec:task-data}). We use a CRF rather
+than independent per-token softmax because entity boundaries in
+agglutinative languages such as Swahili and Amharic are frequently
+ambiguous at the subword level, and the CRF's transition scores reduce
+boundary-splitting errors relative to greedy decoding.
+
+\subsection{Candidate Generator}
+For each detected span, we generate a ranked list of at most 20 candidate
+canonical forms by combining two sources: (i) exact and prefix lookups
+against the language's gazetteer, and (ii) a Damerau--Levenshtein fuzzy
+match over the same gazetteer, thresholded at edit distance $\leq 2$ for
+spans under 12 characters and $\leq 3$ otherwise. The fuzzy matcher is
+deliberately permissive; precision is recovered downstream by the
+reranker rather than by tightening the threshold, which we found costs
+recall on diacritic-dropped and code-switched mentions (Section~\ref{sec:analysis}).
+
+\subsection{Neural Reranker}
+The reranker scores each (span, candidate) pair using three features: the
+encoder's contextual representation of the span, a character-level
+embedding of the edit-distance alignment between span and candidate, and
+a document-frequency prior for the candidate within the current document.
+These are concatenated and passed through a two-layer feed-forward network
+trained with a pairwise hinge loss against the gold candidate, margin
+$0.2$. At inference, the top-scoring candidate is emitted, or
+\texttt{NIL} if no candidate scores above a per-language threshold tuned
+on the development split.

@@ -1,0 +1,100 @@
+\section{Error Handling and Resilience Policy}
+
+\subsection{Standard Error Envelope}
+Every non-2xx REST response, and every failure event published to the bus, uses the same
+envelope so that a client can write one error-handling path for the whole platform.
+
+\begin{lstlisting}
+{
+  "error": {
+    "code": "ERR_RATE_LIMITED",
+    "message": "Client exceeded 300 requests/minute for this service.",
+    "retryable": true,
+    "requestId": "req_c81f2e90",
+    "details": { "retryAfterMs": 4000 }
+  }
+}
+\end{lstlisting}
+
+\subsection{Error Code Registry}
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}l l X c@{}}
+\toprule
+\textbf{HTTP} & \textbf{Internal Code} & \textbf{Meaning} & \textbf{Retryable} \\
+\midrule
+400 & \code{ERR\_VALIDATION}          & Request failed schema validation & No \\
+401 & \code{ERR\_AUTH\_INVALID}       & Missing or expired bearer token & No \\
+404 & \code{ERR\_NOT\_FOUND}          & Resource does not exist & No \\
+409 & \code{ERR\_CONFLICT}            & Idempotency key reused with a different payload & No \\
+429 & \code{ERR\_RATE\_LIMITED}       & Client exceeded its rate limit & Yes \\
+503 & \code{ERR\_UPSTREAM\_UNAVAILABLE} & A required downstream dependency is unavailable & Yes \\
+\bottomrule
+\end{tabularx}
+\caption{Canonical error codes shared across every service in Section~2.2.}
+\end{table}
+
+\subsection{Retry and Backoff Policy}
+Clients retrying a \code{retryable: true} error must use exponential backoff with jitter,
+starting at 200\,ms, doubling each attempt, capped at 5\,s, with up to 20\% random jitter added
+on top of the nominal delay. Figure~\ref{fig:backoff} shows the resulting envelope over six
+attempts.
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.85\linewidth, height=5.2cm,
+  xlabel={Retry attempt}, ylabel={Delay (seconds)},
+  xmin=1, xmax=6, ymin=0, ymax=6.5,
+  xtick={1,2,3,4,5,6},
+  legend pos=north west, legend style={font=\footnotesize, draw=vertexslate!40},
+  axis lines=left,
+  tick label style={font=\footnotesize},
+  label style={font=\footnotesize}
+]
+\addplot[synapseteal, thick, mark=*, mark size=1.6pt] coordinates {
+  (1,0.2) (2,0.4) (3,0.8) (4,1.6) (5,3.2) (6,5.0)
+};
+\addlegendentry{Base delay}
+\addplot[alertred, thick, dashed, mark=triangle*, mark size=2pt] coordinates {
+  (1,0.24) (2,0.48) (3,0.96) (4,1.92) (5,3.84) (6,6.0)
+};
+\addlegendentry{Upper bound with jitter}
+\end{axis}
+\end{tikzpicture}
+\caption{Exponential backoff envelope: nominal delay and worst-case delay with jitter, capped at attempt 6.}
+\label{fig:backoff}
+\end{figure}
+
+\subsection{Circuit Breaker Configuration}
+Each service maintains a circuit breaker per downstream dependency it calls synchronously.
+Thresholds are evaluated over a rolling request window, not a fixed time interval.
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}X c c c@{}}
+\toprule
+\textbf{Dependency} & \textbf{Failure Threshold} & \textbf{Open Duration} & \textbf{Half-Open Trials} \\
+\midrule
+Payment Gateway Adapter        & 50\% of 20-req window & 30s & 3 \\
+Inventory Ledger Service       & 60\% of 20-req window & 20s & 3 \\
+Notification Dispatch Service  & 70\% of 30-req window & 45s & 5 \\
+\bottomrule
+\end{tabularx}
+\caption{Circuit breaker thresholds by downstream dependency.}
+\end{table}
+
+\begin{warnbox}
+While a circuit is open, the calling service must fail fast with \code{ERR\_UPSTREAM\_UNAVAILABLE}
+rather than queue requests. Queuing during an open circuit is the single most common cause of
+cascading timeouts observed in past incident reviews and is explicitly disallowed.
+\end{warnbox}
+
+\subsection{Dead-Letter Handling}
+An event that fails processing after 5 consumer retries is moved to a
+\code{\{topic\}.dlq} topic with the original envelope plus a \code{failureReason} field, and
+retained for 30 days. Moving an event to a dead-letter topic does not remove it from the
+source topic; consumers must track their own offset to avoid reprocessing on restart.

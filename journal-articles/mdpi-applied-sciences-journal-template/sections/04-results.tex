@@ -1,0 +1,60 @@
+\section{Results}
+Table~\ref{tab:results} summarizes tile-level classification performance and inference latency for the three compared architectures on the Synapse-AM held-out test set. DefectNet-Hybrid attains the highest accuracy and macro F1 while remaining more than four times faster than the pure-ViT baseline, reflecting the reduced token count entering the attention stage.
+
+\begin{table}[H]
+\centering
+\caption{Tile-level performance on the Synapse-AM test partition (mean $\pm$ standard deviation over five training seeds).}
+\label{tab:results}
+\begin{tabular}{lccccc}
+\toprule
+\rowcolor{mdpiblue}
+\textcolor{white}{\textbf{Model}} & \textcolor{white}{\textbf{Accuracy (\%)}} & \textcolor{white}{\textbf{Precision}} & \textcolor{white}{\textbf{Recall}} & \textcolor{white}{\textbf{Macro F1}} & \textcolor{white}{\textbf{Latency (ms)}} \\
+\midrule
+ResNet-50 (baseline) & 89.3 $\pm$ 0.4 & 0.881 & 0.876 & 0.879 & 6.8 \\
+Vision Transformer (ViT-S) & 93.7 $\pm$ 0.3 & 0.928 & 0.919 & 0.923 & 39.4 \\
+\rowcolor{mdpilight}
+DefectNet-Hybrid (proposed) & \textbf{96.1 $\pm$ 0.2} & \textbf{0.951} & \textbf{0.944} & \textbf{0.947} & \textbf{9.1} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Per-class performance reveals where the hybrid design contributes most. Figure~\ref{fig:f1} compares macro F1 broken down by defect class for the ResNet-50 baseline and DefectNet-Hybrid. The largest gain, 11.4 points, occurs on delamination, the class most reliant on the long-range spatial context that the transformer stage supplies; porosity, which is dominated by compact local texture, shows the smallest gain, consistent with a CNN stem already capturing most of the discriminative signal for that class.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.92\linewidth,
+  height=6.2cm,
+  ybar,
+  bar width=13pt,
+  ymin=0,ymax=1.0,
+  ylabel={Macro F1-score},
+  symbolic x coords={Porosity,Lack-of-Fusion,Cracking,Delamination},
+  xtick=data,
+  enlarge x limits=0.18,
+  legend style={at={(0.5,-0.22)},anchor=north,legend columns=-1,draw=none,font=\footnotesize},
+  ylabel style={font=\footnotesize},
+  tick label style={font=\footnotesize},
+  axis line style={mdpigray},
+  ymajorgrids=true,
+  grid style={dashed,gray!25},
+  axis lines*=left,
+  every axis plot/.append style={draw=none},
+]
+\addplot[fill=mdpigray!55] coordinates {
+  (Porosity,0.951) (Lack-of-Fusion,0.902) (Cracking,0.834) (Delamination,0.788)
+};
+\addplot[fill=mdpiblue] coordinates {
+  (Porosity,0.968) (Lack-of-Fusion,0.951) (Cracking,0.939) (Delamination,0.902)
+};
+\legend{ResNet-50 (baseline), DefectNet-Hybrid (proposed)}
+\end{axis}
+\end{tikzpicture}
+\caption{Per-class macro F1-score on the Synapse-AM test partition, ResNet-50 baseline versus the proposed DefectNet-Hybrid architecture.}
+\label{fig:f1}
+\end{figure}
+
+Over the eleven-build pilot deployment on the Apex Alloy-220 line, 47 operator alerts were issued; retrospective CT analysis confirmed 39 as true positives (83\% precision in the field, below the held-out test precision as expected under production illumination drift). Builds flagged and corrected mid-process showed a 34\% reduction in CT-detected rejection rate relative to the preceding eleven-build baseline window without inline inspection.
+
+% ------------------------------ SECTION 5 -----------------------------------

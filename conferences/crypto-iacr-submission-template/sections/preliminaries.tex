@@ -1,0 +1,21 @@
+\section{Preliminaries}
+\label{sec:prelims}
+
+In this section, we establish the mathematical notations, algebraic settings, and cryptographic hardness assumptions that underpin the Vertex protocol.
+
+\subsection{Notation}
+For a security parameter $\secparam \in \mathbb{N}$, we denote by $\negl(\secparam)$ a negligible function. We denote the ring of integers as $\Z$ and the field of rational numbers as $\Q$. For an integer $q \ge 2$, we denote the ring of integers modulo $q$ as $\Z_q$. We denote the polynomial ring $\Ring = \Z[X]/(X^d + 1)$, where $d$ is a power of 2, and $\Ringq = \Z_q[X]/(X^d + 1)$ represents the polynomial ring modulo $q$.
+Vectors are represented in bold lowercase letters (e.g., $\vectorbf{a}, \vectorbf{s}$) and matrices are denoted in bold uppercase letters (e.g., $\vectorbf{A}$). For a vector $\vectorbf{v} \in \Ring^n$, we write $\|\vectorbf{v}\|_2$ to denote its $\ell_2$-norm.
+
+\subsection{Hardness Assumptions}
+The security of Vertex relies on the hardness of the Short Integer Solution (SIS) and Learning With Errors (LWE) problems over polynomial rings, which we formalize below.
+
+\begin{definition}[Ring-LWE Decision Problem]
+Let $\secparam$ be the security parameter, $d = d(\secparam)$ a power of 2, $q = q(\secparam) \ge 2$ an integer, and $\chi$ a error distribution over $\Ring$. For a secret $\vectorbf{s} \in \Ringq$, the Ring-LWE distribution $\mathcal{A}_{\vectorbf{s}, \chi}$ is obtained by choosing $\vectorbf{a} \leftarrow \Ringq$ uniformly at random, $e \leftarrow \chi$, and outputting $(\vectorbf{a}, \vectorbf{a} \cdot \vectorbf{s} + e) \in \Ringq^2$. The Ring-LWE problem is to distinguish between $m$ independent samples from $\mathcal{A}_{\vectorbf{s}, \chi}$ and $m$ independent samples from the uniform distribution over $\Ringq^2$.
+\end{definition}
+
+In Vertex, we work with the Module-LWE variation when scaling to larger dimensions. In this setting, the commitments are represented as matrix operations:
+\begin{equation}
+  \vectorbf{t} = \vectorbf{A}\vectorbf{s} + \vectorbf{e} \pmod q
+\end{equation}
+where $\vectorbf{A} \in \Ringq^{k \times l}$ is a public matrix, $\vectorbf{s} \in \Ringq^l$ is the secret vector, and $\vectorbf{e} \in \Ringq^k$ is a small error vector drawn from the distribution $\chi^k$.

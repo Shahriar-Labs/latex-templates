@@ -1,0 +1,35 @@
+\section{Related Work}
+
+\textbf{Multilingual and low-resource NER.} Cross-lingual transfer with
+shared subword encoders substantially narrowed the gap between
+high-resource and low-resource named-entity recognition
+\citep{oyelaran2022lowresource}, but transfer quality still tracks the
+morphological distance between source and target languages
+\citep{ferreira2019attention}. Span-based formulations of joint entity and
+relation extraction \citep{tanaka2020span} generalize more gracefully to
+new entity types than sequence-tagging formulations, which is part of why
+we adopt a span detector rather than a BIO tagger in \sys{VertexTag}.
+
+\textbf{Entity normalization and linking.} Normalization is often treated
+as a downstream step of entity linking, where a candidate generator
+proposes canonical forms and a reranker scores them against context
+\citep{schneider2020adapter}. Most prior candidate generators are built for
+Wikipedia-scale knowledge bases; the AfricaNLP shared task instead supplies
+smaller, curated gazetteers, which changes the trade-off between recall
+(favoring aggressive fuzzy matching) and precision (favoring a strong
+reranker) that a system must strike.
+
+\textbf{Discourse and document-level consistency.} Because the same entity
+often appears multiple times in a document under different surface forms,
+normalization quality is tied to document-level coherence modeling
+\citep{nakamura2021survey}. We do not model discourse explicitly in
+\sys{VertexTag}, but our error analysis in Section~\ref{sec:analysis}
+suggests that document-level re-scoring of low-confidence normalizations is
+a promising direction for future shared-task submissions.
+
+\textbf{Evaluation under drift.} Automatic metrics for text generation and
+extraction tasks are known to be sensitive to distribution shift between
+development and test splits \citep{kapoor2022evaluation,
+ibrahim2023calibration}. The AfricaNLP organizers mitigated this by drawing
+the test split from a later time window than training and development data;
+Section~\ref{sec:task-data} describes the resulting split in detail.

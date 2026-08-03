@@ -1,0 +1,998 @@
+\documentclass[10pt,aspectratio=169]{beamer}
+
+% -----------------------------------------------------------------------------
+% Project Northstar — illustrative M&A pitch book
+% Compile with: latexmk -pdf -interaction=nonstopmode main.tex
+% All companies, figures, and transaction terms are illustrative.
+% -----------------------------------------------------------------------------
+
+\usepackage[T1]{fontenc}
+\usepackage[default]{sourcesanspro}
+\usepackage{sourceserifpro}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{ragged2e}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{fontawesome5}
+\usepackage{amsmath}
+\usepackage{siunitx}
+
+\usetikzlibrary{arrows.meta,calc,positioning,shapes.geometric,patterns,decorations.pathreplacing}
+\pgfplotsset{compat=1.18}
+\sisetup{detect-all,group-separator={,},group-minimum-digits=4}
+
+% ----- Brand palette ---------------------------------------------------------
+\definecolor{Navy}{HTML}{0B1F33}
+\definecolor{Midnight}{HTML}{122E49}
+\definecolor{Blue}{HTML}{1D70A2}
+\definecolor{Sky}{HTML}{73B8E6}
+\definecolor{Teal}{HTML}{19A7A0}
+\definecolor{Mint}{HTML}{BCE8E5}
+\definecolor{Gold}{HTML}{D9A441}
+\definecolor{Coral}{HTML}{E56B5D}
+\definecolor{Ink}{HTML}{23313F}
+\definecolor{Slate}{HTML}{627180}
+\definecolor{Cloud}{HTML}{F3F6F8}
+\definecolor{Mist}{HTML}{E5EBEF}
+\definecolor{White}{HTML}{FFFFFF}
+\definecolor{Positive}{HTML}{2E8B70}
+\definecolor{Negative}{HTML}{C64B50}
+
+% ----- Beamer reset and typography ------------------------------------------
+\usetheme{default}
+\usefonttheme{professionalfonts}
+\setbeamertemplate{navigation symbols}{}
+\setbeamersize{text margin left=0.58cm,text margin right=0.58cm}
+\setbeamercolor{normal text}{fg=Ink,bg=White}
+\setbeamercolor{frametitle}{fg=Navy,bg=White}
+\setbeamerfont{frametitle}{size=\Large,series=\bfseries}
+\setbeamerfont{title}{series=\bfseries}
+\setbeamerfont{subtitle}{series=\mdseries}
+\setbeamerfont{footline}{size=\fontsize{5.8}{6.5}\selectfont}
+\setbeamercolor{itemize item}{fg=Teal}
+\setbeamercolor{itemize subitem}{fg=Blue}
+\setbeamertemplate{itemize item}{\raise0.2ex\hbox{\scriptsize\textcolor{Teal}{\faCircle}}}
+\setbeamertemplate{itemize subitem}{\raise0.2ex\hbox{\tiny\textcolor{Blue}{\faCircle}}}
+\setlength{\tabcolsep}{4pt}
+
+% ----- Reusable layout components -------------------------------------------
+\newcommand{\ProjectName}{PROJECT NORTHSTAR}
+\newcommand{\CompanyName}{Asteria Systems}
+\newcommand{\BankName}{NORTHBRIDGE PARTNERS}
+\newcommand{\AsOfDate}{August 2026}
+
+\newcommand{\eyebrow}[1]{%
+  {\fontsize{6.5}{7}\selectfont\bfseries\color{Teal}\MakeUppercase{#1}}\par\vspace{0.06cm}}
+
+\newcommand{\slidesubtitle}[1]{%
+  \vspace{-0.18cm}{\fontsize{7.5}{9}\selectfont\color{Slate}#1}\par\vspace{0.14cm}}
+
+\newcommand{\pill}[2][Teal]{%
+  \tikz[baseline=-0.55ex]\node[rounded corners=1.8pt,fill=#1!12,inner xsep=5pt,inner ysep=2.2pt]
+  {\fontsize{6.2}{6.2}\selectfont\bfseries\color{#1}#2};}
+
+\newcommand{\metric}[4][Teal]{%
+  \begin{beamercolorbox}[wd=\linewidth,sep=0.11cm,rounded=true]{normal text}%
+    \begin{tikzpicture}
+      \fill[#1] (0,0) rectangle (0.055,0.95);
+      \node[anchor=north west,text=Slate,font=\fontsize{5.2}{5.8}\selectfont\bfseries]
+        at (0.15,0.91) {\MakeUppercase{#2}};
+      \node[anchor=west,text=Navy,font=\fontsize{14}{14}\selectfont\bfseries]
+        at (0.15,0.50) {#3};
+      \node[anchor=south west,text=Slate,font=\fontsize{5.0}{5.6}\selectfont]
+        at (0.15,0.03) {#4};
+    \end{tikzpicture}
+  \end{beamercolorbox}}
+
+\newcommand{\card}[3][Teal]{%
+  \begin{tikzpicture}
+    \node[anchor=north west,rounded corners=2pt,draw=Mist,fill=White,
+      minimum width=\linewidth,minimum height=1.55cm,inner sep=0pt] (box) at (0,0) {};
+    \fill[#1] (box.north west) rectangle ([xshift=0.055cm]box.south west);
+    \node[anchor=north west,text=Navy,text width=0.87\linewidth,
+      font=\fontsize{7.4}{8.3}\selectfont\bfseries] at ([xshift=0.16cm,yshift=-0.14cm]box.north west) {#2};
+    \node[anchor=north west,text=Slate,text width=0.87\linewidth,
+      font=\fontsize{6.2}{7.4}\selectfont,align=left] at ([xshift=0.16cm,yshift=-0.55cm]box.north west) {#3};
+  \end{tikzpicture}}
+
+\newcommand{\source}[1]{%
+  \vfill{\fontsize{4.8}{5.5}\selectfont\color{Slate}\textit{Source: #1}}}
+
+\newcommand{\confidential}{%
+  {\fontsize{5.5}{6}\selectfont\bfseries\color{Coral}STRICTLY PRIVATE \& CONFIDENTIAL}}
+
+\newcommand{\sectiondivider}[3]{%
+  \begin{frame}[plain]
+    \begin{tikzpicture}[remember picture,overlay]
+      \fill[Navy] (current page.south west) rectangle (current page.north east);
+      \fill[Teal] (current page.south west) rectangle ([xshift=0.16cm]current page.north west);
+      \node[anchor=north west,text=Teal,font=\fontsize{8}{9}\selectfont\bfseries]
+        at ([xshift=0.72cm,yshift=-0.72cm]current page.north west) {#1};
+      \node[anchor=west,text=White,text width=12.5cm,font=\fontsize{20.5}{22}\selectfont\bfseries]
+        at ([xshift=0.72cm,yshift=0.30cm]current page.west) {#2};
+      \node[anchor=north west,text=Sky,text width=12.2cm,font=\fontsize{9}{12}\selectfont]
+        at ([xshift=0.72cm,yshift=-0.40cm]current page.west) {#3};
+      \draw[Sky!30,line width=0.4pt] ([xshift=0.72cm,yshift=0.72cm]current page.south west)
+        -- ([xshift=-0.72cm,yshift=0.72cm]current page.south east);
+      \node[anchor=south west,text=White!60,font=\fontsize{5.8}{6}\selectfont]
+        at ([xshift=0.72cm,yshift=0.27cm]current page.south west) {\BankName};
+      \node[anchor=south east,text=White!60,font=\fontsize{5.8}{6}\selectfont]
+        at ([xshift=-0.72cm,yshift=0.27cm]current page.south east) {\ProjectName};
+    \end{tikzpicture}
+  \end{frame}}
+
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=0.82cm,dp=0.10cm,leftskip=0.58cm,rightskip=0.58cm]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle
+    \hfill\raisebox{0.2ex}{\fontsize{5.5}{6}\selectfont\bfseries\color{Slate}\ProjectName}
+  \end{beamercolorbox}
+  \vspace{-0.02cm}\hspace{0.58cm}\color{Mist}\rule{\dimexpr\paperwidth-1.16cm\relax}{0.35pt}
+}
+
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+  \begin{beamercolorbox}[wd=.78\paperwidth,ht=0.33cm,dp=0.13cm,leftskip=0.58cm]{footline}%
+    \color{Slate}\BankName\quad |\quad \confidential
+  \end{beamercolorbox}%
+  \begin{beamercolorbox}[wd=.22\paperwidth,ht=0.33cm,dp=0.13cm,rightskip=0.58cm plus1fil]{footline}%
+    \hfill\color{Slate}\insertframenumber
+  \end{beamercolorbox}}}
+
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+\begin{document}
+
+% =============================================================================
+% COVER
+% =============================================================================
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[Navy] (current page.south west) rectangle (current page.north east);
+    \fill[Midnight] ([xshift=9.5cm]current page.south west) rectangle (current page.north east);
+    \foreach \x in {0,...,8}{
+      \draw[Sky!8,line width=0.35pt] ([xshift={9.5cm+0.55*\x cm}]current page.south west)
+        -- ([xshift={6.0cm+0.55*\x cm}]current page.north east);
+    }
+    \fill[Teal] ([xshift=0.68cm,yshift=-0.68cm]current page.north west)
+      rectangle ([xshift=0.82cm,yshift=-6.85cm]current page.north west);
+    \node[anchor=north west,text=White,font=\fontsize{9}{10}\selectfont\bfseries]
+      at ([xshift=1.10cm,yshift=-0.75cm]current page.north west) {\BankName};
+    \node[anchor=north east,text=Coral,font=\fontsize{6.5}{7}\selectfont\bfseries]
+      at ([xshift=-0.72cm,yshift=-0.78cm]current page.north east) {STRICTLY PRIVATE \& CONFIDENTIAL};
+
+    \node[anchor=west,text=Teal,font=\fontsize{8}{9}\selectfont\bfseries]
+      at ([xshift=1.10cm,yshift=1.20cm]current page.west) {\ProjectName};
+    \node[anchor=west,text=White,text width=10.6cm,font=\fontsize{27}{29}\selectfont\bfseries]
+      at ([xshift=1.10cm,yshift=0.27cm]current page.west) {Strategic Alternatives \& M\&A Positioning};
+    \node[anchor=north west,text=Sky,text width=9.8cm,font=\fontsize{10}{12}\selectfont]
+      at ([xshift=1.10cm,yshift=-0.85cm]current page.west) {Prepared for the Board of Directors of \CompanyName};
+
+    \node[anchor=south west,text=White!70,font=\fontsize{7}{8}\selectfont]
+      at ([xshift=1.10cm,yshift=0.70cm]current page.south west) {\AsOfDate\quad |\quad Illustrative discussion materials};
+    \node[anchor=south east,text=White!35,font=\fontsize{31}{31}\selectfont\bfseries]
+      at ([xshift=-0.70cm,yshift=0.48cm]current page.south east) {N};
+  \end{tikzpicture}
+\end{frame}
+
+% =============================================================================
+% EXECUTIVE SUMMARY
+% =============================================================================
+\begin{frame}{Executive summary}
+  \slidesubtitle{Asteria is at an inflection point where scale, recurring revenue quality, and strategic scarcity support a premium outcome}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.66\textwidth}
+      \eyebrow{Our preliminary perspective}
+      \begin{tikzpicture}
+        \node[anchor=north west,rounded corners=3pt,fill=Navy,minimum width=\linewidth,minimum height=1.20cm] (a) at (0,0) {};
+        \node[anchor=west,text=White,text width=0.92\linewidth,font=\fontsize{9.0}{11}\selectfont\bfseries]
+          at ([xshift=0.22cm]a.west) {A targeted sale process can credibly position Asteria at \textcolor{Mint}{\$1.5--\$1.8bn enterprise value}, with upside for control scarcity and actionable synergies.};
+      \end{tikzpicture}
+      \vspace{0.14cm}
+      \begin{columns}[T,onlytextwidth]
+        \begin{column}{0.49\textwidth}
+          \card[Teal]{Premium asset profile}{92\% recurring revenue, 118\% net retention and 31\% EBITDA growth distinguish Asteria from scaled peers.}
+          \vspace{0.09cm}
+          \card[Blue]{Multiple buyer paths}{Strategics can underwrite revenue and cost synergies; sponsors can pair durable cash flow with add-on M\&A.}
+        \end{column}
+        \begin{column}{0.49\textwidth}
+          \card[Gold]{Timing favors action}{Category consolidation and a limited scaled target set create a credible scarcity narrative today.}
+          \vspace{0.09cm}
+          \card[Coral]{Preparation matters}{Quality of earnings, cohort proof points, and management continuity are the principal value-protection workstreams.}
+        \end{column}
+      \end{columns}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \eyebrow{Illustrative 2026E profile}
+      \metric[Teal]{Revenue}{\$184m}{22\% year-over-year growth}
+      \vspace{0.08cm}
+      \metric[Blue]{Adj. EBITDA}{\$46m}{25\% margin}
+      \vspace{0.08cm}
+      \metric[Gold]{Indicative EV}{\$1.5--1.8bn}{8.2--9.8x 2026E revenue}
+    \end{column}
+  \end{columns}
+  \source{Management information and Northbridge Partners analysis. All figures are illustrative.}
+\end{frame}
+
+\begin{frame}{Today’s discussion}
+  \slidesubtitle{We propose aligning on positioning, valuation, buyer strategy, and the path to a decision-ready process}
+  \vspace{0.16cm}
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \draw[Mist,line width=1.6pt] (0.8,2.60) -- (14.0,2.60);
+    \foreach \x/\n/\title/\desc/\col in {
+      1.0/01/Context/Why consider action now/Teal,
+      3.65/02/Positioning/How buyers will see Asteria/Blue,
+      6.30/03/Valuation/What the business may be worth/Gold,
+      8.95/04/Execution/Who to approach and how/Coral,
+      11.60/05/Decision/Recommended path forward/Positive}{
+      \fill[\col] (\x,2.60) circle (0.19);
+      \node[anchor=south west,text=\col,font=\fontsize{7}{8}\selectfont\bfseries] at (\x-0.18,2.92) {\n};
+      \node[anchor=north west,text=Navy,text width=2.2cm,font=\fontsize{9}{10}\selectfont\bfseries] at (\x-0.18,2.28) {\title};
+      \node[anchor=north west,text=Slate,text width=2.2cm,font=\fontsize{6.5}{7.8}\selectfont] at (\x-0.18,1.78) {\desc};
+    }
+  \end{tikzpicture}
+  \vspace{0.18cm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.32\textwidth}\card[Teal]{Board objective}{Maximize value while preserving certainty, confidentiality, and strategic flexibility.}\end{column}
+    \begin{column}{0.32\textwidth}\card[Blue]{Key decision}{Whether to launch a controlled process following an eight-week readiness sprint.}\end{column}
+    \begin{column}{0.32\textwidth}\card[Gold]{Today’s ask}{Confirm valuation expectations, buyer perimeter, and preparation priorities.}\end{column}
+  \end{columns}
+\end{frame}
+
+\sectiondivider{01}{Strategic context}{Asteria combines an attractive market, differentiated operating model, and credible path to scaled category leadership.}
+
+\begin{frame}{The case for action is strengthening}
+  \slidesubtitle{Four converging factors create an attractive window to evaluate strategic alternatives}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.23\textwidth}
+      \begin{tikzpicture}\node[rounded corners=3pt,fill=Teal!10,minimum width=\linewidth,minimum height=4.55cm] (b) {};
+        \node[text=Teal,font=\fontsize{18}{18}\selectfont] at ([yshift=1.46cm]b.center) {\faChartLine};
+        \node[text=Navy,text width=2.55cm,align=center,font=\fontsize{9}{10}\selectfont\bfseries] at ([yshift=0.75cm]b.center) {Category growth};
+        \node[text=Slate,text width=2.55cm,align=center,font=\fontsize{6.6}{8}\selectfont] at ([yshift=-0.20cm]b.center) {Automation spend is shifting from point tools toward integrated workflow platforms.};
+        \node[text=Teal,font=\fontsize{13}{13}\selectfont\bfseries] at ([yshift=-1.48cm]b.center) {17\%};
+        \node[text=Slate,font=\fontsize{5.4}{6}\selectfont] at ([yshift=-1.78cm]b.center) {2025--30E MARKET CAGR};\end{tikzpicture}
+    \end{column}
+    \begin{column}{0.23\textwidth}
+      \begin{tikzpicture}\node[rounded corners=3pt,fill=Blue!10,minimum width=\linewidth,minimum height=4.55cm] (b) {};
+        \node[text=Blue,font=\fontsize{18}{18}\selectfont] at ([yshift=1.46cm]b.center) {\faPuzzlePiece};
+        \node[text=Navy,text width=2.55cm,align=center,font=\fontsize{9}{10}\selectfont\bfseries] at ([yshift=0.75cm]b.center) {Strategic fit};
+        \node[text=Slate,text width=2.55cm,align=center,font=\fontsize{6.6}{8}\selectfont] at ([yshift=-0.20cm]b.center) {Asteria fills product, data, and mid-market distribution gaps for scaled platforms.};
+        \node[text=Blue,font=\fontsize{13}{13}\selectfont\bfseries] at ([yshift=-1.48cm]b.center) {10+};
+        \node[text=Slate,font=\fontsize{5.4}{6}\selectfont] at ([yshift=-1.78cm]b.center) {CREDIBLE STRATEGIC BUYERS};\end{tikzpicture}
+    \end{column}
+    \begin{column}{0.23\textwidth}
+      \begin{tikzpicture}\node[rounded corners=3pt,fill=Gold!11,minimum width=\linewidth,minimum height=4.55cm] (b) {};
+        \node[text=Gold,font=\fontsize{18}{18}\selectfont] at ([yshift=1.46cm]b.center) {\faGem};
+        \node[text=Navy,text width=2.55cm,align=center,font=\fontsize{9}{10}\selectfont\bfseries] at ([yshift=0.75cm]b.center) {Asset scarcity};
+        \node[text=Slate,text width=2.55cm,align=center,font=\fontsize{6.6}{8}\selectfont] at ([yshift=-0.20cm]b.center) {Few independent assets combine scale, retention, profitability, and proprietary data.};
+        \node[text=Gold,font=\fontsize{13}{13}\selectfont\bfseries] at ([yshift=-1.48cm]b.center) {3};
+        \node[text=Slate,font=\fontsize{5.4}{6}\selectfont] at ([yshift=-1.78cm]b.center) {SCALED INDEPENDENT PEERS};\end{tikzpicture}
+    \end{column}
+    \begin{column}{0.23\textwidth}
+      \begin{tikzpicture}\node[rounded corners=3pt,fill=Coral!10,minimum width=\linewidth,minimum height=4.55cm] (b) {};
+        \node[text=Coral,font=\fontsize{18}{18}\selectfont] at ([yshift=1.46cm]b.center) {\faFlagCheckered};
+        \node[text=Navy,text width=2.55cm,align=center,font=\fontsize{9}{10}\selectfont\bfseries] at ([yshift=0.75cm]b.center) {Execution readiness};
+        \node[text=Slate,text width=2.55cm,align=center,font=\fontsize{6.6}{8}\selectfont] at ([yshift=-0.20cm]b.center) {Predictable KPIs and a deep leadership bench support diligence and transition.};
+        \node[text=Coral,font=\fontsize{13}{13}\selectfont\bfseries] at ([yshift=-1.48cm]b.center) {8 wks};
+        \node[text=Slate,font=\fontsize{5.4}{6}\selectfont] at ([yshift=-1.78cm]b.center) {EST. READINESS SPRINT};\end{tikzpicture}
+    \end{column}
+  \end{columns}
+  \source{Management information, third-party market studies, and Northbridge Partners analysis. Illustrative.}
+\end{frame}
+
+\begin{frame}[shrink=8]{Asteria at a glance}
+  \slidesubtitle{A workflow automation platform with enterprise-grade capabilities and a capital-efficient growth model}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.40\textwidth}
+      \eyebrow{Company overview}
+      {\fontsize{8}{10}\selectfont\color{Ink}\justifying
+      Asteria enables mid-market and enterprise customers to automate complex, regulated workflows through a configurable low-code platform. Its embedded data layer, pre-built integrations, and domain-specific templates shorten time to value and create durable switching costs.\par}
+      \vspace{0.20cm}
+      {\fontsize{6.5}{7.6}\selectfont
+      \begin{tabularx}{\linewidth}{@{}>{\bfseries\color{Navy}}p{1.45cm}Y@{}}
+        Founded & 2016 \quad | \quad Austin, Texas \\
+        Employees & 610 across 8 offices \\
+        Customers & 1,240; 38\% enterprise \\
+        End markets & Financial services, healthcare, industrials \\
+        Ownership & Founders, employees, and growth investors \\
+      \end{tabularx}}
+      \vspace{0.20cm}
+      \pill[Teal]{MISSION-CRITICAL}\quad\pill[Blue]{API-FIRST}\quad\pill[Gold]{AI-ENABLED}
+    \end{column}
+    \begin{column}{0.57\textwidth}
+      \eyebrow{Key performance indicators}
+      \begin{columns}[T,onlytextwidth]
+        \begin{column}{0.32\textwidth}\metric[Teal]{ARR}{\$191m}{24\% YoY growth}\end{column}
+        \begin{column}{0.32\textwidth}\metric[Blue]{Gross retention}{95\%}{Best-in-class stability}\end{column}
+        \begin{column}{0.32\textwidth}\metric[Gold]{Net retention}{118\%}{Expansion-led growth}\end{column}
+      \end{columns}
+      \vspace{0.16cm}
+      \begin{columns}[T,onlytextwidth]
+        \begin{column}{0.32\textwidth}\metric[Coral]{Gross margin}{79\%}{+300 bps since 2023}\end{column}
+        \begin{column}{0.32\textwidth}\metric[Positive]{FCF margin}{19\%}{34\% Rule of 40}\end{column}
+        \begin{column}{0.32\textwidth}\metric[Midnight]{NPS}{+61}{Enterprise cohort}\end{column}
+      \end{columns}
+      \vspace{0.22cm}
+      \begin{tikzpicture}
+        \node[rounded corners=2pt,fill=Cloud,minimum width=\linewidth,minimum height=1.05cm] (x) {};
+        \node[anchor=west,text=Navy,font=\fontsize{7.2}{8}\selectfont\bfseries] at ([xshift=0.18cm,yshift=0.18cm]x.west) {Investment thesis};
+        \node[anchor=west,text=Slate,text width=0.92\linewidth,font=\fontsize{6.4}{7.4}\selectfont] at ([xshift=0.18cm,yshift=-0.17cm]x.west) {Durable growth + expanding margins + proprietary workflow data = strategic control value beyond standalone trading multiples.};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+  \source{Management information as of June 2026.}
+\end{frame}
+
+\begin{frame}{Differentiated position in an attractive market}
+  \slidesubtitle{Asteria occupies the high-value whitespace between horizontal automation suites and narrow point solutions}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.59\textwidth}
+      \begin{tikzpicture}[x=1cm,y=1cm]
+        \draw[-{Latex[length=2mm]},Slate,line width=0.6pt] (0.65,0.55) -- (7.65,0.55);
+        \draw[-{Latex[length=2mm]},Slate,line width=0.6pt] (0.65,0.55) -- (0.65,5.0);
+        \node[anchor=north,text=Slate,font=\fontsize{6}{7}\selectfont] at (4.15,0.24) {WORKFLOW COMPLEXITY};
+        \node[rotate=90,anchor=south,text=Slate,font=\fontsize{6}{7}\selectfont] at (0.18,2.77) {DEPLOYMENT FLEXIBILITY};
+        \fill[Cloud] (0.75,0.68) rectangle (4.05,2.72);
+        \fill[Blue!7] (4.15,0.68) rectangle (7.45,2.72);
+        \fill[Teal!7] (0.75,2.82) rectangle (4.05,4.82);
+        \fill[Mint!55] (4.15,2.82) rectangle (7.45,4.82);
+        \node[text=Slate,font=\fontsize{6}{7}\selectfont\bfseries] at (2.40,1.00) {POINT TOOLS};
+        \node[text=Slate,font=\fontsize{6}{7}\selectfont\bfseries] at (5.80,1.00) {LEGACY BPM};
+        \node[text=Slate,font=\fontsize{6}{7}\selectfont\bfseries] at (2.40,4.50) {HORIZONTAL SUITES};
+        \node[rounded corners=14pt,fill=Navy,minimum width=2.0cm,minimum height=0.78cm,text=White,font=\fontsize{8}{8}\selectfont\bfseries] at (5.80,3.68) {ASTERIA};
+        \foreach \x/\y/\t in {1.55/1.55/Pulse,2.75/1.90/Relay,5.05/1.72/Monolith,6.55/2.08/ProcessCo,1.70/3.35/FlowSuite,3.00/3.92/CloudWorks,4.72/3.15/Nexus}{
+          \fill[White] (\x,\y) circle (0.29);\draw[Mist] (\x,\y) circle (0.29);
+          \node[text=Slate,font=\fontsize{4.8}{5}\selectfont\bfseries] at (\x,\y) {\t};}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.38\textwidth}
+      \eyebrow{Why Asteria wins}
+      \card[Teal]{Faster time to value}{Templates and 220+ integrations reduce median deployment to eight weeks.}
+      \vspace{0.08cm}
+      \card[Blue]{Built for complexity}{Rules, audit trails, permissions, and data residency address regulated use cases.}
+      \vspace{0.08cm}
+      \card[Gold]{Compounding data edge}{Anonymized workflow telemetry improves recommendations and customer outcomes.}
+    \end{column}
+  \end{columns}
+  \source{Company websites, management information, and Northbridge Partners analysis. Illustrative market map.}
+\end{frame}
+
+\begin{frame}{Strategic rationale for a potential acquirer}
+  \slidesubtitle{Asteria offers multiple, mutually reinforcing paths to value creation}
+  \begin{tikzpicture}[node distance=0.45cm and 0.52cm]
+    \node[rounded corners=3pt,fill=Navy,text=White,text width=2.35cm,minimum height=1.15cm,align=center,font=\fontsize{9}{10}\selectfont\bfseries] (core) {ASTERIA\\PLATFORM};
+    \node[rounded corners=3pt,fill=Teal!10,draw=Teal!35,text width=2.55cm,minimum height=1.12cm,align=center,right=of core,yshift=1.65cm] (a) {\textbf{\color{Navy}Accelerate growth}\\[-1pt]{\fontsize{6}{7}\selectfont\color{Slate}Cross-sell installed base}};
+    \node[rounded corners=3pt,fill=Blue!9,draw=Blue!30,text width=2.55cm,minimum height=1.12cm,align=center,right=of core,yshift=0.15cm] (b) {\textbf{\color{Navy}Fill product gaps}\\[-1pt]{\fontsize{6}{7}\selectfont\color{Slate}Add regulated workflows}};
+    \node[rounded corners=3pt,fill=Gold!10,draw=Gold!35,text width=2.55cm,minimum height=1.12cm,align=center,right=of core,yshift=-1.35cm] (c) {\textbf{\color{Navy}Expand margins}\\[-1pt]{\fontsize{6}{7}\selectfont\color{Slate}Scale infrastructure and G\&A}};
+    \node[rounded corners=3pt,fill=Teal!10,draw=Teal!35,text width=2.55cm,minimum height=1.12cm,align=center,right=of a,xshift=0.55cm] (d) {\textbf{\color{Navy}Own the data layer}\\[-1pt]{\fontsize{6}{7}\selectfont\color{Slate}Enrich AI and analytics}};
+    \node[rounded corners=3pt,fill=Blue!9,draw=Blue!30,text width=2.55cm,minimum height=1.12cm,align=center,right=of b,xshift=0.55cm] (e) {\textbf{\color{Navy}Deepen retention}\\[-1pt]{\fontsize{6}{7}\selectfont\color{Slate}Embed mission-critical use cases}};
+    \node[rounded corners=3pt,fill=Gold!10,draw=Gold!35,text width=2.55cm,minimum height=1.12cm,align=center,right=of c,xshift=0.55cm] (f) {\textbf{\color{Navy}Gain scarce talent}\\[-1pt]{\fontsize{6}{7}\selectfont\color{Slate}Add 190 R\&D experts}};
+    \foreach \n in {a,b,c}{\draw[-{Latex[length=2mm]},Mist,line width=0.8pt] (core.east) -- (\n.west);}
+    \draw[-{Latex[length=2mm]},Mist,line width=0.8pt] (a.east) -- (d.west);
+    \draw[-{Latex[length=2mm]},Mist,line width=0.8pt] (b.east) -- (e.west);
+    \draw[-{Latex[length=2mm]},Mist,line width=0.8pt] (c.east) -- (f.west);
+  \end{tikzpicture}
+  \vspace{0.18cm}
+  \begin{tikzpicture}
+    \node[rounded corners=2pt,fill=Navy,minimum width=\linewidth,minimum height=0.88cm] (x) {};
+    \node[anchor=west,text=White,text width=0.93\linewidth,font=\fontsize{7.4}{9}\selectfont] at ([xshift=0.22cm]x.west)
+      {\textbf{Control premium logic:} The highest-value owner can underwrite a larger addressable market, lower go-to-market friction, and faster margin realization than Asteria can achieve independently.};
+  \end{tikzpicture}
+\end{frame}
+
+\sectiondivider{02}{Financial profile \& valuation}{Strong recurring growth and visible margin expansion support premium SaaS valuation benchmarks.}
+
+\begin{frame}[shrink=3]{Historical performance and management plan}
+  \slidesubtitle{Asteria expects to sustain 20\%+ growth while expanding adjusted EBITDA margin by approximately 900 bps}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.64\textwidth}
+      \eyebrow{Revenue and adjusted EBITDA margin}
+      \begin{tikzpicture}
+      \begin{axis}[
+        width=\linewidth,height=4.45cm,
+        ybar,bar width=13pt,
+        ymin=0,ymax=300,
+        axis y line*=left,axis x line*=bottom,
+        axis line style={draw=Mist},tick style={draw=none},
+        symbolic x coords={2023A,2024A,2025A,2026E,2027E,2028E},xtick=data,
+        tick label style={font=\fontsize{5.5}{6}\selectfont,text=Slate},
+        ytick={0,50,100,150,200,250,300},yticklabels={\$0,\$50,\$100,\$150,\$200,\$250,\$300},
+        grid=major,grid style={draw=Mist!70},
+        legend style={draw=none,fill=none,font=\fontsize{5.4}{6}\selectfont,at={(0.02,0.98)},anchor=north west},
+        enlarge x limits=0.10]
+        \addplot[fill=Blue,draw=Blue] coordinates {(2023A,101)(2024A,123)(2025A,151)(2026E,184)(2027E,222)(2028E,264)};
+        \addlegendentry{Revenue (\$m)}
+        \addplot[Teal,line width=1.6pt,mark=*,mark size=2pt] coordinates {(2023A,15)(2024A,17)(2025A,21)(2026E,25)(2027E,28)(2028E,30)};
+        \addlegendentry{Adj. EBITDA margin (\%)}
+      \end{axis}
+      \end{tikzpicture}
+      \vspace{-0.08cm}
+      {\fontsize{5.1}{6}\selectfont\color{Slate}\hspace{0.40cm}\textit{Note: EBITDA-margin series is indexed to the chart axis for visual comparison; labels below provide exact values.}}
+    \end{column}
+    \begin{column}{0.33\textwidth}
+      \eyebrow{Plan takeaways}
+      \card[Teal]{21\% revenue CAGR}{Enterprise mix and international expansion drive 2025A--28E growth.}
+      \vspace{0.08cm}
+      \card[Blue]{900 bps margin gain}{Sales productivity and cloud optimization expand profitability.}
+      \vspace{0.08cm}
+      \card[Gold]{38\% Rule of 40}{2028E growth plus FCF margin positions Asteria above peers.}
+    \end{column}
+  \end{columns}
+  \begin{center}
+  \vspace{0.08cm}
+  \begin{tabular}{lrrrrrr}
+    \toprule
+    \rowcolor{Cloud}\textbf{Adj. EBITDA margin} & \textbf{15\%} & \textbf{17\%} & \textbf{21\%} & \textbf{25\%} & \textbf{28\%} & \textbf{30\%} \\
+    \bottomrule
+  \end{tabular}
+  \end{center}
+  \source{Management information. Projections are illustrative and subject to change.}
+\end{frame}
+
+\begin{frame}{Revenue quality underpins visibility}
+  \slidesubtitle{Asteria’s cohort behavior and contract profile reduce risk to the forecast}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.55\textwidth}
+      \eyebrow{ARR by customer cohort (\$m)}
+      \begin{tikzpicture}
+      \begin{axis}[
+        width=\linewidth,height=4.55cm,ybar stacked,bar width=18pt,
+        ymin=0,ymax=210,symbolic x coords={2022A,2023A,2024A,2025A,2026E},xtick=data,
+        axis y line*=left,axis x line*=bottom,axis line style={draw=Mist},tick style={draw=none},
+        tick label style={font=\fontsize{5.5}{6}\selectfont,text=Slate},
+        ytick={0,50,100,150,200},grid=major,grid style={draw=Mist!70},
+        legend style={draw=none,fill=none,font=\fontsize{5}{5.5}\selectfont,legend columns=3,at={(0.5,1.02)},anchor=south},
+        enlarge x limits=0.13]
+        \addplot[fill=Navy,draw=Navy] coordinates {(2022A,52)(2023A,59)(2024A,65)(2025A,71)(2026E,77)};
+        \addplot[fill=Blue,draw=Blue] coordinates {(2022A,22)(2023A,28)(2024A,35)(2025A,43)(2026E,51)};
+        \addplot[fill=Teal,draw=Teal] coordinates {(2022A,10)(2023A,19)(2024A,27)(2025A,39)(2026E,63)};
+        \legend{Pre-2022,2022--23,2024+}
+      \end{axis}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \eyebrow{Quality indicators}
+      \begin{tabularx}{\linewidth}{@{}Y R{1.15cm}@{}}
+        \rowcolor{Cloud}\textbf{Subscription revenue} & \textbf{92\%} \\
+        Contracted ARR & 97\% \\
+        \rowcolor{Cloud}Average contract term & 2.4 yrs \\
+        Gross retention & 95\% \\
+        \rowcolor{Cloud}Net revenue retention & 118\% \\
+        Top-10 concentration & 14\% \\
+      \end{tabularx}
+      \vspace{0.20cm}
+      \begin{tikzpicture}
+        \node[rounded corners=2pt,fill=Teal!9,minimum width=\linewidth,minimum height=1.42cm] (x) {};
+        \node[anchor=north west,text=Teal,font=\fontsize{6}{7}\selectfont\bfseries] at ([xshift=0.18cm,yshift=-0.16cm]x.north west) {KEY DILIGENCE PROOF POINT};
+        \node[anchor=north west,text=Navy,text width=0.88\linewidth,font=\fontsize{7.4}{8.8}\selectfont\bfseries] at ([xshift=0.18cm,yshift=-0.48cm]x.north west) {Every mature cohort has expanded.};
+        \node[anchor=south west,text=Slate,text width=0.88\linewidth,font=\fontsize{5.8}{6.7}\selectfont] at ([xshift=0.18cm,yshift=0.14cm]x.south west) {Expansion is broad-based across seats, modules, and usage.};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+  \source{Management information and Northbridge Partners analysis.}
+\end{frame}
+
+\begin{frame}{Valuation overview}
+  \slidesubtitle{Multiple methodologies converge around \$1.5--\$1.8bn enterprise value before transaction-specific synergies}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.68\textwidth}
+      \eyebrow{Implied enterprise value (\$bn)}
+      \begin{tikzpicture}[x=3.10cm,y=0.82cm]
+        \draw[Slate,line width=0.5pt] (0.90,0.0) -- (2.15,0.0);
+        \foreach \v in {1.0,1.2,1.4,1.6,1.8,2.0}{
+          \draw[Mist] (\v,0.08) -- (\v,-0.08);
+          \node[anchor=north,text=Slate,font=\fontsize{5.2}{6}\selectfont] at (\v,-0.12) {\$\v};}
+        \foreach \y/\name/\lo/\hi/\col in {
+          4.7/Selected trading comparables/1.35/1.66/Blue,
+          3.65/Precedent transactions/1.48/1.84/Teal,
+          2.60/Discounted cash flow/1.42/1.75/Gold,
+          1.55/LBO reference/1.23/1.50/Slate,
+          0.50/Strategic value incl. synergies/1.62/2.02/Coral}{
+          \node[anchor=east,text=Navy,text width=2.7cm,align=right,font=\fontsize{6.2}{7}\selectfont\bfseries] at (0.85,\y) {\name};
+          \draw[\col,line width=5.5pt,line cap=round] (\lo,\y) -- (\hi,\y);
+          \fill[White] (\lo,\y) circle (0.035); \fill[White] (\hi,\y) circle (0.035);
+          \node[anchor=south,text=\col,font=\fontsize{5.2}{6}\selectfont\bfseries] at (\lo,\y+0.12) {\$\lo};
+          \node[anchor=south,text=\col,font=\fontsize{5.2}{6}\selectfont\bfseries] at (\hi,\y+0.12) {\$\hi};}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.29\textwidth}
+      \eyebrow{Board framing}
+      \metric[Teal]{Core value range}{\$1.5--1.8bn}{8.2--9.8x 2026E revenue}
+      \vspace{0.12cm}
+      \card[Gold]{Threshold consideration}{A process should target at least \$1.6bn to exceed risk-adjusted standalone value.}
+      \vspace{0.08cm}
+      \card[Coral]{Upside mechanism}{Competitive tension and synergy sharing can support value above the core range.}
+    \end{column}
+  \end{columns}
+  \source{Northbridge Partners analysis. Valuation is illustrative, preliminary, and not a fairness opinion.}
+\end{frame}
+
+\begin{frame}{Selected trading comparables}
+  \slidesubtitle{Asteria’s growth, retention, and profitability profile support valuation toward the upper half of the peer range}
+  \begin{table}
+  \centering
+  \fontsize{6.1}{7.4}\selectfont
+  \begin{tabularx}{\linewidth}{@{}Y R{1.03cm} R{1.03cm} R{1.02cm} R{1.08cm} R{1.08cm} R{1.08cm}@{}}
+    \toprule
+    \textbf{Company} & \textbf{EV / Rev.\newline 2026E} & \textbf{EV / EBITDA\newline 2026E} & \textbf{Rev. growth} & \textbf{EBITDA margin} & \textbf{Rule of 40} & \textbf{NRR} \\
+    \midrule
+    CloudWorks & 10.2x & 35.1x & 25\% & 29\% & 54\% & 121\% \\
+    \rowcolor{Cloud}FlowSuite & 8.7x & 34.8x & 22\% & 25\% & 47\% & 117\% \\
+    Nexus Software & 7.9x & 31.6x & 18\% & 25\% & 43\% & 114\% \\
+    \rowcolor{Cloud}ProcessCo & 6.5x & 29.5x & 15\% & 22\% & 37\% & 110\% \\
+    Relay Systems & 5.8x & 27.6x & 13\% & 21\% & 34\% & 108\% \\
+    \midrule
+    \textbf{Median} & \textbf{7.9x} & \textbf{31.6x} & \textbf{18\%} & \textbf{25\%} & \textbf{43\%} & \textbf{114\%} \\
+    \rowcolor{Mint!65}\textbf{Asteria Systems} & \textbf{8.2--9.0x} & \textbf{32.8--36.0x} & \textbf{22\%} & \textbf{25\%} & \textbf{41\%} & \textbf{118\%} \\
+    \bottomrule
+  \end{tabularx}
+  \end{table}
+  \vspace{0.20cm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.32\textwidth}\card[Teal]{Growth premium}{Asteria grows approximately 400 bps faster than the median.}\end{column}
+    \begin{column}{0.32\textwidth}\card[Blue]{Quality premium}{NRR is approximately 400 bps above the median.}\end{column}
+    \begin{column}{0.32\textwidth}\card[Gold]{Scale discount}{Smaller absolute scale tempers the implied premium.}\end{column}
+  \end{columns}
+  \source{Illustrative market data as of July 31, 2026. Peer names and figures are fictional.}
+\end{frame}
+
+\begin{frame}{Precedent transaction analysis}
+  \slidesubtitle{Premium outcomes correlate with strategic fit, product scarcity, and meaningful revenue synergies}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.70\textwidth}
+      \begin{table}
+      \fontsize{5.7}{6.8}\selectfont
+      \begin{tabularx}{\linewidth}{@{}Y C{1.05cm} R{0.87cm} R{0.92cm} R{0.90cm} R{0.83cm}@{}}
+        \toprule
+        \textbf{Target / Acquirer} & \textbf{Announced} & \textbf{EV (\$bn)} & \textbf{EV / LTM Rev.} & \textbf{Premium} & \textbf{Growth} \\
+        \midrule
+        LogicBase / Titan Cloud & Mar-26 & \$2.8 & 11.4x & 38\% & 27\% \\
+        \rowcolor{Cloud}Orchard AI / Horizon Tech & Sep-25 & 1.9 & 9.8x & 31\% & 24\% \\
+        WorkLayer / Vertex Group & Feb-25 & 3.6 & 10.3x & 42\% & 22\% \\
+        \rowcolor{Cloud}RuleStack / Summit Software & Jul-24 & 1.4 & 8.1x & 27\% & 18\% \\
+        AutomateIQ / Global Systems & Nov-23 & 2.2 & 7.6x & 25\% & 19\% \\
+        \midrule
+        \textbf{Median} & & \textbf{\$2.2} & \textbf{9.8x} & \textbf{31\%} & \textbf{22\%} \\
+        \bottomrule
+      \end{tabularx}
+      \end{table}
+      \vspace{0.17cm}
+      \begin{tikzpicture}
+        \node[rounded corners=2pt,fill=Cloud,minimum width=\linewidth,minimum height=1.13cm] (x) {};
+        \node[anchor=west,text=Navy,text width=0.93\linewidth,font=\fontsize{7.2}{8.7}\selectfont\bfseries] at ([xshift=0.18cm,yshift=0.17cm]x.west) {Applying 8.0--10.0x to Asteria’s \$184m 2026E revenue implies \$1.48--\$1.84bn enterprise value.};
+        \node[anchor=west,text=Slate,text width=0.93\linewidth,font=\fontsize{5.7}{6.7}\selectfont] at ([xshift=0.18cm,yshift=-0.26cm]x.west) {The upper end requires a buyer-specific strategic thesis and credible competitive tension.};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.27\textwidth}
+      \eyebrow{Premium drivers}
+      \card[Teal]{Category scarcity}{Limited scaled independent targets}
+      \vspace{0.08cm}
+      \card[Blue]{Revenue synergies}{Distribution and product attach}
+      \vspace{0.08cm}
+      \card[Gold]{Process dynamics}{Multiple credible bidders}
+    \end{column}
+  \end{columns}
+  \source{Illustrative transaction data; all company names and figures are fictional.}
+\end{frame}
+
+\begin{frame}{Discounted cash flow analysis}
+  \slidesubtitle{Standalone intrinsic value is most sensitive to long-term growth and discount rate assumptions}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.52\textwidth}
+      \eyebrow{Enterprise value sensitivity (\$bn)}
+      \begin{center}
+      \fontsize{6.7}{8.2}\selectfont
+      \begin{tabular}{c|ccccc}
+        \multicolumn{1}{c}{} & \multicolumn{5}{c}{\textbf{Perpetuity growth rate}}\\
+        \textbf{WACC} & \textbf{3.0\%} & \textbf{3.5\%} & \textbf{4.0\%} & \textbf{4.5\%} & \textbf{5.0\%}\\ \hline
+        9.0\%  & 1.55 & 1.66 & \cellcolor{Mint}1.79 & \cellcolor{Mint}1.95 & 2.15\\
+        9.5\%  & 1.45 & 1.55 & \cellcolor{Mint}1.66 & \cellcolor{Mint}1.80 & 1.97\\
+        10.0\% & 1.37 & 1.45 & \cellcolor{Teal!25}\textbf{1.55} & \cellcolor{Mint}1.67 & 1.81\\
+        10.5\% & 1.29 & 1.37 & \cellcolor{Mint}1.46 & \cellcolor{Mint}1.56 & 1.68\\
+        11.0\% & 1.22 & 1.29 & 1.37 & 1.46 & 1.56\\
+      \end{tabular}
+      \end{center}
+      \vspace{0.23cm}
+      {\fontsize{5.4}{6.5}\selectfont\color{Slate}\textit{Selected case assumes a 10.0\% WACC and 4.0\% perpetuity growth rate.}}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \eyebrow{Selected case assumptions}
+      \begin{tabularx}{\linewidth}{@{}Y R{1.25cm}@{}}
+        \rowcolor{Cloud}Revenue CAGR, 2026E--31E & 17.2\% \\
+        2031E adjusted EBITDA margin & 33.0\% \\
+        \rowcolor{Cloud}Cash tax rate & 24.0\% \\
+        WACC & 10.0\% \\
+        \rowcolor{Cloud}Perpetuity growth & 4.0\% \\
+        PV of terminal value / EV & 69.0\% \\
+      \end{tabularx}
+      \vspace{0.18cm}
+      \begin{tikzpicture}
+        \node[rounded corners=2pt,fill=Navy,minimum width=\linewidth,minimum height=1.15cm] (x) {};
+        \node[anchor=west,text=White,text width=0.90\linewidth,font=\fontsize{7}{8.4}\selectfont] at ([xshift=0.18cm]x.west) {Selected DCF implies \textbf{\$1.55bn EV}, or \textbf{8.4x 2026E revenue}.};
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+  \source{Northbridge Partners analysis based on illustrative management projections.}
+\end{frame}
+
+\sectiondivider{03}{Buyer strategy \& execution}{A deliberately curated buyer universe and tightly managed process can maximize tension while protecting confidentiality.}
+
+\begin{frame}{Prioritized buyer universe}
+  \slidesubtitle{We recommend a focused first wave of six strategics and four sponsors, with a selective expansion path}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \eyebrow{Strategic buyers}
+      {\fontsize{5.4}{6.5}\selectfont
+      \begin{tabularx}{\linewidth}{@{}Y C{0.92cm} C{0.92cm} C{0.92cm}@{}}
+        \toprule
+        \textbf{Buyer} & \textbf{Fit} & \textbf{Cap.} & \textbf{Pri.} \\
+        \midrule
+        Titan Cloud & \pill[Teal]{HIGH} & \pill[Teal]{HIGH} & \textcolor{Gold}{\faStar\faStar\faStar} \\
+        \rowcolor{Cloud}Horizon Tech & \pill[Teal]{HIGH} & \pill[Teal]{HIGH} & \textcolor{Gold}{\faStar\faStar\faStar} \\
+        Vertex Group & \pill[Teal]{HIGH} & \pill[Blue]{MED} & \textcolor{Gold}{\faStar\faStar\faStar} \\
+        \rowcolor{Cloud}Global Systems & \pill[Blue]{MED} & \pill[Teal]{HIGH} & \textcolor{Gold}{\faStar\faStar} \\
+        Summit Software & \pill[Teal]{HIGH} & \pill[Blue]{MED} & \textcolor{Gold}{\faStar\faStar} \\
+        \rowcolor{Cloud}CloudWorks & \pill[Blue]{MED} & \pill[Teal]{HIGH} & \textcolor{Gold}{\faStar\faStar} \\
+        \bottomrule
+      \end{tabularx}}
+      \vspace{0.13cm}
+      {\fontsize{5.5}{6.6}\selectfont\color{Slate}\textbf{Primary thesis:} accelerate category entry, deepen workflow capabilities, and cross-sell into a scaled installed base.}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \eyebrow{Financial sponsors}
+      {\fontsize{5.4}{6.5}\selectfont
+      \begin{tabularx}{\linewidth}{@{}Y C{0.92cm} C{0.92cm} C{0.92cm}@{}}
+        \toprule
+        \textbf{Buyer} & \textbf{Fit} & \textbf{Cap.} & \textbf{Pri.} \\
+        \midrule
+        North Peak Capital & \pill[Teal]{HIGH} & \pill[Teal]{HIGH} & \textcolor{Gold}{\faStar\faStar\faStar} \\
+        \rowcolor{Cloud}Harbor Equity & \pill[Teal]{HIGH} & \pill[Teal]{HIGH} & \textcolor{Gold}{\faStar\faStar\faStar} \\
+        Redwood Partners & \pill[Blue]{MED} & \pill[Teal]{HIGH} & \textcolor{Gold}{\faStar\faStar} \\
+        \rowcolor{Cloud}Silver River & \pill[Blue]{MED} & \pill[Teal]{HIGH} & \textcolor{Gold}{\faStar\faStar} \\
+        Broadstone Capital & \pill[Blue]{MED} & \pill[Blue]{MED} & \textcolor{Gold}{\faStar} \\
+        \rowcolor{Cloud}Crescent Ridge & \pill[Blue]{MED} & \pill[Blue]{MED} & \textcolor{Gold}{\faStar} \\
+        \bottomrule
+      \end{tabularx}}
+      \vspace{0.13cm}
+      {\fontsize{5.5}{6.6}\selectfont\color{Slate}\textbf{Primary thesis:} combine durable recurring revenue, margin upside, moderate leverage, and a fragmented add-on landscape.}
+    \end{column}
+  \end{columns}
+  \source{Northbridge Partners analysis. Buyer names and assessments are illustrative.}
+\end{frame}
+
+\begin{frame}{Illustrative synergy opportunity}
+  \slidesubtitle{A scaled strategic acquirer could realize \$34--\$52m of annual run-rate value before revenue-synergy upside}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.60\textwidth}
+      \eyebrow{Annual run-rate synergy potential (\$m)}
+      \begin{tikzpicture}[x=0.084cm,y=0.82cm]
+        \foreach \v in {0,10,20,30,40,50,60}{
+          \draw[Mist] (\v,0.25) -- (\v,5.25);
+          \node[anchor=north,text=Slate,font=\fontsize{5}{5.5}\selectfont] at (\v,0.13) {\$\v};}
+        \foreach \y/\name/\lo/\hi/\col in {
+          4.75/Infrastructure \& hosting/8/12/Blue,
+          3.75/Sales \& marketing/10/16/Teal,
+          2.75/G\&A and public-company costs/9/13/Gold,
+          1.75/R\&D overlap and tooling/7/11/Coral}{
+          \node[anchor=east,text=Navy,text width=3.05cm,align=right,font=\fontsize{6}{7}\selectfont\bfseries] at (-1,\y) {\name};
+          \draw[\col,line width=7pt,line cap=round] (\lo,\y) -- (\hi,\y);
+          \node[anchor=west,text=\col,font=\fontsize{5.5}{6}\selectfont\bfseries] at (\hi+1.3,\y) {\$\lo--\$\hi};}
+        \draw[Navy,line width=0.7pt] (0,0.75) -- (60,0.75);
+        \node[anchor=east,text=Navy,font=\fontsize{6.4}{7}\selectfont\bfseries] at (-1,0.75) {Total cost synergies};
+        \draw[Navy,line width=8pt,line cap=round] (34,0.75) -- (52,0.75);
+        \node[anchor=west,text=Navy,font=\fontsize{6}{7}\selectfont\bfseries] at (53.3,0.75) {\$34--\$52};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.37\textwidth}
+      \eyebrow{Value implications}
+      \metric[Teal]{PV of cost synergies}{\$250--390m}{8.0x capitalization; pre-tax}
+      \vspace{0.10cm}
+      \card[Blue]{Revenue upside not included}{1--2\% attach into a large installed base could create substantial incremental value.}
+      \vspace{0.08cm}
+      \card[Coral]{Execution discipline}{Assumes 24-month ramp and \$45--\$65m of one-time costs.}
+    \end{column}
+  \end{columns}
+  \source{Northbridge Partners analysis based on illustrative buyer benchmarks; excludes dis-synergies.}
+\end{frame}
+
+\begin{frame}{Transaction structure alternatives}
+  \slidesubtitle{A conventional cash sale offers the cleanest outcome, while rollover or earnout features can bridge value gaps}
+  \begin{table}
+  \centering
+  \fontsize{6.0}{7.3}\selectfont
+  \begin{tabularx}{\linewidth}{@{}p{2.35cm} Y Y Y@{}}
+    \toprule
+    & \textbf{100\% cash sale} & \textbf{Cash + equity rollover} & \textbf{Cash + earnout / CVR} \\
+    \midrule
+    \textbf{Value certainty} & \textcolor{Positive}{\faCircle}\ High at signing, subject to closing conditions & \textcolor{Gold}{\faCircle}\ Partial exposure to buyer performance & \textcolor{Coral}{\faCircle}\ Contingent on future milestones \\
+    \rowcolor{Cloud}\textbf{Upside participation} & None after close & Meaningful if buyer creates value & Targeted to agreed performance \\
+    \textbf{Tax / liquidity} & Immediate liquidity; taxable event & Potential deferral on rollover portion & Timing depends on instrument \\
+    \rowcolor{Cloud}\textbf{Execution complexity} & Low to moderate & Moderate; governance and liquidity terms & High; definitions and disputes matter \\
+    \textbf{Best fit} & Strategic buyer with full financing certainty & Sponsor or acquisitive public company & Bidder with forecast or integration concerns \\
+    \midrule
+    \textbf{Preliminary view} & \cellcolor{Mint}\textbf{Preferred base structure} & Useful value-preservation alternative & Limit to a small portion of consideration \\
+    \bottomrule
+  \end{tabularx}
+  \end{table}
+  \vspace{0.18cm}
+  \begin{tikzpicture}
+    \node[rounded corners=2pt,fill=Navy,minimum width=\linewidth,minimum height=0.90cm] (x) {};
+    \node[anchor=west,text=White,text width=0.94\linewidth,font=\fontsize{7.2}{8.5}\selectfont] at ([xshift=0.20cm]x.west) {\textbf{Negotiating principle:} maximize cash value and certainty first; use structural tools only where they unlock incremental headline value or preserve competitive tension.};
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Illustrative accretion / dilution}
+  \slidesubtitle{A well-capitalized strategic buyer can support the core valuation range with manageable near-term dilution}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.58\textwidth}
+      \eyebrow{Year-one EPS impact at \$1.65bn enterprise value}
+      \begin{tikzpicture}[x=0.22cm,y=0.95cm]
+        \draw[Slate,line width=0.5pt] (-10,0.35) -- (10,0.35);
+        \foreach \v in {-10,-5,0,5,10}{
+          \draw[Mist] (\v,0.22) -- (\v,4.55);
+          \node[anchor=north,text=Slate,font=\fontsize{5.3}{6}\selectfont] at (\v,0.12) {\v\%};}
+        \foreach \y/\name/\val/\col in {4.10/All cash --- no synergies/-7.2/Coral,3.15/All cash --- 50\% synergies/-2.8/Gold,2.20/50\% stock --- 50\% cash/+0.7/Blue,1.25/50\% stock + full synergies/+5.1/Teal}{
+          \node[anchor=east,text=Navy,text width=3.10cm,align=right,font=\fontsize{6}{7}\selectfont\bfseries] at (-10.6,\y) {\name};
+          \ifdim \val pt<0pt
+            \fill[\col] (\val,\y-0.21) rectangle (0,\y+0.21);
+            \node[anchor=east,text=\col,font=\fontsize{5.5}{6}\selectfont\bfseries] at (\val-0.35,\y) {\val\%};
+          \else
+            \fill[\col] (0,\y-0.21) rectangle (\val,\y+0.21);
+            \node[anchor=west,text=\col,font=\fontsize{5.5}{6}\selectfont\bfseries] at (\val+0.35,\y) {\val\%};
+          \fi}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.39\textwidth}
+      \eyebrow{Selected assumptions}
+      \begin{tabularx}{\linewidth}{@{}Y R{1.22cm}@{}}
+        \rowcolor{Cloud}Purchase enterprise value & \$1.65bn \\
+        Cash interest rate & 4.5\% \\
+        \rowcolor{Cloud}Buyer P/E multiple & 28.0x \\
+        Year-one synergy realization & 50\% \\
+        \rowcolor{Cloud}Foregone interest on cash & 3.5\% \\
+        Tax rate & 24.0\% \\
+      \end{tabularx}
+      \vspace{0.16cm}
+      \card[Teal]{Key takeaway}{Stock consideration and credible synergy capture can make the transaction accretive in year one.}
+    \end{column}
+  \end{columns}
+  \source{Northbridge Partners analysis. Results vary materially by buyer capital structure and accounting treatment.}
+\end{frame}
+
+\begin{frame}{Recommended process design}
+  \slidesubtitle{A two-phase, tightly controlled process balances competitive tension with confidentiality and management burden}
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \draw[Mist,line width=2pt] (0.65,3.55) -- (14.15,3.55);
+    \foreach \x/\n/\wk/\title/\desc/\col in {
+      0.85/1/Wks 1--2/Prepare/Finalize materials; diligence; QofE/Teal,
+      3.45/2/Wks 3--4/Launch/Contact Wave 1; distribute CIM/Blue,
+      6.05/3/Wks 5--7/Indications/Management calls; initial bids/Gold,
+      8.65/4/Wks 8--11/Finalists/Deep diligence; mark-up SPA/Coral,
+      11.25/5/Wks 12--14/Negotiate/Final bids; select counterparty/Positive,
+      13.55/6/Wk 15/Sign/Approvals and announcement/Navy}{
+      \fill[\col] (\x,3.55) circle (0.24);
+      \node[text=White,font=\fontsize{5.5}{5.5}\selectfont\bfseries] at (\x,3.55) {\n};
+      \node[anchor=south,text=\col,font=\fontsize{5.5}{6}\selectfont\bfseries] at (\x,3.95) {\wk};
+      \node[anchor=north,text=Navy,text width=1.75cm,align=center,font=\fontsize{7.2}{8}\selectfont\bfseries] at (\x,3.10) {\title};
+      \node[anchor=north,text=Slate,text width=1.85cm,align=center,font=\fontsize{5.4}{6.4}\selectfont] at (\x,2.57) {\desc};}
+  \end{tikzpicture}
+  \vspace{0.18cm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.32\textwidth}\card[Teal]{Controlled outreach}{Ten priority parties in Wave 1; add four only if tension requires.}\end{column}
+    \begin{column}{0.32\textwidth}\card[Blue]{Bid comparability}{Standard bid instruction letter covering value, structure, financing, and approvals.}\end{column}
+    \begin{column}{0.32\textwidth}\card[Coral]{Fast exclusivity}{Grant only for superior value, limited duration, and near-final documentation.}\end{column}
+  \end{columns}
+  \source{Illustrative timetable; actual timing depends on readiness, buyer engagement, and regulatory requirements.}
+\end{frame}
+
+\begin{frame}{Readiness workplan}
+  \slidesubtitle{An eight-week sprint can resolve the issues most likely to affect value, timing, or certainty}
+  \begin{table}
+  \centering
+  \fontsize{5.8}{7.0}\selectfont
+  \begin{tabularx}{\linewidth}{@{}p{2.15cm} Y p{3.05cm} C{1.00cm}@{}}
+    \toprule
+    \textbf{Workstream} & \textbf{Key deliverables} & \textbf{Value protected} & \textbf{Owner} \\
+    \midrule
+    Financial / QofE & Revenue bridge, ARR tie-out, normalized EBITDA, working capital & Defends recurring quality and run-rate earnings & CFO \\
+    \rowcolor{Cloud}Commercial & Cohorts, churn root causes, pipeline conversion, TAM evidence & Supports growth durability and premium multiple & CRO \\
+    Product / technology & Roadmap, architecture, AI governance, technical debt plan & Reduces integration and platform-risk discount & CTO \\
+    \rowcolor{Cloud}Legal / compliance & IP chain, privacy, material contracts, litigation, licenses & Avoids late retrades and closing conditions & GC \\
+    People / retention & Org map, succession, retention pool, change communications & Preserves continuity through signing and close & CHRO \\
+    \rowcolor{Cloud}Tax / structuring & Tax basis, NOLs, transfer pricing, rollover feasibility & Maximizes after-tax proceeds and flexibility & CFO / Tax \\
+    \bottomrule
+  \end{tabularx}
+  \end{table}
+  \vspace{0.16cm}
+  \begin{tikzpicture}
+    \node[rounded corners=2pt,fill=Teal!9,minimum width=\linewidth,minimum height=0.90cm] (x) {};
+    \node[anchor=west,text=Navy,text width=0.94\linewidth,font=\fontsize{7}{8.4}\selectfont] at ([xshift=0.20cm]x.west) {\textbf{Immediate priority:} commission sell-side quality of earnings and build a single ARR data cube before external outreach.};
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Key risks and mitigants}
+  \slidesubtitle{The principal execution risks are identifiable and manageable with early preparation}
+  \begin{table}
+  \centering
+  \fontsize{5.9}{7.2}\selectfont
+  \begin{tabularx}{\linewidth}{@{}Y C{1.05cm} C{1.05cm} Y@{}}
+    \toprule
+    \textbf{Risk} & \textbf{Likelihood} & \textbf{Impact} & \textbf{Mitigation} \\
+    \midrule
+    Forecast skepticism as growth moderates & \pill[Gold]{MED} & \pill[Coral]{HIGH} & Bottom-up pipeline, cohort, and capacity model; conservative case alongside plan \\
+    \rowcolor{Cloud}Customer or employee leakage & \pill[Blue]{LOW} & \pill[Coral]{HIGH} & Codenames, staged data access, clean team, retention and communication plans \\
+    Buyer concerns on AI / data governance & \pill[Gold]{MED} & \pill[Gold]{MED} & Document model controls, consent, provenance, and incident response before launch \\
+    \rowcolor{Cloud}Financing or market dislocation & \pill[Blue]{LOW} & \pill[Coral]{HIGH} & Prioritize funded buyers; require financing detail and reverse termination protection \\
+    Regulatory scrutiny / extended closing & \pill[Blue]{LOW} & \pill[Gold]{MED} & Early antitrust analysis, buyer-specific risk allocation, narrow operating covenants \\
+    \rowcolor{Cloud}Late-stage value retrade & \pill[Gold]{MED} & \pill[Coral]{HIGH} & Vendor diligence, bid comparability, multiple finalists, limited exclusivity \\
+    \bottomrule
+  \end{tabularx}
+  \end{table}
+  \vspace{0.15cm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.49\textwidth}\card[Teal]{Controllables}{Data quality, process discipline, management preparedness, and documentation readiness.}\end{column}
+    \begin{column}{0.49\textwidth}\card[Blue]{Flexibility}{Maintain a credible standalone plan and retain the right to pause if value or certainty is insufficient.}\end{column}
+  \end{columns}
+\end{frame}
+
+\sectiondivider{04}{Recommendation \& next steps}{Prepare now, preserve optionality, and authorize launch only after the Board validates value and readiness thresholds.}
+
+\begin{frame}{Recommended path forward}
+  \slidesubtitle{We recommend authorizing preparation for a controlled process, subject to three clear decision gates}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.62\textwidth}
+      \begin{tikzpicture}[node distance=0.28cm]
+        \node[rounded corners=3pt,fill=Teal!10,draw=Teal!30,minimum width=\linewidth,minimum height=1.14cm] (a) {};
+        \node[anchor=west,fill=Teal,text=White,circle,minimum size=0.56cm,font=\bfseries] at ([xshift=0.35cm]a.west) {1};
+        \node[anchor=west,text=Navy,font=\fontsize{8.5}{9.5}\selectfont\bfseries] at ([xshift=0.98cm,yshift=0.18cm]a.west) {Authorize the eight-week readiness sprint};
+        \node[anchor=west,text=Slate,text width=0.77\linewidth,font=\fontsize{6.1}{7.2}\selectfont] at ([xshift=0.98cm,yshift=-0.20cm]a.west) {Launch QofE, commercial fact base, legal cleanup, and management preparation.};
+        \node[rounded corners=3pt,fill=Blue!9,draw=Blue!25,minimum width=\linewidth,minimum height=1.14cm,below=of a] (b) {};
+        \node[anchor=west,fill=Blue,text=White,circle,minimum size=0.56cm,font=\bfseries] at ([xshift=0.35cm]b.west) {2};
+        \node[anchor=west,text=Navy,font=\fontsize{8.5}{9.5}\selectfont\bfseries] at ([xshift=0.98cm,yshift=0.18cm]b.west) {Validate a \$1.6bn minimum value threshold};
+        \node[anchor=west,text=Slate,text width=0.77\linewidth,font=\fontsize{6.1}{7.2}\selectfont] at ([xshift=0.98cm,yshift=-0.20cm]b.west) {Compare indications against risk-adjusted standalone value and stakeholder objectives.};
+        \node[rounded corners=3pt,fill=Gold!10,draw=Gold!30,minimum width=\linewidth,minimum height=1.14cm,below=of b] (c) {};
+        \node[anchor=west,fill=Gold,text=White,circle,minimum size=0.56cm,font=\bfseries] at ([xshift=0.35cm]c.west) {3};
+        \node[anchor=west,text=Navy,font=\fontsize{8.5}{9.5}\selectfont\bfseries] at ([xshift=0.98cm,yshift=0.18cm]c.west) {Return to the Board before external launch};
+        \node[anchor=west,text=Slate,text width=0.77\linewidth,font=\fontsize{6.1}{7.2}\selectfont] at ([xshift=0.98cm,yshift=-0.20cm]c.west) {Approve materials, buyer list, communications protocol, and final timetable.};
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.35\textwidth}
+      \eyebrow{Board decisions today}
+      \begin{tikzpicture}
+        \node[rounded corners=3pt,fill=Navy,minimum width=\linewidth,minimum height=3.96cm] (x) {};
+        \foreach \y/\icon/\txt in {1.35/\faCheckCircle/Preparation budget and advisors,0.45/\faUsers/Initial buyer perimeter,-0.45/\faBalanceScale/Value and certainty thresholds,-1.35/\faCalendarCheck/September checkpoint}{
+        \node[anchor=west,text=Teal,font=\fontsize{9}{9}\selectfont] at ([xshift=0.24cm,yshift=\y cm]x.west) {\icon};
+        \node[anchor=west,text=White,text width=3.80cm,font=\fontsize{6.3}{7.5}\selectfont\bfseries] at ([xshift=0.69cm,yshift=\y cm]x.west) {\txt};}
+      \end{tikzpicture}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Immediate next steps}
+  \slidesubtitle{Mobilize a small core team now and preserve a clean decision point at the end of September}
+  \begin{tikzpicture}[x=1cm,y=1cm]
+    \draw[Mist,line width=1.5pt] (1.0,3.70) -- (14.1,3.70);
+    \foreach \x/\wk/\title/\items/\col in {
+      1.15/Week 1/Mobilize/{Confirm steering team\\Engage diligence advisors\\Set confidentiality protocol}/Teal,
+      4.45/Weeks 2--3/Build fact base/{ARR data cube\\QofE fieldwork\\Cohort and pipeline analysis}/Blue,
+      7.75/Weeks 4--6/Prepare materials/{Draft CIM and model\\Management rehearsals\\Buyer-specific theses}/Gold,
+      11.05/Weeks 7--8/Decision gate/{Finalize findings\\Refresh valuation\\Board launch decision}/Coral}{
+      \fill[\col] (\x,3.70) circle (0.19);
+      \node[anchor=south west,text=\col,font=\fontsize{6}{7}\selectfont\bfseries] at (\x-0.18,4.02) {\wk};
+      \node[anchor=north west,text=Navy,text width=2.65cm,font=\fontsize{8}{9}\selectfont\bfseries] at (\x-0.18,3.38) {\title};
+      \node[anchor=north west,text=Slate,text width=2.65cm,font=\fontsize{6}{8}\selectfont] at (\x-0.18,2.85) {\items};}
+  \end{tikzpicture}
+  \vspace{0.12cm}
+  \begin{tikzpicture}
+    \node[rounded corners=3pt,fill=Navy,minimum width=\linewidth,minimum height=1.02cm] (x) {};
+    \node[anchor=west,text=Teal,font=\fontsize{9}{9}\selectfont] at ([xshift=0.22cm]x.west) {\faArrowRight};
+    \node[anchor=west,text=White,text width=0.90\linewidth,font=\fontsize{7.6}{9}\selectfont\bfseries] at ([xshift=0.68cm]x.west) {Target Board checkpoint: September 28, 2026 \quad | \quad Earliest external launch: October 5, 2026};
+  \end{tikzpicture}
+\end{frame}
+
+% =============================================================================
+% APPENDIX
+% =============================================================================
+\sectiondivider{A}{Appendix}{Supporting valuation detail, methodology, and important qualifications.}
+
+\begin{frame}{Illustrative enterprise-to-equity value bridge}
+  \slidesubtitle{The bridge should be refreshed immediately before launch and again at signing}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.60\textwidth}
+      \eyebrow{Illustrative bridge at midpoint value (\$m)}
+      \begin{tikzpicture}[x=0.0028cm,y=0.95cm]
+        \foreach \v in {0,400,800,1200,1600,2000}{
+          \draw[Mist] (\v,0.20) -- (\v,4.70);
+          \node[anchor=north,text=Slate,font=\fontsize{5}{6}\selectfont] at (\v,0.10) {\$\v};}
+        \foreach \y/\name/\start/\stop/\col in {
+          4.25/Enterprise value/0/1650/Navy,
+          3.35/(+) Cash/1650/1734/Teal,
+          2.45/(-) Debt and leases/1734/1646/Coral,
+          1.55/(-) Other adjustments/1646/1618/Gold,
+          0.65/Equity value/0/1618/Blue}{
+          \node[anchor=east,text=Navy,text width=2.45cm,align=right,font=\fontsize{6}{7}\selectfont\bfseries] at (-35,\y) {\name};
+          \fill[\col] (\start,\y-0.23) rectangle (\stop,\y+0.23);
+          \node[anchor=west,text=\col,font=\fontsize{5.5}{6}\selectfont\bfseries] at (\stop+28,\y) {\$\stop};}
+      \end{tikzpicture}
+    \end{column}
+    \begin{column}{0.37\textwidth}
+      \eyebrow{Illustrative per-share value}
+      \begin{tabularx}{\linewidth}{@{}Y R{1.32cm}@{}}
+        \rowcolor{Cloud}Implied equity value & \$1,618m \\
+        Basic shares & 46.2m \\
+        \rowcolor{Cloud}Options / RSUs, treasury method & 3.1m \\
+        Fully diluted shares & 49.3m \\
+        \midrule
+        \textbf{Implied value per share} & \textbf{\$32.82} \\
+      \end{tabularx}
+      \vspace{0.18cm}
+      \card[Gold]{Items to validate}{Debt-like items, transaction bonuses, tax leakage, option treatment, and minimum cash.}
+    \end{column}
+  \end{columns}
+  \source{Northbridge Partners analysis. Assumes illustrative balance sheet as of June 30, 2026.}
+\end{frame}
+
+\begin{frame}[shrink=2]{Valuation methodology and key assumptions}
+  \slidesubtitle{A consistent framework supports comparability while preserving judgment around strategic value}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \eyebrow{Methodologies}
+      \card[Blue]{Trading comparables}{Applies 7.3--9.0x revenue based on peer growth, profitability, scale, and retention.}
+      \vspace{0.08cm}
+      \card[Teal]{Precedent transactions}{Applies 8.0--10.0x revenue, reflecting historical control premiums and scarcity.}
+      \vspace{0.08cm}
+      \card[Gold]{Discounted cash flow}{Discounts unlevered cash flows at 9.5--10.5\% with 3.5--4.5\% terminal growth.}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \eyebrow{Important assumptions}
+      \card[Coral]{Forecast delivery}{Management plan is achieved without material acquisitions or incremental financing.}
+      \vspace{0.08cm}
+      \card[Positive]{Capital structure}{Enterprise values are cash-free, debt-free and exclude transaction expenses.}
+      \vspace{0.08cm}
+      \card[Midnight]{Synergy treatment}{Core valuation excludes buyer-specific synergies; strategic value range includes a portion.}
+    \end{column}
+  \end{columns}
+  \vspace{0.18cm}
+  \begin{tikzpicture}
+    \node[rounded corners=2pt,fill=Cloud,minimum width=\linewidth,minimum height=0.80cm] (x) {};
+    \node[anchor=west,text=Slate,text width=0.94\linewidth,font=\fontsize{6.2}{7.4}\selectfont] at ([xshift=0.20cm]x.west) {No single methodology is dispositive. Actual consideration will depend on diligence findings, transaction structure, financing, regulatory risk, market conditions, and competitive dynamics.};
+  \end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Important notice}
+  \slidesubtitle{These materials are illustrative and intended solely to facilitate preliminary discussion}
+  \begin{tikzpicture}
+    \node[anchor=north west,rounded corners=3pt,fill=Cloud,minimum width=\linewidth,minimum height=4.75cm] (x) at (0,0) {};
+    \node[anchor=north west,text=Ink,text width=0.94\linewidth,font=\fontsize{6.4}{8.2}\selectfont,align=justify] at ([xshift=0.24cm,yshift=-0.23cm]x.north west) {%
+      This presentation has been prepared solely for illustrative discussion purposes. \CompanyName, \BankName, all potential counterparties, peer companies, precedent transactions, financial results, projections, market data, and valuation outputs appearing herein are fictional. Nothing in these materials constitutes investment, legal, accounting, tax, or other professional advice; an offer to sell; a solicitation of an offer to buy; a fairness opinion; or a recommendation regarding any security or transaction.\\[0.16cm]
+      The analyses are based on assumptions selected to demonstrate a conventional merger-and-acquisition pitch-book framework. They have not been independently verified, may be incomplete, and are subject to significant business, economic, market, and transaction-specific uncertainties. Forecasts and forward-looking statements are inherently uncertain, and actual results could differ materially. Valuation ranges are preliminary, illustrative, and do not represent an opinion as to realizable value.\\[0.16cm]
+      Any real transaction would require independent diligence; advice from qualified legal, tax, accounting, regulatory, and financial professionals; authorization by the relevant governing bodies; and compliance with applicable laws. These materials should not be distributed or relied upon for any purpose other than evaluating the design and content of this illustrative presentation.};
+  \end{tikzpicture}
+  \vspace{0.18cm}
+  \begin{center}
+    {\fontsize{7}{8}\selectfont\bfseries\color{Navy}\BankName\quad |\quad Investment Banking \& Strategic Advisory}
+  \end{center}
+\end{frame}
+
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[Navy] (current page.south west) rectangle (current page.north east);
+    \fill[Teal] (current page.south west) rectangle ([xshift=0.16cm]current page.north west);
+    \node[text=White,font=\fontsize{24}{26}\selectfont\bfseries] at ([yshift=0.55cm]current page.center) {Thank you};
+    \node[text=Sky,font=\fontsize{9}{11}\selectfont] at ([yshift=-0.25cm]current page.center) {Questions \& discussion};
+    \draw[Sky!35,line width=0.5pt] ([xshift=-2.6cm,yshift=-0.72cm]current page.center) -- ([xshift=2.6cm,yshift=-0.72cm]current page.center);
+    \node[text=White!65,font=\fontsize{6}{7}\selectfont] at ([yshift=-1.05cm]current page.center) {\ProjectName\quad |\quad \AsOfDate};
+    \node[anchor=south west,text=White,font=\fontsize{7}{8}\selectfont\bfseries] at ([xshift=0.72cm,yshift=0.44cm]current page.south west) {\BankName};
+    \node[anchor=south east,text=Coral,font=\fontsize{5.8}{6}\selectfont\bfseries] at ([xshift=-0.72cm,yshift=0.44cm]current page.south east) {STRICTLY PRIVATE \& CONFIDENTIAL};
+  \end{tikzpicture}
+\end{frame}
+
+\end{document}

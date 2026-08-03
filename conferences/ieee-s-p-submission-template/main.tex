@@ -1,0 +1,69 @@
+\documentclass[conference]{IEEEtran}
+
+% Packages and styling live in preamble.tex; each section has its own file under
+% sections/. Edit those directly -- this file is the outline of the document.
+\input{preamble}
+
+\begin{document}
+
+\title{\sysname: Detecting Cache Side-Channel Attacks on Confidential Virtual\\ Machines from Hardware Performance Counters}
+
+\author{
+\IEEEauthorblockN{Alina Marsh}
+\IEEEauthorblockA{Systems Security Group\\
+Vertex University\\
+alina.marsh@vertex.edu}
+\and
+\IEEEauthorblockN{Devon Okafor}
+\IEEEauthorblockA{Cloud Security Research\\
+Synapse Labs\\
+devon.okafor@synapse-labs.com}
+\and
+\IEEEauthorblockN{Priya Ramanathan}
+\IEEEauthorblockA{Systems Security Group\\
+Vertex University\\
+priya.ramanathan@vertex.edu}
+}
+
+\maketitle
+
+% --- Unofficial-template notice (required: this is not an official IEEE S&P file) ---
+\noindent\fbox{\parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule\relax}{%
+  \footnotesize\textbf{Unofficial template.} This layout is provided for convenience and is
+  \textbf{not} affiliated with, endorsed by, or sponsored by the IEEE Symposium on Security
+  and Privacy, the IEEE Computer Society, or its organisers. Always check the official call
+  for papers and use the current year's official style files for a real submission.}}
+\vspace{0.8em}
+
+\begin{abstract}
+Confidential virtual machines (CVMs) built on AMD SEV-SNP and Corex TDX encrypt guest memory
+and registers, but the last-level cache (LLC) they share with co-resident tenants remains an
+observable, unencrypted channel. We present \sysname, a hypervisor-side detector that flags
+cross-VM cache contention attacks -- Prime+Probe and Flush+Reload style probing -- without
+instrumenting, pausing, or reading anything inside the victim CVM. \sysname{} samples
+per-core hardware performance counters, turns counter deltas into a lightweight contention
+feature, smooths the feature with a streaming exponentially-weighted classifier, and responds
+by re-pinning the suspected attacker's virtual core rather than migrating or killing the
+victim. Across three production-like host traces, \sysname{} detects 94.6\% of injected
+attack sessions at a 1.8\% false-positive rate and 2.1\% victim throughput overhead,
+dominating a reimplementation of \baseline{} at every overhead budget we tested and
+responding to a sustained attack in a median of 340\,ms.
+\end{abstract}
+
+\begin{IEEEkeywords}
+cache side channels; confidential computing; trusted execution environments; intrusion
+detection; hardware performance counters; cloud multi-tenancy.
+\end{IEEEkeywords}
+
+\input{sections/introduction}
+\input{sections/background}
+\input{sections/design}
+\input{sections/implementation}
+\input{sections/evaluation}
+\input{sections/related-work}
+\input{sections/conclusion}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
+\end{document}

@@ -1,0 +1,47 @@
+\section{Functional Safety Requirements}
+\label{sec:requirements}
+
+The top-level Safety Goals are refined into Functional Safety Requirements (FSRs), which define the safety-related functions and diagnostic constraints for the steer-by-wire subsystems. These requirements are allocated to the Hand Wheel Actuator (HWA), the Road Wheel Actuator (RWA), and the communication bus.
+
+\subsection{FSR Refinement Strategy}
+To achieve the high reliability required for ASIL D targets, a multi-tier redundancy and diagnostic concept is employed:
+\begin{itemize}
+    \item \textbf{Dual-Channel Sensory Paths:} Sensor inputs are acquired via independent physical channels with diverse sensing principles (e.g., optical and magnetic).
+    \item \textbf{Diagnostic Coverage ($DC$):} Must exceed 99\% for ASIL D paths within the Fault Tolerant Time Interval (FTTI)~\cite{Smith2020}.
+    \item \textbf{Logical Execution Checks:} Microcontrollers must execute software safety functions on dual-core lockstep hardware with hardware-enforced memory protection units (MPUs).
+\end{itemize}
+
+\subsection{Functional Safety Requirements Allocation}
+Table~\ref{tab:fsr} maps the FSRs to the respective subsystems, establishing the compliance trace matrix.
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Functional Safety Requirements (FSR) Allocation Matrix.}
+    \label{tab:fsr}
+    \begin{tabularx}{\linewidth}{p{1.6cm} X l c c}
+        \toprule
+        \textbf{Req ID} & \textbf{Requirement Description} & \textbf{Allocation} & \textbf{Safety Goal} & \textbf{ASIL} \\
+        \midrule
+        FSR\_HWA\_01 & HWA shall monitor driver torque inputs using dual-channel diverse sensors with diagnostic coverage \(> 99\%\). & HWA Sensors & SG\_01 & ASIL D \\
+        FSR\_HWA\_02 & HWA controller shall disable feedback motor torque if spurious movement is detected in the steering wheel. & HWA Actuator & SG\_01 & ASIL D \\
+        FSR\_RWA\_01 & RWA shall monitor rotor position and torque from both motor channels to cross-validate operational outputs. & RWA Controller & SG\_01, SG\_02 & ASIL D \\
+        FSR\_RWA\_02 & RWA shall perform diagnostic self-tests on power electronics bridges during system startup and every key cycle. & RWA Inverter & SG\_02 & ASIL D \\
+        FSR\_RWA\_03 & RWA shall mechanically isolate a jammed motor winding via an automatic coil-decoupling relay. & RWA Actuator & SG\_03 & ASIL D \\
+        FSR\_COM\_01 & Communication between HWA and RWA shall use a dual-channel FlexRay bus with active CRC and frame counters. & FlexRay Bus & SG\_01, SG\_02 & ASIL D \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Technical Safety Requirements (TSRs)}
+Functional safety requirements are further translated into Technical Safety Requirements (TSRs) to guide the hardware and software design:
+\begin{enumerate}
+    \item \textbf{TSR\_HW\_01:} The torque sensor signals shall be transmitted via Sentinel-bus protocol with a 16-bit Cyclic Redundancy Check (CRC).
+    \item \textbf{TSR\_SW\_01:} Software executing on the safety microcontrollers shall implement a three-layer monitoring architecture:
+    \begin{itemize}
+        \item Layer 1: Functional control path (torque control).
+        \item Layer 2: Independent monitoring path (cross-checking torque limits).
+        \item Layer 3: Processor self-tests, hardware watchdogs, and memory testing.
+    \end{itemize}
+    \item \textbf{TSR\_HW\_02:} The steering motor shall be a dual-wind permanent magnet synchronous motor (PMSM) with isolated power electronics bridges to ensure full drive capability if one winding fails.
+\end{enumerate}

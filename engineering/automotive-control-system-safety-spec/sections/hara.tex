@@ -1,0 +1,61 @@
+\section{Hazard Analysis and Risk Assessment}
+\label{sec:hara}
+
+A systematic Hazard Analysis and Risk Assessment (HARA) was performed in accordance with ISO 26262-3:2018~\cite{ISO26262_2018} to identify potential hazardous events resulting from malfunctions in the steer-by-wire system. Each identified hazard is analyzed across various operational situations, evaluating Severity ($S$), Probability of Exposure ($E$), and Controllability ($C$).
+
+\subsection{Risk Classification Parameters}
+The hazard classification is conducted using the standard rating levels defined below:
+\begin{itemize}
+    \item \textbf{Severity ($S$):} Rated from $S0$ (no injury) to $S3$ (life-threatening or fatal injuries).
+    \item \textbf{Exposure ($E$):} Rated from $E0$ (incredibly unlikely) to $E4$ (high probability, everyday driving).
+    \item \textbf{Controllability ($C$):} Rated from $C0$ (easy to control) to $C3$ (difficult to control or uncontrollable by an average driver).
+\end{itemize}
+The combination of these parameters determines the Automotive Safety Integrity Level (ASIL), ranging from ASIL A (lowest) to ASIL D (highest). If a hazard does not require safety measures under ISO 26262, it is classified as Quality Management (QM).
+
+\subsection{Hazard Identification and ASIL Determination}
+Table~\ref{tab:hara} details the hazards evaluated for the Synapse SbW control loop. The worst-case operational situations are selected to determine the safety requirements.
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Hazard Analysis and Risk Assessment (HARA) for Steer-by-Wire control loop.}
+    \label{tab:hara}
+    \begin{tabularx}{\linewidth}{p{1.2cm} X p{3.2cm} c c c l}
+        \toprule
+        \textbf{ID} & \textbf{Hazard Description} & \textbf{Operational Situation} & \textbf{S} & \textbf{E} & \textbf{C} & \textbf{ASIL} \\
+        \midrule
+        HZ\_01 & Unintended self-steering (spurious torque output) & Highway driving at high speed (\(> 100\) km/h) & S3 & E4 & C3 & ASIL D \\
+        HZ\_02 & Sudden, complete loss of steering assistance & Sharp cornering on mountain roads & S3 & E4 & C3 & ASIL D \\
+        HZ\_03 & Mechanical lock-up of the RWA steering rack & Normal city driving with pedestrians nearby & S3 & E4 & C3 & ASIL D \\
+        HZ\_04 & Incorrect feedback torque generated at HWA & Normal highway driving (spurious vibrations) & S1 & E4 & C1 & QM \\
+        HZ\_05 & Delayed response of road wheels to driver input & Overtaking maneuver on a two-lane road & S3 & E3 & C3 & ASIL C \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Safety Goals (SGs)}
+Based on the identified hazards, the following Safety Goals (SGs) are established for the steering system. These goals represent the top-level safety requirements that must be met to avoid the hazards.
+
+\begin{asilbox}{Safety Goal 1 (SG\_01): Prevent Unintended Self-Steering}
+    \begin{tabular}{p{3cm} l}
+        \textbf{Safety Integrity Level:} & ASIL D \\
+        \textbf{Safe State:} & Disable affected actuator channel, initiate standby channel, notify driver. \\
+        \textbf{FTTI:} & \(50\text{~ms}\) (Fault Tolerant Time Interval)
+    \end{tabular}
+\end{asilbox}
+
+\begin{asilbox}{Safety Goal 2 (SG\_02): Prevent Complete Loss of Steering Assistance}
+    \begin{tabular}{p{3cm} l}
+        \textbf{Safety Integrity Level:} & ASIL D \\
+        \textbf{Safe State:} & Transition to degraded mode (50\% power assist), signal visual warning. \\
+        \textbf{FTTI:} & \(100\text{~ms}\)
+    \end{tabular}
+\end{asilbox}
+
+\begin{asilbox}{Safety Goal 3 (SG\_03): Prevent Physical Steering Lock}
+    \begin{tabular}{p{3cm} l}
+        \textbf{Safety Integrity Level:} & ASIL D \\
+        \textbf{Safe State:} & Mechanically decouple faulty channel, maintain main steering path. \\
+        \textbf{FTTI:} & \(15\text{~ms}\) (Immediate response required)
+    \end{tabular}
+\end{asilbox}

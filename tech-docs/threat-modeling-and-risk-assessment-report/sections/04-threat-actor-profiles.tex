@@ -1,0 +1,33 @@
+\section{Threat Actor Profiles}
+\label{sec:threat-actors}
+
+Likelihood ratings in Section~\ref{sec:risk-matrix} are anchored to the five actors below, ordered by the risk they currently pose to Nexa Ledger rather than by sophistication alone. Capability describes technical resources; access describes the starting foothold each actor is assumed to already have or can plausibly acquire.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l L c L@{}}
+\toprule
+\rowcolor{primary}
+\textcolor{white}{\textbf{Actor}} & \textcolor{white}{\textbf{Motivation}} & \textcolor{white}{\textbf{Capability}} & \textcolor{white}{\textbf{Primary Target}} \\
+\midrule
+Organized fraud ring & Direct financial gain via fabricated or altered settlement entries & High & Webhook ingestion, reconciliation engine \\
+\rowcolor{rowgray}
+Malicious insider & Financial gain, coercion, or grievance; abuses legitimate access & Medium & Admin console, ledger database \\
+Compromised third-party vendor & Unwitting supply-chain foothold via a trusted integration & Medium & Vertex/Synapse integration credentials \\
+\rowcolor{rowgray}
+Opportunistic credential stuffer & Low-effort account takeover for resale or fraud & Low & Client-facing API gateway, auth service \\
+Nation-state-adjacent actor & Espionage or destabilization targeting high-value fintech clients & High & Ledger database, audit log store \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{warningbox}{Actor Spotlight: Organized Fraud Ring (``Ledger Skimmers'')}
+This is the actor most likely to act against Nexa Ledger in the next twelve months, and it is the actor behind the scenario in VULN-01. Groups in this category have previously been observed against other Vertex Payments merchants injecting forged settlement webhooks to create phantom refunds, then withdrawing the resulting balance before month-end reconciliation catches the discrepancy. They do not need to compromise Nexa infrastructure directly: any endpoint that accepts a webhook without verifying its signature and a fresh timestamp is a viable target. Their operational tempo is bursts of automated traffic timed around known reconciliation windows, which makes them detectable if request-rate and signature-failure telemetry on the webhook endpoint is monitored --- currently it is not (see VULN-01).
+\end{warningbox}
+
+\textbf{Malicious insider} scenarios in scope assume a support engineer or contractor with legitimate Admin Console credentials, not a compromised account (that path is covered under the fraud-ring and credential-stuffer profiles). The primary concern is the console's direct database query path (Section~\ref{sec:architecture}, VULN-02), which lets a credentialed insider alter ledger rows without generating the audit events the Reconciliation Engine would normally emit.
+
+\textbf{Compromised third-party vendor} covers a scenario where a Vertex Payments or Synapse Bank Connect credential leaks outside Nexa's control --- for example through a breach at the partner rather than at Nexa. Because Nexa currently issues one shared integration key per partner rather than per tenant (VULN-06), a single leaked credential grants broader access than any individual tenant relationship would justify.
+
+\textbf{Opportunistic credential stuffers} run automated login attempts against the API Gateway using credential lists purchased from unrelated breaches. Their capability is low and their success depends entirely on tenant password reuse, but their volume is high and constant, making them a persistent background threat rather than a one-time event.
+
+The \textbf{nation-state-adjacent actor} is included for completeness given several Nexa Ledger tenants operate in regulated cross-border payment corridors; likelihood is rated low in the absence of any specific intelligence, but impact is rated at the maximum band because this actor's objective (bulk exfiltration of the ledger and audit store) would compromise every tenant simultaneously.

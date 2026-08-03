@@ -1,0 +1,53 @@
+\section{Reference device algorithm}
+
+The following pseudocode is informative but reflects normative ordering:
+
+\begin{lstlisting}[language={}]
+function handle_offer(cose_bytes, campaign):
+    require length(cose_bytes) <= MAX_MANIFEST
+    protected, payload, signature = parse_strict_cose(cose_bytes)
+    key = trust_store.lookup(protected.kid, protected.alg)
+    require key.role permits RELEASE for local_product
+    require verify_cose(key, protected, payload, signature)
+
+    manifest = decode_canonical_cbor(payload)
+    require supported_schema(manifest)
+    require target_matches(manifest.targets, protected_identity())
+    require not revoked(manifest, current_revocations)
+    require freshness_and_rollback_ok(manifest, protected_counters())
+
+    selection = choose_compatible_artifacts(manifest, inventory())
+    require selection covers every required component
+    require install_constraints_can_eventually_be_met(manifest)
+
+    session = persist_new_session(
+        release_id = manifest.release_id,
+        manifest_digest = sha256(payload),
+        selection = selection)
+    send_accept(session)
+
+    for artifact in selection:
+        while not all_chunks_verified(artifact):
+            require current_manifest_digest(session) == sha256(payload)
+            wait_until_transfer_policy_allows()
+            chunk = fetch_next_range(artifact)
+            require sha256(chunk.bytes) == artifact.chunk_hashes[chunk.index]
+            durably_store_then_mark_verified(chunk)
+        require sha256(stored_artifact_bytes) == artifact.sha256
+
+    wait_until_install_policy_allows()
+    stage_into_inactive_target(selection)
+    require verify_installed_images(manifest.components)
+    atomically_schedule_trial_boot(manifest.install_policy)
+    reboot()
+
+function on_trial_boot():
+    if required_health_checks_pass_before_limit():
+        atomically_confirm_and_commit_security_counters()
+        report(CONFIRMED)
+    else:
+        persist_bounded_failure_reason()
+        request_rollback_and_reboot()
+\end{lstlisting}
+
+% -----------------------------------------------------------------------------

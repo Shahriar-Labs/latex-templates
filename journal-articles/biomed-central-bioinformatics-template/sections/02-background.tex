@@ -1,0 +1,85 @@
+\section{Background}
+
+Molecular characterization studies increasingly measure the same biospecimens
+with several assays, including gene expression, DNA methylation, copy-number
+variation, and somatic mutation profiling. These modalities provide complementary
+views of cellular state, but they differ in scale, sparsity, cost, and technical
+failure rate. A model trained only on complete cases may therefore exclude useful
+samples and can fail when a required assay is unavailable in a deployment
+cohort. The Cancer Genome Atlas (TCGA) illustrates both the opportunity and the
+heterogeneity of large multi-omics collections~\cite{weinstein2013tcga}.
+
+Common integration strategies concatenate features, learn a shared latent space,
+or construct sample-similarity networks. Similarity Network Fusion combines
+patient-level networks built from different assays~\cite{wang2014snf}, whereas
+factor models such as MOFA learn interpretable axes of variation across data
+views~\cite{argelaguet2018mofa}. Graph neural networks (GNNs) offer a complementary
+approach: prior biological relationships can define a stable topology, while
+assay measurements become context-dependent node features. Graph convolutional
+networks~\cite{kipf2017gcn} and graph attention networks~\cite{velickovic2018gat}
+have established practical mechanisms for propagating information on such
+structures.
+
+Two issues remain important for translational use. First, missing modalities
+should be represented explicitly rather than silently imputed as if they had
+been observed. Second, a classifier should communicate when a prediction is
+unreliable. Modern neural networks can produce overconfident probabilities even
+when their discrimination is strong~\cite{guo2017calibration}. Approximate
+Bayesian inference with dropout provides a computationally accessible estimate
+of predictive variability~\cite{gal2016dropout}, and temperature scaling can
+correct systematic overconfidence on held-out data.
+
+This illustrative study introduces \modelname, a gene-level GNN with three design
+goals:
+\begin{itemize}
+  \item integrate heterogeneous assays on a shared, biologically motivated graph;
+  \item remain useful when one or more assays are absent; and
+  \item return calibrated probabilities accompanied by uncertainty estimates.
+\end{itemize}
+We describe a leakage-resistant evaluation, compare representative integration
+baselines, and report both discrimination and calibration. Figure~\ref{fig:workflow}
+summarizes the end-to-end workflow.
+
+\begin{figure}[tbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  font=\sffamily\small,
+  assay/.style={rounded corners=2pt,draw=BMCBlue,fill=BMCLight,
+    minimum width=25mm,minimum height=8mm,align=center},
+  process/.style={rounded corners=3pt,draw=BMCDark,very thick,fill=white,
+    minimum width=31mm,minimum height=12mm,align=center},
+  output/.style={rounded corners=3pt,draw=BMCGreen,very thick,fill=BMCGreen!10,
+    minimum width=29mm,minimum height=12mm,align=center},
+  arrow/.style={-{Latex[length=2.2mm]},thick,color=BMCGray},
+  mask/.style={draw=BMCGray,dashed,rounded corners=3pt,inner sep=5pt}
+]
+  \node[assay] (rna) at (0,2.4) {RNA expression};
+  \node[assay] (meth) at (0,1.2) {DNA methylation};
+  \node[assay] (cnv) at (0,0) {Copy number};
+  \node[assay] (mut) at (0,-1.2) {Mutations};
+  \node[mask,fit=(rna)(meth)(cnv)(mut),
+    label={[font=\bfseries\sffamily\small]above:Assay matrices}] (inputs) {};
+
+  \node[process,right=17mm of inputs] (encode) {Modality encoders\\and mask tokens};
+  \node[process,right=13mm of encode] (graph) {Gene graph\\attention layers};
+  \node[process,right=13mm of graph] (pool) {Attentive pooling\\and classifier};
+  \node[output,right=13mm of pool] (pred) {Subtype probability\\and uncertainty};
+
+  \draw[arrow] (inputs.east) -- (encode.west);
+  \draw[arrow] (encode.east) -- (graph.west);
+  \draw[arrow] (graph.east) -- (pool.west);
+  \draw[arrow] (pool.east) -- (pred.west);
+
+  \node[draw=BMCGray,fill=white,circle,inner sep=1.2pt,
+    below=8mm of encode] (drop) {$m_k$};
+  \draw[arrow,dashed] (drop) -- node[right,font=\scriptsize,align=left]
+    {random modality\\masking in training} (encode.south);
+\end{tikzpicture}
+}
+\caption{Overview of the \modelname{} workflow. Assay-specific encoders map
+measurements onto a shared gene graph. Random masks simulate absent assays during
+training. Repeated stochastic forward passes produce a predictive distribution,
+which is calibrated on a validation partition.}
+\label{fig:workflow}
+\end{figure}

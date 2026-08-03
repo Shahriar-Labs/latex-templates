@@ -1,0 +1,68 @@
+\section{Site Conditions and System Design}
+\label{sec:site_design}
+
+\subsection{Meteorological Design Conditions}
+The Meridian Solar PV Facility is designed to operate under the arid, high-irradiation conditions characteristic of the Great Basin Desert. The system engineering must account for extreme diurnal temperature variations, high wind speeds, and localized dust accumulation. The design envelope is defined by the following parameters:
+\begin{itemize}
+    \item \textbf{Design Ambient Temperature Range:} $-10^\circ$C to $+45^\circ$C.
+    \item \textbf{Extreme Wind Design Speed:} 140\,km/h (3-second gust, 50-year return period).
+    \item \textbf{Annual Global Horizontal Irradiance (GHI):} 1,980\,kWh/m\textsuperscript{2}/year.
+    \item \textbf{Annual Plane-of-Array (POA) Irradiance:} 2,240\,kWh/m\textsuperscript{2}/year (tracker-optimized).
+\end{itemize}
+
+\subsection{Equipment Specification}
+To achieve the targets set forth by Nexa Power Group, Vertex Infrastructure Corp has selected tier-one components optimized for high-temperature and bifacial operation. The major equipment components are specified in Table~\ref{tab:equipment_specs}.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Key Technical Parameters of Major Plant Equipment}
+    \label{tab:equipment_specs}
+    \begin{tabularx}{\textwidth}{l X l}
+        \toprule
+        \textbf{Equipment} & \textbf{Parameter} & \textbf{Design Value} \\
+        \midrule
+        \textbf{PV Module} & Model & Vertex Prime VP-650B \\
+         & Nominal Power ($P_{\text{mp}}$) & 650\,Wp \\
+         & Module Efficiency ($\eta$) & 22.3\% \\
+         & Temp. Coeff. of $P_{\text{mp}}$ ($\gamma$) & $-0.34\%/^\circ$C \\
+         & Bifaciality Factor & 75\% $\pm$ 5\% \\
+        \midrule
+        \textbf{Inverter} & Model & Nimbus Centurion NC-4200 \\
+         & Rated AC Output & 4,200\,kW \\
+         & Maximum Efficiency & 99.0\% \\
+         & Nominal AC Output Voltage & 600\,V \\
+        \midrule
+        \textbf{Tracker} & Model & Apex Tracker Duo Single-Axis \\
+         & Tracking Range & $\pm 60^\circ$ \\
+         & Backtracking & Enabled \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Electrical Configuration}
+The system layout features a DC-to-AC overloading ratio of 1.25, which minimizes clipping losses while maximizing inverter capacity utilization. The nominal DC system voltage is 1500\,V. Each inverter block contains multiple DC sub-combiners with smart monitoring capability. 
+
+The electrical transformation pathway from generation to interconnection is shown in Figure~\ref{fig:electrical_diagram}.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[node distance=2.2cm, auto, >=stealth, thick]
+        \tikzstyle{block} = [draw, rectangle, fill=lightgrey, text=charcoal, minimum width=2.4cm, minimum height=1.2cm, align=center, rounded corners, draw=primarycolor]
+        \tikzstyle{cloud} = [draw, ellipse, fill=secondarycolor!10, text=charcoal, minimum width=2.2cm, minimum height=1.2cm, align=center, draw=secondarycolor]
+        
+        \node [block] (pv) {PV Array\\(Vertex Prime)};
+        \node [block, right of=pv, node distance=3.6cm] (comb) {DC Combiner\\(Smart Monitoring)};
+        \node [block, right of=comb, node distance=3.6cm] (inv) {Inverter\\(Nimbus Centurion)};
+        \node [block, right of=inv, node distance=3.6cm] (trans) {Transformer\\(0.6\,kV / 34.5\,kV)};
+        \node [block, below of=trans, node distance=2.2cm] (sub) {Substation\\(34.5\,kV / 115\,kV)};
+        \node [cloud, left of=sub, node distance=3.6cm] (grid) {Utility Grid\\(Interconnection)};
+        
+        \draw [->, primarycolor, line width=1.2pt] (pv) -- node[above]{\footnotesize DC} (comb);
+        \draw [->, primarycolor, line width=1.2pt] (comb) -- node[above]{\footnotesize DC} (inv);
+        \draw [->, secondarycolor, line width=1.2pt] (inv) -- node[above]{\footnotesize AC} (trans);
+        \draw [->, secondarycolor, line width=1.2pt] (trans) -- (sub);
+        \draw [->, secondarycolor, line width=1.2pt] (sub) -- (grid);
+    \end{tikzpicture}
+    \caption{Electrical Block Diagram and Power Transformation Pathway of the Meridian Solar PV Facility.}
+    \label{fig:electrical_diagram}
+\end{figure}

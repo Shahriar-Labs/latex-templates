@@ -1,0 +1,86 @@
+\section{Results}
+
+\subsection{Parameter Sensitivities and Baseline Dynamics}
+
+The model parameters were calibrated using empirical rates from published soil mesocosm studies, adjusted to fit the fictional house set properties. The parameters used in our baseline simulations are summarized in Table~\ref{tab:model_parameters}.
+
+\begin{table}[htbp]
+\centering
+\caption{Model parameters, symbols, default values, and source channels used in the multi-channel food web simulation.}
+\label{tab:model_parameters}
+\vspace{0.2cm}
+\begin{tabularx}{\textwidth}{lXcc}
+\toprule
+\textbf{Parameter Description} & \textbf{Symbol} & \textbf{Default Value} & \textbf{Resource Channel} \\
+\midrule
+Litter decomposition rate & $k_L$ & $0.15\,\text{d}^{-1}$ & Synapse (Slow) \\
+Exudate assimilation rate & $k_E$ & $0.45\,\text{d}^{-1}$ & Vertex (Fast) \\
+Bacterial half-saturation constant & $K_L$ & $120.0\,\text{g C m}^{-2}$ & Synapse \\
+Fungal half-saturation constant & $K_E$ & $45.0\,\text{g C m}^{-2}$ & Vertex \\
+Bacteria attack rate by Apex & $a_B$ & $0.08\,\text{m}^2\,(\text{g C d})^{-1}$ & Both Channels \\
+Fungi attack rate by Apex & $a_F$ & $0.05\,\text{m}^2\,(\text{g C d})^{-1}$ & Both Channels \\
+Apex handling time (Bacteria) & $h_B$ & $2.5\,\text{d}$ & Both Channels \\
+Apex handling time (Fungi) & $h_F$ & $4.0\,\text{d}$ & Both Channels \\
+Apex natural mortality rate & $m_P$ & $0.02\,\text{d}^{-1}$ & Predators \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Under standard environmental conditions, both resource channels co-exist stably, maintaining predator biomass at a mean of $12.4\,\text{g C m}^{-2}$. The microbial compartments (Nimbus Bacteria and Meridian Fungi) exhibit complementary temporal fluctuations, with bacteria dominating during exudate pulses and fungi persisting during recalcitrant litter degradation.
+
+\subsection{Trophic Stability Under Asynchronous vs. Synchronous Inputs}
+
+Trophic stability was highly dependent on the phase relationship between the two carbon input channels. When litter (Synapse) and exudate (Vertex) inputs were asynchronous, the total microbial biomass remained exceptionally stable (coefficient of variation, $\text{CV} = 0.08$), as the slow decay of litter buffered the rapid fluctuations of root exudates. This steady prey supply supported a persistent population of Apex predators.
+
+Conversely, when carbon inputs were synchronous (both peaking during spring growth), the food web experienced intense boom-and-bust cycles. Total prey availability peaked rapidly, driving a massive increase in Apex predator density. However, this was followed by a prolonged resource deficit, causing predator biomass to plunge to critical thresholds ($< 0.5\,\text{g C m}^{-2}$) and increasing local extinction probability by 22\%.
+
+\subsection{Impact of Rainfall Extremes and Channel Coupling}
+
+The introduction of rainfall shocks significantly disrupted food web stability. By inducing high-frequency variance in plant root exudation (Vertex pathway), extreme weather events overrode the asynchronous buffering capacity of the system. 
+
+Fig.~\ref{fig:bifurcation} shows the bifurcation of Apex predator biomass variance as a function of the coefficient of variation ($\text{CV}$) of root exudate inputs. As input volatility increases, the system transitions from stable equilibrium to limit-cycle oscillations, and eventually to stochastic chaos under high-frequency shocks.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.85\textwidth,
+    height=6.5cm,
+    axis lines=left,
+    grid=both,
+    grid style={line width=.1pt, draw=gray!10},
+    major grid style={line width=.2pt, draw=gray!20},
+    xlabel={Exudate Input Volatility ($\text{CV}_{I_E}$)},
+    ylabel={Apex Predator Biomass ($\text{g C m}^{-2}$)},
+    xmin=0.1, xmax=0.9,
+    ymin=0, ymax=25,
+    xtick={0.2,0.4,0.6,0.8},
+    ytick={5,10,15,20},
+    legend pos=north east,
+    legend style={draw=none, fill=none, font=\sffamily\small},
+    line width=1.0pt
+]
+
+    % Asynchronous Channel line (Solid Green)
+    \addplot[ecolgreen, thick, mark=none] coordinates {
+        (0.1, 12.8) (0.2, 12.6) (0.3, 12.4) (0.4, 12.0) (0.5, 11.2)
+        (0.6, 9.8)  (0.7, 7.5)  (0.8, 4.2)  (0.9, 1.8)
+    };
+    \addlegendentry{Asynchronous Input}
+
+    % Synchronous Channel line (Dashed Orange)
+    \addplot[ecolaccent, dashed, thick, mark=none] coordinates {
+        (0.1, 10.2) (0.2, 9.5)  (0.3, 8.4)  (0.4, 6.8)  (0.5, 4.5)
+        (0.6, 2.8)  (0.7, 1.1)  (0.8, 0.3)  (0.9, 0.0)
+    };
+    \addlegendentry{Synchronous Input}
+
+    % Shaded critical threshold area
+    \draw[fill=red!10, draw=none, opacity=0.5] (axis cs:0.1,0) rectangle (axis cs:0.9,2.0);
+    \node[anchor=west, text=red!80!black, font=\sffamily\scriptsize] at (axis cs:0.12, 1.0) {Extinction Hazard Zone};
+
+\end{axis}
+\end{tikzpicture}
+\caption{Steady-state predator biomass as a function of exudate input volatility ($\text{CV}_{I_E}$) under asynchronous (solid green line) and synchronous (dashed orange line) regimes. The red shaded box indicates the critical biomass threshold below which extinction occurs due to demographic stochasticity.}
+\label{fig:bifurcation}
+\end{figure}

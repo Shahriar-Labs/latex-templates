@@ -1,0 +1,35 @@
+\section{Ethical Considerations and Open Science}
+\label{sec:ethics}
+
+All attack sessions in this paper were injected in an isolated testbed built from our own
+hardware and our own victim and attacker VM images; no traffic from an operational cloud
+provider's tenants was observed, modified, or affected at any point in this work, and no
+personally identifiable information was collected. Because \sysname{} is designed to observe
+only aggregate, per-core hardware counters rather than guest memory contents, the traces used
+to train and evaluate the classifier's thresholds contain no information about what any VM
+was computing -- only how its cache accesses were timed. We see no responsible-disclosure
+obligation arising from this work: it identifies a channel (cross-VM cache contention) that is
+already well documented in prior literature and proposes a defense rather than a new
+vulnerability. In keeping with the open-science expectations of this venue, we intend to
+release the \sysname{} sampler, featurizer, and classifier implementation under an open-source
+license on publication. We do not plan to release the raw host performance-counter traces
+themselves, since counter timing recorded from a live multi-tenant host reflects the
+workload behavior of tenants who did not consent to having it published, even though it
+contains no data content; we will instead release the synthetic trace generator used to
+produce the injected-attack sessions in Section~\ref{sec:evaluation}, which is sufficient to
+reproduce every number in Table~\ref{tab:detection} and Figure~\ref{fig:tradeoff}.
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+Memory encryption removes the most direct way to attack a confidential VM, but it leaves the
+last-level cache exactly as shared and exactly as observable as it was before CVMs existed.
+\sysname{} shows that a hypervisor can defend against this residual channel without crossing
+the trust boundary CVMs exist to establish: by reading only per-core hardware counters,
+correlating contention across candidate core pairs, and smoothing the result into a
+hysteresis-gated decision, it detects 94.6\% of injected cache-contention attacks at a 1.8\%
+false-positive rate and 2.1\% overhead, and contains a detected attacker in a median of
+340\,ms without ever touching the victim's memory, schedule, or attestation state. We believe
+the same guest-oblivious, counter-only approach generalizes to other microarchitectural
+channels that memory encryption does not and cannot close, and we leave that extension to
+future work.

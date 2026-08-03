@@ -1,0 +1,25 @@
+\section{Commands, cancellation, and supersession}
+
+The service may send authenticated \code{POLL}, \code{PAUSE}, \code{RESUME}, or
+\code{CANCEL} commands. Commands include a unique ID, campaign ID, issue time,
+optional expiry, and reason. The device acknowledges a command idempotently.
+
+\begin{itemize}
+  \item \code{POLL} triggers discovery; it does not directly authorize a release.
+  \item \code{PAUSE} stops new transfer work at the next chunk boundary and preserves progress.
+  \item \code{RESUME} allows policy evaluation and transfer to continue.
+  \item \code{CANCEL} prevents future staging or activation for the campaign.
+\end{itemize}
+
+Cancellation cannot safely interrupt flash erase/program operations, trust-store
+updates, or an activation commit. The device completes the current atomic step,
+then reaches a safe state. After a trial boot, ordinary cancellation does not
+force rollback; only local health policy or a separately signed emergency
+revocation can do so.
+
+A newer offer supersedes an active one only when it is valid, targets the device,
+has a greater signed sequence, and local policy permits switching. Verified bytes
+may be reused only when their artifact ID, size, digest, and chunk parameters are
+identical in both signed manifests.
+
+% -----------------------------------------------------------------------------

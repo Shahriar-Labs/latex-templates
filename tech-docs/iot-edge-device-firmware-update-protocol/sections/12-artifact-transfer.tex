@@ -1,0 +1,69 @@
+\section{Artifact transfer}
+
+\subsection{Transport-independent requirements}
+
+Artifacts are immutable and content-addressed by the signed digest. A repository
+\must support byte-range retrieval or whole-object retrieval. The device \must:
+
+\begin{itemize}
+  \item verify that the returned length and range agree with the request;
+  \item reject data beyond the signed artifact size;
+  \item hash every received chunk before marking it durable and verified;
+  \item calculate the full artifact digest over bytes in artifact order;
+  \item never execute or parse unverified data with privileged, unsafe code; and
+  \item erase or quarantine staging content after a terminal integrity failure.
+\end{itemize}
+
+\subsection{Chunking and resume}
+
+\field{chunk_size} \must be a power of two from 16~KiB through 1~MiB. All chunks
+except the last have exactly that size. Chunk index $i$ covers:
+
+\[
+  [i \times \textit{chunk\_size},
+   \min((i+1) \times \textit{chunk\_size},\textit{artifact\_size})) .
+\]
+
+The ordered \field{chunk_hashes} array contains SHA-256 for every chunk. A device
+persists progress only after data reaches durable storage and its chunk hash
+matches. After reboot it \must revalidate the manifest digest and staging-record
+integrity before trusting the bitmap. It \should re-hash the last verified chunk
+to detect torn writes.
+
+When a repository changes ETag, total size, or range semantics during a session,
+the device \must stop and validate already stored content against signed chunk
+hashes; it may resume only if all retained bytes remain valid. HTTP cache headers
+never authorize content changes.
+
+\subsection{Full and delta artifacts}
+
+The device should prefer the artifact with the lowest safe total cost, accounting
+for transfer size, scratch space, energy, and failure recovery. A delta artifact
+is eligible only if its signed \field{base\_installed\_sha256} exactly matches the
+installed base image. After applying a delta, the device \must verify both the
+patch artifact digest and the signed \field{installed\_sha256} of the produced
+image. On delta failure it \should fall back to a compatible full artifact from
+the same manifest; it \mustnot accept an unsigned alternative.
+
+Decompression and patching \must enforce declared output-size limits, reject
+trailing unauthorized content, avoid path traversal and symbolic-link escape,
+and operate within an unprivileged or otherwise isolated installer when the
+platform supports it.
+
+\subsection{Retry behavior}
+
+For timeouts, connection loss, HTTP 429, and HTTP 5xx, the device uses exponential
+backoff with full jitter:
+
+\[
+  d_n \sim U(0, \min(d_{\max}, d_0 2^n)),
+\]
+
+where the recommended $d_0$ is 5 seconds and $d_{\max}$ is 15 minutes. An
+authenticated \field{Retry-After} value may raise the delay but cannot exceed the
+local cap. HTTP 401/403 triggers credential refresh at most once before terminal
+authorization failure. HTTP 404/410 is terminal for that URI; the device may try
+another signed URI. Integrity failures \mustnot be retried indefinitely and
+\should trigger a security alert after two independent retrieval attempts.
+
+% -----------------------------------------------------------------------------

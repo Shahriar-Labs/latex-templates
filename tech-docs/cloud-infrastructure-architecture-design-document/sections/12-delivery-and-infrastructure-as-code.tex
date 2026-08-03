@@ -1,0 +1,37 @@
+\section{Delivery and Infrastructure as Code}
+
+\subsection{Source-to-production flow}
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[node distance=7mm]
+  \node[tier,minimum width=25mm] (commit) {Signed commit};
+  \node[service,minimum width=25mm,right=of commit] (test) {Test + scan};
+  \node[service,minimum width=25mm,right=of test] (build) {Build + sign};
+  \node[service,minimum width=25mm,right=of build] (stage) {Deploy stage};
+  \node[service,minimum width=25mm,right=of stage] (verify) {Verify};
+  \node[tier,fill=greenpale,minimum width=28mm,right=of verify] (prod) {Progressive\\production};
+  \draw[flowblue] (commit)--(test);
+  \draw[flowblue] (test)--(build);
+  \draw[flowblue] (build)--(stage);
+  \draw[flowblue] (stage)--(verify);
+  \draw[flowblue] (verify)--(prod);
+  \node[label,below=3mm of build] {immutable digest + provenance};
+\end{tikzpicture}
+}
+\caption{Artifact promotion flow. The same signed artifact advances through every stage.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Pipeline controls}
+
+Pull requests require code ownership, passing tests, policy checks, secret scanning, dependency scanning, and an approved plan for infrastructure changes. Production promotion requires environment approval and is blocked during an active major incident. The pipeline assumes a narrow AWS role through OIDC, records artifact provenance, and writes deployment events to the audit trail.
+
+Deployments use canary steps of 5\%, 25\%, 50\%, and 100\%, advancing only while SLO and application checks remain healthy. Automated rollback returns traffic to the prior signed image. Database migrations are forward-compatible and are not treated as reversible container deployments.
+
+\subsection{Infrastructure repositories and state}
+
+Terraform modules define organization, account, network, cluster, data, security, and observability layers. State is encrypted in a dedicated administrative account with locking, versioning, and access logging. Each environment has independent state and roles. Drift detection runs daily; critical drift alerts the platform team and cannot be silently adopted.
+
+% ================================================================

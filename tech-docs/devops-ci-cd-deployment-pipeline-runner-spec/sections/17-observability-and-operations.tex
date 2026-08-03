@@ -1,0 +1,60 @@
+\section{Observability and operations}
+
+\subsection{Telemetry}
+
+Every service emits structured logs, metrics, and distributed traces using shared
+request, run, job, attempt, and tenant correlation identifiers. Telemetry excludes
+secret values and raw tokens. High-cardinality identifiers remain in logs and traces,
+not unbounded metric labels.
+
+Required metrics include:
+
+\begin{itemize}
+  \item event acceptance, planning duration, planning failures by stable code;
+  \item ready queue depth and age by pool, priority, trust tier, and tenant class;
+  \item lease claim, renewal, expiry, stale finalization, and infrastructure retry rates;
+  \item runner boot, registration, attestation, quarantine, utilization, and teardown time;
+  \item log ingest lag, redaction counts, dropped frames, and artifact verification failures;
+  \item policy decision latency and deny reason, approval age, deployment duration and reconciliation;
+  \item database saturation, transaction conflicts, replication lag, outbox lag, and object-store errors;
+  \item estimated CPU, memory, storage, network, and cost by tenant and repository.
+\end{itemize}
+
+\subsection{Health and readiness}
+
+Liveness indicates that a process can make local progress. Readiness verifies required
+dependencies and whether the instance may receive traffic. Scheduler readiness also
+requires a valid regional writer epoch. A runner advertises detailed health to the
+control plane but exposes no unauthenticated network endpoint. Synthetic probes create
+and execute a minimal pipeline in each critical pool at least every five minutes.
+
+\subsection{Alerts}
+
+Alerts are actionable and mapped to owned runbooks. Page-worthy conditions include
+SLO burn, inability to accept events, rapidly aging ready queues, widespread lease
+expiry, failure to export audit, identity issuance failure, deployment reconciliation
+backlog, regional fencing ambiguity, and suspected sandbox escape. Capacity forecasts,
+quota pressure, cache degradation, and noncritical read lag create tickets or warnings.
+
+\subsection{Required runbooks}
+
+\begin{table}[htbp]
+\centering
+\caption{Operational runbook set}
+\label{tab:runbooks}
+\begin{tabularx}{\textwidth}{@{}L{0.28\textwidth}Y Y@{}}
+  \toprule
+  \thead{Scenario} & \thead{Immediate action} & \thead{Exit condition} \\
+  \midrule
+  Queue latency breach & Identify constrained pools, verify scheduler and quota, add or shift safe capacity & Oldest-ready age within objective and backlog declining \\
+  Lease expiry spike & Check network, runner health, clock, broker, and control-store latency; pause unsafe retries & Renewal success normal; duplicates reconciled \\
+  Suspected runner compromise & Quarantine pool, revoke runner identities and image digest, preserve evidence, rotate exposed grants & Incident commander and security approve rebuilt pool \\
+  Audit export failure & Preserve local outbox, restrict administrative changes, restore exporter or independent store & Backlog verified complete and freshness restored \\
+  Artifact integrity failure & Block digest, stop dependent deployments, compare storage and provenance, notify owners & Scope known, corrupted objects replaced or invalidated \\
+  Regional failover & Fence primary, verify quorum, promote epoch, rotate endpoints, reconcile in-flight work & Single writer proven; SLO probes pass \\
+  Deployment unknown & Freeze same-environment changes, query adapter and target, reconcile idempotency key & Target state and authoritative result recorded \\
+  \bottomrule
+\end{tabularx}
+\end{table}
+
+% -----------------------------------------------------------------------------

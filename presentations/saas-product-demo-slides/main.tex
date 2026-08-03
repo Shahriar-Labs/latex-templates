@@ -1,0 +1,632 @@
+\documentclass[aspectratio=169,11pt]{beamer}
+
+% Pulse - a self-contained SaaS product demo deck.
+% Compile with: latexmk -pdf -interaction=nonstopmode main.tex
+
+\usepackage[T1]{fontenc}
+\usepackage[scaled=0.96]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,positioning,shapes.geometric}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{ragged2e}
+\usepackage{microtype}
+
+\definecolor{PulseInk}{HTML}{172033}
+\definecolor{PulseSlate}{HTML}{506078}
+\definecolor{PulseBlue}{HTML}{536DFE}
+\definecolor{PulseBlueDark}{HTML}{3047D8}
+\definecolor{PulseCyan}{HTML}{31C4C7}
+\definecolor{PulseMint}{HTML}{CFF7ED}
+\definecolor{PulseCoral}{HTML}{FF766D}
+\definecolor{PulseAmber}{HTML}{F4B740}
+\definecolor{PulsePaper}{HTML}{F7F8FC}
+\definecolor{PulseLine}{HTML}{DDE2EC}
+\definecolor{PulseWhite}{HTML}{FFFFFF}
+\definecolor{PulseNavy}{HTML}{10182A}
+\definecolor{PulseGreen}{HTML}{1C9B70}
+
+\setbeamercolor{normal text}{fg=PulseInk,bg=PulsePaper}
+\setbeamercolor{structure}{fg=PulseBlue}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize item}{\raise0.1ex\hbox{\color{PulseBlue}\small$\bullet$}}
+\setbeamertemplate{itemize subitem}{\raise0.1ex\hbox{\color{PulseCyan}\scriptsize$\bullet$}}
+\setlength{\leftmargini}{1.2em}
+\setlength{\leftmarginii}{1em}
+
+\tikzset{
+  card/.style={draw=PulseLine,fill=PulseWhite,rounded corners=4pt,line width=.7pt},
+  softcard/.style={draw=none,fill=PulsePaper,rounded corners=4pt},
+  label/.style={font=\fontsize{9}{11}\selectfont\bfseries,text=PulseSlate},
+  body/.style={font=\fontsize{16}{20}\selectfont,text=PulseInk},
+  smallbody/.style={font=\fontsize{12}{15}\selectfont,text=PulseSlate},
+  tinybody/.style={font=\fontsize{9.5}{12}\selectfont,text=PulseSlate},
+  chip/.style={rounded corners=8pt,inner xsep=7pt,inner ysep=3.5pt,
+    font=\fontsize{9}{10}\selectfont\bfseries},
+  flowarrow/.style={-{Stealth[length=5pt,width=5pt]},line width=1.3pt,draw=PulseBlue},
+}
+
+\newcommand{\PulseMark}[1][PulseBlue]{%
+  \begin{tikzpicture}[baseline=-0.55ex,scale=.18]
+    \fill[#1] (0,0) circle (1);
+    \fill[PulseWhite] (-.48,.08) circle (.19);
+    \fill[PulseWhite] (0,.40) circle (.19);
+    \fill[PulseWhite] (.48,.08) circle (.19);
+    \draw[PulseWhite,line width=1.6pt,rounded corners=2pt]
+      (-.48,.08)--(0,.40)--(.48,.08);
+  \end{tikzpicture}%
+}
+
+\newcommand{\Brand}[1][PulseInk]{%
+  {\color{#1}\PulseMark[PulseBlue]\hspace{0.35em}\bfseries pulse}%
+}
+
+\newcommand{\SlideTitle}[2][]{%
+  \node[anchor=north west,text=PulseInk,align=left,
+    font=\fontsize{35}{38}\selectfont\bfseries]
+    at ([xshift=.78cm,yshift=-.48cm]current page.north west) {#2};
+  \ifx\relax#1\relax\else
+    \node[anchor=north west,text=PulseSlate,align=left,
+      font=\fontsize{14}{17}\selectfont]
+      at ([xshift=.80cm,yshift=-1.50cm]current page.north west) {#1};
+  \fi
+}
+
+\newcommand{\DeckFooter}[1]{%
+  \node[anchor=south west,font=\fontsize{8.5}{10}\selectfont,text=PulseSlate]
+    at ([xshift=.80cm,yshift=.22cm]current page.south west) {\Brand[PulseSlate]};
+  \node[anchor=south east,font=\fontsize{8.5}{10}\selectfont,text=PulseSlate]
+    at ([xshift=-.80cm,yshift=.22cm]current page.south east) {#1};
+}
+
+\newcommand{\PulseCheck}{\tikz[baseline=-.5ex]\fill[PulseGreen]
+  (0,0) circle (.12cm) node[PulseWhite,font=\fontsize{7}{7}\selectfont\bfseries] {$\checkmark$};}
+
+\begin{document}
+
+% -----------------------------------------------------------------------------
+% 1 - Title
+% -----------------------------------------------------------------------------
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[PulseNavy] (current page.south west) rectangle (current page.north east);
+  \fill[PulseBlue,opacity=.95]
+    ([xshift=10.9cm,yshift=-1.1cm]current page.north west) circle (4.2cm);
+  \fill[PulseCyan,opacity=.68]
+    ([xshift=14.3cm,yshift=1.0cm]current page.south west) circle (3.1cm);
+  \fill[PulseCoral,opacity=.75]
+    ([xshift=11.7cm,yshift=1.2cm]current page.south west) circle (.42cm);
+  \draw[PulseWhite,opacity=.18,line width=1.2pt]
+    ([xshift=10.1cm,yshift=1.1cm]current page.south west)
+      .. controls +(1.2,2.7) and +(-2.1,-1.1) ..
+    ([xshift=15.8cm,yshift=-1.1cm]current page.north west);
+
+  \node[anchor=north west,text=PulseWhite,font=\fontsize{20}{22}\selectfont]
+    at ([xshift=.85cm,yshift=-.72cm]current page.north west) {\Brand[PulseWhite]};
+  \node[anchor=west,text=PulseWhite,align=left,
+    font=\fontsize{54}{57}\selectfont\bfseries]
+    at ([xshift=.86cm,yshift=.65cm]current page.west)
+    {Turn signals\\into action};
+  \node[anchor=north west,text=PulseWhite!72,align=left,
+    font=\fontsize{18}{22}\selectfont]
+    at ([xshift=.90cm,yshift=-5.72cm]current page.north west)
+    {A product demo for customer success teams};
+  \node[anchor=south west,text=PulseWhite!62,
+    font=\fontsize{10}{12}\selectfont]
+    at ([xshift=.90cm,yshift=.48cm]current page.south west)
+    {ILLUSTRATIVE PRODUCT CONCEPT};
+\end{tikzpicture}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 2 - Problem
+% -----------------------------------------------------------------------------
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \SlideTitle[The customer story is split across tools, teams, and time.]
+    {Signals delay action}
+
+  \node[card,anchor=north west,minimum width=4.35cm,minimum height=4.85cm]
+    (a) at ([xshift=.80cm,yshift=-2.18cm]current page.north west) {};
+  \node[anchor=north west,font=\fontsize{12}{14}\selectfont\bfseries,text=PulseBlue]
+    at ([xshift=.28cm,yshift=-.28cm]a.north west) {01  ACTIVITY};
+  \node[anchor=north west,align=left,font=\fontsize{19}{22}\selectfont\bfseries,text=PulseInk]
+    at ([xshift=.28cm,yshift=-.80cm]a.north west) {Usage drops};
+  \node[anchor=north west,align=left,body,text width=3.65cm]
+    at ([xshift=.28cm,yshift=-1.50cm]a.north west)
+    {Usage falls. The account owner never sees it.};
+  \draw[PulseLine,line width=1pt]
+    ([xshift=.28cm,yshift=.55cm]a.south west)--([xshift=-.28cm,yshift=.55cm]a.south east);
+  \node[anchor=south west,smallbody]
+    at ([xshift=.28cm,yshift=.18cm]a.south west) {PRODUCT ANALYTICS};
+
+  \node[card,anchor=north west,minimum width=4.35cm,minimum height=4.85cm]
+    (b) at ([xshift=5.82cm,yshift=-2.18cm]current page.north west) {};
+  \node[anchor=north west,font=\fontsize{12}{14}\selectfont\bfseries,text=PulseCoral]
+    at ([xshift=.28cm,yshift=-.28cm]b.north west) {02  SENTIMENT};
+  \node[anchor=north west,align=left,font=\fontsize{19}{22}\selectfont\bfseries,text=PulseInk]
+    at ([xshift=.28cm,yshift=-.80cm]b.north west) {Champion lost};
+  \node[anchor=north west,align=left,body,text width=3.65cm]
+    at ([xshift=.28cm,yshift=-1.50cm]b.north west)
+    {The CRM changes, but no retention motion begins.};
+  \draw[PulseLine,line width=1pt]
+    ([xshift=.28cm,yshift=.55cm]b.south west)--([xshift=-.28cm,yshift=.55cm]b.south east);
+  \node[anchor=south west,smallbody]
+    at ([xshift=.28cm,yshift=.18cm]b.south west) {CRM};
+
+  \node[card,anchor=north west,minimum width=4.35cm,minimum height=4.85cm]
+    (c) at ([xshift=10.84cm,yshift=-2.18cm]current page.north west) {};
+  \node[anchor=north west,font=\fontsize{12}{14}\selectfont\bfseries,text=PulseAmber]
+    at ([xshift=.28cm,yshift=-.28cm]c.north west) {03  COMMERCIAL};
+  \node[anchor=north west,align=left,font=\fontsize{19}{22}\selectfont\bfseries,text=PulseInk]
+    at ([xshift=.28cm,yshift=-.80cm]c.north west) {Renewal close};
+  \node[anchor=north west,align=left,body,text width=3.65cm]
+    at ([xshift=.28cm,yshift=-1.50cm]c.north west)
+    {The pattern appears only when options are limited.};
+  \draw[PulseLine,line width=1pt]
+    ([xshift=.28cm,yshift=.55cm]c.south west)--([xshift=-.28cm,yshift=.55cm]c.south east);
+  \node[anchor=south west,smallbody]
+    at ([xshift=.28cm,yshift=.18cm]c.south west) {BILLING};
+
+  \node[anchor=west,font=\fontsize{17}{20}\selectfont\bfseries,text=PulseInk]
+    at ([xshift=.82cm,yshift=.72cm]current page.south west)
+    {The cost is not missing data. It is delayed action.};
+  \DeckFooter{02}
+\end{tikzpicture}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 3 - Product thesis
+% -----------------------------------------------------------------------------
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \SlideTitle[Pulse connects context, judgment, and execution in one operating loop.]
+    {One workspace. One move.}
+
+  \draw[PulseLine,line width=1.6pt]
+    ([xshift=2.30cm,yshift=-4.35cm]current page.north west)--
+    ([xshift=13.75cm,yshift=-4.35cm]current page.north west);
+
+  \foreach \x/\num/\title/\sub/\col in {
+    2.30/01/Connect/CRM · usage\\billing/PulseBlue,
+    6.12/02/Understand/Health · risk\\intent/PulseCyan,
+    9.94/03/Act/Playbooks\\tasks · drafts/PulseCoral,
+    13.75/04/Learn/Outcomes\\trends · tuning/PulseAmber}
+  {
+    \fill[\col] ([xshift=\x cm,yshift=-4.35cm]current page.north west) circle (.34cm);
+    \node[font=\fontsize{10}{11}\selectfont\bfseries,text=PulseWhite]
+      at ([xshift=\x cm,yshift=-4.35cm]current page.north west) {\num};
+    \node[anchor=north,align=center,font=\fontsize{20}{23}\selectfont\bfseries,text=PulseInk]
+      at ([xshift=\x cm,yshift=-4.90cm]current page.north west) {\title};
+    \node[anchor=north,align=center,font=\fontsize{11}{14}\selectfont,text=PulseSlate,
+      text width=3.0cm]
+      at ([xshift=\x cm,yshift=-5.67cm]current page.north west) {\sub};
+  }
+
+  \node[anchor=south west,align=left,font=\fontsize{18}{22}\selectfont\bfseries,text=PulseBlueDark]
+    at ([xshift=.82cm,yshift=1.05cm]current page.south west)
+    {Every signal ends with an owner and a next step.};
+  \DeckFooter{03}
+\end{tikzpicture}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 4 - Prioritized queue
+% -----------------------------------------------------------------------------
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \SlideTitle[Focus the team on accounts where timing and impact intersect.]
+    {Rank accounts by urgency}
+
+  % Sidebar
+  \node[card,anchor=north west,minimum width=2.28cm,minimum height=5.55cm]
+    (side) at ([xshift=.80cm,yshift=-2.18cm]current page.north west) {};
+  \node[anchor=north west,font=\fontsize{12}{14}\selectfont\bfseries,text=PulseInk]
+    at ([xshift=.22cm,yshift=-.27cm]side.north west) {\Brand};
+  \foreach \yy/\txt in {1.18/Today,1.78/Accounts,2.38/Playbooks,2.98/Insights}
+    \node[anchor=north west,font=\fontsize{10}{12}\selectfont,text=PulseSlate]
+      at ([xshift=.35cm,yshift=-\yy cm]side.north west) {\txt};
+  \fill[PulseBlue!10,rounded corners=3pt]
+    ([xshift=.18cm,yshift=-.98cm]side.north west) rectangle
+    ([xshift=-.18cm,yshift=-1.48cm]side.north east);
+  \fill[PulseBlue,rounded corners=1pt]
+    ([xshift=.18cm,yshift=-.98cm]side.north west) rectangle
+    ([xshift=.23cm,yshift=-1.48cm]side.north west);
+  \node[anchor=south west,font=\fontsize{8}{9}\selectfont\bfseries,text=PulseSlate]
+    at ([xshift=.24cm,yshift=.22cm]side.south west) {EAST TEAM};
+
+  % Main app panel
+  \node[card,anchor=north west,minimum width=12.10cm,minimum height=5.55cm]
+    (app) at ([xshift=3.15cm,yshift=-2.18cm]current page.north west) {};
+  \node[anchor=north west,font=\fontsize{17}{20}\selectfont\bfseries,text=PulseInk]
+    at ([xshift=.35cm,yshift=-.28cm]app.north west) {Today’s priorities};
+  \node[anchor=north east,chip,fill=PulseBlue!10,text=PulseBlue]
+    at ([xshift=-.32cm,yshift=-.24cm]app.north east) {12 NEED ATTENTION};
+
+  \node[anchor=north west,label]
+    at ([xshift=.38cm,yshift=-1.08cm]app.north west) {ACCOUNT};
+  \node[anchor=north west,label]
+    at ([xshift=4.26cm,yshift=-1.08cm]app.north west) {WHY NOW};
+  \node[anchor=north west,label]
+    at ([xshift=9.00cm,yshift=-1.08cm]app.north west) {OWNER};
+  \node[anchor=north west,label]
+    at ([xshift=10.56cm,yshift=-1.08cm]app.north west) {ACTION};
+
+  \foreach \yy/\acct/\why/\owner/\action/\score/\col in {
+    1.50/Northstar Labs/Usage -31\% · new champion/Maya/Review/92/PulseCoral,
+    2.42/Brightpath/Renewal 46d · 2 open issues/Andre/Plan/84/PulseAmber,
+    3.34/Kinetic Works/Expansion intent · 8 invites/Leah/Reach out/77/PulseCyan,
+    4.26/Summit Health/QBR overdue · adoption stable/Maya/Schedule/63/PulseBlue}
+  {
+    \draw[PulseLine,line width=.65pt]
+      ([xshift=.34cm,yshift=-\yy cm]app.north west)--
+      ([xshift=-.34cm,yshift=-\yy cm]app.north east);
+    \fill[\col!16,rounded corners=2pt]
+      ([xshift=.36cm,yshift=-\yy cm-.19cm]app.north west) rectangle ++(.56cm,-.42cm);
+    \node[font=\fontsize{10}{11}\selectfont\bfseries,text=\col]
+      at ([xshift=.64cm,yshift=-\yy cm-.40cm]app.north west) {\score};
+    \node[anchor=north west,font=\fontsize{11}{13}\selectfont\bfseries,text=PulseInk]
+      at ([xshift=1.03cm,yshift=-\yy cm-.24cm]app.north west) {\acct};
+    \node[anchor=north west,font=\fontsize{9}{10.5}\selectfont,text=PulseSlate]
+      at ([xshift=4.26cm,yshift=-\yy cm-.24cm]app.north west) {\why};
+    \node[anchor=north west,font=\fontsize{10}{12}\selectfont\bfseries,text=PulseInk]
+      at ([xshift=9.00cm,yshift=-\yy cm-.24cm]app.north west) {\owner};
+    \node[anchor=north west,font=\fontsize{9}{11}\selectfont\bfseries,text=PulseBlue]
+      at ([xshift=10.56cm,yshift=-\yy cm-.24cm]app.north west) {\action};
+  }
+  \DeckFooter{04}
+\end{tikzpicture}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 5 - Explainable account brief
+% -----------------------------------------------------------------------------
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \SlideTitle[Open any account and see the evidence behind the priority.]
+    {Explain the score}
+
+  \node[card,anchor=north west,minimum width=14.42cm,minimum height=5.55cm]
+    (brief) at ([xshift=.80cm,yshift=-2.18cm]current page.north west) {};
+
+  \node[anchor=north west,font=\fontsize{20}{23}\selectfont\bfseries,text=PulseInk]
+    at ([xshift=.38cm,yshift=-.30cm]brief.north west) {Northstar Labs};
+  \node[anchor=north west,chip,fill=PulseCoral!15,text=PulseCoral]
+    at ([xshift=5.45cm,yshift=-.28cm]brief.north west) {AT RISK};
+  \node[anchor=north east,font=\fontsize{11}{13}\selectfont\bfseries,text=PulseSlate]
+    at ([xshift=-.38cm,yshift=-.34cm]brief.north east) {Renewal · 74 days};
+
+  \node[softcard,anchor=north west,minimum width=3.05cm,minimum height=3.78cm]
+    (health) at ([xshift=.38cm,yshift=-1.13cm]brief.north west) {};
+  \node[anchor=north,font=\fontsize{9.5}{11}\selectfont\bfseries,text=PulseSlate]
+    at ([yshift=-.28cm]health.north) {HEALTH};
+  \draw[PulseLine,line width=8pt] ([yshift=-1.43cm]health.north) arc (180:0:1.00cm);
+  \draw[PulseCoral,line width=8pt] ([yshift=-1.43cm]health.north) arc (180:57:1.00cm);
+  \node[font=\fontsize{33}{36}\selectfont\bfseries,text=PulseInk]
+    at ([yshift=-1.55cm]health.north) {58};
+  \node[anchor=north,align=center,font=\fontsize{11}{14}\selectfont,text=PulseSlate]
+    at ([yshift=-2.48cm]health.north) {Down 18 points\\in 30 days};
+
+  \node[anchor=north west,font=\fontsize{11}{13}\selectfont\bfseries,text=PulseSlate]
+    at ([xshift=3.82cm,yshift=-1.20cm]brief.north west) {WHAT CHANGED};
+  \foreach \yy/\col/\head/\detail in {
+    1.70/PulseCoral/Product usage/Weekly active users fell 31\%.,
+    2.56/PulseAmber/Relationship/Primary champion changed roles.,
+    3.42/PulseBlue/Support/Two priority issues remain open.}
+  {
+    \fill[\col] ([xshift=3.90cm,yshift=-\yy cm]brief.north west) circle (.10cm);
+    \node[anchor=west,font=\fontsize{12}{14}\selectfont\bfseries,text=PulseInk]
+      at ([xshift=4.17cm,yshift=-\yy cm]brief.north west) {\head};
+    \node[anchor=north west,font=\fontsize{10}{12}\selectfont,text=PulseSlate]
+      at ([xshift=4.17cm,yshift=-\yy cm-.16cm]brief.north west) {\detail};
+  }
+
+  \node[anchor=north west,font=\fontsize{11}{13}\selectfont\bfseries,text=PulseSlate]
+    at ([xshift=9.66cm,yshift=-1.20cm]brief.north west) {RECOMMENDED NEXT STEP};
+  \node[draw=PulseBlue,fill=PulseBlue!5,rounded corners=4pt,anchor=north west,
+    minimum width=4.14cm,minimum height=2.82cm]
+    (next) at ([xshift=9.66cm,yshift=-1.62cm]brief.north west) {};
+  \node[anchor=north west,align=left,font=\fontsize{18}{21}\selectfont\bfseries,text=PulseInk,
+    text width=3.55cm]
+    at ([xshift=.26cm,yshift=-.27cm]next.north west)
+    {Launch playbook};
+  \node[anchor=north west,align=left,font=\fontsize{10.5}{13}\selectfont,text=PulseSlate,
+    text width=3.52cm]
+    at ([xshift=.26cm,yshift=-1.72cm]next.north west)
+    {Champion change\\Three owners};
+  \node[anchor=north west,chip,fill=PulseBlue,text=PulseWhite]
+    at ([xshift=9.66cm,yshift=-4.68cm]brief.north west) {START PLAYBOOK};
+
+  \DeckFooter{05}
+\end{tikzpicture}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 6 - Playbook orchestration
+% -----------------------------------------------------------------------------
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \SlideTitle[Move from insight to a coordinated response without losing context.]
+    {Coordinate the response}
+
+  \node[card,anchor=north west,minimum width=4.50cm,minimum height=5.38cm]
+    (left) at ([xshift=.80cm,yshift=-2.28cm]current page.north west) {};
+  \node[anchor=north west,label]
+    at ([xshift=.32cm,yshift=-.30cm]left.north west) {PLAYBOOK};
+  \node[anchor=north west,align=left,font=\fontsize{18}{21}\selectfont\bfseries,text=PulseInk,
+    text width=3.70cm]
+    at ([xshift=.32cm,yshift=-.77cm]left.north west) {Champion change};
+  \node[anchor=north west,align=left,font=\fontsize{11}{14}\selectfont,text=PulseSlate,
+    text width=3.75cm]
+    at ([xshift=.32cm,yshift=-2.02cm]left.north west)
+    {Rebuild the buying group before renewal.};
+  \node[anchor=north west,chip,fill=PulseMint,text=PulseGreen]
+    at ([xshift=.32cm,yshift=-3.30cm]left.north west) {OWNER  MAYA};
+  \node[anchor=north west,chip,fill=PulseBlue!10,text=PulseBlue]
+    at ([xshift=.32cm,yshift=-3.83cm]left.north west) {DUE  FRIDAY};
+  \node[anchor=south west,font=\fontsize{11}{13}\selectfont\bfseries,text=PulseBlue]
+    at ([xshift=.32cm,yshift=.34cm]left.south west) {View account brief  $\rightarrow$};
+
+  \node[card,anchor=north west,minimum width=9.35cm,minimum height=5.38cm]
+    (steps) at ([xshift=5.85cm,yshift=-2.28cm]current page.north west) {};
+  \node[anchor=north west,font=\fontsize{17}{20}\selectfont\bfseries,text=PulseInk]
+    at ([xshift=.38cm,yshift=-.28cm]steps.north west) {Response plan};
+
+  \draw[PulseLine,line width=2pt]
+    ([xshift=.73cm,yshift=-1.28cm]steps.north west)--
+    ([xshift=.73cm,yshift=-4.58cm]steps.north west);
+  \foreach \yy/\num/\title/\detail/\who/\col in {
+    1.35/1/Confirm the account story/Review evidence and open issues/Maya/PulseGreen,
+    2.42/2/Map the new buying group/Identify sponsor and decision roles/Maya/PulseBlue,
+    3.49/3/Prepare executive outreach/Draft a value recap for approval/AI + Maya/PulseBlue,
+    4.56/4/Close the loop/Record outcome and tune health/Auto/PulseSlate}
+  {
+    \fill[\col] ([xshift=.73cm,yshift=-\yy cm]steps.north west) circle (.22cm);
+    \node[font=\fontsize{8}{9}\selectfont\bfseries,text=PulseWhite]
+      at ([xshift=.73cm,yshift=-\yy cm]steps.north west) {\num};
+    \node[anchor=west,font=\fontsize{13}{15}\selectfont\bfseries,text=PulseInk]
+      at ([xshift=1.18cm,yshift=-\yy cm+.07cm]steps.north west) {\title};
+    \node[anchor=west,font=\fontsize{10}{12}\selectfont,text=PulseSlate]
+      at ([xshift=1.18cm,yshift=-\yy cm-.20cm]steps.north west) {\detail};
+    \node[anchor=east,chip,fill=PulsePaper,text=PulseSlate]
+      at ([xshift=-.35cm,yshift=-\yy cm-.02cm]steps.north east) {\who};
+  }
+  \DeckFooter{06}
+\end{tikzpicture}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 7 - AI copilot and governance
+% -----------------------------------------------------------------------------
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \SlideTitle[Automate preparation, not accountability.]
+    {AI drafts. People decide.}
+
+  \node[card,anchor=north west,minimum width=8.76cm,minimum height=5.40cm]
+    (draft) at ([xshift=.80cm,yshift=-2.28cm]current page.north west) {};
+  \node[anchor=north west,font=\fontsize{16}{19}\selectfont\bfseries,text=PulseInk]
+    at ([xshift=.36cm,yshift=-.30cm]draft.north west) {Executive draft};
+  \node[anchor=north east,chip,fill=PulseBlue!10,text=PulseBlue]
+    at ([xshift=-.34cm,yshift=-.27cm]draft.north east) {AI ASSISTED};
+  \node[softcard,anchor=north west,minimum width=8.02cm,minimum height=3.20cm]
+    (email) at ([xshift=.36cm,yshift=-1.06cm]draft.north west) {};
+  \node[anchor=north west,font=\fontsize{10}{12}\selectfont\bfseries,text=PulseSlate]
+    at ([xshift=.26cm,yshift=-.23cm]email.north west) {SUBJECT};
+  \node[anchor=north west,font=\fontsize{11}{14}\selectfont\bfseries,text=PulseInk]
+    at ([xshift=.26cm,yshift=-.57cm]email.north west) {Northstar’s next value milestone};
+  \node[anchor=north west,align=left,font=\fontsize{11}{15}\selectfont,text=PulseInk,
+    text width=7.32cm]
+    at ([xshift=.26cm,yshift=-1.02cm]email.north west)
+    {Hi Jordan,\\[4pt]
+     We noticed a shift in weekly adoption after the recent team change.
+     Can we reconnect on the next value milestone?};
+  \node[anchor=south west,chip,fill=PulseBlue,text=PulseWhite]
+    at ([xshift=.36cm,yshift=.34cm]draft.south west) {APPROVE};
+  \node[anchor=south west,chip,fill=PulsePaper,text=PulseSlate]
+    at ([xshift=2.20cm,yshift=.34cm]draft.south west) {EDIT};
+
+  \node[card,anchor=north west,minimum width=5.05cm,minimum height=5.40cm]
+    (guard) at ([xshift=10.15cm,yshift=-2.28cm]current page.north west) {};
+  \node[anchor=north west,label]
+    at ([xshift=.34cm,yshift=-.31cm]guard.north west) {BUILT-IN CONTROL};
+  \foreach \yy/\head/\detail in {
+    1.12/Grounded context/Uses the account record and approved sources.,
+    2.52/Human approval/No external message is sent automatically.,
+    3.92/Audit trail/Inputs and edits remain reviewable.}
+  {
+    \node[anchor=north west,font=\fontsize{13}{15}\selectfont\bfseries,text=PulseInk]
+      at ([xshift=.70cm,yshift=-\yy cm]guard.north west) {\head};
+    \node[anchor=north west,align=left,font=\fontsize{10}{13}\selectfont,text=PulseSlate,
+      text width=3.72cm]
+      at ([xshift=.70cm,yshift=-\yy cm-.35cm]guard.north west) {\detail};
+    \node[anchor=north west] at ([xshift=.30cm,yshift=-\yy cm+.02cm]guard.north west) {\PulseCheck};
+  }
+  \DeckFooter{07}
+\end{tikzpicture}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 8 - Manager view
+% -----------------------------------------------------------------------------
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \SlideTitle[See portfolio risk, action, and movement in one view.]
+    {One operating picture}
+
+  \node[card,anchor=north west,minimum width=14.42cm,minimum height=5.40cm]
+    (dash) at ([xshift=.80cm,yshift=-2.28cm]current page.north west) {};
+  \node[anchor=north west,font=\fontsize{17}{20}\selectfont\bfseries,text=PulseInk]
+    at ([xshift=.36cm,yshift=-.30cm]dash.north west) {Portfolio pulse};
+  \node[anchor=north east,chip,fill=PulsePaper,text=PulseSlate]
+    at ([xshift=-.34cm,yshift=-.27cm]dash.north east) {THIS QUARTER};
+
+  \foreach \xx/\num/\label/\col in {
+    .36/18/Accounts to review/PulseCoral,
+    3.40/27/Active playbooks/PulseBlue,
+    6.44/81\%/On-time actions/PulseGreen}
+  {
+    \node[softcard,anchor=north west,minimum width=2.68cm,minimum height=1.45cm]
+      (m) at ([xshift=\xx cm,yshift=-1.04cm]dash.north west) {};
+    \node[anchor=north west,font=\fontsize{22}{24}\selectfont\bfseries,text=\col]
+      at ([xshift=.18cm,yshift=-.17cm]m.north west) {\num};
+    \node[anchor=south west,font=\fontsize{8.5}{10}\selectfont\bfseries,text=PulseSlate]
+      at ([xshift=.18cm,yshift=.16cm]m.south west) {\label};
+  }
+
+  \node[anchor=north west,label]
+    at ([xshift=.36cm,yshift=-2.62cm]dash.north west) {RISK BY SEGMENT};
+  \foreach \yy/\seg/\pct/\w/\col in {
+    3.32/Enterprise/22\%/2.20/PulseCoral,
+    3.89/Midmarket/14\%/1.40/PulseAmber,
+    4.46/Scale/8\%/.80/PulseCyan}
+  {
+    \node[anchor=west,font=\fontsize{10.5}{12}\selectfont\bfseries,text=PulseInk]
+      at ([xshift=.36cm,yshift=-\yy cm]dash.north west) {\seg};
+    \fill[PulseLine,rounded corners=2pt]
+      ([xshift=2.05cm,yshift=-\yy cm-.10cm]dash.north west) rectangle ++(2.86cm,.20cm);
+    \fill[\col,rounded corners=2pt]
+      ([xshift=2.05cm,yshift=-\yy cm-.10cm]dash.north west) rectangle ++(\w cm,.20cm);
+    \node[anchor=west,font=\fontsize{10}{12}\selectfont\bfseries,text=\col]
+      at ([xshift=5.10cm,yshift=-\yy cm]dash.north west) {\pct};
+  }
+
+  \node[anchor=north west,label]
+    at ([xshift=7.06cm,yshift=-2.62cm]dash.north west) {ACTION COMPLETION};
+  \draw[PulseLine,line width=.8pt]
+    ([xshift=7.06cm,yshift=-4.46cm]dash.north west)--
+    ([xshift=13.72cm,yshift=-4.46cm]dash.north west);
+  \draw[PulseBlue,line width=2.4pt,rounded corners=2pt]
+    ([xshift=7.20cm,yshift=-4.20cm]dash.north west)--
+    ([xshift=8.25cm,yshift=-3.92cm]dash.north west)--
+    ([xshift=9.31cm,yshift=-4.04cm]dash.north west)--
+    ([xshift=10.37cm,yshift=-3.48cm]dash.north west)--
+    ([xshift=11.43cm,yshift=-3.28cm]dash.north west)--
+    ([xshift=12.49cm,yshift=-2.99cm]dash.north west)--
+    ([xshift=13.55cm,yshift=-3.10cm]dash.north west);
+  \foreach \xx/\lab in {7.20/W1,9.31/W3,11.43/W5,13.55/W7}
+    \node[anchor=north,font=\fontsize{8.5}{10}\selectfont,text=PulseSlate]
+      at ([xshift=\xx cm,yshift=-4.58cm]dash.north west) {\lab};
+  \DeckFooter{08}
+\end{tikzpicture}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 9 - Integrations and security
+% -----------------------------------------------------------------------------
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \SlideTitle[Add a shared operating layer without replacing systems of record.]
+    {Connect with control}
+
+  \node[card,anchor=north west,minimum width=8.08cm,minimum height=5.32cm]
+    (stack) at ([xshift=.80cm,yshift=-2.30cm]current page.north west) {};
+  \node[anchor=north west,label]
+    at ([xshift=.35cm,yshift=-.30cm]stack.north west) {CONNECTED CONTEXT};
+  \foreach \xx/\yy/\abbr/\name/\col in {
+    .35/1.02/CRM/CRM records/PulseBlue,
+    4.14/1.02/APP/Product activity/PulseCyan,
+    .35/2.28/SUP/Support history/PulseCoral,
+    4.14/2.28/BIL/Billing events/PulseAmber,
+    .35/3.54/MSG/Team messages/PulseBlueDark,
+    4.14/3.54/DWH/Warehouse data/PulseGreen}
+  {
+    \node[softcard,anchor=north west,minimum width=3.42cm,minimum height=.94cm]
+      (i) at ([xshift=\xx cm,yshift=-\yy cm]stack.north west) {};
+    \fill[\col,rounded corners=3pt]
+      ([xshift=.14cm,yshift=-.16cm]i.north west) rectangle ++(.65cm,-.62cm);
+    \node[font=\fontsize{8}{9}\selectfont\bfseries,text=PulseWhite]
+      at ([xshift=.465cm,yshift=-.47cm]i.north west) {\abbr};
+    \node[anchor=west,font=\fontsize{10.5}{12}\selectfont\bfseries,text=PulseInk]
+      at ([xshift=.94cm,yshift=-.47cm]i.north west) {\name};
+  }
+
+  \node[card,anchor=north west,minimum width=5.77cm,minimum height=5.32cm]
+    (sec) at ([xshift=9.45cm,yshift=-2.30cm]current page.north west) {};
+  \node[anchor=north west,label]
+    at ([xshift=.35cm,yshift=-.30cm]sec.north west) {GOVERNANCE BY DESIGN};
+  \foreach \yy/\head/\detail in {
+    1.10/Identity controls/SSO · role-based access · provisioning,
+    2.52/Data boundaries/Workspace-scoped access and retention settings,
+    3.94/Reviewability/Activity history for signals and actions}
+  {
+    \node[anchor=north west] at ([xshift=.36cm,yshift=-\yy cm]sec.north west) {\PulseCheck};
+    \node[anchor=north west,font=\fontsize{13}{15}\selectfont\bfseries,text=PulseInk]
+      at ([xshift=.78cm,yshift=-\yy cm+.03cm]sec.north west) {\head};
+    \node[anchor=north west,align=left,font=\fontsize{10}{13}\selectfont,text=PulseSlate,
+      text width=4.45cm]
+      at ([xshift=.78cm,yshift=-\yy cm-.32cm]sec.north west) {\detail};
+  }
+  \DeckFooter{09}
+\end{tikzpicture}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 10 - Rollout
+% -----------------------------------------------------------------------------
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \SlideTitle[Begin with one team, prove the operating rhythm, then expand.]
+    {Reach value in three steps}
+
+  \draw[PulseLine,line width=2pt]
+    ([xshift=2.58cm,yshift=-4.05cm]current page.north west)--
+    ([xshift=13.40cm,yshift=-4.05cm]current page.north west);
+
+  \foreach \x/\num/\time/\title/\detail/\col in {
+    2.58/1/WEEK 1/Connect/Map sources and import a pilot portfolio./PulseBlue,
+    7.99/2/WEEK 2/Calibrate/Agree on health signals and ownership./PulseCyan,
+    13.40/3/WEEKS 3--4/Operate/Launch actions; review outcomes./PulseCoral}
+  {
+    \fill[\col] ([xshift=\x cm,yshift=-4.05cm]current page.north west) circle (.42cm);
+    \node[font=\fontsize{11}{12}\selectfont\bfseries,text=PulseWhite]
+      at ([xshift=\x cm,yshift=-4.05cm]current page.north west) {\num};
+    \node[anchor=south,chip,fill=\col!14,text=\col]
+      at ([xshift=\x cm,yshift=-3.35cm]current page.north west) {\time};
+    \node[anchor=north,align=center,font=\fontsize{23}{26}\selectfont\bfseries,text=PulseInk]
+      at ([xshift=\x cm,yshift=-4.70cm]current page.north west) {\title};
+    \node[anchor=north,align=center,font=\fontsize{12}{15}\selectfont,text=PulseSlate,
+      text width=3.55cm]
+      at ([xshift=\x cm,yshift=-5.45cm]current page.north west) {\detail};
+  }
+
+  \node[anchor=south west,align=left,font=\fontsize{17}{20}\selectfont\bfseries,text=PulseBlueDark]
+    at ([xshift=.82cm,yshift=.77cm]current page.south west)
+    {Success measure: one team, one customer truth.};
+  \DeckFooter{10}
+\end{tikzpicture}
+\end{frame}
+
+% -----------------------------------------------------------------------------
+% 11 - Close
+% -----------------------------------------------------------------------------
+\begin{frame}[plain]
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[PulseNavy] (current page.south west) rectangle (current page.north east);
+  \fill[PulseBlue,opacity=.92]
+    ([xshift=14.75cm,yshift=-.35cm]current page.north west) circle (3.8cm);
+  \fill[PulseCyan,opacity=.58]
+    ([xshift=12.20cm,yshift=.40cm]current page.south west) circle (2.6cm);
+  \draw[PulseWhite,opacity=.16,line width=1.3pt]
+    ([xshift=9.60cm,yshift=.95cm]current page.south west)
+      .. controls +(1.8,2.8) and +(-1.7,-1.5) ..
+    ([xshift=15.70cm,yshift=-.75cm]current page.north west);
+
+  \node[anchor=north west,text=PulseWhite,font=\fontsize{19}{21}\selectfont]
+    at ([xshift=.85cm,yshift=-.70cm]current page.north west) {\Brand[PulseWhite]};
+  \node[anchor=west,align=left,text=PulseWhite,
+    font=\fontsize{48}{52}\selectfont\bfseries]
+    at ([xshift=.86cm,yshift=.63cm]current page.west)
+    {Never guess the\\next best action};
+  \node[anchor=north west,align=left,text=PulseWhite!72,
+    font=\fontsize{17}{21}\selectfont]
+    at ([xshift=.90cm,yshift=-5.58cm]current page.north west)
+    {Bring one customer journey. We’ll map it in Pulse.};
+  \node[anchor=south west,rounded corners=10pt,fill=PulseWhite,text=PulseBlue,
+    inner xsep=12pt,inner ysep=7pt,font=\fontsize{12}{14}\selectfont\bfseries]
+    at ([xshift=.90cm,yshift=.54cm]current page.south west) {START A WORKING SESSION};
+\end{tikzpicture}
+\end{frame}
+
+\end{document}

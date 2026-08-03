@@ -1,0 +1,41 @@
+\section{Security Analysis}
+\label{sec:security}
+
+We prove the security properties of the Vertex argument system under the hardness of the Module-SIS and Module-LWE assumptions.
+
+\subsection{Completeness}
+We state the completeness of Vertex below.
+\begin{theorem}[Completeness]
+  If the Prover $\mathcal{P}$ is honest and holds a valid witness $\vectorbf{w}$ such that $\|\vectorbf{w}\|_2 \le \beta$, then the interactive protocol in \Cref{fig:vertex_protocol} succeeds with probability at least $1/e$, where $e$ is the base of the natural logarithm.
+\end{theorem}
+
+\begin{proof}
+  Assuming the protocol does not abort during the rejection sampling step, we evaluate the verification relation.
+  By substitution:
+  \begin{align}
+    \vectorbf{A}\vectorbf{z} - c \vectorbf{t}_0 &= \vectorbf{A}(\vectorbf{y} + c \cdot \vectorbf{w}) - c(\vectorbf{A}\vectorbf{w}) \\
+    &= \vectorbf{A}\vectorbf{y} + c\vectorbf{A}\vectorbf{w} - c\vectorbf{A}\vectorbf{w} \\
+    &= \vectorbf{A}\vectorbf{y} = \vectorbf{t}.
+  \end{align}
+  The hash check evaluates correctly since $\vectorbf{c}_0 = \mathsf{Hash}(\vectorbf{t})$. By adjusting the rejection sampling parameters, we ensure that the response distribution is independent of the secret witness $\vectorbf{w}$ and bounded by $\gamma \cdot \sqrt{d}$ with high probability. \qed
+\end{proof}
+
+\subsection{Soundness and Zero-Knowledge}
+We model the security of Vertex in the standard game-based framework. \Cref{fig:cpa_game} defines the indistinguishability game under chosen-plaintext attacks for the underlying encryption scheme integrated into Vertex.
+
+\begin{figure}[htb]
+\centering
+\pseudocode{
+  \underline{\mathsf{Exp}^{\mathrm{ind}\text{-}\mathrm{cpa}}_{\mathcal{A}, \Pi}(\secparam)} \\
+  (\pk, \sk) \leftarrow \Gen(1^\secparam) \\
+  (m_0, m_1, \text{state}) \leftarrow \mathcal{A}_1(\pk) \\
+  b \leftarrow \{0,1\} \\
+  c^* \leftarrow \mathsf{Enc}_{\pk}(m_b) \\
+  b' \leftarrow \mathcal{A}_2(c^*, \text{state}) \\
+  \text{return } (b == b')
+}
+\caption{IND-CPA security experiment for the commitment verification scheme.}
+\label{fig:cpa_game}
+\end{figure}
+
+The Zero-Knowledge property is established by showing that there exists a simulator $\mathcal{S}$ that can produce transcripts indistinguishable from real protocol runs without access to the witness $\vectorbf{w}$.

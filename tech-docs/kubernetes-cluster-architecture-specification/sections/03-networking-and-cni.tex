@@ -1,0 +1,36 @@
+\section{Networking \& CNI}
+
+\subsection{CNI selection}
+\texttt{apex-prod-mer1} uses Cilium 1.15 in eBPF mode with the kube-proxy replacement enabled. Cilium was chosen over the Meridian-native CNI for three reasons: native \code{kube-proxy} replacement removes a whole class of \code{iptables} scaling problems once the cluster passed roughly 400 services; Hubble gives per-flow network observability without a sidecar; and \code{CiliumNetworkPolicy} supports L7-aware rules (HTTP method and path matching) that the platform's default-deny model depends on. Every node runs the Cilium agent as a DaemonSet across all three pools, including \code{system}.
+
+\subsection{IP address management}
+Pod and service address ranges are allocated cluster-scope, not per-node, to keep the CIDR plan predictable as pools scale.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l L@{}}
+\toprule
+\rowcolor{primary}
+\textcolor{white}{\textbf{Range}} & \textcolor{white}{\textbf{CIDR}} & \textcolor{white}{\textbf{Notes}} \\
+\midrule
+Node subnet & \code{10.60.0.0/20} & Three subnets, one per AZ, in the Meridian production VPC \\
+\rowcolor{rowgray}
+Pod CIDR & \code{10.64.0.0/14} & Cilium cluster-scope IPAM; \code{/24} allocated per node on demand \\
+Service CIDR & \code{10.96.0.0/12} & \code{ClusterIP} allocation range \\
+\rowcolor{rowgray}
+Hubble relay & \code{10.60.15.0/28} & Fixed range for the observability control plane \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Network policy model}
+The cluster default is deny-all: every namespace is created with a baseline \code{CiliumNetworkPolicy} that drops ingress and egress not explicitly allowed. Application teams add scoped allow rules through their own manifests rather than requesting exceptions from platform engineering, which keeps ownership of the policy with the team that understands the traffic. Three properties are enforced regardless of what a team writes:
+
+\begin{itemize}[itemsep=2pt]
+  \item \textbf{DNS is always permitted} to the in-cluster CoreDNS service, so a misconfigured egress rule cannot silently break name resolution.
+  \item \textbf{Cross-namespace traffic requires an explicit label selector} --- there is no cluster-wide allow rule that lets one team's pods reach another's by IP alone.
+  \item \textbf{Egress to the public internet is denied by default} outside the \code{general-compute} pool; workloads that need it request an egress gateway route, which is logged and rate-limited.
+\end{itemize}
+
+\begin{warningbox}{Known Limitation}
+Hubble flow logs are retained for 72 hours in-cluster before rolling over. Longer-term flow analysis for incident investigation depends on the export pipeline into Synapse, which currently lags live traffic by up to 10 minutes during peak ingestion windows.
+\end{warningbox}

@@ -1,0 +1,55 @@
+\section{Introduction}
+\label{sec:intro}
+
+Cloud providers are moving latency-sensitive and regulated workloads onto confidential
+virtual machines (CVMs): guest memory is transparently encrypted and integrity-protected by
+the CPU, and the hypervisor -- along with any co-resident tenant -- is placed outside the
+trust boundary. AMD SEV-SNP and Intel TDX both make this guarantee for entire VMs rather than
+individual enclaves, and providers such as Nexa Cloud now offer CVM instance types as a
+drop-in replacement for ordinary VMs, with no code changes required from the tenant.
+
+Memory encryption closes the most direct attack: a curious or compromised hypervisor can no
+longer read guest pages off the wire. It does nothing, however, for resources that must stay
+\emph{shared} for the economics of multi-tenancy to work at all. The last-level cache (LLC) is
+physically partitioned across sockets, not tenants, so a victim CVM and an attacker VM
+scheduled on the same socket still contend for the same cache ways and observe each other's
+occupancy through timing. Prime+Probe and Flush+Reload style attacks that were originally
+demonstrated against ordinary co-resident VMs apply to this setting largely unmodified --
+encryption protects the data the victim computes on, not the memory-access pattern it computes
+with.
+
+Cache partitioning defenses eliminate the channel by construction, but they do so by giving
+up the very thing multi-tenancy is sold on: a fixed, static carve-up of the LLC caps the
+number of tenants a socket can host regardless of their actual working sets, and providers
+have been reluctant to ship it as a default. Detection is the alternative in production today,
+but existing detectors were built for ordinary VMs and lean on signals a CVM host does not
+have. Guest-side counters or page-fault instrumentation require modifying or observing the
+tenant's kernel, which is precisely what SEV-SNP and TDX exist to prevent; the hypervisor
+cannot install anything inside the CVM's trust boundary without invalidating its attestation.
+A detector for this setting has to work from what the host can see \emph{outside} the guest --
+and it has to be cheap enough to run continuously on every socket, not just when an incident
+is already suspected.
+
+This paper presents \sysname, a hypervisor-side detector that meets both constraints. \sysname{}
+observes only per-core hardware performance counters -- LLC references, LLC misses, and
+per-core eviction counts that the CPU already exposes to the host -- and never inspects the
+victim CVM's memory, registers, or hypercalls. It turns counter deltas into a contention
+feature between candidate attacker/victim core pairs, smooths the feature with a streaming
+classifier, and on a sustained detection re-pins the suspected attacker's virtual core to an
+isolated cache partition instead of migrating or killing the victim. The victim's schedule,
+memory layout, and attestation are untouched throughout.
+
+Our contributions are:
+\begin{itemize}[leftmargin=1.4em]
+  \item A guest-oblivious detection architecture for cross-VM cache contention attacks that
+  requires no instrumentation, cooperation, or visibility inside a confidential VM
+  (Section~\ref{sec:design}).
+  \item A streaming classifier with an explicit recall/false-positive trade-off knob, evaluated
+  against a reimplemented \baseline{} baseline and a naive fixed-threshold detector
+  (Section~\ref{sec:evaluation}).
+  \item An isolation response that contains a detected attacker without touching the victim's
+  scheduling, memory, or attestation state (Section~\ref{sec:design}).
+  \item An evaluation on three production-like host traces showing 94.6\% recall at 1.8\% FPR
+  and 2.1\% victim throughput overhead, with a median 340\,ms time to isolate a sustained
+  attacker (Section~\ref{sec:evaluation}).
+\end{itemize}

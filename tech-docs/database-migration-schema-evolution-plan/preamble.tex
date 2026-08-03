@@ -1,0 +1,152 @@
+% ---- Page Geometry \& Layout ---------------------------------------------
+\usepackage[a4paper,margin=2.2cm,top=2.5cm,bottom=2.5cm,headheight=15pt]{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{microtype}
+
+% ---- Fonts \& Typography -------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[scaled=0.95]{helvet}
+\renewcommand{\familydefault}{\sfdefault}
+
+% ---- Math \& Core Symbols ------------------------------------------------
+\usepackage{amsmath,amssymb}
+
+% ---- Colors \& Tables ----------------------------------------------------
+\usepackage[table,dvipsnames]{xcolor}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+
+% Custom Colors (Slate/Sky/Amber palette)
+\definecolor{brandprimary}{HTML}{0F172A}    % Dark Slate
+\definecolor{brandsecondary}{HTML}{0284C7}  % Sky Blue
+\definecolor{brandaccent}{HTML}{D97706}     % Amber
+\definecolor{brandsuccess}{HTML}{16A34A}    % Green
+\definecolor{brandmuted}{HTML}{475569}      % Muted Slate
+\definecolor{brandbg}{HTML}{F8FAFC}         % Light BG
+\definecolor{brandborder}{HTML}{E2E8F0}     % Border
+\definecolor{brandcode}{HTML}{F1F5F9}       % Code BG
+
+% ---- Graphics, TikZ, and Boxes -----------------------------------------
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, shapes.geometric, backgrounds}
+\usepackage[most]{tcolorbox}
+\usepackage{fontawesome5}
+
+% Info and Warning boxes
+\newtcolorbox{infobox}[1]{
+  colback=brandbg,
+  colframe=brandsecondary,
+  arc=4pt,
+  outer arc=4pt,
+  title={\sffamily\bfseries\color{white}\faInfoCircle\enspace #1},
+  coltitle=white,
+  fontupper=\sffamily,
+  boxrule=1.5pt,
+  left=10pt,
+  right=10pt,
+  top=8pt,
+  bottom=8pt
+}
+
+\newtcolorbox{warningbox}[1]{
+  colback=brandbg,
+  colframe=brandaccent,
+  arc=4pt,
+  outer arc=4pt,
+  title={\sffamily\bfseries\color{white}\faExclamationTriangle\enspace #1},
+  coltitle=white,
+  fontupper=\sffamily,
+  boxrule=1.5pt,
+  left=10pt,
+  right=10pt,
+  top=8pt,
+  bottom=8pt
+}
+
+% ---- Code Listings ------------------------------------------------------
+\usepackage{listings}
+
+\lstdefinelanguage{sql}{
+  morekeywords={SELECT,INSERT,UPDATE,DELETE,CREATE,TABLE,PARTITION,BY,ALTER,ADD,COLUMN,PRIMARY,KEY,FOREIGN,REFERENCES,BEGIN,COMMIT,ROLLBACK,INDEX,USING,HASH,TRIGGER,ON,FOR,EACH,ROW,EXECUTE,FUNCTION,RETURNS,VOID,TEXT,INTEGER,BIGINT,BOOLEAN,TIMESTAMP,WITH,TIME,ZONE,DEFAULT,NOW,UUID,GEN_RANDOM_UUID,CHECKSUM,MD5,COUNT,SUM,WHERE,FROM,INTO,VALUES,SET,EXPLAIN,ANALYZE},
+  keywordstyle=\color{brandsecondary}\bfseries,
+  basicstyle=\ttfamily\footnotesize\color{brandprimary},
+  sensitive=false,
+  comment=[l]{--},
+  morecomment=[s]{/*}{*/},
+  commentstyle=\color{brandmuted}\itshape,
+  stringstyle=\color{brandaccent},
+  breaklines=true,
+  showstringspaces=false
+}
+
+\lstset{
+  backgroundcolor=\color{brandcode},
+  basicstyle=\ttfamily\footnotesize,
+  breakatwhitespace=false,
+  breaklines=true,
+  captionpos=b,
+  commentstyle=\color{brandmuted}\itshape,
+  keywordstyle=\color{brandsecondary}\bfseries,
+  stringstyle=\color{brandaccent},
+  numberstyle=\tiny\color{brandmuted},
+  numbers=left,
+  numbersep=8pt,
+  frame=single,
+  frameround=tttt,
+  framesep=6pt,
+  rulecolor=\color{brandborder},
+  showstringspaces=false
+}
+
+% ---- Hyperlinks --------------------------------------------------------
+\usepackage{hyperref}
+\usepackage{bookmark}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=brandsecondary,
+    filecolor=brandsecondary,
+    urlcolor=brandsecondary,
+    citecolor=brandsecondary,
+    pdftitle={Database Migration \& Schema Evolution Plan},
+    pdfauthor={Synapse Database Engineering},
+    pdfsubject={Database Schema Evolution and Migration Runbook},
+    pdfkeywords={PostgreSQL, Schema Evolution, Data Migration, Rollback, Data Integrity}
+}
+
+% ---- Document Layout Adjustments ----------------------------------------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+\renewcommand{\arraystretch}{1.15}
+
+% Header and Footer Configuration
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\color{brandmuted}\sffamily\small Meridian Core DB -- Migration Plan}
+\fancyhead[R]{\color{brandmuted}\sffamily\small Doc ID: DB-EVO-2026-001}
+\fancyfoot[L]{\color{brandmuted}\sffamily\small Confidential -- Internal Use Only}
+\fancyfoot[R]{\color{brandmuted}\sffamily\small Page \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Section Titles Formatting
+\titleformat{\section}
+  {\color{brandprimary}\normalfont\large\bfseries}
+  {\thesection}{1em}{}
+\titleformat{\subsection}
+  {\color{brandsecondary}\normalfont\normalsize\bfseries}
+  {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\color{brandaccent}\normalfont\normalsize\bfseries}
+  {\thesubsubsection}{1em}{}
+
+% Custom Column Types for tabularx
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}

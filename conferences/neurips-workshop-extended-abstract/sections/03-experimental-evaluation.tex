@@ -1,0 +1,86 @@
+\section{Experimental Evaluation}
+\label{sec:experiments}
+
+\subsection{Setup}
+
+We evaluate on Office-Home~\citep{venkateswara2017officehome},
+VisDA-2017~\citep{peng2017visda}, and DomainNet-126, the 126-class subset
+commonly used for DomainNet~\citep{peng2019domainnet}. We use a ResNet-50
+backbone initialised from ImageNet, train with SGD, and report the mean of three
+seeds. Source-only, domain-adversarial training (DANN)~\citep{ganin2016domain},
+and fixed-threshold self-training are reimplemented with the same backbone,
+augmentations, and optimisation budget. Hyperparameters are selected on held-out
+source data without target labels. For \method, we use $\tau_0=0.90$,
+$[\tau_{\min},\tau_{\max}]=[0.70,0.97]$, and $\rho=0.95$ throughout.
+
+We measure target top-1 accuracy, expected calibration error (ECE; 15 equal-width
+bins), and pseudo-label coverage. The primary metric is mean target accuracy;
+lower ECE is better. Reported coverage is the fraction of target examples whose
+pseudo-label passes the training gate at the end of optimisation.
+
+\begin{table}[t]
+  \centering
+  \caption{Target accuracy (\%) and ECE (\%, lower is better). Values are
+  mean $\pm$ standard deviation over three seeds.}
+  \label{tab:main}
+  \small
+  \setlength{\tabcolsep}{5pt}
+  \begin{tabularx}{\textwidth}{@{}L *{3}{Y} Y@{}}
+    \toprule
+    Method & Office-Home & VisDA-2017 & DomainNet-126 & Mean ECE $\downarrow$ \\
+    \midrule
+    Source only
+      & $60.3\pm0.4$ & $52.8\pm0.7$ & $48.7\pm0.3$ & $14.8$ \\
+    DANN~\citep{ganin2016domain}
+      & $63.1\pm0.5$ & $58.4\pm0.6$ & $50.2\pm0.4$ & $12.6$ \\
+    Fixed-threshold self-training
+      & $67.4\pm0.3$ & $70.1\pm0.8$ & $54.6\pm0.5$ & $10.9$ \\
+    \method{} (ours)
+      & $\mathbf{69.2\pm0.2}$ & $\mathbf{73.5\pm0.5}$
+      & $\mathbf{56.8\pm0.3}$ & $\mathbf{7.1}$ \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{Results and ablations}
+
+\Cref{tab:main} summarises the main comparison. \method{} improves mean target
+accuracy by 2.5 points over fixed-threshold self-training and lowers mean ECE by
+3.8 points. Gains are largest on VisDA-2017, where the synthetic-to-real shift
+produces sharply overconfident source predictions. Training variance also
+decreases, consistent with the gate admitting fewer unstable pseudo-labels.
+
+The ablation in \cref{tab:ablation} isolates the two reliability signals on
+Office-Home. Adaptive thresholds alone improve mean-class accuracy, particularly
+for the least frequent predicted classes. Agreement alone improves calibration
+but reduces coverage. Combining both recovers useful coverage while obtaining
+the best accuracy and ECE. Using a single global EMA instead of class-conditional
+statistics loses 0.9 accuracy points, supporting the role of class adaptation.
+
+\begin{table}[t]
+  \centering
+  \caption{Office-Home ablation. ``Adaptive'' denotes class-conditional
+  thresholds; ``Agree'' denotes the strong-view agreement test.}
+  \label{tab:ablation}
+  \small
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    Variant & Accuracy $\uparrow$ & ECE $\downarrow$ & Coverage \\
+    \midrule
+    Fixed threshold          & 67.4 & 10.7 & 71.8 \\
+    + adaptive               & 68.3 &  9.2 & 74.5 \\
+    + agreement              & 68.0 &  8.1 & 62.6 \\
+    Global EMA + agreement   & 68.3 &  7.8 & 66.9 \\
+    Adaptive + agreement     & \textbf{69.2} & \textbf{6.9} & 68.4 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\textbf{Sensitivity.}
+Across $\tau_0\in\{0.80,0.85,0.90,0.95\}$, mean Office-Home accuracy varies by
+less than 0.7 points. Removing clipping makes rare-class thresholds unstable in
+early epochs and reduces accuracy by 1.1 points. EMA momentum is less sensitive
+for $\rho\in[0.9,0.99]$, although higher values delay adaptation after abrupt
+changes in target composition.
+
+% -----------------------------------------------------------------------------

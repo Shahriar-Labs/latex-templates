@@ -1,0 +1,112 @@
+\section{Security Analysis}
+\label{sec:security}
+
+The proof has two independent components.  First, salts control collisions
+among points that the simulator chooses.  Second, a forking step obtains a
+second challenge for the adversary's decisive oracle query.
+
+\begin{lemma}[Salt-collision bound]
+  \label{lem:collision}
+  Among at most $q_P$ honest proof queries, the probability that two queries
+  with identical $(pk,x,a)$ also select the same salt is at most
+  \[
+     \delta_{\mathrm{salt}} \le \frac{q_P(q_P-1)}{2^{\rho+1}}.
+  \]
+  The same bound holds if the adversary adaptively selects the public key and
+  instance before each salt is sampled.
+\end{lemma}
+
+\begin{proof}
+  Condition on the entire execution before a salt is sampled.  For each pair
+  of proof queries with matching prefixes $(pk,x,a)$, the later independent
+  salt equals the earlier one with probability $2^{-\rho}$.  There are at most
+  $\binom{q_P}{2}$ pairs.  Adaptivity changes which pairs have matching
+  prefixes but not the conditional probability for their fresh salts.
+\end{proof}
+
+\begin{lemma}[Pre-query bound]
+  \label{lem:prequery}
+  Suppose an honest proof's commitment $a$ is fixed before its salt is sampled.
+  For any adversary making at most $q_H$ oracle queries overall, the probability
+  that its table already contains
+  $\mathsf{Enc}(pk,x,a,s)$ when a fresh salt $s$ is sampled is at most
+  $q_H/2^\rho$ per proof query.  Thus
+  $\Prob[\mathsf{PreQ}]\le q_Pq_H/2^\rho$.
+\end{lemma}
+
+\begin{proof}
+  After conditioning on $(pk,x,a)$ and the adversary's current view, at most
+  $q_H$ table entries can have the required prefix.  Each determines at most
+  one bad $\rho$-bit salt by injectivity of the encoding.  A union bound over
+  the $q_P$ proof queries completes the argument.
+\end{proof}
+
+To state the extraction term cleanly, let $\varepsilon$ be the adversary's
+success probability after excluding the two bad events above.  A standard
+forking experiment reruns $\adv$ with identical random tape and identical
+oracle answers before its decisive query, then supplies an independent
+challenge at that query.  Write $q=q_H+q_P+1$ for an upper bound on the number
+of candidate transcript-defining oracle points, including those created while
+answering proof queries.
+
+\begin{theorem}[Multi-user extraction]
+  \label{thm:main}
+  Let $\Pi$ have challenge space of size $2^t$ and special-soundness error
+  $\varepsilon_{\mathrm{ss}}$.  For every classical adversary $\adv$ against
+  $\trans^{\hash}_{\Pi,\rho}$, there is a black-box extractor $\bdv$ such that
+  \begin{align}
+  \Adv^{\mathrm{muk}}_{\trans,\adv}
+  \;&\le
+  \sqrt{q\bigl(\Adv^{\mathrm{ext}}_{\Pi,\bdv}
+             +2^{-t}+\varepsilon_{\mathrm{ss}}\bigr)}
+  + \frac{q_Pq_H}{2^\rho}
+  + \frac{q_P(q_P-1)}{2^{\rho+1}},
+  \label{eq:main-bound}
+  \end{align}
+  where $\Time(\bdv)$ is at most two executions of $\adv$ plus
+  $O(q)$ table operations and one invocation of the special-soundness
+  extractor.  The bound has no additional multiplicative factor $U$.
+\end{theorem}
+
+\begin{proof}
+  We proceed through games.
+
+  \emph{Game $G_0$.} This is the real multi-user experiment with one global
+  lazy-sampled oracle.
+
+  \emph{Game $G_1$.} The challenger answers honest proof requests by choosing
+  the salt and programming the transcript-defining oracle point consistently.
+  If that point was previously queried, it sets $\mathsf{PreQ}$ and aborts.
+  By \cref{lem:prequery}, the statistical difference from $G_0$ is at most
+  $q_Pq_H/2^\rho$.
+
+  \emph{Game $G_2$.} Abort when two simulated proofs reuse an oracle point.
+  By \cref{lem:collision}, this costs at most
+  $q_P(q_P-1)/2^{\rho+1}$.  Conditioned on no abort, every programmed point is
+  fresh and has exactly the random-oracle distribution.
+
+  Now fix a successful execution of $G_2$.  Except with probability $2^{-t}$,
+  the adversary queried the oracle at
+  $X^*=\mathsf{Enc}(pk_{i^*},x^*,a^*,s^*)$ before outputting its proof: without
+  that query, its response predicts a uniform challenge.  Select the decisive
+  query among at most $q$ candidates and apply the classical forking argument
+  of Pointcheval and Stern~\cite{PointchevalStern1996}.  Replaying with the
+  same prefix and an independent answer yields, with probability at least
+  $\varepsilon^2/q-2^{-t}$, two accepting transcripts sharing
+  $(pk_{i^*},x^*,a^*)$ and having distinct challenges.  Applying special
+  soundness extracts a witness, apart from
+  $\varepsilon_{\mathrm{ss}}$.
+
+  The public key is part of $X^*$.  Hence the fork stays in the same user's
+  domain by \cref{lem:domains}; the extractor neither guesses $i^*$ in advance
+  nor loses a factor $U$.  Rearranging the resulting inequality for
+  $\varepsilon$ and adding the two game-transition terms proves
+  \cref{eq:main-bound}.
+\end{proof}
+
+\begin{remark}[What ``no factor $U$'' means]
+The adversary's resources $q_H$ and $q_P$ may naturally grow with the number of
+users.  The theorem does not make a system with more traffic free.  It states
+that after total traffic is fixed, the reduction does not pay a second loss
+merely to guess which public key appears in the forgery.
+\end{remark}

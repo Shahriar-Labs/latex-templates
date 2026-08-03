@@ -1,0 +1,100 @@
+\section{System architecture}
+
+\subsection{Logical architecture}
+
+Figure~\ref{fig:architecture} shows the principal components and trust boundaries.
+The public ingress path ends at the control-plane API. Job payloads flow to runners
+through an authenticated broker or long-poll endpoint; runners do not accept inbound
+connections from repositories.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=8mm and 12mm,
+  box/.style={draw=Primary,rounded corners,thick,fill=LightBlue,minimum width=26mm,minimum height=10mm,align=center,font=\small},
+  worker/.style={draw=Accent,rounded corners,thick,fill=white,minimum width=28mm,minimum height=10mm,align=center,font=\small},
+  store/.style={draw=DarkGray,cylinder,shape border rotate=90,aspect=0.24,fill=LightGray,minimum width=24mm,minimum height=13mm,align=center,font=\small},
+  ext/.style={draw=DarkGray,dashed,rounded corners,fill=white,minimum width=25mm,minimum height=10mm,align=center,font=\small},
+  flow/.style={-{Latex[length=2.2mm]},thick,draw=DarkGray},
+  boundary/.style={draw=MidGray,dashed,rounded corners,inner sep=6mm}
+]
+  \node[ext] (scm) {Source\\control};
+  \node[box,right=of scm] (api) {API and\\authentication};
+  \node[box,right=of api] (planner) {Validator and\\DAG planner};
+  \node[box,right=of planner] (scheduler) {Scheduler and\\lease manager};
+  \node[store,below=of planner] (db) {State store};
+  \node[box,below=of scheduler] (policy) {Policy and\\approvals};
+  \node[worker,right=20mm of scheduler] (runner) {Ephemeral\\runner};
+  \node[worker,below=of runner] (sandbox) {Job sandbox};
+  \node[store,right=20mm of runner] (objects) {Logs, artifacts,\\and provenance};
+  \node[ext,below=of objects] (targets) {Vault, registry,\\and environments};
+
+  \draw[flow] (scm) -- node[above,font=\scriptsize]{signed event} (api);
+  \draw[flow] (api) -- (planner);
+  \draw[flow] (planner) -- (scheduler);
+  \draw[flow] (planner) -- (db);
+  \draw[flow] (scheduler) -- (db);
+  \draw[flow] (policy) -- (scheduler);
+  \draw[flow] (scheduler) -- node[above,font=\scriptsize]{lease} (runner);
+  \draw[flow] (runner) -- (sandbox);
+  \draw[flow] (sandbox) -- node[above,font=\scriptsize]{stream/upload} (objects);
+  \draw[flow] (sandbox) -- (targets);
+  \draw[flow] (policy) -| (targets);
+
+  \node[boundary,fit=(api)(planner)(scheduler)(db)(policy),label={[font=\small\bfseries\color{Primary}]above:Control-plane trust boundary}] {};
+  \node[boundary,fit=(runner)(sandbox),label={[font=\small\bfseries\color{Accent}]above:Execution trust boundary}] {};
+\end{tikzpicture}%
+}
+\caption{Logical architecture and major trust boundaries}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Component responsibilities}
+
+\begin{longtable}{@{}L{0.25\textwidth}L{0.35\textwidth}L{0.33\textwidth}@{}}
+\caption{Component responsibility model}\label{tab:components}\\
+\toprule
+\thead{Component} & \thead{Responsibilities} & \thead{Must not do} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Component} & \thead{Responsibilities} & \thead{Must not do} \\
+\midrule
+\endhead
+API gateway and identity & Authenticate users and services, verify webhook signatures, authorize commands, enforce quotas, issue idempotency keys & Execute pipeline commands or expose internal service credentials \\
+Pipeline service & Resolve revision, parse schema, evaluate expressions, expand matrices, construct immutable DAG and plan digest & Fetch or interpolate secret values during planning \\
+Scheduler & Match ready jobs to eligible capacity, apply fairness, issue leases and fencing tokens, process heartbeats and retries & Trust runner-reported authorization or bypass policy gates \\
+Policy and approval service & Evaluate organization, repository, environment, and risk policies; record signed decisions & Mutate source, artifacts, or deployment output \\
+Runner manager & Register and attest workers, manage pool capacity and image rollout, quarantine unhealthy instances & Persist repository credentials or reuse dirty sandboxes \\
+Runner agent & Claim one or more permitted leases, create sandbox, stream logs, upload outputs, report result, erase workspace & Decide protected-environment authorization \\
+Artifact service & Issue scoped upload/download grants, verify digests, retain metadata and provenance & Execute uploaded content or accept digest mismatch \\
+Audit service & Append, integrity-protect, export, and retain security and administrative events & Allow ordinary administrators to rewrite or delete evidence \\
+\bottomrule
+\end{longtable}
+
+\subsection{Deployment topology}
+
+The control plane \must run across at least three failure domains in the primary
+region. Stateless services use an active/active topology. The state store uses a
+quorum-backed high-availability configuration and continuous point-in-time recovery.
+Object storage uses cross-zone durability. A warm standby control plane in the
+recovery region receives replicated configuration, audit data, and backups but does
+not lease jobs until promoted.
+
+Runner pools are independent scaling units. Pools are segmented by operating system,
+architecture, region, network zone, workload trust tier, and specialized capability
+(for example GPU or hardware signing). Internet-facing untrusted builds and trusted
+production deployments \must not share a pool, node, service account, or mutable image.
+
+\subsection{Trust boundaries and data flows}
+
+\begin{enumerate}
+  \item \textbf{Source boundary:} repository content and pull-request code are untrusted input.
+  \item \textbf{Control-plane boundary:} only authenticated APIs and signed service-to-service traffic enter.
+  \item \textbf{Execution boundary:} a sandbox receives an immutable plan fragment and scoped grants.
+  \item \textbf{Protected-target boundary:} environment access requires workload identity, policy approval, and artifact verification.
+  \item \textbf{Evidence boundary:} audit and provenance records are append-only and independently retained.
+\end{enumerate}
+
+% -----------------------------------------------------------------------------

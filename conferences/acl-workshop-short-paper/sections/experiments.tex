@@ -1,0 +1,47 @@
+\section{Experimental Setup}
+
+\subsection{The \sys{CiteCheck-6K} Corpus}
+\label{sec:data}
+
+We generated literature-review paragraphs by prompting three
+instruction-tuned models -- \sys{Nexa-7B-Instruct}, \sys{Synapse-13B-Chat},
+and \sys{Vertex-XL} -- with topic descriptions drawn from four research
+domains: NLP, biomedicine, materials science, and economics. Each generated
+paragraph was decomposed into (claim, citation) pairs, and three annotators
+with graduate research experience in the relevant domain labeled each pair
+as \textsc{faithful}, \textsc{fabricated}, \textsc{misattributed}, or
+\textsc{distorted}, consulting the cited paper directly. Disagreements were
+adjudicated by a fourth annotator following the adjudication protocol of
+\citet{winter2021adjudication}; inter-annotator agreement before
+adjudication was $\kappa = 0.79$.
+
+The resulting corpus, \sys{CiteCheck-6K}, contains 6,400 labeled pairs:
+2,190 faithful, 1,780 fabricated, 1,340 misattributed, and 1,090 distorted.
+We split by \emph{generated paragraph} rather than by pair, so that no two
+pairs from the same paragraph appear on opposite sides of the train/test
+boundary, and reserve 20\% of paragraphs for the test set used throughout
+Section~\ref{sec:results}.
+
+\subsection{Baselines}
+
+We compare \sys{SynapseCite} against two baselines. \textbf{Retrieval-only}
+runs Stage~1 and Stage~2 of \sys{SynapseCite} but skips the entailment
+classifier, predicting \textsc{faithful} whenever a passage is retrieved
+above a cosine-similarity threshold tuned on a held-out development split,
+and \textsc{fabricated} otherwise -- it cannot distinguish misattribution or
+distortion from faithfulness. \textbf{Prompted-LLM judge} sends the claim
+and the cited paper's abstract to \sys{Apex-Judge-70B} with a four-way
+classification prompt and three in-context examples per class, following
+the shared-task prompting convention of \citet{nakamura2021survey}.
+
+\subsection{Metrics}
+
+We report macro-averaged F1 across the four labels, and, since fabrication
+detection matters most for the downstream use case of flagging a citation
+for human review, we separately report recall on the \textsc{fabricated}
+class alone. We also report median per-pair inference cost in USD,
+estimated from public per-token pricing for each system's model calls
+following the cost-aware evaluation protocol of
+\citet{ahmadi2023costaware}, since a verifier that only a well-funded lab
+can afford to run does not solve the problem for the researchers most
+likely to rely on an LLM drafting assistant in the first place.

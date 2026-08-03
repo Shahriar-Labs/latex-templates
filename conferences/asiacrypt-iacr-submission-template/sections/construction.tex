@@ -1,0 +1,71 @@
+\section{The Nimbus-T Construction}
+\label{sec:construction}
+
+\paragraph{Key Generation and Sharing.}
+$\Gen(1^\secparam)$ samples $s \xleftarrow{\$} \Z_N$ and sets $\pk = [s]\star E_0$, exactly as in the base scheme. $\Share(s,t,n)$ draws $f(x) = s + a_1 x + \dots + a_{t-1}x^{t-1} \in \Z_N[x]$ with $f(0)=s$ and issues $s_i = f(i) \bmod N$ to signer $i$ over an authenticated channel, following the dealer model of~\cite{tran2024dkg}. As sharing is over $\Z_N$ rather than a large prime, we require $\gcd(t!,N)=1$ for $\Combine$'s Lagrange coefficients $\lambda_i^T = \prod_{j \in T\setminus\{i\}} \frac{-j}{i-j} \bmod N$ to be well-defined; this holds for every parameter set we use (\Cref{sec:eval}), and gives $\sum_{i\in T}\lambda_i^T s_i \equiv s \pmod N$.
+
+\paragraph{Threshold Signing.}
+The base scheme is a Fiat-Shamir sigma protocol: commit $r=[y]\star E_0$, derive $c = H(r,m)$, respond $z = y+cs \bmod N$; the verifier accepts iff $[z]\star E_0 = [c]\star\pk\star r$. Nimbus-T distributes this without an extra round: each signer in $T$ contributes a partial commitment, then a partial response weighted by its Lagrange coefficient once the challenge is fixed; unlike Apex-GA's interactive combination round~\cite{voss2023apexga}, the combiner's role is purely additive (\Cref{fig:nimbus-protocol}).
+
+\begin{figure}[htb]
+\centering
+\begin{tikzpicture}[scale=0.82, transform shape, node distance=1.6cm, auto, >={Stealth[length=2mm]}, thick]
+  \node[draw, rectangle, fill=mistlight, minimum width=2.7cm, minimum height=0.85cm, rounded corners] (signers) at (0,0) {
+    \begin{tabular}{c}
+      \textbf{Signers $i \in T$} \\
+      \small holding $s_i$, $|T|=t$
+    \end{tabular}
+  };
+  \node[draw, rectangle, fill=mistlight, minimum width=2.7cm, minimum height=0.85cm, rounded corners] (combiner) at (4.4,0) {
+    \begin{tabular}{c}
+      \textbf{Combiner} \\
+      \small untrusted, public
+    \end{tabular}
+  };
+  \node[draw, rectangle, fill=mistlight, minimum width=2.7cm, minimum height=0.85cm, rounded corners] (verifier) at (8.8,0) {
+    \begin{tabular}{c}
+      \textbf{Verifier} \\
+      \small holds $\pk$
+    \end{tabular}
+  };
+
+  \draw[dashed, thick, graphite] (signers.south) -- (0,-3.9);
+  \draw[dashed, thick, graphite] (combiner.south) -- (4.4,-3.9);
+  \draw[dashed, thick, graphite] (verifier.south) -- (8.8,-3.9);
+
+  \node[anchor=east, align=left] at (-0.2,-0.9) {
+    \begin{tabular}{r}
+      \scriptsize $y_i \xleftarrow{\$} \Z_N$ \\
+      \scriptsize $r_i = [y_i]\star E_0$
+    \end{tabular}
+  };
+  \draw[->, thick, indigown] (0,-1.35) -- (4.4,-1.35) node[midway, above] {\scriptsize $\{r_i\}_{i\in T}$};
+
+  \node[align=left] at (4.4,-1.75) {\scriptsize $R=\sum_{i\in T} r_i$, \; $c=H(R,m)$};
+  \draw[->, thick, jadeteal] (4.4,-2.15) -- (0,-2.15) node[midway, above] {\scriptsize $c$};
+  \draw[->, thick, jadeteal] (4.4,-2.15) -- (8.8,-2.15) node[midway, above] {\scriptsize $c$};
+
+  \node[anchor=east, align=left] at (-0.2,-2.7) {
+    \scriptsize $z_i = y_i + \lambda_i^T c\, s_i \bmod N$
+  };
+  \draw[->, thick, indigown] (0,-3.1) -- (4.4,-3.1) node[midway, above] {\scriptsize $\{z_i\}_{i\in T}$};
+
+  \node[align=left] at (4.4,-3.45) {\scriptsize $z=\sum_{i\in T} z_i \bmod N$};
+  \draw[->, thick, indigown] (4.4,-3.7) -- (8.8,-3.7) node[midway, above] {\scriptsize $\sigma=(c,z,T)$};
+
+  \node[draw, rectangle, fill=white, draw=graphite, minimum width=2.9cm, minimum height=0.85cm, rounded corners, anchor=north] at (8.8,-3.9) {
+    \begin{minipage}{2.6cm}
+      \scriptsize
+      \textbf{Accept iff:}\\
+      $[z]\star E_0 \stackrel{?}{=} [c]\star\pk\star R$
+    \end{minipage}
+  };
+\end{tikzpicture}
+\caption{One Nimbus-T signing session. Signers exchange only partial commitments and responses; the combiner performs two additions and never sees an individual share $s_i$. The final $\sigma=(c,z,T)$ verifies as a base-scheme signature.}
+\label{fig:nimbus-protocol}
+\end{figure}
+
+Correctness follows since $z = \sum_{i\in T} y_i + c\sum_{i\in T}\lambda_i^T s_i \equiv y + cs \pmod N$, where $y=\sum_{i\in T} y_i$ and $[y]\star E_0 = R$; so $(c,z,T)$ is distributed exactly as a base-scheme signature with commitment randomness $y$, and $\Verify$ needs no modification.
+
+\paragraph{Combiner Trust and Robustness.}
+The combiner's additions ($R=\sum r_i$, $z=\sum z_i$) are public and checkable, so tampering yields a signature that fails $\Verify$ and the role can be rotated per session. A signer submitting $z_i$ inconsistent with its earlier $r_i$ is caught by the per-share check $[z_i]\star E_0 \stackrel{?}{=} [\lambda_i^T c]\star([s_i]\star E_0)\star r_i$ (against the public key $[s_i]\star E_0$ published at $\Share$ time), so a single cheating signer causes an abort rather than an invalid signature reaching $\Verify$ (\Cref{sec:security}).

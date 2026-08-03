@@ -1,0 +1,145 @@
+%% sections/shading_analysis.tex
+%% Shading methodology, inter-row losses, and horizon obstruction
+
+\section{Shading Analysis \& Loss Budget}
+
+\subsection{Methodology}
+
+Shading analysis was performed using \textbf{Nexa SolarSim v4.3} with 3D terrain and obstacle
+modelling derived from \textsc{lidar} survey data (point density \SI{8}{\per\meter\squared}).
+The analysis distinguishes three loss categories per IEC~61724-1:2021 Annex~A:
+
+\begin{enumerate}[leftmargin=1.6em, itemsep=3pt, label=\lbrack\arabic*\rbrack]
+  \item \textbf{Near shading} — inter-row, fence, and inverter shelter obstructions within
+        the plant boundary.
+  \item \textbf{Far shading} — topographic horizon profile derived from 30~m \textsc{dem}.
+  \item \textbf{Electrical mismatch} — string-level power reduction from partial shading
+        on non-bypass-diode-isolated cells.
+\end{enumerate}
+
+\subsection{Inter-Row Shading Design}
+
+Rows are oriented \textbf{N--S} with modules tilted at \textbf{22°} (optimised for
+latitude $-34.1°$). The ground coverage ratio (\textsc{gcr}) is 0.40, yielding the
+following inter-row shading loss profile:
+
+\begin{table}[H]
+  \centering
+  \caption{Monthly Inter-Row Shading Loss — Meridian Flats Solar Park}
+  \label{tab:shading}
+  \begin{tabular}{@{} l S[table-format=1.2] S[table-format=1.2] S[table-format=3.0] @{}}
+    \toprule
+    \rowcolor{SolarMist}
+    \textbf{Month} & \textbf{Beam Shading (\%)} & \textbf{Diff.\ Shading (\%)} & \textbf{Irradiance Loss (kWh/m²)} \\
+    \midrule
+    January   & 0.32 & 1.65 & 6 \\
+    February  & 0.35 & 1.67 & 5 \\
+    March     & 0.61 & 1.70 & 7 \\
+    April     & 1.20 & 1.72 & 9 \\
+    May       & 2.41 & 1.75 & 12 \\
+    June      & 3.15 & 1.78 & 14 \\
+    July      & 2.98 & 1.77 & 13 \\
+    August    & 1.88 & 1.73 & 10 \\
+    September & 0.90 & 1.71 & 8 \\
+    October   & 0.48 & 1.66 & 6 \\
+    November  & 0.33 & 1.65 & 5 \\
+    December  & 0.29 & 1.64 & 5 \\
+    \midrule
+    \rowcolor{SolarMist}
+    \textbf{Annual} & \textbf{1.24} & \textbf{1.70} & \textbf{100} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Shading Loss Budget Summary}
+
+The total shading-related loss budget is summarised below. All values are expressed as a
+percentage of annual \textsc{ghi} in-plane irradiation (\perfval{1977}{\kilo\watt\hour\per\meter\squared\per\yr}).
+
+\begin{center}
+\begin{tabular}{@{} l r r @{}}
+  \toprule
+  \rowcolor{SolarMist}
+  \textbf{Loss Component}        & \textbf{Energy Loss (\%)} & \textbf{Limit (\%)} \\
+  \midrule
+  Inter-row beam shading         & 1.24  & 1.50 \\
+  Inter-row diffuse shading      & 1.70  & 2.00 \\
+  Far horizon shading            & 0.18  & 0.25 \\
+  Electrical mismatch (shading)  & 0.35  & 0.50 \\
+  \midrule
+  \rowcolor{SolarMist}
+  \textbf{Total Shading Loss}    & \textbf{3.47}  & \textbf{4.25} \\
+  \bottomrule
+\end{tabular}
+\end{center}
+
+The modelled total shading loss of \highlight{3.47\%} is within the contractual limit of
+\highlight{4.25\%}. If measured annual shading loss (derived from \textsc{scada} irradiance
+comparison) exceeds 4.25\%, Vertex Constructors shall conduct a structural alignment audit of
+all tracker or fixed-tilt mounting systems within 60~days.
+
+\subsection{Horizon Obstruction Profile — TikZ Diagram}
+
+Figure~\ref{fig:horizon} shows the simplified horizon obstruction profile at the plant
+centroid (\textsc{gps}: $-34.07°$\,S, $147.32°$\,E), derived from \textsc{lidar} survey.
+Shaded area indicates sun path regions intercepted by horizon obstructions.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[scale=1.0]
+    %% Axes
+    \draw[->, SolarNavy, thick] (-0.3,0) -- (10.5,0) node[right, font=\small] {Azimuth (°)};
+    \draw[->, SolarNavy, thick] (0,-0.2) -- (0,3.8) node[above, font=\small] {Elevation (°)};
+
+    %% Axis labels (azimuth: 0=N, 90=E, 180=S, 270=W, 360=N)
+    \foreach \x/\lbl in {0/N, 2.25/NE, 4.5/E, 6.75/SE, 9.0/S} {
+      \node[below, font=\scriptsize, color=SolarSlate] at (\x, 0) {\lbl};
+    }
+    \foreach \y/\lbl in {0/0, 1/5, 2/10, 3/15} {
+      \node[left, font=\scriptsize, color=SolarSlate] at (0, \y) {\lbl};
+    }
+
+    %% Horizon obstruction fill (terrain profile, simplified)
+    \fill[SolarSlate!25]
+      (0,0.20) -- (0.5,0.25) -- (1.0,0.30) -- (1.5,0.22) -- (2.0,0.18)
+      -- (2.5,0.20) -- (3.0,0.28) -- (3.5,0.60) -- (4.0,0.50) -- (4.5,0.35)
+      -- (5.0,0.28) -- (5.5,0.20) -- (6.0,0.18) -- (6.5,0.15)
+      -- (7.0,0.18) -- (7.5,0.22) -- (8.0,0.20) -- (8.5,0.18)
+      -- (9.0,0.16) -- (9.0,0) -- (0,0) -- cycle;
+
+    %% Horizon line
+    \draw[SolarNavy, thick]
+      (0,0.20) -- (0.5,0.25) -- (1.0,0.30) -- (1.5,0.22) -- (2.0,0.18)
+      -- (2.5,0.20) -- (3.0,0.28) -- (3.5,0.60) -- (4.0,0.50) -- (4.5,0.35)
+      -- (5.0,0.28) -- (5.5,0.20) -- (6.0,0.18) -- (6.5,0.15)
+      -- (7.0,0.18) -- (7.5,0.22) -- (8.0,0.20) -- (8.5,0.18) -- (9.0,0.16);
+
+    %% Sun path at winter solstice (simplified arc)
+    \draw[SolarAmber, thick, dashed]
+      (2.5,0) parabola bend (5.5,2.80) (8.5,0);
+    \node[SolarAmber, font=\scriptsize, above right] at (5.5,2.85) {Winter solstice sun path};
+
+    %% Sun path at summer solstice
+    \draw[SolarNavy!60, thick, dotted]
+      (1.0,0) parabola bend (5.0,3.60) (9.0,0);
+    \node[SolarNavy!60, font=\scriptsize, above right] at (5.0,3.65) {Summer solstice sun path};
+
+    %% Label for horizon obstruction
+    \node[SolarSlate, font=\scriptsize\itshape] at (3.5,0.85) {Terrain horizon};
+
+    %% Legend box
+    \begin{scope}[shift={(6.8,2.5)}]
+      \fill[SolarMist] (0,0) rectangle (2.2,0.9);
+      \draw[SolarNavy!40] (0,0) rectangle (2.2,0.9);
+      \fill[SolarSlate!25] (0.1,0.55) rectangle (0.55,0.80);
+      \draw[SolarNavy, thick] (0.1,0.675) -- (0.55,0.675);
+      \node[right, font=\scriptsize] at (0.6,0.675) {Obstruction};
+      \draw[SolarAmber, thick, dashed] (0.1,0.22) -- (0.55,0.22);
+      \node[right, font=\scriptsize] at (0.6,0.22) {Winter path};
+    \end{scope}
+  \end{tikzpicture}
+  \caption{Simplified horizon obstruction profile at plant centroid. Shaded band indicates
+           terrain profile. Maximum terrain obstruction of \SI{3.0}{\degree} elevation occurs
+           at the NE quadrant (\mbox{azimuth $\approx 40°$}).}
+  \label{fig:horizon}
+\end{figure}

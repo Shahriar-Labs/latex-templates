@@ -1,0 +1,25 @@
+\section{Offer acceptance and policy evaluation}
+
+After validation, the device sends \code{ACCEPT} with session, release, selected
+artifact IDs, current conditions, and an estimated start time. Acceptance means
+the device intends to proceed; it does not guarantee activation. The device sends
+\code{DECLINE} instead when the release is valid but cannot be applied, using a
+reason such as \code{INSUFFICIENT\_SPACE}, \code{POLICY\_BLOCKED},
+\code{UNSUPPORTED\_ARTIFACT}, or \code{DEPENDENCY\_UNSATISFIED}.
+
+Before download and again before staging and activation, the device evaluates:
+
+\begin{itemize}
+  \item battery percentage, external power, and estimated energy reserve;
+  \item staging and recovery storage, including worst-case temporary expansion;
+  \item device temperature and platform thermal limits;
+  \item network type, metering, roaming, and local data budget;
+  \item maintenance window, user activity, and process safety interlocks; and
+  \item campaign cancellation or signed release revocation learned since acceptance.
+\end{itemize}
+
+A temporary policy failure moves the session to \state{Deferred} or \state{Paused}
+without discarding verified bytes. A permanent incompatibility is terminal.
+Safety-critical interlocks always take precedence over campaign timing.
+
+% -----------------------------------------------------------------------------

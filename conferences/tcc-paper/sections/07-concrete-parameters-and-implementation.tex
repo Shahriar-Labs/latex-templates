@@ -1,0 +1,59 @@
+\section{Concrete Parameters and Implementation}
+\label{sec:parameters}
+
+The main theorem makes parameter selection mechanical.  If an application
+wants the pre-query term below $2^{-s}$, it suffices to choose
+\begin{equation}
+  \rho \geq s+\lceil\log_2 q_H\rceil+\lceil\log_2 n\rceil-k.
+  \label{eq:rho-choice}
+\end{equation}
+Salt length should still have a conservative floor (typically 128 bits), since
+message entropy estimates are easy to overstate.  Commitment length $\tau$
+is chosen independently from the binding bound; achieving approximately
+$s$-bit binding against $q_H$ queries requires
+\begin{equation}
+  \tau\geq s+2\lceil\log_2(q_H+2)\rceil-1.
+  \label{eq:tau-choice}
+\end{equation}
+
+\begin{table}[t]
+\caption{Illustrative bounds for $\rho=128$, $\tau=256$, $q_H\leq2^{40}$,
+and $n\leq2^{20}$.  Exponents are conservative.}
+\label{tab:parameters}
+\centering
+\small
+\begin{tabular}{@{}cccc@{}}
+\toprule
+Residual $k$ & Pre-query bound & Binding bound & Interpretation \\
+\midrule
+$0$   & $2^{-68}$  & $<2^{-175}$ & salt carries hiding loss \\
+$32$  & $2^{-100}$ & $<2^{-175}$ & moderate-entropy data \\
+$64$  & $2^{-132}$ & $<2^{-175}$ & high-entropy secret \\
+$128$ & $2^{-196}$ & $<2^{-175}$ & binding dominates \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The numbers in \cref{tab:parameters} are examples, not universal deployment
+targets.  The query budget must include parallel attackers and the lifetime of
+the chosen domain.  If a standardized hash is used as a ROM heuristic, use an
+approved output length and retain the full digest unless a protocol analysis
+justifies truncation.
+
+\subsection{Implementation checklist}
+
+\begin{enumerate}
+  \item Generate each salt with a cryptographically secure random-number
+        generator.  Never derive it from a timestamp or resettable counter.
+  \item Allocate a stable, documented protocol tag and version.  Do not reuse
+        a tag for a changed serialization.
+  \item Encode lengths and integers canonically.  Reject overlong integers,
+        duplicate map keys, alternative Unicode normalizations, and trailing
+        bytes before hashing.
+  \item Make $sid$ globally unique for the required replay horizon, and define
+        exactly which application fields it authenticates.
+  \item Compare digests in constant time when the surrounding protocol makes
+        timing observable, and erase retained openings when no longer needed.
+  \item Test negative cases: altered tag, session, position, message, and salt
+        must each cause verification to fail.
+\end{enumerate}

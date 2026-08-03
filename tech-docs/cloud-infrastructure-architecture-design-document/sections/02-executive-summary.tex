@@ -1,0 +1,47 @@
+\section{Executive Summary}
+
+This design establishes a secure, highly available AWS foundation for Asteria, a business-to-business commerce platform. The target supports public APIs, a web application, asynchronous order processing, and analytics while keeping operational ownership practical for a platform team of eight engineers.
+
+The architecture uses separate AWS accounts for production, non-production, security, logging, and shared services. Production workloads run on Amazon EKS across three Availability Zones. Amazon CloudFront, AWS WAF, and an Application Load Balancer provide the public edge. Amazon Aurora PostgreSQL is the system of record; ElastiCache for Redis supports ephemeral caching; S3 stores objects and immutable audit exports; and managed queues decouple background work. Infrastructure and policy are delivered through reviewed, immutable pipelines.
+
+\begin{summarybox}[Architecture decision]
+Adopt a multi-account, single-region / multi-AZ production architecture with warm recovery in a second region. Prefer managed services for undifferentiated operations, private networking by default, short-lived identity, encrypted data paths, and observable failure domains.
+\end{summarybox}
+
+\subsection{Outcome targets}
+
+\begin{tabularx}{\textwidth}{@{}L{40mm}Y L{42mm}@{}}
+  \toprule
+  \rowcolor{navy}
+  \color{white}\textbf{Quality} & \color{white}\textbf{Target} & \color{white}\textbf{Evidence} \\
+  \midrule
+  Availability & 99.95\% monthly for public API and checkout & SLO dashboard and synthetic probes \\
+  \rowcolor{pale}
+  Performance & API p95 $<250$ ms and p99 $<600$ ms at 2,500 requests/s & Distributed load test \\
+  Recovery & Tier 1 RTO $\leq60$ min; RPO $\leq5$ min & Quarterly recovery exercise \\
+  \rowcolor{pale}
+  Security & No public workloads or databases; all privileged access is just-in-time & Config rules and access reports \\
+  Delivery & Routine production release in $<20$ min; rollback in $<10$ min & Pipeline telemetry \\
+  \rowcolor{pale}
+  Cost & Monthly variance within 10\% of forecast & Tagged cost allocation report \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Key decisions and trade-offs}
+
+\begin{tabularx}{\textwidth}{@{}L{31mm}Y Y@{}}
+  \toprule
+  \rowcolor{navy}
+  \color{white}\textbf{Decision} & \color{white}\textbf{Why} & \color{white}\textbf{Accepted trade-off} \\
+  \midrule
+  EKS for services & Consistent scheduling, policy, autoscaling, and deployment patterns & Kubernetes operating complexity \\
+  \rowcolor{pale}
+  Aurora PostgreSQL & Transactional integrity, mature tooling, managed failover & Higher baseline cost than a single instance \\
+  Multi-AZ primary & Contains common infrastructure failures without operator action & Does not cover regional failure \\
+  \rowcolor{pale}
+  Warm regional recovery & Meets one-hour RTO at sustainable cost & Capacity scale-up is required during failover \\
+  Private egress & Restricts network paths and centralizes inspection & NAT and endpoint charges \\
+  \bottomrule
+\end{tabularx}
+
+% ================================================================

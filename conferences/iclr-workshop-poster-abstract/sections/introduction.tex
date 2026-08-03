@@ -1,0 +1,42 @@
+% ============================================================
+%  sections/introduction.tex
+% ============================================================
+
+\section{Introduction}
+
+The rise of large vision--language models (VLMs) such as
+\citet{radford2021clip} and \citet{dosovitskiy2021vit} has transformed
+multimodal understanding, enabling systems that jointly reason over
+images and natural language. Yet the quadratic complexity of
+self-attention with respect to sequence length makes full-attention
+inference prohibitively expensive when both visual and textual token
+streams are long.
+
+Existing efficiency approaches fall into three categories:
+\textit{structured pruning} of model weights
+\citep{he2016resnet}, \textit{quantisation} of activations and weights,
+and \textit{token reduction}---the focus of this work.
+Token-reduction methods discard or merge tokens deemed unimportant for
+the final prediction, but prior work~\citep{chen2021simclr} largely
+treats modality-specific and cross-modal tokens identically and
+applies fixed, hand-crafted rules that do not generalise across tasks.
+
+\textbf{Our contribution.}\quad We present \modelname{}, a
+\emph{modality-aware adaptive token routing} framework that:
+\begin{enumerate}[leftmargin=*, label=(\roman*), itemsep=2pt, topsep=2pt]
+  \item Learns separate sparsity masks for vision and language tokens
+        using a differentiable top-\(k\) operator, allowing end-to-end
+        training with a standard cross-entropy objective plus a
+        FLOPs-regularisation term.
+  \item Achieves \textbf{3.1\(\times\)} FLOPs reduction and
+        \textbf{2.4\(\times\)} latency reduction with
+        \(\leq\)0.5\% accuracy drop across twelve \dataset{} tasks.
+  \item Transfers sparsity masks across model scales (ViT-B, ViT-L,
+        ViT-H) and language backbones without retraining.
+\end{enumerate}
+
+This work targets practitioners deploying VLMs in latency-sensitive
+environments such as on-device assistants and real-time visual
+question answering. We believe the learned-mask paradigm opens a
+practical path to sub-quadratic multimodal inference without
+architectural surgery.

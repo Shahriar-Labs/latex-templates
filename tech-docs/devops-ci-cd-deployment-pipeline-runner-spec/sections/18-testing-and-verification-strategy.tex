@@ -1,0 +1,35 @@
+\section{Testing and verification strategy}
+
+\subsection{Test layers}
+
+\begin{enumerate}
+  \item \textbf{Unit and property tests:} parser, expression evaluator, DAG, policy inputs,
+        state machines, canonicalization, lease fencing, and safe archive extraction.
+  \item \textbf{Contract tests:} public API schemas, runner protocol compatibility,
+        event evolution, artifact grants, OIDC claims, and deployment adapter behavior.
+  \item \textbf{Integration tests:} source event through logs, artifacts, provenance,
+        approval, deployment, cancellation, retry, and retention.
+  \item \textbf{Security tests:} tenant isolation, sandbox escape attempts, token replay,
+        SSRF, webhook replay, poisoned caches, malicious archives, log injection, and secret canaries.
+  \item \textbf{Resilience tests:} process crash, packet loss, duplicate delivery, stale
+        lease, database failover, object-store errors, zone loss, and regional promotion.
+  \item \textbf{Performance tests:} burst admission, large DAG planning, scheduler fairness,
+        runner churn, log fan-out, artifact throughput, and noisy-neighbor containment.
+\end{enumerate}
+
+\subsection{Compatibility policy}
+
+The control plane supports the current and previous two runner minor versions during a
+rolling upgrade. Protocol fields use additive evolution; removing or redefining a field
+requires a new major version. A runner advertises capabilities, and the scheduler does
+not lease an incompatible job. Downgrade is tested for the duration of the rollback window.
+
+\subsection{Release gates}
+
+A control-plane release requires passing automated tests, dependency and image scans,
+schema compatibility checks, migration rehearsal, canary health, and rollback validation.
+Database migrations are backward compatible with the previous application version,
+expand before use, and contract only after the rollback window. Runner-image releases
+run representative untrusted workloads and verify teardown residue before promotion.
+
+% -----------------------------------------------------------------------------

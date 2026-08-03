@@ -1,0 +1,171 @@
+%% preamble.tex — packages, colours, custom commands, page geometry
+
+%% ─── Page geometry ────────────────────────────────────────────────────────────
+\usepackage[
+  top=2.4cm, bottom=2.6cm,
+  left=2.8cm, right=2.8cm,
+  headheight=14pt
+]{geometry}
+
+%% ─── Encoding & fonts ─────────────────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+%% ─── Colour ───────────────────────────────────────────────────────────────────
+\usepackage[table]{xcolor}
+
+\definecolor{PrimaryNavy}{HTML}{0D2340}
+\definecolor{AccentTeal}{HTML}{007A7A}
+\definecolor{LightSlate}{HTML}{F4F6F9}
+\definecolor{MidGrey}{HTML}{8494A8}
+\definecolor{RuleGrey}{HTML}{CBD5E1}
+\definecolor{AlertAmber}{HTML}{C4640A}
+
+%% ─── Typography helpers ───────────────────────────────────────────────────────
+\usepackage{setspace}
+\setstretch{1.15}
+
+\usepackage{parskip}
+\setlength{\parskip}{6pt plus 1pt}
+
+%% ─── Headers & footers ────────────────────────────────────────────────────────
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\color{MidGrey}\footnotesize Consulting Services Agreement --- Statement of Work}
+\fancyhead[R]{\color{MidGrey}\footnotesize Apex Consulting \& Meridian Technologies}
+\fancyfoot[C]{\color{MidGrey}\footnotesize Page \thepage}
+
+%% ─── Tables ───────────────────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{longtable}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+%% ─── Lists ────────────────────────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist[itemize]{
+  leftmargin=1.4em,
+  label={\color{AccentTeal}\small$\bullet$},
+  itemsep=2pt,
+  topsep=4pt
+}
+\setlist[enumerate]{leftmargin=1.6em, itemsep=2pt, topsep=4pt}
+
+%% ─── Graphics & TikZ ──────────────────────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, shapes.geometric, backgrounds, patterns}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+%% ─── Boxes ────────────────────────────────────────────────────────────────────
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{breakable, skins}
+
+%% ─── Section styling ──────────────────────────────────────────────────────────
+\usepackage{titlesec}
+
+\titleformat{\section}
+  {\color{PrimaryNavy}\large\bfseries}
+  {\color{AccentTeal}\thesection.}
+  {0.55em}{}
+  [\vspace{-4pt}\color{RuleGrey}\titlerule\vspace{2pt}]
+
+\titleformat{\subsection}
+  {\color{PrimaryNavy}\normalsize\bfseries}
+  {\color{AccentTeal}\thesubsection}
+  {0.5em}{}
+
+\titlespacing{\section}{0pt}{18pt}{8pt}
+\titlespacing{\subsection}{0pt}{12pt}{4pt}
+
+%% ─── Hyperlinks ───────────────────────────────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=AccentTeal,
+  urlcolor=AccentTeal,
+  citecolor=AccentTeal,
+  bookmarksopen=true,
+  pdfstartview=FitH
+]{hyperref}
+
+%% ─── Misc utilities ───────────────────────────────────────────────────────────
+\usepackage{calc}
+\usepackage{ifthen}
+\usepackage{fontawesome5}
+\usepackage{soul}       % \hl for highlights
+
+%% ─── Custom commands ──────────────────────────────────────────────────────────
+\newcommand{\sectionrule}{%
+  \vspace{4pt}\color{RuleGrey}\hrule height 0.4pt\vspace{4pt}}
+
+%% Title block helpers
+\newcommand{\tagline}[1]{%
+  {\color{MidGrey}\small\itshape #1}}
+
+\newcommand{\fieldlabel}[1]{%
+  {\color{MidGrey}\footnotesize\bfseries\MakeUppercase{#1}}}
+
+\newcommand{\fieldvalue}[1]{%
+  {\color{PrimaryNavy}\small #1}}
+
+%% Clause numbering
+\newcounter{clausectr}
+\renewcommand{\theclausectr}{\arabic{clausectr}}
+\newcommand{\clause}[1]{%
+  \stepcounter{clausectr}%
+  \par\noindent\textbf{\color{AccentTeal}\theclausectr.\quad #1}\par}
+
+%% Inline highlight box
+\newtcbox{\notebox}{
+  enhanced, nobeforeafter, width=\linewidth, tcbox width=forced left,
+  colback=LightSlate, colframe=AccentTeal,
+  boxrule=0pt, leftrule=3pt,
+  arc=2pt, outer arc=2pt,
+  top=4pt, bottom=4pt, left=8pt, right=8pt,
+  fontupper=\small
+}
+
+%% Definition box (used for key terms)
+\newtcolorbox{definebox}{
+  enhanced, breakable,
+  colback=LightSlate,
+  colframe=RuleGrey,
+  boxrule=0.5pt,
+  arc=4pt,
+  title={\faBook\quad Key Terms \& Definitions},
+  fonttitle={\bfseries\color{PrimaryNavy}\small},
+  coltitle=PrimaryNavy,
+  attach boxed title to top left={yshift=-2mm, xshift=8mm},
+  boxed title style={colback=white, colframe=RuleGrey, boxrule=0.5pt, arc=3pt},
+  top=10pt, bottom=8pt, left=10pt, right=10pt
+}
+
+%% Milestone box
+\newtcolorbox{milestonebox}[1][]{
+  enhanced, breakable,
+  colback=white,
+  colframe=PrimaryNavy,
+  boxrule=0.8pt,
+  arc=4pt,
+  title={#1},
+  fonttitle={\bfseries\color{white}\small},
+  coltitle=white,
+  colbacktitle=PrimaryNavy,
+  top=8pt, bottom=8pt, left=10pt, right=10pt
+}
+
+%% Signature field
+\newcommand{\sigfield}[2]{%
+  \vspace{14pt}%
+  \noindent\rule{5.5cm}{0.4pt}\par%
+  \noindent{\footnotesize\color{MidGrey} #1}\par%
+  \noindent{\footnotesize\color{MidGrey} #2}%
+  \vspace{4pt}}

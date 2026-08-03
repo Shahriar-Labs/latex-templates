@@ -1,0 +1,54 @@
+% sections/methodology.tex
+\section{Methodology}
+Our methodology revolves around a continuous optimization loop where scene parameters are iteratively refined to match target photographs. The mathematical foundation is based on the rendering equation, formulated differentiably, coupled with a coordinate-based neural representation.
+
+\subsection{Differentiable Radiative Transfer}
+Let $I$ be the intensity of a pixel, which is computed as the integral of incoming radiance over the pixel's footprint. The differentiable rendering equation expresses the pixel response $I(\theta)$ under scene parameters $\theta$ (geometry, materials, and light sources) as:
+\begin{equation}
+    I(\theta) = \int_{\mathcal{M}} h(x, y) L(x \rightarrow y; \theta) \mathrm{d}\mu(x, y)
+\end{equation}
+where $\mathcal{M}$ represents the scene surfaces, $h(x, y)$ is the pixel filter, $L(x \rightarrow y; \theta)$ is the radiance propagating from point $x$ to $y$, and $\mu(x, y)$ is the area product measure.
+
+To optimize $\theta$, we compute the gradient of a photometric loss $\mathcal{L}$ with respect to $\theta$. This requires the derivative $\nabla_\theta L$. Since radiance discontinuities occur at occlusion boundaries, the derivative includes a boundary term:
+\begin{equation}
+    \nabla_\theta I(\theta) = \int_{\mathcal{M}} h \nabla_\theta L \mathrm{d}\mu + \oint_{\partial\mathcal{M}} h L \langle \mathbf{v}_\theta, \mathbf{n} \rangle \mathrm{d}\mathbf{s}
+\end{equation}
+where $\partial\mathcal{M}$ represents the silhouette edges, $\mathbf{v}_\theta$ is the edge velocity vector, and $\mathbf{n}$ is the normal vector. Instead of explicitly tracing these boundary edges, which is computationally expensive, Synapse-Render employs a volumetric edge-filtering heuristic that approximates the boundary integral using a localized density field, saving substantial computing time. This technique builds upon previous boundary-free approximations proposed by Martinez and Tanaka~\cite{meridian2023differentiable}.
+
+\subsection{System Pipeline}
+As illustrated in Figure~\ref{fig:pipeline}, the pipeline consists of a forward pass and a backward pass. In the forward pass, Nexa coordinate parameters are queried to obtain spatial properties, which are then path-traced by the Synapse engine. The resulting image is compared against the reference to compute the loss. In the backward pass, adjoint methods propagate the gradients back to the Nexa parameters.
+
+\begin{figure*}[t]
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.2cm and 1.8cm,
+    box/.style={draw, rectangle, rounded corners=5pt, minimum width=2.8cm, minimum height=1.2cm, align=center, thick, font=\sffamily\small},
+    forward/.style={fill=SynapseBlue!10, draw=SynapseBlue, text=SynapseBlue!50!black},
+    backward/.style={fill=MeridianCoral!10, draw=MeridianCoral, text=MeridianCoral!50!black},
+    parameter/.style={fill=VertexIndigo!10, draw=VertexIndigo, text=VertexIndigo!50!black},
+    arrow/.style={-latex, thick, draw=gray!80},
+    backarrow/.style={-latex, thick, draw=MeridianCoral, dashed}
+  ]
+    % Forward Nodes
+    \node[box, parameter] (params) {Scene Parameters $\theta$\\ \footnotesize (Nexa Hash Grid)};
+    \node[box, forward, right=of params] (tracer) {Forward Path Tracer\\ \footnotesize (Synapse-Render)};
+    \node[box, forward, right=of tracer] (image) {Rendered Image $\hat{I}$\\ \footnotesize ($512 \times 512$)};
+    \node[box, forward, right=of image] (loss) {Photometric Loss $\mathcal{L}$\\ \footnotesize (L1 + MS-SSIM)};
+    \node[box, fill=gray!10, draw=gray!50, above=of loss, yshift=-0.5cm] (ref) {Reference Image\\ $I_{\text{ref}}$};
+    
+    % Backward Nodes
+    \node[box, backward, below=of loss] (adjoint) {Adjoint Solver\\ \footnotesize ($\nabla_{\hat{I}} \mathcal{L} \rightarrow \nabla_\theta \mathcal{L}$)};
+    \node[box, backward, below=of tracer] (optimizer) {Adam Optimizer\\ \footnotesize (Meridian Engine)};
+
+    % Connections
+    \draw[arrow] (params) -- (tracer);
+    \draw[arrow] (tracer) -- (image);
+    \draw[arrow] (image) -- (loss);
+    \draw[arrow] (ref) -- (loss);
+    \draw[arrow] (loss) -- (adjoint);
+    \draw[arrow] (adjoint) -- (optimizer) node[midway, above, text=MeridianCoral] {$\nabla_\theta \mathcal{L}$};
+    \draw[backarrow] (optimizer) -- (params) node[midway, left, text=MeridianCoral] {Update $\theta$};
+  \end{tikzpicture}
+  \caption{The Synapse-Render differentiable path tracing loop. Scene parameters represented via Nexa hash grids are rendered into $\hat{I}$. Gradients are computed via the Adjoint Solver and backpropagated to update parameters.}
+  \label{fig:pipeline}
+\end{figure*}

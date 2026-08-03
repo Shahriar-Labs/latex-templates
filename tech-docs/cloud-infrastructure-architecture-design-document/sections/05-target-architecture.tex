@@ -1,0 +1,99 @@
+\section{Target Architecture}
+
+\subsection{System context}
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[node distance=11mm and 14mm]
+  \node[tier,fill=pale,minimum width=30mm] (users) {Customers\\and merchants};
+  \node[tier,fill=bluepale,minimum width=38mm,right=of users] (edge) {Global edge\\DNS, CDN, WAF};
+  \node[tier,fill=greenpale,minimum width=49mm,right=of edge] (platform) {Asteria platform\\web, API, workers, data};
+  \node[tier,fill=amberpale,minimum width=33mm,above right=7mm and 13mm of platform] (pay) {Payment\\provider};
+  \node[tier,fill=amberpale,minimum width=33mm,right=13mm of platform] (idp) {Workforce and\\customer IdP};
+  \node[tier,fill=amberpale,minimum width=33mm,below right=7mm and 13mm of platform] (partners) {Merchant and\\shipping APIs};
+  \draw[flowblue] (users) -- node[label,above]{HTTPS} (edge);
+  \draw[flowblue] (edge) -- node[label,above]{HTTPS} (platform);
+  \draw[flow] (platform) -- node[label,sloped,above]{tokens} (pay);
+  \draw[flow] (platform) -- node[label,above]{OIDC/SAML} (idp);
+  \draw[flow] (platform) -- node[label,sloped,below]{HTTPS/events} (partners);
+\end{tikzpicture}
+}
+\caption{System context and external trust boundaries.}
+\label{fig:context}
+\end{figure}
+
+\subsection{Logical component architecture}
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[node distance=7mm and 9mm]
+  \node[tier,minimum width=22mm] (client) {Client};
+  \node[service,minimum width=25mm,right=of client] (cdn) {CloudFront};
+  \node[service,minimum width=23mm,right=of cdn] (waf) {AWS WAF};
+  \node[service,minimum width=24mm,right=of waf] (alb) {Public ALB};
+
+  \node[service,minimum width=28mm,below=13mm of alb] (ingress) {EKS ingress};
+  \node[service,minimum width=28mm,left=of ingress] (web) {Web service};
+  \node[service,minimum width=28mm,right=of ingress] (api) {API services};
+  \node[service,minimum width=28mm,right=of api] (worker) {Workers};
+
+  \node[data,minimum width=23mm,below=15mm of web] (redis) {Redis};
+  \node[data,minimum width=26mm,below=15mm of ingress] (aurora) {Aurora\\PostgreSQL};
+  \node[data,minimum width=23mm,below=15mm of api] (s3) {S3};
+  \node[service,minimum width=24mm,below=15mm of worker] (sqs) {SQS / EventBridge};
+
+  \node[tier,fill=pale,minimum width=30mm,below=13mm of aurora] (obs) {Observability};
+  \node[tier,fill=pale,minimum width=30mm,left=of obs] (identity) {IAM / KMS / Secrets};
+  \node[tier,fill=pale,minimum width=30mm,right=of obs] (cicd) {CI/CD and IaC};
+
+  \draw[flowblue] (client)--(cdn);
+  \draw[flowblue] (cdn)--(waf);
+  \draw[flowblue] (waf)--(alb);
+  \draw[flowblue] (alb)--(ingress);
+  \draw[flow] (ingress)--(web);
+  \draw[flow] (ingress)--(api);
+  \draw[flow] (api)--(worker);
+  \draw[flow] (web)--(redis);
+  \draw[flow] (api)--(aurora);
+  \draw[flow] (api)--(s3);
+  \draw[flow] (api)--(sqs);
+  \draw[flow] (sqs)--(worker);
+  \draw[dashedflow] (identity)--(aurora);
+  \draw[dashedflow] (obs)--(aurora);
+  \draw[dashedflow] (cicd)--(sqs);
+
+  \begin{scope}[on background layer]
+    \node[zone,fill=bluepale!30,fit=(web)(ingress)(api)(worker),label={[font=\scriptsize\bfseries,text=blue]above:EKS workload plane}] {};
+    \node[zone,fill=greenpale!30,fit=(redis)(aurora)(s3)(sqs),label={[font=\scriptsize\bfseries,text=teal]below:Managed data and integration}] {};
+  \end{scope}
+\end{tikzpicture}}
+\caption{Logical service architecture. Solid arrows carry application traffic; dashed arrows represent management or telemetry relationships.}
+\label{fig:logical}
+\end{figure}
+
+\subsection{AWS account topology}
+
+AWS Organizations applies service control policies and consolidated billing. Workloads cannot create unapproved regions, disable security services, leave the organization, or make protected log stores public.
+
+\begin{tabularx}{\textwidth}{@{}L{31mm}L{32mm}Y@{}}
+  \toprule
+  \rowcolor{navy}
+  \color{white}\textbf{Organizational unit} & \color{white}\textbf{Accounts} & \color{white}\textbf{Purpose} \\
+  \midrule
+  Security & Security Tooling, Log Archive & Delegated security administration and immutable evidence \\
+  \rowcolor{pale}
+  Infrastructure & Network, Shared Services & Transit, endpoints, DNS, image and package services \\
+  Workloads / Prod & Production & Customer workloads and production data \\
+  \rowcolor{pale}
+  Workloads / Non-prod & Development, Test, Staging & Isolated delivery stages with production-equivalent controls \\
+  Sandbox & Engineering sandboxes & Time-limited experimentation with restricted spend and data \\
+  \bottomrule
+\end{tabularx}
+
+\begin{securitybox}[Control-plane boundary]
+Root users have hardware-backed MFA and no access keys. Workforce access is federated through IAM Identity Center. Organization CloudTrail, AWS Config, GuardDuty, Security Hub, and access findings are delegated to the security account; workload administrators cannot alter the evidence trail.
+\end{securitybox}
+
+% ================================================================

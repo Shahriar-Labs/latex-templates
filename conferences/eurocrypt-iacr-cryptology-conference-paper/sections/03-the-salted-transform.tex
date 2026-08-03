@@ -1,0 +1,62 @@
+\section{The Salted Transform}
+\label{sec:transform}
+
+Let $\Pi$ be a protocol as above and let $\rho$ be a salt length.  The salted
+transform $\trans^{\hash}_{\Pi,\rho}$ is defined by the following algorithms.
+
+\secpar{Prover $\prove^{\hash}$} On input $(pk,x,w)$, compute
+    $(a,st)\leftarrow\prove_1(pk,x,w)$, sample $s\getsr\bits^\rho$, set
+    $c=\hash(\mathsf{Enc}(pk,x,a,s))$, compute
+    $z\leftarrow\prove_2(st,c)$, and return $\pi=(a,s,z)$.
+
+\secpar{Verifier $\verify^{\hash}$} On input $(pk,x,\pi)$, parse
+$\pi=(a,s,z)$ and reject unless $s\in\bits^\rho$.  Set
+$c=\hash(\mathsf{Enc}(pk,x,a,s))$ and return
+$\verify(pk,x,a,c,z)$.
+
+The salt is public and carries no entropy after publication.  Its role is to
+make the future programming point unpredictable when an honest transcript is
+simulated.  It does not replace commitment randomness, and it is never used as
+a secret key.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+      font=\small,
+      node distance=8mm and 9mm,
+      box/.style={draw=ecblue, rounded corners=2pt, fill=ecgray,
+                  minimum height=8mm, align=center, inner xsep=6pt},
+      arr/.style={-{Latex[length=2mm]}, thick, ecblue}]
+    \node[box] (commit) {$a\leftarrow\prove_1(pk,x,w)$};
+    \node[box, right=of commit] (salt) {$s\getsr\bits^\rho$};
+    \node[box, right=of salt] (encode) {$X=\mathsf{Enc}(pk,x,a,s)$};
+    \node[box, below=of encode] (hash) {$c=\hash(X)$};
+    \node[box, left=of hash] (response) {$z\leftarrow\prove_2(st,c)$};
+    \node[box, left=of response] (proof) {$\pi=(a,s,z)$};
+    \draw[arr] (commit) -- (salt);
+    \draw[arr] (salt) -- (encode);
+    \draw[arr] (encode) -- (hash);
+    \draw[arr] (hash) -- (response);
+    \draw[arr] (response) -- (proof);
+  \end{tikzpicture}
+  \caption{Data flow of the salted transform.  Every value entering the random
+  oracle is public, typed, and bound to the public key.}
+  \label{fig:transform}
+\end{figure}
+
+\subsection{Multi-user knowledge experiment}
+
+The challenger generates keys $(pk_i,sk_i)\leftarrow\kg(1^\lambda)$ for
+$i\in[U]$ and gives all public keys to $\adv$.  The adversary may query the
+common oracle $\hash$ at most $q_H$ times and request at most $q_P$ honest
+proofs in total, adaptively choosing $(i,x)$ for each request.  It wins by
+returning $(i^*,x^*,\pi^*)$ such that verification accepts, the tuple is fresh,
+and the designated extractor fails to output a witness for $x^*$.  Freshness
+means that $(i^*,x^*,\pi^*)$ was not returned verbatim by the proof oracle; an
+application may impose a stronger, message-level notion.
+
+We denote the winning probability by
+$\Adv^{\mathrm{muk}}_{\trans,\adv}(\lambda,U,q_H,q_P)$.
+The experiment uses one global lazy-sampled table.  This matches deployed hash
+functions and ensures that any accounting benefit comes from the encoding,
+not from granting each user an independent oracle.

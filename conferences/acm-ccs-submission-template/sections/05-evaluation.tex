@@ -1,0 +1,120 @@
+\section{Evaluation}
+\label{sec:evaluation}
+
+\subsection{Setup}
+We replay three synthetic multi-tenant workloads modeled on production
+access patterns commonly reported for SaaS platforms: a CRM export log
+(Zipfian key popularity, $s = 1.1$), a billing-event store (bimodal
+popularity reflecting a small set of enterprise accounts alongside a long
+tail of self-serve accounts), and an analytics cache (near-uniform
+popularity with short-lived hot keys). Each workload issues 200{,}000
+queries over a simulated one-hour window against a backend containing
+50{,}000 distinct keys. We compare four systems:
+
+\begin{itemize}[leftmargin=*]
+  \item \textbf{Nimbus KV} --- an unmodified encrypted key-value store
+  with no leakage mitigation; the access pattern and volume of every
+  query are visible to the backend as-is.
+  \item \textbf{Apex Store} --- a commercial store using order-preserving
+  encryption for range queries, which additionally reveals relative key
+  order.
+  \item \textbf{Vertex Store} --- a store augmented with response-volume
+  padding only, using a fixed global bucket schedule, but no request
+  reordering.
+  \item \textbf{\sysname{} (ours)} --- epoch batching, tenant-fitted
+  volume padding, and oblivious intra-epoch shuffling, as described in
+  \S\ref{sec:design}, layered in front of the same backend as Nimbus KV.
+\end{itemize}
+
+For each system we measure (a) access-pattern leakage $L_{\mathrm{AP}}$
+estimated via the plug-in mutual-information estimator over 30 monitoring
+windows, (b) the reconstruction advantage of the frequency-alignment
+attack from Eq.~\ref{eq:advantage}, reported as raw accuracy, and (c)
+throughput overhead relative to Nimbus KV at a fixed client concurrency of
+64.
+
+\subsection{Leakage and Accuracy}
+Table~\ref{tab:leakage} reports results averaged across the three
+workloads at \sysname's default configuration ($w = 25$~ms, $k = 8$
+buckets). \sysname{} reduces the frequency-alignment attack's accuracy to
+14.1\%, close to the 12.5\% a random guess over 8 equally likely buckets
+would achieve, at 14.6\% throughput overhead. Vertex Store's padding-only
+defense reduces accuracy from Nimbus KV's 71.2\% to 38.7\% but leaves
+nearly triple \sysname's residual advantage, consistent with the
+Eq.~\ref{eq:bound} prediction that padding without shuffling only removes
+the $\log_2 k$ term and leaves the shuffle-entropy correction at zero.
+Apex Store's order-preserving encryption is barely better than the
+unmodified baseline: relative order alone is enough for the
+frequency-alignment attack to recover most of the key ranking.
+
+\begin{table}[t]
+  \centering
+  \caption{Leakage and reconstruction accuracy averaged over three
+    synthetic workloads. Lower is better in every leakage column.}
+  \label{tab:leakage}
+  \begin{tabular}{lccc}
+    \toprule
+    \textbf{System} & $L_{\mathrm{AP}}$ & \textbf{Recon.} & \textbf{Overhead} \\
+     & \textbf{(bits/query)} & \textbf{Acc. (\%)} & \textbf{(\%)} \\
+    \midrule
+    Nimbus KV (unmodified)     & 6.4 & 71.2 & --- \\
+    Apex Store (order-preserving) & 5.1 & 64.8 & 3.5 \\
+    Vertex Store (padding-only)  & 3.2 & 38.7 & 11.2 \\
+    \textbf{\sysname{} (ours)}    & \textbf{0.9} & \textbf{14.1} & \textbf{14.6} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Overhead--Accuracy Trade-off}
+Figure~\ref{fig:tradeoff} sweeps the padding budget (controlled by the
+bucket count $k$ for Vertex Store, and jointly by $k$ and epoch width $w$
+for \sysname{}) and plots the resulting reconstruction accuracy against
+measured throughput overhead. At every overhead budget we tested,
+\sysname{} dominates Vertex Store: the gap is widest at low overhead
+(3\% budget: 55\% vs.\ 68\% accuracy) and narrows but does not close as
+overhead grows, because Vertex Store's curve is bounded below by the
+$\log_2 k$ term it cannot remove no matter how large $k$ becomes, while
+\sysname's curve continues to benefit from the shuffle-entropy correction
+in Eq.~\ref{eq:bound}.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        xlabel={Throughput Overhead (\%)},
+        ylabel={Reconstruction Accuracy (\%)},
+        xmin=0, xmax=20,
+        ymin=0, ymax=80,
+        xtick={0,5,10,15,20},
+        ytick={0,20,40,60,80},
+        legend pos=north east,
+        grid=both,
+        grid style={line width=.1pt, draw=gray!10},
+        major grid style={line width=.2pt, draw=gray!20},
+        width=\linewidth,
+        height=5.2cm
+    ]
+    \addplot[color=ccscrimson, mark=square, thick]
+      coordinates {(3,68)(6,58)(9,49)(12,42)(15,38)(18,35)};
+    \addlegendentry{Vertex Store (padding-only)}
+
+    \addplot[color=ccsteal, mark=*, thick]
+      coordinates {(3,55)(6,35)(9,24)(12,18)(15,14)(18,11)};
+    \addlegendentry{\sysname{} (ours)}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Reconstruction accuracy versus throughput overhead as the
+    padding budget is swept. \sysname{} dominates the padding-only
+    baseline at every overhead level tested.}
+  \label{fig:tradeoff}
+\end{figure}
+
+\subsection{Latency}
+The epoch batcher bounds added tail latency by construction: at
+$w = 25$~ms, the 99th-percentile added latency across all three workloads
+stayed under 31~ms, and no query waited longer than $w$ plus one backend
+round trip. Operators with stricter latency budgets can lower $w$ at the
+cost of smaller epochs, which reduces the shuffler's effective entropy
+$H_{\mathrm{shuf}}(m)$ and pushes the accuracy curve in
+Figure~\ref{fig:tradeoff} upward; we view $w$ as the primary knob for
+trading latency against leakage in a given deployment.

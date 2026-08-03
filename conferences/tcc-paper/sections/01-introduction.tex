@@ -1,0 +1,69 @@
+\section{Introduction}
+\label{sec:intro}
+
+A commitment lets a sender fix a message while keeping it hidden until a later
+opening.  The two usual requirements are hiding and binding: the commitment
+should reveal no message, and the sender should not be able to open it in two
+ways.  These definitions are deliberately local.  Modern applications,
+however, rarely create a single isolated commitment.  Voting systems commit to
+many ballots, distributed protocols commit in concurrent sessions, and
+zero-knowledge compilers commit to vectors of correlated values.
+
+In such uses an adversary first sees a batch and then chooses which positions
+to open.  This order creates the \emph{selective-opening} problem
+\cite{DworkEtAl2003,BellareHofheinzYilek2012}.  Per-message hiding is not a
+generic solution: the opened messages may be correlated with the unopened
+ones, and a simulator must reproduce a joint view selected adaptively.  The
+problem is partly cryptographic and partly syntactic.  If two sessions share
+an untyped hash domain, an opening produced in one context may accidentally be
+meaningful in another.
+
+This paper studies a transparent special case.  Messages come from a joint
+distribution having residual conditional min-entropy, and commitments use a
+random oracle with fresh salts and explicit domain separation.  For session
+identifier $sid$ and position $i$, the commitment is
+\begin{equation}
+  C_i=\Hash\bigl(\Encode(\Tag,sid,i,m_i;r_i)\bigr),
+  \label{eq:intro-commitment}
+\end{equation}
+where $r_i\getsR\bits^\rho$.  The simulator replaces each initially hidden
+message with a fixed dummy value while retaining the same public syntax.  It
+answers adaptive openings using the real messages and programs the
+corresponding oracle points.  The only observable failure occurs if the
+adversary queried such a point before it was programmed.
+
+\subsection{Contributions}
+
+Our goal is a proof that can be read beside an implementation.  The main
+contributions are:
+
+\begin{itemize}
+  \item a fully typed commitment syntax that binds the protocol version,
+        session, vector position, message, and salt;
+  \item a game-based adaptive selective-opening theorem whose loss is stated
+        directly in terms of residual conditional min-entropy; and
+  \item matching binding and composition analyses, including concrete bounds
+        and counterexamples for omitted domain fields.
+\end{itemize}
+
+For $n$ commitments and an adversary making $q_H$ random-oracle queries, our
+central bound has the form
+\begin{equation}
+  \Adv^{\mathsf{aso}}(\adv)
+  \leq q_Hn\,2^{-(k+\rho)}
+      + \frac{n(n-1)}{2^{\rho+1}}
+      + \varepsilon_{\mathsf{enc}},
+  \label{eq:informal-bound}
+\end{equation}
+where $k$ is the residual conditional min-entropy of each unopened message and
+$\varepsilon_{\mathsf{enc}}$ captures any failure of the implementation's
+canonical encoder.  For the specified encoder this last term is zero.  The
+bound is conservative, easy to instantiate, and highlights that salt entropy
+and message entropy contribute additively against pre-query attacks.
+
+\secpar{Scope} We work in the classical random-oracle model (ROM), and our
+positive result assumes residual message entropy.  We do not claim security
+for arbitrary correlated distributions or against quantum oracle queries.
+Those settings need stronger notions and different proof tools
+\cite{CanettiEtAl1996,Unruh2015}.  Our construction should therefore be read as
+a narrow, useful component rather than a universal selective-opening compiler.

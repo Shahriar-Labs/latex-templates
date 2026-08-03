@@ -1,0 +1,94 @@
+\section{System Architecture and Asset Inventory}
+\label{sec:architecture}
+
+Nexa Ledger ingests two categories of external input: interactive requests from tenant client applications through the API Gateway, and asynchronous settlement events pushed by Vertex Payments to a public webhook endpoint. Both paths converge on the Reconciliation Engine, which is the only component permitted to write ledger entries. A separate pull path retrieves account-balance snapshots from Synapse Bank Connect on a scheduled basis. The Admin Console exists for tenant support staff to investigate reconciliation discrepancies and, notably, retains a direct query path into the Ledger Database that bypasses the Reconciliation Engine's write-path validation --- this shortcut is the subject of finding VULN-02 in Section~\ref{sec:findings}.
+
+\subsection{Data Flow Diagram}
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  node distance=10mm and 10mm,
+  font=\small,
+  external/.style={rectangle, draw=dark, thick, fill=light, minimum width=30mm, minimum height=11mm, font=\small, align=center},
+  process/.style={rectangle, rounded corners=3pt, draw=brand, thick, fill=brand!8, minimum width=30mm, minimum height=11mm, font=\small, align=center},
+  store/.style={cylinder, shape border rotate=90, draw=dark, thick, fill=rowgray, aspect=0.3, minimum width=24mm, minimum height=15mm, font=\small, align=center},
+  flow/.style={-{Latex[length=2.2mm]}, thick, dark},
+  riskflow/.style={-{Latex[length=2.2mm]}, thick, accent, dashed},
+  elabel/.style={font=\tiny, text=muted}
+]
+
+  \node (client)  [external] {Client App\\\footnotesize (Tenant Web/API)};
+  \node (vertex)  [external, right=10mm of client] {Vertex Payments\\\footnotesize (Card Processor)};
+  \node (synapse) [external, right=10mm of vertex] {Synapse Bank\\Connect};
+  \node (staff)   [external, right=10mm of synapse] {Support Staff\\\footnotesize (Internal User)};
+
+  \node (gateway) [process, below=12mm of client]  {API Gateway};
+  \node (webhook) [process, below=12mm of vertex]  {Webhook Ingestion\\Endpoint};
+  \node (admin)   [process, below=12mm of staff]   {Admin Console};
+
+  \node (auth)  [process, below=14mm of gateway] {Auth / Identity\\Service};
+  \node (recon) [process, below=14mm of webhook, xshift=8mm] {Reconciliation\\Engine};
+
+  \node (ledgerdb) [store, below=16mm of auth, xshift=25mm] {Ledger\\Database};
+  \node (auditlog) [store, right=18mm of ledgerdb] {Audit Log\\Store};
+
+  \draw[flow] (client) -- (gateway) node[elabel, pos=0.18, left, xshift=-1mm] {HTTPS};
+  \draw[flow] (vertex) -- (webhook) node[elabel, pos=0.18, left, xshift=-1mm] {signed webhook};
+  \draw[flow] (staff) -- (admin) node[elabel, pos=0.18, left, xshift=-1mm] {internal login};
+  \draw[flow] (gateway) -- (auth) node[elabel, midway, left] {validate token};
+  \draw[flow] (gateway.south) -- ++(0,-6mm) -| (recon.north west) node[elabel, pos=0.75, above] {API calls};
+  \draw[flow] (webhook) -- (recon) node[elabel, midway, right] {settlement events};
+  \draw[flow] (synapse.south) -- ++(0,-8mm) -| (recon.north east) node[elabel, pos=0.75, above] {account pull};
+  \draw[flow] (recon) -- (ledgerdb) node[elabel, midway, left] {writes};
+  \draw[flow] (recon) -- (auditlog) node[elabel, midway, right] {audit events};
+  \draw[riskflow] (admin.south) -- ++(0,-20mm) -| (ledgerdb.north) node[elabel, pos=0.8, above, text=accent] {direct query (VULN-02)};
+
+  \begin{scope}[on background layer]
+    \node[draw=brand, dashed, thick, rounded corners=6pt,
+      fit=(gateway)(webhook)(admin)(auth)(recon)(ledgerdb)(auditlog),
+      inner sep=6mm,
+      label={[font=\small\bfseries, text=brand]below left:Trust Boundary --- Nexa Production VPC}] {};
+  \end{scope}
+
+\end{tikzpicture}%
+}
+\caption{Data flow diagram for Nexa Ledger. External entities sit above the dashed trust boundary; the dashed red edge marks the Admin Console's direct database path flagged in the vulnerability findings.}
+\label{fig:dfd}
+\end{figure}
+
+\begin{center}
+\footnotesize
+\tikz\node[rectangle, draw=dark, fill=light, minimum width=4mm, minimum height=3mm]{}; \, External Entity \qquad
+\tikz\node[rectangle, rounded corners=1pt, draw=brand, fill=brand!8, minimum width=4mm, minimum height=3mm]{}; \, Process \qquad
+\tikz\node[cylinder, shape border rotate=90, draw=dark, fill=rowgray, aspect=0.3, minimum width=3mm, minimum height=4mm]{}; \, Data Store \qquad
+{\color{brand}\bfseries- -} \, Trust Boundary \qquad
+{\color{accent}\bfseries- -} \, Flagged Risk Path
+\end{center}
+
+\subsection{Asset Inventory}
+
+Table~\ref{tab:assets} lists every component inside the trust boundary along with the data it handles and its assigned owner. Data classification follows the Nexa internal scheme: \emph{Restricted} (financial or regulated data, encrypted at rest and in transit, access logged), \emph{Confidential} (business-sensitive, access-controlled), and \emph{Internal} (routing/operational metadata with no direct financial content).
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l L l l l@{}}
+\toprule
+\rowcolor{primary}
+\textcolor{white}{\textbf{Asset}} & \textcolor{white}{\textbf{Type}} & \textcolor{white}{\textbf{Classification}} & \textcolor{white}{\textbf{Trust Zone}} & \textcolor{white}{\textbf{Owner}} \\
+\midrule
+API Gateway & Process, public-facing & Internal & Perimeter (DMZ) & Platform Infrastructure \\
+\rowcolor{rowgray}
+Webhook Ingestion Endpoint & Process, public-facing & Confidential & Perimeter (DMZ) & Ledger Platform Team \\
+Auth / Identity Service & Process & Confidential & Internal, app tier & Identity Team \\
+\rowcolor{rowgray}
+Reconciliation Engine & Process & Restricted & Internal, app tier & Ledger Platform Team \\
+Admin Console & Process, internal tool & Restricted & Internal, app tier & Support Engineering \\
+\rowcolor{rowgray}
+Ledger Database & Data store (Postgres) & Restricted & Internal, data tier & Data Platform Team \\
+Audit Log Store & Data store (object storage) & Restricted & Internal, data tier & Security Engineering \\
+\bottomrule
+\end{tabularx}
+\captionof{table}{In-scope assets, their data classification, and ownership.}
+\label{tab:assets}
+\end{center}

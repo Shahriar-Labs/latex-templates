@@ -1,0 +1,37 @@
+\section{Related Work}
+\label{sec:related}
+
+\paragraph{Cache side-channel attacks.} Cross-VM cache attacks were first demonstrated at
+scale against ordinary co-resident tenants, showing that access-based techniques generalize
+from single-machine settings to multi-tenant clouds~\cite{okonkwo2015cache}. Flush+Reload
+attacks such as those on the L3 cache showed that shared, deduplicated pages give an attacker
+a far higher-resolution channel than contention alone~\cite{laurent2014flushreload}, and
+automated eviction-set construction for inclusive last-level caches removed the remaining
+manual effort from mounting a Prime+Probe attack against an arbitrary target
+address~\cite{tanaka2017templates}. \sysname's threat model (Section~\ref{sec:background})
+assumes an attacker at least this capable.
+
+\paragraph{Cache partitioning defenses.} Way-based partitioning defeats these attacks by
+construction, giving each tenant a disjoint slice of the LLC so that no access pattern from
+one tenant is observable by another~\cite{moreau2016catalyst}. Extending partitioning into
+speculative execution closes a related gap, where transient execution can leak cache state
+that a purely architectural partitioning scheme misses~\cite{delacroix2019dawg}. \sysname{}
+reuses the same partitioning primitive as its isolation mechanism (Section~\ref{sec:design})
+but applies it reactively and only to a flagged core, rather than statically to every tenant
+regardless of whether an attack is underway.
+
+\paragraph{Detection from performance counters.} Detecting cache probing from hardware
+performance counters rather than preventing it outright was proposed as a lower-overhead
+alternative to static partitioning, using counter anomalies to flag likely
+attackers~\cite{herrera2018counterspy}, and later work targeted this specifically at
+co-resident probing in cloud VMs with an offline-trained classifier~\cite{weiss2020hpcguard}.
+\baseline{}, our evaluation baseline, follows this line of work; Section~\ref{sec:evaluation}
+shows that a streaming, correlation-based feature closes much of the recall gap this prior
+work leaves against a persistent attacker, at comparable overhead.
+
+\paragraph{Confidential computing isolation guarantees.} A systematic study of trusted
+execution environment isolation catalogs which resources modern CVM architectures do and do
+not protect, and identifies shared microarchitectural state -- including the cache hierarchy
+-- as a residual risk that memory encryption alone does not close~\cite{ivanova2021tee}.
+\sysname{} is a direct response to that gap: it targets exactly the residual risk the survey
+identifies, without requiring any change to the CVM architectures it protects.

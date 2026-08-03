@@ -1,0 +1,38 @@
+\section{Normative configuration example}
+
+\begin{lstlisting}[caption={Abbreviated protected runner-pool configuration},label={lst:pool}]
+apiVersion: platform.example/v1
+kind: RunnerPool
+metadata:
+  name: production-deploy
+spec:
+  platform: linux
+  architecture: amd64
+  trustTier: protected
+  regions: [primary]
+  isolation: microvm
+  ephemeral: true
+  maxJobsPerRunner: 1
+  runnerCertificateTTL: 30m
+  jobIdentityTTL: 5m
+  imagePolicy:
+    channel: stable
+    requireSignature: true
+    allowedPublishers: [platform-image-builder]
+  networkPolicy:
+    defaultEgress: deny
+    destinations:
+      - service: artifact-store
+        port: 443
+      - service: workload-identity
+        port: 443
+      - service: deployment-api
+        port: 443
+  resources:
+    minWarm: 2
+    maxConcurrentJobs: 50
+  exceptions:
+    privileged: false
+    hostNetwork: false
+    hostRuntimeSocket: false
+\end{lstlisting}

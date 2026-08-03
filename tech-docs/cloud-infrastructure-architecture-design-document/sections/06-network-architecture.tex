@@ -1,0 +1,80 @@
+\section{Network Architecture}
+
+\subsection{Production VPC topology}
+
+The primary production VPC uses a non-overlapping \code{10.20.0.0/16} block across three Availability Zones. Subnets are separated by function so routes, network ACLs, capacity, and ownership remain clear. There are no public IP addresses on application nodes or data services.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{0.97\textwidth}{!}{%
+\begin{tikzpicture}[node distance=6mm and 8mm]
+  \node[tier,fill=bluepale,minimum width=28mm] (edge) {Route 53\\CloudFront + WAF};
+  \node[tier,fill=white,minimum width=25mm,right=of edge] (igw) {Internet\\Gateway};
+  \node[service,minimum width=30mm,right=of igw] (alb) {ALB\\public subnets};
+
+  \node[tier,fill=pale,minimum width=28mm,below=14mm of igw] (nat) {NAT gateways\\one per AZ};
+  \node[service,minimum width=33mm,right=of nat] (eks) {EKS nodes / pods\\private app subnets};
+  \node[data,minimum width=34mm,right=of eks] (db) {Aurora + Redis\\isolated data subnets};
+
+  \node[tier,fill=greenpale,minimum width=31mm,below=14mm of eks] (vpce) {VPC endpoints\\S3, ECR, STS, logs};
+  \node[tier,fill=amberpale,minimum width=31mm,left=of vpce] (tgw) {Transit Gateway\\inspection / VPN};
+  \node[tier,fill=pale,minimum width=31mm,right=of vpce] (dns) {Resolver endpoints\\private DNS};
+
+  \draw[flowblue] (edge)--(igw);
+  \draw[flowblue] (igw)--(alb);
+  \draw[flowblue] (alb)--(eks);
+  \draw[flow] (eks)--(db);
+  \draw[flow] (eks)--(nat);
+  \draw[flow] (eks)--(vpce);
+  \draw[flow] (tgw)--(eks);
+  \draw[flow] (dns)--(eks);
+
+  \begin{scope}[on background layer]
+    \node[zone,fill=bluepale!24,fit=(alb)(nat)(eks)(db)(vpce)(tgw)(dns),inner sep=10pt,
+      label={[font=\scriptsize\bfseries,text=navy]above:Production VPC 10.20.0.0/16 --- replicated across three Availability Zones}] {};
+  \end{scope}
+\end{tikzpicture}}
+\caption{Production network zones and principal traffic paths.}
+\label{fig:network}
+\end{figure}
+
+\subsection{Subnet and address plan}
+
+\begin{tabularx}{\textwidth}{@{}L{31mm}L{34mm}Y C{17mm}@{}}
+  \toprule
+  \rowcolor{navy}
+  \color{white}\textbf{Tier} & \color{white}\textbf{CIDRs by AZ} & \color{white}\textbf{Contents} & \color{white}\textbf{Route} \\
+  \midrule
+  Public edge & \code{10.20.0.0/24}--\code{2.0/24} & ALB, NAT gateways & IGW \\
+  \rowcolor{pale}
+  Private application & \code{10.20.16.0/20}--\code{48.0/20} & EKS nodes and pods & NAT / endpoints \\
+  Isolated data & \code{10.20.64.0/21}--\code{80.0/21} & Aurora, Redis & Local only \\
+  \rowcolor{pale}
+  Private endpoints & \code{10.20.96.0/24}--\code{98.0/24} & Interface endpoints, resolvers & Local / TGW \\
+  Reserved & \code{10.20.112.0/20} and above & Growth and migration & None \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Traffic policy}
+
+Security groups are the primary stateful control. Network policies enforce namespace and workload boundaries inside EKS. Network ACLs remain coarse safeguards, not an application authorization layer.
+
+\begin{tabularx}{\textwidth}{@{}L{28mm}L{30mm}C{18mm}Y@{}}
+  \toprule
+  \rowcolor{navy}
+  \color{white}\textbf{Source} & \color{white}\textbf{Destination} & \color{white}\textbf{Port} & \color{white}\textbf{Control} \\
+  \midrule
+  CloudFront origin & Public ALB & TCP 443 & Managed prefix list and secret origin header \\
+  \rowcolor{pale}
+  ALB & Ingress pods & TCP 8443 & Dedicated security groups \\
+  Application pods & Aurora proxy & TCP 5432 & Workload SG and namespace policy \\
+  \rowcolor{pale}
+  Application pods & Redis & TCP 6379 & TLS, workload SG, auth token \\
+  Application pods & AWS APIs & TCP 443 & VPC endpoint policy \\
+  \rowcolor{pale}
+  Application pods & Internet allowlist & TCP 443 & Egress proxy / NAT and DNS policy \\
+  Administrators & Workloads & None inbound & SSM or Kubernetes API via approved access path \\
+  \bottomrule
+\end{tabularx}
+
+% ================================================================

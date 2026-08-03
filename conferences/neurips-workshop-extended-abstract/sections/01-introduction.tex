@@ -1,0 +1,37 @@
+\section{Introduction}
+
+Models deployed outside their training environment often encounter systematic
+distribution shift. Unsupervised domain adaptation (UDA) addresses this setting
+using labelled examples from a source distribution and unlabelled examples from
+a related target distribution. Feature-alignment methods can learn
+domain-invariant representations~\citep{ganin2016domain,tzeng2017adversarial},
+whereas self-training instead treats confident target predictions as temporary
+labels~\citep{french2018self,sohn2020fixmatch}. The latter is attractive because
+it introduces little architectural overhead and integrates naturally with
+modern augmentation pipelines.
+
+The central weakness of self-training is confirmation bias: early mistakes are
+reintroduced as supervision and become increasingly confident. A single global
+acceptance threshold is particularly brittle under target shift. It can reject
+most examples from hard or rare classes while accepting overconfident errors
+from easy classes. Moreover, neural confidence scores are often
+miscalibrated~\citep{guo2017calibration}, so a score of $0.9$ need not correspond
+to a $90\%$ chance of correctness.
+
+We study whether reliability can be improved without target labels or a learned
+domain discriminator. Our approach, \method, combines online
+class-conditional thresholds with consistency under perturbation. The method
+has three practical properties: (i) it changes only the training loss;
+(ii) it adds no parameters at inference; and (iii) it provides a direct control
+over pseudo-label coverage. Our contributions are:
+
+\begin{itemize}
+  \item a confidence gate whose class-specific thresholds adapt to the observed
+        target prediction distribution;
+  \item an agreement test that suppresses unstable pseudo-labels under strong
+        augmentation; and
+  \item an empirical analysis separating accuracy, calibration, coverage, and
+        class balance across several domain shifts.
+\end{itemize}
+
+% -----------------------------------------------------------------------------

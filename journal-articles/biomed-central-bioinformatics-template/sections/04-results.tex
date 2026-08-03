@@ -1,0 +1,124 @@
+\section{Results}
+
+\subsection{Predictive performance}
+
+With complete modalities, \modelname{} yielded a mean macro-F1 of $0.872$ and a
+balanced accuracy of $0.879$ (Table~\ref{tab:performance}). Removing one assay at
+inference reduced macro-F1 to $0.814$. The MLP declined from $0.837$ to $0.755$,
+whereas early concatenation declined from $0.811$ to $0.738$. The smaller decrease
+for \modelname{} was consistent with modality masking exposing the model to
+partial observations during training.
+
+\begin{table}[tbp]
+\centering
+\caption{Illustrative mean performance across four held-out cohorts. Values in
+parentheses are 95\% bootstrap confidence intervals. Best mean values within each
+condition are shown in bold.}
+\label{tab:performance}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Model & Macro-F1 & Balanced accuracy & AUROC \\
+\midrule
+\multicolumn{4}{@{}l}{\textit{All modalities available}}\\
+Logistic regression & $0.811$ $(0.796,0.826)$ & $0.819$ $(0.804,0.834)$ & $0.943$ $(0.936,0.950)$\\
+MLP & $0.837$ $(0.823,0.851)$ & $0.842$ $(0.828,0.856)$ & $0.957$ $(0.951,0.963)$\\
+SNF + SVM & $0.824$ $(0.809,0.839)$ & $0.831$ $(0.816,0.846)$ & $0.951$ $(0.944,0.958)$\\
+Graph model, uncalibrated & $0.861$ $(0.848,0.874)$ & $0.868$ $(0.855,0.881)$ & $0.968$ $(0.963,0.973)$\\
+\modelname & $\mathbf{0.872}$ $(0.859,0.885)$ & $\mathbf{0.879}$ $(0.866,0.892)$ & $\mathbf{0.973}$ $(0.969,0.977)$\\
+\addlinespace
+\multicolumn{4}{@{}l}{\textit{One modality missing at inference}}\\
+Logistic regression & $0.738$ $(0.720,0.756)$ & $0.747$ $(0.729,0.765)$ & $0.905$ $(0.895,0.915)$\\
+MLP & $0.755$ $(0.738,0.772)$ & $0.761$ $(0.744,0.778)$ & $0.918$ $(0.909,0.927)$\\
+SNF + SVM & $0.769$ $(0.752,0.786)$ & $0.775$ $(0.758,0.792)$ & $0.925$ $(0.916,0.934)$\\
+Graph model, uncalibrated & $0.781$ $(0.765,0.797)$ & $0.789$ $(0.773,0.805)$ & $0.934$ $(0.926,0.942)$\\
+\modelname & $\mathbf{0.814}$ $(0.798,0.830)$ & $\mathbf{0.821}$ $(0.805,0.837)$ & $\mathbf{0.947}$ $(0.940,0.954)$\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:cohorts} shows macro-F1 by held-out cohort under the missing-assay
+condition. Performance varied across sites for every method, which supports
+reporting cohort-level results rather than only a pooled estimate. The proposed
+model ranked first in each illustrative cohort, with the largest margin in cohort
+D, which had the strongest simulated distribution shift.
+
+\begin{figure}[tbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  ybar,
+  width=0.92\textwidth,
+  height=6.5cm,
+  bar width=7pt,
+  ymin=0.60,
+  ymax=0.90,
+  ylabel={Macro-F1},
+  symbolic x coords={Cohort A,Cohort B,Cohort C,Cohort D},
+  xtick=data,
+  x tick label style={font=\small},
+  ymajorgrids=true,
+  grid style={draw=BMCGray!18},
+  axis line style={draw=BMCGray},
+  tick align=outside,
+  legend style={at={(0.5,1.03)},anchor=south,legend columns=3,draw=none,
+    font=\small},
+  enlarge x limits=0.16
+]
+\addplot[fill=BMCGray!55,draw=BMCGray] coordinates {
+  (Cohort A,0.760) (Cohort B,0.744) (Cohort C,0.729) (Cohort D,0.719)};
+\addplot[fill=BMCBlue!60,draw=BMCBlue] coordinates {
+  (Cohort A,0.787) (Cohort B,0.772) (Cohort C,0.765) (Cohort D,0.752)};
+\addplot[fill=BMCGreen!70,draw=BMCGreen!80!black] coordinates {
+  (Cohort A,0.838) (Cohort B,0.821) (Cohort C,0.806) (Cohort D,0.791)};
+\legend{MLP,SNF + SVM,\modelname}
+\end{axis}
+\end{tikzpicture}
+\caption{Macro-F1 by held-out cohort when one assay was missing. Bars are
+illustrative fold-level point estimates. Cohorts were never mixed between the
+training and test partitions.}
+\label{fig:cohorts}
+\end{figure}
+
+\subsection{Calibration and uncertainty}
+
+Temperature scaling reduced ECE from $0.067$ to $0.028$ under complete data and
+from $0.098$ to $0.041$ when one assay was missing (Table~\ref{tab:calibration}).
+The largest gains occurred in the 0.8--1.0 confidence range, where the
+uncalibrated graph model was systematically overconfident. Predictive entropy was
+higher for incorrect than correct predictions (median $1.07$ versus $0.42$ nats),
+suggesting that uncertainty carried information beyond the predicted class.
+
+\begin{table}[tbp]
+\centering
+\caption{Illustrative calibration results. Lower values are better for all
+metrics.}
+\label{tab:calibration}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Condition and model & ECE & Brier score & Negative log-likelihood \\
+\midrule
+Complete, uncalibrated graph model & $0.067$ & $0.214$ & $0.421$ \\
+Complete, \modelname & $\mathbf{0.028}$ & $\mathbf{0.196}$ & $\mathbf{0.386}$ \\
+One missing, early concatenation & $0.098$ & $0.337$ & $0.659$ \\
+One missing, uncalibrated graph model & $0.091$ & $0.303$ & $0.601$ \\
+One missing, \modelname & $\mathbf{0.041}$ & $\mathbf{0.267}$ & $\mathbf{0.531}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+At a selective-classification coverage of 80\%, rejecting samples with the
+highest predictive entropy increased macro-F1 from $0.814$ to $0.861$. This
+analysis does not establish a clinically acceptable rejection rule; it merely
+illustrates how abstention behavior can be reported alongside conventional
+classification metrics.
+
+\subsection{Ablation analysis}
+
+Removing modality masking reduced missing-assay macro-F1 by $3.1$ percentage
+points. Replacing the curated gene graph with a random degree-matched graph
+reduced macro-F1 by $1.8$ points, while replacing graph attention with independent
+per-gene processing reduced it by $2.4$ points. Temperature scaling changed
+class predictions for fewer than $0.1\%$ of samples, as expected for a positive
+scalar applied uniformly to logits, but substantially improved probability
+calibration.

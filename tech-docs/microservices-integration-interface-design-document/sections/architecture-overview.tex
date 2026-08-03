@@ -1,0 +1,98 @@
+\section{System Architecture Overview}
+
+\subsection{Context}
+The Nexa Commerce Platform is decomposed into six services, each owned by a single team, that
+cooperate to take an order from checkout through fulfilment notification. Cross-service calls
+are either synchronous, through a shared API gateway, or asynchronous, through the Meridian
+event bus. No service is permitted to call another service's private endpoint or database
+directly; every interaction crosses one of these two boundaries.
+
+\subsection{Service Inventory}
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\textbf{Service} & \textbf{Owner} & \textbf{Responsibility} \\
+\midrule
+Order Orchestration Service   & Nexa     & Order lifecycle, saga coordination, order state machine \\
+Payment Gateway Adapter       & Synapse  & Payment authorization, capture, refund, PCI-scoped tokenisation \\
+Inventory Ledger Service      & Vertex   & Stock reservation, availability, warehouse allocation \\
+Notification Dispatch Service & Nimbus   & Transactional email, SMS, and push notification delivery \\
+Customer Analytics Service    & Apex     & Event ingestion for funnel, cohort, and revenue reporting \\
+Meridian Event Bus            & Meridian & Shared Kafka-compatible broker; topic governance and retention \\
+\bottomrule
+\end{tabularx}
+\caption{Services participating in the integration described by this document.}
+\end{table}
+
+\subsection{Integration Topology}
+Figure~\ref{fig:topology} shows the two integration paths. Solid arrows are synchronous REST
+calls routed through the API gateway; dashed arrows are asynchronous publish/subscribe traffic
+on the Meridian bus. \svc{Customer Analytics} is a bus-only consumer and exposes no inbound
+API of its own.
+
+\begin{figure}[h!]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  node distance=10mm and 14mm,
+  box/.style={draw, rounded corners=2pt, text width=27mm, minimum height=10mm,
+              align=center, font=\scriptsize, fill=white, line width=0.6pt},
+  gw/.style={box, draw=nexanavy, fill=nexanavy!8, font=\scriptsize\bfseries},
+  bus/.style={draw=vertexslate, fill=vertexslate!12, rounded corners=2pt,
+              minimum width=148mm, minimum height=8mm, align=center, font=\small\bfseries},
+  sync/.style={-{Latex[length=2mm]}, nexanavy, line width=0.7pt},
+  async/.style={-{Latex[length=2mm]}, synapseteal, dashed, line width=0.7pt}
+]
+  \node[gw, text width=24mm] (gw) {API Gateway\\ \footnotesize (Nexa)};
+  \node[box, above=of gw, text width=24mm] (client) {Client Applications};
+
+  \node[box, below=16mm of gw, xshift=-56mm] (order) {Order Orchestration\\ \footnotesize Nexa};
+  \node[box, below=16mm of gw, xshift=-18.5mm] (pay) {Payment Gateway Adapter\\ \footnotesize Synapse};
+  \node[box, below=16mm of gw, xshift=18.5mm] (inv) {Inventory Ledger\\ \footnotesize Vertex};
+  \node[box, below=16mm of gw, xshift=56mm] (notif) {Notification Dispatch\\ \footnotesize Nimbus};
+
+  \node[bus, below=14mm of pay, xshift=-18.75mm] (bus) {Meridian Event Bus};
+  \node[box, below=13mm of bus, text width=32mm, fill=alertred!8, draw=alertred] (analytics) {Customer Analytics\\ \footnotesize Apex (consumer only)};
+
+  \draw[sync] (client) -- (gw);
+  \draw[sync] (gw) -- (order);
+  \draw[sync] (gw) -- (pay);
+  \draw[sync] (gw) -- (inv);
+  \draw[sync] (gw) -- (notif);
+
+  \draw[async] (order) -- (bus);
+  \draw[async] (pay) -- (bus);
+  \draw[async] (inv) -- (bus);
+  \draw[async] (notif) -- (bus);
+  \draw[async] (bus) -- (analytics);
+
+  \begin{scope}[on background layer]
+    \node[fit=(order)(notif)(bus), fill=nexanavy!3, rounded corners=4pt, inner sep=6mm] {};
+  \end{scope}
+\end{tikzpicture}%
+}
+\caption{Synchronous (solid) and asynchronous (dashed) integration paths across the platform.}
+\label{fig:topology}
+\end{figure}
+
+\subsection{Deployment Environments}
+Every service is deployed independently to three environments. Base URLs below apply to the
+API gateway; the Meridian bus uses a separate bootstrap-server hostname per environment, listed
+in \code{MER-OPS-114}.
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}l X l@{}}
+\toprule
+\textbf{Environment} & \textbf{Gateway Base URL} & \textbf{Purpose} \\
+\midrule
+Development & \code{https://api.dev.nexa.internal}     & Feature branches, contract testing \\
+Staging     & \code{https://api.staging.letx-nexa.io}  & Partner integration sign-off \\
+Production  & \code{https://api.nexa.io}               & Live customer traffic \\
+\bottomrule
+\end{tabularx}
+\caption{Gateway base URLs by environment.}
+\end{table}

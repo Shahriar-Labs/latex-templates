@@ -1,0 +1,71 @@
+\section{Results}
+\label{sec:results}
+
+Table~\ref{tab:main} reports normalized F1 on the blind test set for all
+four baselines and \sys{VertexTag}, per language and averaged.
+\sys{VertexTag} outperforms every baseline on every language, with the
+largest absolute gain over the strongest baseline (Apex-Multi) on Amharic
+(+4.1 F1), the language with the lowest gazetteer coverage and the
+smallest training split.
+
+\begin{table}[t]
+\centering
+\small
+\setlength{\tabcolsep}{3.2pt}
+\caption{Normalized entity F1 (\%) on the blind test set. Best result per
+column in \textbf{bold}; \sys{VertexTag} is our submission.}
+\label{tab:main}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{System} & \textbf{swa} & \textbf{hau} & \textbf{yor} & \textbf{amh} & \textbf{Avg.} \\
+\midrule
+Nexa-Base     & 71.2 & 68.4 & 65.9 & 60.3 & 66.5 \\
+Synapse-XLM   & 76.8 & 74.1 & 70.2 & 66.8 & 72.0 \\
+Apex-Multi    & 78.3 & 75.6 & 72.4 & 69.1 & 73.9 \\
+\sys{VertexTag}     & \textbf{82.1} & \textbf{79.8} & \textbf{76.5} & \textbf{73.2} & \textbf{77.9} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:bars} visualizes the same comparison against the strongest
+baseline. Gains are consistent across languages, but not uniform: the gap
+between \sys{VertexTag} and Apex-Multi widens as gazetteer coverage drops
+(Section~\ref{sec:task-data}), which is consistent with our hypothesis
+that the fuzzy-match-plus-reranker combination matters most exactly where
+exact gazetteer lookup fails most often.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  ybar,
+  bar width=7pt,
+  width=0.98\linewidth,
+  height=4.6cm,
+  ylabel={Normalized F1 (\%)},
+  symbolic x coords={Swahili,Hausa,Yoruba,Amharic},
+  xtick=data,
+  tick label style={font=\scriptsize},
+  label style={font=\small},
+  ymin=55, ymax=90,
+  enlarge x limits=0.22,
+  legend style={font=\scriptsize,at={(0.5,1.16)},anchor=north,
+    legend columns=1,draw=none,fill=none},
+  axis lines*=left,
+  grid=major,
+  grid style={dashed,gray!25},
+]
+\addplot[fill=wsgray!45,draw=wsgray] coordinates {
+  (Swahili,78.3) (Hausa,75.6) (Yoruba,72.4) (Amharic,69.1)
+};
+\addplot[fill=wsteal,draw=wsindigo] coordinates {
+  (Swahili,82.1) (Hausa,79.8) (Yoruba,76.5) (Amharic,73.2)
+};
+\legend{Apex-Multi (best baseline), \sys{VertexTag} (ours)}
+\end{axis}
+\end{tikzpicture}
+\caption{Normalized F1 by language, \sys{VertexTag} versus the strongest
+released baseline. The gap grows as gazetteer coverage shrinks, from
+Swahili (89\% coverage) to Amharic (71\% coverage).}
+\label{fig:bars}
+\end{figure}

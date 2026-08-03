@@ -1,0 +1,35 @@
+\section{Implementation}
+\label{sec:implementation}
+
+We implemented \sysname{} as an extension to a KVM-based hypervisor, adding roughly 2,400
+lines of C to the host kernel module and a userspace control daemon that runs the featurizer
+and classifier. None of the changes touch guest-facing code paths.
+
+\paragraph{Counter access.} The sampler reads per-core LLC-reference and LLC-miss counters
+directly through the host's existing PMU access path rather than through the general-purpose
+\texttt{perf\_event} subsystem, which adds scheduling and context-switch overhead that scales
+with the number of monitored events. Direct MSR reads at a fixed sampling interval keep the
+per-sample cost to a handful of cycles per core.
+
+\paragraph{Featurization.} The userspace daemon maintains a rolling window (default 200\,ms,
+matching the slowest sampling interval we evaluate) per candidate core pair. On a
+dual-socket host with 32 cores per socket this is at most 31 candidate pairs per potential
+victim core, which the daemon evaluates in well under one millisecond per window on a single
+control-plane core.
+
+\paragraph{Classifier.} The EWMA smoothing factor $\alpha$, the detection threshold $\tau$,
+the clearing threshold $\tau_{\text{lo}}$, and the consecutive-window requirement $k$ are
+host-level configuration, not per-tenant configuration -- a tenant cannot see or influence its
+own detection parameters, which would otherwise let an attacker probe the threshold directly.
+
+\paragraph{Isolation response.} Re-pinning reuses the same cache-way partitioning primitive
+exposed by the host's existing way-based allocation support; the isolation controller issues
+the same partition-reassignment call an operator would issue manually, just automatically and
+scoped to a single vCPU rather than a whole socket.
+
+\paragraph{Calibration.} Before enforcement is enabled, each host runs a calibration pass
+during a representative low-contention period to establish per-core-pair baselines for the
+featurizer and an initial threshold $\tau$. Hosts periodically recalibrate on a rolling
+window of traffic classified as benign by the current model, so that a change in a tenant's
+legitimate workload (e.g., a new batch job with naturally bursty cache behavior) does not
+permanently inflate the false-positive rate.

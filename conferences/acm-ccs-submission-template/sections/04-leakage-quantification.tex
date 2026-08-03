@@ -1,0 +1,71 @@
+\section{Leakage Quantification}
+\label{sec:leakage}
+
+To compare defenses on a common footing we treat the adversary's observed
+transcript as the output of a noisy channel whose input is the tenant's
+true access pattern, and quantify leakage as the mutual information
+between the two.
+
+\subsection{Channel Model}
+Let $Q = (q_1, \dots, q_n)$ be the sequence of plaintext queries issued by
+a tenant over a monitoring window, and let $\mathrm{AP}(Q)$ denote the
+access pattern induced by $Q$ --- the sequence of (identifier-set, volume)
+pairs a backend without any gateway would observe. Let $T$ denote the
+transcript actually observed by the adversary once a defense is applied:
+under no defense, $T = \mathrm{AP}(Q)$; under \sysname{}, $T$ is the
+sequence of bucketed, shuffled requests dispatched to the backend. We
+define the access-pattern leakage of a defense as
+\begin{equation}
+  \label{eq:leakage}
+  L_{\mathrm{AP}} \;=\; I\big(\mathrm{AP}(Q) \,;\, T\big),
+\end{equation}
+the mutual information between the true access pattern and the observed
+transcript, measured in bits. A defense that reveals nothing about
+$\mathrm{AP}(Q)$ beyond the auxiliary distribution $\mathcal{A}$ already
+knows achieves $L_{\mathrm{AP}} = 0$; the unmodified backend achieves
+$L_{\mathrm{AP}} = H(\mathrm{AP}(Q))$, the full entropy of the access
+pattern.
+
+\subsection{Bounding \texorpdfstring{$L_{\mathrm{AP}}$}{L\_AP} for \sysname{}}
+Within a single epoch of width $w$ containing $m$ queries, \sysname{}'s
+transcript reveals only (a) which of the $k$ buckets in $B$ each query was
+assigned to, and (b) the multiset of bucket assignments dispatched in that
+epoch, since the shuffler's permutation is drawn independently of query
+identity. This gives the per-epoch bound
+\begin{equation}
+  \label{eq:bound}
+  L_{\mathrm{AP}}^{(\text{epoch})} \;\le\; m \log_2 k \;-\; H_{\mathrm{shuf}}(m),
+\end{equation}
+where $H_{\mathrm{shuf}}(m) = \log_2(m!)$ is the entropy contributed by the
+shuffler's permutation of $m$ same-epoch requests. The first term is the
+leakage the volume padder alone would admit --- $\log_2 k$ bits per query,
+since only the bucket index is visible; the second term is the correction
+the shuffler subtracts by making the $m$ requests within an epoch
+mutually indistinguishable in dispatch order. Equation~\ref{eq:bound}
+formalizes the intuition from \S\ref{sec:design}: padding without
+shuffling leaves the full $m \log_2 k$ term exposed, since $H_{\mathrm{shuf}}$
+collapses to zero when dispatch order is left untouched.
+
+\subsection{Reconstruction Advantage}
+Because $L_{\mathrm{AP}}$ is difficult to interpret operationally, we also
+report the empirical quantity our evaluation measures directly: the
+\emph{reconstruction advantage} of a concrete adversary $\mathcal{A}$
+attempting to map observed identifiers back to plaintext keys,
+\begin{equation}
+  \label{eq:advantage}
+  \mathrm{Adv}^{\mathrm{rec}}_{\mathcal{A}} \;=\;
+  \Pr\big[\mathcal{A}(T) = \mathrm{key}(Q)\big] \;-\;
+  \Pr\big[\mathcal{A}_{\mathrm{guess}}(\varnothing) = \mathrm{key}(Q)\big],
+\end{equation}
+i.e., the improvement in reconstruction accuracy that observing $T$ gives
+$\mathcal{A}$ over guessing from the auxiliary distribution alone. We
+instantiate $\mathcal{A}$ as the frequency-alignment attack
+of~\citet{kellaris2016generic}, adapted to bucketed volumes, since it is
+the strongest publicly documented attack applicable to all four systems we
+compare. $L_{\mathrm{AP}}$ and $\mathrm{Adv}^{\mathrm{rec}}_{\mathcal{A}}$
+are not the same quantity --- the former bounds what \emph{any} adversary
+could in principle extract, the latter measures what a concrete, practical
+attack does extract --- and reporting both is what lets
+\S\ref{sec:evaluation} distinguish a defense that is information-
+theoretically leaky but attack-resistant in practice from one that is
+genuinely close to $L_{\mathrm{AP}} = 0$.

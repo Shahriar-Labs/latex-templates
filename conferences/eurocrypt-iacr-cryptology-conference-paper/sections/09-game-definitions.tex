@@ -1,0 +1,16 @@
+\section{Game Definitions}
+\label{app:games}
+
+For completeness, we spell out the two abort flags used in the proof.  The
+simulator stores tuples $(X,c,\mathsf{origin})$ in its oracle table, where
+$\mathsf{origin}\in\{\mathsf{adversary},\mathsf{proof}\}$.  Before inserting a
+proof-origin entry $X=\mathsf{Enc}(pk,x,a,s)$, it executes
+\[
+  \mathsf{PreQ}\leftarrow
+  \mathsf{PreQ}\lor [X\in\operatorname{dom}(T)].
+\]
+After insertion, it sets $\mathsf{SaltColl}$ if a different proof request has
+the same $X$.  The proof of \cref{thm:main} aborts on either flag.  Keeping the
+flags separate matters because they rely on different independence claims:
+the pre-query argument conditions on the adversary's current table, whereas
+the collision argument compares pairs of simulator-generated salts.

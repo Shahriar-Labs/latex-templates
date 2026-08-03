@@ -1,0 +1,33 @@
+\section{Trial boot, health, and confirmation}
+
+The trial image starts a confirmation controller as early as practical. It
+reports \code{TRIAL\_STARTED} only after the network stack is available, but
+network availability alone is not a sufficient health signal.
+
+The minimum health gate includes:
+
+\begin{itemize}
+  \item verified boot and required filesystem mounts;
+  \item successful schema/data migration or verified backward-compatible state;
+  \item watchdog stability for the configured observation interval;
+  \item startup of all mandatory services and device drivers;
+  \item access to critical sensors, actuators, and secure storage; and
+  \item no platform-defined fatal diagnostic or safety condition.
+\end{itemize}
+
+Cloud reachability \should be a confirmation requirement only when the device can
+reliably distinguish a firmware defect from an external outage. Otherwise the
+device confirms locally and reports when connectivity returns.
+
+Confirmation is an atomic boot-control operation. The device \must first ensure
+the trial slot is fully verified, then mark it confirmed, commit applicable
+security counters, and finally allow the old slot to become reusable. A reset at
+any point must yield either the old confirmed image or the new confirmed image,
+never an unverified slot.
+
+If health fails, the agent should record a compact durable diagnostic before
+requesting rollback. The bootloader performs rollback even if the trial agent is
+nonfunctional. After booting the recovery image, the agent reports
+\code{ROLLED\_BACK} with the failed release ID and reason.
+
+% -----------------------------------------------------------------------------

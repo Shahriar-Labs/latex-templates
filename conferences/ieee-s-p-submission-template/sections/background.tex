@@ -1,0 +1,61 @@
+\section{Background and Threat Model}
+\label{sec:background}
+
+\subsection{Confidential Co-Tenancy}
+
+A confidential VM extends ordinary hardware virtualization with per-VM memory encryption, an
+integrity-protected page table, and remote attestation of the initial guest image. AMD
+SEV-SNP and Intel TDX differ in mechanism but agree on the trust boundary: the hypervisor,
+the host operating system, and any other VM on the same physical machine are all excluded
+from the CVM's confidentiality and integrity guarantees. Crucially, neither technology
+changes what is \emph{physically shared} between sockets' tenants. The LLC, the memory
+controller, and the interconnect are still time-multiplexed the same way they were before
+CVMs existed, because partitioning them statically per tenant would undercut the
+consolidation ratio the cloud business model depends on. Nexa Cloud, like other large
+providers, packs several CVMs per socket precisely because most workloads do not use their
+full cache allocation continuously.
+
+\subsection{Attacker Model}
+
+We assume an attacker who controls an ordinary (non-confidential) or confidential VM
+co-resident with the victim CVM on the same physical socket, obtained either by renting
+capacity until the scheduler happens to co-locate them or by exploiting a provider's
+placement heuristics. The attacker cannot compromise the hypervisor and cannot read the
+victim's memory, registers, or page tables -- SEV-SNP and TDX are assumed to hold. The
+attacker \emph{can} execute arbitrary unprivileged code on its own core and can construct LLC
+eviction sets to mount a Prime+Probe attack against the shared cache, or exploit any
+host-shared pages (hypervisor-provided paravirtual drivers, deduplicated read-only libraries)
+for a Flush+Reload variant, following the same construction as prior cross-VM cache attacks
+against ordinary co-tenants~\cite{okonkwo2015cache,laurent2014flushreload}. Automated
+eviction-set construction, as demonstrated for inclusive LLCs, is assumed to be within the
+attacker's capability and requires no cooperation from the victim
+whatsoever~\cite{tanaka2017templates}. We do not assume the attacker is rate-limited: a
+realistic adversary will probe as fast as the shared cache permits, and a detector that only
+catches slow, cautious probing is not useful in this setting.
+
+We explicitly exclude attacks that require compromising the hypervisor, physical access to
+the host, or side channels outside the cache hierarchy (e.g., DRAM row-buffer or power
+side channels); those threats are out of scope for a detector built on cache-adjacent
+performance counters and are better addressed by the isolation mechanisms discussed in
+Section~\ref{sec:related}.
+
+\subsection{Design Goals}
+
+The threat model above rules out the two easiest places to put a detector -- inside the
+guest, or by inspecting guest memory from the host -- so \sysname{} is built around four
+goals that follow directly from what remains:
+
+\begin{itemize}[leftmargin=1.4em]
+  \item \textbf{Guest-oblivious.} No code, agent, or instrumentation runs inside the CVM, and
+  nothing the detector reads can be attributed to guest memory contents. This preserves the
+  CVM's attestation unchanged.
+  \item \textbf{Low overhead.} The detector must run continuously on every socket, not just
+  during a suspected incident, so its steady-state cost has to be small enough that a provider
+  would actually enable it by default -- we target under 3\% victim throughput loss.
+  \item \textbf{High recall at low false-positive rate under realistic noise.} Ordinary
+  co-located workloads (batch jobs, other tenants' bursts) contend for the LLC too; a detector
+  that cannot tell benign contention from a probing attacker is not deployable at cloud scale.
+  \item \textbf{Proportional response.} The response to a detection should contain the
+  attacker without disrupting the victim's SLA -- migrating or killing the victim on a
+  false positive is a worse outcome than the attack it defends against.
+\end{itemize}

@@ -1,0 +1,76 @@
+\section{Structure and Analysis Model}
+
+\subsection{Geometry and framing}
+\begin{table}[htbp]
+\centering
+\caption{Assumed building geometry}
+\begin{tabularx}{\textwidth}{@{}Y R{35mm}@{}}
+  \toprule
+  \textbf{Parameter} & \textbf{Assumed value} \\
+  \midrule
+  Plan dimensions & \SI{18}{\metre} $\times$ \SI{12}{\metre} \\
+  Primary grid & Three \SI{6}{\metre} bays in X; two \SI{6}{\metre} bays in Y \\
+  Occupied levels & Ground and Level 1; roof above Level 1 \\
+  Storey height / total height & \SI{3.6}{\metre} / \SI{7.2}{\metre} \\
+  Secondary beam spacing & \SI{3.0}{\metre} \\
+  Typical beam and girder span & \SI{6.0}{\metre} \\
+  Lateral system & Steel braced bays in each principal direction \\
+  Floor diaphragm & Composite slab idealized as rigid in plane \\
+  Foundations & Isolated reinforced-concrete spread footings \\
+  \bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=0.62cm,y=0.62cm,font=\small]
+  \draw[fill=paleblue,draw=navy,line width=0.9pt] (0,0) rectangle (18,12);
+  \foreach \x/\lab in {0/A,6/B,12/C,18/D} {
+    \draw[rulegray] (\x,0)--(\x,12);
+    \node[below=3pt,text=navy] at (\x,0) {\lab};
+  }
+  \foreach \y/\lab in {0/1,6/2,12/3} {
+    \draw[rulegray] (0,\y)--(18,\y);
+    \node[left=3pt,text=navy] at (0,\y) {\lab};
+  }
+  \foreach \x in {0,6,12,18}
+    \foreach \y in {0,6,12}
+      \fill[navy] (\x,\y) circle (2.1pt);
+  \foreach \x in {3,9,15} {
+    \draw[blue,dashed] (\x,0)--(\x,12);
+  }
+  \draw[warning,line width=1.5pt] (0,0)--(6,0);
+  \draw[warning,line width=1.5pt] (12,12)--(18,12);
+  \node[warning,anchor=south] at (3,0.15) {braced bay};
+  \draw[<->] (0,-1.2)--(18,-1.2) node[midway,fill=white] {\SI{18}{\metre}};
+  \draw[<->] (19.2,0)--(19.2,12) node[midway,fill=white,rotate=90] {\SI{12}{\metre}};
+  \node[navy,anchor=west] at (0,13.2) {Conceptual framing plan};
+\end{tikzpicture}
+\caption{Assumed plan grid; dashed lines indicate secondary beam lines.}
+\label{fig:plan}
+\end{figure}
+
+\subsection{Load path}
+Floor and roof pressure loads act on the slab/deck and pass to secondary beams, then
+to girders, columns, footings, and supporting soil. Facade wind passes to the floor
+and roof diaphragms, which distribute it to vertical braced bays. Brace forces pass
+through columns and base connections to the foundations. Every real-project design
+must demonstrate continuity at deck fasteners, collectors, connections, base plates,
+anchors, footings, and soil.
+
+\subsection{Analysis assumptions}
+\label{sec:analysis}
+The representative gravity members are checked as simply supported. The global
+lateral model idealizes rigid diaphragms, pinned beam-to-column gravity connections,
+and concentric bracing. Nominal member stiffness is used. A notional second-order
+review gives an illustrative amplification $B_2=1.04$; reported lateral member
+demands include this amplification. Accidental torsion is included conceptually in
+the reported brace demand but is not reconstructed as a full three-dimensional
+analysis here.
+
+These assumptions are acceptable only for the worked example. A project model must
+include actual stiffness, offsets, releases, diaphragm flexibility where applicable,
+cracked concrete stiffness, P--$\Delta$ and P--$\delta$ effects, foundation restraint,
+and construction sequence where significant.
+
+% =============================================================================

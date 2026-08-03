@@ -1,0 +1,66 @@
+\section{Analysis}
+\label{sec:analysis}
+
+\subsection{Ablation}
+Table~\ref{tab:ablation} removes the fuzzy matcher and the neural
+reranker in turn, averaged across all four languages. Removing the fuzzy
+matcher and falling back to exact-and-prefix gazetteer lookup costs 3.3 F1
+points; removing the reranker and instead emitting the top candidate by
+edit distance alone costs 4.8 points. The two components are not fully
+redundant: removing both costs 8.2 points, more than the sum of either
+component removed alone would suggest, indicating that the reranker
+relies on the fuzzy matcher to surface correct candidates it can then
+select, and gains little when the candidate list is already restricted to
+exact matches.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Ablation, average normalized F1 (\%) across all four languages.}
+\label{tab:ablation}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+\textbf{Configuration} & \textbf{Avg. F1} & \textbf{$\Delta$} \\
+\midrule
+Full \sys{VertexTag}        & 77.9 & --  \\
+\quad -- fuzzy matcher      & 74.6 & $-3.3$ \\
+\quad -- neural reranker    & 73.1 & $-4.8$ \\
+\quad -- both components    & 69.7 & $-8.2$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Error Analysis}
+We manually inspected 150 test-set errors sampled evenly across
+languages. Three patterns account for most of them:
+
+\begin{itemize}[leftmargin=1.1em,itemsep=1pt,topsep=2pt]
+  \item \textbf{Diacritic loss} (34\% of inspected errors, concentrated in
+    Yoruba): source text frequently omits tonal diacritics that the
+    gazetteer preserves, pushing true matches past our edit-distance
+    threshold when the dropped mention is short;
+  \item \textbf{Compound and titled names} (29\%): mentions like
+    \textit{Alhaji Musa Ibrahim} normalize correctly only if the honorific
+    is stripped before matching, which our span detector does
+    inconsistently;
+  \item \textbf{Code-switched mentions} (18\%, concentrated in Swahili and
+    Hausa news text): organization names embedded in English-language
+    quotations are sometimes tagged by the span detector but fail
+    gazetteer matching because the source gazetteer stores the
+    vernacular-language form only.
+\end{itemize}
+
+The remaining errors are distributed across annotation edge cases (nested
+entities, ambiguous DATE/MISC boundaries) that we did not find a single
+dominant fix for within the shared-task submission window.
+
+\subsection{Discussion}
+The error patterns above suggest two directions we did not have time to
+pursue before submission. First, honorific and title stripping as an
+explicit preprocessing step, rather than relying on the span detector to
+absorb it implicitly, should reduce compound-name errors directly.
+Second, a lightweight document-level cache -- reusing an earlier,
+high-confidence normalization for a repeated mention later in the same
+document -- would address code-switched mentions that resolve correctly
+elsewhere in the same article, an idea adjacent to the discourse-level
+consistency modeling discussed in Section~\ref{sec:task-data}.

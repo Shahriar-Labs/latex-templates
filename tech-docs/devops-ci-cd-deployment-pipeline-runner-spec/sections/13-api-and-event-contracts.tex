@@ -1,0 +1,79 @@
+\section{API and event contracts}
+
+\subsection{General conventions}
+
+The external API is versioned under \code{/v1}. Requests and responses use UTF-8 JSON.
+Times use RFC~3339 UTC with fractional seconds; identifiers are opaque, globally unique,
+and never recycled. Mutating requests accept \code{Idempotency-Key}; the key is scoped
+to caller and operation and retained for at least 24 hours. List endpoints use stable
+cursor pagination. Unknown response fields must be ignored by clients.
+
+Errors have HTTP status, stable machine code, human-readable message, request ID,
+retryability, and optional field diagnostics. Authentication failures reveal no
+resource existence. Rate-limit responses provide a retry hint.
+
+\subsection{Core endpoints}
+
+\begin{longtable}{@{}L{0.12\textwidth}L{0.36\textwidth}L{0.43\textwidth}@{}}
+\caption{Core API surface}\label{tab:api}\\
+\toprule
+\thead{Method} & \thead{Path} & \thead{Purpose} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Method} & \thead{Path} & \thead{Purpose} \\
+\midrule
+\endhead
+POST & \path{/v1/events/source} & Accept a signed source-control event and deduplicate delivery \\
+POST & \path{/v1/runs} & Manually create a run for an authorized revision and inputs \\
+GET & \path{/v1/runs/{run_id}} & Return run, plan, job summary, policy, and evidence links \\
+POST & \path{/v1/runs/{run_id}:cancel} & Request idempotent cancellation \\
+POST & \path{/v1/jobs/{job_id}:retry} & Create a policy-authorized retry attempt \\
+GET & \path{/v1/jobs/{job_id}/logs} & Stream or page ordered, authorized logs \\
+POST & \path{/v1/approvals} & Approve or reject a digest-bound environment request \\
+POST & \path{/v1/runners:register} & Register and attest an ephemeral runner \\
+POST & \path{/v1/leases:claim} & Long-poll for an eligible job lease \\
+POST & \path{/v1/leases/{lease_id}:renew} & Renew lease and report health/progress \\
+POST & \path{/v1/attempts/{attempt_id}:finalize} & Atomically commit result and output manifest \\
+POST & \path{/v1/artifacts:beginUpload} & Issue a scoped multipart upload grant \\
+POST & \path{/v1/artifacts/{artifact_id}:finalize} & Verify and publish immutable artifact \\
+\bottomrule
+\end{longtable}
+
+\subsection{Example lease response}
+
+\begin{lstlisting}[language={},caption={Abbreviated job lease},label={lst:lease}]
+{
+  "lease_id": "les_01J...",
+  "attempt_id": "att_01J...",
+  "fencing_token": 18442,
+  "expires_at": "2026-08-02T10:15:30.000Z",
+  "plan_digest": "sha256:5d9f...c821",
+  "runner_image": "registry/runner@sha256:c021...7aa9",
+  "sandbox": {
+    "cpu_millis": 2000,
+    "memory_bytes": 4294967296,
+    "timeout_seconds": 1200,
+    "network_policy_id": "netpol_build_v7"
+  },
+  "steps": [
+    {"kind": "action", "digest": "sha256:4f57...a012"},
+    {"kind": "command", "argv": ["npm", "test"]}
+  ],
+  "grants": {
+    "log_upload": "grant_01J...",
+    "artifact_upload": "grant_01K..."
+  }
+}
+\end{lstlisting}
+
+\subsection{Event envelope}
+
+All emitted events use an envelope containing \code{event\_id}, \code{event\_type},
+\code{schema\_version}, \code{occurred\_at}, \code{recorded\_at}, \code{tenant\_id},
+\code{subject}, \code{actor}, \code{correlation\_id}, \code{causation\_id}, and
+\code{data}. Delivery is at least once; consumers deduplicate by event identifier.
+Events are partitioned by run identifier where ordering matters. Personally
+identifiable data and secret material are excluded from payloads.
+
+% -----------------------------------------------------------------------------

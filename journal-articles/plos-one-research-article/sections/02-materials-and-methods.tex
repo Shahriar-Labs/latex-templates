@@ -1,0 +1,60 @@
+\section{Materials and methods}
+
+\subsection{Study design and route construction}
+We created a repeated-route observational design representing a compact subtropical city. The synthetic street network contained six urban-form strata defined by crossing low or high building-height ratio with low, medium, or high impervious cover. Within each stratum, six loop routes of \SI{1.2}{km} were generated, for 36 routes in total. Routes did not overlap, which simplified spatial dependence while retaining repeated observations within routes.
+
+Each route was traversed at 08:00, 13:00, and 16:00 on 14 synthetic summer days. A traversal lasted 12--18 minutes depending on a sampled walking speed of \SIrange{1.1}{1.6}{m.s^{-1}}. Measurements were generated once per second and aggregated first into 100-m segments and then to route-period means. The design produced $36\times14\times3=1{,}512$ route-period observations. Fig~\ref{fig:design} summarizes the sampling and analysis workflow.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=8mm and 9mm,
+  processbox/.style={rounded corners=3pt,draw=PLOSblue,thick,fill=Mist,
+    minimum width=2.65cm,minimum height=1.08cm,align=center,
+    font=\sffamily\small,text=Ink},
+  note/.style={font=\scriptsize\color{Slate},align=center},
+  flow/.style={-{Stealth[length=2.4mm]},line width=0.9pt,draw=PLOSblue}
+]
+  \node[processbox] (network) {6 urban-form\\strata};
+  \node[processbox,right=of network] (routes) {36 loop routes\\1.2 km each};
+  \node[processbox,right=of routes] (visits) {14 days $\times$\\3 daily periods};
+  \node[processbox,below=of visits] (sensors) {1-Hz synthetic\\sensor streams};
+  \node[processbox,left=of sensors] (segments) {100-m segment\\aggregation};
+  \node[processbox,left=of segments] (models) {Mixed-effects\\route analysis};
+  \draw[flow] (network) -- (routes);
+  \draw[flow] (routes) -- (visits);
+  \draw[flow] (visits) -- (sensors);
+  \draw[flow] (sensors) -- (segments);
+  \draw[flow] (segments) -- (models);
+  \node[note,below=3mm of routes] {1,512 route-period observations};
+\end{tikzpicture}
+\caption{Synthetic study design and analytic workflow. Routes were balanced across urban-form strata, repeatedly traversed across day and time, sampled at one-second intervals, and summarized before mixed-effects analysis. The diagram reports design quantities rather than empirical participant flow.}
+\label{fig:design}
+\end{figure}
+
+\subsection{Synthetic environmental measurements}
+We generated all variables from explicit distributions with the pseudorandom seed fixed at 24,071. Day-level air temperature followed a normal distribution with mean \SI{32.4}{\degreeCelsius} and standard deviation \SI{1.8}{\degreeCelsius}; period-specific offsets were $-3.0$, $+0.8$, and $+1.5$ degrees for morning, midday, and afternoon. Relative humidity was negatively correlated with air temperature ($r=-0.62$). Wind speed followed a log-normal distribution with median \SI{1.7}{m.s^{-1}}. Route-level canopy cover, impervious cover, and building-height ratio were drawn within their assigned strata and then held constant across study days.
+
+Street shade was represented as a binary sequence along each route. The sequence was constructed to match route-level canopy percentage while independently varying the median length of uninterrupted canopy. We defined continuity as the mean length, in metres, of runs containing at least 80\% shaded points. This parameterization allowed routes with similar canopy amount to have different spatial arrangements.
+
+The outcome, wet-bulb globe temperature (WBGT), was generated to mimic the direction and approximate scale of outdoor thermal processes described by validated physical models \cite{Liljegren2008}. The simulation was not used to validate a heat index and should not be interpreted as an alternative to direct globe-temperature measurement. For route $i$, day $j$, and period $k$, the data-generating equation was
+\begin{align}
+Y_{ijk}={}&21.6 + 0.58T_{ijk}+0.031H_{ijk}-0.44\log(1+W_{ijk}) \notag\\
+&-0.071C_i-0.0022L_i+0.009I_i+0.34B_i
++u_i+v_j+\varepsilon_{ijk},
+\label{eq:dgp}
+\end{align}
+where $T$ is air temperature in degrees Celsius, $H$ is relative humidity in percent, $W$ is wind speed in metres per second, $C$ is canopy cover in percentage points, $L$ is mean uninterrupted canopy length in metres, $I$ is impervious cover in percentage points, and $B$ is building-height ratio. Route intercepts $u_i$, day intercepts $v_j$, and residuals $\varepsilon_{ijk}$ were independent zero-mean normal terms with standard deviations 0.62, 0.81, and \SI{0.74}{\degreeCelsius}, respectively.
+
+\subsection{Statistical analysis}
+We summarized route characteristics with means and standard deviations or medians and interquartile ranges. The primary analysis used a linear mixed-effects model with random intercepts for route and day. Fixed effects were canopy cover, canopy continuity, air temperature, relative humidity, log wind speed, impervious cover, building-height ratio, and period. A second model added interactions between period and both canopy measures. Continuous exposure coefficients were scaled to policy-relevant increments: 10 percentage points for cover and 100 m for continuity.
+
+The fitted model was
+\begin{equation}
+Y_{ijk}=\beta_0+\beta_1C_i+\beta_2L_i+\boldsymbol{x}_{ijk}^{\mathsf T}
+\boldsymbol{\gamma}+b_i+d_j+e_{ijk},
+\label{eq:model}
+\end{equation}
+where $\boldsymbol{x}_{ijk}$ contains the prespecified covariates, and $b_i$ and $d_j$ are route and day random intercepts. We report point estimates with 95\% confidence intervals (CIs) based on profile likelihood and two-sided $p$ values, using $p<0.05$ as a descriptive threshold rather than a binary claim of importance. Model assumptions were assessed using residual-versus-fitted and quantile plots.
+
+Sensitivity analyses (1) replaced mean continuity with the longest uninterrupted canopy segment, (2) excluded observations above the 95th percentile of WBGT, (3) added a quadratic canopy term, and (4) refitted the primary model while leaving out each day in turn. Analyses were specified before generating the final synthetic outcome. Calculations follow standard mixed-effects implementation principles \cite{Bates2015}; no human participants, animals, or identifiable records were involved, so ethics review and consent were not applicable.

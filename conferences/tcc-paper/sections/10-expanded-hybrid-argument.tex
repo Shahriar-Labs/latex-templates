@@ -1,0 +1,35 @@
+\section{Expanded Hybrid Argument}
+\label{app:hybrids}
+
+For completeness, we spell out the hybrids implicit in
+\cref{thm:aso}.  This appendix also clarifies what the simulator stores.
+
+\secpar{State} For each position $i$, the simulator stores
+$(sid,i,C_i,r_i,\mathsf{status}_i)$.  Status is initially \textsf{closed} and
+changes once to \textsf{opened}.  The random-oracle table maps canonical byte
+strings to $\tau$-bit outputs.  Repeated opening requests return the identical
+stored pair and do not reprogram the oracle.
+
+\secpar{Hybrid $G_j$} Positions $1,\ldots,j$ use uniform commitments and are
+programmed on opening.  Positions $j+1,\ldots,n$ use honest commitments.
+Adaptive order is handled by relabeling positions according to their first
+opening time in the analysis; this relabeling is conceptual and does not
+change the bytes containing $i$.
+
+\secpar{Transition} To pass from $G_{j-1}$ to $G_j$, replace
+\[
+ \Hash(\Encode(\Tag,sid,j,M_j;r_j))
+\]
+with a uniform $C_j$.  These variables have identical distributions unless
+the encoded point already occurs in the oracle table.  At the eventual opening
+the game installs the same value, after which all future answers coincide.
+Thus the transition cost is precisely the probability of a prior query to
+that point.  \Cref{lem:prequery} bounds this probability after conditioning on
+every earlier adaptive decision.
+
+\secpar{No hidden independence assumption} The proof never assumes that the
+messages $M_i$ are mutually independent.  It uses only the pointwise bound in
+\cref{def:residual-entropy} after conditioning on the values already opened.
+The salts, by contrast, must be fresh and mutually independent.  If a salt is
+derived deterministically from the message, the additive entropy calculation
+fails.

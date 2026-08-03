@@ -1,0 +1,57 @@
+\section{Worked Link Budget}
+
+\begin{tabularx}{\linewidth}{@{}cY R r@{}}
+\toprule
+\textbf{Step} & \textbf{Budget item} & \textbf{Contribution} & \textbf{Running level} \\
+\midrule
+1 & Transmitter output & $+\dBm{\TxPower}$ & \dBm{\TxPower} \\
+2 & Tx feeder and connectors & $-\dB{\TxLineLoss}$ & \dBm{\TxPower-\TxLineLoss} \\
+3 & Tx antenna gain & $+\dB{\TxGain}$ & \dBm{\EIRP}\quad(EIRP) \\
+4 & Free-space path loss & $-\dB{\FSPL}$ & \dBm{\EIRP-\FSPL} \\
+5 & Gas, polarization, and other losses & $-\dB{\GasLoss+\PolLoss+\OtherLoss}$ & \dBm{\EIRP-\PropagationLoss} \\
+6 & Rx antenna gain & $+\dB{\RxGain}$ & \dBm{\EIRP-\PropagationLoss+\RxGain} \\
+7 & Rx feeder and connectors & $-\dB{\RxLineLoss}$ & \dBm{\ReceivedPower} \\
+\midrule
+\rowcolor{paleblue}
+& \textbf{Predicted clear-air receive level} & & \textbf{\dBm{\ReceivedPower}} \\
+\rowcolor{ice}
+& Receiver threshold & & \dBm{\RxThreshold} \\
+\rowcolor{palegreen}
+& \textbf{Available fade margin} & & \textbf{\dB{\FadeMargin}} \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Numerical checks}
+\begin{align*}
+L_{fs} &= 92.45+20\log_{10}(\FreqGHz)+20\log_{10}(\PathKm)
+       = \dB{\FSPL},\\
+\mathrm{EIRP} &= \TxPower-\plainone{\TxLineLoss}+\TxGain
+       = \dBm{\EIRP},\\
+P_r &= \plainone{\EIRP}-\plainone{\PropagationLoss}
+       +\RxGain-\plainone{\RxLineLoss}
+       = \dBm{\ReceivedPower},\\
+N &= -174+10\log_{10}(\BandwidthMHz\times10^6)+\NoiseFigure
+       = \dBm{\NoiseFloor},\\
+P_{th} &= \plainone{\NoiseFloor}+\RequiredCN+\ImplementationLoss
+       = \dBm{\RxThreshold},\\
+M_f &= (\plainone{\ReceivedPower})-(\plainone{\RxThreshold})
+       = \dB{\FadeMargin}.
+\end{align*}
+
+\subsection{Margin visualization}
+\begin{center}
+\begin{tikzpicture}[x=0.20cm,y=1cm,font=\small]
+  \fill[line!55] (0,0) rectangle (35,0.58);
+  \fill[green!70] (0,0) rectangle (\FadeMargin,0.58);
+  \draw[navy,thick] (0,0) rectangle (35,0.58);
+  \draw[amber,very thick] (\RequiredMargin,-0.11) -- (\RequiredMargin,0.77);
+  \foreach \x in {0,5,...,35}{
+    \draw[slate] (\x,0) -- (\x,-0.08);
+    \node[below,text=slate] at (\x,-0.08) {\x};
+  }
+  \node[above,text=green] at (\FadeMargin,0.62) {\bfseries Calculated \dB{\FadeMargin}};
+  \node[below,text=amber,align=center] at (\RequiredMargin,-0.48)
+    {Required\\\dB{\RequiredMargin}};
+  \node[above left,text=white] at (\FadeMargin-0.6,0.05) {\bfseries headroom};
+\end{tikzpicture}
+\end{center}

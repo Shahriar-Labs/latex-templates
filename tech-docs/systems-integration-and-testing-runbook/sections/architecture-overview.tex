@@ -1,0 +1,68 @@
+\section{System Architecture Overview}
+
+\subsection{Component Inventory}
+Table~\ref{tab:components} lists every component touched by this change, its owning team, and
+the environment it runs in. All version numbers are the ones expected to be live immediately
+after cutover.
+
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabularx}{\textwidth}{@{}l l l l@{}}
+    \toprule
+    \textbf{Component} & \textbf{Owner} & \textbf{Environment} & \textbf{Version} \\
+    \midrule
+    Nexa API Gateway & Nexa Platform Engineering & Vertex Cloud, \texttt{ap-south-1} & 5.12.0 \\
+    Nimbus Payment Adapter & Nimbus Integrations Team & Vertex Cloud, \texttt{ap-south-1} & 3.4.0 \\
+    Ledger Postgres Cluster & Vertex Cloud SRE & Vertex Cloud, \texttt{ap-south-1} & 15.6 \\
+    Synapse QA Harness & Synapse Quality Engineering & CI runner, ephemeral & 2.9.1 \\
+    Apex Monitoring Agent & Apex Observability & sidecar, all pods & 1.7.3 \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Components in scope for this integration.}
+  \label{tab:components}
+\end{table}
+
+\subsection{Data and Control Flow}
+Figure~\ref{fig:architecture} shows the request path exercised during both normal operation and
+the validation phase described in Section~\ref{sec:validation}. Meridian's storefront calls the
+Nexa API Gateway, which routes payment-intent requests to the Nimbus adapter over an internal
+mTLS link on port \texttt{8843}. The adapter writes settlement records to the Vertex Cloud
+ledger cluster and returns a confirmation token to the gateway. Apex's monitoring agent samples
+latency and error rate at both the gateway and the adapter; Synapse's QA harness exercises the
+same path from outside the cluster during validation windows.
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}[
+      node distance=1.1cm and 2.0cm,
+      box/.style={draw, rounded corners=2pt, thick, minimum height=1cm, minimum width=2.6cm,
+        align=center, font=\small},
+      client/.style={box, fill=softgray, draw=inkgray},
+      nexa/.style={box, fill=navyink, text=white, draw=navyink},
+      nimbus/.style={box, fill=tealaccent, text=white, draw=tealaccent},
+      store/.style={box, fill=paperedge, draw=inkgray},
+      obs/.style={box, dashed, fill=white, draw=amberwarn, text=amberwarn},
+      arr/.style={-{Stealth[length=2.2mm]}, thick, draw=inkgray},
+    ]
+    \node[client] (meridian) {Meridian\\Storefront};
+    \node[nexa, right=of meridian] (gateway) {Nexa API\\Gateway};
+    \node[nimbus, right=of gateway] (adapter) {Nimbus Payment\\Adapter v3.4.0};
+    \node[store, right=of adapter] (ledger) {Vertex Cloud\\Ledger Postgres};
+
+    \node[obs, above=of gateway] (apex) {Apex Monitoring};
+    \node[obs, below=of adapter] (synapse) {Synapse QA Harness};
+
+    \draw[arr] (meridian) -- node[above, font=\scriptsize]{HTTPS} (gateway);
+    \draw[arr] (gateway) -- node[above, font=\scriptsize]{mTLS} (adapter);
+    \draw[arr] (adapter) -- node[above, font=\scriptsize]{TLS} (ledger);
+
+    \draw[arr, amberwarn] (apex) -- (gateway);
+    \draw[arr, amberwarn] (apex.east) to[bend left=15] (adapter.north);
+    \draw[arr, amberwarn] (synapse) -- (adapter);
+    \draw[arr, amberwarn] (synapse.west) to[bend right=15] (gateway.south);
+  \end{tikzpicture}
+  \caption{Request path and observation points during integration testing. Solid arrows show
+  production traffic; dashed nodes and amber arrows show the monitoring and validation planes.}
+  \label{fig:architecture}
+\end{figure}

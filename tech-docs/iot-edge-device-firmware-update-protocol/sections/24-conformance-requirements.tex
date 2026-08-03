@@ -1,0 +1,71 @@
+\section{Conformance requirements}
+
+\subsection{Implementation classes}
+
+\begin{tabularx}{\textwidth}{@{}L{33mm}Y@{}}
+  \toprule
+  \textbf{Class} & \textbf{Required behavior} \\
+  \midrule
+  Device Core & Discovery, strict signed-manifest validation, SHA-256, Ed25519,
+    full-artifact HTTPS transfer, resume, safe installation, anti-rollback,
+    trial confirmation/rollback, and status events. \\
+  Device Delta & Device Core plus at least one declared delta format with base and
+    result verification and safe fallback. \\
+  Update Service & Idempotent discovery/status processing, compatible offer
+    selection, campaign controls, bounded retry advice, and protocol-version handling. \\
+  Repository & Immutable object and correct whole/range retrieval with stable size. \\
+  Boot Platform & Verified boot, protected counter storage, atomic trial/confirmed
+    selection, bounded attempts, watchdog integration, and independent rollback. \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Mandatory test suite}
+
+A Device Core implementation \must pass all applicable tests below. Power-failure
+tests inject reset before and after every persistent write and flash erase/program
+boundary.
+
+\begin{longtable}{@{}L{18mm}L{52mm}L{82mm}@{}}
+  \toprule
+  \textbf{ID} & \textbf{Test} & \textbf{Expected result} \\
+  \midrule
+  \endhead
+  C-001 & Valid full update & Device downloads, verifies, stages, boots, confirms,
+    and reports success. \\
+  C-002 & Unknown optional field & Field is ignored without changing signed semantics. \\
+  C-003 & Unknown critical field & Manifest is rejected before transfer. \\
+  C-004 & Modified manifest byte & Signature verification fails. \\
+  C-005 & Unknown/revoked signer & Manifest is rejected as untrusted. \\
+  C-006 & Wrong model/hardware & Manifest is rejected as target mismatch. \\
+  C-007 & Older security version & Candidate is rejected; confirmed image remains. \\
+  C-008 & Duplicate CBOR key & Manifest is rejected as malformed. \\
+  C-009 & Oversized control object & Object is rejected without memory exhaustion. \\
+  C-010 & Interrupted chunk & Partial chunk is not marked verified; transfer resumes. \\
+  C-011 & Corrupt chunk & Chunk hash fails; bytes are discarded and bounded retry occurs. \\
+  C-012 & Corrupt complete artifact & Full digest fails and staging is forbidden. \\
+  C-013 & Repository changes object & Signed size/digest controls; invalid bytes are rejected. \\
+  C-014 & Power loss during download & Device boots confirmed image and safely resumes. \\
+  C-015 & Power loss during slot write & Partial target is never selected for boot. \\
+  C-016 & Power loss during activation record & Boot selection resolves to a valid slot. \\
+  C-017 & Trial image boot loop & Bootloader rolls back within configured attempt limit. \\
+  C-018 & Health-check failure & Trial is not confirmed; recovery image boots. \\
+  C-019 & Power loss during confirmation & Exactly one valid confirmed outcome is recovered. \\
+  C-020 & Status redelivery & Service deduplicates; state does not regress. \\
+  C-021 & Pause/cancel at flash boundary & Atomic operation completes, then device reaches safe state. \\
+  C-022 & Delta wrong base & Delta is rejected and signed full alternative is selected. \\
+  C-023 & Decompression expansion attack & Declared output bound stops processing safely. \\
+  C-024 & TLS/authentication failure & No unauthenticated offer or artifact is trusted. \\
+  C-025 & Factory reset after upgrade & Protected anti-rollback state is retained. \\
+  \bottomrule
+\end{longtable}
+
+\subsection{Acceptance evidence}
+
+Conformance evidence includes protocol traces with secrets removed, manifest test
+vectors, signature verification results, flash fault-injection coverage, boot-slot
+transition logs, counter behavior, and results for each mandatory test. A platform
+claim must name the hardware revision, bootloader version, agent version,
+supported artifact formats, maximum tested artifact size, and cryptographic
+library versions.
+
+% -----------------------------------------------------------------------------

@@ -1,0 +1,60 @@
+\section{Authentication and Authorization}
+\label{sec:auth_oauth}
+
+The Vertex Gateway implements a zero-trust boundary by requiring cryptographic authentication for all public-facing endpoints. Standardizing on OpenID Connect (OIDC) and the OAuth 2.0 framework \cite{rfc6749}, the gateway acts as a Policy Enforcement Point (PEP) while delegating token generation to the Nimbus Identity Provider (IdP) acting as the Policy Decision Point (PDP).
+
+\subsection{Token Validation Lifecycle}
+Every request targeting protected resources must present a JSON Web Token (JWT) \cite{rfc7519} in the \texttt{Authorization} header as a bearer token. The gateway executes the validation lifecycle depicted below:
+
+\begin{enumerate}
+    \item \textbf{Header Extraction}: Verifies the token format is compliant with \texttt{Bearer <token\_string>}.
+    \item \textbf{Signature Verification}: Validates the cryptographic signature against the cached public keys retrieved from the Nimbus IdP's JSON Web Key Set (JWKS) endpoint. The cached keys have a time-to-live (TTL) of 24 hours. The default signature algorithms allowed are \texttt{RS256} and \texttt{ES256}.
+    \item \textbf{Temporal Verification}: Rejects tokens where the current time is before the issue time (\texttt{nbf} / not-before claim) or after the expiration time (\texttt{exp} claim). A clock-skew tolerance of 30 seconds is permitted.
+    \item \textbf{Audience and Issuer Checks}: Rejects tokens where the \texttt{iss} claim does not match \url{https://auth.nimbus.com/oauth2/v1} or the \texttt{aud} claim does not match the configured client identifiers of Vertex.
+\end{enumerate}
+
+\begin{securitynote}{JWT Signature Validation Policy}
+To mitigate token-forgery attacks, the gateway is configured to explicitly reject tokens that utilize the \texttt{"alg": "none"} header value. Any request containing a signature algorithm other than those explicitly safelisted (e.g., \texttt{RS256}, \texttt{ES256}) is immediately dropped, and a \texttt{401 Unauthorized} response is returned.
+\end{securitynote}
+
+\subsection{Scope and Policy Mapping}
+Once token validation succeeds, the gateway performs path-level authorization using OAuth 2.0 scopes. Table~\ref{tab:scope_mapping} defines the security classification and the associated scopes for different downstream endpoints.
+
+\begin{table}[htbp]
+\centering
+\caption{Vertex Gateway Path Scope and Role Mapping}
+\label{tab:scope_mapping}
+\begin{tabularx}{\textwidth}{l l l X}
+\toprule
+\textbf{API Context} & \textbf{HTTP Method} & \textbf{Required Scope} & \textbf{Security Tier} \\
+\midrule
+\texttt{/api/v1/retail/*} & \texttt{GET} & \texttt{retail:read} & Standard Access \\
+\texttt{/api/v1/retail/*} & \texttt{POST, PUT} & \texttt{retail:write} & Elevated Confidential \\
+\texttt{/api/v1/payments/*} & \texttt{POST} & \texttt{payment:write} & High Critical \\
+\texttt{/api/v1/admin/*} & \texttt{GET, POST} & \texttt{admin:sys} & Core Infrastructure \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{JWT Validation Configuration}
+The declarative YAML configuration for the JWT validation filter in the Vertex Gateway is shown in Listing~\ref{lst:jwt_config}.
+
+\begin{lstlisting}[language=yaml, caption={YAML configuration snippet for Vertex Gateway JWT validation filter.}, label={lst:jwt_config}]
+filters:
+  - name: jwt-validator
+    enabled: true
+    config:
+      jwks_uri: "https://auth.nimbus.com/oauth2/v1/keys"
+      cache_ttl_seconds: 86400
+      clock_skew_seconds: 30
+      allowed_algorithms:
+        - RS256
+        - ES256
+      rules:
+        - match:
+            path: "/api/v1/payments/**"
+          required_claims:
+            iss: "https://auth.nimbus.com/oauth2/v1"
+            aud: "payment-processing-engine"
+            scp: "payment:write"
+\end{lstlisting}

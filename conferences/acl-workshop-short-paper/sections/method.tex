@@ -1,0 +1,81 @@
+\section{\sys{SynapseCite}}
+\label{sec:method}
+
+\sys{SynapseCite} checks one (sentence, in-text citation) pair at a time and
+returns one of four labels: \textsc{faithful}, \textsc{fabricated},
+\textsc{misattributed}, or \textsc{distorted}. It runs in three stages,
+shown in Figure~\ref{fig:architecture}.
+
+\subsection{Stage 1: Existence Check}
+
+Given the citation key, \sys{SynapseCite} looks up the reference in a
+2.1M-paper index built from public bibliographic metadata (title, authors,
+venue, year). A fuzzy string match against the reference-list entry the LLM
+itself produced -- not just the in-text key -- catches near-miss
+fabrications where the model invents a plausible-looking but nonexistent
+title attached to a real author. Pairs that fail this check are labeled
+\textsc{fabricated} and exit the pipeline immediately; the remaining stages
+only run on citations that resolve to a real paper, which is the majority
+case and the one existence checking alone cannot resolve.
+
+\subsection{Stage 2: Passage Retrieval}
+\label{sec:retrieval}
+
+For a citation that resolves, \sys{SynapseCite} retrieves the passage of
+the cited paper's abstract and, where full text is available, its
+introduction and results sections, most relevant to the citing claim. We
+use a dense bi-encoder fine-tuned with in-batch negatives sampled from
+\emph{other passages of the same paper}, which we found necessary: a
+retriever trained on generic negatives tends to retrieve the abstract for
+every claim regardless of whether the abstract actually contains the
+relevant detail, since the abstract is lexically closest to almost any
+claim about the paper.
+
+\subsection{Stage 3: Claim--Evidence Entailment}
+
+The retrieved passage and the citing claim are concatenated and passed to a
+compact entailment classifier, a shared encoder with a lightweight adapter
+head fine-tuned on \sys{CiteCheck-6K} (Section~\ref{sec:data}), following
+the adapter recipe of \citet{schneider2020adapter}. The classifier outputs
+\textsc{faithful} when the passage supports the claim as stated,
+\textsc{distorted} when the passage discusses the same topic but the
+specific number, method name, or direction of the claim does not match, and
+\textsc{misattributed} when the passage is topically unrelated to the
+claim. Keeping this stage separate from retrieval matters: in our ablation
+(Section~\ref{sec:results}), swapping in a stronger retriever improves
+recall on misattribution but has almost no effect on distortion, which
+depends on fine-grained comparison within an already-relevant passage
+rather than on finding the passage in the first place.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  node distance=6mm and 6mm,
+  box/.style={draw=aclplum, thick, rounded corners=2pt, fill=acllight,
+    minimum width=2.55cm, minimum height=0.85cm, align=center, font=\small},
+  decision/.style={draw=aclgold!70!black, thick, fill=white,
+    shape=diamond, aspect=2.4, align=center, font=\scriptsize,
+    minimum width=2.3cm, inner sep=1pt},
+  reject/.style={draw=aclplum!70!black, thick, rounded corners=2pt,
+    fill=aclplum!12, minimum width=2.3cm, minimum height=0.7cm,
+    align=center, font=\scriptsize},
+  arr/.style={-{Latex[length=2mm]}, thick, color=aclgray}
+]
+  \node[box] (input) {Claim +\\ in-text citation};
+  \node[decision, below=of input] (exist) {Resolves to\\ real paper?};
+  \node[reject, left=9mm of exist] (fab) {\textsc{fabricated}};
+  \node[box, below=of exist] (retrieve) {Retrieve most\\ relevant passage};
+  \node[box, below=of retrieve] (entail) {Entailment\\ classifier};
+  \node[reject, below=of entail] (verdict) {\textsc{faithful} /\\ \textsc{distorted} /\\ \textsc{misattributed}};
+
+  \draw[arr] (input) -- (exist);
+  \draw[arr] (exist) -- node[above, font=\scriptsize] {no} (fab);
+  \draw[arr] (exist) -- node[right, font=\scriptsize] {yes} (retrieve);
+  \draw[arr] (retrieve) -- (entail);
+  \draw[arr] (entail) -- (verdict);
+\end{tikzpicture}
+\caption{\sys{SynapseCite} pipeline. Existence checking gates the more
+expensive retrieval and entailment stages, which run only on citations that
+resolve to a real paper.}
+\label{fig:architecture}
+\end{figure}

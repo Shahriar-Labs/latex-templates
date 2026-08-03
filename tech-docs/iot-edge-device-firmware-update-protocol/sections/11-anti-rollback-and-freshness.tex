@@ -1,0 +1,31 @@
+\section{Anti-rollback and freshness}
+\label{sec:rollback}
+
+Each protected component has an unsigned \field{image_security_version}. Before
+staging, the device \must require:
+
+\[
+  \textit{candidate security version} \geq
+  \textit{highest confirmed security version}.
+\]
+
+If equal security versions are permitted for servicing releases, the signed
+\field{sequence} must be strictly greater than the highest accepted sequence for
+that product and update channel. A production profile \should require a strictly
+greater security version whenever a release fixes a security vulnerability.
+
+The device commits a higher hardware monotonic counter only after the candidate
+passes cryptographic verification and immediately before or during confirmation,
+according to platform recovery semantics. It \mustnot advance the only available
+counter before a recoverable boot path exists. A rollback to the previous image
+during trial is allowed even when that image has a lower candidate version,
+because it is the previously confirmed recovery image. After the new image is
+confirmed, that exception ends.
+
+Where trusted time exists, the device \must reject a manifest after
+\field{expires_at}. Without trusted time, it \must enforce signed release
+sequence, security version, and revocation state, and \should obtain authenticated
+time before accepting an initial release after factory reset. Resetting user data
+\mustnot erase rollback counters or trust-store versions.
+
+% -----------------------------------------------------------------------------

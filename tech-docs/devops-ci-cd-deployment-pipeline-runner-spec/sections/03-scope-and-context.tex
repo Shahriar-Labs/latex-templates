@@ -1,0 +1,53 @@
+\section{Scope and context}
+
+\subsection{In scope}
+
+This specification covers pipeline ingestion and validation, directed-acyclic-graph
+(DAG) planning, job scheduling, runner registration and attestation, execution
+isolation, logs, artifacts, caches, secrets delivery, deployment environments,
+approvals, policy enforcement, observability, audit, API contracts, service objectives,
+capacity, disaster recovery, and production rollout.
+
+\subsection{Out of scope}
+
+\begin{itemize}
+  \item Source-control hosting, code review, and branch-protection implementation.
+  \item Artifact repository internals, secret-vault internals, and cloud-provider control planes.
+  \item Application-specific test frameworks and deployment strategies implemented by teams.
+  \item General-purpose interactive development environments or arbitrary persistent workloads.
+  \item End-user billing; resource usage is measured and exported for showback or chargeback.
+\end{itemize}
+
+\subsection{Assumptions and constraints}
+
+\begin{itemize}
+  \item Source revisions are addressable by immutable commit identifiers.
+  \item An enterprise identity provider supports OpenID Connect (OIDC), groups, and multi-factor authentication.
+  \item A secret manager and artifact/object store are available through authenticated APIs.
+  \item Production environments can validate federated workload identities and artifact signatures.
+  \item Linux is the mandatory first execution platform; Windows and macOS are optional pool types.
+  \item The platform is multi-tenant. Repository administrators are not infrastructure administrators.
+  \item A regional network or cloud failure is credible and must not corrupt accepted pipeline state.
+\end{itemize}
+
+\subsection{Personas and responsibilities}
+
+\begin{table}[htbp]
+\centering
+\caption{Primary personas}
+\label{tab:personas}
+\begin{tabularx}{\textwidth}{@{}L{0.23\textwidth}Y Y@{}}
+  \toprule
+  \thead{Persona} & \thead{Needs} & \thead{Accountability} \\
+  \midrule
+  Contributor & Fast, reproducible feedback with understandable errors & Pipeline code and remediation of job failures \\
+  Service owner & Safe promotion, approvals, deployment visibility & Service policy, environments, and release decisions \\
+  Platform engineer & Scalable scheduling and standardized runner images & Control plane, base images, capacity, upgrades \\
+  Security engineer & Enforced isolation, identity, evidence, and response & Guardrails, detections, exceptions, investigations \\
+  SRE / operator & Clear SLOs, diagnostics, and recovery procedures & Availability, incidents, capacity, disaster recovery \\
+  Auditor & Complete, immutable evidence without platform-admin access & Independent control verification \\
+  \bottomrule
+\end{tabularx}
+\end{table}
+
+% -----------------------------------------------------------------------------

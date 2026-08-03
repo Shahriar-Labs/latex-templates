@@ -1,0 +1,30 @@
+\section{Security Policies}
+
+\subsection{Identity \& RBAC}
+Human access is granted through OIDC-federated \code{Role} and \code{ClusterRoleBinding} objects mapped from Synapse Auth groups; there are no static \code{kubeconfig} credentials issued to individuals. Service-to-service access uses per-workload Kubernetes service accounts bound to the narrowest role that satisfies the workload, never the namespace default. Namespaces are grouped into three enforcement tiers, applied as Pod Security Admission labels.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l l L@{}}
+\toprule
+\rowcolor{primary}
+\textcolor{white}{\textbf{Tier}} & \textcolor{white}{\textbf{Pod Security Standard}} & \textcolor{white}{\textbf{Default Network Policy}} & \textcolor{white}{\textbf{Applies To}} \\
+\midrule
+\code{restricted} & Restricted & Deny-all baseline & Vertex, Nexa application namespaces \\
+\rowcolor{rowgray}
+\code{baseline} & Baseline & Deny-all baseline & Synapse batch and analytics jobs \\
+\code{privileged} & Privileged, per-workload exception & Deny-all baseline & \code{system} pool add-ons only \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Every \code{privileged}-tier exception is reviewed by Security Engineering and time-boxed with an expiry label; an admission policy blocks any exception past its expiry from being reconciled.
+
+\subsection{Admission control \& supply chain}
+Kyverno enforces cluster policy at admission, including the mandatory per-route rate limits referenced in Section 4.3, a ban on the \code{latest} image tag, and a requirement that every image be signed with \code{cosign} against the Apex build key before it can be scheduled. Trivy scans images on push to the internal registry and again nightly against everything currently running; a Critical finding blocks promotion to \code{apex-prod-mer1} until remediated or explicitly waived by Security Engineering.
+
+\subsection{Secrets management}
+Application secrets are stored in Meridian KMS and synchronized into the cluster by the External Secrets Operator, which materializes them as native \code{Secret} objects with a bounded TTL and re-fetches on rotation. No secret is committed to a Git repository or baked into a container image; CI enforces this with a pre-merge scan.
+
+\begin{specbox}{AD-07: Centralized Audit Logging}
+Kubernetes audit logs, Cilium flow logs, and admission decisions are shipped off-cluster to a write-once Synapse log store within seconds of generation, and retained for 400 days to satisfy the platform's compliance window. Nodes never hold more than 24 hours of local log history, so a compromised node cannot be used to tamper with the audit trail of its own compromise.
+\end{specbox}

@@ -1,0 +1,41 @@
+\section{Reliability and Disaster Recovery}
+
+\subsection{Failure-domain design}
+
+The normal operating mode tolerates loss of a pod, node, or one Availability Zone without human intervention. Health checks remove failed endpoints; Kubernetes reschedules workloads; Aurora promotes a healthy replica; and queues buffer transient downstream loss. Timeouts, bounded retries with jitter, circuit breakers, concurrency limits, and load shedding prevent cascading failure.
+
+\subsection{Recovery tiers}
+
+\begin{tabularx}{\textwidth}{@{}C{15mm}L{36mm}C{20mm}C{20mm}Y@{}}
+  \toprule
+  \rowcolor{navy}
+  \color{white}\textbf{Tier} & \color{white}\textbf{Examples} & \color{white}\textbf{RTO} & \color{white}\textbf{RPO} & \color{white}\textbf{Strategy} \\
+  \midrule
+  1 & Checkout, API, orders & $\leq60$ min & $\leq5$ min & Warm recovery stack; replicated data \\
+  \rowcolor{pale}
+  2 & Catalog admin, integrations & $\leq4$ h & $\leq1$ h & Pilot light; restore and scale \\
+  3 & Analytics, internal tools & $\leq24$ h & $\leq24$ h & Backup and rebuild \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Regional recovery sequence}
+
+\begin{enumerate}
+  \item Incident commander declares regional recovery after impact and primary-region safety checks.
+  \item Freeze releases, preserve evidence, validate last replicated recovery points, and record the recovery timestamp.
+  \item Apply reviewed Terraform to scale recovery EKS nodes, workers, endpoints, and observability collectors.
+  \item Promote the Aurora cross-region secondary; validate object replication and the required event-replay position.
+  \item Run synthetic and transaction-integrity tests through the recovery endpoint.
+  \item Change Route 53 failover health state and progressively restore traffic (5\%, 25\%, 50\%, 100\%).
+  \item Reconcile asynchronous work, announce service restoration, and start controlled failback planning.
+\end{enumerate}
+
+\begin{riskbox}[Split-brain prevention]
+Database promotion and DNS failover are gated by a single incident commander. The primary writer is fenced before recovery writes are enabled. Failback is a planned migration with reconciliation; DNS is never switched merely because the old region appears healthy again.
+\end{riskbox}
+
+\subsection{Backup controls and exercises}
+
+AWS Backup policies enforce schedules, cross-account copies, vault lock, and restore-point monitoring. Backup success does not prove recoverability: a sample Aurora cluster and S3 object set are restored monthly; a service recovery exercise runs quarterly; and a full regional exercise runs twice each year. Results, actual RTO/RPO, data exceptions, and corrective actions are retained.
+
+% ================================================================

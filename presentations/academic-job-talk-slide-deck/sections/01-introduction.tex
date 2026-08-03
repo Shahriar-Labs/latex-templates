@@ -1,0 +1,78 @@
+\section{Research Vision}
+\subsection{Motivation}
+
+\begin{frame}{Scientific Instruments Are Drowning in Noise}{Motivation}
+  \small
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      Modern physical sensing networks -- seismic arrays, climate buoys, wearable
+      biosensors -- generate high-frequency time series where the signal of interest
+      is buried under sensor drift, environmental interference, and intermittent
+      dropout~\cite{chen2023seismic}.
+
+      \vspace{0.08cm}
+      \begin{itemize}
+        \item Deep models trained on clean benchmarks \textbf{overfit the noise
+          floor}, not the underlying physics.
+        \item Standard self-supervised objectives assume corruption is
+          \emph{random}, when it is highly \textbf{structured}.
+        \item Apex Environmental Labs loses an estimated 22\% of readings
+          to this gap every field season.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.4\textwidth}
+      \begin{notebox}{Working Definition}
+        A representation is \emph{robust} if downstream performance degrades
+        gracefully, not catastrophically, as corruption severity increases.
+      \end{notebox}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\subsection{A Structural View}
+
+\begin{frame}{From Raw Signal to Robust Representation}{A Structural View of the Problem}
+  \begin{center}
+  \begin{tikzpicture}[
+    node distance=0.9cm,
+    box/.style={draw=primaryNavy, fill=white, thick, rounded corners,
+      minimum width=2.2cm, minimum height=0.95cm, align=center, font=\scriptsize\sffamily},
+    lbl/.style={font=\tiny\sffamily, text=colorMuted},
+    noisyarrow/.style={-{Stealth[length=2.2mm]}, thick, draw=accentGold!80!black,
+      decorate, decoration={snake, amplitude=0.4mm, segment length=2.6mm, post length=2mm}},
+    cleanarrow/.style={-{Stealth[length=2.2mm]}, thick, draw=accentTeal}
+  ]
+    \node[box] (raw) {Raw Sensor\\Signal};
+    \node[box, right=of raw] (corrupt) {Structured\\Corruption};
+    \node[box, right=of corrupt] (encoder) {Contrastive\\Encoder};
+    \node[box, right=of encoder, fill=accentTeal!10] (rep) {Robust\\Representation};
+
+    \draw[cleanarrow] (raw) -- (corrupt) node[midway, above, lbl] {observe};
+    \draw[noisyarrow] (corrupt) -- (encoder) node[midway, above, lbl] {drift, dropout};
+    \draw[cleanarrow] (encoder) -- (rep) node[midway, above, lbl] {invariance};
+  \end{tikzpicture}
+  \par\vspace{0.3cm}
+  {\scriptsize\textcolor{colorMuted}{Figure 1: The corruption model is estimated from
+  deployment logs rather than assumed, so the encoder learns invariances that match
+  how instruments actually fail.}}
+  \end{center}
+\end{frame}
+
+\subsection{Research Statement}
+
+\begin{frame}{My Research Statement}{Three Thrusts, One Question}
+  \begin{contributionbox}{Central Question}
+    How do we build representations of physical time series that stay useful
+    when the deployment environment stops looking like the training set?
+  \end{contributionbox}
+
+  \vspace{0.25cm}
+  \begin{enumerate}
+    \item \textbf{Noise-robust self-supervised learning} -- encode structured,
+      instrument-specific corruption directly into the pretraining objective.
+    \item \textbf{Uncertainty quantification under distribution shift} -- give
+      downstream users calibrated confidence, not just a point prediction.
+    \item \textbf{Label-efficient transfer} -- make these representations useful
+      to domain scientists who can label dozens of examples, not millions.
+  \end{enumerate}
+\end{frame}

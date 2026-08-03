@@ -1,0 +1,39 @@
+\section{Conventions and terminology}
+
+\begin{longtable}{@{}L{35mm}L{116mm}@{}}
+  \toprule
+  \textbf{Term} & \textbf{Meaning} \\
+  \midrule
+  \endhead
+  Artifact & Immutable byte sequence installed on a device, such as a full image,
+             delta patch, bootloader, or component bundle. \\
+  Campaign & Server-side policy that assigns a release to an eligible population
+             over time. \\
+  Device agent & Trusted device software that evaluates manifests, transfers
+                 artifacts, invokes the installer, and reports status. \\
+  Digest & SHA-256 hash unless the manifest explicitly selects another mandatory
+           algorithm from a later protocol revision. \\
+  Image security version & Monotonically increasing integer used by the secure
+                           boot chain to prevent rollback. \\
+  Manifest & Canonically encoded, signed release metadata that binds artifact
+             bytes to target constraints and installation policy. \\
+  Release & A manifest and the immutable artifacts it authorizes. \\
+  Repository & Service that returns artifact bytes. It need not be trusted for
+               authenticity because bytes are verified end to end. \\
+  Update service & Authority that evaluates campaign policy and returns a signed
+                   manifest or a no-update response. \\
+  Confirmed image & Image that passed post-boot health checks and is accepted as
+                    the recovery baseline. \\
+  Trial image & Newly activated image that has not yet been confirmed. \\
+  Trust store & Protected set of accepted signing keys, key identifiers, roles,
+                validity metadata, and revocation state. \\
+  \bottomrule
+\end{longtable}
+
+All sizes are in octets. Unsigned integers use network byte order when a transport
+binding exposes them as raw binary. Timestamps are UTC strings in RFC~3339 form
+with a trailing \code{Z}; devices compare them only when they have a trustworthy
+time source. A semantic version is informational unless a rule explicitly uses
+it; security ordering always uses integer counters.
+
+% -----------------------------------------------------------------------------

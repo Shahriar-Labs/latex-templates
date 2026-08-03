@@ -1,0 +1,25 @@
+\section{Introduction}
+\label{sec:intro}
+
+With the rapid adoption of cloud database services, protecting data privacy while verifying query execution correctness has become a paramount challenge. Cloud providers often operate under a semi-trusted model, where they may behave honestly but are curious about the underlying records, or could experience transient faults leading to corrupted database lookups. 
+Cryptographic verification via Zero-Knowledge Proofs (ZKPs) has been proposed to resolve this tension, allowing database engines to output a proof $\pi$ certifying that query results conform to a particular commitment without disclosing any unauthorized records.
+
+However, deploying zero-knowledge systems in massive cloud infrastructures presents severe performance challenges. Traditional public-key protocols scale poorly to large databases. Lattice-based cryptography offers a promising path forward, as it provides security based on hard lattice problems (e.g., Ring Learning With Errors, Ring-LWE) and features fast additive homomorphic operations. 
+Yet, existing lattice-based ZKP schemes, such as Nexa~\cite{nexa2024lattice} and Apex~\cite{apex2025signatures}, still struggle with substantial verification times and large proofs that degrade network throughput when transmitted over cloud links.
+
+To address these limitations, we introduce \textbf{Vertex}, a zero-knowledge argument system tailored for modern distributed databases. The core innovation of Vertex is a decoupled proof-generation pipeline that separates the algebraic checking of relations from the cryptographic commitment phases. Under this model, database engines can delegate the commitment tasks to a pool of worker nodes without compromising security or privacy.
+
+\subsection{Our Contributions}
+Our main contributions are summarized as follows:
+\begin{itemize}
+  \item \textbf{Decoupled Design:} We formulate a new model for zero-knowledge proofs where algebraic constraint checks and commitment procedures are isolated. This enables massive horizontal scaling of proof generation on clusters like Synapse Cloud.
+  \item \textbf{Efficient Lattice Construction:} We implement a lattice-based commitment scheme utilizing the Ring-LWE assumption, which drastically reduces the computational work required for proof verification.
+  \item \textbf{Concrete Implementation and Evaluation:} We prototype Vertex in C++ and run benchmarks comparing it to state-of-the-art systems. Our experiments indicate a 42\% reduction in proof size and a 3.5x reduction in verifier latency.
+\end{itemize}
+
+\begin{tcolorbox}
+  \textbf{Highlight: Decoupled Proof Strategy} \\
+  Vertex enables zero-knowledge database proofs that scale linearly with the number of verification worker nodes, allowing distributed systems like Synapse to offload proof commitments to secondary compute clusters.
+  
+  This design reduces bottleneck times in relational query pipelines where verification latency must remain below 2 milliseconds.
+\end{tcolorbox}

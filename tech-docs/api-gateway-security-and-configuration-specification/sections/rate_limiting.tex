@@ -1,0 +1,61 @@
+\section{Rate Limiting and Traffic Management}
+\label{sec:rate_limiting}
+
+To protect Nimbus core services from resource exhaustion, degradation, and distributed denial-of-service (DDoS) attacks, the Vertex Gateway implements distributed rate limiting. Traffic policing is enforced at the edge, utilizing a Redis-backed Token Bucket algorithm. This architecture guarantees low latency and synchronization of rate counters across the gateway cluster.
+
+\subsection{Token Bucket Algorithm Parameters}
+The rate limiting mechanism is defined by two primary parameters:
+\begin{enumerate}
+    \item \textbf{Bucket Capacity} ($C$): The maximum number of tokens the bucket can hold. This defines the maximum burst size permitted for transient spikes in client requests.
+    \item \textbf{Refill Rate} ($R$): The rate at which tokens are added back to the bucket (tokens per second). This defines the sustained throughput limit for the client.
+\end{enumerate}
+
+Every incoming request consumes exactly one token from the target bucket. If the bucket is empty, the request is rejected with a \texttt{429 Too Many Requests} status, and a standard response header is injected specifying the retry interval:
+\begin{equation}
+    T_{\text{wait}} = \frac{1 - N_{\text{tokens}}}{R}
+\end{equation}
+
+\subsection{Client Tier Security Profiles}
+Rate limits are applied dynamically based on the authenticated client tier. Tiers are resolved from the JWT issuer claims and metadata. Table~\ref{tab:rate_limits} presents the standard profiles enforced across the Vertex Gateway environment.
+
+\begin{table}[htbp]
+\centering
+\caption{Dynamic Traffic Control Profiles by Client Tier}
+\label{tab:rate_limits}
+\begin{tabularx}{\textwidth}{l c c X X}
+\toprule
+\textbf{Client Tier} & \begin{tabular}[c]{@{}c@{}}\textbf{Sustained}\\\textbf{Rate (R)}\end{tabular} & \begin{tabular}[c]{@{}c@{}}\textbf{Burst}\\\textbf{Capacity (C)}\end{tabular} & \textbf{Enforcement Key} & \textbf{Action on Limit} \\
+\midrule
+Anonymous Public & 10 req/sec & 20 req & Client IP Address & Delay \& Reject \\
+Standard Partner & 200 req/sec & 500 req & App ID (JWT Claim) & Throttle \\
+Enterprise Partner & 1,000 req/sec & 2,500 req & App ID (JWT Claim) & Throttle \& Alert \\
+Internal Microservice & 5,000 req/sec & 10,000 req & Mutual TLS CN & Dynamic Scale \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Rate Limit Filter Configuration}
+Listing~\ref{lst:rate_limit_config} shows the YAML configuration for enforcing the client-tier rate limiting policies on the payment endpoint.
+
+\begin{lstlisting}[language=yaml, caption={YAML configuration for the Redis token-bucket rate limiter filter.}, label={lst:rate_limit_config}]
+filters:
+  - name: token-bucket-limiter
+    enabled: true
+    config:
+      redis_cluster_nodes:
+        - "redis-sentinel-01.internal.nimbus.com:26379"
+        - "redis-sentinel-02.internal.nimbus.com:26379"
+      default_key_generator: "claims.client_id"
+      fallback_key_generator: "request.client_ip"
+      rate_limits:
+        - key: "retail-mobile-app"
+          refill_rate: 100
+          capacity: 250
+        - key: "partner-synapse-b2b"
+          refill_rate: 500
+          capacity: 1000
+\end{lstlisting}
+
+\begin{warningbox}{DDoS Mitigation Override}
+In the event of an active denial-of-service attack, security operations can execute an emergency override of the Vertex Gateway rate-limiting filter. This will dynamically lower the capacity of anonymous buckets to 2 req/sec and reject all requests bypassing the Cloudflare WAF, preventing traffic from reaching the internal virtual private cloud (VPC).
+\end{warningbox}

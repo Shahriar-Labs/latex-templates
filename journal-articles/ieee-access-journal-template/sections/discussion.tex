@@ -1,0 +1,8 @@
+\section{Discussion}
+\label{sec:discussion}
+
+The performance gains achieved by our unified framework are primarily driven by the reduction of inter-core data transfers. In traditional edge accelerators, moving intermediate activations between the CPU and the tensor accelerator consumes more than 50\% of the total system power. By utilizing the MeridianLink shared SRAM cache and allowing the SynapseLink core to coordinate memory accesses directly, we virtually eliminate the need for external DRAM transactions during local layer evaluations.
+
+Another major benefit is the event-triggered clock-gating mechanism. The NexaCore engine features a relatively large silicon footprint and suffers from high static leakage currents. By putting the engine into a deep sleep state when event rates are below the activation threshold, we cut down static energy dissipation by 72\%. This is particularly advantageous for applications with bursty signal profiles, such as seismic anomaly detection or wearable biometric monitoring.
+
+However, these benefits come at the cost of a slightly more complex programming model. Software developers must partition their neural network architectures into event-driven layers (executed on SynapseLink) and dense matrix layers (executed on NexaCore). Ongoing efforts are focused on developing a unified compiler that automates this partitioning process directly from standard TensorFlow or PyTorch models, removing this barrier to entry.

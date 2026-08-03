@@ -1,0 +1,27 @@
+\section{Power-loss and recovery invariants}
+
+A conforming implementation demonstrates the following invariants under power
+loss at every storage operation:
+
+\begin{enumerate}
+  \item at least one cryptographically verified, confirmed image remains bootable;
+  \item a partially received artifact is never treated as fully verified;
+  \item a partially written slot is never selected as confirmed;
+  \item boot-selection records resolve deterministically using validity and generation;
+  \item security counters never decrease and do not strand the only recovery image;
+  \item trial attempts are bounded even when resets occur before application startup; and
+  \item resumption never combines bytes authorized by different manifest digests.
+\end{enumerate}
+
+Boot-control records \should use two copies with generation, state, payload digest,
+and CRC or authenticated tag. The writer commits a new valid record before
+invalidating the old one. Flash wear limits must be considered when selecting
+progress checkpoint frequency; a chunk bitmap may be journaled in batches only
+if uncommitted chunks are safely reverified after reboot.
+
+Recovery mode \must accept only properly targeted signed images and must expose
+no unauthenticated command that disables secure boot, rollback prevention, or
+artifact verification. Physical recovery may use a deployment-specific presence
+test, but its trust implications must be documented.
+
+% -----------------------------------------------------------------------------

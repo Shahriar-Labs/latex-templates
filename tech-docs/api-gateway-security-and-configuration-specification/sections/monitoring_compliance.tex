@@ -1,0 +1,56 @@
+\section{Monitoring, Logging, and Auditing}
+\label{sec:monitoring_compliance}
+
+Security observability is critical for post-incident analysis, threat hunting, and regulatory compliance. The Vertex Gateway integrates directly with the Nimbus Enterprise Security Information and Event Management (SIEM) system to export real-time threat intelligence and audit logs.
+
+\subsection{Structured Logging and PII Masking}
+The gateway writes all log events in structured JSON format to standard output, which is collected by logging agents. To maintain compliance with privacy regulations, the gateway filters out all sensitive data.
+\begin{itemize}
+    \item \textbf{Token Masking}: The \texttt{Authorization} header is stripped of its bearer token value in standard logs; only the token metadata (issuer, key ID, and expiry) is logged.
+    \item \textbf{Request/Response Payload Masking}: Downstream debug payloads are parsed, and fields containing Personally Identifiable Information (PII) or Primary Account Numbers (PAN) are masked with asterisks before logging. For instance, card numbers are masked to only show the last four digits (\texttt{************1234}).
+\end{itemize}
+
+Listing~\ref{lst:audit_log} displays an example of an audit log entry emitted by the gateway after rejecting a client due to scope insufficiency.
+
+\begin{lstlisting}[language={}, caption={JSON structured audit log event representing an unauthorized request.}, label={lst:audit_log}]
+{
+  "timestamp": "2026-08-02T15:51:00.124Z",
+  "correlation_id": "77e2992d-21e2-4c05-80f7-41c3a53ea354",
+  "client_ip": "198.51.100.42",
+  "http_method": "POST",
+  "request_uri": "/api/v1/payments/transfers",
+  "response_status": 403,
+  "error_code": "INSUFFICIENT_SCOPE",
+  "auth_metadata": {
+    "issuer": "https://auth.nimbus.com/oauth2/v1",
+    "subject": "usr_9a2b8e7c",
+    "client_id": "retail-mobile-app",
+    "provided_scopes": ["retail:read", "retail:write"],
+    "missing_scopes": ["payment:write"]
+  }
+}
+\end{lstlisting}
+
+\subsection{Regulatory Compliance Mapping}
+The configuration patterns detailed in this document map directly to standard compliance controls. Table~\ref{tab:compliance_matrix} outlines the relationship between Vertex Gateway security capabilities and PCI-DSS, SOC 2, and ISO/IEC 27001 frameworks.
+
+\begin{table}[htbp]
+\centering
+\caption{Vertex Gateway Control Mapping to Compliance Frameworks}
+\label{tab:compliance_matrix}
+\begin{tabularx}{\textwidth}{l X l l l}
+\toprule
+\textbf{Gateway Control} & \textbf{Functionality} & \textbf{PCI-DSS v4.0} & \textbf{SOC 2 Type II} & \textbf{ISO 27001:2022} \\
+\midrule
+JWT validation & Cryptographic auth & Req 8.3.1 & CC6.1, CC6.2 & Control A.8.20 \\
+Rate Limiting & Denial of Service prevention & Req 11.4.1 & CC7.1 & Control A.8.22 \\
+HSTS / HTTPS & Enforce data-in-transit encryption & Req 4.2.1 & CC6.6 & Control A.8.24 \\
+CORS policies & Restrict cross-origin access & Req 6.4.3 & CC6.3 & Control A.8.28 \\
+Audit logs & Masked JSON events to SIEM & Req 10.2.1 & CC7.2, CC7.3 & Control A.8.15 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{warningbox}{Incident Response Triggers}
+Any request that triggers a rate limiting block (HTTP 429) or authentication failure (HTTP 401/403) from a single IP address more than 100 times in 10 seconds is flagged by the SIEM as a brute-force or credential-stuffing attempt. This dynamically triggers a temporary IP block at the firewall level for 1 hour.
+\end{warningbox}

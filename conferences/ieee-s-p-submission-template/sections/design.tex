@@ -1,0 +1,97 @@
+\section{\sysname{} Design}
+\label{sec:design}
+
+\sysname{} is a four-stage pipeline that runs entirely in the hypervisor: a counter sampler
+reads raw hardware performance counters, a featurizer turns counter deltas into a per
+core-pair contention score, a streaming classifier smooths that score into a detection
+decision, and an isolation controller acts on sustained detections. Figure~\ref{fig:arch}
+shows the pipeline alongside the trust boundary it respects -- the victim CVM's memory,
+registers, and hypercalls are never touched by any stage.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners, minimum height=0.9cm, align=center, font=\small},
+  vmbox/.style={draw, dashed, rounded corners, minimum height=1.6cm, align=center, font=\small, inner sep=6pt},
+  stage/.style={draw, fill=wardnavy!8, rounded corners, minimum width=2.5cm, minimum height=1cm, align=center, font=\small},
+  arrow/.style={-{Stealth[length=2.2mm]}, thick, wardgray}
+]
+  \node[vmbox, minimum width=3.0cm] (victim) at (0,3.4) {Confidential VM\\(victim)\\[2pt]\footnotesize memory / registers /\\hypercalls -- never inspected};
+  \node[box, fill=wardred!10, minimum width=3.0cm] (attacker) at (5,3.4) {Attacker VM};
+
+  \node[stage, minimum width=8.4cm] (llc) at (2.5,1.9) {Shared LLC \& per-core hardware performance counters};
+
+  \draw[arrow] (victim.south) -- (2.0,2.4);
+  \draw[arrow] (attacker.south) -- (3.0,2.4);
+
+  \node[stage] (sampler) at (0,0.4) {Counter Sampler};
+  \node[stage] (feat) at (2.8,0.4) {Contention Featurizer};
+  \node[stage] (clf) at (2.8,-1.1) {Streaming Classifier};
+  \node[stage] (iso) at (0,-1.1) {Isolation Controller};
+
+  \draw[arrow] (llc.south) -- (2.5,1.4) -- (1.4,0.9) -- (sampler.north);
+  \draw[arrow] (llc.south) -- (2.5,1.4) -- (2.8,0.9) -- (feat.north);
+  \draw[arrow] (sampler.east) -- (feat.west);
+  \draw[arrow] (feat.south) -- (clf.north);
+  \draw[arrow] (clf.west) -- (iso.east);
+
+  \draw[arrow] (iso.north) .. controls (0,1.9) and (3.6,3.9) .. (attacker.south east)
+    node[midway, above, font=\footnotesize] {re-pin suspected attacker vCPU};
+\end{tikzpicture}
+\caption{\sysname{} architecture. Only the shared LLC and per-core hardware counters are
+observed; the victim CVM's memory, registers, and hypercalls are never inspected. On
+detection, the isolation controller re-pins the suspected attacker's virtual core, leaving the
+victim's schedule untouched.}
+\label{fig:arch}
+\end{figure*}
+
+\subsection{Counter Sampler}
+
+The sampler reads, at a configurable interval (2--20\,ms), the per-core LLC-reference and
+LLC-miss counters exposed by the CPU's performance monitoring unit for every core on the
+socket. Because these counters are already maintained by the hardware for the host's own
+profiling needs, reading them costs a register access per core per sample and requires no
+new hardware support, no guest visibility, and no change to the CVM's memory or attestation
+state.
+
+\subsection{Contention Featurizer}
+
+Raw counter values are noisy across sample intervals because ordinary program behavior
+already produces bursty cache traffic. The featurizer instead computes, for each candidate
+attacker/victim core pair on the socket, the correlation between the attacker candidate's
+LLC-miss-rate delta and the victim's LLC-miss-rate delta relative to each core's own rolling
+baseline. A real Prime+Probe or Flush+Reload loop drives this correlation up because the
+attacker's own accesses are timed \emph{by} the victim's evictions; unrelated contention from
+other co-located workloads does not carry this coupling and tends to wash out in the
+correlation rather than the raw miss rate.
+
+\subsection{Streaming Classifier}
+\label{sec:classifier}
+
+The featurizer's per-window contention score $x_t$ is smoothed online with an
+exponentially-weighted moving average so that a single noisy window cannot trigger a
+detection and a sustained attack cannot hide by staying just under a per-window threshold:
+
+\begin{equation}
+s_t = \alpha \, x_t + (1-\alpha)\, s_{t-1}, \qquad \alpha \in (0,1]
+\label{eq:ewma}
+\end{equation}
+
+\noindent where $s_t$ is the smoothed score after window $t$ and $\alpha$ trades off
+responsiveness against noise rejection. \sysname{} declares a detection when $s_t$ exceeds a
+per-host threshold $\tau$ for $k$ consecutive windows, and clears it only after $s_t$ falls
+below a lower threshold $\tau_{\text{lo}} < \tau$ for the same number of windows. This
+hysteresis band is what keeps the detector from flapping the isolation response on and off
+around a borderline score; Section~\ref{sec:evaluation} sweeps $\alpha$ and the sampling
+interval together to trace the resulting recall/overhead trade-off.
+
+\subsection{Isolation Controller}
+
+On a sustained detection, the isolation controller re-pins the suspected attacker's virtual
+core to a cache-way partition that does not overlap the victim's -- using the same
+way-based partitioning mechanism as static defenses~\cite{moreau2016catalyst,delacroix2019dawg},
+but applied narrowly and only to the flagged core rather than to every tenant on the socket
+all the time. The victim's own scheduling, affinity, and memory layout are never modified.
+If the smoothed score subsides below $\tau_{\text{lo}}$ for a cool-down period, the
+re-pinning is rolled back automatically, so a false positive costs the misclassified tenant a
+temporary cache-partition assignment rather than a lasting penalty.

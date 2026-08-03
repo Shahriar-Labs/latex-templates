@@ -1,0 +1,68 @@
+\section{Equipment Selection and System Schematic}
+\label{sec:equipment_selection}
+
+Based on the peak thermal load and airflow calculations, the primary mechanical equipment was selected to meet the heating, cooling, and ventilation demands of the Synapse Headquarters.
+
+A modular Variable Air Volume (VAV) system was chosen for the office zones, served by a central Air Handling Unit (AHU-1) located on the roof. Central chilled water is provided by an air-cooled scroll chiller (CH-1) utilizing low-GWP refrigerant R-454B. Heating is provided by a gas-fired condensing boiler (BLR-1) delivering hot water to the VAV reheat coils and cabinet unit heaters.
+
+\subsection{Central Equipment Schedule}
+The major mechanical equipment selections are presented in Table~\ref{tab:equipment_schedule}.
+
+\begin{table}[htbp]
+\centering
+\caption{HVAC Scheduled Equipment Specifications}
+\label{tab:equipment_schedule}
+\begin{tabularx}{\textwidth}{l l X c c}
+\toprule
+\textbf{Tag} & \textbf{Manufacturer} & \textbf{Model/Series} & \textbf{Design Capacity} & \textbf{Design Airflow} \\
+\midrule
+AHU-1 & Apex Systems & Series 400 Modular VAV & 60 Tons (720 MBH) & 22,000 CFM \\
+CH-1 & Nimbus Corp. & Centrifugal Scroll Chiller & 80 Tons (960 MBH) & 160 GPM \\
+BLR-1 & Meridian Thermal & Condensing Firetube Boiler & 450 MBH & 45 GPM \\
+FCU-1..12 & Synapse Tech & Thin-Line Ducted FCU & 2 Tons (24 MBH) ea & 800 CFM ea \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{System Air Loop Flow Schematic}
+The central airflow distribution and conditioning loop is illustrated schematically in Figure~\ref{fig:ahu_schematic}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=0.5cm and 0.6cm,
+    block/.style={draw=primarycolor, fill=lightgrey, rectangle, minimum width=1.3cm, minimum height=1.0cm, align=center, font=\scriptsize\sffamily, thick, rounded corners},
+    flow/.style={->, >=stealth, thick, primarycolor}
+]
+% Central Conditioning Components
+\node[block] (mix) {Mixing\\Box};
+\node[block, right=of mix] (filter) {Pre-Filter\\\& Carbon};
+\node[block, right=of filter] (cc) {Cooling\\Coil};
+\node[block, right=of cc] (hc) {Heating\\Coil};
+\node[block, right=of hc] (fan) {Supply\\Fan};
+\node[block, right=of fan] (zone) {Office\\Zones};
+
+% Flows between blocks
+\draw[flow] (mix) -- (filter);
+\draw[flow] (filter) -- (cc);
+\draw[flow] (cc) -- (hc);
+\draw[flow] (hc) -- (fan);
+\draw[flow] (fan) -- (zone) node[midway, above, font=\tiny\sffamily] {SA};
+
+% Outdoor Air and Return Air
+\node[left=0.6cm of mix, yshift=0.4cm, font=\scriptsize\sffamily] (oa) {OA};
+\node[left=0.6cm of mix, yshift=-0.4cm, font=\scriptsize\sffamily] (ra) {RA};
+\draw[flow] (oa.east) -- (mix.170);
+\draw[flow] (ra.east) -- (mix.190);
+
+% Exhaust Air
+\node[above=0.6cm of mix, font=\scriptsize\sffamily] (ea) {EA};
+\draw[flow] (mix.north) -- (ea);
+
+% Return loop connection
+\draw[flow] (zone.south) -- ++(0,-0.6) -| (ra.west) node[near start, below, font=\tiny\sffamily] {Return Air Loop};
+
+\end{tikzpicture}
+\caption{Air Handling Unit AHU-1 central conditioning air loop flow schematic.}
+\label{fig:ahu_schematic}
+\end{figure}

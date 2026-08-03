@@ -1,0 +1,82 @@
+\section{Performance Benchmarks}
+\subsection{Scale \& Load Testing}
+
+\begin{frame}{Performance Benchmarks}{Throughput and Resource Efficiency}
+  Load testing was conducted on a simulated 8-node Kubernetes cluster at Nexa Labs~\cite{apex2025microservices}.
+  
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \centering
+      \begin{tikzpicture}[scale=0.75]
+        \begin{axis}[
+          width=6.0cm,
+          height=3.6cm,
+          grid=both,
+          grid style={line width=.1pt, draw=gray!10},
+          major grid style={line width=.2pt, draw=gray!30},
+          xlabel={Requests / Sec (RPS)},
+          ylabel={95th Pctl Latency (ms)},
+          xmin=100, xmax=1000,
+          ymin=0, ymax=450,
+          xtick={100, 400, 700, 1000},
+          ytick={100, 200, 300, 400},
+          legend pos=north west,
+          legend style={font=\tiny, draw=none, fill=none},
+          axis x line=bottom,
+          axis y line=left,
+          every tick label/.append style={font=\tiny},
+          label style={font=\scriptsize}
+        ]
+          % Monolith Latency
+          \addplot[
+            color=colorDanger,
+            mark=*,
+            line width=1.2pt
+          ] coordinates {
+            (100,  85)
+            (400,  190)
+            (700,  340)
+            (1000, 420)
+          };
+          \addlegendentry{Legacy Monolith}
+
+          % Microservices Latency
+          \addplot[
+            color=colorSuccess,
+            mark=square*,
+            line width=1.2pt
+          ] coordinates {
+            (100,  45)
+            (400,  62)
+            (700,  85)
+            (1000, 110)
+          };
+          \addlegendentry{Microservices}
+        \end{axis}
+      \end{tikzpicture}
+      \par\vspace{0.1cm}
+      {\scriptsize\textcolor{textDark!70}{Figure 2: Latency under load scaling.}}
+    \end{column}
+    \hfill
+    \begin{column}{0.48\textwidth}
+      \textbf{Key Measurements:}
+      \begin{itemize}
+        \item \textbf{Peak Latency:} Monolith latency degrades exponentially beyond 600 RPS due to DB pool locking.
+        \item \textbf{Throughput Limit:} Microservices sustained 1,000+ RPS with flat sub-120ms latency.
+      \end{itemize}
+
+      \vspace{0.2cm}
+      {\scriptsize
+      \begin{tabular}{lccc}
+        \toprule
+        \textbf{Metric} & \textbf{Monolith} & \textbf{Proposed} & \textbf{Gain} \\
+        \midrule
+        Max RPS & 650 & 2,200 & +238\% \\
+        DB CPU \% & 88\% & 32\% & -63.6\% \\
+        Deploy Time & 45m & 4m & -91.1\% \\
+        \bottomrule
+      \end{tabular}
+      }
+    \end{column}
+  \end{columns}
+\end{frame}

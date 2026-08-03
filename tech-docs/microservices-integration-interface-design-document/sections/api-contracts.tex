@@ -1,0 +1,77 @@
+\section{Synchronous API Contracts}
+
+\subsection{Gateway and Versioning}
+All synchronous traffic between services is routed through the Nexa API gateway and is
+versioned in the URI path, currently \code{/v2}. A new major version is introduced only for
+breaking changes; additive changes (new optional fields, new endpoints) ship within the
+current version. See Section~6 for the full versioning policy.
+
+\subsection{Authentication and Transport Security}
+Every gateway-routed call requires two layers of trust:
+\begin{itemize}[leftmargin=1.6em]
+  \item \textbf{Mutual TLS} between the gateway and each downstream service, terminated at the
+    service mesh sidecar, with certificates rotated every 90 days.
+  \item \textbf{A short-lived JWT bearer token} (5-minute expiry) issued by the internal
+    service-identity provider and validated by the gateway before the request is forwarded.
+\end{itemize}
+Partner-owned services (Synapse, Vertex, Nimbus) authenticate the same way; there is no
+separate ``partner'' auth path, which keeps the trust model uniform across ownership
+boundaries.
+
+\subsection{Endpoint Catalog}
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}l X l@{}}
+\toprule
+\textbf{Method \& Path} & \textbf{Description} & \textbf{Owning Service} \\
+\midrule
+\code{POST /v2/orders} & Create an order and reserve inventory atomically & Order Orchestration \\
+\code{GET /v2/orders/\{orderId\}} & Retrieve order status and state-machine history & Order Orchestration \\
+\code{POST /v2/payments/authorize} & Authorize payment for a given order & Payment Gateway Adapter \\
+\code{POST /v2/payments/\{paymentId\}/capture} & Capture a previously authorized payment & Payment Gateway Adapter \\
+\code{GET /v2/inventory/\{sku\}/availability} & Real-time stock availability by SKU and warehouse & Inventory Ledger \\
+\code{POST /v2/notifications/dispatch} & Send a transactional notification & Notification Dispatch \\
+\bottomrule
+\end{tabularx}
+\caption{Primary gateway-routed endpoints in the \code{/v2} contract.}
+\end{table}
+
+\subsection{Sample Request and Response}
+\begin{sloppypar}
+The example below authorizes payment for an order. Every write endpoint requires an
+\code{Idempotency-Key} header; \svc{Payment Gateway Adapter} stores the key for 24 hours and
+returns the original response, unchanged, for any retry that reuses it.
+\end{sloppypar}
+
+\begin{lstlisting}
+POST /v2/payments/authorize
+Idempotency-Key: 8f14e45f-ceea-4c9a-b1e4-0d7e2f9a5b21
+
+{
+  "orderId": "ord_7f3c9a21",
+  "amount": { "value": "129.00", "currency": "USD" },
+  "paymentMethod": { "type": "card", "token": "tok_9c2e1a" },
+  "capture": false
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+200 OK
+
+{
+  "paymentId": "pay_4b8d2e77",
+  "orderId": "ord_7f3c9a21",
+  "status": "authorized",
+  "amount": { "value": "129.00", "currency": "USD" },
+  "expiresAt": "2026-08-03T14:22:00Z"
+}
+\end{lstlisting}
+
+\subsection{Pagination and Rate Limiting}
+List endpoints use cursor-based pagination via a \code{cursor} query parameter and return a
+\code{nextCursor} field; page size is fixed at 50 and is not client-configurable. Every
+authenticated client is limited to 300 requests per minute per service, enforced at the
+gateway; the response headers \code{X-RateLimit-Remaining} and \code{X-RateLimit-Reset} report
+the current window. Exceeding the limit returns \code{429} with the error envelope described
+in Section~5.

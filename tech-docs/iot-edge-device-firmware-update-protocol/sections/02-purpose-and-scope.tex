@@ -1,0 +1,49 @@
+\section{Purpose and scope}
+
+The IoT Edge Device Firmware Update Protocol (\protocol) coordinates a trusted
+update service, one or more artifact repositories, and an edge device. It is
+designed for devices that may have limited memory, metered connectivity, sudden
+power loss, long offline periods, and a hardware or software root of trust.
+
+\protocol defines:
+
+\begin{itemize}
+  \item how a device identifies itself and asks whether an update applies;
+  \item how an authority describes and signs a release;
+  \item how a device downloads a full or delta artifact resumably;
+  \item how authenticity, integrity, freshness, and rollback resistance are enforced;
+  \item how installation and activation remain safe across power loss;
+  \item how post-boot health is confirmed or automatically rolled back;
+  \item how rollout policy, cancellation, telemetry, and failures are represented; and
+  \item what behavior is required for interoperability and conformance.
+\end{itemize}
+
+The protocol does not prescribe a radio, IP stack, operating system, flash
+layout, cloud vendor, or fleet-management user interface. It also does not make
+an insecure boot chain secure: devices are expected to verify executable code
+from an immutable or independently protected trust anchor.
+
+\subsection{Design goals}
+
+\begin{enumerate}
+  \item \textbf{Fail-safe operation.} An interrupted or invalid update cannot
+        permanently prevent the device from booting its last confirmed image.
+  \item \textbf{End-to-end authorization.} Artifact acceptance depends on the
+        signed manifest, not solely on transport security or repository trust.
+  \item \textbf{Constrained-device viability.} Transfer can resume by chunk and
+        verification can be streamed with bounded RAM.
+  \item \textbf{Operational control.} Rollouts can be staged, paused, expired,
+        superseded, and observed without weakening device-side checks.
+  \item \textbf{Deterministic behavior.} A device presented with the same trusted
+        inputs makes the same applicability and security decisions.
+\end{enumerate}
+
+\subsection{Out of scope}
+
+Factory provisioning, application data migration semantics, physical debug-port
+security, and organization-specific release approval are out of scope. A device
+may update applications, configuration, radio firmware, or other components
+using this protocol, but component-specific installation behavior remains a
+platform responsibility.
+
+% -----------------------------------------------------------------------------

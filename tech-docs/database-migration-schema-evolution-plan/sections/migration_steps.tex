@@ -1,0 +1,58 @@
+\section{Step-by-Step Migration Execution}
+
+The migration is partitioned into three chronological phases: Pre-migration Preparation, Migration Execution, and Post-migration Validation. DBAs must run these commands sequentially and log execution outputs in the Meridian runbook.
+
+\subsection{Phase 1: Pre-migration Preparation}
+Before altering the database instance, the following commands must be run:
+\begin{enumerate}
+    \item Lock client application write access:
+\begin{lstlisting}[language=sql, caption={Disable application writes by updating security rules.}]
+ALTER USER application_client WITH NOLOGIN;
+SELECT pg_terminate_backend(pid) 
+FROM pg_stat_activity 
+WHERE usename = 'application_client';
+\end{lstlisting}
+    \item Take a consistent database snapshot:
+\begin{lstlisting}[language=sql, caption={Perform pg\_dump snapshot.}]
+-- Executed via shell
+pg_dump -h localhost -U dba_admin -F d -j 4 -b -v -f /var/backups/meridian_v1_4_2_backup synapse_core
+\end{lstlisting}
+\end{enumerate}
+
+\begin{warningbox}{Critical Backup Requirement}
+Before initiating Phase 2, a complete physical pg\_dump snapshot must be successfully written to the secure off-site storage replication. Verify that the backup checksum matches the live production database.
+\end{warningbox}
+
+\subsection{Phase 2: Migration Execution}
+Once client connections are terminated, execute the schema definitions and run the batch data transformation pipeline.
+
+\begin{lstlisting}[language=sql, caption={Partition and normalize user profiles and ledger tables.}]
+-- Create the partitioned target table
+CREATE TABLE ledger_transactions_v2 (
+    transaction_id UUID NOT NULL DEFAULT gen_random_uuid(),
+    account_id UUID NOT NULL,
+    amount NUMERIC(18, 4) NOT NULL,
+    transaction_time TIMESTAMP WITH TIME ZONE NOT NULL,
+    PRIMARY KEY (transaction_id, transaction_time)
+) PARTITION BY RANGE (transaction_time);
+
+-- Define weekly partitions for the execution window
+CREATE TABLE ledger_transactions_y2026m08w01 PARTITION OF ledger_transactions_v2
+    FOR VALUES FROM ('2026-08-01 00:00:00+00') TO ('2026-08-08 00:00:00+00');
+
+-- Transform and copy legacy data into partitioned schema
+INSERT INTO ledger_transactions_v2 (transaction_id, account_id, amount, transaction_time)
+SELECT transaction_id, account_id, amount, transaction_time
+FROM ledger_transactions;
+\end{lstlisting}
+
+\subsection{Phase 3: Post-migration Validation}
+After data loading, indexes and foreign keys must be created. Compatibility views are activated to support older clients.
+\begin{lstlisting}[language=sql, caption={Create indexes and views for legacy compatibility.}]
+CREATE INDEX idx_ledger_v2_acc ON ledger_transactions_v2(account_id);
+
+-- Legacy backward compatibility view
+CREATE OR REPLACE VIEW ledger_transactions AS
+SELECT transaction_id, account_id, amount, transaction_time
+FROM ledger_transactions_v2;
+\end{lstlisting}

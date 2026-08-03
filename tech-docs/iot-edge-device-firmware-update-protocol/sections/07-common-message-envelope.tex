@@ -1,0 +1,43 @@
+\section{Common message envelope}
+
+Protocol control messages use canonical CBOR in production. Diagnostic examples
+in this document use the deterministic JSON mapping: byte strings are lowercase
+hex, integers remain integers, and map keys remain strings. A receiver \must
+enforce maximum nesting depth 12, maximum map entries 128, and maximum decoded
+control-message size 64~KiB unless a stricter device profile applies.
+
+Each request or event contains:
+
+\begin{lstlisting}[language={},caption={Common logical envelope}]
+{
+  "protocol": "EFUP",
+  "protocol_version": 1,
+  "message_type": "DISCOVER",
+  "message_id": "9e6d17e5-8fb0-4e22-b18c-38b61e381b52",
+  "device_id": "edge-dhaka-004271",
+  "sent_at": "2026-08-02T06:20:00Z",
+  "body": { }
+}
+\end{lstlisting}
+
+\begin{tabularx}{\textwidth}{@{}L{35mm}L{26mm}Y@{}}
+  \toprule
+  \textbf{Field} & \textbf{Required} & \textbf{Semantics} \\
+  \midrule
+  \field{protocol} & Yes & Literal \code{EFUP}. \\
+  \field{protocol_version} & Yes & Integer major version; this specification uses 1. \\
+  \field{message_type} & Yes & Uppercase message name defined by this document. \\
+  \field{message_id} & Yes & UUID used for deduplication and trace correlation. \\
+  \field{device_id} & Device messages & Stable device identifier. \\
+  \field{sent_at} & When trusted time exists & Sender's UTC creation time. \\
+  \field{body} & Yes & Message-specific map. \\
+  \bottomrule
+\end{tabularx}
+
+The recipient \must reject an unsupported major version with
+\code{UNSUPPORTED\_PROTOCOL}. Duplicate requests with the same
+\field{message_id} and identical authenticated content \should receive an
+equivalent response. Reuse of a message ID with different content \must be
+rejected as \code{MESSAGE\_ID\_CONFLICT}.
+
+% -----------------------------------------------------------------------------

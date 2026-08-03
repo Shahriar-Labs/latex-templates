@@ -1,0 +1,36 @@
+\section{Compute and Application Platform}
+
+\subsection{EKS baseline}
+
+The cluster control plane exposes a private endpoint and a restricted public endpoint for approved CI runners only. Managed node groups span three Availability Zones. System add-ons run on a small on-demand group; application services use mixed on-demand and Spot capacity. Critical services maintain enough on-demand replicas to survive loss of any one zone.
+
+\begin{tabularx}{\textwidth}{@{}L{32mm}Y Y@{}}
+  \toprule
+  \rowcolor{navy}
+  \color{white}\textbf{Concern} & \color{white}\textbf{Baseline} & \color{white}\textbf{Guardrail} \\
+  \midrule
+  Scheduling & Topology spread across zone and host; anti-affinity for critical replicas & Admission policy rejects single-replica Tier 1 workloads \\
+  \rowcolor{pale}
+  Capacity & Cluster Autoscaler / Karpenter with approved instance families & Defined CPU, memory, and ephemeral-storage requests \\
+  Pod identity & EKS workload identity mapped to one IAM role per service & No node-role credential use by applications \\
+  \rowcolor{pale}
+  Images & Private ECR, digest-pinned, signed, scanned before promotion & Critical vulnerabilities block release \\
+  Runtime & Read-only root filesystem, non-root UID, dropped capabilities & Policy exceptions expire automatically \\
+  \rowcolor{pale}
+  Availability & PDBs, readiness/startup probes, graceful termination & Planned disruption respects error budget \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Workload deployment pattern}
+
+Each service is a versioned Helm release promoted across environments. A deployment contains resource requests and limits, health probes, a service account, pod disruption budget, network policy, autoscaling rules, telemetry annotations, and ownership metadata. Configuration is externalized; secrets are mounted at runtime from Secrets Manager and never stored in Git or container images.
+
+\subsection{Scaling model}
+
+API pods scale on CPU and requests per second, workers on queue age and depth, and node capacity on pending pods. Scale-out begins at 60\% target utilization, leaving headroom for a zone failure. Scheduled scaling precedes known campaigns. Scale-in uses a ten-minute stabilization window to avoid oscillation.
+
+\begin{summarybox}[Capacity invariant]
+At steady state, the remaining two Availability Zones must absorb the loss of one zone without exceeding 75\% allocatable CPU or memory. The invariant is tested monthly and before every major campaign.
+\end{summarybox}
+
+% ================================================================

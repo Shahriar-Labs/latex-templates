@@ -1,0 +1,83 @@
+\section{Experimental Evaluation}
+\label{sec:evaluation}
+
+We evaluated our co-designed architecture on a cycle-accurate hardware simulator configured with fictional parameters representing NexaCore and SynapseLink silicons. The hardware configuration details are listed in Table~\ref{tab:config}.
+
+\begin{table}[htbp]
+\centering
+\caption{Simulator Configuration Parameters for the Hardware Co-design.}
+\label{tab:config}
+\vspace{0.2cm}
+\setlength{\tabcolsep}{4pt}
+\small
+\begin{tabular}{lcc}
+\toprule
+\textbf{Hardware Block} & \textbf{Parameter} & \textbf{Value} \\
+\midrule
+NexaCore Engine         & Systolic Array Size & $16 \times 16$ MACs \\
+                        & Operating Frequency & $250\,\text{MHz}$ \\
+                        & Target Voltage      & $0.85\,\text{V}$ \\
+\midrule
+SynapseLink Core        & Number of Neurons   & $65\text{k}$ \\
+                        & Routing Topology    & $4 \times 4$ Mesh \\
+\midrule
+MeridianLink Cache      & Capacity            & $512\,\text{kB}$ \\
+                        & Bus Width           & $128\text{-bit}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+We measured the throughput of our system across varying batch sizes and compared it with the standalone NexaCore design. As shown in Fig.~\ref{fig:throughput}, the tightly-coupled SynapseLink + NexaCore architecture achieves significantly higher throughput at small batch sizes because the neuromorphic scheduler bypasses the overhead of traditional DMA transfers.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis} [
+    width=0.96\columnwidth,
+    height=5.2cm,
+    grid=both,
+    grid style={line width=.1pt, draw=gray!10},
+    major grid style={line width=.2pt, draw=gray!20},
+    xlabel={Batch Size},
+    ylabel={Throughput (k-inferences/s)},
+    xmin=1, xmax=64,
+    ymin=10, ymax=130,
+    xtick={1, 8, 16, 32, 64},
+    ytick={20, 40, 60, 80, 100, 120},
+    legend pos=north west,
+    legend style={draw=none, fill=none, font=\sffamily\scriptsize},
+    line width=1.0pt
+]
+    \addplot[accessred, thick, mark=*] coordinates {
+        (1, 25.2) (8, 68.5) (16, 95.3) (32, 118.1) (64, 124.8)
+    };
+    \addlegendentry{SynapseLink + NexaCore}
+
+    \addplot[accessgray, dashed, thick, mark=square*] coordinates {
+        (1, 10.1) (8, 30.4) (16, 52.1) (32, 78.4) (64, 96.2)
+    };
+    \addlegendentry{NexaCore Baseline}
+\end{axis}
+\end{tikzpicture}
+\caption{System inference throughput (thousand inferences per second) as a function of the batch size, comparing the proposed co-designed framework with a baseline tensor accelerator.}
+\label{fig:throughput}
+\end{figure}
+
+The power consumption benchmarks are summarized in Table~\ref{tab:benchmarks}. The unified design consumes only 215\,mW of active power during continuous inference, representing a 48.8\% power reduction over the baseline configuration.
+
+\begin{table*}[htbp]
+\centering
+\caption{Performance and Power Benchmarks for Different Edge Implementations.}
+\label{tab:benchmarks}
+\vspace{0.2cm}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Configuration} & \textbf{Accuracy (\%)} & \textbf{F1-Score} & \textbf{Power (mW)} & \textbf{Latency (ms)} \\
+\midrule
+NexaCore Baseline      & 92.4                   & 0.918             & 420                 & 12.5                  \\
+SynapseLink Standard   & 95.1                   & 0.949             & 280                 & 8.2                   \\
+SynapseLink Parallel   & 96.8                   & 0.966             & 310                 & 4.5                   \\
+\textbf{SynapseLink+NexaCore} & \textbf{98.2}   & \textbf{0.981}    & \textbf{215}        & \textbf{2.1}          \\
+\bottomrule
+\end{tabular}
+\end{table*}

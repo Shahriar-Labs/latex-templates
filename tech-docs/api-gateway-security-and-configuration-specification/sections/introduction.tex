@@ -1,0 +1,47 @@
+\section{Introduction}
+\label{sec:introduction}
+
+In modern enterprise architectures, the API Gateway serves as the single entry point and enforcement boundary for all external and internal client interactions. For the \textbf{Nimbus Corp} digital banking ecosystem, the \textbf{Vertex Gateway} acts as the primary reverse proxy and security enforcement hub, mediating traffic between client applications and downstream microservices managed by the \textbf{Synapse Engineering} division.
+
+This document details the security configurations, protocol enforcement rules, and traffic management policies deployed on the Vertex Gateway. The configuration ensures compliance with the enterprise security blueprint \cite{vertex_arch} and aligns with the federated identity guidelines of the Nimbus Identity \& Access Management (IAM) framework \cite{nimbus_auth_spec}.
+
+\subsection{Document Scope}
+This specification covers four critical dimensions of the Vertex Gateway configuration:
+\begin{enumerate}
+    \item \textbf{Identity and Access Control}: Strict validation of JSON Web Tokens (JWT) issued by the federated identity provider, scope checking, and downstream claim propagation.
+    \item \textbf{Traffic Management and Rate Limiting}: Tiered rate-limiting rules utilizing the token bucket algorithm to prevent denial-of-service (DoS) attacks and ensure resource fairness.
+    \item \textbf{CORS and Routing Rules}: Path-based routing tables, cross-origin resource sharing restrictions, and secure header injection.
+    \item \textbf{Auditing and Compliance}: Log formats, SIEM ingestion protocols, and tracing patterns.
+\end{enumerate}
+
+\subsection{Architectural Flow}
+The network placement of the gateway and its interaction with the Nimbus Identity Provider (IdP) and downstream core APIs are illustrated in Figure~\ref{fig:network_architecture}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    scale=0.95, every node/.style={transform shape, font=\sffamily\small},
+    box/.style={draw=primary, fill=lightbg, minimum width=2.6cm, minimum height=1cm, align=center, rounded corners=3pt, thick},
+    extbox/.style={draw=secondary, fill=lightbg, minimum width=2.6cm, minimum height=1cm, align=center, rounded corners=3pt, thick},
+    arrow/.style={->, >=stealth, thick, primary}
+]
+    % Nodes
+    \node[extbox] (client) at (0,0) {External Clients \\ (Web / Mobile)};
+    \node[box] (gw) at (4.5,0) {\textbf{Vertex Gateway} \\ (WAF, Rate Limit)};
+    \node[box] (idp) at (4.5,2.2) {Identity Provider \\ (OAuth2 / OIDC)};
+    \node[box] (api1) at (9,1) {Nimbus Core \\ API};
+    \node[box] (api2) at (9,-1) {Synapse Engine \\ API};
+    
+    % Flow arrows
+    \draw[arrow] (client) -- node[above, font=\scriptsize\color{textmuted}] {HTTPS} (gw);
+    \draw[arrow] ($(gw.north west)!0.3!(gw.north east)$) -- node[left, font=\scriptsize\color{textmuted}] {Validate Token} ($(idp.south west)!0.3!(idp.south east)$);
+    \draw[arrow] ($(idp.south west)!0.7!(idp.south east)$) -- node[right, font=\scriptsize\color{textmuted}] {Claims} ($(gw.north west)!0.7!(gw.north east)$);
+    
+    \draw[arrow] (gw.east) -- +(0.5,0) |- (api1.west) node[near end, above, font=\scriptsize\color{textmuted}] {Forwarded Req};
+    \draw[arrow] (gw.east) -- +(0.5,0) |- (api2.west);
+\end{tikzpicture}
+\caption{Vertex Gateway Network Placement and Request Execution Flow}
+\label{fig:network_architecture}
+\end{figure}
+
+By terminating TLS connections at the Vertex Gateway, downstream services are insulated from direct internet exposure. The gateway also intercepts malicious payloads, normalizes HTTP requests, and validates security claims before routing traffic to private subnets.

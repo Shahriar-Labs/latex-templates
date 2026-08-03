@@ -1,0 +1,26 @@
+\section{Construction}
+\label{sec:construction}
+
+Let $\rho$ be the salt length and $\tau$ the commitment length.  The public
+parameters contain $(\rho,\tau,\Tag,\Encode)$ and a random oracle
+$\Hash:\bits^*\to\bits^\tau$.
+
+\secpar{$\Setup(1^\lambda)$} Choose parameters $\rho,\tau\geq\lambda$, fix a
+public protocol tag and the canonical encoder from \cref{eq:encoding}, and
+return $pp=(\rho,\tau,\Tag,\Encode,\Hash)$.
+
+\secpar{$\Commit(pp,sid,i,m)$} Sample $r\getsR\bits^\rho$, compute
+\[
+  X=\Encode(\Tag,sid,i,m;r),\qquad C=\Hash(X),
+\]
+and return $(C,d)$ for $d=(m,r)$.  If the API supplies $m$ separately at
+opening time, storing only $r$ is equivalent.
+
+\secpar{$\Verify(pp,sid,i,C,m,r)$} Reject if any field is malformed or if
+$|r|\neq\rho$.  Canonically encode
+$X=\Encode(\Tag,sid,i,m;r)$ and accept if and only if $C=\Hash(X)$.
+
+Correctness is immediate.  The construction is deliberately stateless, but an
+implementation should still reject duplicate positions within a session:
+this catches application errors and prevents confusing two semantic records
+that intentionally share the same hash domain.

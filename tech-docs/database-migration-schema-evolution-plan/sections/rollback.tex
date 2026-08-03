@@ -1,0 +1,39 @@
+\section{Rollback \& Contingency Strategy}
+
+If performance degradations or validation mismatches exceed defined thresholds, the DBAs must trigger the rollback sequence. The maximum allowable downtime window is four hours, within which rollback and service restoration must be completed.
+
+\subsection{Rollback Thresholds}
+A rollback is triggered automatically if any of the following conditions are met:
+\begin{itemize}
+    \item Execution step delay exceeds the schedule by more than $45$ minutes.
+    \item Checksum verification mismatch is discovered in database transactions.
+    \item Application service latency exceeds $500\text{ ms}$ for over $5$ consecutive minutes post-migration.
+    \item Error rate on database queries exceeds $1.5\%$ on the application path.
+\end{itemize}
+
+\begin{infobox}{Rollback Authority}
+Only the Database Architecture Coordinator (Sarah Jenkins) or the Infrastructure Director (Elena Rostova) has the authority to declare rollback execution.
+\end{infobox}
+
+\subsection{Rollback Execution Steps}
+Follow these steps to safely restore the legacy v1.4.2 database:
+\begin{enumerate}
+    \item Terminate any active sessions on the new v2.0.0 schema.
+    \item Re-point DNS database aliases back to the read-only replication nodes if write replication was paused.
+    \item Restoring the legacy schema from snapshot:
+\begin{lstlisting}[language=sql, caption={Drop new schema changes and restore from physical backup.}]
+-- Drop target tables if rollback is triggered
+DROP VIEW IF EXISTS ledger_transactions;
+DROP TABLE IF EXISTS ledger_transactions_v2 CASCADE;
+DROP TABLE IF EXISTS user_addresses CASCADE;
+DROP TABLE IF EXISTS user_settings CASCADE;
+
+-- Re-enable legacy schema from raw sql dump
+-- Execute via shell
+psql -h localhost -U dba_admin -d synapse_core -f /var/backups/meridian_v1_4_2_backup
+\end{lstlisting}
+    \item Enable application user logins:
+\begin{lstlisting}[language=sql, caption={Allow client database access.}]
+ALTER USER application_client WITH LOGIN;
+\end{lstlisting}
+\end{enumerate}

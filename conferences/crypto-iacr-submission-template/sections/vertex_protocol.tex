@@ -1,0 +1,75 @@
+\section{The Vertex Protocol}
+\label{sec:protocol}
+
+The core architecture of Vertex consists of three main phases: \textsf{Setup}, \textsf{Commit}, and \textsf{Prove}. The protocol is designed to be interactive, but can be made non-interactive in the random oracle model via the Fiat-Shamir transform.
+
+\subsection{Protocol Flow}
+Let $\vectorbf{A} \in \Ringq^{k \times l}$ be the public matrix generated during $\textsf{Setup}(1^\secparam)$. The Prover holds a secret witness polynomial $\vectorbf{w} \in \Ring^l$ with small coefficients, representing the query verification path. The Verifier receives the public commitment key and the commitment vector $\vectorbf{t}_0 = \vectorbf{A}\vectorbf{w} + \vectorbf{e}_0$.
+
+The detailed interaction between the Prover $\mathcal{P}$ and Verifier $\mathcal{V}$ is presented in \Cref{fig:vertex_protocol}.
+
+\begin{figure}[htb]
+\centering
+\begin{tikzpicture}[node distance=2.5cm, auto, >=stealth, thick]
+  % Define coordinates/nodes
+  \node[draw, rectangle, fill=nimbuslight, minimum width=2.5cm, minimum height=1cm, rounded corners] (prover) at (0,0) {
+    \begin{tabular}{c}
+      \textbf{Prover $\mathcal{P}$} \\
+      \small Input: $\pk, \sk, \vectorbf{w}$
+    \end{tabular}
+  };
+  \node[draw, rectangle, fill=nimbuslight, minimum width=2.5cm, minimum height=1cm, rounded corners] (verifier) at (6,0) {
+    \begin{tabular}{c}
+      \textbf{Verifier $\mathcal{V}$} \\
+      \small Input: $\pk, \vectorbf{t}_0$
+    \end{tabular}
+  };
+
+  % Draw timelines
+  \draw[dashed, thick, charcoal] (prover.south) -- (0,-6.5);
+  \draw[dashed, thick, charcoal] (verifier.south) -- (6,-6.5);
+
+  % Step 1: Commitment
+  \node[anchor=west] at (0.2,-1.5) {
+    \begin{tabular}{l}
+      $\vectorbf{y} \leftarrow \chi^l$ \\
+      $\vectorbf{t} = \vectorbf{A}\vectorbf{y}$ \\
+      $\vectorbf{c}_0 = \mathsf{Hash}(\vectorbf{t})$
+    \end{tabular}
+  };
+  \draw[->, thick, meridianblue] (0,-2.3) -- (6,-2.3) node[midway, above] {$\vectorbf{c}_0$};
+
+  % Step 2: Challenge
+  \node[anchor=east] at (5.8,-3.2) {
+    \begin{tabular}{r}
+      $c \leftarrow \mathcal{C}$
+    \end{tabular}
+  };
+  \draw[<-, thick, apexteal] (0,-3.7) -- (6,-3.7) node[midway, above] {$c$};
+
+  % Step 3: Response
+  \node[anchor=west] at (0.2,-4.8) {
+    \begin{tabular}{l}
+      $\vectorbf{z} = \vectorbf{y} + c \cdot \vectorbf{w}$ \\
+      Apply rejection sampling \\
+      with probability $p(\vectorbf{z}, c \cdot \vectorbf{w})$
+    \end{tabular}
+  };
+  \draw[->, thick, meridianblue] (0,-5.5) -- (6,-5.5) node[midway, above] {$\vectorbf{z}$};
+
+  % Step 4: Verification
+  \node[draw, rectangle, fill=white, draw=charcoal, minimum width=3.4cm, minimum height=1.1cm, rounded corners, anchor=west] (verify_box) at (6.2,-6.0) {
+    \begin{minipage}{3.4cm}
+      \scriptsize
+      \textbf{Verification Checks:}\\
+      1. $\|\vectorbf{z}\|_2 \le \gamma \cdot \sqrt{d}$\\
+      2. $\vectorbf{A}\vectorbf{z} - c \vectorbf{t}_0 \stackrel{?}{=} \vectorbf{t}$
+    \end{minipage}
+  };
+
+\end{tikzpicture}
+\caption{The Vertex interactive proof protocol showing commitment, challenge, and response phases with rejection sampling.}
+\label{fig:vertex_protocol}
+\end{figure}
+
+The challenge space $\mathcal{C}$ consists of polynomials in $\Ring$ whose coefficients are in $\{-1, 0, 1\}$ and contain exactly $\kappa$ non-zero elements. Rejection sampling is crucial to prevent leakage of the secret key $\vectorbf{w}$ via the response vector $\vectorbf{z}$. If rejection sampling fails, the Prover restarts the protocol with a new random masking vector $\vectorbf{y}$.

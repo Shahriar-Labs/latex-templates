@@ -1,0 +1,71 @@
+\section{Introduction}
+\label{sec:introduction}
+
+The Fiat--Shamir (FS) transform~\cite{FiatShamir1986} is among the most useful
+interfaces between interactive proofs and deployed cryptography.  It replaces
+the verifier's random challenge with a hash of the public transcript, thereby
+turning a three-move identification protocol into a non-interactive proof or a
+signature scheme.  The random-oracle methodology~\cite{BellareRogaway1993}
+provides a clean idealized setting for its analysis, while the forking
+lemma~\cite{PointchevalStern1996} explains how two accepting transcripts with a
+shared commitment can reveal a witness.
+
+Real deployments differ from the single-key textbook experiment.  A shared
+hash function is evaluated for many protocols, public keys, sessions, and
+messages.  If these values are not represented unambiguously in the oracle
+input, transcripts from one context can be replayed or reinterpreted in
+another.  Even with a sound encoding, a proof must say whether its loss grows
+with the number of users and how fresh randomness affects reprogramming.  Such
+questions are especially relevant when a conservative proof is converted into
+parameters.
+
+This paper studies the following deliberately simple transform.  For a
+three-move public-coin protocol with commitment $a$, the prover samples a
+$\rho$-bit salt $s$ and sets
+\[
+  c = \hash(\mathtt{tag}\,\|\,\mathsf{enc}(pk,x,a,s)),
+\]
+where the encoding is injective and length-delimited.  The proof is
+$\pi=(a,s,z)$, with $z$ the response to $c$.  Including $pk$ gives each user a
+disjoint logical oracle domain; including $s$ makes the point selected by the
+honest prover hard to predict before the commitment is fixed.
+
+\subsection{Contributions}
+
+Our contribution is not a new assumption or identification protocol.  It is a
+small, reusable proof layer connecting standard special soundness to a
+multi-user deployment.
+
+\begin{itemize}
+  \item We specify a typed salted FS transform whose transcript encoding is
+        explicit down to the protocol tag and length prefixes.
+  \item We present a game-based extraction theorem in which the user count is
+        absorbed by domain separation.  The remaining loss is expressed using
+        total oracle and signing queries, rather than a union bound over keys.
+  \item We instantiate the theorem for Schnorr identification and turn its bad
+        events into a concise parameter table and an implementation checklist.
+\end{itemize}
+
+\begin{table}[t]
+  \caption{Where the proof accounts for deployment-level concerns.}
+  \label{tab:roadmap}
+  \centering
+  \small
+  \begin{tabular}{@{}p{0.26\textwidth}p{0.29\textwidth}p{0.34\textwidth}@{}}
+    \toprule
+    Concern & Mechanism & Proof location \\
+    \midrule
+    Cross-protocol reuse & Fixed protocol tag & Domain lemma, \cref{lem:domains} \\
+    Cross-user replay & Public key in hash input & Domain lemma, \cref{lem:domains} \\
+    Ambiguous parsing & Injective typed encoding & Syntax, \cref{sec:syntax} \\
+    Repeated programmed point & Fresh $\rho$-bit salt & Collision bound, \cref{lem:collision} \\
+    Witness extraction & Special soundness and rewind & Main theorem, \cref{thm:main} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\secpar{Scope} We work in the classical random-oracle model (ROM).  Quantum
+queries require different reprogramming tools and are not covered by our main
+theorem; we return to this limitation in \cref{sec:limitations}.  Our theorem is
+stated for proofs of knowledge.  The standard conversion to signatures hashes
+the message as the statement and uses the same analysis.

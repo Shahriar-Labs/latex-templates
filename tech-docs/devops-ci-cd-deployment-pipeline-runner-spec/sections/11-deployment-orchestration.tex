@@ -1,0 +1,45 @@
+\section{Deployment orchestration}
+
+\subsection{Environment contract}
+
+An environment defines target identity, allowed source refs, allowed artifact classes,
+required evidence, runner pool, network zone, reviewers, maintenance windows,
+concurrency, timeout, rollback policy, and credential federation. Environment
+configuration is versioned and changes are audited.
+
+Before leasing a deployment job, the control plane \must confirm:
+
+\begin{enumerate}
+  \item upstream jobs succeeded and the run has not been superseded or cancelled;
+  \item artifact digest exists, is immutable, and has valid provenance and required SBOM;
+  \item source revision and event satisfy branch, tag, and repository rules;
+  \item vulnerability, license, test, and change-management evidence satisfy current policy;
+  \item approvals are valid and bound to the current digests and policy version;
+  \item environment concurrency and change window permit entry; and
+  \item an eligible protected runner and workload identity can be issued.
+\end{enumerate}
+
+\subsection{Promotion}
+
+Promotion reuses the same artifact digest across environments. Rebuilding between
+staging and production is prohibited. Environment-specific configuration is injected
+at deployment or runtime and is separately versioned. A promotion record links the
+source deployment, target environment, evidence snapshot, approvals, and outcome.
+
+\subsection{Deployment strategies}
+
+Adapters may implement rolling, blue/green, canary, or custom strategies. Each adapter
+exposes \code{prepare}, \code{apply}, \code{observe}, \code{rollback}, and
+\code{reconcile} operations with idempotency keys. Health gates use bounded observation
+windows and explicit success criteria. A timeout is an unknown outcome until
+reconciliation proves whether the target changed.
+
+\subsection{Rollback}
+
+Rollback is a new, audited deployment of a previously approved artifact or an
+adapter-specific compensating action. It does not erase the failed deployment record.
+Automatic rollback requires pre-authorized policy, a known-good target digest, and a
+health signal whose false-positive risk is understood. Database changes and other
+irreversible effects require an application-owned recovery plan referenced by the job.
+
+% -----------------------------------------------------------------------------

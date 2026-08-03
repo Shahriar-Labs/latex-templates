@@ -1,0 +1,56 @@
+\section{Routing, CORS, and Security Headers}
+\label{sec:routing_cors}
+
+Routing logic in the Vertex Gateway is designed to isolate downstream services from direct external paths. The gateway performs path matching, prefix stripping, and downstream header injection. Concurrently, it enforces strict Cross-Origin Resource Sharing (CORS) rules to restrict browser-based API access.
+
+\subsection{CORS Profile Policies}
+CORS policies are applied on a per-route basis. Fictional partner portals and mobile backends require distinct origins. The default security profile restricts cross-origin calls based on a strict safelist. Listing~\ref{lst:cors_config} illustrates the configuration for the Synapse dashboard origin.
+
+\begin{lstlisting}[language=yaml, caption={CORS policy configuration block for public enterprise dashboards.}, label={lst:cors_config}]
+cors:
+  enabled: true
+  allowed_origins:
+    - "https://dashboard.synapse.nimbus.com"
+    - "https://portal.vertex-partner.net"
+  allowed_methods:
+    - GET
+    - POST
+    - OPTIONS
+  allowed_headers:
+    - Authorization
+    - Content-Type
+    - X-Requested-With
+    - X-Correlation-ID
+  exposed_headers:
+    - X-Response-Time
+  allow_credentials: true
+  max_age_seconds: 3600
+\end{lstlisting}
+
+\subsection{Security Response Headers}
+To protect client browsers against common vulnerability vectors such as Clickjacking, Cross-Site Scripting (XSS), and MIME-type sniffing, the Vertex Gateway injects standardized security response headers for all downstream responses. Table~\ref{tab:security_headers} summarizes the values enforced at the edge.
+
+\begin{table}[htbp]
+\centering
+\caption{Vertex Gateway Edge Security Headers}
+\label{tab:security_headers}
+\begin{tabularx}{\textwidth}{l X l}
+\toprule
+\textbf{Header Name} & \textbf{Value Enforced} & \textbf{Security Objective} \\
+\midrule
+\texttt{Strict-Transport-Security} & \texttt{max-age=63072000;} \allowbreak \texttt{includeSubDomains;} \allowbreak \texttt{preload} & Force TLS connection \\
+\texttt{Content-Security-Policy} & \texttt{default-src 'none';} \allowbreak \texttt{frame-ancestors 'none';} & Prevent script injection \\
+\texttt{X-Frame-Options} & \texttt{DENY} & Clickjacking protection \\
+\texttt{X-Content-Type-Options} & \texttt{nosniff} & Prevent MIME-type sniffing \\
+\texttt{Referrer-Policy} & \texttt{strict-origin-} \allowbreak \texttt{when-cross-origin} & Avoid metadata leakage \\
+\texttt{Permissions-Policy} & \texttt{geolocation=(),} \allowbreak \texttt{camera=(),} \allowbreak \texttt{microphone=()} & Disable browser hardware access \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Header Injection and Sanitization}
+In addition to generating downstream headers, the gateway executes sanitation protocols on incoming headers:
+\begin{itemize}
+    \item \textbf{Strip Headers}: The gateway strips all headers matching \texttt{X-Nimbus-*} and \texttt{X-Vertex-*} from incoming client requests to prevent header injection attacks where clients fake authorization attributes.
+    \item \textbf{Correlation ID Injection}: The gateway automatically generates a unique \texttt{X-Correlation-ID} (UUIDv4) for every request if not present. This ID is propagated down to the microservice chain to ensure trace correlation.
+\end{itemize}

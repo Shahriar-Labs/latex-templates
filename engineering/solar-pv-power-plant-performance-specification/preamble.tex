@@ -1,0 +1,172 @@
+%% preamble.tex — packages, colours, typography, custom commands
+% ---------------------------------------------------------------
+
+%% Page geometry
+\usepackage[
+  a4paper,
+  top=25mm, bottom=28mm,
+  left=25mm, right=25mm,
+  headheight=14pt
+]{geometry}
+
+%% Core typography & encoding
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{lmodern}
+
+%% Math
+\usepackage{amsmath}
+\let\Bbbk\relax
+\let\Bbbk\relax
+\let\Bbbk\relax
+\let\Bbbk\relax
+\let\Bbbk\relax
+\let\Bbbk\relax
+\let\Bbbk\relax
+\let\Bbbk\relax
+\let\Bbbk\relax
+\usepackage{amssymb}
+
+%% Colour (load with table option for \rowcolor / \cellcolor)
+\usepackage[table,dvipsnames]{xcolor}
+
+%% Graphics & TikZ / PGFPlots
+\usepackage{graphicx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usetikzlibrary{positioning, calc, shapes.geometric, backgrounds, patterns, decorations.pathmorphing}
+
+%% Tables
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{colortbl}
+
+%% Lists
+\usepackage{enumitem}
+
+%% Floats & captions
+\usepackage{float}
+\usepackage{caption}
+\captionsetup{labelfont={bf,color=SolarNavy}, textfont=small, skip=6pt}
+
+%% Headers & footers
+\usepackage{fancyhdr}
+
+%% URL & hyperlinks
+\usepackage[hidelinks]{hyperref}
+\usepackage{url}
+
+%% tcolorbox for callout panels
+\usepackage[most]{tcolorbox}
+
+%% SI units
+\usepackage{siunitx}
+\DeclareSIUnit{\yr}{yr}
+\DeclareSIUnit{\day}{d}
+\sisetup{
+  per-mode = symbol,
+  group-separator = {,},
+  output-decimal-marker = {.}
+}
+
+%% Misc
+\usepackage{parskip}
+\usepackage{setspace}
+\usepackage{ragged2e}
+\usepackage{soul}
+
+% ---------------------------------------------------------------
+%% COLOUR PALETTE
+% ---------------------------------------------------------------
+\definecolor{SolarNavy}{HTML}{1A2B4A}      % deep navy — headings, rules
+\definecolor{SolarAmber}{HTML}{E8A020}     % amber — accents, highlights
+\definecolor{SolarSlate}{HTML}{4A6080}     % mid-slate — sub-headings
+\definecolor{SolarMist}{HTML}{EDF2F7}      % pale mist — table rows, panels
+
+% ---------------------------------------------------------------
+%% TYPOGRAPHY CONFIGURATION
+% ---------------------------------------------------------------
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+%% Section headings
+\usepackage{titlesec}
+\titleformat{\section}
+  {\large\bfseries\color{SolarNavy}}
+  {\thesection}{1em}{}
+  [\color{SolarAmber}\rule{\linewidth}{1.5pt}\vspace{2pt}]
+
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{SolarSlate}}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\normalsize\itshape\color{SolarSlate}}
+  {\thesubsubsection}{1em}{}
+
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+
+%% Table of contents styling
+\usepackage{tocloft}
+\renewcommand{\cftsecfont}{\bfseries\color{SolarNavy}}
+\renewcommand{\cftsecpagefont}{\bfseries\color{SolarNavy}}
+\renewcommand{\cftsubsecfont}{\color{SolarSlate}}
+\setlength{\cftbeforesecskip}{4pt}
+
+%% Headers & footers
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\small\color{SolarSlate} Nexa Solar Energy Solutions}
+\fancyhead[R]{\small\color{SolarSlate} PV Performance Specification \textbar{} Rev.~3.1}
+\fancyfoot[C]{\small\color{SolarSlate}\thepage}
+\fancyfoot[R]{\small\color{SolarSlate} \textsc{Confidential}}
+
+%% Plain style for title page
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \fancyfoot[C]{\small\color{SolarSlate}\thepage}%
+}
+
+% ---------------------------------------------------------------
+%% CUSTOM COMMANDS & ENVIRONMENTS
+% ---------------------------------------------------------------
+
+%% Inline key-value tag
+\newcommand{\kvtag}[2]{%
+  \textcolor{SolarSlate}{\textbf{#1:}}~\textcolor{SolarNavy}{#2}%
+}
+
+%% Requirement callout box
+\tcbset{
+  requirementbox/.style={
+    enhanced,
+    colback=SolarMist,
+    colframe=SolarNavy,
+    fonttitle=\bfseries\color{white},
+    coltitle=white,
+    attach boxed title to top left={yshift=-2mm, xshift=6mm},
+    boxed title style={colback=SolarNavy, rounded corners},
+    top=8pt, bottom=6pt, left=8pt, right=8pt,
+    boxrule=0.6pt
+  }
+}
+
+\newcommand{\reqbox}[2]{%
+  \begin{tcolorbox}[requirementbox, title={#1}]
+    #2
+  \end{tcolorbox}%
+}
+
+%% Highlight emphasis
+\newcommand{\highlight}[1]{\textcolor{SolarAmber}{\textbf{#1}}}
+
+%% Performance requirement macro
+\newcommand{\perfval}[2]{\SI{#1}{#2}}

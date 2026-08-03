@@ -1,0 +1,21 @@
+\section{Minimal Test Vectors}
+\label{app:test-vectors}
+
+An implementation can exercise the semantic structure without fixing a
+particular hash function.  Let the tag be \texttt{ballot-v1}, the session be
+\texttt{election-2030}, the position be the integer $7$, the message be the
+UTF-8 bytes for \texttt{yes}, and the salt be a 16-byte test value.  A test
+harness should establish the following properties:
+
+\begin{itemize}
+  \item serializing the tuple twice yields identical bytes;
+  \item parsing and re-encoding yields the original byte string;
+  \item changing any one field changes the encoded byte string;
+  \item non-minimal integer encodings and truncated length fields are rejected;
+  \item the same opening fails under position $8$ and under a different
+        session identifier; and
+  \item a bit flip in the message or salt causes verification to reject.
+\end{itemize}
+
+These tests do not prove security, but they directly exercise the injectivity
+hypothesis used by \cref{lem:context-separation,thm:binding}.

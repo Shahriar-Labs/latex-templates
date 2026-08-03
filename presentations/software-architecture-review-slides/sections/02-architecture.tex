@@ -1,0 +1,44 @@
+\section{Proposed Microservices Architecture}
+\subsection{System Diagram}
+
+\begin{frame}{Target Event-Driven Architecture}{Services \& Decoupled Communication}
+  We propose decomposing Synapse Core into decoupled services communicating asynchronously via Apache Kafka.
+  
+  \vspace{0.2cm}
+  \begin{columns}[T]
+    \begin{column}{0.45\textwidth}
+      \textbf{Architecture Components:}
+      \begin{itemize}
+        \item \textbf{API Gateway:} Handles routing, auth, and rate limiting.
+        \item \textbf{Order Service:} Checkout orchestration using Postgres.
+        \item \textbf{Notify Service:} Async notification dispatch (email/SMS).
+        \item \textbf{Kafka Cluster:} Log-centric event broker for services.
+      \end{itemize}
+    \end{column}
+    \hfill
+    \begin{column}{0.5\textwidth}
+      \centering
+      \begin{tikzpicture}[
+        node distance=0.4cm and 0.8cm,
+        box/.style={draw=primaryDark, fill=white, thick, rounded corners, minimum width=1.6cm, minimum height=0.6cm, font=\scriptsize\sffamily},
+        bus/.style={draw=accentCyan, fill=accentCyan!10, thick, rounded corners, minimum width=3.8cm, minimum height=0.5cm, font=\scriptsize\sffamily\bfseries},
+        arrow/.style={-{Stealth[scale=0.8]}, thick, draw=accentBlue}
+      ]
+        % Nodes
+        \node (client) [box, fill=bgLight] {Client / App};
+        \node (gateway) [box, below=0.4cm of client, fill=accentCyan!5] {API Gateway};
+        \node (order) [box, below left=0.5cm and 0.3cm of gateway] {Order Svc};
+        \node (notify) [box, below right=0.5cm and 0.3cm of gateway] {Notify Svc};
+        \node (kafka) [bus, below=1.4cm of gateway] {Kafka Event Bus};
+
+        % Connections
+        \draw [arrow] (client) -- (gateway);
+        \draw [arrow] (gateway) -- (order) node[midway, above left, font=\tiny] {HTTPS};
+        \draw [arrow] (order) -- (order |- kafka.north) node[midway, left, font=\tiny] {Publish};
+        \draw [arrow] (kafka.north -| notify) -- (notify) node[midway, right, font=\tiny] {Consume};
+      \end{tikzpicture}
+      \par\vspace{0.2cm}
+      {\scriptsize\textcolor{textDark!70}{Figure 1: Event-driven asynchronous model.}}
+    \end{column}
+  \end{columns}
+\end{frame}

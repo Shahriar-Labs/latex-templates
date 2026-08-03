@@ -1,0 +1,95 @@
+\section{Results and Analysis}
+\label{sec:results}
+
+\subsection{Main Results}
+
+Table~\ref{tab:main} reports macro F1 and fabrication recall on the
+\sys{CiteCheck-6K} test split. \sys{SynapseCite} reaches 91.4 macro F1,
+11.2 points above the retrieval-only baseline and 6.7 points above
+\sys{Apex-Judge-70B}, while costing roughly one-eighth as much per pair to
+run. The retrieval-only baseline's weakness is expected -- it has no
+mechanism to distinguish misattribution or distortion from faithfulness --
+but the gap to the prompted judge is the more informative comparison, since
+both systems see the same evidence passage. We attribute the gap to the
+judge's tendency to default to \textsc{faithful} whenever the passage is
+topically on point, even when the specific claim is not supported, which
+Section~\ref{sec:errors} examines directly.
+
+\begin{table}[t]
+\centering
+\footnotesize
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{System} & \textbf{Macro F1} & \textbf{Fab. Rec.} & \textbf{\$/pair} \\
+\midrule
+Retrieval-only & 80.2 & 92.1 & 0.0004 \\
+\sys{Apex-Judge-70B} & 84.7 & 90.8 & 0.0210 \\
+\sys{SynapseCite}, no adapter & 87.9 & 93.4 & 0.0026 \\
+\rowcolor{acllight}
+\textbf{\sys{SynapseCite}} & \textbf{91.4} & \textbf{95.0} & 0.0026 \\
+\bottomrule
+\end{tabular}
+\caption{Macro F1, fabrication recall, and estimated median inference cost
+per (claim, citation) pair on the \sys{CiteCheck-6K} test split.}
+\label{tab:main}
+\end{table}
+
+\subsection{Breakdown by Domain}
+
+Figure~\ref{fig:domain} splits macro F1 by research domain. All three
+systems score lowest on materials science, which we trace to a vocabulary
+mismatch: claims about material properties frequently cite specific
+numeric ranges (e.g., a band gap or tensile strength), and the entailment
+classifier -- trained predominantly on NLP and biomedicine paragraphs --
+under-weights numeric agreement relative to topical agreement. Economics
+shows the smallest gap between \sys{SynapseCite} and the prompted judge,
+consistent with claims in that domain being comparatively easier to verify
+from an abstract alone.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\linewidth, height=4.3cm,
+  ybar, bar width=5pt,
+  ymin=65, ymax=100,
+  ylabel={Macro F1}, ylabel style={font=\scriptsize},
+  symbolic x coords={NLP,Biomed,Materials,Economics},
+  xtick=data, xticklabel style={font=\scriptsize},
+  yticklabel style={font=\scriptsize},
+  enlarge x limits=0.22,
+  legend style={font=\tiny, at={(0.5,1.14)}, anchor=south,
+    legend columns=3, draw=none},
+  axis lines*=left, tick align=outside,
+  axis line style={aclgray}, tick style={aclgray}
+]
+\addplot[fill=aclgray!45, draw=aclgray] coordinates
+  {(NLP,81.9) (Biomed,80.4) (Materials,72.6) (Economics,83.1)};
+\addplot[fill=aclgold!55, draw=aclgold!70!black] coordinates
+  {(NLP,86.0) (Biomed,84.9) (Materials,78.3) (Economics,86.6)};
+\addplot[fill=aclplum!70, draw=aclplum] coordinates
+  {(NLP,92.7) (Biomed,91.5) (Materials,84.9) (Economics,90.9)};
+\legend{Retrieval-only, \sys{Apex-Judge}, \sys{SynapseCite}}
+\end{axis}
+\end{tikzpicture}
+\caption{Macro F1 by research domain. Materials science is hardest for all
+systems; \sys{SynapseCite} retains the largest margin there.}
+\label{fig:domain}
+\end{figure}
+
+\subsection{Error Analysis}
+\label{sec:errors}
+
+We manually inspected 120 \sys{SynapseCite} errors sampled uniformly across
+domains. 68\% are distortion pairs mislabeled \textsc{faithful} -- the
+retrieved passage discusses the right method or dataset, but a number,
+direction, or qualifier in the claim (``improves by 12 points'' where the
+paper reports 4) does not match. 21\% are misattribution pairs where the
+retriever surfaces a passage from a different section of the correct paper
+that happens to be lexically similar to the claim, masking the mismatch
+from the entailment classifier. The remaining 11\% are fabricated citations
+that survived Stage~1 because the model's invented title happened to match
+a real, unrelated paper by the same author closely enough to pass the
+fuzzy-match threshold. This last category suggests existence checking
+should eventually compare full author-and-topic context, not title strings
+alone.

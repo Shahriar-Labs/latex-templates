@@ -1,0 +1,159 @@
+% preamble.tex — packages, colours, custom commands, page geometry
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage[a4paper,top=2.6cm,bottom=2.6cm,left=2.3cm,right=2.3cm,headheight=15pt]{geometry}
+\usepackage{parskip}
+\setlength{\parskip}{0.5em}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[table]{xcolor}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{enumitem}
+\usepackage{fontawesome5}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[most]{tcolorbox}
+\usepackage{listings}
+
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,arrows.meta,shapes.geometric,backgrounds,fit,decorations.pathmorphing}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.17}
+
+\usepackage[colorlinks=true,breaklinks=true]{hyperref}
+
+% ---------------------------------------------------------------- colours
+\definecolor{nexanavy}{HTML}{132A4C}
+\definecolor{synapseteal}{HTML}{0E7C86}
+\definecolor{vertexslate}{HTML}{5B6B79}
+\definecolor{alertred}{HTML}{B23A34}
+
+\hypersetup{
+  linkcolor=nexanavy,
+  citecolor=synapseteal,
+  urlcolor=synapseteal,
+  pdftitle={Microservices Integration Interface Design Document},
+  pdfauthor={Nexa Platform Engineering}
+}
+
+% ---------------------------------------------------------------- section styling
+\titleformat{\section}
+  {\color{nexanavy}\Large\bfseries}{\thesection}{0.6em}{}
+  [{\color{synapseteal!55}\titlerule[0.8pt]}]
+\titlespacing*{\section}{0pt}{1.1em}{0.5em}
+
+\titleformat{\subsection}
+  {\color{nexanavy}\large\bfseries}{\thesubsection}{0.6em}{}
+\titlespacing*{\subsection}{0pt}{0.8em}{0.3em}
+
+\titleformat{\subsubsection}
+  {\color{vertexslate}\normalsize\bfseries}{\thesubsubsection}{0.5em}{}
+\titlespacing*{\subsubsection}{0pt}{0.6em}{0.25em}
+
+% ---------------------------------------------------------------- header / footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\color{vertexslate}Nexa Platform Engineering}
+\fancyhead[R]{\small\color{vertexslate}NEXA-ARCH-INT-2024-017}
+\fancyfoot[L]{\small\color{vertexslate}Internal --- Confidential}
+\fancyfoot[R]{\small\color{vertexslate}Page \thepage\ of \pageref{LastPage}}
+
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \fancyfoot[L]{\small\color{vertexslate}Internal --- Confidential}
+  \fancyfoot[R]{\small\color{vertexslate}Page \thepage\ of \pageref{LastPage}}
+}
+
+\usepackage{lastpage}
+
+% ---------------------------------------------------------------- code listings
+\lstdefinelanguage{jsonish}{
+  basicstyle=\ttfamily\small\color{nexanavy},
+  stringstyle=\color{synapseteal},
+  keywordstyle=\bfseries\color{vertexslate},
+  numberstyle=\tiny\color{vertexslate},
+  showstringspaces=false,
+  breaklines=true,
+  frame=single,
+  rulecolor=\color{vertexslate!35},
+  framesep=6pt,
+  backgroundcolor=\color{vertexslate!6},
+  literate=
+    {"}{{\textcolor{synapseteal}{"}}}1
+    {:}{{\textcolor{vertexslate}{:}}}1,
+}
+\lstset{language=jsonish,basicstyle=\ttfamily\small}
+
+% ---------------------------------------------------------------- tcolorbox styles
+\newtcolorbox{infobox}[1][]{
+  colframe=synapseteal, colback=synapseteal!6,
+  coltitle=white, colbacktitle=synapseteal,
+  fonttitle=\bfseries, boxrule=0.6pt, arc=2pt,
+  left=5pt, right=5pt, top=2pt, bottom=2pt,
+  title={Note}, #1
+}
+\newtcolorbox{warnbox}[1][]{
+  colframe=alertred, colback=alertred!6,
+  coltitle=white, colbacktitle=alertred,
+  fonttitle=\bfseries, boxrule=0.6pt, arc=2pt,
+  left=5pt, right=5pt, top=2pt, bottom=2pt,
+  title={Policy}, #1
+}
+
+% ---------------------------------------------------------------- helper commands
+\newcommand{\svc}[1]{\textcolor{synapseteal}{\textbf{#1}}}
+\newcommand{\code}[1]{\texttt{\small #1}}
+
+% ---------------------------------------------------------------- cover title
+\newcommand{\nexacovertitle}{%
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[nexanavy] (current page.north west) rectangle ([yshift=-3.6cm]current page.north east);
+  \draw[decorate,decoration={snake,amplitude=1.5pt,segment length=6pt},
+        synapseteal!70, line width=1pt]
+    ([yshift=-3.6cm]current page.north west) -- ([yshift=-3.6cm]current page.north east);
+  \node[anchor=north west,text=white,font=\bfseries\Large] at
+    ([xshift=2.3cm,yshift=-1.3cm]current page.north west) {NEXA PLATFORM ENGINEERING};
+  \node[anchor=north west,text=synapseteal!60,font=\small] at
+    ([xshift=2.3cm,yshift=-2.1cm]current page.north west) {Interface Design Documentation Series};
+\end{tikzpicture}
+
+\vspace*{4.4cm}
+{\color{nexanavy}\Huge\bfseries Microservices Integration\\[0.2em] Interface Design Document\par}
+\vspace{0.4em}
+{\color{vertexslate}\Large Nexa Commerce Platform --- Service-to-Service Contract Specification\par}
+
+\vspace{2.2cm}
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\textbf{Document ID}       & NEXA-ARCH-INT-2024-017 \\
+\textbf{Version}           & 2.3.0 \\
+\textbf{Status}            & Approved \\
+\textbf{Classification}    & Internal --- Confidential \\
+\textbf{Effective Date}    & 10 February 2026 \\
+\textbf{Last Revised}      & 15 July 2026 \\
+\textbf{Next Scheduled Review} & 15 January 2027 \\[0.6em]
+\textbf{Author}            & Priya Anand, Staff Platform Architect, Nexa Platform Engineering \\
+\textbf{Reviewers}         & Marcus Feldt (Synapse Financial Systems) \newline
+                             Deja Okonkwo (Vertex Supply Chain) \newline
+                             Ravi Chandran (Nimbus Communications) \\
+\textbf{Approved By}       & Helena Brandt, VP Engineering, Nexa \\
+\end{tabularx}
+
+\vfill
+{\small\color{vertexslate}
+This document specifies the synchronous and asynchronous integration contracts between
+Nexa-owned and partner-owned services on the Nexa Commerce Platform. Distribution is
+limited to Nexa staff and named partner engineering leads under existing NDA terms.\par}
+\end{titlepage}
+}

@@ -1,0 +1,137 @@
+% ============================================================
+%  sections/experiments.tex
+% ============================================================
+
+\section{Experiments}
+
+\subsection{Benchmark: \dataset{}}
+
+We introduce \dataset{} (Versatile Benchmark), a curated
+1.4 million image--text pair evaluation suite built from
+twelve tasks spanning visual question answering, image--text
+retrieval, visual entailment, and grounded captioning. Tasks
+are stratified by domain (natural images, medical scans,
+satellite imagery, and document pages) to expose modality-specific
+routing behaviour. Data sourcing is described in the supplementary
+material of the extended arXiv preprint.
+
+\subsection{Main Results}
+
+Table~\ref{tab:main} reports top-1 accuracy, FLOPs, and
+wall-clock latency for \modelname{} and three competitive baselines
+on the four primary \dataset{} tasks. All experiments run on a
+single NVIDIA A100-80G GPU with batch size 64.
+
+\begin{table}[H]
+  \centering
+  \small
+  \caption{%
+    \textbf{Main results on \dataset{}.}
+    FLOPs are reported for a single forward pass; latency
+    is median over 1{,}000 inference calls. Best per column
+    is \textbf{bolded}; \(\dagger\) marks our method.
+  }
+  \label{tab:main}
+  \setlength{\tabcolsep}{4pt}
+  \renewcommand{\arraystretch}{1.25}
+  \resizebox{\columnwidth}{!}{%
+\begin{tabular}{@{}l c c c c c@{}}
+    \toprule
+    \rowcolor{TableHead}
+    \color{white}\textbf{Method}
+      & \color{white}\textbf{VQA} (\%)
+      & \color{white}\textbf{Retrieval} (\%)
+      & \color{white}\textbf{Entail} (\%)
+      & \color{white}\textbf{Caption} (\%)
+      & \color{white}\textbf{FLOPs (G)} \\
+    \midrule
+    \rowcolor{TableAlt}
+    CLIP (ViT-B/32) \citeyearpar{radford2021clip}
+      & 71.3 & 68.9 & 74.1 & 65.2 & 18.4 \\
+    \baseline{} \citeyearpar{dosovitskiy2021vit}
+      & 78.6 & 75.3 & 80.4 & 72.8 & 55.7 \\
+    \rowcolor{TableAlt}
+    Sparse-ViT \citeyearpar{nguyen2024sparse}
+      & 76.9 & 73.8 & 79.1 & 71.3 & 24.3 \\
+    \modelname{}$^\dagger$ (ours)
+      & \textbf{78.2} & \textbf{75.0} & \textbf{80.1} & \textbf{72.5}
+      & \textbf{17.9} \\
+    \bottomrule
+  \end{tabular}%
+}
+\end{table}
+
+\modelname{} retains 99.2\% of the \baseline{} accuracy on average
+while operating at 32\% of its FLOPs budget, confirming that the
+learned masks correctly identify redundant tokens. The 2.4$\times$
+latency reduction over \baseline{} is consistent across batch sizes
+1--128 (see extended results in the poster supplement).
+
+\subsection{Sparsity vs.\ Accuracy Trade-off}
+
+Figure~\ref{fig:sparsity} shows the Pareto frontier of
+accuracy versus FLOPs as we sweep the retention ratio
+\(k/N \in \{0.3, 0.4, 0.5, 0.6, 0.7, 0.8\}\) on the
+VQA split of \dataset{}.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[scale=0.85]
+    % Axes
+    \draw[->, thick, color=NexaDark] (0,0) -- (7.2,0)
+      node[right, font=\small] {FLOPs (G)};
+    \draw[->, thick, color=NexaDark] (0,0) -- (0,5.2)
+      node[above, font=\small] {VQA Acc.\ (\%)};
+
+    % Grid
+    \foreach \x in {1,2,3,4,5,6,7}{
+      \draw[gray!25, thin] (\x,0) -- (\x,5);
+    }
+    \foreach \y in {1,2,3,4,5}{
+      \draw[gray!25, thin] (0,\y) -- (7,\y);
+    }
+
+    % x-axis ticks (FLOPs: 10, 18, 25, 32, 40, 48, 56)
+    \foreach \xv/\xl in {1/10, 1.8/18, 2.5/25, 3.2/32, 4.0/40, 4.8/48, 5.6/56}{
+      \draw (\xv, 0) -- (\xv, -0.1);
+      \node[below, font=\tiny] at (\xv, -0.1) {\xl};
+    }
+    % y-axis ticks (Acc: 70 to 80)
+    \foreach \yv/\yl in {0/70, 1/72, 2/74, 3/76, 4/78, 5/80}{
+      \draw (0,\yv) -- (-0.1,\yv);
+      \node[left, font=\tiny] at (-0.1,\yv) {\yl};
+    }
+
+    % SynapseNet Pareto curve (k/N 0.3..0.8)
+    % Approximate points: FLOPs 10->17.9, Acc 70->78.2
+    \draw[color=NexaAccent, thick, line width=1.5pt]
+      (1.0, 0.2) -- (1.3, 0.8) -- (1.8, 1.6) -- (2.3, 2.5) -- (2.9, 3.4) -- (3.6, 4.1);
+
+    % Dots on curve
+    \foreach \px/\py in {1.0/0.2, 1.3/0.8, 1.8/1.6, 2.3/2.5, 2.9/3.4, 3.6/4.1}{
+      \filldraw[NexaAccent] (\px,\py) circle (2.2pt);
+    }
+
+    % Baseline star
+    \filldraw[NexaGold] (5.57,4.0) -- ++(3pt,8pt) -- ++(3pt,-8pt)
+      -- ++(-8pt,5pt) -- ++(8pt,5pt) -- cycle;
+    \node[right, font=\tiny\bfseries, color=NexaGold] at (5.7,4.35)
+      {\baseline{}};
+
+    % Sparse-ViT triangle
+    \filldraw[NexaGray] (2.43,2.0) -- ++(0,7pt) -- ++(6pt,-7pt) -- cycle;
+    \node[right, font=\tiny, color=NexaGray] at (2.5,2.25)
+      {Sparse-ViT};
+
+    % Our frontier label
+    \node[font=\tiny\bfseries, color=NexaAccent] at (3.9,2.3)
+      {\modelname{}};
+  \end{tikzpicture}
+  \caption{%
+    \textbf{FLOPs--Accuracy Pareto frontier.}
+    \modelname{} (blue curve) dominates Sparse-ViT (grey triangle)
+    at all operating points and closely approaches \baseline{}
+    (gold star) at 32\% of its FLOPs budget.
+  }
+  \label{fig:sparsity}
+\end{figure}

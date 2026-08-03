@@ -1,0 +1,97 @@
+\section{Design}
+\label{sec:design}
+
+\subsection{Authenticated causal context}
+
+A small node agent intercepts outbound RPC metadata through the service mesh.
+For request $r$ at hop $i$, it constructs
+
+\begin{equation}
+  C_i = \bigl(t, e_0, e_i, d_i, h(C_{i-1}), n_i\bigr),
+  \qquad \sigma_i=\operatorname{MAC}_{k_i}(C_i),
+  \label{eq:context}
+\end{equation}
+
+where $t$ is a trace identifier, $e_0$ the entry-point identity, $e_i$ the
+current workload identity, $d_i$ a coarse operation label, and $n_i$ a nonce.
+Hash chaining commits each hop to its predecessor. Keys $k_i$ are issued to
+attested agents and rotated hourly; application containers never receive them.
+At a protected sink, the agent emits the context and local identity decision to
+an append-only collector. The 128-bit hash and truncated tag bound the token to
+72 bytes in our prototype.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+      x=1cm,y=1cm,
+      box/.style={draw=signalblue,fill=panelblue,rounded corners=2pt,
+                  minimum width=1.17cm,minimum height=0.54cm,
+                  align=center,font=\scriptsize},
+      sink/.style={draw=alertred,fill=panelgold,rounded corners=2pt,
+                   minimum width=1.18cm,minimum height=0.54cm,
+                   align=center,font=\scriptsize},
+      agent/.style={draw=inkgray,densely dashed,rounded corners=2pt,
+                    minimum width=1.45cm,minimum height=0.86cm},
+      flow/.style={-{Latex[length=1.7mm]},line width=0.6pt,draw=inkgray},
+      evidence/.style={-{Latex[length=1.7mm]},densely dashed,
+                       line width=0.55pt,draw=signalblue}
+    ]
+    \node[box] (edge) at (0,0) {API\\gateway};
+    \node[box] (order) at (1.75,0) {order\\service};
+    \node[box] (pay) at (3.50,0) {payment\\service};
+    \node[sink] (vault) at (5.25,0) {token\\vault};
+
+    \node[agent,fit=(edge)] (a1) {};
+    \node[agent,fit=(order)] (a2) {};
+    \node[agent,fit=(pay)] (a3) {};
+    \node[agent,fit=(vault)] (a4) {};
+
+    \draw[flow] (edge) -- node[above,font=\tiny] {$C_1,\sigma_1$} (order);
+    \draw[flow] (order) -- node[above,font=\tiny] {$C_2,\sigma_2$} (pay);
+    \draw[flow] (pay) -- node[above,font=\tiny] {$C_3,\sigma_3$} (vault);
+
+    \node[draw=linegray,fill=white,rounded corners=2pt,
+          font=\scriptsize,align=center,minimum width=2.1cm,
+          minimum height=0.54cm] (collector) at (2.62,-1.28)
+          {collector + workflow scorer};
+    \draw[evidence] (a1.south) |- (collector.west);
+    \draw[evidence] (a2.south) -- (collector.north west);
+    \draw[evidence] (a3.south) -- (collector.north east);
+    \draw[evidence] (a4.south) |- (collector.east);
+    \node[font=\tiny\color{inkgray},anchor=west] at (-0.72,0.66)
+          {mesh agents authenticate every hop};
+  \end{tikzpicture}
+  \caption{\system{} binds a sensitive action to its causal RPC chain. Dashed
+  lines carry asynchronously exported evidence; detection is off path.}
+  \label{fig:design}
+\end{figure}
+
+\subsection{Workflow scoring}
+
+The collector verifies tags and derives an edge sequence
+$P_r=(e_0\!\rightarrow\!e_1,\ldots,e_{m-1}\!\rightarrow\!e_m)$.
+From a clean training window it estimates a smoothed conditional probability
+$p(e_j,d_j\mid e_{j-1},d_{j-1})$. A path's surprise score is
+
+\begin{equation}
+  S(P_r)=-\sum_{j=1}^{m}\log
+  p(e_j,d_j\mid e_{j-1},d_{j-1}) + \lambda M(P_r),
+  \label{eq:score}
+\end{equation}
+
+where $M(P_r)$ counts missing or unverifiable hops. Alerts require both
+$S(P_r)>\tau_s$ and a protected sink action. This gate prevents ordinary
+workflow drift from overwhelming operators. Thresholds are calibrated per sink
+to a fixed alert budget. A nightly review promotes persistent, approved paths
+into the baseline; the detector never learns directly from alerted traffic.
+
+\subsection{Incremental deployment}
+
+An uninstrumented hop contributes a signed gap marker from the nearest agents,
+rather than silently terminating the chain. The score penalizes gaps through
+$M$ but retains verified prefix and suffix evidence. Deployments can therefore
+begin at ingress services and sensitive sinks, then expand toward ambiguous
+middle-tier paths. Context tokens use W3C trace-state-compatible metadata so
+applications need not change their request schema~\citep{w3ctracecontext}.
+
+% -----------------------------------------------------------------------------

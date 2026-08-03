@@ -1,0 +1,29 @@
+\section{Migration Strategy}
+\subsection{Phased Rollout}
+
+\begin{frame}{Migration Strategy \& Rollout Plan}{Risk Mitigation \& Phasing}
+  To prevent service disruption, we will execute a 3-stage rollout using the Strangler Fig pattern.
+  
+  \vspace{0.08cm}
+  \begin{minipage}{\textwidth}
+    \begin{statbox}{Phase 1: Read-Only Replication (Weeks 1--4)}
+      Route search traffic to the new Notify service while writing to both database instances. Verify consistency.
+    \end{statbox}
+  \end{minipage}
+  
+  \par\vspace{0.04cm}
+  
+  \begin{minipage}{\textwidth}
+    \begin{warningbox}{Phase 2: Write Shadowing (Weeks 5--8)}
+      Shadow writes to Order Service and validate transaction state differences asynchronously. No live customer dependencies.
+    \end{warningbox}
+  \end{minipage}
+
+  \par\vspace{0.04cm}
+
+  \begin{minipage}{\textwidth}
+    \begin{successbox}{Phase 3: Direct Cutover (Week 9)}
+      Point DNS to the API Gateway. Keep legacy monolith standby instance operational for 7 days as rollback target.
+    \end{successbox}
+  \end{minipage}
+\end{frame}

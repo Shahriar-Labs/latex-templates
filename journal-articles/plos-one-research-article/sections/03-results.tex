@@ -1,0 +1,140 @@
+\section{Results}
+
+\subsection{Route and exposure characteristics}
+The 36 routes had a mean canopy cover of 31.4\% (standard deviation 15.8) and a median uninterrupted canopy length of 118 m (interquartile range 66--207). Mean route-average WBGT across the 1,512 observations was \SI{30.7}{\degreeCelsius} (standard deviation \SI{2.4}{\degreeCelsius}); afternoon observations were warmest. Table~\ref{tab:characteristics} describes the synthetic sample.
+
+\begin{table}[htbp]
+\centering
+\caption{Characteristics of synthetic routes and route-period observations.}
+\label{tab:characteristics}
+\small
+\begin{tabularx}{\textwidth}{@{}X>{\raggedleft\arraybackslash}p{0.27\textwidth}>{\raggedleft\arraybackslash}p{0.23\textwidth}@{}}
+\toprule
+\textbf{Characteristic} & \textbf{Summary} & \textbf{Range} \\
+\midrule
+\multicolumn{3}{@{}l}{\textit{Route-level variables ($n=36$)}}\\[2pt]
+Canopy cover, \% & 31.4 (15.8) & 6.8--68.9 \\
+Impervious cover, \% & 57.2 (16.4) & 24.1--84.6 \\
+Building-height ratio & 0.74 (0.31) & 0.22--1.41 \\
+Mean uninterrupted canopy, m & 118 [66--207] & 21--348 \\
+Longest uninterrupted canopy, m & 236 [142--381] & 48--612 \\
+\addlinespace
+\multicolumn{3}{@{}l}{\textit{Route-period variables ($n=1{,}512$)}}\\[2pt]
+Air temperature, \si{\degreeCelsius} & 32.2 (2.5) & 25.8--38.7 \\
+Relative humidity, \% & 59.6 (9.8) & 35.4--83.1 \\
+Wind speed, \si{m.s^{-1}} & 1.7 [1.1--2.6] & 0.2--6.9 \\
+Wet-bulb globe temperature, \si{\degreeCelsius} & 30.7 (2.4) & 24.2--37.5 \\
+\bottomrule
+\end{tabularx}
+\vspace{3pt}
+\parbox{\textwidth}{\footnotesize Values are mean (standard deviation) or median [interquartile range], unless otherwise indicated. All values were generated synthetically.}
+\end{table}
+
+\subsection{Canopy amount, continuity, and heat exposure}
+In the adjusted primary model, each 10-percentage-point increase in canopy cover was associated with a \SI{0.71}{\degreeCelsius} lower WBGT (95\% CI, $-0.83$ to $-0.59$; $p<0.001$). Holding cover and other covariates constant, each additional 100 m of mean uninterrupted canopy was associated with a \SI{0.22}{\degreeCelsius} reduction (95\% CI, $-0.31$ to $-0.13$; $p<0.001$). The exposure-response curve in Fig~\ref{fig:curve} shows that routes with more continuous canopy remained cooler at the same total cover.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.88\textwidth,
+  height=6.4cm,
+  xmin=5,xmax=70,
+  ymin=26.3,ymax=31.8,
+  xlabel={Route canopy cover (\%)},
+  ylabel={Adjusted WBGT (\si{\degreeCelsius})},
+  axis line style={draw=Slate},
+  tick style={draw=Slate},
+  ticklabel style={font=\small,color=Slate},
+  label style={font=\small\sffamily,color=Ink},
+  grid=major,
+  grid style={draw=Rule!65},
+  legend style={draw=none,fill=white,font=\small,at={(0.98,0.98)},anchor=north east},
+  legend cell align=left
+]
+  \addplot[very thick,PLOSorange,domain=5:70,samples=50] {31.65-0.071*x};
+  \addlegendentry{Fragmented canopy (50 m)}
+  \addplot[very thick,Canopy,domain=5:70,samples=50] {31.32-0.071*x};
+  \addlegendentry{Continuous canopy (200 m)}
+  \addplot[name path=upper,draw=none,domain=5:70,samples=50] {31.93-0.071*x};
+  \addplot[name path=lower,draw=none,domain=5:70,samples=50] {31.37-0.071*x};
+  \addplot[PLOSorange!18] fill between[of=upper and lower];
+  \addplot[name path=upperb,draw=none,domain=5:70,samples=50] {31.60-0.071*x};
+  \addplot[name path=lowerb,draw=none,domain=5:70,samples=50] {31.04-0.071*x};
+  \addplot[Canopy!18] fill between[of=upperb and lowerb];
+  \addplot[very thick,PLOSorange,domain=5:70,samples=50] {31.65-0.071*x};
+  \addplot[very thick,Canopy,domain=5:70,samples=50] {31.32-0.071*x};
+\end{axis}
+\end{tikzpicture}
+\caption{Adjusted association between canopy cover and route-average wet-bulb globe temperature (WBGT). Lines show predictions from the primary mixed-effects model at 50 m and 200 m of mean uninterrupted canopy, with other covariates held at their means and period set to midday. Shaded bands are 95\% confidence intervals. Values are synthetic.}
+\label{fig:curve}
+\end{figure}
+
+Air temperature had the largest positive coefficient among time-varying variables, while greater wind speed was associated with lower WBGT. Impervious cover remained positively associated with exposure after canopy adjustment. Table~\ref{tab:model} reports all prespecified primary-model coefficients.
+
+\begin{table}[htbp]
+\centering
+\caption{Adjusted mixed-effects model for route-average wet-bulb globe temperature.}
+\label{tab:model}
+\small
+\begin{tabularx}{\textwidth}{@{}X S[table-format=-1.2] >{\raggedleft\arraybackslash}p{0.24\textwidth} S[table-format=<1.3]@{}}
+\toprule
+\textbf{Predictor} & {\textbf{Estimate (\si{\degreeCelsius})}} & \textbf{95\% CI} & {\textbf{$p$ value}}\\
+\midrule
+Canopy cover, per 10 percentage points & -0.71 & $-0.83$ to $-0.59$ & <0.001\\
+Mean uninterrupted canopy, per 100 m & -0.22 & $-0.31$ to $-0.13$ & <0.001\\
+Air temperature, per \si{\degreeCelsius} & 0.57 & $0.54$ to $0.60$ & <0.001\\
+Relative humidity, per 10 percentage points & 0.30 & $0.24$ to $0.36$ & <0.001\\
+Wind speed, per log unit & -0.42 & $-0.51$ to $-0.33$ & <0.001\\
+Impervious cover, per 10 percentage points & 0.09 & $0.03$ to $0.15$ & 0.004\\
+Building-height ratio, per 0.5 unit & 0.17 & $0.05$ to $0.29$ & 0.006\\
+Midday vs morning & 1.84 & $1.68$ to $2.00$ & <0.001\\
+Afternoon vs morning & 2.37 & $2.21$ to $2.53$ & <0.001\\
+\bottomrule
+\end{tabularx}
+\vspace{3pt}
+\parbox{\textwidth}{\footnotesize CI, confidence interval. The model includes route and day random intercepts. Estimates are conditional associations, not causal effects. Values are synthetic.}
+\end{table}
+
+\subsection{Time-of-day modification and sensitivity analyses}
+Associations were stronger later in the day. A 10-percentage-point canopy increase corresponded to reductions of \SI{0.54}{\degreeCelsius} in the morning, \SI{0.73}{\degreeCelsius} at midday, and \SI{0.82}{\degreeCelsius} in the afternoon. Continuity estimates followed the same ordering. Fig~\ref{fig:forest} displays period-specific estimates and their uncertainty.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.86\textwidth,
+  height=6.1cm,
+  xmin=-1.02,xmax=0.08,
+  ymin=0.4,ymax=6.6,
+  axis x line*=bottom,
+  axis y line=none,
+  xlabel={Adjusted difference in WBGT (\si{\degreeCelsius})},
+  xtick={-1.0,-0.8,-0.6,-0.4,-0.2,0},
+  ytick={1,2,3,4,5,6},
+  yticklabels={Afternoon,Midday,Morning,Afternoon,Midday,Morning},
+  ticklabel style={font=\small,color=Slate},
+  label style={font=\small\sffamily,color=Ink},
+  xmajorgrids=true,
+  grid style={draw=Rule!60},
+  extra x ticks={0},
+  extra x tick style={grid=major,grid style={draw=Ink,thick},tick label style={font=\scriptsize}},
+  clip=false
+]
+  \addplot+[only marks,mark=*,mark size=2.5pt,PLOSblue,
+    error bars/.cd,x dir=both,x explicit,error bar style={line width=1.1pt,PLOSblue}]
+    coordinates {(-0.27,1) +- (0.07,0) (-0.23,2) +- (0.06,0) (-0.15,3) +- (0.06,0)};
+  \addplot+[only marks,mark=square*,mark size=2.5pt,Canopy,
+    error bars/.cd,x dir=both,x explicit,error bar style={line width=1.1pt,Canopy}]
+    coordinates {(-0.82,4) +- (0.13,0) (-0.73,5) +- (0.12,0) (-0.54,6) +- (0.12,0)};
+  \node[anchor=west,font=\small\sffamily\bfseries,text=Canopy]
+    at (axis cs:-1.00,6.48) {Canopy cover: per 10 percentage points};
+  \node[anchor=west,font=\small\sffamily\bfseries,text=PLOSblue]
+    at (axis cs:-1.00,3.48) {Continuity: per 100 m};
+\end{axis}
+\end{tikzpicture}
+\caption{Period-specific associations of canopy measures with route-average wet-bulb globe temperature (WBGT). Points are adjusted model estimates and horizontal bars are 95\% confidence intervals. The vertical line denotes no association. Values are synthetic.}
+\label{fig:forest}
+\end{figure}
+
+Replacing mean continuity with the longest canopy segment yielded an estimate of $-0.16$ degrees per 100 m (95\% CI, $-0.22$ to $-0.10$). Excluding the warmest 5\% of observations produced cover and continuity estimates of $-0.68$ and $-0.21$ degrees, respectively. A quadratic term suggested attenuation above approximately 55\% cover, but its confidence interval included a linear relationship. Across 14 leave-one-day-out models, the cover estimate ranged from $-0.75$ to $-0.66$ degrees and the continuity estimate from $-0.25$ to $-0.19$ degrees. Residual diagnostics did not show substantial heteroscedasticity or tail departure.

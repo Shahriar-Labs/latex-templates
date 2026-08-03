@@ -1,0 +1,84 @@
+\section{Methodology}
+The SDM model consists of a network of $N$ leaky integrate-and-fire (LIF) neurons connected through dynamic synaptic junctions.
+The membrane potential $V_i(t)$ of neuron $i$ is governed by the following differential equation:
+\begin{equation}
+\tau_m \frac{dV_i(t)}{dt} = -(V_i(t) - V_{rest}) + R \left( I_{ext,i}(t) + I_{syn,i}(t) \right)
+\label{eq:membrane}
+\end{equation}
+where $\tau_m$ represents the membrane time constant, $V_{rest}$ is the resting potential, $R$ is the membrane resistance, $I_{ext,i}(t)$ is the external stimulus, and $I_{syn,i}(t)$ is the total synaptic current received by neuron $i$.
+
+The synaptic current $I_{syn,i}(t)$ is computed as the sum of all presynaptic inputs scaled by the dynamic synaptic weights $W_{ij}(t)$:
+\begin{equation}
+I_{syn,i}(t) = \sum_{j \neq i} W_{ij}(t) \sum_{k} \alpha(t - t_{j,k})
+\label{eq:synaptic_current}
+\end{equation}
+where $t_{j,k}$ is the time of the $k$-th spike emitted by presynaptic neuron $j$, and $\alpha(t)$ is the synaptic kernel function defined as:
+\begin{equation}
+\alpha(t) = \frac{t}{\tau_s} \exp\left(1 - \frac{t}{\tau_s}\right) \Theta(t)
+\end{equation}
+with $\tau_s$ representing the synaptic decay time constant and $\Theta(t)$ being the Heaviside step function.
+
+\subsection{Synaptic Dynamics and Weight Adaptation}
+The synaptic weights $W_{ij}(t)$ are adapted based on a modified spike-timing-dependent plasticity (STDP) rule combined with a homeostatic scaling mechanism.
+The STDP weight update is modeled as:
+\begin{equation}
+\frac{dW_{ij}(t)}{dt} = \eta \left( A_+ \exp\left( - \frac{\Delta t}{\tau_+} \right) - A_- \exp\left( - \frac{\Delta t}{\tau_-} \right) \right) - \gamma (W_{ij}(t) - W_0)
+\label{eq:plasticity}
+\end{equation}
+where $\Delta t = t_{post} - t_{pre}$ is the time difference between post- and presynaptic spikes, $\eta$ is the learning rate, $\tau_+$ and $\tau_-$ are the temporal windows for potentiation and depression respectively, and $\gamma$ is the homeostatic scaling factor that pulls the weight back to its baseline value $W_0$.
+
+\subsection{Network Architecture and Topology}
+We arrange the neurons in a hierarchical structure consisting of three distinct layers: Vertex (input), Meridian (processing), and Apex (output).
+The connections within the Meridian layer are recurrent and sparse, mimicking the dense local connectivity of cortical columns.
+Fig~\ref{fig:network} illustrates the connectivity layout.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    cell/.style={circle, draw=PlosBlue, fill=PlosBlue!5, very thick, minimum size=10mm, align=center, font=\sffamily\footnotesize},
+    input/.style={circle, draw=PlosGray, fill=PlosGray!10, thick, minimum size=8mm, align=center, font=\sffamily\footnotesize},
+    output/.style={circle, draw=PlosAccent, fill=PlosAccent!10, very thick, minimum size=10mm, align=center, font=\sffamily\footnotesize},
+    arrow/.style={-stealth, thick, draw=PlosGray!80},
+    rec_arrow/.style={-stealth, thick, draw=PlosBlue, bend right=45}
+]
+
+    % Input layer (Vertex)
+    \node[input] (I1) at (0, 2) {Vertex\\$I_1$};
+    \node[input] (I2) at (0, 0) {Vertex\\$I_2$};
+
+    % Recurrent layer (Meridian)
+    \node[cell] (R1) at (3.5, 3) {Meridian\\$M_1$};
+    \node[cell] (R2) at (3.5, 1) {Meridian\\$M_2$};
+    \node[cell] (R3) at (3.5, -1) {Meridian\\$M_3$};
+
+    % Output layer (Apex)
+    \node[output] (O1) at (7, 1.5) {Apex\\$O_1$};
+
+    % Connections: Input to Recurrent
+    \draw[arrow] (I1) -- (R1) node[midway, above, font=\tiny] {$W_{I_1 M_1}$};
+    \draw[arrow] (I1) -- (R2);
+    \draw[arrow] (I2) -- (R2);
+    \draw[arrow] (I2) -- (R3) node[midway, below, font=\tiny] {$W_{I_2 M_3}$};
+
+    % Connections: Recurrent to Output
+    \draw[arrow] (R1) -- (O1) node[midway, above, font=\tiny] {$W_{M_1 O_1}$};
+    \draw[arrow] (R2) -- (O1);
+    \draw[arrow] (R3) -- (O1);
+
+    % Recurrent connections (Meridian self-loops/inter-connectivity)
+    \draw[rec_arrow] (R1) to (R2);
+    \draw[rec_arrow] (R2) to (R3);
+    \draw[rec_arrow] (R3) to[bend left=55] (R1);
+
+    % Legend or annotations
+    \node[draw, dashed, color=PlosGray, fit={(I1) (I2)}, inner sep=4pt, label=above:\textbf{\sffamily Input Layer}] {};
+    \node[draw, dashed, color=PlosBlue, fit={(R1) (R2) (R3)}, inner sep=4pt, label=above:\textbf{\sffamily Meridian Core}] {};
+    \node[draw, dashed, color=PlosAccent, fit={(O1)}, inner sep=6pt, label=above:\textbf{\sffamily Output}] {};
+
+\end{tikzpicture}
+\caption{\textbf{Synapse-Dynamic Meridian (SDM) Architecture Schematic.}
+The input signals enter via the Vertex layer, which projects onto the recurrent Meridian Core.
+The Meridian Core contains lateral connections that support feedback loops.
+The final output is computed by the Apex layer which acts as a classifier or decision maker.}
+\label{fig:network}
+\end{figure}

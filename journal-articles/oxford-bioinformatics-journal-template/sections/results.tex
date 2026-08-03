@@ -1,0 +1,66 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{Benchmark comparison}
+\label{sec:benchmark}
+
+We compared SynapseFold against three baselines on the 512-structure held-out test split described in Section~\ref{sec:dataset}: a homology-modelling pipeline that threads onto the nearest structural template \citep{kowalski2019homology}, ApexRNA, a convolutional distance-prediction network \citep{oconnor2021apexrna}, and NimbusFold, a coarse-grained physics simulator \citep{delgado2020nimbusfold}. Table~\ref{tab:benchmark} reports precision and recall on native base-pair contact recovery, contact F1, and mean backbone \rmsd\ to the deposited structure after optimal superposition.
+
+\begin{table}[t]
+\centering
+\small
+\caption{Benchmark performance on the 512-structure held-out test split. Best value per column in bold.}
+\label{tab:benchmark}
+\begin{tabular}{lcccc}
+\toprule
+Method & Prec. & Recall & F1 & \rmsd~(\AA) \\
+\midrule
+Homology baseline & 0.58 & 0.51 & 0.54 & 11.7 \\
+NimbusFold         & 0.71 & 0.69 & 0.70 & 8.3  \\
+ApexRNA            & 0.79 & 0.74 & 0.76 & 6.6  \\
+\rowcolor{nimbusgray}
+SynapseFold (full) & \textbf{0.90} & \textbf{0.87} & \textbf{0.88} & \textbf{4.1} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+SynapseFold achieves the highest contact F1 and the lowest \rmsd\ of all four methods, improving mean \rmsd\ by 38\% relative to ApexRNA, the strongest neural baseline, and by 65\% relative to the homology baseline. The margin over NimbusFold is achieved at roughly two orders of magnitude lower wall-clock cost per structure, since NimbusFold requires iterative physics simulation while SynapseFold performs a single forward pass followed by embedding-based structure realisation.
+
+\subsection{Performance by sequence length}
+\label{sec:length}
+
+Figure~\ref{fig:f1length} breaks contact F1 down by sequence length tercile. SynapseFold's advantage over ApexRNA is modest for short sequences, where local secondary structure dominates and both methods perform well, but widens substantially for longer sequences, where tertiary contacts between distant regions of the chain become the primary source of structural signal. This is consistent with the design intent of the long-range attention channel described in Section~\ref{sec:graph}, which was added specifically to let the model route information between nucleotides that are far apart in sequence but close in the folded structure.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  ybar,
+  bar width=9pt,
+  width=0.99\linewidth,
+  height=4.3cm,
+  symbolic x coords={Short,Medium,Long},
+  xtick=data,
+  ymin=0, ymax=1,
+  ylabel={Contact F1},
+  ylabel style={font=\small},
+  tick label style={font=\small},
+  legend style={font=\scriptsize, at={(0.5,1.12)}, anchor=south, legend columns=-1},
+  enlarge x limits=0.3,
+  axis line style={color=meridiangray},
+  ymajorgrids=true,
+  grid style={dashed, gray!25},
+]
+\addplot[fill=oxfordblue] coordinates {(Short,0.90) (Medium,0.88) (Long,0.83)};
+\addplot[fill=synapseteal!70] coordinates {(Short,0.87) (Medium,0.77) (Long,0.63)};
+\legend{SynapseFold, ApexRNA}
+\end{axis}
+\end{tikzpicture}
+\caption{Contact F1 by sequence-length tercile (Short: $<$110~nt; Medium: 110--220~nt; Long: $>$220~nt). The advantage of SynapseFold over the strongest neural baseline widens as sequence length increases.}
+\label{fig:f1length}
+\end{figure}
+
+\subsection{Ablation study}
+\label{sec:ablation}
+
+Removing the long-range $k$-nearest-neighbour edges from the graph (Section~\ref{sec:graph}) and retaining only backbone and predicted base-pair edges reduces test F1 from 0.88 to 0.81 and increases mean \rmsd\ from 4.1~\AA\ to 5.4~\AA, confirming that the learned tertiary contact channel carries information not already present in secondary structure. Replacing the categorical distance head with a single-scalar regression head, holding the rest of the architecture fixed, increases \rmsd\ to 4.8~\AA, consistent with our expectation that flexible regions are poorly served by a point estimate. Removing the clash penalty $\mathcal{L}_{\mathrm{clash}}$ from Equation~\eqref{eq:loss} does not measurably change contact F1 but increases the proportion of realised structures containing at least one steric clash from 3\% to 19\%, indicating that the term is primarily a physical-plausibility regulariser rather than an accuracy driver.

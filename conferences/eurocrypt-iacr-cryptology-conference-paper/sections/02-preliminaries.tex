@@ -1,0 +1,76 @@
+\section{Preliminaries}
+\label{sec:preliminaries}
+
+For $n\in\N$, $[n]=\{1,\ldots,n\}$ and $u\getsr S$ denotes uniform sampling
+from a finite set $S$.  All algorithms receive the security parameter
+$1^\lambda$ implicitly.  A function $f$ is negligible if for every positive
+polynomial $p$, $f(\lambda)<1/p(\lambda)$ for all sufficiently large
+$\lambda$.  We write $\Time(\adv)$ for the running time of an adversary,
+including its oracle simulation overhead.
+
+\subsection{Three-move public-coin protocols}
+
+Let $R\subseteq\bits^*\times\bits^*$ be an NP relation, with instance $x$ and
+witness $w$.  A canonical three-move protocol $\Pi=(\prove,\verify)$ has the
+form
+\[
+  (a,st)\leftarrow\prove_1(pk,x,w),\qquad
+  c\getsr\mathcal{C},\qquad
+  z\leftarrow\prove_2(st,c),
+\]
+after which the verifier outputs $\verify(pk,x,a,c,z)\in\{\acc,\rej\}$.
+The challenge set $\mathcal{C}$ has size $2^t$.  Perfect completeness means
+that honest transcripts are always accepted.
+
+\begin{definition}[Special soundness]
+  \label{def:ss}
+  The protocol $\Pi$ has special-soundness error $\varepsilon_{\mathrm{ss}}$
+  if there is an extractor $\mathsf{Ext}$ such that, given two accepting
+  transcripts $(a,c,z)$ and $(a,c',z')$ for the same $(pk,x)$ with $c\ne c'$,
+  it outputs $w$ satisfying $(x,w)\in R$, except with probability at most
+  $\varepsilon_{\mathrm{ss}}$.
+\end{definition}
+
+For Schnorr identification in a prime-order group, extraction is algebraic and
+$\varepsilon_{\mathrm{ss}}=0$.  For protocols with an admissibility condition
+or computational extraction, keeping the error explicit is useful.
+
+\subsection{Random oracles and lazy sampling}
+
+A random oracle $\hash:\bits^*\to\mathcal{C}$ is simulated by a table $T$.
+On a new input $X$, the simulator samples $c\getsr\mathcal{C}$, stores
+$T[X]=c$, and returns $c$; repeated inputs return the stored value.  Programming
+$\hash(X):=c$ is distribution-preserving when $X$ has not previously been
+queried.  Consequently, our games record the event
+\[
+  \mathsf{PreQ}:=[X\in\operatorname{dom}(T)]
+\]
+whenever an honest transcript attempts to program $X$.
+
+\subsection{Typed encodings}
+\label{sec:syntax}
+
+We require a canonical injective encoding.  For a byte string $v$, let
+$L(v)$ be its fixed-width length followed by $v$, and define
+\begin{equation}
+  \label{eq:encoding}
+  \mathsf{Enc}(pk,x,a,s)
+  = \mathtt{FSv1}\,\|\,L(\mathsf{id}(\Pi))\,\|\,L(pk)\,\|\,L(x)\,\|\,L(a)\,\|\,L(s).
+\end{equation}
+The literal version byte prevents a future format from silently sharing the
+same domain.  Fixed-length encodings may omit a length prefix only when the
+type and length are uniquely determined by the protocol identifier.
+
+\begin{lemma}[Disjoint logical domains]
+  \label{lem:domains}
+  If $\mathsf{Enc}$ is injective, two equal oracle inputs identify the same
+  protocol version, public key, instance, commitment, and salt.  In particular,
+  an oracle query under one public key cannot be the programmed point of a
+  different public key.
+\end{lemma}
+
+\begin{proof}
+  Parse the fixed tag and then each length-delimited field from left to right.
+  Equality of the resulting strings implies equality of every field.  The last
+  claim follows by contraposition on the public-key field.
+\end{proof}

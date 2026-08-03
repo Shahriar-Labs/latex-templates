@@ -1,0 +1,70 @@
+\section{Protocol overview}
+
+\protocol is a device-initiated, manifest-driven protocol. A normal exchange is:
+
+\begin{lstlisting}
+Device                 Update Service        Repository        Bootloader
+  |-- DISCOVER ------------>|                    |                 |
+  |<-- OFFER(manifest) ------|                    |                 |
+  |-- ACCEPT --------------->|                    |                 |
+  |-- GET Range --------------------------------->|                 |
+  |<-- artifact bytes ----------------------------|                 |
+  |-- STATUS(verified) ----->|                    |                 |
+  |-- install to inactive slot                    |                 |
+  |-- STATUS(staged) ------->|                    |                 |
+  |-- set trial boot --------------------------------------------->|
+  |                         reboot                                  |
+  |<------------------------------------------------ trial image ---|
+  |-- health checks                                              |
+  |-- confirm image --------------------------------------------->|
+  |-- STATUS(confirmed) ---->|                    |                 |
+\end{lstlisting}
+
+Every offer is independently verifiable. Transfer and installation may span many
+connections. Status delivery is at least once, so the service \must process it
+idempotently using \field{device_id}, \field{session_id}, and \field{sequence}.
+
+\subsection{Device state machine}
+\label{sec:state-machine}
+
+\begin{longtable}{@{}L{29mm}L{75mm}L{48mm}@{}}
+  \toprule
+  \textbf{State} & \textbf{Entry action} & \textbf{Normal next state} \\
+  \midrule
+  \endhead
+  \state{Idle} & Wait for schedule, operator request, or notification. &
+    \state{Discovering} \\
+  \state{Discovering} & Send inventory and capabilities; validate response envelope. &
+    \state{Offered} or \state{Idle} \\
+  \state{Offered} & Verify signature, freshness, applicability, policy, and storage. &
+    \state{Downloading}, \state{Deferred}, or \state{Failed} \\
+  \state{Downloading} & Fetch ranges, verify chunks, and persist progress. &
+    \state{Verifying} or \state{Paused} \\
+  \state{Verifying} & Verify full artifact digest and authenticated metadata. &
+    \state{Staging} or \state{Failed} \\
+  \state{Staging} & Write/transform inactive component and verify installed image. &
+    \state{Ready} or \state{Failed} \\
+  \state{Ready} & Wait for activation policy and create atomic trial-boot record. &
+    \state{Rebooting} \\
+  \state{Rebooting} & Reboot into the trial image. & \state{Trial} \\
+  \state{Trial} & Run health checks before the attempt/deadline limit. &
+    \state{Confirmed} or \state{Rollback} \\
+  \state{Confirmed} & Commit security counter and report terminal success. &
+    \state{Idle} \\
+  \state{Rollback} & Select confirmed image, reboot, and report failure. &
+    \state{Idle} \\
+  \state{Paused} & Preserve verified progress while policy or connectivity blocks work. &
+    \state{Downloading} or \state{Idle} \\
+  \state{Deferred} & Record a policy reason and retry at/after the advised time. &
+    \state{Discovering} \\
+  \state{Failed} & Clean unsafe staging state and report a terminal error. &
+    \state{Idle} \\
+  \bottomrule
+\end{longtable}
+
+Security failures such as an invalid signature, digest mismatch, target mismatch,
+or rollback attempt are terminal for that manifest. Transient transport and power
+conditions are resumable and \mustnot be reported as terminal until configured
+retry limits are exhausted.
+
+% -----------------------------------------------------------------------------

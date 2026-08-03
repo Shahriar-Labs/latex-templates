@@ -1,0 +1,44 @@
+\section{STRIDE Threat Analysis}
+\label{sec:stride-analysis}
+
+Table~\ref{tab:stride} enumerates every threat identified by walking each STRIDE category against every component in the data flow diagram (Figure~\ref{fig:dfd}). Threats T-01 through T-04, T-06, T-07, T-11, and T-13 carry a \critical{} or \highrisk{} rating and are tracked as formal findings with assigned CVSS scores and mitigation owners in Section~\ref{sec:findings}; the remainder are tracked in the risk register and revisited each quarter (Section~\ref{sec:recommendations}).
+
+{\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}P{7mm}P{25mm}P{22mm}P{68mm}c@{}}
+\toprule
+\rowcolor{primary}
+\textcolor{white}{\textbf{ID}} & \textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{STRIDE}} & \textcolor{white}{\textbf{Threat Scenario}} & \textcolor{white}{\textbf{Risk}} \\
+\midrule
+\endfirsthead
+\toprule
+\rowcolor{primary}
+\textcolor{white}{\textbf{ID}} & \textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{STRIDE}} & \textcolor{white}{\textbf{Threat Scenario}} & \textcolor{white}{\textbf{Risk}} \\
+\midrule
+\endhead
+T-01 & Webhook Ingestion & Spoofing & Forged Vertex settlement webhook accepted without a valid HMAC signature in non-production environments, letting fabricated events reach the reconciliation queue. & \critical{} \\
+\rowcolor{rowgray}
+T-02 & Webhook Ingestion & Tampering & A previously valid signed webhook payload is replayed with no timestamp or nonce check, re-applying an already-settled transaction a second time. & \highrisk{} \\
+T-03 & Reconciliation Engine & Tampering & A leaked, partner-shared integration key lets an actor submit settlement records for a merchant the credential was never scoped to. & \highrisk{} \\
+\rowcolor{rowgray}
+T-04 & Admin Console & Elevation of Privilege & A support session can query and modify the Ledger Database directly, bypassing the Reconciliation Engine's write-path validation and audit-event emission. & \critical{} \\
+T-05 & Auth Service & Spoofing & Credential-stuffing bot succeeds against tenant accounts without MFA, using password lists sourced from unrelated breaches. & \mediumrisk{} \\
+\rowcolor{rowgray}
+T-06 & Ledger Database & Tampering & An insider with data-tier access executes a direct SQL update on a settled ledger row outside any application code path, leaving no application-level trail. & \critical{} \\
+T-07 & Audit Log Store & Repudiation & Audit entries are mutable under the shared data-tier service credential, letting an actor alter or delete evidence of a prior tampering event. & \highrisk{} \\
+\rowcolor{rowgray}
+T-08 & API Gateway & Spoofing & Differential error responses on login allow enumeration of valid tenant email addresses ahead of a targeted credential-stuffing run. & \lowrisk{} \\
+T-09 & API Gateway & Denial of Service & Absence of per-tenant rate quotas lets one noisy or compromised tenant integration degrade gateway latency for every tenant. & \mediumrisk{} \\
+\rowcolor{rowgray}
+T-10 & Reconciliation Engine & Information Disclosure & Verbose error responses on failed reconciliation return internal transaction and merchant identifiers to the calling client. & \lowrisk{} \\
+T-11 & Auth Service & Elevation of Privilege & A downgraded user's JWT role claim is not re-validated on token refresh, so the prior, higher-privilege role persists until natural expiry. & \highrisk{} \\
+\rowcolor{rowgray}
+T-12 & Admin Console & Repudiation & Support staff share a small pool of console logins for on-call coverage, so individual actions cannot be attributed to a specific person. & \mediumrisk{} \\
+T-13 & Ledger Database & Information Disclosure & Nightly backups are encrypted at the volume level only; card-adjacent metadata fields are not separately encrypted, widening exposure if a backup is mishandled. & \highrisk{} \\
+\rowcolor{rowgray}
+T-14 & Audit Log Store & Denial of Service & No per-tenant write-throughput isolation; a log flood from one tenant's activity can cause audit events from other tenants to be dropped. & \mediumrisk{} \\
+\bottomrule
+\caption{STRIDE threat catalogue across all in-scope components.}
+\label{tab:stride}
+\end{longtable}
+}

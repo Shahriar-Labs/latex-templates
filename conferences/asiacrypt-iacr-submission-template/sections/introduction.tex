@@ -1,0 +1,20 @@
+\section{Introduction}
+\label{sec:intro}
+
+Custodial wallets, certificate authorities, and validator committees increasingly refuse to place full signing authority in a single key. A $(t,n)$-threshold signature scheme lets $n$ parties hold shares of a secret key such that any $t$ can jointly sign, while fewer than $t$ learn nothing usable and cannot forge alone. Threshold ECDSA and Schnorr are deployed in production custody systems today, but both inherit classical discrete-log's vulnerability to a quantum computer, and post-quantum threshold constructions remain almost exclusively lattice-based.
+
+Lattice threshold signatures built on Fiat-Shamir with aborts~\cite{nimbus2021lattice} must repeatedly reject and restart signing to keep the response independent of the secret; coordinating this across $t$ mutually distrusting parties without leaking timing is delicate, and keys and signatures are kilobyte-scale. Isogeny-based group-action signatures~\cite{sterling2019hhs,beullens2020csifish} offer a different profile --- compact keys and signatures, often an order of magnitude smaller, at the cost of slower group operations --- that suits the threshold setting, where inter-signer bandwidth is often the binding constraint and computation can be parallelized across signer hardware.
+
+Extending group-action signatures to the threshold setting is not immediate: the underlying sigma protocol commits, challenges, and responds with a value depending on the secret, and distributing this naively either leaks more than the threshold structure permits or requires an extra interactive round before the challenge can be issued, as in the prior construction we call Apex-GA~\cite{voss2023apexga}. That extra round doubles the round-trip count relative to the base scheme and limits deployability in latency-sensitive settings.
+
+\subsection{Our Contributions}
+We present \textbf{Nimbus-T}, a $(t,n)$-threshold signature scheme from isogeny group actions that keeps the two-move structure of the base sigma protocol intact and tolerates up to $n-t$ absent signers:
+\begin{itemize}[leftmargin=*]
+  \item A $\Share$/$\Combine$ pair, building on~\cite{tran2024dkg}, that distributes a class-group secret via integer Shamir sharing and reconstructs the response through a public Lagrange combination, with no extra interactive round.
+  \item An EUF-CMA proof reducing forgery to the group action inverse problem via a threshold-aware forking argument, and a robustness proof against $t-1$ malicious signers under a decisional group-action assumption.
+  \item An implementation showing 51\% lower signing time and 55\% lower verification time than Apex-GA at $(5,9)$, with signature size within 2\% of the non-threshold baseline.
+\end{itemize}
+
+\begin{tcolorbox}
+  \textbf{Why group actions?} A single class-group element is the entire secret key, so sharing it is ordinary linear algebra over $\Z_N$, not a bespoke lattice gadget --- and the base scheme's commit-challenge-response structure lifts to the threshold setting almost for free.
+\end{tcolorbox}

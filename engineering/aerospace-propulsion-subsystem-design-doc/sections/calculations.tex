@@ -1,0 +1,60 @@
+\section{Thermodynamic Calculations \& Chamber Sizing}
+This section details the primary aerodynamic and thermodynamic calculations performed to establish the baseline geometry of the Nimbus-X thrust chamber.
+
+\subsection{Mass Flow Rates and Exhaust Velocity}
+Using the design vacuum thrust and specific impulse, the total mass flow rate $\dot{m}$ and effective exhaust velocity $v_e$ are calculated. 
+The effective exhaust velocity in vacuum is:
+\begin{equation}
+    v_{e,\text{vac}} = I_{\text{sp,vac}} \cdot g_0 = 355.0 \text{~s} \cdot 9.80665 \text{~m/s}^2 = 3481.36 \text{~m/s}
+\end{equation}
+
+The total propellant mass flow rate is:
+\begin{equation}
+    \dot{m} = \frac{F_{\text{vac}}}{v_{e,\text{vac}}} = \frac{350{,}000 \text{~N}}{3481.36 \text{~m/s}} = 100.535 \text{~kg/s}
+\end{equation}
+
+With an oxidizer-to-fuel ratio $O/F = 3.40$, the individual mass flow rates for the oxidizer ($\dot{m}_{\text{ox}}$) and fuel ($\dot{m}_{\text{fuel}}$) are determined by:
+\begin{align}
+    \dot{m}_{\text{fuel}} &= \frac{\dot{m}}{1 + O/F} = \frac{100.535}{4.40} = 22.849 \text{~kg/s} \\
+    \dot{m}_{\text{ox}} &= O/F \cdot \dot{m}_{\text{fuel}} = 3.40 \cdot 22.849 = 77.686 \text{~kg/s}
+\end{align}
+
+\subsection{Throat Area Sizing}
+The throat area $A_t$ is sized to choke the flow under nominal combustion chamber conditions. The thrust coefficient $C_F$ is calculated from compressible flow relations as a function of the specific heat ratio $\gamma$, expansion ratio $\epsilon$, and pressure ratio~\cite{Hill1992}.
+For the LOX/Methane combustion products at $O/F = 3.40$, the specific heat ratio is modeled as $\gamma = 1.22$. The theoretical vacuum thrust coefficient $C_{F,\text{vac}}$ is given by:
+\begin{equation}
+    C_{F,\text{vac}} = \sqrt{\frac{2\gamma^2}{\gamma-1} \left(\frac{2}{\gamma+1}\right)^{\frac{\gamma+1}{\gamma-1}} \left[ 1 - \left(\frac{P_e}{P_c}\right)^{\frac{\gamma-1}{\gamma}} \right]} + \epsilon \left( \frac{P_e}{P_c} \right)
+\end{equation}
+
+Substituting $\gamma = 1.22$, $\epsilon = 80$, $P_c = 10.0\text{~MPa}$, and $P_e = 8.5\text{~kPa}$:
+\begin{equation}
+    C_{F,\text{vac}} = 1.765
+\end{equation}
+
+Thus, the throat area required is:
+\begin{equation}
+    A_t = \frac{F_{\text{vac}}}{P_c \cdot C_{F,\text{vac}}} = \frac{350{,}000 \text{~N}}{10{,}000{,}000 \text{~Pa} \cdot 1.765} = 0.01983 \text{~m}^2
+\end{equation}
+
+The corresponding throat diameter is:
+\begin{equation}
+    D_t = \sqrt{\frac{4 A_t}{\pi}} = 0.1589 \text{~m} = 158.9 \text{~mm}
+\end{equation}
+
+\subsection{Combustion Chamber Geometry}
+The combustion chamber volume is characterized by the characteristic length $L^*$, which represents the chamber volume divided by the throat area:
+\begin{equation}
+    L^* = \frac{V_c}{A_t}
+    \label{eq:lstar}
+\end{equation}
+For liquid oxygen and liquid methane, an $L^*$ value of $1.15\text{~m}$ is selected to ensure complete combustion and vaporization of the droplets within the chamber~\cite{Huzel1992}. From Eq.~\eqref{eq:lstar}, the chamber volume is:
+\begin{equation}
+    V_c = L^* \cdot A_t = 1.15 \text{~m} \cdot 0.01983 \text{~m}^2 = 0.0228 \text{~m}^3 = 22.8 \text{~L}
+\end{equation}
+
+The contraction ratio $\epsilon_c = A_c / A_t$ is chosen as $3.5$ to limit gas velocities at the injector face and prevent combustion instabilities. This yields:
+\begin{align}
+    A_c &= \epsilon_c \cdot A_t = 3.5 \cdot 0.01983 = 0.06941 \text{~m}^2 \\
+    D_c &= \sqrt{\frac{4 A_c}{\pi}} = 0.2973 \text{~m} = 297.3 \text{~mm}
+\end{align}
+The chamber length $L_c$ (excluding the convergent section) is then computed as $0.28\text{~m}$ based on standard conical convergence angles.

@@ -1,0 +1,896 @@
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[11pt,a4paper]{article}
+
+% -----------------------------------------------------------------------------
+% Civil Engineering Foundation and Soil Analysis Report
+% Self-contained worked design report; compile with pdfLaTeX.
+% -----------------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{newtxtext,newtxmath}
+\usepackage[a4paper,top=25mm,bottom=25mm,left=24mm,right=22mm,
+            headheight=15pt,footskip=14mm]{geometry}
+\usepackage{microtype}
+\usepackage{setspace}
+\setstretch{1.08}
+
+\usepackage{amsmath,mathtools}
+\usepackage{siunitx}
+\sisetup{detect-all,per-mode=symbol,range-phrase=--,range-units=single}
+\usepackage{booktabs,tabularx,longtable,array,multirow}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,patterns,positioning,shapes.geometric}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{float}
+\usepackage{ragged2e}
+\usepackage{hyperref}
+\usepackage[nameinlink,noabbrev]{cleveref}
+
+% --- Colour system ------------------------------------------------------------
+\definecolor{navy}{HTML}{17324D}
+\definecolor{blue}{HTML}{276A8E}
+\definecolor{teal}{HTML}{1F8A85}
+\definecolor{gold}{HTML}{D79B32}
+\definecolor{red}{HTML}{B5473C}
+\definecolor{ink}{HTML}{263238}
+\definecolor{muted}{HTML}{687680}
+\definecolor{pale}{HTML}{EEF3F5}
+\definecolor{paleblue}{HTML}{E8F1F5}
+\definecolor{palegold}{HTML}{FBF4E6}
+\definecolor{palered}{HTML}{FAECE9}
+\definecolor{fillsoil}{HTML}{B9A27C}
+\definecolor{claysoil}{HTML}{AFC6D6}
+\definecolor{sandsoil}{HTML}{E8D29C}
+\definecolor{densesand}{HTML}{D6B86F}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=navy,
+  citecolor=teal,
+  urlcolor=blue,
+  pdftitle={Foundation and Soil Analysis Report},
+  pdfauthor={Geotechnical Engineering Group},
+  pdfsubject={Illustrative geotechnical design basis and foundation assessment}
+}
+
+% --- Typography and page style ------------------------------------------------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\setlist[itemize]{leftmargin=5mm,itemsep=2pt,topsep=3pt}
+\setlist[enumerate]{leftmargin=6mm,itemsep=2pt,topsep=3pt}
+\renewcommand{\arraystretch}{1.18}
+\captionsetup{font=small,labelfont={bf,color=navy},textfont=it}
+
+\titleformat{\section}
+  {\Large\bfseries\color{navy}}{\thesection}{0.7em}{}
+  [\vspace{-2pt}\color{teal}\titlerule]
+\titleformat{\subsection}
+  {\large\bfseries\color{blue}}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{ink}}{\thesubsubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{16pt}{8pt}
+\titlespacing*{\subsection}{0pt}{12pt}{5pt}
+
+\pagestyle{empty}
+\fancyhf{}
+\fancyhead[L]{\small\color{muted}\textbf{GEO-2026-014} \enspace/\enspace FOUNDATION \& SOIL ANALYSIS}
+\fancyhead[R]{\small\color{muted}REV 0 \enspace--\enspace 02 AUG 2026}
+\fancyfoot[L]{\footnotesize\color{muted}Illustrative design report --- not for construction}
+\fancyfoot[R]{\footnotesize\color{muted}Page \thepage\ of \pageref*{LastPage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \renewcommand{\footrulewidth}{0pt}
+}
+
+% Draw the running furniture at shipout so continuation and float pages receive
+% exactly the same header and footer.  The cover is excluded by the flag.
+\newif\ifcoverpage
+\coverpagetrue
+\AddToHook{shipout/foreground}{%
+  \ifcoverpage\else
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=west,font=\small,text=muted]
+      at ([xshift=24mm,yshift=-13mm]current page.north west)
+      {\textbf{GEO-2026-014} \enspace/\enspace FOUNDATION \& SOIL ANALYSIS};
+    \node[anchor=east,font=\small,text=muted]
+      at ([xshift=-22mm,yshift=-13mm]current page.north east)
+      {REV 0 \enspace--\enspace 02 AUG 2026};
+    \draw[navy,line width=.4pt]
+      ([xshift=24mm,yshift=-17mm]current page.north west)--
+      ([xshift=-22mm,yshift=-17mm]current page.north east);
+    \node[anchor=west,font=\footnotesize,text=muted]
+      at ([xshift=24mm,yshift=12mm]current page.south west)
+      {Illustrative design report --- not for construction};
+    \node[anchor=east,font=\footnotesize,text=muted]
+      at ([xshift=-22mm,yshift=12mm]current page.south east)
+      {Page \thepage\ of \pageref*{LastPage}};
+  \end{tikzpicture}%
+  \fi
+}
+
+% --- Reusable components ------------------------------------------------------
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\Centering\arraybackslash}p{#1}}
+\newcommand{\good}{\textcolor{teal}{\textbf{LOW}}}
+\newcommand{\moderate}{\textcolor{gold!85!black}{\textbf{MEDIUM}}}
+\newcommand{\high}{\textcolor{red}{\textbf{HIGH}}}
+
+\newtcolorbox{keybox}[1][]{
+  enhanced,breakable,colback=paleblue,colframe=teal,
+  boxrule=0.7pt,arc=1.5mm,left=4mm,right=4mm,top=3mm,bottom=3mm,
+  borderline west={3pt}{0pt}{teal},title=#1,
+  fonttitle=\bfseries\color{navy},coltitle=navy
+}
+\newtcolorbox{warningbox}[1][]{
+  enhanced,breakable,colback=palegold,colframe=gold,
+  boxrule=0.7pt,arc=1.5mm,left=4mm,right=4mm,top=3mm,bottom=3mm,
+  borderline west={3pt}{0pt}{gold},title=#1,
+  fonttitle=\bfseries\color{navy},coltitle=navy
+}
+\newtcolorbox{decisionbox}[1][]{
+  enhanced,breakable,colback=navy,colframe=navy,
+  boxrule=0pt,arc=1.5mm,left=5mm,right=5mm,top=4mm,bottom=4mm,
+  title=#1,fonttitle=\bfseries\color{white},coltitle=white,
+  coltext=white
+}
+
+\newcommand{\metric}[3]{%
+  \begin{minipage}[t]{0.30\linewidth}\centering
+    {\color{muted}\footnotesize\MakeUppercase{#1}}\\[2pt]
+    {\color{navy}\LARGE\bfseries #2}\\[-1pt]
+    {\color{muted}\footnotesize #3}
+  \end{minipage}%
+}
+
+\begin{document}
+\hypersetup{pageanchor=false}
+
+% =============================================================================
+% COVER
+% =============================================================================
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[navy] (current page.north west) rectangle
+    ([yshift=-110mm]current page.north east);
+  \fill[teal] ([yshift=-110mm]current page.north west) rectangle
+    ([yshift=-113mm]current page.north east);
+  \fill[pale] ([yshift=-113mm]current page.north west) rectangle
+    (current page.south east);
+  \draw[white,opacity=.18,line width=1.2pt]
+    ([xshift=18mm,yshift=-17mm]current page.north west) grid[step=9mm]
+    ([xshift=-18mm,yshift=-103mm]current page.north east);
+  \fill[gold] ([xshift=-24mm,yshift=22mm]current page.south east) circle (15mm);
+  \fill[pale] ([xshift=-24mm,yshift=22mm]current page.south east) circle (10mm);
+  \fill[teal] ([xshift=-24mm,yshift=22mm]current page.south east) circle (5mm);
+\end{tikzpicture}
+
+\vspace*{6mm}
+{\color{white}\small\bfseries GEOTECHNICAL ENGINEERING GROUP}\hfill
+{\color{white}\small PROJECT NO. GEO-2026-014}
+
+\vspace{24mm}
+{\color{white}\fontsize{29}{34}\selectfont\bfseries
+FOUNDATION \&\\[2mm] SOIL ANALYSIS}
+
+\vspace{5mm}
+{\color{white}\Large Geotechnical Design Basis Report}
+
+\vspace{40mm}
+{\color{navy}\Large\bfseries Proposed Mid-Rise Development}\par
+\vspace{2mm}
+{\color{blue}\large Illustrative Urban Site \enspace/\enspace Dhaka, Bangladesh}
+
+\vspace{15mm}
+\begin{tcolorbox}[colback=white,colframe=white,boxrule=0pt,arc=1.5mm,
+  left=5mm,right=5mm,top=4mm,bottom=4mm,width=.78\textwidth]
+\begin{tabularx}{\linewidth}{@{}L{31mm}Y@{}}
+\textcolor{muted}{\small CLIENT} & ABC Development Limited \\
+\textcolor{muted}{\small STATUS} & Illustrative design report --- not for construction \\
+\textcolor{muted}{\small REVISION} & Rev 0 \enspace/\enspace 02 August 2026 \\
+\textcolor{muted}{\small PREPARED BY} & Geotechnical Engineering Group \\
+\end{tabularx}
+\end{tcolorbox}
+
+\vfill
+{\color{muted}\footnotesize
+This document demonstrates a complete engineering-report format using an assumed dataset.
+Site-specific design requires a commissioned investigation, laboratory certificates and review
+by the Engineer of Record.}
+\end{titlepage}
+\coverpagefalse
+\hypersetup{pageanchor=true}
+\pagenumbering{roman}
+
+% =============================================================================
+% FRONT MATTER
+% =============================================================================
+\section*{Document control}
+\addcontentsline{toc}{section}{Document control}
+\begin{tabularx}{\textwidth}{@{}L{26mm}L{28mm}Y L{31mm}@{}}
+\toprule
+\rowcolor{navy!8}
+\textbf{Revision} & \textbf{Date} & \textbf{Purpose / description} & \textbf{Status} \\
+\midrule
+0 & 02 Aug 2026 & Initial issue; illustrative design basis and foundation assessment & For technical review \\
+\bottomrule
+\end{tabularx}
+
+\vspace{8mm}
+\begin{tabularx}{\textwidth}{@{}L{28mm}Y L{30mm}L{26mm}@{}}
+\toprule
+\rowcolor{navy!8}
+& \textbf{Name / role} & \textbf{Discipline} & \textbf{Signature} \\
+\midrule
+Prepared by & Geotechnical Engineer & Geotechnical & --- \\
+Checked by & Senior Geotechnical Engineer & Geotechnical & --- \\
+Approved by & Project Director & Civil / Structural & --- \\
+\bottomrule
+\end{tabularx}
+
+\begin{warningbox}[Important status note]
+No project-specific borehole logs, survey, structural reactions or laboratory certificates were
+provided. All dimensions, soil parameters and calculations in this report are a coherent
+\emph{worked design basis}, not measured site data. They shall be replaced and independently
+verified before tender, permitting or construction.
+\end{warningbox}
+
+\tableofcontents
+\clearpage
+
+\section*{Executive summary}
+\addcontentsline{toc}{section}{Executive summary}
+
+The assumed ground model comprises uncontrolled fill over soft to firm alluvial clay, underlain
+by medium-dense and then dense silty sand. Groundwater is expected near
+\SI{2.2}{\metre} below existing grade and may fluctuate seasonally. The clay immediately below
+the proposed foundation level has low undrained strength and is settlement-sensitive.
+
+\begin{decisionbox}[Recommended foundation strategy]
+Adopt cast-in-place bored piles, nominally \SI{600}{\milli\metre} diameter and
+\SI{17.5}{\metre} long from existing grade, founded at least \SI{5}{\metre} into the dense
+sand stratum. Use a preliminary allowable axial compression resistance of
+\textbf{\SI{900}{\kilo\newton} per pile}. Confirm resistance, settlement and construction method
+with a maintained-load preliminary pile test and site-specific pile design.
+\end{decisionbox}
+
+\vspace{3mm}
+\noindent
+\metric{Groundwater}{\SI{2.2}{m}}{below grade}
+\hfill
+\metric{Pile length}{\SI{17.5}{m}}{preliminary}
+\hfill
+\metric{Allowable load}{\SI{900}{kN}}{compression}
+
+\vspace{7mm}
+\begin{tabularx}{\textwidth}{@{}L{42mm}Y C{24mm}@{}}
+\toprule
+\rowcolor{navy!8}
+\textbf{Issue} & \textbf{Engineering finding / required control} & \textbf{Risk} \\
+\midrule
+Shallow foundations & Predicted primary consolidation settlement is about
+\SI{85}{\milli\metre}; conventional pads or an untreated raft are not recommended. & \high \\
+Pile performance & Dense sand provides a competent combined shaft-and-base bearing layer;
+actual performance depends on bore stability and base cleaning. & \moderate \\
+Groundwater & Excavation extends below the assumed water table. Use staged, filtered
+dewatering and monitor drawdown at adjacent property lines. & \moderate \\
+Seismic response & Preliminary classification is a soft-soil profile; site response and
+liquefaction screening require CPT/Vs data and the governing seismic parameters. & \moderate \\
+Aggressivity & No chemical results are available. Test groundwater and soil for sulfate,
+chloride, pH and resistivity before specifying concrete durability class. & \moderate \\
+\bottomrule
+\end{tabularx}
+
+\begin{keybox}[Hold points before detailed design]
+Complete project-specific drilling and CPT, survey groundwater for at least one wet season,
+receive service and factored column reactions, complete chemical testing, and load-test a
+non-working pile. The structural and geotechnical designers shall jointly check group effects,
+total and differential settlement, pile-cap punching, lateral response and seismic actions.
+\end{keybox}
+
+\clearpage
+\pagenumbering{arabic}
+
+% =============================================================================
+\section{Introduction}
+\subsection{Purpose and scope}
+This report establishes an illustrative geotechnical design basis for a reinforced-concrete
+mid-rise building with one basement. It demonstrates the evaluation of a ground model,
+foundation alternatives, axial pile resistance, settlement, groundwater risks and construction
+quality controls. The assessment covers:
+\begin{itemize}
+  \item interpretation of a representative three-borehole investigation to
+        \SI{25}{\metre} depth;
+  \item selection of characteristic engineering parameters;
+  \item screening of pads, raft and deep-foundation options;
+  \item preliminary geotechnical sizing of bored piles; and
+  \item requirements for verification, monitoring and quality assurance.
+\end{itemize}
+
+This report does not design retaining walls, permanent basement waterproofing, pile caps,
+structural reinforcement or temporary works. Those items require coordinated design after the
+project geometry and actions are confirmed.
+
+\subsection{Assumed development}
+\begin{table}[H]
+\centering
+\caption{Assumed project design basis.}
+\label{tab:project-basis}
+\begin{tabularx}{\textwidth}{@{}L{47mm}Y@{}}
+\toprule
+\rowcolor{navy!8}
+\textbf{Item} & \textbf{Adopted basis} \\
+\midrule
+Building & Eight-storey reinforced-concrete frame with one basement \\
+Plan dimensions & Approximately \SI{22}{\metre} by \SI{30}{\metre} \\
+Basement / pile-cap level & About \SI{2.7}{\metre} below existing grade \\
+Service column reactions & \SIrange{700}{1800}{\kilo\newton}; core reaction about \SI{9000}{\kilo\newton} \\
+Settlement criteria & \SI{40}{\milli\metre} total; angular distortion preferably less than 1:500 \\
+Adjacent assets & Low-rise buildings and buried utilities near the property boundary \\
+Design life & 50 years, subject to confirmation by the owner \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Information hierarchy}
+Where conflicts arise, project-specific survey, certified field logs and laboratory results take
+precedence over this illustrative basis. Design should follow the governing building code and
+the contract-adopted editions of recognized geotechnical standards. Parameter selection should
+use engineering judgment and load-test back-analysis rather than uncorrected SPT values alone
+\cite{peck1974,bowles1996}.
+
+% =============================================================================
+\section{Illustrative site investigation}
+\subsection{Field programme}
+The assumed investigation includes three rotary wash boreholes (BH-01 to BH-03), standard
+penetration testing at approximately \SI{1.5}{\metre} intervals, disturbed and thin-wall samples,
+and temporary standpipes. For a real project, the final scope should be set after reviewing
+column locations, basement geometry and access constraints.
+
+\begin{table}[H]
+\centering
+\caption{Illustrative exploration schedule.}
+\label{tab:exploration}
+\begin{tabularx}{\textwidth}{@{}L{20mm}C{24mm}C{25mm}C{31mm}Y@{}}
+\toprule
+\rowcolor{navy!8}
+\textbf{Point} & \textbf{Depth} & \textbf{Ground level} & \textbf{Water level} & \textbf{Principal tests} \\
+ & (m) & (m datum) & (m below grade) & \\
+\midrule
+BH-01 & 25.0 & 100.20 & 2.1 & SPT, classification, strength \\
+BH-02 & 25.0 & 100.05 & 2.3 & SPT, consolidation, chemistry \\
+BH-03 & 25.0 &  99.90 & 2.2 & SPT, classification, strength \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Subsurface profile}
+\begin{figure}[H]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[x=1cm,y=0.36cm,font=\footnotesize]
+  % depth axis
+  \draw[-{Stealth[length=2mm]},thick,navy] (0,1) -- (0,-26);
+  \node[rotate=90,navy] at (-0.75,-12.5) {Depth below grade (m)};
+  \foreach \d in {0,5,10,15,20,25}{
+    \draw[navy] (-0.12,-\d)--(0.12,-\d);
+    \node[left] at (-0.15,-\d) {\d};
+    \draw[muted!25,dashed] (0.2,-\d)--(15.8,-\d);
+  }
+  % main profile
+  \fill[fillsoil] (1,0) rectangle (5,-1.2);
+  \fill[claysoil] (1,-1.2) rectangle (5,-4.5);
+  \fill[sandsoil] (1,-4.5) rectangle (5,-10.5);
+  \fill[densesand] (1,-10.5) rectangle (5,-18.0);
+  \fill[claysoil!75!navy] (1,-18.0) rectangle (5,-25.0);
+  \draw[navy,thick] (1,0) rectangle (5,-25);
+  \foreach \y in {-1.2,-4.5,-10.5,-18}{\draw[white,line width=1pt] (1,\y)--(5,\y);}
+  \node[align=center] at (3,-0.6) {FILL};
+  \node[align=center] at (3,-2.85) {SOFT--FIRM\\SILTY CLAY};
+  \node[align=center] at (3,-7.5) {MEDIUM-DENSE\\SILTY SAND};
+  \node[align=center] at (3,-14.25) {DENSE SAND};
+  \node[align=center,text=white] at (3,-21.5) {STIFF CLAY\\WITH SAND};
+  % water line
+  \draw[blue,densely dashed,line width=1.2pt] (0.5,-2.2)--(15.8,-2.2);
+  \node[blue,fill=white,inner sep=1pt] at (13.9,-2.2) {GWT $\approx$ \SI{2.2}{m}};
+  % pile schematic
+  \fill[navy!80] (7.3,-2.7) rectangle (7.85,-17.5);
+  \fill[navy] (7.05,-2.35) rectangle (8.10,-2.7);
+  \draw[gold,line width=2pt,{Stealth[length=2mm]}-{Stealth[length=2mm]}]
+    (8.65,-2.7)--node[right,align=left]{\SI{600}{mm} bored pile\\$L=\SI{14.8}{m}$ below cap}(8.65,-17.5);
+  \draw[teal,dashed] (5.1,-17.5)--(10,-17.5);
+  \node[teal,anchor=west] at (9.1,-17.5) {preliminary toe};
+  % notes
+  \node[anchor=west,align=left,text width=3.4cm] at (12,-9) {
+    \textbf{Design implication}\\[2pt]
+    Soft clay controls shallow-foundation settlement.\\[4pt]
+    Dense sand below \SI{10.5}{m} provides the primary pile bearing stratum.\\[4pt]
+    Maintain at least \SI{5}{m} penetration into dense sand.};
+\end{tikzpicture}
+}
+\caption{Generalized ground model and recommended pile concept. Layer boundaries may vary
+between exploration points.}
+\label{fig:ground-model}
+\end{figure}
+
+\subsection{Groundwater}
+The interpreted groundwater level is \SIrange{2.1}{2.3}{\metre} below grade. A single reading
+after drilling may be affected by the drilling method and does not define the seasonal high.
+Piezometers should therefore be installed and monitored before basement and temporary-works
+design. For preliminary uplift and construction checks, use a conservative groundwater level of
+\SI{1.0}{\metre} below grade unless monitoring demonstrates a lower design level.
+
+% =============================================================================
+\section{Engineering properties}
+\subsection{Field and laboratory trends}
+The following results are internally consistent assumed values. SPT blow counts are corrected
+to an energy-normalized value, $N_{60}$, for interpretation. In cohesive soils, undrained shear
+strength is based primarily on high-quality sampling and strength tests rather than SPT
+correlations \cite{lambe1969}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=.72\textwidth,height=8cm,
+  xbar,bar width=4pt,
+  xmin=0,xmax=50,ymin=-25,ymax=0,
+  ytick={-25,-20,-15,-10,-5,0},
+  yticklabels={25,20,15,10,5,0},
+  xlabel={$N_{60}$ (blows / \SI{300}{mm})},
+  ylabel={Depth below grade (m)},
+  grid=both,grid style={muted!18},
+  axis line style={navy},tick label style={font=\small},
+  label style={font=\small,color=navy},
+  legend style={draw=none,at={(0.98,0.04)},anchor=south east,font=\small}
+]
+\addplot[fill=teal!70,draw=teal] coordinates {
+  (3,-1.5) (4,-3) (5,-4.5) (12,-6) (16,-7.5) (19,-9)
+  (28,-10.5) (32,-12) (36,-13.5) (40,-15) (38,-16.5)
+  (24,-18) (22,-19.5) (25,-21) (28,-22.5) (31,-24)};
+\addlegendentry{BH-02 representative profile}
+\end{axis}
+\end{tikzpicture}
+\caption{Representative normalized SPT profile used for preliminary interpretation.}
+\label{fig:spt}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\caption{Summary of assumed laboratory index and strength results.}
+\label{tab:lab}
+\small
+\begin{tabularx}{\textwidth}{@{}L{35mm}C{16mm}C{16mm}C{16mm}C{18mm}C{18mm}Y@{}}
+\toprule
+\rowcolor{navy!8}
+\textbf{Material} & $w$ (\%) & $LL$ (\%) & $PI$ (\%) & $c_u$ (kPa) & $C_c$ & \textbf{USCS} \\
+\midrule
+Fill & 18--30 & -- & -- & -- & -- & ML/CL, variable \\
+Soft--firm silty clay & 32--42 & 48 & 25 & 25--38 & 0.24 & CL \\
+Medium-dense silty sand & 18--24 & NP & NP & -- & -- & SM \\
+Dense sand & 15--20 & NP & NP & -- & -- & SP--SM \\
+Stiff clay with sand & 22--30 & 42 & 20 & 90--140 & 0.14 & CL \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Characteristic design parameters}
+Parameters in \cref{tab:parameters} are cautious characteristic values for preliminary design.
+They are not lower bounds; the selection considers test scatter, scale and the likely zone of
+influence. Effective-stress strength is used for drained and long-term analyses, while $c_u$ is
+used for short-term total-stress checks.
+
+\begin{table}[H]
+\centering
+\caption{Preliminary geotechnical design parameters.}
+\label{tab:parameters}
+\small
+\begin{tabularx}{\textwidth}{@{}L{28mm}C{15mm}C{15mm}C{15mm}C{15mm}C{15mm}Y@{}}
+\toprule
+\rowcolor{navy!8}
+\textbf{Unit} & $\gamma$ & $c_u$ & $c'$ & $\phi'$ & $E_s$ & \textbf{Design note} \\
+ & (kN/m$^3$) & (kPa) & (kPa) & (deg) & (MPa) & \\
+\midrule
+Fill & 18 & -- & 0 & 27 & 5 & Remove below foundations \\
+Soft--firm clay & 18 & 30 & 3 & 24 & 4 & Settlement-sensitive \\
+Medium-dense sand & 19 & -- & 0 & 31 & 22 & Use submerged unit weight below GWT \\
+Dense sand & 20 & -- & 0 & 36 & 55 & Primary pile-bearing layer \\
+Stiff clay / sand & 19.5 & 110 & 5 & 28 & 35 & Confirm continuity \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+For earth-pressure screening, the normally consolidated at-rest coefficient may be estimated as
+$K_0=1-\sin\phi'$. Permanent wall design shall account for stress history, compaction,
+surcharge, construction sequence and groundwater; the tabulated values alone are insufficient.
+
+% =============================================================================
+\section{Foundation alternatives}
+\subsection{Screening assessment}
+\begin{table}[H]
+\centering
+\caption{Foundation option comparison.}
+\label{tab:options}
+\begin{tabularx}{\textwidth}{@{}L{34mm}Y Y C{22mm}@{}}
+\toprule
+\rowcolor{navy!8}
+\textbf{Option} & \textbf{Advantages} & \textbf{Constraints} & \textbf{Outcome} \\
+\midrule
+Isolated / strip footings & Simple and economical construction & Very low bearing resistance in clay; large and differential settlement & Reject \\
+Untreated raft & Load redistribution; simple basement integration & Consolidation settlement exceeds criterion; sensitive to nonuniform fill & Reject \\
+Improved-ground raft & Can reduce pile count and embodied material & Requires trial area, specialist design and settlement verification & Reserve option \\
+Driven precast piles & Good displacement-pile resistance; rapid installation & Vibration, noise and heave risk near adjacent assets & Conditional \\
+Bored cast-in-place piles & Low vibration; adaptable length and diameter & Needs slurry/casing control, base cleaning and integrity testing & \textbf{Preferred} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Shallow bearing resistance}
+At a notional founding depth $D_f=\SI{1.8}{\metre}$ within the soft--firm clay, the undrained
+net ultimate bearing resistance for a wide footing is screened as
+\begin{equation}
+q_{\mathrm{net,ult}} = N_c c_u = 5.14(30) = \SI{154}{\kilo\pascal}.
+\end{equation}
+With a global factor of safety of 3 and overburden $\gamma D_f$, the corresponding gross
+allowable pressure is only
+\begin{equation}
+q_{\mathrm{allow,gross}}
+=\frac{154}{3}+18(1.8) \approx \SI{84}{\kilo\pascal}.
+\end{equation}
+This is a bearing-capacity screen only; settlement governs at an even lower practical pressure.
+Footings near excavations or sloping ground would also require reduced resistance.
+
+\subsection{Raft settlement screen}
+For a \SI{2.7}{\metre} thick consolidating clay layer, the one-dimensional primary consolidation
+estimate is
+\begin{equation}
+S_c=\frac{C_c H}{1+e_0}\log_{10}\!\left(
+\frac{\sigma'_0+\Delta\sigma'}{\sigma'_0}\right).
+\label{eq:consolidation}
+\end{equation}
+Using $C_c=0.24$, $H=\SI{2.7}{\metre}$, $e_0=0.80$,
+$\sigma'_0=\SI{58}{\kilo\pascal}$ and average
+$\Delta\sigma'=\SI{42}{\kilo\pascal}$ gives
+\begin{equation}
+S_c=\frac{0.24(2.7)}{1.80}\log_{10}\!\left(\frac{100}{58}\right)
+=\SI{0.085}{\metre}\approx\SI{85}{\milli\metre}.
+\end{equation}
+Immediate settlement and construction variability would add to this value. The untreated raft
+therefore does not satisfy the adopted \SI{40}{\milli\metre} criterion.
+
+% =============================================================================
+\section{Preliminary bored-pile design}
+\subsection{Geometry and design approach}
+The preferred concept uses nominal \SI{600}{\milli\metre} diameter rotary bored piles with toe
+level at approximately \SI{17.5}{\metre} below existing grade. Piles extend through the weak
+near-surface soils and develop resistance primarily in the two sand units. The preliminary
+compression resistance is evaluated by the static sum
+\begin{equation}
+Q_u=Q_s+Q_b=\sum_i \pi D L_i f_{s,i}
+ + \frac{\pi D^2}{4}q_b,
+\label{eq:pile}
+\end{equation}
+where $f_{s,i}$ is the unit shaft resistance and $q_b$ is the unit base resistance. Values are
+deliberately capped to reflect bored-pile construction effects \cite{tomlinson2008}.
+
+\subsection{Axial compression resistance}
+\begin{table}[H]
+\centering
+\caption{Static axial resistance calculation for one \SI{600}{\milli\metre} pile.}
+\label{tab:pilecalc}
+\small
+\begin{tabularx}{\textwidth}{@{}L{36mm}C{23mm}C{22mm}C{25mm}Y@{}}
+\toprule
+\rowcolor{navy!8}
+\textbf{Component} & \textbf{Length / area} & \textbf{Unit resistance} & \textbf{Resistance} & \textbf{Basis} \\
+\midrule
+Clay shaft & \SI{2.5}{m} & \SI{22}{kPa} & \SI{104}{kN} & Adhesion capped \\
+Medium-dense sand shaft & \SI{6.0}{m} & \SI{45}{kPa} & \SI{509}{kN} & Effective-stress screen \\
+Dense-sand shaft & \SI{7.0}{m} & \SI{80}{kPa} & \SI{1056}{kN} & Bored-pile cap \\
+Dense-sand base & \SI{0.283}{m^2} & \SI{3500}{kPa} & \SI{990}{kN} & Clean, sound base \\
+\midrule
+\multicolumn{3}{r}{\textbf{Calculated ultimate resistance, $Q_u$}} & \textbf{\SI{2659}{kN}} & \\
+\multicolumn{3}{r}{Global factor of safety} & 2.5 & \\
+\multicolumn{3}{r}{Calculated allowable resistance} & \SI{1064}{kN} & \\
+\multicolumn{3}{r}{\textbf{Adopted preliminary allowable load}} & \textbf{\SI{900}{kN}} & test required \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The adopted load is less than the static calculation to provide an initial allowance for layer
+variability, group interaction, construction tolerance and settlement. It is not a substitute for
+code-compliant resistance factors or load testing. Structural axial capacity, reinforcement,
+durability, handling of accidental eccentricity and pile-cap connection shall be checked
+separately.
+
+\subsection{Pile groups and settlement}
+Pile groups should use a preliminary center-to-center spacing of at least $3D$ (\SI{1.8}{\metre})
+and preferably $3.5D$ where pile-cap geometry allows. Each group shall be checked for:
+\begin{itemize}
+  \item sum of individual-pile resistances and block failure;
+  \item group settlement under sustained service load, including consolidation of clay below
+        and around the equivalent raft;
+  \item load redistribution from pile-position tolerance and cap stiffness;
+  \item downdrag from new fill, groundwater lowering or settling upper clay; and
+  \item minimum edge distance, cap punching shear and reinforcement anchorage.
+\end{itemize}
+
+For concept design, expect single-pile service settlement of approximately
+\SIrange{10}{18}{\milli\metre} and pile-group settlement of
+\SIrange{20}{35}{\milli\metre}. These ranges shall be replaced by a calibrated numerical or
+equivalent-raft analysis after the preliminary load test.
+
+\subsection{Uplift and lateral loading}
+Do not apply the compression value to uplift. For preliminary proportioning only, limit allowable
+tension to \SI{400}{\kilo\newton} per pile, ignoring base resistance and checking the weight of
+the pile-cap/structure. Lateral resistance depends strongly on pile-head fixity, group spacing,
+cyclic degradation and the weak upper clay. A site-specific $p$--$y$ or continuum analysis is
+required once shear, moment and head-displacement criteria are issued by the structural engineer.
+
+\begin{keybox}[Preliminary pile schedule]
+\begin{tabularx}{\linewidth}{@{}L{42mm}Y@{}}
+Nominal diameter & \SI{600}{\milli\metre} \\
+Toe level & \SI{17.5}{\metre} below existing grade, subject to bore log \\
+Minimum dense-sand socket & \SI{5.0}{\metre} \\
+Allowable compression & \SI{900}{\kilo\newton} per pile \\
+Allowable tension & \SI{400}{\kilo\newton} per pile, preliminary only \\
+Minimum spacing & $3D$; prefer $3.5D$ \\
+Working-load test & \SI{1.5}{\mega\newton} proof load unless governing code requires more \\
+Preliminary test pile & Load to geotechnical failure or at least $2.5$ times working load \\
+\end{tabularx}
+\end{keybox}
+
+% =============================================================================
+\section{Groundwater, excavation and seismic considerations}
+\subsection{Basement excavation and water control}
+The assumed excavation base is approximately \SI{0.5}{\metre} below the observed water level.
+Open pumping without filters can cause piping, loss of fines and settlement outside the site.
+The contractor's temporary-works design should include:
+\begin{itemize}
+  \item a cut-off or internally filtered wellpoint / sump arrangement matched to the sand layers;
+  \item piezometers inside and outside the excavation, with trigger levels tied to response actions;
+  \item stability checks for basal heave, piping, uplift and wall toe embedment;
+  \item recharge or staged pumping where drawdown at adjacent foundations is unacceptable; and
+  \item discharge permits, treatment and a standby power/pump plan.
+\end{itemize}
+
+Permanent basement design shall assume hydrostatic pressure to the project design groundwater
+level unless a maintainable permanent drainage system is deliberately adopted. Buoyancy should
+be checked for both completed and temporary construction stages.
+
+\subsection{Liquefaction and cyclic response}
+The medium-dense silty sand below the water table is potentially susceptible to cyclic pore-pressure
+generation. A definitive liquefaction assessment cannot be made from the assumed data because
+design earthquake demand, fines plasticity and reliable energy-corrected SPT/CPT data are absent.
+Obtain seismic CPT and preferably shear-wave velocity measurements; evaluate triggering,
+post-liquefaction settlement, lateral deformation and pile kinematic demand using the governing
+hazard level. The preliminary soil profile should be treated conservatively until that assessment
+is complete.
+
+% =============================================================================
+\section{Construction requirements}
+\subsection{Bored-pile installation}
+The piling specification should be performance-based and submitted with the contractor's method
+statement. Minimum controls are:
+\begin{enumerate}
+  \item Survey each pile center and establish a protected cut-off datum.
+  \item Use temporary casing and/or approved support fluid to maintain bore stability and prevent
+        necking, inclusions or inflow.
+  \item Log penetration rate and arisings continuously. The geotechnical representative shall
+        confirm at least \SI{5}{\metre} penetration into competent dense sand.
+  \item Clean the base; measure cleanliness and support-fluid properties immediately before
+        concreting.
+  \item Install the cage with centralizers. Place concrete continuously by tremie from the base,
+        keeping the tremie embedded in fresh concrete.
+  \item Record theoretical and actual concrete volume against depth. Investigate unexplained
+        overbreak, loss or interruption.
+  \item Remove contaminated head concrete to sound material after curing; do not damage the
+        reinforcement or induce cracking.
+\end{enumerate}
+
+\subsection{Pile testing and acceptance}
+\begin{table}[H]
+\centering
+\caption{Recommended verification and quality-control schedule.}
+\label{tab:qa}
+\begin{tabularx}{\textwidth}{@{}L{38mm}L{31mm}Y@{}}
+\toprule
+\rowcolor{navy!8}
+\textbf{Activity} & \textbf{Minimum concept frequency} & \textbf{Purpose / acceptance basis} \\
+\midrule
+Preliminary maintained-load test & One sacrificial pile & Establish load--settlement response and calibrate design \\
+Working-pile proof test & At least 1\% of piles, minimum two & Demonstrate performance at specified proof load \\
+Low-strain integrity test & 100\% of piles & Screen for major discontinuity; interpret with construction log \\
+Cross-hole sonic logging & Large / critical piles as specified & Higher-resolution integrity assessment \\
+Concrete testing & Each pour / delivery sequence & Slump or flow, temperature, strength and traceability \\
+Pile position and level survey & 100\% of piles & Confirm plan tolerance, verticality and cut-off \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Project specifications must define test procedures, loading sequence, settlement limits,
+re-test rules and responsibility for remedial design. Integrity testing is a screening tool and
+does not demonstrate geotechnical capacity.
+
+\subsection{Earthworks and slabs}
+Strip vegetation, debris and uncontrolled fill from beneath ground-bearing slabs. Proof-roll the
+exposed formation where practical and undercut yielding zones. Place approved granular fill in
+thin, moisture-conditioned lifts and verify compaction by field density testing. Protect clay
+formation from rain, drying and construction traffic with a prompt blinding layer. Do not use
+pile boring spoil as engineered fill unless it is separately processed, tested and approved.
+
+% =============================================================================
+\section{Risk register and observational controls}
+\begin{table}[H]
+\centering
+\caption{Geotechnical design and construction risk register.}
+\label{tab:risk}
+\small
+\begin{tabularx}{\textwidth}{@{}L{32mm}C{18mm}Y C{24mm}@{}}
+\toprule
+\rowcolor{navy!8}
+\textbf{Hazard} & \textbf{Initial} & \textbf{Control / verification} & \textbf{Residual} \\
+\midrule
+Unrecognized weak lens at pile toe & \high & Additional CPT; log every pile; minimum dense-sand penetration; load test & \moderate \\
+Excess pile settlement & \high & Calibrated group analysis; proof testing; cap-level monitoring & \good \\
+Bore collapse / inclusions & \high & Casing or support fluid; concreting records; integrity testing & \moderate \\
+Drawdown-induced off-site settlement & \high & Piezometers, settlement points, staged pumping, recharge contingency & \moderate \\
+Basement uplift & \high & Conservative water level; construction-stage and permanent buoyancy checks & \good \\
+Chemical attack on concrete & \moderate & Soil/water chemistry; specified exposure class and concrete mix & \good \\
+Liquefaction / cyclic softening & \high & Seismic CPT/Vs testing; code-based assessment; pile kinematic design & \moderate \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Instrumentation should be installed before activities that may cause movement. Suggested
+starting trigger values are \SI{8}{\milli\metre} horizontal wall movement, \SI{10}{\milli\metre}
+adjacent-building settlement, and \SI{0.5}{\metre} groundwater drawdown outside the excavation.
+These are placeholders: the temporary-works designer shall establish project-specific green,
+amber and red limits, survey frequency, notification routes and pre-agreed response actions.
+
+% =============================================================================
+\section{Conclusions and recommendations}
+\begin{enumerate}
+  \item The illustrative ground model is fill to \SI{1.2}{\metre}, soft--firm clay to
+        \SI{4.5}{\metre}, medium-dense silty sand to \SI{10.5}{\metre}, dense sand to
+        \SI{18}{\metre}, and stiff clay with sand below. Groundwater is near
+        \SI{2.2}{\metre} depth.
+  \item Conventional shallow pads are unsuitable for the assumed mid-rise loads. An untreated
+        raft has a screened primary consolidation settlement of about \SI{85}{\milli\metre},
+        exceeding the adopted \SI{40}{\milli\metre} criterion.
+  \item Use \SI{600}{\milli\metre} bored piles approximately \SI{17.5}{\metre} long, with a
+        minimum \SI{5}{\metre} penetration into dense sand, as the preferred concept.
+  \item Use \SI{900}{\kilo\newton} allowable axial compression per pile for preliminary layout
+        only. Confirm the final resistance and load--settlement curve by a preliminary
+        maintained-load test and code-compliant design.
+  \item Assess group settlement, downdrag, lateral and seismic loading, pile-cap stiffness and
+        construction tolerances using the final structural reactions.
+  \item Manage groundwater with filtered, monitored dewatering. Design basement slabs and walls
+        for the confirmed long-term water level and all temporary stages.
+  \item Complete site-specific drilling, CPT, groundwater monitoring, chemical testing and
+        seismic characterization before detailed design.
+\end{enumerate}
+
+\begin{decisionbox}[Design release condition]
+The concept may proceed to coordinated preliminary layout. It shall \textbf{not} be released for
+construction until the assumed ground model has been replaced by certified project data, pile
+testing has validated the design model, and the geotechnical and structural designers have signed
+the final foundation schedule.
+\end{decisionbox}
+
+% =============================================================================
+\section{Limitations}
+This report is an illustrative engineering document prepared without project source data. It is
+intended to demonstrate analysis and reporting structure only. Subsurface conditions are
+inherently variable, and conditions between investigation points may differ from those shown.
+The conclusions apply only to the assumed development and design basis in
+\cref{tab:project-basis}.
+
+No party should use the numerical values for procurement, regulatory submission, construction,
+property transaction or assessment of an actual site. A licensed/registered geotechnical
+professional familiar with the local geology and governing regulations must review the site,
+specify and supervise the investigation, interpret certified results and issue the construction
+design. The contractor remains responsible for means, methods, temporary works and safe execution.
+
+% =============================================================================
+\appendix
+\clearpage
+\section{Calculation summary}
+\subsection{Pile resistance arithmetic}
+For $D=\SI{0.60}{\metre}$, shaft perimeter $p=\pi D=\SI{1.885}{\metre}$ and base area
+$A_b=\pi D^2/4=\SI{0.2827}{\metre\squared}$. Applying \cref{eq:pile}:
+\begin{align*}
+Q_{s,\mathrm{clay}} &= 1.885(2.5)(22) = \SI{104}{\kilo\newton},\\
+Q_{s,\mathrm{med\ sand}} &= 1.885(6.0)(45) = \SI{509}{\kilo\newton},\\
+Q_{s,\mathrm{dense\ sand}} &= 1.885(7.0)(80) = \SI{1056}{\kilo\newton},\\
+Q_b &= 0.2827(3500) = \SI{990}{\kilo\newton},\\
+Q_u &= 104+509+1056+990 = \SI{2659}{\kilo\newton},\\
+Q_{\mathrm{allow,calc}} &= 2659/2.5 = \SI{1064}{\kilo\newton},\\
+Q_{\mathrm{allow,adopted}} &= \SI{900}{\kilo\newton}.
+\end{align*}
+The calculation omits shaft resistance in uncontrolled fill and does not count pile self-weight
+as resistance. Final partial factors, load combinations and downdrag treatment shall follow the
+governing code.
+
+\subsection{Example pile count}
+For a service column reaction $N_s=\SI{1800}{\kilo\newton}$, the arithmetic minimum is
+\begin{equation*}
+n=\left\lceil\frac{N_s}{Q_{\mathrm{allow}}}\right\rceil
+=\left\lceil\frac{1800}{900}\right\rceil=2.
+\end{equation*}
+A two-pile cap may be unsuitable where moments act in both directions; the structural designer
+may require three or four piles to achieve stability and acceptable load distribution. Pile count
+shall be based on the complete service and ultimate action envelopes, including cap self-weight,
+uplift, eccentricity and seismic combinations.
+
+\section{Design verification checklist}
+\small
+\begin{tabularx}{\textwidth}{@{}L{10mm}L{76mm}Y@{}}
+\toprule
+\rowcolor{navy!8}
+\textbf{No.} & \textbf{Verification item} & \textbf{Close-out evidence} \\
+\midrule
+1 & Final survey, building grid and founding levels & Approved civil / architectural drawings \\
+2 & Boreholes and CPT at representative foundation zones & Factual and interpretive geotechnical reports \\
+3 & Seasonal groundwater and design water level & Piezometer record and designer approval \\
+4 & Soil and groundwater aggressivity & Certified chemical laboratory results \\
+5 & Service and factored reaction envelopes & Signed structural foundation schedule \\
+6 & Axial, group and settlement analyses & Checked calculation package \\
+7 & Lateral, seismic and liquefaction assessment & Checked specialist analysis \\
+8 & Preliminary pile load test & Accepted test report and back-analysis \\
+9 & Piling method statement and trial records & Engineer's acceptance / inspection plan \\
+10 & Working-pile proof and integrity testing & Accepted QA dossier \\
+11 & As-built pile coordinates and cut-off levels & Signed survey \\
+12 & Groundwater and movement monitoring close-out & Instrumentation report and trigger close-out \\
+\bottomrule
+\end{tabularx}
+\normalsize
+
+% =============================================================================
+\clearpage
+\addcontentsline{toc}{section}{References}
+\begin{thebibliography}{9}
+\bibitem{bowles1996}
+J. E. Bowles,
+\emph{Foundation Analysis and Design}, 5th ed.
+McGraw--Hill, 1996.
+
+\bibitem{lambe1969}
+T. W. Lambe and R. V. Whitman,
+\emph{Soil Mechanics}.
+John Wiley \& Sons, 1969.
+
+\bibitem{peck1974}
+R. B. Peck, W. E. Hanson, and T. H. Thornburn,
+\emph{Foundation Engineering}, 2nd ed.
+John Wiley \& Sons, 1974.
+
+\bibitem{tomlinson2008}
+M. Tomlinson and J. Woodward,
+\emph{Pile Design and Construction Practice}, 5th ed.
+Taylor \& Francis, 2008.
+\end{thebibliography}
+
+\vfill
+\begin{center}
+\begin{tikzpicture}
+\draw[teal,line width=1pt] (0,0)--(3,0);
+\node[navy,font=\bfseries] at (5.2,0) {END OF REPORT};
+\draw[teal,line width=1pt] (7.4,0)--(10.4,0);
+\end{tikzpicture}
+\end{center}
+
+\end{document}

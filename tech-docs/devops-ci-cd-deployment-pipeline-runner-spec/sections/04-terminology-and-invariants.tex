@@ -1,0 +1,30 @@
+\section{Terminology and invariants}
+
+\begin{description}
+  \item[Pipeline] A versioned declaration of triggers, jobs, dependencies, inputs, and policies.
+  \item[Run] One evaluated instance of a pipeline for a source revision and event.
+  \item[Job] The smallest independently scheduled node in the run DAG.
+  \item[Step] An ordered command or action within a job; steps share the job sandbox.
+  \item[Runner] An agent that claims a job lease and manages its execution sandbox.
+  \item[Runner pool] A policy and capacity boundary defined by platform, region, trust tier, and capabilities.
+  \item[Lease] Time-bounded ownership of a job attempt by one runner.
+  \item[Attempt] One execution of a job. Retries create new attempts with distinct identities.
+  \item[Artifact] Immutable output addressed by cryptographic digest and retained independently of a runner.
+  \item[Cache] A performance optimization whose content is untrusted and may be deleted without affecting correctness.
+  \item[Environment] A protected deployment target with policy, concurrency, identity, and approval rules.
+  \item[Provenance] Signed evidence connecting source, plan, builder, materials, commands, and outputs.
+\end{description}
+
+The following invariants are non-negotiable:
+
+\begin{enumerate}
+  \item A job is never considered successful until required logs, result metadata, and output digests are durably committed.
+  \item At most one active lease exists for a job attempt. A stale attempt cannot finalize after its fencing token expires.
+  \item A deployment consumes an immutable artifact digest, never a mutable tag alone.
+  \item A runner has no durable control-plane credential. Its identity is short-lived and bound to an attested instance.
+  \item A cache hit cannot grant more trust than a cache miss; security decisions never depend on cache contents.
+  \item Redaction is defense in depth. A value's secrecy cannot rely solely on log filtering.
+  \item Authorization is evaluated by the control plane at the time of each protected action.
+\end{enumerate}
+
+% -----------------------------------------------------------------------------

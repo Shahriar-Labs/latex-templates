@@ -1,0 +1,87 @@
+\section{System Design}
+\label{sec:design}
+
+\sysname{} is a stateless-per-request gateway that mediates every query
+between tenant clients and an unmodified encrypted key-value backend.
+Figure~\ref{fig:arch} shows the three stages a query passes through:
+the \emph{Epoch Batcher}, the \emph{Volume Padder}, and the
+\emph{Oblivious Shuffler}. None of these stages requires any change to the
+backend's wire protocol; from the backend's perspective, \sysname{} is
+simply another client.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+      node distance=0.55cm and 0.9cm,
+      box/.style={draw, rectangle, minimum width=2.3cm, minimum height=0.9cm,
+        rounded corners, align=center, thick, font=\small},
+      client/.style={box, draw=ccsmuted, fill=ccsmuted!8},
+      stage/.style={box, draw=ccsteal, fill=ccsteal!8},
+      backend/.style={box, draw=ccscrimson, fill=ccscrimson!8},
+      arrow/.style={->, >=stealth, thick, draw=ccsnavy}
+    ]
+    \node[client] (clients) {Tenant\\ Clients};
+    \node[stage, right=of clients] (batcher) {Epoch\\ Batcher};
+    \node[stage, right=of batcher] (padder) {Volume\\ Padder};
+    \node[stage, below=of padder] (shuffler) {Oblivious\\ Shuffler};
+    \node[backend, left=of shuffler] (backend) {Encrypted\\ Backend};
+
+    \draw[arrow] (clients) -- node[above, scale=0.7] {query} (batcher);
+    \draw[arrow] (batcher) -- node[above, scale=0.7] {epoch $w$} (padder);
+    \draw[arrow] (padder) -- node[right, scale=0.7] {bucketed} (shuffler);
+    \draw[arrow] (shuffler) -- node[above, scale=0.7] {reordered} (backend);
+    \draw[arrow] (backend) to[out=200, in=340] node[below, scale=0.7]
+      {response} (clients);
+
+    \begin{scope}[on background layer]
+      \draw[ccsnavy!40, dashed, rounded corners]
+        ($(batcher.north west)+(-0.2,0.55)$) rectangle
+        ($(shuffler.south east)+(0.2,-0.2)$);
+      \node[ccsnavy, font=\small\bfseries] at
+        ($(batcher.north west)+(1.9,0.3)$) {\sysname{} Gateway};
+    \end{scope}
+  \end{tikzpicture}
+  \caption{\sysname{} sits between tenant clients and an unmodified
+    encrypted backend (Nimbus KV, Apex Store, or Vertex Store in our
+    evaluation), batching, padding, and reordering requests before they
+    reach storage.}
+  \label{fig:arch}
+\end{figure}
+
+\subsection{Epoch Batcher}
+Incoming queries are collected into fixed-width epochs of duration $w$
+(configurable; we use $w \in \{10, 25, 50\}$~ms in \S\ref{sec:evaluation}).
+The batcher does not delay a query past the end of its epoch by more than
+$w$, bounding added latency by construction. All queries admitted to the
+same epoch are processed as a single unit by the two stages that follow,
+which is what allows their volumes and dispatch order to be jointly
+transformed rather than treated independently.
+
+\subsection{Volume Padder}
+For each query in an epoch, the padder rounds the size of the response set
+up to the nearest bucket in a per-tenant bucket set
+$B = \{b_1, b_2, \dots, b_k\}$, chosen at deployment time from a quantile
+sweep of the tenant's own historical query-volume distribution rather than
+a fixed global schedule. Padding is applied by issuing supplementary reads
+of decoy identifiers drawn from a tenant-specific decoy pool, so that the
+backend always observes exactly $b_i$ records touched for a query bucketed
+to $b_i$, and by discarding the decoy payloads at the gateway before
+returning the response to the client. Choosing $B$ from the tenant's own
+distribution keeps the average padding overhead low relative to a
+one-size-fits-all bucket schedule, at the cost of the bucket boundaries
+themselves becoming tenant-specific configuration that must be rotated
+periodically (\S\ref{sec:leakage}).
+
+\subsection{Oblivious Shuffler}
+Volume padding alone still lets an adversary correlate \emph{arrival
+order} with logical query identity across epochs: if the same key is
+queried every epoch, its bucketed request retains a fixed relative
+position unless that position is randomized. The shuffler permutes the
+dispatch order of an epoch's now-uniformly-shaped requests using a
+cryptographically secure random permutation drawn fresh per epoch, and
+demultiplexes responses back to their originating client using a
+per-request correlation tag encrypted under a key known only to the
+gateway. This closes the residual timing correlation that volume padding
+by itself leaves open, which is the mechanism behind the accuracy gap
+between the \emph{Vertex Store (padding-only)} baseline and \sysname{} in
+\S\ref{sec:evaluation}.

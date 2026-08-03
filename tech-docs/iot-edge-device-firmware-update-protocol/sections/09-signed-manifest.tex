@@ -1,0 +1,128 @@
+\section{Signed manifest}
+
+\subsection{Canonical form and signature}
+
+The signed payload is a canonical CBOR map. It is wrapped in a COSE\_Sign1
+structure whose protected headers contain the algorithm and \field{kid}. The
+signature covers the exact canonical payload bytes. Gateways and repositories
+\mustnot rewrite, normalize, or reserialize a signed payload.
+
+The device validates the manifest in this order:
+
+\begin{enumerate}
+  \item parse with strict size, type, duplicate-key, and canonical-encoding checks;
+  \item select a trusted key by protected \field{kid} and authorized signer role;
+  \item verify the COSE signature over the original payload bytes;
+  \item verify protocol and manifest schema versions;
+  \item enforce validity, revocation, target, dependency, and anti-rollback rules;
+  \item select exactly one compatible artifact for each required component; and
+  \item persist the manifest digest before beginning transfer.
+\end{enumerate}
+
+No artifact URL, filename, content type, or server response header is security
+authoritative unless its value is bound into the signed manifest.
+
+\subsection{Manifest fields}
+
+\begin{longtable}{@{}L{38mm}L{21mm}L{93mm}@{}}
+  \toprule
+  \textbf{Field} & \textbf{Req.} & \textbf{Description} \\
+  \midrule
+  \endhead
+  \field{manifest_version} & Yes & Integer schema version; value 1. \\
+  \field{protocol_min/max} & Yes & Inclusive supported protocol major-version range. \\
+  \field{release_id} & Yes & Unique UUID for this immutable release definition. \\
+  \field{product} & Yes & Product namespace controlled by the signing authority. \\
+  \field{version} & Yes & Human-readable release version. \\
+  \field{issued_at} & Yes & Audit timestamp; not by itself a freshness guarantee. \\
+  \field{expires_at} & Profile & Last acceptance time when trusted time is required. \\
+  \field{sequence} & Yes & Monotonically increasing unsigned release sequence. \\
+  \field{targets} & Yes & Allowed models, hardware revisions, and optional device groups. \\
+  \field{components} & Yes & Ordered component requirements and artifact choices. \\
+  \field{install_policy} & Yes & Power, space, reboot, trial, and confirmation constraints. \\
+  \field{dependencies} & No & Required component, agent, bootloader, or schema versions. \\
+  \field{revokes} & No & Release or artifact IDs that must no longer be installed. \\
+  \field{critical} & No & Extension-field names that receivers must understand. \\
+  \field{release_notes} & No & Non-executable display text, URI, and locale metadata. \\
+  \bottomrule
+\end{longtable}
+
+\subsection{Artifact descriptor}
+
+Each component contains one or more artifact alternatives. An artifact descriptor
+\must contain \field{artifact_id}, \field{format}, \field{size}, \field{sha256},
+\field{compression}, \field{chunk_size}, \field{chunk_hashes}, and at least one
+HTTPS \field{uri}. It also contains the resulting installed-image digest and
+security version when downloaded bytes are compressed, packaged, or a delta.
+
+\begin{lstlisting}[language={},caption={Abbreviated diagnostic manifest representation}]
+{
+  "manifest_version": 1,
+  "protocol_min": 1,
+  "protocol_max": 1,
+  "release_id": "80c43260-26d2-4e1a-a34b-0914c176f85e",
+  "product": "acme.edge-gateway",
+  "version": "3.8.0",
+  "issued_at": "2026-08-01T00:00:00Z",
+  "expires_at": "2026-09-01T00:00:00Z",
+  "sequence": 108,
+  "targets": {
+    "models": ["gw-x2-revB"],
+    "hardware_revisions": ["B2", "B3"]
+  },
+  "components": [{
+    "name": "system",
+    "required": true,
+    "version": "3.8.0",
+    "image_security_version": 43,
+    "installed_sha256": "e93a...6b11",
+    "artifacts": [{
+      "artifact_id": "ca9f67bd-ecc4-4ec0-ac14-a56a9003a616",
+      "kind": "full",
+      "format": "squashfs",
+      "compression": "none",
+      "size": 188743680,
+      "sha256": "e93a...6b11",
+      "chunk_size": 262144,
+      "chunk_hashes": ["2a11...af03", "..."],
+      "uris": ["https://updates.example.net/artifacts/ca9f67bd"]
+    }]
+  }],
+  "install_policy": {
+    "min_battery_percent": 40,
+    "require_external_power": false,
+    "required_free_bytes": 377487360,
+    "activation": "maintenance_window",
+    "max_trial_boots": 3,
+    "confirmation_timeout_seconds": 300
+  },
+  "critical": []
+}
+\end{lstlisting}
+
+The ellipses above abbreviate hashes and arrays for readability; an encoded
+manifest \must contain complete 32-octet SHA-256 values and every chunk hash.
+
+\subsection{Applicability rules}
+
+An offered manifest is applicable only when all of the following are true:
+
+\begin{enumerate}
+  \item the signature and signer role are valid;
+  \item the protocol version lies within \field{protocol_min} and
+        \field{protocol_max};
+  \item product, model, and hardware revision match the signed target expression;
+  \item all critical fields and required components are understood;
+  \item dependencies are satisfied before the dependent component is activated;
+  \item each selected artifact matches a reported capability;
+  \item its release sequence and image security version satisfy Section~\ref{sec:rollback};
+  \item the release and artifact are not present in signed revocation metadata; and
+  \item installation constraints can be satisfied without risking the confirmed image.
+\end{enumerate}
+
+Target expressions are positive allow-lists. Empty target lists match nothing.
+Wildcards, regular expressions, and negative matches are forbidden in version 1
+to keep evaluation deterministic. Group targeting is an operational filter and
+\must be backed by authenticated provisioning state if used as a signed target.
+
+% -----------------------------------------------------------------------------

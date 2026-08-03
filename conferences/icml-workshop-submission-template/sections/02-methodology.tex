@@ -1,0 +1,21 @@
+\section{Methodology}
+\label{sec:method}
+We consider a decentralized collaborative learning setting with $M$ distributed client nodes. The global objective is to minimize the aggregate loss function:
+\begin{equation}
+\min_{\w \in \R^d} \sum_{i=1}^M p_i F_i(\w)
+\end{equation}
+where $p_i \ge 0$ is the weight of client $i$ ($\sum_{i=1}^M p_i = 1$), and $F_i(\w) \coloneqq \E_{\x \sim \mathcal{D}_i} [\Lloss(\w; \x)]$ represents the local expected loss over the client's private data distribution $\mathcal{D}_i$.
+
+\subsection{Decentralized Consensus Update}
+In the Vertex-Fed framework, clients maintain local model weights $\w_i^t$ at time step $t$. Instead of sending updates to a central server, clients perform local stochastic gradient descent (SGD) steps and exchange parameter weights with their immediate neighbors in an adaptive consensus graph $G^t = (V, E^t)$. The update rule for client $i$ is formulated as:
+\begin{equation}
+\w_i^{t+1} = \sum_{j \in \mathcal{N}_i^t} A_{ij}^t \left( \w_j^t - \eta \g_j^t \right)
+\end{equation}
+where $\mathcal{N}_i^t$ denotes the set of active neighbors of node $i$ (including $i$ itself) at step $t$, $A_{ij}^t$ represents the consensus weight matrix satisfying $\sum_{j=1}^M A_{ij}^t = 1$, $\eta$ is the learning rate, and $\g_j^t$ is the stochastic gradient computed on client $j$'s local dataset.
+
+\subsection{Dynamic Topology Optimization}
+To optimize communication overhead, the consensus topology $E^t$ is updated dynamically. At regular intervals $\tau$, each client computes the cosine similarity of local gradient direction updates with its neighbors. If the gradient directions diverge significantly, indicating that consensus weight averaging between these two nodes would degrade learning performance, the communication link is pruned. The connection strength is defined as:
+\begin{equation}
+S_{ij}^t = \frac{\langle \g_i^t, \g_j^t \rangle}{\|\g_i^t\| \|\g_j^t\|}
+\end{equation}
+The Nimbus-class controller prunes the link if $S_{ij}^t < \theta$, where $\theta$ is an adaptive similarity threshold. By dynamically adjusting $\theta$, the network balances communication cost and convergence speed.

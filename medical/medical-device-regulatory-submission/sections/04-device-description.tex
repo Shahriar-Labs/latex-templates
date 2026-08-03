@@ -1,0 +1,57 @@
+\section{Device description}
+
+\subsection{System overview}
+The system consists of the wearable patch, a reusable clinic gateway, the cloud-hosted analysis portal, and a clinician-facing report. The patch acquires and stores the ECG. At the end of the monitoring period, the gateway uploads an encrypted record. The portal performs signal-quality assessment and flags candidate rhythm events. A qualified reviewer confirms or rejects the candidates and releases a report to the ordering clinician.
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=0.32in,
+  every node/.style={font=\sffamily\small},
+  block/.style={draw=Blue,fill=Ice,rounded corners=3pt,minimum height=0.76in,text width=1.30in,align=center,line width=0.7pt},
+  flow/.style={-{Latex[length=2.2mm]},line width=0.8pt,draw=Teal}
+]
+\node[block] (patient) {\textbf{Wearable patch}\\ECG acquisition\\14-day memory};
+\node[block,right=of patient] (gateway) {\textbf{Clinic gateway}\\Authenticated\\data transfer};
+\node[block,right=of gateway] (portal) {\textbf{Analysis portal}\\Candidate-event\\detection};
+\node[block,right=of portal] (review) {\textbf{Qualified reviewer}\\Confirmation and\\report release};
+\draw[flow] (patient) -- node[above,font=\scriptsize\sffamily]{encrypted} (gateway);
+\draw[flow] (gateway) -- node[above,font=\scriptsize\sffamily]{TLS 1.3} (portal);
+\draw[flow] (portal) -- node[above,font=\scriptsize\sffamily]{review queue} (review);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Principal components}
+\begin{tabularx}{\textwidth}{@{}L{1.45in}L{1.25in}Y L{1.45in}@{}}
+\toprule
+\rowcolor{Navy}
+\thead{Component} & \thead{Identifier} & \thead{Function} & \thead{Key specification} \\
+\midrule
+ECG patch & ATP-100 & Acquires, digitizes, and stores one ECG channel & 250 Hz; 16-bit; 0.05--40 Hz \\
+Electrode / adhesive & ATP-E14 & Conductive interface and skin fixation & Hydrogel; 220 cm\textsuperscript{2}; 14-day contact \\
+Clinic gateway & ATG-200 & Secure data upload and integrity verification & USB-C; Wi-Fi 802.11n; SHA-256 check \\
+Analysis portal & ATS 3.2 & Signal segmentation and candidate-event detection & Web application; role-based access \\
+Clinician report & ATR-3 & Presents reviewed findings and signal-quality metrics & PDF/A; audit-linked release \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Operating principles}
+Two Ag/AgCl electrodes detect surface biopotentials. A low-noise analog front end filters and amplifies the differential signal before analog-to-digital conversion. Firmware timestamps and stores the signal in encrypted flash memory. The device has one patient control: pressing the symptom button places an event marker in the record. A status light provides brief feedback for activation, event marking, and fault conditions.
+
+\subsection{Technical specifications}
+\begin{tabularx}{\textwidth}{@{}L{1.7in}Y L{1.7in}Y@{}}
+\toprule
+\rowcolor{Navy}\thead{Parameter} & \thead{Specification} & \thead{Parameter} & \thead{Specification} \\
+\midrule
+Dimensions / mass & 124 $\times$ 50 $\times$ 12 mm; 34 g & Recording duration & Up to 14 consecutive days \\
+Ingress protection & IPX7 & Applied part & Type BF \\
+Power source & Sealed 3.0 V lithium cell & Wireless radio & Bluetooth Low Energy, upload only \\
+Operating range & 5--40\,\textdegree C; 15--90\% RH & Storage range & $-20$--55\,\textdegree C \\
+Expected shelf life & 18 months & Sterility & Supplied non-sterile \\
+Data capacity & 360 hours ECG plus metadata & Clock accuracy & $\pm$30 ppm \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Configurations and accessories}
+The ATP-100 patch is supplied in adult and pediatric-fit adhesive configurations. Electronics, firmware, signal path, and analysis are identical. The pediatric-fit configuration changes only the perimeter geometry and is intended for patients weighing at least 10 kg. The ATG-200 gateway, application tool, placement guide, return pouch, and clinician quick-reference card are included accessories.
+
+% =============================================================================

@@ -1,0 +1,215 @@
+% Preamble for Synapse AI Model Review Presentation
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% Mathematical fonts and layouts
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\usetikzlibrary{
+  arrows.meta,
+  backgrounds,
+  calc,
+  fit,
+  positioning,
+  shapes.geometric
+}
+
+% Visual utilities
+\usepackage[skins,listings,breakable]{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{url}
+
+% Bibliography management
+\usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
+\addbibresource{references.bib}
+\setbeamertemplate{bibliography item}{\insertbiblabel}
+
+% Custom Color Definitions (no trailing spaces inside HTML hex codes!)
+\definecolor{primaryNavy}{HTML}{0F172A}    % Slate 900
+\definecolor{accentTeal}{HTML}{0EA5E9}     % Sky 500
+\definecolor{accentIndigo}{HTML}{6366F1}   % Indigo 500
+\definecolor{bgLight}{HTML}{F8FAFC}        % Slate 50
+\definecolor{textDark}{HTML}{1E293B}       % Slate 800
+\definecolor{textMuted}{HTML}{64748B}      % Slate 500
+\definecolor{colorDrift}{HTML}{EF4444}     % Red 500
+
+% Beamer Global Colors
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor{background canvas}{bg=bgLight}
+\setbeamercolor{normal text}{fg=textDark,bg=bgLight}
+\setbeamercolor{structure}{fg=accentIndigo}
+\setbeamercolor{frametitle}{fg=primaryNavy,bg=bgLight}
+\setbeamercolor{title}{fg=white}
+\setbeamercolor{subtitle}{fg=accentTeal}
+\setbeamercolor{author}{fg=white!90}
+\setbeamercolor{date}{fg=white!70}
+
+% Typography Fonts
+\setbeamerfont{title}{size=\Large,series=\bfseries}
+\setbeamerfont{subtitle}{size=\large}
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamerfont{framesubtitle}{size=\small,series=\normalfont}
+\setbeamerfont{caption}{size=\small}
+
+% Lists styling
+\setbeamercolor{item}{fg=accentTeal}
+\setbeamercolor{subitem}{fg=accentIndigo}
+\setbeamercolor{subsubitem}{fg=textDark!70}
+\setbeamertemplate{itemize items}[circle]
+
+% Custom Frame Title Layout
+\setbeamertemplate{frametitle}{%
+  \vspace*{10pt}%
+  \begin{minipage}{\textwidth}
+    \usebeamerfont{frametitle}\insertframetitle
+    \ifx\insertframesubtitle\empty\else
+      \par\vspace*{2pt}%
+      {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\insertframesubtitle}%
+    \fi
+  \end{minipage}%
+  \vspace*{3pt}%
+  \textcolor{accentTeal!60}{\makebox[0pt][l]{\rule{\linewidth}{1.5pt}}}%
+  \vspace*{3pt}%
+}
+
+% Custom Footline Layout
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox to\paperwidth{%
+    \begin{beamercolorbox}[wd=0.333333\paperwidth,ht=2.25ex,dp=1ex,left]{author in head/foot}%
+      \hspace*{3ex}\color{textMuted}\scriptsize Synapse AI Review
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=0.333333\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+      \color{textMuted}\scriptsize Meridian-II Deployment
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=0.333333\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+      \color{textMuted}\scriptsize\insertframenumber{} / \inserttotalframenumber\hspace*{3ex}
+    \end{beamercolorbox}%
+  }%
+  \vspace*{2ex}%
+}
+
+% Title Frame command
+\newcommand{\titleframe}{%
+  \begingroup%
+  \setbeamercolor{background canvas}{bg=primaryNavy}%
+  \begin{frame}[plain]%
+    \begin{tikzpicture}[remember picture, overlay]
+      % Background geometry
+      \fill[primaryNavy] (current page.south west) rectangle (current page.north east);
+      \draw[accentTeal, line width=1.5pt, opacity=0.25] (current page.south west) ++(1,-1) circle (3.5cm);
+      \draw[accentTeal, line width=0.8pt, opacity=0.15] (current page.south west) ++(1,-1) circle (4.2cm);
+      \draw[accentIndigo, line width=2pt, opacity=0.2] (current page.north east) ++(-2,2) circle (5cm);
+      \draw[accentIndigo, line width=1pt, opacity=0.1] (current page.north east) ++(-2,2) circle (5.8cm);
+      
+      % Subtle network grid lines
+      \foreach \x in {1,2,...,5} {
+        \draw[white, opacity=0.03] ($(current page.south west)+(\x*3, 0)$) -- ($(current page.north west)+(\x*3, 0)$);
+      }
+      \foreach \y in {1,2,...,3} {
+        \draw[white, opacity=0.03] ($(current page.south west)+(0, \y*2.5)$) -- ($(current page.south east)+(0, \y*2.5)$);
+      }
+      
+      % Logo icon + text (fictional company "Synapse")
+      \node[anchor=north west] at ($(current page.north west)+(1.0,-1.0)$) {
+        \begin{tikzpicture}[scale=0.3]
+          \fill[accentTeal] (0,0) circle (0.3cm);
+          \fill[accentIndigo] (1,1.2) circle (0.35cm);
+          \fill[accentTeal] (2,0.3) circle (0.25cm);
+          \draw[white, line width=1pt, opacity=0.7] (0,0) -- (1,1.2) -- (2,0.3);
+        \end{tikzpicture}
+        \hspace{0.2cm}
+        \raisebox{0.2cm}{\large\bfseries\color{white}Synapse AI}
+      };
+    \end{tikzpicture}
+    
+    \vspace{1.8cm}%
+    \raggedright%
+    \begin{minipage}{0.85\textwidth}%
+      {\color{accentTeal}\bfseries\small MODEL REVIEW $\cdot$ RELEASE CANDIDATE 2} \\[0.3cm]%
+      {\color{white}\usebeamerfont{title}\Huge\bfseries\raggedright Meridian-II Model Performance \& Safety Review\par}%
+      \vspace*{0.3cm}%
+      {\color{white!80}\usebeamerfont{subtitle}\large Evaluation on Benchmark Tasks, Bias Audits, and Production Readiness\par}%
+    \end{minipage}%
+    
+    \vspace*{1.2cm}%
+    \begin{minipage}{0.85\textwidth}%
+      \color{white!70}\footnotesize
+      \begin{tabular}{@{}ll}
+        \textbf{Presenters:} & Dr. Aris Thorne (Lead ML Engineer, Synapse) \& Elena Vance (Systems Architect) \\
+        \textbf{Reviewers:} & Vertex Model Governance Board \\
+        \textbf{Date:} & August 2026
+      \end{tabular}
+    \end{minipage}%
+  \end{frame}%
+  \endgroup%
+}
+
+% Info Box
+\newtcolorbox{infobox}[2][]{
+  colback=accentTeal!5,
+  colframe=accentTeal!30,
+  coltitle=primaryNavy,
+  fonttitle=\bfseries\sffamily\small,
+  title={#2},
+  enhanced,
+  borderline west={3pt}{0pt}{accentTeal},
+  attach boxed title to top left={yshift=-2mm, xshift=2mm},
+  boxed title style={colback=accentTeal!15, colframe=accentTeal!30},
+  boxsep=1pt,
+  top=4pt,
+  bottom=4pt,
+  left=6pt,
+  right=6pt,
+  #1
+}
+
+% Alert Box (for drift / warnings)
+\newtcolorbox{driftbox}[2][]{
+  colback=colorDrift!5,
+  colframe=colorDrift!30,
+  coltitle=colorDrift!90!black,
+  fonttitle=\bfseries\sffamily\small,
+  title={#2},
+  enhanced,
+  borderline west={3pt}{0pt}{colorDrift},
+  attach boxed title to top left={yshift=-2mm, xshift=2mm},
+  boxed title style={colback=colorDrift!10, colframe=colorDrift!30},
+  boxsep=1pt,
+  top=4pt,
+  bottom=4pt,
+  left=6pt,
+  right=6pt,
+  #1
+}
+
+% Success Box (for compliance / positive validation)
+\newtcolorbox{successbox}[2][]{
+  colback=accentIndigo!5,
+  colframe=accentIndigo!30,
+  coltitle=accentIndigo!90!black,
+  fonttitle=\bfseries\sffamily\small,
+  title={#2},
+  enhanced,
+  borderline west={3pt}{0pt}{accentIndigo},
+  attach boxed title to top left={yshift=-2mm, xshift=2mm},
+  boxed title style={colback=accentIndigo!10, colframe=accentIndigo!30},
+  boxsep=1pt,
+  top=4pt,
+  bottom=4pt,
+  left=6pt,
+  right=6pt,
+  #1
+}
+
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}

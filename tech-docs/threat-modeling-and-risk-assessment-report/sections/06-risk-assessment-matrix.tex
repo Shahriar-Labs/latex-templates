@@ -1,0 +1,71 @@
+\section{Risk Assessment Matrix}
+\label{sec:risk-matrix}
+
+Each threat in Table~\ref{tab:stride} was scored on Likelihood (informed by the actor profiles in Section~\ref{sec:threat-actors}) and Impact (informed by the asset classification in Section~\ref{sec:architecture}), both on a 1--5 scale, following the banding defined in Section~\ref{sec:scope-methodology}. Figure~\ref{fig:riskmatrix} plots all fourteen threats on the resulting grid; cell shading marks the severity band a Likelihood--Impact combination falls into, independent of whether a threat currently occupies that cell.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[x=16mm, y=16mm]
+
+  \foreach \i in {1,...,5} {
+    \foreach \l in {1,...,5} {
+      \pgfmathtruncatemacro{\score}{\i*\l}
+      \ifnum\score>14
+        \fill[riskcritical!55] (\i-1,\l-1) rectangle (\i,\l);
+      \else\ifnum\score>7
+        \fill[riskhigh!55] (\i-1,\l-1) rectangle (\i,\l);
+      \else\ifnum\score>3
+        \fill[riskmedium!45] (\i-1,\l-1) rectangle (\i,\l);
+      \else
+        \fill[risklow!40] (\i-1,\l-1) rectangle (\i,\l);
+      \fi\fi\fi
+    }
+  }
+
+  \draw[step=1, border] (0,0) grid (5,5);
+  \draw[dark, thick] (0,0) rectangle (5,5);
+
+  \foreach \i in {1,...,5} {
+    \node[font=\small, text=dark] at (\i-0.5, -0.4) {\i};
+  }
+  \foreach \l in {1,...,5} {
+    \node[font=\small, text=dark] at (-0.4, \l-0.5) {\l};
+  }
+  \node[font=\small\bfseries, text=primary] at (2.5, -1.0) {Impact};
+  \node[font=\small\bfseries, text=primary, rotate=90] at (-1.05, 2.5) {Likelihood};
+
+  \node[circle, fill=white, draw=dark, thick, minimum size=7mm, font=\tiny\bfseries, align=center] at (4.5, 4.5) {T-01};
+  \node[circle, fill=white, draw=dark, thick, minimum size=7mm, font=\tiny\bfseries, align=center] at (4.5, 3.5) {T-04};
+  \node[circle, fill=white, draw=dark, thick, minimum size=7mm, font=\tiny\bfseries, align=center] at (3.5, 4.5) {T-06};
+  \node[circle, fill=white, draw=dark, thick, minimum size=7mm, font=\tiny\bfseries, align=center] at (2.5, 3.5) {T-02};
+  \node[circle, fill=white, draw=dark, thick, minimum size=8mm, font=\tiny\bfseries, align=center] at (3.5, 2.5) {T-03\\T-11};
+  \node[circle, fill=white, draw=dark, thick, minimum size=7mm, font=\tiny\bfseries, align=center] at (2.5, 2.5) {T-07};
+  \node[circle, fill=white, draw=dark, thick, minimum size=7mm, font=\tiny\bfseries, align=center] at (4.5, 1.5) {T-13};
+  \node[circle, fill=white, draw=dark, thick, minimum size=7mm, font=\tiny\bfseries, align=center] at (1.5, 2.5) {T-05};
+  \node[circle, fill=white, draw=dark, thick, minimum size=8mm, font=\tiny\bfseries, align=center] at (2.5, 1.5) {T-09\\T-14};
+  \node[circle, fill=white, draw=dark, thick, minimum size=7mm, font=\tiny\bfseries, align=center] at (1.5, 1.5) {T-12};
+  \node[circle, fill=white, draw=dark, thick, minimum size=8mm, font=\tiny\bfseries, align=center] at (1.5, 0.5) {T-08\\T-10};
+
+\end{tikzpicture}
+\caption{Likelihood--Impact matrix for all fourteen catalogued threats. Cell shading marks the severity band; markers show where each threat currently sits.}
+\label{fig:riskmatrix}
+\end{figure}
+
+\begin{center}
+\footnotesize
+\begin{tabularx}{0.9\linewidth}{@{}l l L@{}}
+\toprule
+\rowcolor{primary}
+\textcolor{white}{\textbf{Band}} & \textcolor{white}{\textbf{Count}} & \textcolor{white}{\textbf{Threat IDs}} \\
+\midrule
+\critical{} & 3 & T-01, T-04, T-06 \\
+\rowcolor{rowgray}
+\highrisk{} & 5 & T-02, T-03, T-07, T-11, T-13 \\
+\mediumrisk{} & 4 & T-05, T-09, T-12, T-14 \\
+\rowcolor{rowgray}
+\lowrisk{} & 2 & T-08, T-10 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The concentration of Critical and High findings in the upper-right quadrant of the matrix is driven almost entirely by the webhook ingestion and admin console trust decisions identified in Section~\ref{sec:architecture} --- both are paths where a single missing control (signature verification, write-path enforcement) converts a Medium-likelihood actor into a High- or Critical-impact outcome. This concentration is the basis for prioritizing VULN-01 through VULN-03 ahead of the remaining findings in Section~\ref{sec:findings}.

@@ -1,0 +1,24 @@
+\section{Methodology and Mathematical Formulation}
+\label{sec:methodology}
+
+To optimize the execution of sparse neural layers on dense hardware, we formulate the scheduling problem as a constrained optimization. Let $E = \{e_1, e_2, \dots, e_N\}$ be the set of incoming events within a temporal window $W$. Each event $e_i = (x_i, y_i, t_i, c_i)$ represents a coordinate position, timestamp, and channel.
+
+The goal is to partition the spatial domain into $K$ dense patches that maximize the execution efficiency on the NexaCore array. We define the utilization utility $U(P_k)$ of a patch $P_k$ as:
+\begin{equation}
+U(P_k) = \frac{\sum_{e_i \in P_k} \alpha_i \cdot \text{Cost}(e_i)}{\text{Area}(P_k) \cdot \Phi + \gamma}
+\label{eq:utility}
+\end{equation}
+where $\text{Cost}(e_i)$ is the computation cost of processing event $e_i$, $\text{Area}(P_k)$ is the physical dimensions of the patch, $\Phi$ is the overhead factor of setting up the systolic array, and $\gamma$ is a constant regularization term to prevent dividing by zero.
+
+The optimization objective is to find a set of patches $\mathcal{P} = \{P_1, P_2, \dots, P_K\}$ that minimizes both the idle MAC cycles and the routing energy:
+\begin{equation}
+\min_{\mathcal{P}} \sum_{k=1}^K \left( 1 - U(P_k) \right) + \beta \cdot \text{Dist}(P_k, C_k)
+\label{eq:objective}
+\end{equation}
+subject to the hardware memory constraints:
+\begin{equation}
+\sum_{k=1}^K \text{Size}(P_k) \le M_{\text{SRAM}}
+\end{equation}
+where $M_{\text{SRAM}}$ is the capacity of the MeridianLink SRAM cache, $C_k$ is the spatial centroid of the neuromorphic core routing table, and $\beta$ is a tuning parameter balancing compute utilization and routing distance.
+
+We solve this problem at runtime using a lightweight heuristic scheduler in the SynapseLink control unit. The scheduler runs with $O(N \log N)$ complexity, where $N$ is the number of active event clusters, ensuring negligible overhead on the system's primary processor.

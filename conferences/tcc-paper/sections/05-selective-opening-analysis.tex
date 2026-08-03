@@ -1,0 +1,109 @@
+\section{Selective-Opening Analysis}
+\label{sec:analysis}
+
+We first isolate the guessing event.  Fix a history in which position $i$ has
+not been opened.  By residual entropy, the conditional probability of every
+candidate $m_i$ is at most $2^{-k}$.  Its salt is independent and uniform, so
+every pair $(m_i,r_i)$ has conditional probability at most $2^{-(k+\rho)}$.
+Injectivity then transfers the same bound to the real oracle input.
+
+\begin{lemma}[Pre-query bound]
+\label{lem:prequery}
+Suppose $\dist$ has residual $k$-entropy.  For any unopened position $i$ and
+any adversary making $q_H$ distinct oracle queries,
+\[
+  \Pr[\bad_{\mathsf{pre},i}]\leq q_H2^{-(k+\rho)}.
+\]
+Consequently, for a set $U$ of at most $n$ unopened positions,
+\[
+  \Pr\left[\bigvee_{i\in U}\bad_{\mathsf{pre},i}\right]
+  \leq q_Hn2^{-(k+\rho)}.
+\]
+\end{lemma}
+
+\begin{proof}
+Condition on any transcript immediately before an oracle query and on all
+messages revealed so far.  For a fixed unopened $i$, residual entropy bounds
+the chance of guessing $M_i$ by $2^{-k}$; independence of $r_i$ contributes
+$2^{-\rho}$.  By \cref{lem:context-separation}, no differently typed tuple
+encodes to the same point.  Union bound over $q_H$ queries and then over $U$.
+The argument remains valid under adaptive opening because it conditions on
+each realized history.
+\end{proof}
+
+The simulator also needs published commitments to be independent.  Random-
+oracle outputs at distinct inputs are independent, but inputs could coincide
+if two equal messages receive equal salts.  Positions already prevent such a
+collision.  We nevertheless retain a salt-collision term in the main theorem
+because many optimized implementations omit $i$ when a separate per-position
+oracle is used.  For the encoder specified here, that term can be deleted.
+
+\begin{lemma}[Salt collisions]
+\label{lem:salt-collision}
+For $n$ independent $\rho$-bit salts,
+\[
+  \Pr[\exists i<j:r_i=r_j]\leq\binom{n}{2}2^{-\rho}.
+\]
+With the position-aware encoder of \cref{eq:encoding}, equal salts do not
+produce equal oracle inputs for distinct positions.
+\end{lemma}
+
+\begin{proof}
+Each pair collides with probability $2^{-\rho}$; apply a union bound.  The
+second statement follows from \cref{lem:context-separation}.
+\end{proof}
+
+\begin{theorem}[Adaptive selective opening]
+\label{thm:aso}
+Let $\dist$ have residual $k$-entropy, and let $\adv$ create or receive at most
+$n$ commitments and make at most $q_H$ distinct random-oracle queries.  There
+exists a straight-line simulator
+$\Sim$ such that
+\begin{equation}
+ \Adv^{\mathsf{aso}}_{\Pi,\dist}(\adv,\Sim)
+ \leq q_Hn2^{-(k+\rho)}+\varepsilon_{\mathsf{enc}}.
+ \label{eq:main-bound}
+\end{equation}
+For a variant whose encoder omits the position but uses unique session-local
+records, add at most $\binom n2 2^{-\rho}$ to the right-hand side.
+\end{theorem}
+
+\begin{proof}
+Order positions by the time at which the adversary first opens them, placing
+never-opened positions last.  Consider hybrids $G_0,\ldots,G_n$ that replace
+real commitments with uniform strings one position at a time.  In a replaced
+position, the simulator samples $C_i\getsR\bits^\tau$.  If $i$ is later
+opened, it programs
+\[
+  \Hash(\Encode(\Tag,sid,i,M_i;r_i)):=C_i
+\]
+and returns $(M_i,r_i)$.  Before the first query to that input, a lazy-sampled
+random-oracle value is itself uniform, so adjacent hybrids are identically
+distributed unless the input was pre-queried or the encoder is non-canonical.
+
+By \cref{lem:iub,lem:prequery}, the total distinguishing gap for all simulated
+positions is at most $q_Hn2^{-(k+\rho)}$.  Canonical
+encoding makes $\varepsilon_{\mathsf{enc}}=0$.  Opened positions are handled
+at their opening time, and programming preserves their exact joint
+distribution.  This yields \cref{eq:main-bound}.  If position is absent from
+the input, condition additionally on distinct salts and apply
+\cref{lem:salt-collision}.
+\end{proof}
+
+\begin{corollary}[Computational message recovery]
+\label{cor:recovery}
+Before opening position $i$, an adversary making $q_H$ oracle queries recovers
+$M_i$ with probability at most
+\[
+  2^{-k}+q_H2^{-(k+\rho)}+2^{-\tau},
+\]
+apart from public leakage and encoder failures.
+\end{corollary}
+
+\begin{proof}
+In the ideal game the commitment is independent of $M_i$, so the best direct
+guess succeeds with probability at most $2^{-k}$.  Transfer to the real game
+using \cref{thm:aso}; the $2^{-\tau}$ term accounts for guessing an output in
+an interface that treats equality with a target digest as evidence of
+recovery.
+\end{proof}

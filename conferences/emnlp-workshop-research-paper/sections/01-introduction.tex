@@ -1,0 +1,44 @@
+\section{Introduction}
+
+Named-entity recognition is a mature technology for high-resource languages,
+but \emph{normalization} -- mapping a recognized mention to a canonical form
+shared across documents, spellings, and scripts -- remains unreliable for
+African languages. A single person's name can surface as \textit{Wanjiru},
+\textit{Wanjiru wa Kamau}, or \textit{W. Kamau} within the same news article;
+place names inherited from colonial administrations compete with
+post-independence renamings; and Latin-script transliterations of Amharic
+names vary by transcription convention. Downstream applications --
+cross-document coreference, knowledge-base population, and multilingual
+search -- inherit every one of these inconsistencies.
+
+The 2026 AfricaNLP Entity Normalization Shared Task was organized to give
+this problem a common benchmark: four languages (Swahili, Hausa, Yoruba, and
+Amharic), a shared annotation scheme, and a held-out blind test set scored by
+the organizers. This paper describes \sys{VertexTag}, the system we
+submitted to the shared task, and the choices behind it.
+
+Two properties of the task shaped our design. First, training data is
+small relative to the entity variation observed at test time, so a purely
+neural approach struggles to generalize to unseen name forms. Second, the
+organizers released curated gazetteers for each language, which a purely
+retrieval-based approach can exploit but a purely neural approach ignores
+by default. \sys{VertexTag} is built to use both: a neural span detector
+narrows down where entities occur, and a hybrid candidate generator --
+combining gazetteer lookup, edit-distance fuzzy matching, and a learned
+reranker -- decides what canonical form they normalize to.
+
+\vspace{2pt}
+\noindent Our contributions are threefold:
+\begin{itemize}[leftmargin=1.1em,itemsep=1pt,topsep=2pt]
+  \item A system architecture that couples a shared multilingual encoder
+    with a dictionary-and-fuzzy-match candidate generator, letting the
+    model fall back on string similarity exactly when neural generalization
+    is weakest;
+  \item An empirical comparison against the three baselines released with
+    the shared task, showing consistent gains across all four languages and
+    the largest gain on the lowest-resource language, Amharic;
+  \item An ablation and error analysis that separates the contribution of
+    the fuzzy matcher from the neural reranker, and characterizes the
+    failure modes -- diacritic loss, compound names, and code-switched
+    mentions -- that remain open after both components are included.
+\end{itemize}

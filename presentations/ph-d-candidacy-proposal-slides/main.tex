@@ -1,0 +1,663 @@
+% PhD Candidacy Proposal Slides
+% A self-contained, compile-tested Beamer template.
+% Replace the sample title, names, dates, and research content with your own.
+% Compile with: latexmk -pdf main.tex
+
+\documentclass[aspectratio=169,11pt]{beamer}
+
+% -----------------------------------------------------------------------------
+% Packages
+% -----------------------------------------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[default]{lato}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{ragged2e}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,positioning}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+
+% -----------------------------------------------------------------------------
+% Color system
+% -----------------------------------------------------------------------------
+\definecolor{Midnight}{HTML}{10233F}
+\definecolor{Ocean}{HTML}{0B7285}
+\definecolor{Coral}{HTML}{E76F51}
+\definecolor{Gold}{HTML}{E9C46A}
+\definecolor{Ink}{HTML}{17212B}
+\definecolor{Slate}{HTML}{5C6975}
+\definecolor{Mist}{HTML}{EDF3F5}
+\definecolor{Cloud}{HTML}{F8FAFB}
+\definecolor{White}{HTML}{FFFFFF}
+\definecolor{Success}{HTML}{2A9D8F}
+
+% -----------------------------------------------------------------------------
+% Presentation metadata -- edit these fields first
+% -----------------------------------------------------------------------------
+\newcommand{\CandidateName}{Maya Chen}
+\newcommand{\CandidateEmail}{maya.chen@northbridge.edu}
+\newcommand{\DepartmentName}{Department of Computer Science}
+\newcommand{\UniversityName}{Northbridge University}
+\newcommand{\AdvisorName}{Prof. Elena Hartmann}
+\newcommand{\CommitteeNames}{Prof. Luis Osei \quad Prof. Marta Bianchi}
+\newcommand{\ProposalDate}{18 September 2026}
+\newcommand{\ShortProposalTitle}{Reliable Human--AI Decisions}
+
+\title{Reliable Human--AI Decision Support\\under Distribution Shift}
+\subtitle{Detecting risk, explaining reliance, and designing safer interventions}
+\author{\CandidateName}
+\institute{\DepartmentName\\\UniversityName}
+\date{PhD Candidacy Proposal \textbullet\ \ProposalDate}
+
+% -----------------------------------------------------------------------------
+% Beamer theme
+% -----------------------------------------------------------------------------
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{enumerate items}[default]
+
+\setbeamercolor{background canvas}{bg=Cloud}
+\setbeamercolor{normal text}{fg=Ink,bg=Cloud}
+\setbeamercolor{structure}{fg=Ocean}
+\setbeamercolor{alerted text}{fg=Coral}
+\setbeamercolor{frametitle}{fg=Midnight,bg=Cloud}
+\setbeamercolor{block title}{fg=White,bg=Ocean}
+\setbeamercolor{block body}{fg=Ink,bg=Mist}
+\setbeamercolor{itemize item}{fg=Coral}
+\setbeamercolor{itemize subitem}{fg=Ocean}
+
+% Large, presentation-first type sizes.
+\setbeamerfont{normal text}{size*={16pt}{20pt},series=\mdseries}
+\setbeamerfont{title}{size*={50pt}{54pt},series=\bfseries}
+\setbeamerfont{subtitle}{size*={20pt}{24pt},series=\mdseries}
+\setbeamerfont{author}{size*={18pt}{22pt},series=\bfseries}
+\setbeamerfont{institute}{size*={16pt}{20pt}}
+\setbeamerfont{date}{size*={14pt}{17pt}}
+\setbeamerfont{frametitle}{size*={30pt}{34pt},series=\bfseries}
+\setbeamerfont{block title}{size*={17pt}{20pt},series=\bfseries}
+\setbeamerfont{block body}{size*={16pt}{20pt}}
+
+\setbeamersize{text margin left=0.72cm,text margin right=0.72cm}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+
+% Frame title with a restrained accent rule.
+\setbeamertemplate{frametitle}{%
+  \par\nointerlineskip
+  \begin{beamercolorbox}[wd=\paperwidth,ht=1.12cm,dp=0.20cm,leftskip=0.72cm,rightskip=0.72cm]{frametitle}
+    \usebeamerfont{frametitle}\insertframetitle
+  \end{beamercolorbox}%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[Ocean] (current page.north west) ++(0,-1.31cm) rectangle ++(\paperwidth,0.045cm);
+    \fill[Coral] (current page.north west) ++(0,-1.31cm) rectangle ++(2.1cm,0.045cm);
+  \end{tikzpicture}%
+}
+
+% Quiet footer. The title slide and plain section slides suppress it locally.
+\setbeamertemplate{footline}{%
+  \ifnum\insertframenumber>1\relax
+    \leavevmode
+    \hbox{%
+      \begin{beamercolorbox}[wd=.76\paperwidth,ht=0.34cm,dp=0.16cm,leftskip=0.72cm]{author in head/foot}
+        \color{Slate}\fontsize{9}{11}\selectfont
+        \CandidateName\ \textbullet\ \ShortProposalTitle
+      \end{beamercolorbox}%
+      \begin{beamercolorbox}[wd=.24\paperwidth,ht=0.34cm,dp=0.16cm,rightskip=0.72cm plus 1fil]{date in head/foot}
+        \color{Slate}\fontsize{9}{11}\selectfont
+        \insertframenumber\,/\,\inserttotalframenumber
+      \end{beamercolorbox}%
+    }
+  \fi
+}
+
+% -----------------------------------------------------------------------------
+% Reusable presentation components
+% -----------------------------------------------------------------------------
+\newcommand{\eyebrow}[1]{%
+  {\color{Ocean}\fontsize{13}{15}\selectfont\bfseries\MakeUppercase{#1}}\par\vspace{0.14cm}%
+}
+
+\newcommand{\bigclaim}[1]{%
+  {\color{Midnight}\fontsize{25}{30}\selectfont\bfseries #1}%
+}
+
+\newcommand{\metric}[2]{%
+  {\color{Midnight}\fontsize{24}{27}\selectfont\bfseries #1}\par
+  {\color{Slate}\fontsize{14}{17}\selectfont #2}%
+}
+
+\newtcolorbox{thesisbox}[1][]{%
+  enhanced,
+  colback=White,
+  colframe=Ocean,
+  boxrule=1.1pt,
+  borderline west={4pt}{0pt}{Coral},
+  arc=1.5pt,
+  left=12pt,right=12pt,top=10pt,bottom=10pt,
+  #1
+}
+
+\newcommand{\studylabel}[2]{%
+  \begin{tikzpicture}[baseline=(label.base)]
+    \node[fill=#1,text=White,rounded corners=1.5pt,inner xsep=7pt,inner ysep=3pt,
+          font=\fontsize{12}{14}\selectfont\bfseries] (label) {#2};
+  \end{tikzpicture}%
+}
+
+\newcommand{\statusdot}[1]{%
+  \tikz[baseline=-0.6ex]\fill[#1] (0,0) circle (0.08cm);%
+}
+
+% A full-bleed section transition.
+\newcommand{\sectionframe}[3]{%
+  \section{#2}%
+  {\setbeamertemplate{footline}{}
+   \setbeamercolor{background canvas}{bg=Midnight}
+   \begin{frame}[plain]
+     \begin{tikzpicture}[remember picture,overlay]
+       \fill[Ocean] (current page.north west) rectangle ([xshift=0.18cm]current page.south west);
+       \fill[Coral] ([xshift=0.18cm]current page.north west) rectangle ([xshift=0.25cm]current page.south west);
+       \fill[Gold] ([xshift=-2.2cm,yshift=-0.75cm]current page.north east) circle (1.75cm);
+       \fill[Ocean!45!Midnight] ([xshift=-0.55cm,yshift=0.45cm]current page.south east) circle (2.0cm);
+     \end{tikzpicture}
+     \vfill
+     \hspace{0.35cm}\begin{minipage}{0.84\textwidth}
+       \RaggedRight
+       \hyphenpenalty=10000
+       {\color{Gold}\fontsize{14}{16}\selectfont\bfseries PART #1}\par\vspace{0.28cm}
+       {\color{White}\fontsize{38}{43}\selectfont\bfseries #2}\par\vspace{0.36cm}
+       {\color{Mist}\fontsize{18}{22}\selectfont #3}
+     \end{minipage}
+     \vfill
+   \end{frame}}
+}
+
+% -----------------------------------------------------------------------------
+% Document
+% -----------------------------------------------------------------------------
+\begin{document}
+
+% 1 -- Title
+{\setbeamertemplate{footline}{}
+ \setbeamercolor{background canvas}{bg=Midnight}
+ \begin{frame}[plain,t]
+   \begin{tikzpicture}[remember picture,overlay]
+     \fill[Ocean] (current page.north west) rectangle ([xshift=0.18cm]current page.south west);
+     \fill[Coral] ([xshift=0.18cm]current page.north west) rectangle ([xshift=0.25cm]current page.south west);
+     \fill[Ocean!52!Midnight] ([xshift=-0.5cm,yshift=0.25cm]current page.south east) circle (2.45cm);
+     \fill[Gold] ([xshift=-2.15cm,yshift=-0.7cm]current page.north east) circle (1.35cm);
+   \end{tikzpicture}
+   \vspace{0.40cm}
+   \hspace{0.42cm}\begin{minipage}{0.86\textwidth}
+     \RaggedRight
+     \hyphenpenalty=10000
+     {\color{Gold}\fontsize{14}{16}\selectfont\bfseries PHD CANDIDACY PROPOSAL}\par\vspace{0.28cm}
+     {\color{White}\fontsize{34}{37}\selectfont\bfseries
+       Reliable Human--AI\\[-1pt]
+       Decision Support\\[-1pt]
+       under Distribution Shift}\par\vspace{0.20cm}
+     {\color{Mist}\fontsize{15}{18}\selectfont
+       Detecting risk, explaining reliance, and designing safer interventions}\par
+     \vspace{0.26cm}
+     {\color{White}\fontsize{16}{19}\selectfont\bfseries \CandidateName}\par
+     {\color{Mist}\fontsize{13}{16}\selectfont
+       \DepartmentName\ \textbullet\ \UniversityName}\par\vspace{0.13cm}
+     {\color{Mist}\fontsize{12}{15}\selectfont
+       Advisor: \AdvisorName\ \textbullet\ \ProposalDate}
+   \end{minipage}
+ \end{frame}}
+
+% 2 -- Decision frame
+\begin{frame}{Proposal in one sentence}
+  \eyebrow{Committee decision}
+  \bigclaim{Can joint monitoring prevent silent failure in AI-assisted decisions?}
+
+  \vspace{0.34cm}
+  {\color{Slate}\fontsize{15}{18}\selectfont
+   Decision requested: approve a theoretically grounded, testable, and feasible program.}
+
+  \vspace{0.34cm}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.32\textwidth}\metric{Important}{High-stakes systems drift after deployment.}
+    \column{0.32\textwidth}\metric{Testable}{Each claim has a falsification criterion.}
+    \column{0.32\textwidth}\metric{Feasible}{Data, compute, and staged gates are identified.}
+  \end{columns}
+\end{frame}
+
+\sectionframe{1}{Problem and thesis}{The reliability gap appears where changing data meets changing human behavior.}
+
+% 4 -- Motivation
+\begin{frame}{Silent failure sustains trust}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.55\textwidth}
+      \eyebrow{Operational pattern}
+      \begin{enumerate}
+        \item A model is validated on historical data.
+        \item Deployment changes the data and workflow.
+        \item Accuracy erodes before labels arrive.
+        \item Users cannot see when reliance is unsafe.
+      \end{enumerate}
+    \column{0.40\textwidth}
+      \begin{thesisbox}
+        \eyebrow{Core problem}
+        Current monitoring asks whether the \emph{model} shifted.
+        Safe deployment requires knowing whether the
+        \textbf{joint human--AI decision} became unreliable.
+      \end{thesisbox}
+  \end{columns}
+
+  \vspace{0.20cm}
+  {\color{Slate}\fontsize{14}{17}\selectfont
+   Scope: decision-support settings with consequential outcomes, delayed labels,
+   and a human who can accept, override, or ignore an AI recommendation.}
+\end{frame}
+
+% 5 -- Literature gap
+\begin{frame}{The gap spans three fields}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.30\textwidth}
+      \eyebrow{Shift detection}
+      Measures changes in inputs, outputs, or representations.
+
+      \vspace{0.22cm}{\color{Coral}\bfseries Missing:} downstream human response.
+    \column{0.04\textwidth}
+      \centering\color{Gold}\rule{1pt}{3.75cm}
+    \column{0.30\textwidth}
+      \eyebrow{Human reliance}
+      Studies trust, calibration, explanations, and overrides.
+
+      \vspace{0.22cm}{\color{Coral}\bfseries Missing:} changing deployment data.
+    \column{0.04\textwidth}
+      \centering\color{Gold}\rule{1pt}{3.75cm}
+    \column{0.30\textwidth}
+      \eyebrow{Adaptive systems}
+      Updates models using retraining or test-time adaptation.
+
+      \vspace{0.22cm}{\color{Coral}\bfseries Missing:} behavioral safety objectives.
+  \end{columns}
+
+  \vspace{0.22cm}
+  \begin{thesisbox}
+    \textbf{Research gap:} no unified account links detectable shift,
+    changing reliance, and an intervention that improves the final decision.
+  \end{thesisbox}
+\end{frame}
+
+% 6 -- Thesis and RQs
+\begin{frame}{One thesis and three questions}
+  \begin{thesisbox}
+    \textbf{Thesis.} Deployment risk can be identified earlier and reduced more reliably
+    when monitoring combines model uncertainty with human reliance signals, then triggers
+    an intervention matched to the observed failure mode.
+  \end{thesisbox}
+
+  \vspace{0.22cm}
+  \begin{tabularx}{\textwidth}{@{}>{\bfseries\color{Ocean}}l@{\hspace{0.32cm}}>{\RaggedRight\arraybackslash}X@{}}
+    RQ1 & Which unlabeled signals predict degradation in joint decision quality?\\[0.22cm]
+    RQ2 & How does distribution shift causally change acceptance and override behavior?\\[0.22cm]
+    RQ3 & Which targeted intervention restores calibration with the least added burden?\\
+  \end{tabularx}
+\end{frame}
+
+\sectionframe{2}{Proposed research program}{Three studies turn one thesis into measurable, falsifiable claims.}
+
+% 8 -- Program overview
+\begin{frame}{Three studies, one argument}
+  \begin{tikzpicture}[
+    node distance=0.45cm,
+    box/.style={draw,rounded corners=2pt,minimum height=2.08cm,text width=4.08cm,
+                inner sep=0.22cm,align=left,font=\fontsize{13}{16}\selectfont},
+    flow/.style={-{Stealth[length=3mm]},line width=1.5pt,Gold}
+  ]
+    \draw[flow] (4.28,1.05) -- (4.76,1.05);
+    \draw[flow] (9.06,1.05) -- (9.54,1.05);
+
+    \node[box,draw=Ocean,fill=White] (s1) at (2.12,1.05)
+      {\studylabel{Ocean}{STUDY 1}\\[0.12cm]
+       \textbf{Detect risk}\\
+       Identify early signals of joint error before outcome labels arrive.};
+    \node[box,draw=Coral,fill=White] (s2) at (6.90,1.05)
+      {\studylabel{Coral}{STUDY 2}\\[0.12cm]
+       \textbf{Explain reliance}\\
+       Estimate how shift changes acceptance, override, and effort.};
+    \node[box,draw=Success,fill=White] (s3) at (11.68,1.05)
+      {\studylabel{Success}{STUDY 3}\\[0.12cm]
+       \textbf{Improve decisions}\\
+       Test targeted alerts and selective deferral in a controlled trial.};
+  \end{tikzpicture}
+
+  \vspace{0.12cm}
+  \centering
+  {\color{Midnight}\fontsize{16}{19}\selectfont\bfseries
+   Output: a validated monitoring-and-intervention policy for human--AI teams.}
+\end{frame}
+
+% 9 -- Conceptual model
+\begin{frame}{Joint decisions are the target}
+  \centering
+  \begin{tikzpicture}[
+    n/.style={draw=Ocean,fill=White,rounded corners=2pt,minimum width=3.35cm,
+              minimum height=1.0cm,align=center,font=\fontsize{14}{17}\selectfont\bfseries},
+    outcome/.style={draw=Coral,fill=Coral!8,rounded corners=2pt,minimum width=3.6cm,
+                    minimum height=1.0cm,align=center,font=\fontsize{14}{17}\selectfont\bfseries},
+    a/.style={-{Stealth[length=2.7mm]},line width=1.4pt,Midnight}
+  ]
+    \draw[a] (3.30,1.15) -- (5.15,1.15);
+    \draw[a] (8.45,1.15) -- (10.20,1.15);
+    \node[n] at (1.75,1.15) {Distribution shift};
+    \node[n] at (6.80,1.15) {Model uncertainty\\+ human reliance};
+    \node[outcome] at (11.80,1.15) {Joint decision quality};
+  \end{tikzpicture}
+
+  \vspace{0.34cm}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+      \eyebrow{Primary outcome}
+      Decision loss combines incorrect action and task-specific harm.
+    \column{0.48\textwidth}
+      \eyebrow{Key moderator}
+      User expertise and decision stakes shape the interaction.
+  \end{columns}
+
+  \vspace{0.24cm}
+  {\color{Slate}\fontsize{14}{17}\selectfont
+   Neither uncertainty nor reliance alone determines whether an intervention helps.}
+\end{frame}
+
+% 10 -- Study 1
+\begin{frame}{Study 1: Detect risk early}
+  \studylabel{Ocean}{STUDY 1}\hspace{0.18cm}
+  {\color{Midnight}\fontsize{20}{24}\selectfont\bfseries Prospective monitoring study}
+
+  \vspace{0.34cm}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.47\textwidth}
+      \eyebrow{Design}
+      Replay timestamped cases in order; expose the system to gradual and abrupt shifts;
+      delay outcome labels to mirror deployment.
+
+      \vspace{0.36cm}
+      \eyebrow{Signals}
+      Predictive entropy, representation drift, disagreement, acceptance rate, and response time.
+    \column{0.47\textwidth}
+      \eyebrow{Primary test}
+      Compare signal combinations on lead time and precision for detecting a clinically or
+      operationally meaningful rise in joint error.
+
+      \vspace{0.36cm}
+      \eyebrow{Falsification}
+      Reject H1 if behavioral signals add no out-of-sample value beyond model-only monitoring.
+  \end{columns}
+\end{frame}
+
+% 11 -- Study 2
+\begin{frame}{Study 2: Explain reliance}
+  \studylabel{Coral}{STUDY 2}\hspace{0.18cm}
+  {\color{Midnight}\fontsize{20}{24}\selectfont\bfseries Controlled mechanism experiment}
+
+  \vspace{0.34cm}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.47\textwidth}
+      \eyebrow{Manipulation}
+      Randomize shift visibility, model confidence, and explanation quality in a
+      preregistered $2\times2\times2$ design.
+
+      \vspace{0.36cm}
+      \eyebrow{Measured behavior}
+      Acceptance, appropriate override, decision time, confidence, and perceived workload.
+    \column{0.47\textwidth}
+      \eyebrow{Causal estimand}
+      Average treatment effect of visible shift cues on appropriate reliance,
+      with expertise as a prespecified moderator.
+
+      \vspace{0.36cm}
+      \eyebrow{Falsification}
+      Reject H2 if shift cues change confidence but do not improve appropriate reliance.
+  \end{columns}
+\end{frame}
+
+% 12 -- Study 3
+\begin{frame}{Study 3: Target intervention}
+  \studylabel{Success}{STUDY 3}\hspace{0.18cm}
+  {\color{Midnight}\fontsize{20}{24}\selectfont\bfseries Randomized intervention trial}
+
+  \vspace{0.20cm}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.48\textwidth}
+      \eyebrow{Policy arms}
+      \begin{enumerate}
+        \item Standard confidence display
+        \item Contextual shift alert
+        \item Selective deferral to human review
+      \end{enumerate}
+    \column{0.46\textwidth}
+      \eyebrow{Success criterion}
+      Lower joint decision loss without a practically unacceptable increase in time or workload.
+
+      \vspace{0.22cm}
+      \eyebrow{Falsification}
+      Reject H3 if the best policy fails the preregistered benefit--burden threshold.
+  \end{columns}
+
+  \vspace{0.16cm}
+  {\color{Coral}\bfseries
+   Trigger the intervention by failure mode, not a generic uncertainty threshold.}
+\end{frame}
+
+\sectionframe{3}{Evidence and execution}{Validity comes from converging domains, preregistered tests, and staged decisions.}
+
+% 14 -- Data and domains
+\begin{frame}{Two domains test generality}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.47\textwidth}
+      \eyebrow{Domain A: clinical triage}
+      Consequential decisions, delayed outcomes, specialist users, and strong governance constraints.
+
+      \vspace{0.34cm}
+      \textbf{Role in thesis:} high-stakes validation and expert-reliance analysis.
+    \column{0.47\textwidth}
+      \eyebrow{Domain B: infrastructure incidents}
+      Rapid decisions, rich event logs, recurring operational shifts, and measurable response cost.
+
+      \vspace{0.34cm}
+      \textbf{Role in thesis:} replication, stress testing, and external validity.
+  \end{columns}
+
+  \vspace{0.26cm}
+  \begin{thesisbox}
+    \textbf{Transfer claim:} the monitoring logic should transfer; domain-specific harm weights
+    and intervention thresholds should not.
+  \end{thesisbox}
+\end{frame}
+
+% 15 -- Evaluation
+\begin{frame}{Three claims need three tests}
+  \begin{tabularx}{\textwidth}{@{}>{\bfseries\color{Ocean}}l@{\hspace{0.35cm}}>{\RaggedRight\arraybackslash}X>{\RaggedRight\arraybackslash}X@{}}
+    \toprule
+    Claim & Primary evidence & Robustness check\\
+    \midrule
+    Early detection & Lead time at fixed false-alert rate & Time-split and domain-shifted test sets\\[0.22cm]
+    Causal mechanism & Preregistered treatment effects & Expertise and task-stakes interaction\\[0.22cm]
+    Practical utility & Joint decision loss & Workload, delay, and subgroup performance\\
+    \bottomrule
+  \end{tabularx}
+
+  \vspace{0.22cm}
+  \begin{thesisbox}
+    \textbf{Analysis discipline:} one confirmatory model per primary claim;
+    exploratory models are labeled and reported separately.
+  \end{thesisbox}
+\end{frame}
+
+% 16 -- Feasibility
+\begin{frame}{Feasibility is gated}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.46\textwidth}
+      \eyebrow{Available now}
+      \statusdot{Success}\ Data-use pathway identified\\[0.16cm]
+      \statusdot{Success}\ Replay pipeline implemented\\[0.16cm]
+      \statusdot{Success}\ Pilot task and measures drafted\\[0.16cm]
+      \statusdot{Success}\ Compute fits existing allocation
+    \column{0.48\textwidth}
+      \eyebrow{Gate before each study}
+      \textbf{G1:} Data quality supports the target shift.\\[0.16cm]
+      \textbf{G2:} Pilot establishes reliable behavior measures.\\[0.16cm]
+      \textbf{G3:} Intervention passes usability and safety review.
+  \end{columns}
+
+  \vspace{0.28cm}
+  \begin{thesisbox}
+    If a gate fails, the study narrows its claim before new data collection begins.
+  \end{thesisbox}
+\end{frame}
+
+% 17 -- Ethics and risks
+\begin{frame}{Each risk has a fallback}
+  \begin{tabularx}{\textwidth}{@{}>{\bfseries\color{Coral}}l@{\hspace{0.35cm}}>{\RaggedRight\arraybackslash}X>{\RaggedRight\arraybackslash}X@{}}
+    \toprule
+    Risk & Prevention & Fallback\\
+    \midrule
+    Restricted data & De-identification, minimum access, audit log & Public benchmark plus synthetic shift\\[0.20cm]
+    Weak behavior signal & Validated task, pilot reliability threshold & Narrow claim to observable actions\\[0.20cm]
+    Alert fatigue & Burden cap and human-factors review & Selective deferral only\\[0.20cm]
+    Unequal benefit & Prespecified subgroup analysis & Group-conditional threshold or no deployment\\
+    \bottomrule
+  \end{tabularx}
+
+  \vspace{0.20cm}
+  {\color{Slate}\fontsize{14}{17}\selectfont
+   No live clinical recommendation is made during the dissertation; all intervention studies
+   use retrospective replay or controlled simulation until separate deployment approval.}
+\end{frame}
+
+% 18 -- Timeline
+\begin{frame}{A 24-month critical path}
+  \renewcommand{\arraystretch}{1.20}
+  \begin{tabularx}{\textwidth}{@{}>{\bfseries}p{3.45cm}*{8}{>{\centering\arraybackslash}X}@{}}
+    \toprule
+     & \multicolumn{2}{c}{\bfseries 2026} & \multicolumn{4}{c}{\bfseries 2027} & \multicolumn{2}{c}{\bfseries 2028}\\
+    Workstream & Q3 & Q4 & Q1 & Q2 & Q3 & Q4 & Q1 & Q2\\
+    \midrule
+    Study 1: detection
+      & \cellcolor{Ocean!75} & \cellcolor{Ocean!75} & \cellcolor{Ocean!75} & & & & &\\
+    Study 2: mechanism
+      & & \cellcolor{Coral!65} & \cellcolor{Coral!65} & \cellcolor{Coral!65} & & & &\\
+    Study 3: intervention
+      & & & & \cellcolor{Success!70} & \cellcolor{Success!70} & \cellcolor{Success!70} & &\\
+    Synthesis and writing
+      & & & & & & \cellcolor{Gold!80} & \cellcolor{Gold!80} & \cellcolor{Gold!80}\\
+    \bottomrule
+  \end{tabularx}
+
+  \vspace{0.22cm}
+  {\color{Midnight}\fontsize{15}{18}\selectfont\bfseries
+   Submission sequence: detection $\rightarrow$ mechanism $\rightarrow$ intervention + dissertation.}
+\end{frame}
+
+% 19 -- Contributions
+\begin{frame}{Dissertation contributions}
+  \begin{columns}[T,onlytextwidth]
+    \column{0.31\textwidth}
+      \eyebrow{Conceptual}
+      A model of how distribution shift, model uncertainty, and human reliance jointly produce risk.
+    \column{0.03\textwidth}
+      \centering\color{Gold}\rule{1pt}{3.85cm}
+    \column{0.31\textwidth}
+      \eyebrow{Methodological}
+      Evaluation methods that treat the joint decision, not standalone model accuracy, as the target.
+    \column{0.03\textwidth}
+      \centering\color{Gold}\rule{1pt}{3.85cm}
+    \column{0.31\textwidth}
+      \eyebrow{Practical}
+      A policy for choosing among monitoring, alerting, and deferral under explicit burden constraints.
+  \end{columns}
+
+  \vspace{0.22cm}
+  \begin{thesisbox}
+    \textbf{Dissertation claim:} reliable decision support is a property of the
+    adaptive human--AI system, not of the model in isolation.
+  \end{thesisbox}
+\end{frame}
+
+% 20 -- Close
+{\setbeamertemplate{footline}{}
+ \setbeamercolor{background canvas}{bg=Midnight}
+ \begin{frame}[plain]
+   \begin{tikzpicture}[remember picture,overlay]
+     \fill[Ocean] (current page.north west) rectangle ([xshift=0.18cm]current page.south west);
+     \fill[Coral] ([xshift=0.18cm]current page.north west) rectangle ([xshift=0.25cm]current page.south west);
+     \fill[Ocean!48!Midnight] ([xshift=-0.4cm,yshift=0.35cm]current page.south east) circle (2.4cm);
+     \fill[Gold] ([xshift=-2.1cm,yshift=-0.75cm]current page.north east) circle (1.4cm);
+   \end{tikzpicture}
+   \vfill
+   \hspace{0.42cm}\begin{minipage}{0.84\textwidth}
+     \RaggedRight
+     \hyphenpenalty=10000
+     {\color{Gold}\fontsize{14}{16}\selectfont\bfseries DECISION REQUEST}\par\vspace{0.30cm}
+     {\color{White}\fontsize{38}{43}\selectfont\bfseries
+      Approve a testable program for safer human--AI decisions}\par\vspace{0.38cm}
+     {\color{Mist}\fontsize{18}{22}\selectfont
+      The proposal connects early detection, causal explanation, and targeted intervention
+      through explicit evidence gates.}\par\vspace{0.62cm}
+     {\color{White}\fontsize{17}{20}\selectfont\bfseries Questions and discussion}\par
+     {\color{Mist}\fontsize{14}{17}\selectfont \CandidateName\ \textbullet\ \CandidateEmail}
+   \end{minipage}
+   \vfill
+ \end{frame}}
+
+% -----------------------------------------------------------------------------
+% Appendix
+% -----------------------------------------------------------------------------
+\appendix
+
+% 21 -- References I
+\begin{frame}{Selected references}
+  \eyebrow{Human--AI interaction and uncertainty}
+  {\fontsize{16}{21}\selectfont
+   \textbf{Amershi, S. et al. (2019).}\par
+   Guidelines for human--AI interaction. \emph{Proceedings of CHI}.\par
+
+   \vspace{0.54cm}
+   \textbf{Ovadia, Y. et al. (2019).}\par
+   Can you trust your model's uncertainty? \emph{Advances in Neural Information Processing Systems}.}
+
+  \vspace{0.62cm}
+  {\color{Slate}\fontsize{14}{17}\selectfont
+   Sample references -- replace with the literature that directly motivates your proposal.}
+\end{frame}
+
+% 22 -- References II
+\begin{frame}{Selected references, continued}
+  \eyebrow{Accountability and deployed systems}
+  {\fontsize{16}{21}\selectfont
+   \textbf{Raji, I. D. et al. (2020).}\par
+   Closing the AI accountability gap. \emph{Proceedings of FAccT}.\par
+
+   \vspace{0.54cm}
+   \textbf{Sculley, D. et al. (2015).}\par
+   Hidden technical debt in machine learning systems.
+   \emph{Advances in Neural Information Processing Systems}.}
+\end{frame}
+
+% 23 -- Backup decision criteria
+\begin{frame}{Candidacy criteria}
+  \begin{tabularx}{\textwidth}{@{}>{\bfseries\color{Ocean}}p{3.15cm}>{\RaggedRight\arraybackslash}X>{\RaggedRight\arraybackslash}p{4.45cm}@{}}
+    \toprule
+    Criterion & Evidence in proposal & Remaining committee input\\
+    \midrule
+    Significance & Joint reliability affects consequential decisions & Is the scope important enough?\\[0.15cm]
+    Originality & Connects detection, reliance, and intervention & Is the thesis sufficiently distinct?\\[0.15cm]
+    Rigor & Preregistered tests and explicit falsification & Are outcomes and estimands adequate?\\[0.15cm]
+    Feasibility & Staged gates and bounded fallback paths & Are resources and timing realistic?\\
+    \bottomrule
+  \end{tabularx}
+
+  \vspace{0.24cm}
+  {\color{Coral}\bfseries Committee feedback becomes a revised scope and milestone agreement.}
+\end{frame}
+
+\end{document}

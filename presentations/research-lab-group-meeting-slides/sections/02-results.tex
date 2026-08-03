@@ -1,0 +1,72 @@
+\section{Experimental Results}
+\subsection{Training Throughput \& Scaling}
+
+\begin{frame}{Performance Benchmarking}{Throughput Scaling under Model Parallelism}
+  We evaluated the scaling behavior of Nexa-Base-v3 using different tensor and pipeline parallel configurations~\cite{jenkins2025tensor}.
+  
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Key Takeaways:}
+      \begin{itemize}
+        \item \textbf{Tensor Parallelism (TP):} High intra-node performance, but scaling is constrained by NVLink limits.
+        \item \textbf{Pipeline Parallelism (PP):} Effective across nodes; communication overhead is hidden.
+        \item \textbf{Peak Speed:} Obtained 240 TFLOPS/GPU using TP=2, PP=4.
+        \item \textbf{Efficiency:} Sustained 78\% scaling efficiency up to 128 GPUs.
+      \end{itemize}
+    \end{column}
+    \hfill
+    \begin{column}{0.48\textwidth}
+      \centering
+      \begin{tikzpicture}[scale=0.8]
+        \begin{axis}[
+          width=6.0cm,
+          height=3.8cm,
+          grid=both,
+          grid style={line width=.1pt, draw=gray!10},
+          major grid style={line width=.2pt, draw=gray!30},
+          xlabel={GPU Count},
+          ylabel={TFLOPS per GPU},
+          xmin=8, xmax=128,
+          ymin=150, ymax=280,
+          xtick={8, 32, 64, 128},
+          ytick={160, 200, 240, 280},
+          legend pos=south west,
+          legend style={font=\tiny, draw=none, fill=none},
+          axis x line=bottom,
+          axis y line=left,
+          every tick label/.append style={font=\tiny},
+          label style={font=\scriptsize}
+        ]
+          % Vertex-PP4 (Optimized)
+          \addplot[
+            color=accentTeal,
+            mark=square*,
+            line width=1.2pt
+          ] coordinates {
+            (8,   265)
+            (32,  258)
+            (64,  242)
+            (128, 235)
+          };
+          \addlegendentry{PP=4 (Opt)}
+
+          % Vertex-PP2 (Standard)
+          \addplot[
+            color=primaryDark,
+            mark=*,
+            line width=1.2pt,
+            dashed
+          ] coordinates {
+            (8,   260)
+            (32,  230)
+            (64,  210)
+            (128, 185)
+          };
+          \addlegendentry{PP=2 (Std)}
+        \end{axis}
+      \end{tikzpicture}
+      \par\vspace{0.1cm}
+      {\scriptsize\textcolor{textDark!70}{Figure 1: Scaling performance comparison.}}
+    \end{column}
+  \end{columns}
+\end{frame}

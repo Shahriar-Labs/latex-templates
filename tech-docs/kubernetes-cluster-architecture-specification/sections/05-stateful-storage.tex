@@ -1,0 +1,40 @@
+\section{Stateful Storage}
+
+\subsection{CSI driver \& storage classes}
+Persistent volumes are provisioned through the Meridian Block Store CSI driver. Three storage classes cover the platform's workloads; none are the cluster default, so every \code{PersistentVolumeClaim} must name one explicitly.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l l l L@{}}
+\toprule
+\rowcolor{primary}
+\textcolor{white}{\textbf{StorageClass}} & \textcolor{white}{\textbf{Media}} & \textcolor{white}{\textbf{Reclaim}} & \textcolor{white}{\textbf{Expansion}} & \textcolor{white}{\textbf{Snapshot Schedule}} \\
+\midrule
+\code{fast-ssd} & NVMe SSD & Retain & Online & Every 6h, 14-day retention \\
+\rowcolor{rowgray}
+\code{standard-ssd} & SSD & Delete & Online & Daily, 7-day retention \\
+\code{archive} & Object-backed & Retain & Offline & Weekly, 180-day retention \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\code{fast-ssd} backs the Synapse Postgres primaries and the Kafka log volumes in the \code{stateful-data} pool; \code{standard-ssd} covers Redis and general application caches; \code{archive} holds compacted Synapse analytics exports that are read infrequently.
+
+\subsection{Backup \& disaster recovery}
+The Apex Backup Operator runs as a controller in the \code{system} pool, orchestrating CSI snapshots on the schedules above and replicating snapshot metadata --- not the underlying blocks --- to \texttt{mer-west-1} every hour. A full cross-region restore of the \code{stateful-data} pool is rehearsed quarterly against a scratch cluster; the two most recent rehearsals both completed within the recovery targets below.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}L c c@{}}
+\toprule
+\rowcolor{primary}
+\textcolor{white}{\textbf{Service}} & \textcolor{white}{\textbf{RPO}} & \textcolor{white}{\textbf{RTO}} \\
+\midrule
+Synapse Postgres (primary ledger data) & 15 minutes & 45 minutes \\
+\rowcolor{rowgray}
+Redis (cache, non-authoritative) & Best effort & 10 minutes \\
+Kafka (event log) & 5 minutes & 30 minutes \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Stateful workload placement}
+Every StatefulSet that mounts a \code{fast-ssd} or \code{standard-ssd} volume carries the \code{workload=stateful} toleration for the \code{stateful-data} pool's taint (Section 2.2) and a pod anti-affinity rule spreading replicas across availability zones. This keeps a single AZ outage from taking down both the primary and its standby replica in the same failure domain.

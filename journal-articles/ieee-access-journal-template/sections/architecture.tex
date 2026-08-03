@@ -1,0 +1,36 @@
+\section{System Architecture}
+\label{sec:architecture}
+
+Our architecture consists of three principal layers: the sensor interface, the neuromorphic routing fabric, and the tensor acceleration array. A high-level schematic of the system is shown in Fig.~\ref{fig:sys_arch}.
+
+At the input layer, the \textit{ApexSens} edge intelligence sensor captures multi-channel environmental signals and converts them into sparse event streams. These event streams are forwarded to the \textit{SynapseLink} neuromorphic core, which houses a mesh of spiking neural processing units. The primary role of the SynapseLink core is to manage spatial routing and decide which parts of the incoming signals require dense processing.
+
+When a high-priority feature is detected, the SynapseLink fabric triggers the \textit{NexaCore} tensor engine. The NexaCore engine features a systolic array of multiply-accumulate (MAC) units that perform the heavy matrix operations. To minimize data transport energy, both cores share a local \textit{MeridianLink} SRAM cache, which stores weight parameters and intermediate feature maps.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=0.8cm,
+    block/.style={rectangle, draw=accessred, fill=accesslight, thick, minimum width=1.8cm, minimum height=1.0cm, align=center, font=\sffamily\tiny, rounded corners=2pt},
+    line/.style={draw=accessdark, -stealth, thick},
+    label_style/.style={font=\sffamily\fontsize{4}{5}\selectfont\color{accessgray}, midway, align=center}
+]
+    % Nodes
+    \node [block] (input) {\textbf{ApexSens Sensor}\\(Signal Capture)};
+    \node [block, right=of input] (nexacore) {\textbf{NexaCore Engine}\\(Tensor MAC Array)};
+    \node [block, right=of nexacore] (synapse) {\textbf{SynapseLink Core}\\(Event Routing)};
+    \node [block, below=of nexacore] (cache) {\textbf{MeridianLink}\\(Shared SRAM Cache)};
+    
+    % Connections
+    \draw [line] (input) -- (nexacore) node[label_style, above] {Raw Data\\Streams};
+    \draw [line] (nexacore) -- (synapse) node[label_style, above] {Tensor\\Triggers};
+    \draw [line] (nexacore) to[bend left=20] (cache) node[label_style, left] {Read/Write};
+    \draw [line] (cache) to[bend left=20] (nexacore);
+    \draw [line] (synapse) |- (cache) node[label_style, right, pos=0.3] {Parameter\\Fetch};
+    
+\end{tikzpicture}
+\caption{System architecture layout. The ApexSens sensor routes captured signals to the NexaCore tensor engine, which works in tandem with the SynapseLink event core. Both cores share the MeridianLink SRAM cache for data exchange.}
+\label{fig:sys_arch}
+\end{figure}
+
+The coupling between the event-driven control plane and the synchronous data plane is achieved via a mailboxed interrupt system. This system allows the SynapseLink fabric to put the NexaCore engine into a deep sleep state when event rates are low, saving static leakage power. When a block of events crosses a critical density threshold, the NexaCore engine is awakened within $1.2\,\mu\text{s}$ to execute the corresponding layer inferences.

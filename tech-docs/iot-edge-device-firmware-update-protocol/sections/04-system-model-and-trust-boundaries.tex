@@ -1,0 +1,53 @@
+\section{System model and trust boundaries}
+
+\subsection{Roles}
+
+\begin{tabularx}{\textwidth}{@{}L{31mm}Y Y@{}}
+  \toprule
+  \textbf{Role} & \textbf{Primary responsibility} & \textbf{Security assumption} \\
+  \midrule
+  Release signer & Approves canonical manifests using an offline or tightly
+    controlled signing key. & Private signing material is never present on the
+    device or public repository. \\
+  Update service & Selects campaigns and delivers signed manifests. & May affect
+    availability and targeting, but cannot authorize unapproved bytes. \\
+  Repository/CDN & Serves immutable artifact ranges. & Is untrusted for integrity
+    and may return stale, truncated, or malicious content. \\
+  Device agent & Enforces applicability and security policy; controls installation.
+    & Executes within the device's trusted computing base. \\
+  Bootloader & Verifies the bootable image and manages trial/confirmed selection.
+    & Protected from ordinary firmware modification. \\
+  Fleet operator & Starts, pauses, cancels, and monitors campaigns. & Authenticated
+    and authorized by the fleet-management control plane. \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Minimum device capabilities}
+
+A conforming device \must provide:
+
+\begin{itemize}
+  \item a stable, non-secret \field{device_id} and an immutable or protected
+        \field{model} identifier;
+  \item a cryptographically secure SHA-256 implementation;
+  \item verification for the required signature suite in Section~\ref{sec:crypto};
+  \item protected storage for trust anchors and the highest accepted security version;
+  \item an installation method that preserves a bootable confirmed image after interruption;
+  \item a source of cryptographically strong randomness when TLS or nonce generation requires it; and
+  \item durable storage sufficient for protocol state or a way to reconstruct it safely.
+\end{itemize}
+
+\subsection{Threat model}
+
+The adversary may observe, delay, replay, reorder, truncate, or replace network
+traffic; compromise a repository; know device identifiers and installed versions;
+cause repeated network or power interruption; and attempt to install older valid
+firmware. \protocol also limits the impact of a compromised online update service
+by requiring offline-authorized manifests.
+
+The base protocol does not protect a device after compromise of its manifest
+signing key, immutable boot code, hardware trust anchor, or active firmware with
+arbitrary access to protected storage. Key rotation, threshold signing, measured
+boot, and remote attestation can reduce those risks but are deployment profiles.
+
+% -----------------------------------------------------------------------------

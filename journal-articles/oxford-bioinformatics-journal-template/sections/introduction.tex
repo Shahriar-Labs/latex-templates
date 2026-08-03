@@ -1,0 +1,18 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Non-coding RNA molecules regulate transcription, splicing, and translation through tertiary folds that are frequently as functionally specific as protein active sites, yet the structural biology toolkit for RNA has lagged far behind that of proteins. Fewer than four thousand distinct RNA tertiary structures have been deposited across public archives, against several hundred thousand protein structures, and the gap has widened rather than narrowed as sequencing throughput has outpaced structural characterisation \citep{fischer2022benchmark}. The consequence is a large and growing population of functionally important RNAs -- riboswitches, long non-coding transcripts, viral packaging signals -- whose three-dimensional folds are simply unknown.
+
+Two families of computational method have historically filled this gap. Homology-based approaches thread a query sequence onto a related solved structure and perform well when a close structural relative exists, but degrade sharply for novel folds with no useful template \citep{kowalski2019homology}. Physics-based coarse-grained simulation, at the other extreme, requires no template but scales poorly with sequence length and is sensitive to force-field parameterisation, making it impractical for routine screening of hundreds of candidate transcripts \citep{delgado2020nimbusfold}.
+
+The success of deep, sequence-conditioned structure prediction in the protein domain suggests a third path. Graph neural networks that operate over residue-level or nucleotide-level graphs have shown that pairwise geometric relationships can be learned directly from sequence and evolutionary signal, without an explicit physical energy function \citep{voss2021attention,nguyen2018graphsage}. Attention mechanisms in particular allow a model to weight distant nucleotide pairs unevenly, which is well suited to RNA, where long-range base pairing routinely dominates the tertiary fold \citep{silva2020transformer}.
+
+In this paper we introduce SynapseFold, a graph attention network that predicts a full pairwise distance distribution for an RNA sequence and reconstructs a three-dimensional structure through constrained multidimensional embedding. Our contributions are threefold.
+
+\begin{enumerate}[leftmargin=1.4em]
+  \item We curate a benchmark of 3{,}412 non-redundant RNA structures from the Nimbus Structural Archive, split by structural class rather than by sequence identity alone, to more honestly assess generalisation to novel folds.
+  \item We describe a graph attention architecture, detailed in Section~\ref{sec:methods}, that combines a nucleotide-level $k$-nearest-neighbour graph with a learned long-range attention channel, and that outputs calibrated pairwise distance distributions rather than point estimates.
+  \item We show, in Section~\ref{sec:results}, that this design reduces mean backbone \rmsd\ by 38\% relative to the strongest prior neural baseline, and by more than 60\% relative to the homology-based baseline, while requiring roughly two minutes of inference per structure on a single accelerator.
+\end{enumerate}
+
+The remainder of the paper is organised as follows. Section~\ref{sec:methods} describes the benchmark, the graph construction and model architecture, and the training procedure. Section~\ref{sec:results} reports benchmark accuracy against three baselines and an ablation over the model's principal components. Section~\ref{sec:discussion} interprets these results in light of known failure modes and outlines directions for future work, and Section~\ref{sec:conclusion} summarises our findings.

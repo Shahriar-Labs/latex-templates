@@ -1,0 +1,177 @@
+% ============================================================
+% preamble.tex — packages, colours, commands, geometry
+% Startup Cap Table & Dilution Scenario Report
+% ============================================================
+
+% ---- Page Geometry -----------------------------------------
+\usepackage[
+  top=2.4cm, bottom=2.6cm,
+  left=2.5cm, right=2.5cm,
+  headheight=14pt
+]{geometry}
+
+% ---- Core Typography ---------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{lmodern}
+\usepackage{setspace}
+\usepackage{parskip}
+
+% ---- Colour -------------------------------------------------
+\usepackage[table]{xcolor}
+
+% Brand palette
+\definecolor{nexaNavy}{HTML}{0D1F3C}
+\definecolor{nexaSlate}{HTML}{1E3A5F}
+\definecolor{nexaAqua}{HTML}{00A8B5}
+\definecolor{nexaGold}{HTML}{D4A843}
+\definecolor{nexaLightGray}{HTML}{F4F6F9}
+\definecolor{nexaMidGray}{HTML}{8896A7}
+\definecolor{nexaRed}{HTML}{C0392B}
+\definecolor{nexaGreen}{HTML}{1A7A4A}
+
+% ---- Headers & Footers -------------------------------------
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{nexaAqua}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[L]{\small\color{nexaMidGray}\textsc{Nexa Ventures}}
+\fancyhead[R]{\small\color{nexaMidGray}Cap Table \& Dilution Report}
+\fancyfoot[C]{\small\color{nexaMidGray}\thepage}
+
+% ---- Section Formatting ------------------------------------
+\usepackage[explicit]{titlesec}
+\titleformat{\section}
+  {\color{nexaNavy}\large\bfseries}
+  {}
+  {0em}
+  {\colorbox{nexaLightGray}{\parbox{\dimexpr\linewidth-2\fboxsep}{\strut#1\strut}}}
+  [\vspace{-0.5em}\textcolor{nexaAqua}{\rule{\linewidth}{1.5pt}}]
+
+\titlespacing*{\section}{0pt}{18pt}{10pt}
+
+\titleformat{\subsection}
+  {\color{nexaSlate}\normalsize\bfseries}
+  {}
+  {0em}
+  {#1}
+
+\titlespacing*{\subsection}{0pt}{12pt}{5pt}
+
+% ---- Tables -------------------------------------------------
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{makecell}
+
+% Row colours for tables
+\newcommand{\headerrow}{\rowcolor{nexaNavy}}
+\newcommand{\altrow}{\rowcolor{nexaLightGray}}
+
+% ---- TikZ & PGFPlots ----------------------------------------
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, backgrounds}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+% ---- tcolorbox ---------------------------------------------
+\usepackage[most]{tcolorbox}
+\tcbuselibrary{skins, breakable}
+
+% Key metric box
+\tcbset{
+  metricbox/.style={
+    enhanced,
+    colback=nexaLightGray,
+    colframe=nexaAqua,
+    boxrule=1.5pt,
+    arc=4pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt,
+    fonttitle=\bfseries\small\color{nexaNavy},
+    coltitle=nexaNavy
+  },
+  warnbox/.style={
+    enhanced,
+    colback=nexaGold!15,
+    colframe=nexaGold,
+    boxrule=1pt,
+    arc=4pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt
+  },
+  infobox/.style={
+    enhanced,
+    colback=nexaAqua!10,
+    colframe=nexaAqua,
+    boxrule=1pt,
+    arc=4pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt
+  }
+}
+
+% ---- Utility Packages --------------------------------------
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\let\Bbbk\relax
+\let\Bbbk\relax
+\let\Bbbk\relax
+\let\Bbbk\relax
+\let\Bbbk\relax
+\let\Bbbk\relax
+\let\Bbbk\relax
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{hyperref}
+\usepackage{fontawesome5}
+
+% ---- Hyperref Setup ----------------------------------------
+\hypersetup{
+  colorlinks = true,
+  linkcolor  = nexaSlate,
+  urlcolor   = nexaAqua,
+  citecolor  = nexaSlate,
+  pdftitle   = {Nexa Ventures --- Cap Table \& Dilution Scenario Report},
+  pdfauthor  = {Nexa Ventures Finance Team},
+  pdfsubject = {Equity Dilution Analysis},
+  pdfkeywords= {cap table, dilution, startup, seed, Series A, ESOP}
+}
+
+% ---- Caption Styling ----------------------------------------
+\captionsetup{
+  font=small,
+  labelfont={bf, color=nexaNavy},
+  labelsep=period
+}
+
+% ---- Custom Commands ----------------------------------------
+\newcommand{\shares}[1]{\textbf{#1}}
+\newcommand{\pct}[1]{\textbf{#1\%}}
+\newcommand{\usd}[1]{\$#1}
+\newcommand{\roundtag}[1]{%
+  \begin{tikzpicture}[baseline=(t.base)]
+    \node[fill=nexaAqua, text=white, rounded corners=3pt,
+          inner xsep=5pt, inner ysep=2pt, font=\bfseries\footnotesize] (t) {#1};
+  \end{tikzpicture}%
+}
+\newcommand{\dilutionarrow}{%
+  \textcolor{nexaRed}{\faArrowDown}\;%
+}
+\newcommand{\positive}{%
+  \textcolor{nexaGreen}{\faCheckCircle}\;%
+}
+\newcommand{\caution}{%
+  \textcolor{nexaGold}{\faExclamationTriangle}\;%
+}
+
+% ---- Column Types -------------------------------------------
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+% ---- Spacing Helpers ----------------------------------------
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}

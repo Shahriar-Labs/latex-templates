@@ -1,0 +1,49 @@
+\section{Related Work}
+
+\paragraph{Hallucination in generated text.} Factual hallucination in
+neural text generation is well studied for summarization and open-domain
+question answering \citep{tanaka2020span, ferreira2019attention}, where the
+standard remedy is to ground generation in retrieved evidence at decoding
+time. Citation fabrication is a narrower instance of the same problem, but
+the object being verified is structured -- an identifiable paper plus a
+specific claim -- which lets a verifier check existence and support
+separately rather than scoring plausibility as a single number.
+
+\paragraph{Retrieval-augmented verification.} Passage retrieval has been
+used to ground claims in open-domain fact-checking pipelines
+\citep{delgado2021retrieval}, and sentence-level entailment models have
+been applied directly to scientific claim verification
+\citep{holm2022entailment}. Adapter-based fine-tuning has separately been
+shown to adapt a shared encoder to a new verification task cheaply
+\citep{schneider2020adapter}. We combine both lines of work: an entailment
+head trained with the adapter recipe of \citet{schneider2020adapter}, over
+passages retrieved the way \citet{holm2022entailment} retrieve scientific
+evidence. Unlike open-domain fact-checking, our retrieval index is
+restricted to the cited paper itself rather than an open corpus, since the
+question is not whether a claim is true in general but whether
+\emph{this} paper supports it. Grounded decoding at generation time reduces
+but does not eliminate source hallucination \citep{voss2023hallucination},
+which is why we treat verification as a separate post-hoc pass rather than
+relying on the generator alone.
+
+\paragraph{LLM-as-judge for citation checking.} The most directly related
+work prompts a large model with a claim and a cited abstract and asks for a
+support judgment \citep{nakamura2021survey}. This approach is flexible and
+requires no task-specific training, but its cost scales with the number of
+citations checked, and its judgments are sensitive to prompt phrasing, an
+issue also documented for LLM judges in other evaluation settings
+\citep{oyelaran2022lowresource}. \sys{SynapseCite} is trained specifically
+for the three-way fabricated/misattributed/distorted distinction, which we
+find a general-purpose judge conflates in a fixed fraction of cases
+regardless of prompt (Section~\ref{sec:results}).
+
+\paragraph{Bibliographic existence checking.} Tools that check whether a
+DOI or arXiv identifier resolves are a necessary but insufficient first
+filter: they catch outright invention but not the far more common case of a
+real paper cited for a claim it does not make, and their reliability is
+itself bounded by how completely the underlying scholarly index covers a
+given venue and year \citep{cabrera2020bibliographic}. \sys{SynapseCite}
+uses existence checking only as its first stage, gating the more expensive
+retrieval-and-entailment stages that follow, in the spirit of prior
+benchmark suites for scholarly document processing that stage cheap checks
+before expensive ones \citep{barreto2022scholarly}.

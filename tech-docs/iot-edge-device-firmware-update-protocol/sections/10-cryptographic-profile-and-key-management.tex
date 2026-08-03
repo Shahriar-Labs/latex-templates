@@ -1,0 +1,49 @@
+\section{Cryptographic profile and key management}
+\label{sec:crypto}
+
+\subsection{Required algorithms}
+
+All version-1 implementations \must implement SHA-256 and COSE\_Sign1 with
+Ed25519 (COSE algorithm EdDSA). An implementation \may also support ECDSA P-256
+with SHA-256 (ES256), but a deployment using ES256 \must define deterministic,
+strict signature-encoding validation. TLS 1.3 is preferred; TLS 1.2 is permitted
+only with authenticated encryption, forward-secret key exchange, certificate
+validation, and obsolete algorithms disabled.
+
+Digest comparison \must be constant-time where practical. Devices \must reject
+non-canonical CBOR, duplicate map keys, unsupported critical COSE headers,
+unprotected algorithm identifiers, malformed public keys, and signatures of the
+wrong length before installation.
+
+\subsection{Trust-store requirements}
+
+Each trust-store record contains \field{key_id}, public key, algorithm, signer
+role, product scope, activation constraint, and revocation state. The trust store
+\must be integrity protected and updated only by an already trusted key with the
+\code{root} or \code{key-management} role. A release key \mustnot authorize new
+root keys unless the deployment explicitly grants that capability.
+
+Key rotation uses an overlap period:
+
+\begin{enumerate}
+  \item an existing key signs a key-set update containing the new key and scope;
+  \item devices durably install the new record and acknowledge its digest;
+  \item releases are signed by the new key after sufficient fleet adoption; and
+  \item a later signed key-set update revokes the old key.
+\end{enumerate}
+
+A device with unreliable wall-clock time \must use signed monotonic key-set
+versions rather than certificate dates for trust-store rollback resistance.
+Emergency revocation data \should be small, independently signed, monotonically
+versioned, cached, and checked before accepting a new manifest.
+
+\subsection{Transport authentication}
+
+HTTPS endpoints \must authenticate the server name using a platform trust store
+or deployment pin set. Managed deployments \should use mutual TLS or an
+application-layer device credential. Bearer credentials \must be short-lived,
+audience-restricted, sent only in an authorization header, and never included in
+artifact URIs. Transport authentication protects confidentiality, fleet metadata,
+and service availability; it does not replace manifest verification.
+
+% -----------------------------------------------------------------------------

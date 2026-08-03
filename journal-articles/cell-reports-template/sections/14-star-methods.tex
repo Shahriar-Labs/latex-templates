@@ -1,0 +1,114 @@
+\section{STAR Methods}
+
+\subsection{Key resources table}
+\rowcolors{2}{CellLight}{white}
+\begin{longtable}{@{}L{0.31\textwidth}L{0.35\textwidth}L{0.27\textwidth}@{}}
+\toprule
+\rowcolor{white}
+\textbf{REAGENT or RESOURCE} & \textbf{SOURCE} &
+\textbf{IDENTIFIER} \\
+\midrule
+\endfirsthead
+\toprule
+\rowcolor{white}
+\textbf{REAGENT or RESOURCE} & \textbf{SOURCE} &
+\textbf{IDENTIFIER} \\
+\midrule
+\endhead
+\multicolumn{3}{@{}l}{\cellcolor{gray!25}\textbf{Deposited data}} \\
+Synthetic screen specification & This paper & Illustrative DOI: \DataDOI \\
+Synthetic analysis outputs & This paper & Illustrative accession: MRI-SYN-001 \\
+\multicolumn{3}{@{}l}{\cellcolor{gray!25}\textbf{Software and algorithms}} \\
+R statistical environment & R Foundation for Statistical Computing &
+\url{https://www.r-project.org/} \\
+Analysis workflow & This paper & Illustrative repository: \CodeURL \\
+Benjamini--Hochberg procedure & \citet{benjamini1995} & \NA \\
+\multicolumn{3}{@{}l}{\cellcolor{gray!25}\textbf{Other}} \\
+Synthetic plate-layout specification & This paper & Included in Method details \\
+\bottomrule
+\end{longtable}
+\rowcolors{2}{}{}
+
+\subsection{Experimental model and subject details}
+
+\subsubsection{Synthetic experimental system}
+No human participants, animals, primary samples, or cell lines were used. We
+generated a synthetic plate-based dataset to resemble a high-content cellular
+stress-response screen. Consequently, sex, gender, age, ancestry, authentication,
+and mycoplasma-testing fields are not applicable. The simulation specification,
+rather than a biological specimen, is the experimental model.
+
+\subsection{Method details}
+
+\subsubsection{Study design}
+The design comprised three acquisition batches, four plates per batch, and 48
+wells per plate. Within every plate, four wells were assigned to vehicle, four to
+a positive control, and 40 to synthetic perturbations. Conditions were balanced
+across edge and interior wells. Measurements were simulated at 6, 24, and 48 h.
+The primary outcome was the standardized composite stress score at 24 h; five
+additional readouts were designated secondary outcomes.
+
+The simulation was deterministic after initialization with the integer seed
+20260802. Treatment assignments were generated before outcomes. Analysts were
+not blinded because the analysis was scripted and the ground truth was required
+for performance evaluation. No prospective power calculation was used; the
+design was chosen to demonstrate plate, batch, and time effects in a compact
+example.
+
+\subsubsection{Data generation}
+For well $i$ on plate $j$, standardized readout $y_{ij}$ was generated as
+\begin{equation}
+  y_{ij} = \mu + \beta_{t(i)} + \gamma_{h(i)}
+  + (\beta\gamma)_{t(i),h(i)} + b_j + q_{r(i),c(i)} + \epsilon_{ij},
+  \label{eq:simulation}
+\end{equation}
+where $\beta_{t(i)}$ is the perturbation effect, $\gamma_{h(i)}$ is the time
+effect, $b_j\sim\mathcal{N}(0,0.20^2)$ is a plate effect,
+$q_{r(i),c(i)}$ is a low-amplitude row/column artifact, and
+$\epsilon_{ij}\sim\mathcal{N}(0,\sigma^2)$ is measurement error. Strong effects
+had absolute standardized magnitude 0.8--1.5, weak effects 0.3--0.6, and null
+effects 0. Batch offsets were added before normalization.
+
+\subsubsection{Quality control and exclusions}
+Quality-control rules were applied without treatment labels. A well was excluded
+if simulated focus quality was below 0.80, segmented object count was below 100,
+or saturated pixels exceeded 5\%. A plate was to be excluded if robust $Z'$ for
+the positive control was below 0.50 or if more than 15\% of wells failed quality
+control. No plate met an exclusion rule. All exclusions and plate-level metrics
+were retained in the audit table before statistical modeling.
+
+\subsubsection{Normalization and feature construction}
+Each readout was centered by the plate-specific vehicle median and divided by
+the plate-specific median absolute deviation (MAD), scaled by 1.4826. MAD values
+below $10^{-6}$ were to be replaced by $10^{-6}$, although this safeguard was not
+triggered. The composite stress score was the mean of the normalized reporter,
+permeability, and inverse cell-count features after orienting them so that larger
+values indicated greater stress.
+
+\subsubsection{Sensitivity analyses}
+Three analyses were specified before inspecting recovery metrics: (1) replacing
+median/MAD scaling with mean/standard-deviation scaling estimated from control
+wells, (2) removing the batch term from the model, and (3) increasing or
+decreasing each image-quality threshold by 10\%. Concordance was evaluated with
+Spearman's rank correlation and overlap of discoveries.
+
+\subsection{Quantification and statistical analysis}
+Readouts were analyzed separately using a linear model with treatment, time,
+treatment-by-time interaction, and batch as fixed effects and plate as a random
+intercept. The worked values approximate this model and are not outputs from an
+attached software execution. Two-sided contrasts compared each perturbation with
+the time-matched vehicle. Confidence intervals were computed at 95\%. Within each
+readout family, $p$ values were adjusted using the Benjamini--Hochberg procedure
+\citep{benjamini1995}; adjusted $p<0.05$ defined a discovery. No observation was
+treated as an independent biological replicate: the plate was the independent
+simulation unit, with wells serving as within-plate technical units.
+
+Model assumptions were assessed from residual-versus-fitted and quantile plots.
+Recovery was the proportion of implanted non-null effects called in the correct
+direction. The observed false-positive proportion was the fraction of implanted
+null comparisons called significant. Exact sample sizes, estimates, intervals,
+and adjusted $p$ values are reported in the Results and Table~\ref{tab:effects}.
+
+\subsection{Additional resources}
+No clinical trial, preregistration, or biological-protocol record applies to this
+synthetic worked example.

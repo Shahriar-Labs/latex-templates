@@ -1,0 +1,47 @@
+\section{Residual Risk and Recommendations}
+\label{sec:recommendations}
+
+\subsection{Residual Risk}
+
+Assuming the mitigations in Section~\ref{sec:findings} land on their target dates, residual risk for Nexa Ledger falls to \lowrisk{} or \mediumrisk{} for every component except the webhook ingestion path, which remains \highrisk{} until VULN-01 and VULN-04 both close --- signature enforcement alone does not fully retire the risk without the accompanying replay protection. No mitigation in this report is expected to bring any component to zero residual risk; the Medium and Low threats in Table~\ref{tab:stride} (T-05, T-08, T-09, T-10, T-12, T-14) are accepted at their current rating pending the Q4 2026 review, since none individually crosses the threshold that would require an out-of-cycle fix under the response expectations in Section~\ref{sec:scope-methodology}.
+
+\subsection{Recommended Roadmap}
+
+\begin{enumerate}[leftmargin=1.4em]
+  \item \textbf{Q3 2026 (by September 30):} Close VULN-01, VULN-02, VULN-03, and VULN-04. These four findings account for all three Critical threats and two of five High threats, and collectively address the webhook trust boundary and the admin console bypass identified as the two structural weaknesses in this assessment.
+  \item \textbf{Q4 2026 (by December 31):} Close VULN-05, VULN-06, and VULN-08. Per-tenant credential scoping (VULN-06) should be sequenced with the Vertex partner team, since it requires a coordinated credential rotation rather than a unilateral Nexa change.
+  \item \textbf{Ongoing:} Re-run this threat model whenever a new external integration is added (a new payment rail or aggregator introduces new external entities and data flows that this document does not yet cover), and at minimum every two quarters regardless of architectural change.
+  \item \textbf{Process:} Add signature-failure rate and admin-console direct-query volume as standing metrics on the Security Engineering dashboard, so that both flagged paths in Figure~\ref{fig:dfd} are observable before the underlying findings close, not only after.
+\end{enumerate}
+
+\subsection{Sign-Off}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l L l@{}}
+\toprule
+\rowcolor{primary}
+\textcolor{white}{\textbf{Role}} & \textcolor{white}{\textbf{Name}} & \textcolor{white}{\textbf{Date}} \\
+\midrule
+Author & Priya Nandakumar, Director of Security Engineering & July 28, 2026 \\
+\rowcolor{rowgray}
+Technical Reviewer & Owen Falk, Principal Engineer, Ledger Platform & July 30, 2026 \\
+Approver & Marcus Ferreira, Chief Information Security Officer & August 2, 2026 \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Revision History}
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l L@{}}
+\toprule
+\rowcolor{primary}
+\textcolor{white}{\textbf{Version}} & \textcolor{white}{\textbf{Date}} & \textcolor{white}{\textbf{Summary}} \\
+\midrule
+1.0 & March 12, 2026 & Initial threat model covering the API Gateway, Auth Service, and Ledger Database only. \\
+\rowcolor{rowgray}
+2.0 & June 9, 2026 & Added Webhook Ingestion Endpoint, Reconciliation Engine, and Synapse Bank Connect data flow following the account-aggregation launch. \\
+2.1 & August 2, 2026 & Added Admin Console direct-query path (VULN-02) after discovery during the Q3 access review; refreshed all CVSS scores against current CVSS~v3.1 guidance. \\
+\bottomrule
+\end{tabularx}
+\end{center}

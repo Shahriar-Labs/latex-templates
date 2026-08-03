@@ -1,0 +1,58 @@
+\section{Materials and Methods}
+
+\subsection{Participants}
+
+Forty healthy adults were recruited from the local community. Inclusion criteria were age 18--35 years, habitual sleep duration of 7--9~h, and regular bedtimes. Exclusion criteria included neurologic or psychiatric illness, diagnosed sleep disorder, psychoactive medication, shift work within 3 months, transmeridian travel within 4 weeks, and hearing thresholds above 25~dB HL at 0.5--4~kHz. Four participants withdrew before completing all experimental nights; the final sample comprised 36 adults (19 women; age $24.8\pm4.1$ years).
+
+The Northbridge University Human Research Ethics Board approved the protocol (NU-HREB-2025-117). Participants provided written informed consent and received financial compensation. The study was preregistered before enrollment at the Open Science Framework (\url{https://osf.io/7n2cx}).
+
+\subsection{Design and Procedure}
+
+The randomized, double-blind, within-participant crossover protocol included one adaptation night followed by three experimental nights separated by at least 7 days. Condition order was computer-randomized in balanced blocks of six. The conditions were phase-locked stimulation, phase-jittered stimulation, and sham. Participants and morning assessors were blinded; an investigator not involved in testing configured the stimulation computer.
+
+For 5 days before each visit, participants maintained a fixed sleep schedule within $\pm30$~min, verified by wrist actigraphy and sleep diary. Caffeine and alcohol were prohibited for 24~h. At 21:00, participants completed the psychomotor vigilance task and learned 120 unrelated noun pairs. Immediate cued recall continued until one pass through the list reached at least 60\% correct. Lights-off occurred at the participant's habitual bedtime. Delayed cued recall and vigilance were tested 45~min after awakening.
+
+\subsection{EEG Acquisition and Closed-Loop Stimulation}
+
+EEG was recorded from 64 active electrodes at 500~Hz, referenced online to FCz and re-referenced offline to linked mastoids. Impedances were maintained below $10~\mathrm{k}\Omega$. Sleep was scored in 30-s epochs according to American Academy of Sleep Medicine criteria by two blinded raters.
+
+The real-time detector used the average of F3 and F4, band-pass filtered at 0.25--1.25~Hz. Stimulation began after 5 continuous minutes of artifact-free N3 sleep. Following detection of a negative half-wave below $-80~\mu$V, an autoregressive predictor estimated the next positive peak. Two 50-ms pink-noise pulses separated by 1.075~s were presented binaurally at 45~dB above individual hearing threshold. Stimulation paused upon arousal, movement, or transition out of N3. The phase-jittered condition replayed the matched pulse count at delays sampled uniformly from 0.3--1.5~s after detection. During sham, triggers were recorded but no sound was delivered (Figure~\ref{fig:protocol}).
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=6mm and 7mm,
+  block/.style={draw=frontline,fill=frontpale,rounded corners=2pt,
+                minimum height=12mm,minimum width=26mm,align=center,
+                font=\sffamily\scriptsize,text=frontnavy},
+  accent/.style={block,draw=frontcyan,very thick},
+  arrow/.style={-{Stealth[length=2.2mm]},thick,draw=frontblue}
+]
+\node[block] (adapt) {Adaptation\\night};
+\node[accent,right=of adapt] (learn) {Evening\\word-pair learning};
+\node[accent,right=of learn] (detect) {Online N3\\phase detection};
+\node[accent,right=of detect] (stim) {Locked, jittered,\\or sham pulses};
+\node[accent,right=of stim] (test) {Morning recall\\and vigilance};
+\draw[arrow] (adapt) -- (learn);
+\draw[arrow] (learn) -- (detect);
+\draw[arrow] (detect) -- (stim);
+\draw[arrow] (stim) -- (test);
+\node[font=\sffamily\tiny,text=frontgray,below=4mm of learn] {three counterbalanced experimental nights};
+\draw[decorate,decoration={brace,mirror,amplitude=4pt},draw=frontgray]
+  ($(learn.south west)+(0,-6mm)$) -- ($(test.south east)+(0,-6mm)$);
+\end{tikzpicture}
+\caption{Study protocol. Each participant completed three counterbalanced experimental nights at least 7 days apart. Phase-locked and phase-jittered nights delivered identical acoustic energy; only pulse timing relative to the endogenous slow oscillation differed.}
+\label{fig:protocol}
+\end{figure}
+
+\subsection{Memory, Vigilance, and EEG Outcomes}
+
+The primary behavioral outcome was overnight retention, defined as delayed correct recall divided by immediate correct recall and expressed as a percentage. The prespecified physiological outcomes were frontal slow-oscillation amplitude (0.5--1.0~Hz), fast-spindle power (12--15~Hz), and phase--amplitude coupling during the 2.5~s after each trigger. Coupling strength was quantified by the mean vector length of spindle-envelope amplitude over slow-oscillation phase. Analyses excluded trials with peak-to-peak amplitude above 500~$\mu$V or a scored arousal within 3~s.
+
+\subsection{Statistical Analysis}
+
+Analyses were performed in R 4.5.0. Linear mixed-effects models included condition, experimental-night order, and presleep performance as fixed effects and a participant random intercept. Planned contrasts compared phase-locked with sham and phase-jittered conditions; Holm correction controlled the familywise error rate. Pearson correlation tested the association between within-participant coupling change and retention benefit. Two-sided $p<0.05$ indicated statistical significance. Model residuals were inspected for normality and homoscedasticity. Effect estimates are reported with 95\% confidence intervals.
+
+An a priori simulation indicated that 34 completers provided 90\% power to detect a standardized within-participant effect of $d_z=0.55$ at $\alpha=0.05$. The analysis included every participant who completed all three conditions; no outcome values were imputed.
+
+% -----------------------------------------------------------------------------

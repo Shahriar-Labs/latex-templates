@@ -1,0 +1,59 @@
+\section{Security Architecture}
+
+\subsection{Identity and access}
+
+Humans authenticate to the corporate identity provider with phishing-resistant MFA and assume permission-set roles through IAM Identity Center. Elevated roles require ticket linkage and time-bound approval. Workloads receive service-specific IAM roles through EKS workload identity. CI uses OIDC federation; no long-lived AWS keys are stored in the CI platform.
+
+\begin{tabularx}{\textwidth}{@{}L{31mm}Y L{33mm}@{}}
+  \toprule
+  \rowcolor{navy}
+  \color{white}\textbf{Principal} & \color{white}\textbf{Access model} & \color{white}\textbf{Maximum session} \\
+  \midrule
+  Developer & Read non-sensitive telemetry; deploy through pipeline & 8 hours \\
+  \rowcolor{pale}
+  Production operator & Just-in-time operational role with ticket & 1 hour \\
+  Security analyst & Organization-wide read and investigation tooling & 4 hours \\
+  \rowcolor{pale}
+  CI pipeline & OIDC trust restricted by repository, branch, and environment & 1 hour \\
+  Application pod & Namespace-bound service account to narrow IAM role & 1 hour, rotated \\
+  \rowcolor{pale}
+  Break-glass operator & Dual approval, isolated credential, full session capture & 30 minutes \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Encryption and key management}
+
+TLS 1.2 or later protects external and internal application traffic. AWS Certificate Manager manages public certificates. KMS customer-managed keys are separated by data class and environment, use annual rotation where supported, and deny direct administrative decrypt operations. Key policies grant services through conditions such as account, VPC endpoint, encryption context, and resource ARN.
+
+\subsection{Secrets management}
+
+Secrets Manager stores database, partner, and signing credentials. Rotation is automated where the target supports it; otherwise the owner receives a rotation task before expiry. Applications fetch secrets at runtime through workload identity. Secret values are redacted from logs, traces, crash dumps, command histories, and deployment outputs.
+
+\subsection{Detection and response}
+
+CloudTrail, Config, VPC Flow Logs, WAF logs, EKS audit logs, GuardDuty, Inspector, ECR scanning, Security Hub, IAM Access Analyzer, and application security events feed the centralized security account and SIEM. High-confidence findings invoke an on-call route and containment runbook; evidence is written to a retention-locked log bucket.
+
+\begin{securitybox}[Minimum control set]
+No internet-addressable database or node; no wildcard action on wildcard resource in workload roles; no plaintext secret in code or pipeline variables; no unscanned image in production; no mutable audit-log retention; and no production change without a traceable identity and reviewed artifact.
+\end{securitybox}
+
+\subsection{Threat summary}
+
+\begin{tabularx}{\textwidth}{@{}L{32mm}Y Y@{}}
+  \toprule
+  \rowcolor{navy}
+  \color{white}\textbf{Threat} & \color{white}\textbf{Prevent / limit} & \color{white}\textbf{Detect / recover} \\
+  \midrule
+  Account takeover & MFA, conditional access, short sessions, least privilege & Identity alerts, session revocation, credential rotation \\
+  \rowcolor{pale}
+  Web exploitation & WAF, input validation, patched images, rate limits & WAF/APM correlation, isolate workload, deploy fix \\
+  Supply-chain compromise & Pinned dependencies, signed artifacts, protected branches & Provenance checks, image quarantine, known-good rollback \\
+  \rowcolor{pale}
+  Data exfiltration & Private paths, endpoint policies, egress allowlist, KMS & Flow/data events, revoke access, preserve evidence \\
+  Destructive operator & Separation of duties, protected backups, approval gates & CloudTrail alert, account containment, restore \\
+  \rowcolor{pale}
+  Denial of service & CDN, Shield Standard, WAF rate rules, autoscaling & Edge telemetry, load shedding, provider escalation \\
+  \bottomrule
+\end{tabularx}
+
+% ================================================================

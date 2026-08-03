@@ -1,0 +1,73 @@
+\section{Course Schedule \& Milestones}
+
+CS-350 is structured as a fast-paced journey through theory and implementation. The weekly topics, associated readings, and primary course milestones are detailed in Table~\ref{tab:schedule}.
+
+\begin{table}[H]
+\centering
+\caption{Weekly Course Syllabus and Lab Milestones}
+\label{tab:schedule}
+\begin{tabularx}{\textwidth}{c l X p{4.2cm}}
+\toprule
+\textbf{Weeks} & \textbf{Core Subject Area} & \textbf{Key Readings} & \textbf{Deliverable} \\
+\midrule
+Week 1--2 & Distributed Time \& Clocks & Lamport Clocks \citep{lamport1978time} & Lab 0 (Ungraded Go Lab) \\
+Week 3--4 & RPC \& Socket Architectures & Tanenbaum Ch. 4 \citep{tanenbaum2017distributed} & Lab 1 (Multi-threaded RPC) \\
+Week 5--7 & Log Replication \& Consensus & Raft Protocol \citep{ongaro2014search} & Lab 2 (Raft Leader Election) \\
+Week 8 & Midpoint conceptual Sync & Practice exercises & In-class Midterm Exam \\
+Week 9--11 & Replicated Key-Value Storage & Tanenbaum Ch. 7 & Lab 3 (Fault-tolerant DB) \\
+Week 12--14 & Scaling \& Partitioning & CAP Theorem publications & Capstone Project Beta \\
+Week 15 & System Showcases \& Demos & Peer team surveys & Capstone Final Presentation \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Milestone Progression Map}
+
+Figure~\ref{fig:milestones} depicts how the lab assignments build upon one another, progressing from foundational RPC concepts to a fully scale-out consensus engine.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=1.0cm and 1.2cm,
+  box/.style={
+    draw=vertexnavy,
+    thick,
+    fill=bglight,
+    text=charcoal,
+    align=center,
+    rounded corners=4pt,
+    minimum width=3.2cm,
+    minimum height=1.3cm,
+    font=\small\bfseries
+  },
+  arrow/.style={
+    -latex,
+    thick,
+    vertexteal
+  }
+]
+  % Nodes
+  \node[box] (step1) {\faCode\\[3pt] Week 1--4\\ Lab 1: Go \& RPC};
+  \node[box, right=of step1] (step2) {\faServer\\[3pt] Week 5--8\\ Lab 2: Raft Core};
+  \node[box, right=of step2] (step3) {\faDatabase\\[3pt] Week 9--11\\ Lab 3: Raft KV};
+  
+  \node[box, below=of step3] (step4) {\faProjectDiagram\\[3pt] Week 12--14\\ Capstone Project};
+  \node[box, left=of step4] (step5) {\faFlagCheckered\\[3pt] Week 15\\ Final Presentation};
+
+  % Connecting lines
+  \draw[arrow] (step1) -- (step2) node[midway, above, font=\scriptsize\itshape, text=vertexteal] {Basic RPC};
+  \draw[arrow] (step2) -- (step3) node[midway, above, font=\scriptsize\itshape, text=vertexteal] {Consensus};
+  \draw[arrow] (step3) -- (step4) node[midway, right, font=\scriptsize\itshape, text=vertexteal] {Storage};
+  \draw[arrow] (step4) -- (step5) node[midway, below, font=\scriptsize\itshape, text=vertexteal] {Scale-out};
+
+  % Highlight container using calc on background layer
+  \begin{scope}[on background layer]
+    \draw[draw=vertexamber!40, fill=vertexamber!8, dashed, thick, rounded corners=5pt] 
+      ($(step2.north west)+(-0.2,0.6)$) rectangle ($(step3.south east)+(0.2,-0.4)$);
+    \node[text=vertexamber!80!black, font=\footnotesize\bfseries] at ($(step2.north east)!0.5!(step3.north west)+(0,0.8)$) {Core Consensus Phase};
+  \end{scope}
+
+\end{tikzpicture}
+\caption{Progression of programming milestones and project development in CS-350.}
+\label{fig:milestones}
+\end{figure}

@@ -1,0 +1,49 @@
+\section{Identifiers, versions, and persistent state}
+
+\subsection{Identifiers}
+
+\begin{longtable}{@{}L{31mm}L{45mm}L{76mm}@{}}
+  \toprule
+  \textbf{Name} & \textbf{Syntax} & \textbf{Requirement} \\
+  \midrule
+  \endhead
+  \field{device_id} & 1--128 printable ASCII characters & Unique within a fleet;
+    opaque to protocol logic. \\
+  \field{model} & 1--64 characters matching \code{[A-Za-z0-9._-]+} & Bound to
+    hardware or immutable provisioning data. \\
+  \field{release_id} & UUID string & Globally unique per signed release. \\
+  \field{campaign_id} & UUID string & Identifies rollout policy; not trusted for
+    artifact authorization. \\
+  \field{artifact_id} & UUID string & Uniquely identifies immutable bytes and
+    transfer metadata. \\
+  \field{session_id} & 128-bit random value encoded as 32 lowercase hex digits &
+    Unique per discovery-to-terminal update attempt. \\
+  \field{key_id} & 1--64 ASCII characters & Selects a trust-store verification key. \\
+  \bottomrule
+\end{longtable}
+
+Identifiers are case-sensitive. Services \must treat identifiers as opaque and
+\mustnot embed credentials or personally identifying data in URLs, logs, or MQTT
+topics. A device \mustnot derive authorization solely from a mutable model string
+reported by application firmware.
+
+\subsection{Persistent state}
+
+The following values \must survive power loss using atomic records, journaling,
+or an equivalent mechanism:
+
+\begin{itemize}
+  \item the highest confirmed \field{image_security_version} per protected component;
+  \item active, confirmed, and trial slot identifiers;
+  \item current \field{release_id}, \field{artifact_id}, manifest digest, and session ID;
+  \item verified download offset or verified chunk bitmap;
+  \item remaining trial boot attempts and confirmation deadline basis; and
+  \item the most recent status sequence number for the active session.
+\end{itemize}
+
+A persistent update record \must include an integrity check and a monotonically
+advancing generation number. If no valid record can be recovered, the device
+\must boot the independently verified confirmed slot and restart discovery; it
+\mustnot activate partially written content.
+
+% -----------------------------------------------------------------------------

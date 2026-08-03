@@ -1,0 +1,55 @@
+\section{Security architecture}
+
+\subsection{Threat model}
+
+The design assumes an attacker can control repository content, dependency responses,
+build scripts, test output, and pull-request metadata. It also considers malicious
+insiders, stolen user sessions, compromised runner instances, dependency confusion,
+cache poisoning, artifact substitution, webhook replay, log injection, resource
+exhaustion, and control-plane service compromise.
+
+\begin{longtable}{@{}L{0.24\textwidth}L{0.31\textwidth}L{0.37\textwidth}@{}}
+\caption{Threats and primary mitigations}\label{tab:threats}\\
+\toprule
+\thead{Threat} & \thead{Security objective} & \thead{Primary mitigations} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Threat} & \thead{Security objective} & \thead{Primary mitigations} \\
+\midrule
+\endhead
+Untrusted code escapes job & Prevent host and cross-job compromise & Ephemeral micro-VM, unprivileged execution, syscall and network policy, no host sockets, rapid teardown \\
+Credential theft & Limit value and lifetime of stolen material & Just-in-time workload identity, narrow audience, short TTL, memory delivery, egress controls \\
+Poisoned dependency/action & Preserve input integrity & Digest pinning, trusted mirrors, signature checks, allowlists, provenance and SBOM \\
+Cache poisoning & Prevent trust-boundary escalation & Trust-tier namespaces, safe extraction, immutable manifests, cache-as-untrusted invariant \\
+Artifact substitution & Deploy exactly reviewed output & Digest addressing, independent verification, signature and provenance checks, approval binding \\
+Webhook replay/spoofing & Accept authentic events once & Signature, timestamp window, delivery-ID deduplication, source allowlist \\
+Stale runner result & Preserve state correctness & Renewable lease, monotonic fencing token, compare-and-swap finalization \\
+Log or UI injection & Protect operators and evidence & Control-sequence allowlist, output encoding, content security policy, immutable raw frames \\
+Denial of service & Preserve fair availability & Quotas, bounded expansion, weighted fairness, autoscaling, rate limiting, circuit breakers \\
+Privileged insider & Make misuse difficult and detectable & Separation of duties, just-in-time admin, dual approval, immutable audit, session recording \\
+Regional split brain & Prevent double execution/deployment & Single-writer promotion lease, fenced region epoch, runner certificate revocation \\
+\bottomrule
+\end{longtable}
+
+\subsection{Control requirements}
+
+\begin{itemize}
+  \item All traffic \must use TLS 1.2 or later; TLS 1.3 is preferred. Internal service traffic uses mutual authentication.
+  \item Cryptographic algorithms and key sizes follow the organization's approved cryptographic standard.
+  \item Dependencies and container images are continuously scanned; critical control-plane findings block release.
+  \item Administrative APIs are isolated from public ingress and require phishing-resistant multi-factor authentication.
+  \item Security policy is version controlled, peer reviewed, tested, and deployed through the same staged process as code.
+  \item Exceptions have owner, scope, rationale, compensating controls, approval, and automatic expiry.
+  \item An external penetration test occurs before general availability and after a material trust-boundary change.
+\end{itemize}
+
+\subsection{Audit integrity}
+
+Audit events include actor, authentication context, action, resource, request ID, source
+address, policy decision, before/after metadata where safe, result, and timestamp.
+Events are chained or batch-signed and exported within five minutes to an independently
+administered write-once store and security analytics platform. Clock health is monitored.
+Missing sequence ranges or signature failures create a high-severity alert.
+
+% -----------------------------------------------------------------------------

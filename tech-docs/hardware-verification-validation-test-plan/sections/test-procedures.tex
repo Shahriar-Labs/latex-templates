@@ -1,0 +1,42 @@
+\section{Verification Procedures \& Test Vectors}
+
+\subsection{Test Vector Stimuli}
+To validate chip-level logical states and bus communication integrity, verification engineers must load and execute standard test vectors. The digital patterns verify command decoding, timing margins, and operational reliability. Table~\ref{tab:vectors} contains the core test vector sequences for high-speed bus interfaces.
+
+\begin{table}[h]
+\small
+\centering
+\begin{tabularx}{\textwidth}{l l X c}
+\toprule
+\textbf{Vector ID} & \textbf{Interface} & \textbf{Stimulus Pattern (Hex)} & \textbf{Expected Output} \\
+\midrule
+VEC-001 & JTAG & \texttt{0x3F0A1E4B8C9D0E1F} & \texttt{0xAA55AA55} \\
+VEC-002 & SPI & \texttt{0xAA5500FF55AAFF00} & \texttt{0x55AAFF0055AA00FF} \\
+VEC-003 & I2C & \texttt{0x70 \lbrack W\rbrack\ 0x02 0x5A} & ACK + Register Write Success \\
+VEC-004 & PCIe & Link training sequence (TS1/TS2) & Link state L0 active \\
+\bottomrule
+\end{tabularx}
+\caption{High-speed interface verification test vectors.}
+\label{tab:vectors}
+\end{table}
+
+\subsection{Step-by-Step Test Execution}
+Verification engineers must perform the testing protocol in sequence. The general testing steps are:
+\begin{enumerate}
+    \item \textbf{Power-up Sequence Validation}: Ensure that the programmable power supply triggers voltage rails in order ($3.3\text{V} \rightarrow 1.8\text{V} \rightarrow 1.2\text{V} \rightarrow 0.9\text{V}$). Check current draw limits to confirm no short circuits.
+    \item \textbf{Clock Initialization Verification}: Monitor the $25\text{\,MHz}$ oscillator. Check phase lock loop (PLL) registers to ensure core clock reaches $1.2\text{\,GHz}$ without frequency jitter.
+    \item \textbf{Boundary Scan Validation}: Verify logic pathway continuity using JTAG boundary scan commands.
+    \item \textbf{High-speed Interface Validation}: Execute high-speed data bursts on DDR and PCIe channels. Log error rates and eye diagrams on the oscilloscope.
+\end{enumerate}
+
+\subsection{Pass/Fail Criteria}
+The verification tests are marked pass or fail based on strict technical thresholds:
+\begin{itemize}
+    \item \textbf{Signal Integrity}: Rise/fall times must be $\le 120\text{\,ps}$ for PCIe lanes, and eye-opening width must exceed $70\%$ of unit interval (UI).
+    \item \textbf{JTAG Operation}: TAP controller must return IDCODE matching the Nimbus-5 signature register \texttt{0x0A5C2043}.
+    \item \textbf{Bit Error Rate (BER)}: PCIe link must run error-free for a minimum of $10^9$ bits under thermal stress test.
+\end{itemize}
+
+\begin{warningbox}{Interface Failure Protocol}
+If the PCIe link fails to achieve L0 state after five subsequent re-train loops, power down the DUT immediately. Check if pin probes on TX/RX lines are introducing capacitive load distortion ($\ge 1.5\text{\,pF}$).
+\end{warningbox}

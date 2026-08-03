@@ -1,0 +1,34 @@
+\section{Downtime Schedule \& DBA Roles}
+
+The database schema evolution will occur during a low-activity maintenance window. Below is the scheduled timeline and list of operational DBAs responsible for execution.
+
+\subsection{Execution Timeline}
+The migration timeline is structured down to the minute to ensure coordination with front-end deployment teams.
+
+\begin{table}[h]
+\small
+\centering
+\begin{tabularx}{\textwidth}{L{2.5cm} L{2.2cm} L{3cm} Y}
+\toprule
+\textbf{Time (UTC)} & \textbf{Phase} & \textbf{Responsibility} & \textbf{Action Required} \\
+\midrule
+01:00 -- 01:15 & Pre-Migration & David Kim (DBA) & Disable client write access and take snapshot. \\
+01:15 -- 01:45 & Staging Check & Marcus Vance (QA) & Validate snapshot on Apex staging clone. \\
+01:45 -- 02:30 & Execution & David Kim (DBA) & Apply SQL schemas and copy transactional data. \\
+02:30 -- 03:00 & Verification & Sarah Jenkins (Arch) & Run checksum validations and query tests. \\
+03:00 -- 03:20 & Deployment & Elena Rostova (Dir) & Route application traffic and verify query speed. \\
+03:20 -- 04:00 & Support Window & All DBA Team & Monitor logs; trigger rollback if thresholds met. \\
+\bottomrule
+\end{tabularx}
+\caption{Downtime execution schedule.}
+\label{tab:schedule}
+\end{table}
+
+\subsection{Operational Team Directory}
+In the event of escalation or if rollback triggers are met, contact key stakeholders immediately.
+
+\begin{itemize}
+    \item \textbf{Database Architecture Coordinator}: Sarah Jenkins -- Ext: 4482
+    \item \textbf{Lead Database Operations DBA}: David Kim -- Ext: 4901
+    \item \textbf{Infrastructure Director (Sign-off)}: Elena Rostova -- Ext: 4011
+\end{itemize}

@@ -1,0 +1,41 @@
+The Synapse architecture comprises three primary layers: the IoT Device Layer, the Edge Gateway Layer, and the Global Ledger Layer. Figure~\ref{fig:arch} illustrates the system architecture and the data flow between these components.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+    [
+      node distance=0.8cm and 1.2cm,
+      box/.style={draw, rectangle, minimum width=2.0cm, minimum height=1.0cm, rounded corners, align=center, thick},
+      iot/.style={box, draw=primary, fill=primary!5},
+      edge/.style={box, draw=secondary, fill=secondary!5},
+      cloud/.style={box, draw=accent, fill=accent!5},
+      arrow/.style={->, >=stealth, thick}
+    ]
+    % Nodes
+    \node[iot] (device) {IoT Device \\ (Nexa Core)};
+    \node[edge, right=of device] (gateway) {Synapse Edge \\ Gateway};
+    \node[cloud, right=of gateway] (ledger) {Vertex Trust \\ Ledger};
+
+    % Connections
+    \draw[arrow] (device) -- node[above, scale=0.7] {Telemetry} (gateway);
+    \draw[arrow] (gateway) -- node[above, scale=0.7] {State Proof} (ledger);
+    \draw[arrow] (ledger) to[out=150, in=30] node[below, scale=0.7] {Revocation} (gateway);
+    
+  \end{tikzpicture}
+  \caption{Synapse Trust Architecture. Devices register measurements to the local Edge Gateway, which periodically anchors State Proofs to the global Vertex Ledger.}
+  \label{fig:arch}
+\end{figure}
+
+\subsection{Proof-of-State Consensus}
+At the core of Synapse is the Proof-of-State (PoS) consensus protocol. Instead of executing resource-intensive cryptographic puzzles, IoT nodes within a local network cluster establish consensus by exchanging signed cryptographic measurements of their current execution state. This state is represented as:
+\begin{equation}
+    S_i = \mathcal{H}(\text{FW}_i \mathbin{\Vert} \text{Config}_i \mathbin{\Vert} \text{Nonce})
+\end{equation}
+where $\mathcal{H}$ is a cryptographic hash function (e.g., SHA-256), $\text{FW}_i$ is the firmware image of node $i$, $\text{Config}_i$ is the runtime configuration vector, and $\text{Nonce}$ is a challenge broadcasted by the edge gateway.
+
+\subsection{Hierarchical Aggregation}
+To minimize bandwidth consumption, the local edge gateway aggregates the individual State Proofs ($S_i$) using a Merkle tree structure. The root of this tree:
+\begin{equation}
+    R_{\text{edge}} = \text{MerkleRoot}(S_1, S_2, \dots, S_n)
+\end{equation}
+is then submitted to the global Vertex Trust Ledger. This hierarchical aggregation reduces the transaction rate on the main ledger from $O(N)$ (where $N$ is the number of devices) to $O(G)$ (where $G$ is the number of edge gateways).

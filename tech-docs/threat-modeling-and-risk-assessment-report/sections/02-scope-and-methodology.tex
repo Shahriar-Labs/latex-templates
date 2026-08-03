@@ -1,0 +1,50 @@
+\section{Scope and Methodology}
+\label{sec:scope-methodology}
+
+\subsection{In-Scope Components}
+
+This assessment covers the production deployment of Nexa Ledger on Meridian Cloud, spanning the API gateway, authentication service, reconciliation engine, webhook ingestion endpoint, admin console, ledger database, and audit log store. The following are explicitly \textbf{out of scope}: the Nexa Editor product (a separate codebase and threat surface), physical security of Meridian Cloud data centers (covered by Meridian's own SOC~2 attestation), and client-side security of tenant integrations built against the Nexa Ledger SDK, which is addressed in a separate partner security guideline.
+
+\subsection{Framework: STRIDE}
+
+Threats were elicited per component using \textbf{STRIDE} \cite{stride_shostack}, the threat categorization model that decomposes adversarial behavior into six classes:
+
+\begin{center}
+\begin{tabularx}{0.95\linewidth}{@{}l L@{}}
+\toprule
+\textbf{Category} & \textbf{Security Property Violated} \\
+\midrule
+Spoofing & Authentication --- an actor claims an identity that is not theirs \\
+Tampering & Integrity --- data or code is modified without authorization \\
+Repudiation & Non-repudiation --- an actor denies performing an action, and the system cannot prove otherwise \\
+Information Disclosure & Confidentiality --- data is exposed to an actor not entitled to see it \\
+Denial of Service & Availability --- a legitimate actor is denied service \\
+Elevation of Privilege & Authorization --- an actor gains capabilities beyond their entitlement \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Each in-scope component from Section~\ref{sec:architecture} was evaluated against all six categories; categories with no credible threat path for a given component are omitted from Section~\ref{sec:stride-analysis} rather than padded with placeholder entries.
+
+\subsection{Risk Scoring}
+
+Every identified threat is scored qualitatively on \textbf{Likelihood} and \textbf{Impact}, each rated 1 (lowest) to 5 (highest), following the qualitative risk-rating approach in NIST SP~800-30 \cite{nist80030}. The product of the two scores maps to a severity band:
+
+\begin{center}
+\begin{tabularx}{0.75\linewidth}{@{}l c L@{}}
+\toprule
+\textbf{Severity Band} & \textbf{Score Range} & \textbf{Response Expectation} \\
+\midrule
+\critical{} & 15--25 & Remediate before next release; escalate to CISO \\
+\highrisk{} & 8--14 & Remediate within current quarter \\
+\mediumrisk{} & 4--7 & Remediate within two quarters, or accept with sign-off \\
+\lowrisk{} & 1--3 & Track; remediate opportunistically \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Likelihood accounts for attacker motivation and required access (informed by the threat actor profiles in Section~\ref{sec:threat-actors}), and Impact accounts for financial loss, regulatory exposure, and reconciliation integrity across tenants. Where a component processes card-network-adjacent data, CVSS~v3.1 base scores \cite{cvss31} are additionally recorded for individual vulnerabilities in Section~\ref{sec:findings} to align with Vertex Payments' partner disclosure requirements.
+
+\subsection{Sources}
+
+Component boundaries and data flows were reconstructed from the current production Terraform state and the Nexa Ledger service catalog; asset owners were confirmed against the internal architecture register \cite{nexa_ledger_arch}. STRIDE categorization was cross-checked against relevant technique clusters in the MITRE ATT\&CK knowledge base \cite{mitre_attack} and the current OWASP Top~10 \cite{owasp_top10} to avoid omitting well-documented attack classes.

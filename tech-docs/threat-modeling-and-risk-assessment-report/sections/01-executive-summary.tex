@@ -1,0 +1,32 @@
+\section{Executive Summary}
+\label{sec:executive-summary}
+
+Nexa Ledger is the system of record for transaction reconciliation across Nexa Systems' fintech client base, settling entries between merchant acquirers, the Vertex Payments processing network, and the Synapse Bank Connect account-aggregation service. Because the platform holds live financial data for 340+ tenant organizations, Security Engineering commissioned this threat model ahead of the Q3 2026 architecture review to establish a documented, repeatable baseline for how the system can be attacked and where controls currently stand.
+
+The assessment applied the STRIDE framework \cite{stride_shostack} against a decomposed data-flow diagram of the platform (Section~\ref{sec:architecture}), profiled five threat actors with credible motive and access to the system (Section~\ref{sec:threat-actors}), and scored every identified threat on a five-by-five likelihood/impact matrix consistent with NIST SP 800-30 \cite{nist80030} (Section~\ref{sec:risk-matrix}). In total, \textbf{14 distinct threats} were catalogued across seven in-scope components.
+
+\begin{center}
+\begin{tabularx}{0.85\linewidth}{@{}L C C@{}}
+\toprule
+\textbf{Severity Band} & \textbf{Count} & \textbf{Share of Findings} \\
+\midrule
+\critical{} & 3 & 21\% \\
+\highrisk{} & 5 & 36\% \\
+\mediumrisk{} & 4 & 29\% \\
+\lowrisk{} & 2 & 14\% \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The three Critical findings concentrate in a single area: trust assumptions on the public webhook ingestion path used by Vertex Payments to deliver asynchronous settlement events. An unauthenticated or replayed webhook can currently inject fabricated settlement records into the reconciliation engine before signature verification is enforced consistently across all environments. This is tracked as \textbf{VULN-01} in Section~\ref{sec:findings} and is the single highest-priority remediation in this report.
+
+\textbf{Key recommendations}, detailed fully in Section~\ref{sec:recommendations}, are:
+
+\begin{enumerate}[leftmargin=1.4em]
+  \item Enforce HMAC signature verification and replay-window checks on \emph{every} environment for the Vertex webhook endpoint, not only production (VULN-01, VULN-04).
+  \item Retire the Admin Console's direct database query path in favor of calls that route through the Reconciliation Engine, and move console sessions onto short-lived, scoped tokens (VULN-02).
+  \item Add row-level audit triggers on the Ledger Database so tampering by a credentialed insider is detectable within one reconciliation cycle rather than at month-end close (VULN-03).
+  \item Rotate and scope Vertex Payments API credentials per tenant instead of a single shared integration key, limiting blast radius if a partner-side credential leaks (VULN-06).
+\end{enumerate}
+
+Twelve of the fourteen findings have an assigned owner and target remediation date in Section~\ref{sec:findings}; residual risk after planned mitigations lands at \lowrisk{} to \mediumrisk{} for all components except the webhook ingestion path, which remains \highrisk{} until VULN-01 closes.

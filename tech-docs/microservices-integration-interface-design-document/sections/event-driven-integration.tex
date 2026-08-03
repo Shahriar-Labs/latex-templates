@@ -1,0 +1,58 @@
+\section{Event-Driven Integration}
+
+\subsection{Meridian Event Bus Overview}
+The Meridian event bus is a Kafka-compatible broker operated as a shared platform service. It
+carries all cross-service traffic that does not require an immediate response: state
+transitions, fulfilment events, and analytics telemetry. Producers own the schema of every
+topic they publish; consumers may not assume undocumented fields are stable.
+
+\subsection{Topic Catalog}
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}l l X l@{}}
+\toprule
+\textbf{Topic} & \textbf{Producer} & \textbf{Consumers} & \textbf{Retention} \\
+\midrule
+\code{order.created.v1}      & Order Orchestration     & Inventory Ledger, Analytics            & 7 days \\
+\code{payment.authorized.v1} & Payment Gateway Adapter & Order Orchestration, Analytics          & 14 days \\
+\code{inventory.reserved.v1} & Inventory Ledger        & Order Orchestration                     & 7 days \\
+\code{notification.failed.v1}& Notification Dispatch   & Analytics, Ops Alerting                 & 30 days \\
+\bottomrule
+\end{tabularx}
+\caption{Topics on the Meridian bus relevant to order fulfilment. All topics use \code{orderId} or \code{sku} as the partition key, noted per topic in \texttt{MER-OPS-114}.}
+\end{table}
+
+\subsection{Payload Schema}
+Every event on the bus is wrapped in the same envelope as REST error responses (Section~5.1),
+with \code{data} carrying the topic-specific payload. The example below is a
+\code{payment.authorized.v1} event:
+
+\begin{lstlisting}
+{
+  "eventId": "evt_2a91cd6e",
+  "eventType": "payment.authorized.v1",
+  "occurredAt": "2026-08-03T14:20:11Z",
+  "producer": "payment-gateway-adapter",
+  "data": {
+    "paymentId": "pay_4b8d2e77",
+    "orderId": "ord_7f3c9a21",
+    "amount": { "value": "129.00", "currency": "USD" },
+    "authorizationExpiresAt": "2026-08-03T14:22:00Z"
+  }
+}
+\end{lstlisting}
+
+\subsection{Delivery Semantics and Idempotency}
+The bus guarantees at-least-once delivery within a partition; it does not guarantee exactly-once
+delivery across consumer restarts. Every consumer is therefore required to be idempotent with
+respect to \code{eventId}: the recommended pattern is an upsert keyed on \code{eventId} into a
+local processed-events table with a 30-day retention window, matching the widest topic
+retention in Table~2. Consumers must not assume ordering across partitions; ordering is only
+guaranteed within a single partition key (\code{orderId} or \code{sku}).
+
+\begin{infobox}[title={Schema Evolution Rule}]
+New fields may be added to \code{data} as optional at any time. Removing or renaming a field,
+or changing its type, requires a new topic version (e.g. \code{order.created.v2}) published
+alongside the old one for at least one full deprecation cycle, per Section~6.
+\end{infobox}

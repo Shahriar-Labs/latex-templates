@@ -1,0 +1,79 @@
+\section{Syntax and Security Experiments}
+\label{sec:syntax}
+
+A non-interactive commitment scheme consists of three algorithms:
+$\Setup$, $\Commit$, and $\Verify$.  Setup selects public parameters
+$pp\leftarrow\Setup(1^\lambda)$.  The commitment algorithm returns
+$(C,d)\leftarrow\Commit(pp,sid,i,m)$, where $d$ is the opening.  The verifier
+outputs $\Verify(pp,sid,i,C,m,d)\in\{0,1\}$.  Perfect correctness requires
+honest openings always to verify.
+
+\subsection{Adaptive selective-opening experiment}
+
+We compare two experiments shown in \cref{fig:games}.  Both sample a message
+vector $M\leftarrow\dist$ and give the adversary a vector of
+commitments.  The adversary may make random-oracle queries and adaptively ask
+to open positions.  Its opening set $I$ may depend on commitments and prior
+answers.  Finally it outputs a bit based on its entire view.
+
+In $\Real$, each commitment is produced from $M_i$.  In $\Ideal$, a simulator
+first publishes independent uniform strings of the required commitment length.
+Upon an opening query $i$, it returns $(M_i,r_i)$ and programs
+the real oracle point to equal the already published $C_i$.  If that point was
+queried earlier, the ideal game sets $\bad_{\mathsf{pre}}$ and aborts.  Message
+length is regarded as public leakage; applications requiring length hiding
+must pad before invoking the scheme.
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize,
+  box/.style={draw=tccblue,rounded corners=2pt,fill=tccpale,
+              align=left,inner sep=5pt,text width=.39\textwidth},
+  arr/.style={-{Latex[length=1.8mm]},thick,tccblue},
+  node distance=8mm and 8mm]
+  \node[box] (real) {
+    \textbf{Real experiment}\\
+    $M\leftarrow\dist$; $r_i\getsR\bits^\rho$\\
+    $C_i\gets\Hash(\Encode(\Tag,sid,i,M_i;r_i))$\\
+    give $C_1,\ldots,C_n$ to $\adv$\\
+    on $\mathsf{open}(i)$ return $(M_i,r_i)$};
+  \node[box,right=of real] (ideal) {
+    \textbf{Ideal experiment}\\
+    $M\leftarrow\dist$; $r_i\getsR\bits^\rho$\\
+    $C_i\getsR\bits^\tau$\\
+    give $C_1,\ldots,C_n$ to $\adv$\\
+    on $\mathsf{open}(i)$ program the real point\\
+    to $C_i$, then return $(M_i,r_i)$};
+  \draw[arr] (real.east) -- node[above,text=tccblue]{hybrids} (ideal.west);
+\end{tikzpicture}
+\caption{The real and simulated views.  Oracle queries are answered by a
+shared lazy-sampling interface.  The ideal experiment aborts only if a real
+opening point was queried before its position was opened.}
+\label{fig:games}
+\end{figure}
+
+\begin{definition}[Adaptive selective-opening advantage]
+For an adversary $\adv$, distribution $\dist$, and simulator $\Sim$, define
+\[
+ \Adv^{\mathsf{aso}}_{\Pi,\dist}(\adv,\Sim)
+ =\left|\Pr[\Real^{\adv}_{\Pi,\dist}=1]
+          -\Pr[\Ideal^{\adv,\Sim}_{\Pi,\dist}=1]\right|.
+\]
+The adversary is limited to $q_H$ distinct oracle queries and at most $n$
+adaptive opening queries.
+\end{definition}
+
+This indistinguishability formulation captures the claim needed here: before
+opening a position, its commitment can be simulated without its message.
+Stronger simulation definitions may additionally demand recovery of the
+adversary's state or support arbitrary leakage functions; we make no such
+claim.
+
+\subsection{Binding experiment}
+
+An adversary wins binding if it outputs
+$(sid,i,C,m,r,m',r')$ such that $(m,r)\neq(m',r')$ and both openings verify for
+the same tag, session, position, and commitment.  Write
+$\Adv^{\mathsf{bind}}_\Pi(\adv)$ for its success probability.  We count all
+oracle queries, including those implicit in verification, in $q_H$.

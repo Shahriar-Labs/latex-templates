@@ -1,0 +1,64 @@
+\section{Results and Validation}
+\label{sec:results}
+
+\subsection{Calibration and Sensitivity Analysis}
+The sensor front-end sensitivity was calibrated in a controlled environmental chamber at the Synapse Metrology Lab. Figure \ref{fig:calibration} shows the sensor output voltage as a function of the acoustic pressure wave amplitude, comparing the SAM node with legacy hardware.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.75\textwidth,
+    height=6cm,
+    grid=both,
+    grid style={line width=.1pt, draw=gray!10},
+    major grid style={line width=.2pt, draw=gray!30},
+    xlabel={Acoustic Wave Amplitude (Pa)},
+    ylabel={Output Voltage (mV)},
+    xmin=0, xmax=100,
+    ymin=0, ymax=600,
+    legend pos=north west,
+    legend cell align={left},
+    legend style={font=\sffamily\scriptsize, fill=white, draw=borderCol},
+    tick label style={font=\sffamily\scriptsize},
+    label style={font=\sffamily\small\bfseries\color{mdpiSecondary}}
+]
+    % SAM Node Curve
+    \addplot[thick, color=mdpiPrimary, mark=*] coordinates {
+        (0,0) (10,55) (20,115) (40,240) (60,370) (80,490) (100,580)
+    };
+    \addlegendentry{SAM Node (This Work)}
+
+    % Legacy Curve
+    \addplot[thick, dashed, color=mdpiAccent, mark=square*] coordinates {
+        (0,0) (10,35) (20,72) (40,150) (60,225) (80,310) (100,380)
+    };
+    \addlegendentry{Meridian Sentinel-I}
+
+\end{axis}
+\end{tikzpicture}
+\caption{Voltage response calibration curve under controlled acoustic stimulation, showing improved linearity and responsivity of the SAM node compared to the legacy Meridian Sentinel-I.}
+\label{fig:calibration}
+\end{figure}
+
+The calibration results indicate a sensitivity of $5.8$ mV/Pa for the SAM node, which is approximately $52\%$ higher than the $3.8$ mV/Pa achieved by the Meridian Sentinel-I.
+
+\subsection{Power Consumption Comparison}
+Power management is critical for the longevity of the distributed sensor network. Table \ref{tab:power_perf} summarizes the electrical characteristics and power consumption profiles of the SAM node against other platforms under identical operational conditions (10\% duty cycle).
+
+\begin{table}[htbp]
+\caption{Power consumption and performance comparison of structural health monitoring nodes under active, sleep, and standby states.}
+\label{tab:power_perf}
+\centering
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Node Platform} & \textbf{Active Current} & \textbf{Sleep Current} & \textbf{Energy Source} & \textbf{Est. Lifetime (Months)} \\
+\midrule
+SAM Node (This Work) & $12.4\text{ mA}$ & $4.2\text{ }\mu\text{A}$ & Solar / LiFePO4 & $60.0$ \\{}
+Meridian Sentinel-I \cite{Meridian2023} & $24.8\text{ mA}$ & $15.5\text{ }\mu\text{A}$ & Alkaline Battery & $12.0$ \\{}
+Vertex Precision V5 & $38.2\text{ mA}$ & $32.0\text{ }\mu\text{A}$ & Lithium Primary & $8.0$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The SAM node outperforms its competitors in terms of sleep current consumption, which can be attributed to the dynamic power gating system implemented in the Nexa energy harvesting circuit. This sleep state efficiency directly translates to the estimated 60-month operational lifetime under standard solar radiation cycles.

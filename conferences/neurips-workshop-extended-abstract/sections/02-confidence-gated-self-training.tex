@@ -1,0 +1,91 @@
+\section{Confidence-Gated Self-Training}
+\label{sec:method}
+
+\subsection{Problem setting}
+
+Let $\mathcal{D}_s=\{(x_i^s,y_i^s)\}_{i=1}^{n_s}$ be labelled source data and
+$\mathcal{D}_t=\{x_j^t\}_{j=1}^{n_t}$ unlabelled target data over $K$ classes.
+A classifier $f_\theta:\mathcal{X}\rightarrow\Delta^{K-1}$ outputs a categorical
+distribution. We minimise the usual supervised source loss
+\begin{equation}
+  \mathcal{L}_{s}(\theta)
+  = \E_{(x,y)\sim\mathcal{D}_s}
+    \bigl[-\log f_\theta(x)_y\bigr].
+  \label{eq:source}
+\end{equation}
+For a target example, a weak augmentation $a_w$ produces
+$p=f_\theta(a_w(x))$. Its candidate pseudo-label and confidence are
+$\hat y=\argmax_k p_k$ and $q=\max_k p_k$, respectively.
+
+\subsection{Adaptive confidence gate}
+
+At training step $r$, we maintain an exponential moving average $m_k^{(r)}$ of
+the confidence assigned to examples predicted as class $k$:
+\begin{equation}
+  m_k^{(r)}=\rho m_k^{(r-1)}+(1-\rho)
+  \frac{\sum_{x\in B_t}\1[\hat y(x)=k]q(x)}
+       {\max\{1,\sum_{x\in B_t}\1[\hat y(x)=k]\}},
+  \label{eq:ema}
+\end{equation}
+with momentum $\rho$. Empty classes retain their preceding value. The
+class-conditional acceptance threshold is
+\begin{equation}
+  \tau_k^{(r)}=\operatorname{clip}
+  \left(\tau_0\frac{m_k^{(r)}}{\frac{1}{K}\sum_{j=1}^{K}m_j^{(r)}},
+  \tau_{\min},\tau_{\max}\right).
+  \label{eq:threshold}
+\end{equation}
+The normalization makes thresholds lower for classes that are systematically
+less confident, while clipping prevents degenerate acceptance.
+
+\subsection{Augmentation agreement and objective}
+
+Let $p'=f_\theta(a_s(x))$ denote the prediction under a strong augmentation.
+The reliability gate is
+\begin{equation}
+  g(x)=\1[q(x)\ge\tau_{\hat y(x)}]
+       \1[\argmax_k p'_k=\hat y(x)].
+  \label{eq:gate}
+\end{equation}
+We stop gradients through $p$, $\hat y$, and $g$. The target loss is the
+coverage-normalised cross-entropy
+\begin{equation}
+  \mathcal{L}_t(\theta)=
+  \frac{\sum_{x\in B_t}g(x)\bigl[-\log p'_{\hat y(x)}\bigr]}
+       {\max\{1,\sum_{x\in B_t}g(x)\}}.
+  \label{eq:target}
+\end{equation}
+The final objective is
+$\mathcal{L}=\mathcal{L}_s+\lambda(r)\mathcal{L}_t$, where $\lambda(r)$ is
+linearly warmed from zero to one during the first $10\%$ of training. The gate
+is used only during training, so inference cost equals that of the backbone.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+      node distance=5mm and 8mm,
+      box/.style={draw=linkblue,rounded corners=2pt,fill=softblue,
+                  align=center,minimum height=8mm,font=\small},
+      decision/.style={draw=darkgray,rounded corners=2pt,align=center,
+                       minimum height=8mm,font=\small},
+      arrow/.style={-{Latex[length=2mm]},thick,draw=darkgray}
+    ]
+    \node[box] (target) {unlabelled\\target image $x$};
+    \node[box,right=of target] (weak) {weak view\\$a_w(x)$};
+    \node[box,below=of weak] (strong) {strong view\\$a_s(x)$};
+    \node[decision,right=of weak] (conf) {class-adaptive\\confidence test};
+    \node[decision,right=of strong] (agree) {prediction\\agreement test};
+    \node[box,right=11mm of $(conf)!0.5!(agree)$] (loss) {accepted\\target loss};
+    \draw[arrow] (target) -- (weak);
+    \draw[arrow] (target.east) -- ++(3mm,0) |- (strong.west);
+    \draw[arrow] (weak) -- (conf);
+    \draw[arrow] (strong) -- (agree);
+    \draw[arrow] (conf.east) -- ++(3mm,0) |- (loss.west);
+    \draw[arrow] (agree.east) -- ++(3mm,0) |- (loss.west);
+  \end{tikzpicture}
+  \caption{Overview of \method. A pseudo-label contributes to the target loss
+  only when it passes both confidence and augmentation-agreement tests.}
+  \label{fig:overview}
+\end{figure}
+
+% -----------------------------------------------------------------------------

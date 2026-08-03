@@ -1,0 +1,105 @@
+% ---------------------------------------------------------------------------
+% ACM CCS submission preamble
+%   - sigconf, two-column acmart layout; `review` turns on line numbers and
+%     the submission-id watermark, `anonymous` suppresses author identity for
+%     double-blind review. Restore real authorship only for the camera-ready.
+%   - Copyright/rights-management blocks are intentionally suppressed below:
+%     the proceedings chairs fill those in once the paper is accepted.
+% ---------------------------------------------------------------------------
+
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{pgfplots}
+
+\usetikzlibrary{positioning, calc, shapes.geometric, backgrounds}
+\pgfplotsset{compat=1.18}
+
+\setcopyright{none}
+\settopmatter{printacmref=false}
+\renewcommand\footnotetextcopyrightpermission[1]{}
+
+\acmConference[CCS '26]{Proceedings of the 2026 ACM SIGSAC Conference on
+  Computer and Communications Security}{October 12--16, 2026}{Taipei, Taiwan}
+\acmBooktitle{Proceedings of the 2026 ACM SIGSAC Conference on Computer and
+  Communications Security (CCS '26), October 12--16, 2026, Taipei, Taiwan}
+\acmYear{2026}
+\acmSubmissionID{1904}
+
+% --- Palette ----------------------------------------------------------------
+\definecolor{ccsnavy}{HTML}{102A43}    % primary -- deep navy
+\definecolor{ccsteal}{HTML}{0B7285}    % secondary -- teal
+\definecolor{ccscrimson}{HTML}{9B2226} % accent -- alert / crimson
+\definecolor{ccsmuted}{HTML}{5C6773}   % muted grey for captions, rules
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=ccsteal,
+    citecolor=ccsteal,
+    urlcolor=ccscrimson
+}
+
+% --- Shorthand for the system name ------------------------------------------
+\newcommand{\sysname}{Custodian}
+
+\title[Custodian]{Custodian: Bounding Access-Pattern Leakage in Encrypted
+  Multi-Tenant Key-Value Stores}
+
+% --- Double-blind review block ----------------------------------------------
+% CCS uses double-blind review: do not put author names, institutions, or
+% identifying acknowledgments anywhere in the submitted PDF.
+\author{Anonymous Author(s)}
+\affiliation{%
+  \institution{Anonymous Institution(s)}
+  \country{Anonymous}}
+
+\begin{abstract}
+Encrypted key-value stores promise confidentiality for multi-tenant cloud
+deployments, yet the access patterns and response volumes they reveal during
+normal operation have repeatedly been shown to leak enough structure for an
+honest-but-curious operator to reconstruct plaintext ranges and query
+distributions. We present \sysname{}, a gateway that sits between tenants and
+an encrypted backend and bounds two families of leakage --- access-pattern
+leakage and volume leakage --- without modifying the backend's storage format
+or requiring a trusted execution environment. \sysname{} batches requests into
+fixed-width epochs, pads response volumes to a small set of size buckets
+chosen from the tenant's historical query distribution, and applies a
+lightweight oblivious shuffle to reorder same-epoch reads before they reach
+the backend. We formalize the resulting leakage as a bounded mutual-information
+channel and show that \sysname's reconstruction-attack advantage falls below
+that of three deployed baselines --- Nimbus KV, Apex Store, and Vertex Store
+--- while adding 9--18\% throughput overhead depending on the configured
+epoch width. We further show that padding alone, without epoch-level
+shuffling, leaves an attacker with a residual advantage nearly triple
+\sysname's, indicating that padding and reordering are complementary rather
+than substitutable defenses.
+\end{abstract}
+
+\begin{CCSXML}
+<ccs2012>
+ <concept>
+  <concept_id>10002978.10003029.10003032</concept_id>
+  <concept_desc>Security and privacy~Management and querying of encrypted data</concept_desc>
+  <concept_significance>500</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10002978.10002991.10002995</concept_id>
+  <concept_desc>Security and privacy~Formal security models</concept_desc>
+  <concept_significance>300</concept_significance>
+ </concept>
+ <concept>
+  <concept_id>10002978.10003006.10003007</concept_id>
+  <concept_desc>Security and privacy~Database and storage security</concept_desc>
+  <concept_significance>300</concept_significance>
+ </concept>
+</ccs2012>
+\end{CCSXML}
+
+\ccsdesc[500]{Security and privacy~Management and querying of encrypted data}
+\ccsdesc[300]{Security and privacy~Formal security models}
+\ccsdesc[300]{Security and privacy~Database and storage security}
+
+\keywords{encrypted databases, access-pattern leakage, volume leakage,
+  leakage-abuse attacks, searchable encryption, oblivious algorithms}

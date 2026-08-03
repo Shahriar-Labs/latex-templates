@@ -1,0 +1,73 @@
+\section{Materials and Methods}
+\label{sec:methods}
+
+\subsection{Dataset and benchmark curation}
+\label{sec:dataset}
+
+Training and evaluation structures were drawn from the Nimbus Structural Archive, filtered to entries with resolution better than 3.2~\AA\ and sequence length between 20 and 400 nucleotides. After removing redundant chains at 80\% sequence identity, 3{,}412 structures remained. Rather than splitting by sequence identity alone, which allows near-identical folds to leak between train and test partitions, we additionally clustered structures by SCOR-style structural class and held out entire classes for validation (9\%) and test (15\%), leaving 76\% for training. This yields a harder but more representative estimate of performance on genuinely novel folds.
+
+\subsection{Graph representation and featurisation}
+\label{sec:graph}
+
+Each RNA sequence is represented as a graph $G = (V, E)$ in which each node $v_i \in V$ corresponds to one nucleotide and carries a feature vector encoding base identity, position within the sequence, and a three-state secondary-structure prediction (paired, unpaired, or ambiguous) obtained from a standard folding grammar. Edges connect (i) sequential neighbours along the backbone, (ii) predicted base-pairing partners, and (iii) the $k=10$ nearest neighbours in an initial embedding produced by a lightweight convolutional encoder, which allows the graph to express tertiary contacts that are absent from secondary structure alone.
+
+\subsection{Model architecture}
+\label{sec:architecture}
+
+SynapseFold consists of a nucleotide embedding layer, a stack of $L=8$ graph attention layers, and a pairwise distance head, followed by a non-learned structure realisation step. Figure~\ref{fig:pipeline} summarises the pipeline. Within each graph attention layer, the un-normalised attention coefficient between nucleotides $i$ and $j$ is
+
+\begin{equation}
+e_{ij} = \mathrm{LeakyReLU}\!\left(\mathbf{a}^{\top}\left[\mathbf{W}h_i \,\Vert\, \mathbf{W}h_j\right]\right),
+\label{eq:score}
+\end{equation}
+
+where $h_i$ is the hidden representation of nucleotide $i$, $\mathbf{W}$ is a shared linear projection, $\mathbf{a}$ is a learned attention vector, and $\Vert$ denotes concatenation. Coefficients are normalised over the neighbourhood $\mathcal{N}(i)$ defined by the edge set $E$,
+
+\begin{equation}
+\alpha_{ij} = \frac{\exp(e_{ij})}{\sum_{k \in \mathcal{N}(i)} \exp(e_{ik})},
+\label{eq:attention}
+\end{equation}
+
+and the updated representation is a weighted sum $h_i' = \sigma\!\left(\sum_{j \in \mathcal{N}(i)} \alpha_{ij}\mathbf{W}h_j\right)$ across four attention heads, concatenated and passed through a residual feed-forward block. The final layer's node representations are combined pairwise and passed through a small multilayer perceptron that outputs, for every nucleotide pair, a 32-bin categorical distribution over inter-nucleotide distance rather than a single scalar, following the observation that distance uncertainty is highly non-Gaussian for flexible loop regions.
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw=oxfordblue, thick, rounded corners=3pt, fill=nimbusgray,
+              minimum width=3.1cm, minimum height=1.05cm, align=center, font=\small},
+  arrow/.style={-{Latex[length=2.2mm]}, thick, color=synapseteal}
+]
+  \node[box] (seq)  {Sequence\\input};
+  \node[box, right=1.0cm of seq] (embed) {Nucleotide\\embedding};
+  \node[box, right=1.0cm of embed] (graph) {Graph\\construction};
+
+  \node[box, below=1.35cm of seq, xshift=0.9cm] (gat) {Graph attention\\stack ($L{=}8$)};
+  \node[box, right=1.0cm of gat] (dist) {Pairwise distance\\head};
+  \node[box, right=1.0cm of dist] (struct) {Structure\\realisation};
+
+  \draw[arrow] (seq) -- (embed);
+  \draw[arrow] (embed) -- (graph);
+  \draw[arrow] (graph.south) -- ++(0,-0.35) -| (gat.north);
+  \draw[arrow] (gat) -- (dist);
+  \draw[arrow] (dist) -- (struct);
+\end{tikzpicture}
+\caption{SynapseFold pipeline. A sequence is embedded, assembled into a nucleotide-level graph, and processed by eight graph attention layers; the resulting pairwise distance distributions are converted into a three-dimensional structure by constrained embedding.}
+\label{fig:pipeline}
+\end{figure*}
+
+\subsection{Structure realisation}
+\label{sec:realisation}
+
+Predicted per-bin distance distributions are converted to a single expected distance for every nucleotide pair, producing a dense distance matrix. Coordinates are then recovered by minimising a stress function between predicted and realised pairwise distances via stochastic gradient descent, initialised from classical multidimensional scaling and refined with a mild backbone-continuity penalty to discourage physically implausible bond lengths.
+
+\subsection{Training procedure}
+\label{sec:training}
+
+The network is trained end to end to minimise a weighted sum of three terms,
+
+\begin{equation}
+\mathcal{L} = \lambda_1 \mathcal{L}_{\mathrm{dist}} + \lambda_2 \mathcal{L}_{\mathrm{torsion}} + \lambda_3 \mathcal{L}_{\mathrm{clash}},
+\label{eq:loss}
+\end{equation}
+
+where $\mathcal{L}_{\mathrm{dist}}$ is the cross-entropy between predicted and true binned distances, $\mathcal{L}_{\mathrm{torsion}}$ penalises implausible backbone torsion angles, and $\mathcal{L}_{\mathrm{clash}}$ penalises predicted atoms closer than their van der Waals radii permit. We used $\lambda_1{=}1.0$, $\lambda_2{=}0.3$, $\lambda_3{=}0.5$, chosen by grid search on the validation split. Models were trained for 220 epochs with the Adam optimiser, an initial learning rate of $3\times10^{-4}$ decayed by cosine annealing, and a batch size of 16 graphs, on the Apex Compute Cluster using four accelerators per run. Training a single model required approximately 31 hours.

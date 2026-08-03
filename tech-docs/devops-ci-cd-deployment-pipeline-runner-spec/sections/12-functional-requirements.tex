@@ -1,0 +1,43 @@
+\section{Functional requirements}
+
+Table~\ref{tab:functional-requirements} is normative. ``Verification'' identifies the
+primary evidence; it does not limit additional testing.
+
+\begin{longtable}{@{}L{0.13\textwidth}L{0.55\textwidth}L{0.24\textwidth}@{}}
+\caption{Functional requirements}\label{tab:functional-requirements}\\
+\toprule
+\thead{ID} & \thead{Requirement} & \thead{Verification} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{ID} & \thead{Requirement} & \thead{Verification} \\
+\midrule
+\endhead
+\req{FR-001} & The system \must authenticate every user, service, webhook, and runner before accepting work. & Auth integration and negative tests \\
+\req{FR-002} & The system \must verify event signatures, timestamp freshness, delivery identity, and replay status. & Webhook conformance tests \\
+\req{FR-003} & The planner \must produce and persist a deterministic DAG and canonical digest before scheduling. & Golden plan tests \\
+\req{FR-004} & The planner \must reject cycles, unresolved references, excessive expansion, and unauthorized permissions. & Schema and fuzz tests \\
+\req{FR-005} & The scheduler \must enforce pool eligibility, quotas, fairness, priority bounds, and environment gates. & Simulation and policy tests \\
+\req{FR-006} & Job assignment \must use expiring leases and fencing tokens that reject stale completion. & Fault-injection test \\
+\req{FR-007} & Every attempt \must execute in a fresh sandbox and leave no reusable writable state. & Image and teardown test \\
+\req{FR-008} & Runner and job credentials \must be short-lived, scoped, audience-bound, and revocable. & Token-claims inspection \\
+\req{FR-009} & Secrets \must be resolved just in time and excluded from plans, logs, caches, artifacts, and images. & Secret canary tests \\
+\req{FR-010} & Logs \must be ordered, resumable, durably acknowledged, redacted, and explicitly marked if incomplete. & Disconnect and redaction tests \\
+\req{FR-011} & Artifact finalization \must independently verify size and cryptographic digest. & Corruption tests \\
+\req{FR-012} & Cache namespaces \must prevent writes from a lower-trust context into a higher-trust context. & Fork-boundary tests \\
+\req{FR-013} & The system \must emit signed provenance tying outputs to source, plan, materials, builder, and attempt. & Signature verification \\
+\req{FR-014} & A production deployment \must consume an immutable digest and pass current environment policy. & End-to-end release test \\
+\req{FR-015} & Approval \must bind actor, environment, artifact, plan, policy version, decision, and expiry. & Approval invalidation tests \\
+\req{FR-016} & Cancellation \must stop future jobs, revoke grants, terminate active sandboxes, and record final disposition. & Cancellation race tests \\
+\req{FR-017} & Retries \must create a new attempt identity while preserving job and run history. & Retry audit test \\
+\req{FR-018} & All administrative, authorization, secret, approval, and deployment actions \must generate immutable audit events. & Audit completeness test \\
+\req{FR-019} & Public mutation APIs \must support idempotency and return stable structured error codes. & API conformance suite \\
+\req{FR-020} & Operators \must be able to drain, quarantine, rotate, and revoke runners and images without database edits. & Operational exercise \\
+\req{FR-021} & The system \must enforce configurable resource, concurrency, retention, and cost quotas by tenant. & Load and quota tests \\
+\req{FR-022} & Protected deployment adapters \must support status reconciliation after timeout or control-plane interruption. & Recovery test \\
+\req{FR-023} & The system \must preserve accepted run state across an availability-zone failure. & Zone-failure exercise \\
+\req{FR-024} & The disaster-recovery process \must prevent both regions from leasing jobs simultaneously. & Regional failover exercise \\
+\bottomrule
+\end{longtable}
+
+% -----------------------------------------------------------------------------

@@ -1,0 +1,34 @@
+\section{Acceptance criteria and traceability}
+
+General availability is approved only when all mandatory criteria in
+Table~\ref{tab:acceptance} have objective evidence and no open critical or high-risk
+security finding lacks an approved exception.
+
+\begin{longtable}{@{}L{0.14\textwidth}L{0.47\textwidth}L{0.30\textwidth}@{}}
+\caption{Acceptance criteria}\label{tab:acceptance}\\
+\toprule
+\thead{ID} & \thead{Criterion} & \thead{Required evidence} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{ID} & \thead{Criterion} & \thead{Required evidence} \\
+\midrule
+\endhead
+\req{AC-01} & Signed source event creates one deterministic run; replay creates no duplicate. & \req{FR-001--004}; webhook and planner report \\
+\req{AC-02} & A 256-job DAG is planned within objective and scheduled without starvation under mixed tenant load. & \req{FR-003--005}; performance report \\
+\req{AC-03} & Killing a runner causes safe lease expiry and retry; stale completion cannot finalize. & \req{FR-006}, \req{FR-017}; chaos trace \\
+\req{AC-04} & Forensic inspection finds no cross-job writable residue, token, or secret after teardown. & \req{FR-007--009}; isolation report \\
+\req{AC-05} & Log disconnect and replay produce ordered output with no silent gap; secret canaries are absent. & \req{FR-009--010}; redaction report \\
+\req{AC-06} & Corrupted artifact and malicious cache archive are rejected without changing job trust. & \req{FR-011--012}; negative tests \\
+\req{AC-07} & Production policy rejects unsigned, mismatched, vulnerable, or unapproved artifacts. & \req{FR-013--015}; policy evidence \\
+\req{AC-08} & Cancellation revokes grants and prevents a queued or running deployment from entering the environment. & \req{FR-016}; race test \\
+\req{AC-09} & All protected actions appear in immutable audit storage with actor and correlation data within five minutes. & \req{FR-018}; audit reconciliation \\
+\req{AC-10} & API retries with the same idempotency key create one effect and stable response. & \req{FR-019}; contract suite \\
+\req{AC-11} & Operators quarantine a compromised image and drain its pool without direct database mutation. & \req{FR-020}; incident exercise \\
+\req{AC-12} & A noisy tenant reaches quota while other tenants remain within queue-latency objective. & \req{FR-005}, \req{FR-021}; load report \\
+\req{AC-13} & An interrupted deployment is reconciled to the observed target state before later promotion. & \req{FR-022}; adapter recovery test \\
+\req{AC-14} & Zone loss preserves accepted runs; regional exercise meets RPO/RTO with one active lease epoch. & \req{FR-023--024}; DR report \\
+\bottomrule
+\end{longtable}
+
+% -----------------------------------------------------------------------------

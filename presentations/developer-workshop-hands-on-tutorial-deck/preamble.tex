@@ -1,0 +1,223 @@
+% Packages, colors, and layout settings for the developer workshop beamer slides.
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% Mathematics & figures
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\usetikzlibrary{
+  arrows.meta,
+  backgrounds,
+  calc,
+  fit,
+  positioning,
+  shapes.geometric
+}
+
+% Code highlighting & icons
+\usepackage{listings}
+\usepackage[skins,listings,breakable]{tcolorbox}
+\usepackage{fontawesome5}
+
+% Bibliography setup
+\usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
+\addbibresource{references.bib}
+
+% Custom Colors
+\definecolor{primaryDark}{HTML}{0F172A}    % Slate 900
+\definecolor{accentGreen}{HTML}{10B981}    % Emerald 500
+\definecolor{accentBlue}{HTML}{4F46E5}     % Indigo 600
+\definecolor{mutedText}{HTML}{64748B}      % Slate 500
+\definecolor{bgLight}{HTML}{F8FAFC}        % Slate 50
+\definecolor{codeBgLight}{HTML}{F1F5F9}    % Slate 100
+\definecolor{codeBgDark}{HTML}{1E293B}     % Slate 800
+\definecolor{termHeader}{HTML}{334155}     % Slate 700
+
+% Beamer Theme Settings
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor{background canvas}{bg=bgLight}
+\setbeamercolor{normal text}{fg=primaryDark,bg=bgLight}
+\setbeamercolor{structure}{fg=accentBlue}
+\setbeamercolor{frametitle}{fg=primaryDark,bg=bgLight}
+\setbeamercolor{title}{fg=white}
+\setbeamercolor{subtitle}{fg=accentGreen}
+\setbeamercolor{author}{fg=white!90}
+\setbeamercolor{date}{fg=mutedText}
+
+\setbeamerfont{title}{size=\Large,series=\bfseries}
+\setbeamerfont{subtitle}{size=\large}
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamerfont{caption}{size=\small}
+
+\setbeamercolor{item}{fg=accentGreen}
+\setbeamercolor{subitem}{fg=accentBlue}
+\setbeamercolor{subsubitem}{fg=mutedText}
+
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{sections/subsections in toc}[circle]
+
+% Frame Title Layout
+\setbeamertemplate{frametitle}{%
+  \vspace*{12pt}%
+  \begin{minipage}{\textwidth}
+    \usebeamerfont{frametitle}\insertframetitle
+    \ifx\insertframesubtitle\empty\else
+      \par\vspace*{2pt}%
+      {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\insertframesubtitle}%
+    \fi
+  \end{minipage}%
+  \vspace*{2pt}%
+  \textcolor{accentBlue!30}{\makebox[0pt][l]{\rule{\linewidth}{1pt}}}%
+  \vspace*{4pt}%
+}
+
+% Footline Layout
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox to\paperwidth{%
+    \begin{beamercolorbox}[wd=0.333333\paperwidth,ht=2.25ex,dp=1ex,left]{author in head/foot}%
+      \hspace*{3ex}\color{mutedText}\scriptsize Synapse Mesh Workshop
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=0.333333\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+      \color{mutedText}\scriptsize Hands-on Developer Guide
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=0.333333\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+      \color{mutedText}\scriptsize\insertframenumber{} / \inserttotalframenumber\hspace*{3ex}
+    \end{beamercolorbox}%
+  }%
+  \vspace*{2ex}%
+}
+
+% Custom Listings Styles
+\lstdefinelanguage{json}{
+  basicstyle=\ttfamily\scriptsize,
+  stringstyle=\color{accentBlue},
+  commentstyle=\color{mutedText},
+  string=[b]",
+  literate=
+   *{0}{{{\color{accentGreen}0}}}{1}
+    {1}{{{\color{accentGreen}1}}}{1}
+    {2}{{{\color{accentGreen}2}}}{1}
+    {3}{{{\color{accentGreen}3}}}{1}
+    {4}{{{\color{accentGreen}4}}}{1}
+    {5}{{{\color{accentGreen}5}}}{1}
+    {6}{{{\color{accentGreen}6}}}{1}
+    {7}{{{\color{accentGreen}7}}}{1}
+    {8}{{{\color{accentGreen}8}}}{1}
+    {9}{{{\color{accentGreen}9}}}{1}
+    {:}{{{\color{primaryDark}{:}}}}{1}
+    {,}{{{\color{primaryDark}{,}}}}{1}
+    {\{}{{{\color{primaryDark}{\{}}}}{1}
+    {\}}{{{\color{primaryDark}{\}}}}}{1}
+    {[}{{{\color{primaryDark}{[}}}}{1}
+    {]}{{{\color{primaryDark}{]}}}}{1},
+}
+
+\lstdefinestyle{yaml}{
+  basicstyle=\ttfamily\scriptsize,
+  keywordstyle=\color{accentBlue}\bfseries,
+  stringstyle=\color{accentGreen},
+  commentstyle=\color{mutedText}\itshape,
+  moredelim=[l][\color{primaryDark}]{\ },
+  moredelim=[l][\color{accentBlue}]{:},
+}
+
+% Reusable Tcolorboxes
+\newtcolorbox{codebox}[2][]{
+  colback=codeBgLight,
+  colframe=primaryDark!10,
+  coltitle=primaryDark,
+  fonttitle=\bfseries\sffamily\small,
+  title={#2},
+  enhanced,
+  borderline west={3pt}{0pt}{accentBlue},
+  attach boxed title to top left={yshift=-2mm, xshift=2mm},
+  boxed title style={colback=codeBgLight, colframe=primaryDark!10},
+  boxsep=1pt,
+  top=2pt,
+  bottom=2pt,
+  left=4pt,
+  right=4pt,
+  #1
+}
+
+\newtcblisting{terminalbox}[2][]{
+  colback=codeBgDark,
+  colupper=white,
+  colframe=termHeader,
+  fonttitle=\bfseries\sffamily\small,
+  title={#2},
+  enhanced,
+  attach boxed title to top left={yshift=-2mm, xshift=2mm},
+  boxed title style={colback=termHeader, colframe=termHeader},
+  listing only,
+  listing options={
+    breaklines=true,
+    breakatwhitespace=true,
+    showstringspaces=false,
+    keepspaces=true,
+    language=bash,
+    basicstyle=\ttfamily\scriptsize\color{white},
+    keywordstyle=\color{accentGreen},
+    commentstyle=\color{mutedText}
+  },
+  boxsep=1pt,
+  top=2pt,
+  bottom=2pt,
+  left=4pt,
+  right=4pt,
+  #1
+}
+
+\newtcolorbox{alertbox}[2][]{
+  colback=red!5,
+  colframe=red!20,
+  coltitle=red!80!black,
+  fonttitle=\bfseries\sffamily\small,
+  title={#2},
+  enhanced,
+  borderline west={3pt}{0pt}{red!60!black},
+  attach boxed title to top left={yshift=-2mm, xshift=2mm},
+  boxed title style={colback=red!5, colframe=red!20},
+  boxsep=1pt,
+  top=2pt,
+  bottom=2pt,
+  left=4pt,
+  right=4pt,
+  #1
+}
+
+% Custom title frame command
+\newcommand{\titleframe}{%
+  \begingroup%
+  \setbeamercolor{background canvas}{bg=primaryDark}%
+  \begin{frame}[plain]%
+    \centering%
+    \vspace*{1.2cm}%
+    {\color{white}\usebeamerfont{title}\inserttitle}\par%
+    \vspace*{0.3cm}%
+    {\color{accentGreen}\usebeamerfont{subtitle}\insertsubtitle}\par%
+    \vspace*{1.0cm}%
+    {\color{white!90}\small\insertauthor}\par%
+    \vspace*{0.2cm}%
+    {\color{mutedText}\scriptsize\insertinstitute}\par%
+    \vspace*{0.6cm}%
+    {\color{mutedText}\scriptsize\insertdate}\par%
+  \end{frame}%
+  \endgroup%
+}
+
+% Presentation Info
+\title{Synapse Mesh Hands-on Developer Workshop}
+\subtitle{Declarative Service Directory \& Traffic Control}
+\author[Dr. Sarah Jenkins]{Dr. Sarah Jenkins \and Marcus Chen}
+\institute[Synapse Tech]{Synapse Systems Inc. \textbullet{} Developer Relations}
+\date{August 2026}

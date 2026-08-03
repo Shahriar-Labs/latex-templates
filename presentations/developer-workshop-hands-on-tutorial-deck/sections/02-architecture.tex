@@ -1,0 +1,35 @@
+\section{Architecture}
+\subsection{System Overview}
+
+\begin{frame}{Synapse Mesh Architecture}{Service-to-Service Topology}
+  The Synapse Mesh architecture separates control plane state from data plane execution.
+  
+  \vspace{0.4cm}
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.2cm and 1.8cm,
+    every node/.style={font=\sffamily\scriptsize, align=center},
+    box/.style={draw, rectangle, rounded corners=4pt, minimum width=2.4cm, minimum height=0.9cm, line width=1pt},
+    client/.style={box, fill=mutedText!10, draw=mutedText},
+    gateway/.style={box, fill=accentBlue!10, draw=accentBlue},
+    service/.style={box, fill=primaryDark!10, draw=primaryDark},
+    registry/.style={box, fill=accentGreen!10, draw=accentGreen, dashed},
+    arrow/.style={-{Stealth[scale=0.8]}, line width=1pt, draw=primaryDark!70}
+  ]
+    % Nodes
+    \node[client] (client) {Developer \\ Client};
+    \node[gateway, right=of client] (gateway) {Synapse Gateway \\ (Vertex Proxy)};
+    \node[service, right=of gateway, yshift=0.8cm] (billing) {Nexa Billing \\ Service};
+    \node[service, right=of gateway, yshift=-0.8cm] (auth) {Nimbus Auth \\ Service};
+    \node[registry, below=of gateway] (registry) {Synapse Directory \\ (Registry Service)};
+
+    % Arrows
+    \draw[arrow] (client) -- node[above] {HTTP} (gateway);
+    \draw[arrow] (gateway.east) -- ++(0.3,0) |- (billing.west);
+    \draw[arrow] (gateway.east) -- ++(0.3,0) |- (auth.west);
+    \draw[arrow] (gateway) -- node[left] {Resolve} (registry);
+    
+    % Dashed feedback/auth check
+    \draw[arrow, dashed, draw=accentGreen] (billing) -- node[right, pos=0.7] {Verify Token} (auth);
+  \end{tikzpicture}
+\end{frame}

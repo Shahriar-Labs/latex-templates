@@ -1,0 +1,46 @@
+\section{Installation and atomic activation}
+
+\subsection{A/B slot profile}
+
+The recommended profile has an immutable first-stage bootloader and two bootable
+slots. At all times, at least one slot is marked confirmed. The installer writes
+only the inactive slot, reads it back, verifies the signed installed-image digest,
+flushes all writes, then atomically creates trial metadata containing:
+
+\begin{itemize}
+  \item target slot and release ID;
+  \item expected installed-image digest and security version;
+  \item maximum trial boots and remaining boot count;
+  \item confirmation timeout; and
+  \item previous confirmed slot.
+\end{itemize}
+
+The bootloader verifies the target image signature or digest against protected
+metadata before every trial boot. It decrements the durable trial counter before
+transferring control. If verification fails, the counter reaches zero, the image
+resets before confirmation, or the watchdog expires, the bootloader selects the
+previous confirmed slot.
+
+\subsection{Single-slot profile}
+
+A single-slot device is conforming only if it has an independently bootable
+recovery environment that can restore a complete signed image after arbitrary
+power loss. In-place overwrite without a recovery path is non-conforming. The
+recovery environment \must use the same signature, targeting, digest, and
+anti-rollback checks as the normal agent.
+
+\subsection{Multi-component transactions}
+
+The manifest defines component installation order and compatibility dependencies.
+When components must change atomically, the platform \must stage all of them
+before activation and commit a single transaction record. On failure it rolls
+back the complete compatibility group. If hardware prevents atomic rollback, the
+manifest \must encode a safe forward-compatible order, and each intermediate
+combination must be explicitly supported.
+
+Bootloader updates require a dedicated platform profile. At minimum they use
+redundant boot blocks or immutable recovery code, write protection, independent
+read-back verification, and a power-loss-safe selector. An ordinary system image
+\mustnot directly rewrite the only boot block.
+
+% -----------------------------------------------------------------------------

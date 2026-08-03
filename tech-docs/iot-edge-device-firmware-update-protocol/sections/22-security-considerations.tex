@@ -1,0 +1,48 @@
+\section{Security considerations}
+
+\subsection{Required controls}
+
+Implementations \must address:
+
+\begin{itemize}
+  \item \textbf{Repository compromise:} signed manifests, artifact and chunk digests,
+        immutable identifiers, and strict size enforcement;
+  \item \textbf{Replay and freeze:} security versions, signed release sequence,
+        expiration where trusted time exists, and revocation metadata;
+  \item \textbf{Target confusion:} signed product/model/hardware allow-lists and
+        protected device identity;
+  \item \textbf{Parser attacks:} canonical encoding, bounded allocation, duplicate-key
+        rejection, strict types, and fuzz testing;
+  \item \textbf{Decompression/patch attacks:} output bounds, isolated processing,
+        base/result digest checks, and path confinement;
+  \item \textbf{Power interruption:} atomic records, inactive-slot installation,
+        read-back verification, and independent rollback;
+  \item \textbf{Credential leakage:} TLS, scoped credentials, sanitized telemetry,
+        and no credentials in URLs; and
+  \item \textbf{Fleet-wide failure:} stable staged cohorts, rate limits, jitter,
+        halt thresholds, and bounded device retries.
+\end{itemize}
+
+\subsection{Denial of service}
+
+The device should authenticate small control objects before reserving large
+storage or performing expensive transformations. It must cap message sizes,
+redirects, URI count, retry count, concurrent transfers, decompressed size, patch
+operations, and log growth. It should reject cyclic dependencies and manifests
+with excessive component or artifact alternatives.
+
+An attacker able to block all connectivity can prevent updates; no network
+protocol can guarantee availability in that case. Devices should retain safe
+autonomous behavior and surface prolonged update unavailability when connectivity
+returns.
+
+\subsection{Signing operations}
+
+Release pipelines should produce reproducible artifacts, generate a software bill
+of materials, scan and test the exact bytes to be signed, require independent
+approval for production, and keep online services separated from signing keys.
+Signing logs should be append-only and include manifest digest, release ID, key
+ID, approvers, and build provenance. Deterministic builds and transparency logs
+are recommended for high-assurance deployments.
+
+% -----------------------------------------------------------------------------

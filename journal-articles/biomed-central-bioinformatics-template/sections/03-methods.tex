@@ -1,0 +1,135 @@
+\section{Methods}
+
+\subsection{Benchmark design and data partitions}
+
+We generated an illustrative benchmark with 2,400 samples, four equally sized
+cohorts, and five balanced outcome classes. Each sample contained four molecular
+modalities mapped to 1,200 genes. Class-dependent signals were injected into 30
+pathways, with cohort-specific shifts in feature scale and noise. The benchmark
+was deliberately synthetic so that this template contains no personal or
+controlled-access data.
+
+Samples were partitioned by cohort. In each of four outer folds, one complete
+cohort served as the test set; the remaining cohorts were split by sample into
+training and validation partitions at an 85:15 ratio. All centering, scaling,
+feature selection, graph filtering, hyperparameter selection, and temperature
+fitting were performed without access to the held-out cohort. Reported values
+are the mean across the four outer folds.
+
+Two inference conditions were evaluated:
+\begin{enumerate}
+  \item \textbf{complete:} all four modalities were available; and
+  \item \textbf{missing assay:} one modality was removed uniformly at random for
+  each test sample, independently of the outcome.
+\end{enumerate}
+
+\subsection{Graph construction and feature encoding}
+
+The graph $G=(V,E)$ contained one node per retained gene. An undirected edge was
+included when two genes shared a curated pathway or when their simulated
+training-set correlation exceeded a fixed threshold. Self-loops were added and
+duplicate edges removed. Importantly, correlations were recomputed within each
+outer training fold.
+
+Let $x_{iv}^{(k)}$ denote the value of modality $k$ for sample $i$ and gene $v$.
+Each scalar measurement was projected to a $d$-dimensional vector by a
+modality-specific encoder. An observed-modality indicator $m_i^{(k)}\in\{0,1\}$
+selected either that encoded value or a learned missing token $q^{(k)}$:
+\begin{equation}
+z_{iv}^{(k)} = m_i^{(k)}\,\phi_k\!\left(x_{iv}^{(k)}\right)
+ + \left(1-m_i^{(k)}\right)q^{(k)}.
+\label{eq:mask}
+\end{equation}
+The initial node representation was the normalized concatenation of all modality
+vectors and mask indicators. During training, each available modality was
+independently masked with probability $p_{\mathrm{mask}}=0.20$, while at least one
+modality was always retained.
+
+\subsection{Graph attention and sample representation}
+
+For node $v$ at layer $\ell$, attention coefficients over its neighborhood
+$\mathcal{N}(v)$ were computed as
+\begin{align}
+e_{vu}^{(\ell)} &={\rm LeakyReLU}\!\left(
+a_\ell^\top[W_\ell h_v^{(\ell)}\,\Vert\,W_\ell h_u^{(\ell)}]\right),\\
+\alpha_{vu}^{(\ell)} &=
+\frac{\exp(e_{vu}^{(\ell)})}
+{\sum_{r\in\mathcal{N}(v)}\exp(e_{vr}^{(\ell)})},\\
+h_v^{(\ell+1)} &= \sigma\!\left(
+\sum_{u\in\mathcal{N}(v)}\alpha_{vu}^{(\ell)}W_\ell h_u^{(\ell)}\right).
+\label{eq:gat}
+\end{align}
+Four attention heads were averaged in the final of two graph layers. A gated
+attention pool converted node states into a sample vector $g_i$, followed by a
+two-layer classifier producing logits $s_i\in\R^C$ for $C$ classes.
+
+\subsection{Optimization and uncertainty estimation}
+
+Parameters were optimized with Adam~\cite{kingma2015adam} by minimizing weighted
+cross-entropy plus $L_2$ regularization. Early stopping monitored validation
+macro-F1 with a patience of 20 epochs. Candidate learning rates, hidden widths,
+dropout rates, and regularization strengths were fixed before outer-fold testing;
+the selected settings are reported in Table~\ref{tab:hyperparameters}.
+
+\begin{table}[tbp]
+\centering
+\caption{Selected model and optimization settings used in the illustrative
+benchmark.}
+\label{tab:hyperparameters}
+\begin{tabularx}{0.86\textwidth}{>{\raggedright\arraybackslash}X c
+  >{\raggedright\arraybackslash}X c}
+\toprule
+Setting & Value & Setting & Value \\
+\midrule
+Graph layers & 2 & Attention heads & 4 \\
+Hidden width & 64 & Dropout rate & 0.30 \\
+Learning rate & $3\times10^{-4}$ & Weight decay & $10^{-4}$ \\
+Batch size & 32 & Mask probability & 0.20 \\
+Maximum epochs & 250 & Stochastic passes & 50 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Dropout remained active at inference for $T=50$ stochastic forward passes. If
+$p_t(y=c\mid x_i)$ is the softmax probability from pass $t$, the predictive mean
+and entropy were
+\begin{align}
+\bar p_i(c) &= \frac{1}{T}\sum_{t=1}^{T}p_t(y=c\mid x_i),\\
+H_i &= -\sum_{c=1}^{C}\bar p_i(c)\log \bar p_i(c).
+\label{eq:entropy}
+\end{align}
+A scalar temperature $\tau>0$ was fitted on validation logits by minimizing
+negative log-likelihood. Final probabilities were
+$\operatorname{softmax}(s_i/\tau)$, with the same fold-specific temperature
+applied to the held-out cohort.
+
+\subsection{Comparators and evaluation metrics}
+
+We compared \modelname{} with logistic regression on early-concatenated features,
+a multilayer perceptron (MLP), Similarity Network Fusion followed by a support
+vector machine, and the proposed graph model without modality masking or
+calibration. For concatenation-based methods, absent modalities were filled with
+training-fold feature medians and accompanied by binary missingness indicators.
+
+The primary metric was macro-averaged F1. Secondary discrimination metrics were
+balanced accuracy and one-versus-rest area under the receiver operating
+characteristic curve (AUROC). Calibration was assessed by negative log-likelihood,
+Brier score, and expected calibration error (ECE) with 15 equal-width bins:
+\begin{equation}
+\operatorname{ECE}=\sum_{b=1}^{B}\frac{|I_b|}{n}
+\left|\operatorname{acc}(I_b)-\operatorname{conf}(I_b)\right|.
+\label{eq:ece}
+\end{equation}
+Paired differences between methods were summarized across outer folds with a
+percentile bootstrap over samples within each held-out cohort. Because the
+benchmark is illustrative, confidence intervals are presented to demonstrate
+reporting format rather than to support a scientific claim.
+
+\subsection{Implementation and reproducibility}
+
+The illustrative implementation assumes Python 3.11, PyTorch~\cite{paszke2019pytorch},
+and scikit-learn~\cite{pedregosa2011scikit}. A reproducible study should pin all
+package versions, record random seeds, archive the exact train--validation--test
+indices, and save preprocessing objects separately for each outer fold. Hardware,
+runtime, energy use, and failure cases should be reported alongside predictive
+performance when the template is adapted.

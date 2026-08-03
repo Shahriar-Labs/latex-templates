@@ -1,0 +1,83 @@
+\section{Preliminary Evaluation}
+\label{sec:evaluation}
+
+We evaluate four questions: detection coverage, alert volume, request overhead,
+and robustness to partial deployment. All reported data and attacks are
+synthetic or production-derived and de-identified; no live customer traffic was
+attacked.
+
+\subsection{Methodology}
+
+Our testbed contains 48 containerized services on 12 Kubernetes nodes. We
+replay 24 hours of request shapes from 12 workflows at 18,000 requests/s. The
+baseline contains 7.2 million sampled complete paths. We inject 190 attacks in
+five families: direct sink access, skipped validation, confused-deputy chains,
+rare API sequencing, and trace-header forgery. Each uses an identity that is
+authorized for every invoked API. We compare against an identity-resource
+frequency model (\textsc{IR-Freq}) and an unsigned trace-path model
+(\textsc{Trace-Only}). Thresholds for all systems are selected using the same
+clean validation window. Performance results are medians over five runs; attack
+detection reports 95\% Wilson intervals.
+
+\begin{table}[t]
+  \centering
+  \caption{Credential-abuse detection and operational cost. Best detection at
+  the target alert budget is bold.}
+  \label{tab:main}
+  \small
+  \setlength{\tabcolsep}{3.5pt}
+  \begin{tabularx}{\columnwidth}{@{}lYYY@{}}
+    \toprule
+    Detector & Recall (\%) & Alerts / 10k & Header bytes \\
+    \midrule
+    \textsc{IR-Freq}    & 61.6 & 0.30 & 0 \\
+    \textsc{Trace-Only} & 83.2 & 0.34 & 55 \\
+    \system{}           & \textbf{94.7} & 0.31 & 72 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{Security results}
+
+As \cref{tab:main} shows, \system{} detects 180 of 190 attack paths (94.7\%,
+95\% CI: 90.5--97.2\%) at 0.31 alerts per 10,000 requests. \textsc{IR-Freq}
+misses most attacks using a common principal-resource pair. \textsc{Trace-Only}
+recovers path anomalies but accepts 22 forged or spliced headers. Authentication
+accounts for 11.5 points of \system's recall advantage over that baseline.
+
+The ten misses reproduce common workflows up to the same operation labels as
+benign requests. Detecting them requires richer application semantics or
+endpoint telemetry. Alert review finds that 76\% of false positives correspond
+to legitimate deployments introducing a previously unseen edge; incorporating
+deployment metadata is a promising way to suppress this predictable drift.
+
+\begin{table}[t]
+  \centering
+  \caption{Median end-to-end overhead by deployment coverage. P99 is measured
+  at full coverage. Collector work is asynchronous.}
+  \label{tab:coverage}
+  \small
+  \setlength{\tabcolsep}{3.2pt}
+  \begin{tabularx}{\columnwidth}{@{}lRRR@{}}
+    \toprule
+    Instrumented services & 25\% & 50\% & 100\% \\
+    \midrule
+    Recall (\%)           & 71.1 & 86.3 & 94.7 \\
+    Median latency ($\mu$s) & 12 & 21 & 38 \\
+    CPU overhead (\%)     & 0.4 & 0.8 & 1.6 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{Performance and partial deployment}
+
+At full coverage, context construction and mesh interception add 38~$\mu$s
+median and 91~$\mu$s p99 latency, or 0.37\% of the testbed's median request
+latency. Verification consumes 1.6\% aggregate CPU and 0.6\% network bandwidth.
+No statistically distinguishable throughput loss appears below 25,000
+requests/s. As \cref{tab:coverage} illustrates, instrumenting only ingress and
+sensitive services provides useful but incomplete protection. At 50\% coverage,
+prioritizing services by proximity to protected sinks yields 86.3\% recall;
+random selection yields 78.9\%.
+
+% -----------------------------------------------------------------------------

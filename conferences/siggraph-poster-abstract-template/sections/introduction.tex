@@ -1,0 +1,18 @@
+% sections/introduction.tex
+\section{Introduction}
+Real-time photorealistic graphics have long relied on path tracing to simulate complex light transport phenomena, including global illumination, soft shadows, and glossy reflections. In recent years, the computer graphics community has witnessed a paradigm shift toward \emph{inverse rendering}, where the goal is to reconstruct 3D scene parameters—such as shape, spatially varying materials, and light sources—directly from a set of 2D reference photographs. 
+
+Differentiable path tracing has emerged as the mathematical backbone for these optimization problems, as it enables the computation of derivatives of rendered images with respect to arbitrary scene parameters. However, evaluating these derivatives is computationally expensive, often requiring hours of optimization for a single scene. The computational bottleneck is two-fold:
+\begin{enumerate}
+    \item \textbf{Ray-Scene Intersection:} Differentiable rendering requires tracing millions of paths through complex geometries, which is difficult to scale without specialized hardware acceleration.
+    \item \textbf{Boundary Gradients:} Discontinuities at geometric boundaries introduce Dirac delta functions in the integrand, necessitating boundary rendering techniques that are prone to high variance and noise.
+\end{enumerate}
+
+To address these challenges, we introduce \textbf{Synapse-Render}, a high-performance differentiable path tracer designed specifically for high-throughput cloud environments, such as the Nexa Cloud Platform~\cite{rostova2025synapse}. Synapse-Render incorporates a coordinate-based neural representation alongside a novel boundary-free gradient formulation, enabling real-time optimization of complex scenes. 
+
+By leveraging Nimbus distributed compute nodes~\cite{nimbus2025cloud}, we show that Synapse-Render achieves an order of magnitude speedup over traditional baselines while maintaining high reconstruction quality. The core contributions of our work are:
+\begin{itemize}
+    \item A boundary-free differentiable path tracing formulation that avoids expensive boundary ray sampling.
+    \item A multi-resolution hash grid representation for materials and geometry, accelerated by custom CUDA kernels.
+    \item An implementation optimized for Nexa Cloud clusters, demonstrating near-linear scaling across multiple GPU nodes.
+\end{itemize}

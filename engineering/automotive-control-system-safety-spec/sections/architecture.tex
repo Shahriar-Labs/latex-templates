@@ -1,0 +1,97 @@
+\section{Technical Safety Concept and System Architecture}
+\label{sec:architecture}
+
+The Synapse SbW system implements a fail-operational architecture designed to tolerate single-point hardware and software faults without compromising primary steering control. To satisfy the ASIL D requirements, both physical power paths and electrical signaling paths are fully redundant and galvanically isolated.
+
+\subsection{Redundant System Architecture}
+The system layout features two independent control channels that operate in parallel. Under nominal conditions, both channels contribute equally to active steering and cross-monitor each other. If one channel detects a critical fault, it disables itself and isolates its winding, while the standby channel immediately assumes 100\% steering control.
+
+Figure~\ref{fig:sbw_architecture} displays the logical block diagram of the technical safety concept.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[
+        box/.style={draw, rectangle, rounded corners=3pt, minimum width=2.4cm, minimum height=1.1cm, align=center, thick, fill=white, draw=primary, font=\sffamily\scriptsize},
+        secbox/.style={draw, rectangle, rounded corners=3pt, minimum width=2.4cm, minimum height=1.1cm, align=center, thick, fill=white, draw=secondary, font=\sffamily\scriptsize},
+        warnbox/.style={draw, rectangle, rounded corners=3pt, minimum width=2.4cm, minimum height=1.1cm, align=center, thick, fill=white, draw=warningorange, font=\sffamily\scriptsize},
+        bus/.style={draw, <->, >=stealth, ultra thick, secondary},
+        signal/.style={draw, ->, >=stealth, thick, primary},
+        monitor/.style={draw, <->, >=stealth, thick, warningorange, dashed},
+        every node/.style={font=\sffamily\scriptsize}
+    ]
+        % Left Column: Hand Wheel Subsystem
+        \node[box] (torqA) at (0, 1.8) {\textbf{Torque/Angle A}\\\faFile~Diverse Sensor};
+        \node[box] (torqB) at (0, -1.8) {\textbf{Torque/Angle B}\\\faFile~Diverse Sensor};
+        
+        % Middle-Left Column: HWA Controllers
+        \node[secbox] (hwaA) at (3.5, 1.8) {\textbf{HWA MCU A}\\\faMicrochip~Lockstep CPU};
+        \node[secbox] (hwaB) at (3.5, -1.8) {\textbf{HWA MCU B}\\\faMicrochip~Lockstep CPU};
+        
+        % Middle-Right Column: RWA Controllers
+        \node[secbox] (rwaA) at (8.5, 1.8) {\textbf{RWA MCU A}\\\faMicrochip~Lockstep CPU};
+        \node[secbox] (rwaB) at (8.5, -1.8) {\textbf{RWA MCU B}\\\faMicrochip~Lockstep CPU};
+        
+        % Right Column: Road Wheel Subsystem
+        \node[box] (motorA) at (12, 1.8) {\textbf{PMSM Motor Winding A}\\\faMicrochip~Phase Actuator};
+        \node[box] (motorB) at (12, -1.8) {\textbf{PMSM Motor Winding B}\\\faMicrochip~Phase Actuator};
+        
+        % Connections: Sensors to HWA
+        \draw[signal] (torqA.east) -- (hwaA.west) node[midway, above] {SPI};
+        \draw[signal] (torqB.east) -- (hwaB.west) node[midway, below] {SPI};
+        
+        % HWA Cross-Monitoring
+        \draw[monitor] (hwaA.south) -- (hwaB.north) node[midway, right] {Cross-Ch. Link};
+        
+        % Communication Bus (FlexRay)
+        \draw[bus] (hwaA.east) -- (rwaA.west) node[midway, above] {FlexRay Ch. A};
+        \draw[bus] (hwaB.east) -- (rwaB.west) node[midway, below] {FlexRay Ch. B};
+        
+        % RWA Cross-Monitoring
+        \draw[monitor] (rwaA.south) -- (rwaB.north) node[midway, left] {Cross-Ch. Link};
+        
+        % HWA feedback motor block (small block between HWA MCU)
+        \node[warnbox] (fbmot) at (3.5, 0) {\textbf{Feedback Motor}\\\faLock~HWA Feel Actuator};
+        \draw[signal] (hwaA.south) -- (fbmot.north);
+        \draw[signal] (hwaB.north) -- (fbmot.south);
+        
+        % Connections: RWA to Motors
+        \draw[signal] (rwaA.east) -- (motorA.west) node[midway, above] {PWM};
+        \draw[signal] (rwaB.east) -- (motorB.west) node[midway, below] {PWM};
+        
+        % Watchdog monitoring the entire RWA
+        \node[warnbox] (wdog) at (8.5, 0) {\textbf{Safety Monitor}\\\faLock~Window Watchdog};
+        \draw[monitor] (rwaA.south) -- (wdog.north);
+        \draw[monitor] (rwaB.north) -- (wdog.south);
+        
+    \end{tikzpicture}
+    \caption{Steer-by-Wire fail-operational architecture schematic showing dual-channel signal pathways.}
+    \label{fig:sbw_architecture}
+\end{figure}
+
+\subsection{Cross-Channel Monitoring and Diagnostic Concept}
+To ensure instant fault containment, the microcontrollers exchange status bytes and control signals over a high-speed local serial link. The main diagnostics checked include:
+\begin{itemize}
+    \item \textbf{E2E Communication Safeguards:} Data packets on the FlexRay bus include sequence numbers and a 16-bit CRC to detect signal loss, corruption, or delays.
+    \item \textbf{Plausibility Check of Sensor Input:} The torque values from Sensor A and Sensor B are compared. If the variance exceeds 5\% for more than 4 ms, a sensor fault state is declared.
+    \item \textbf{Power Stage Diagnostics:} Gate driver diagnostic signals are checked continuously to verify proper execution of inverter switching patterns.
+\end{itemize}
+
+\subsection{Transition to Safe State}
+If a diagnostic error is flagged, the system executes the safe state transition matrix described in Table~\ref{tab:safestate}.
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Safe State Transition Matrix for Steer-by-Wire Control Channels.}
+    \label{tab:safestate}
+    \begin{tabularx}{\linewidth}{X l l p{3.8cm}}
+        \toprule
+        \textbf{Diagnostic Failure Trigger} & \textbf{Active State} & \textbf{Next Safe State} & \textbf{Degraded Functionality} \\
+        \midrule
+        Single torque sensor channel open-circuit & Nominal Dual-Ch. & Single-Channel Mode & Full steering power assist; yellow dashboard warning lit. \\
+        FlexRay Channel A communication timeout & Nominal Dual-Ch. & Single-Channel Bus & Full power assist using FlexRay Channel B; steering response unchanged. \\
+        RWA Inverter Phase Short-Circuit (Channel A) & Nominal Dual-Ch. & Degraded Backup Mode & Channel A isolated; Channel B drives steering with 50\% power assist. \\
+        Double-channel sensor failure (Dual loss) & Nominal Dual-Ch. & Safe Shutdown State & Steering assist disabled; physical steering rack locked in neutral position. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}

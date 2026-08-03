@@ -1,0 +1,28 @@
+\section{Challenges \& Blockers}
+\subsection{Current Impediments}
+
+\begin{frame}{Current Blockers \& Mitigation Strategy}{Technical Impediments}
+  The following items require active resolution before scaling the training run to the full cluster.
+  
+  \vspace{0.4cm}
+  \begin{minipage}{\textwidth}
+    \begin{blockerbox}{Blocker: Memory Leakage in Distributed Optimizer (S. Jenkins)}
+      Out-of-memory (OOM) errors occur when scaling past 64 GPUs.
+      \begin{itemize}
+        \item \textbf{Issue:} VRAM grows linearly by 420\,MB per step.
+        \item \textbf{Action:} Profiling autograd tensors with PyTorch team.
+      \end{itemize}
+    \end{blockerbox}
+  \end{minipage}
+  
+  \par\vspace{0.25cm}
+  
+  \begin{minipage}{\textwidth}
+    \begin{warningbox}{Risk: Interconnect Bandwidth Bottlenecks (M. Chen)}
+      Nodes lacking direct NVLink connections suffer 15\% latency overhead.
+      \begin{itemize}
+        \item \textbf{Mitigation:} Standardize batch sizes to hide pipeline bubbles.
+      \end{itemize}
+    \end{warningbox}
+  \end{minipage}
+\end{frame}

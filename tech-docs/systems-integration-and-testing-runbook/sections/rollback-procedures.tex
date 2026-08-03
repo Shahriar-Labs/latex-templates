@@ -1,0 +1,55 @@
+\section{Rollback Procedures}
+\label{sec:rollback}
+
+\begin{warnbox}[Roll back immediately if any of the following occur]
+\begin{itemize}
+  \item Test INT-043 (ledger write consistency) returns any duplicate rows.
+  \item p95 latency exceeds 400\,ms for more than two consecutive minutes after promotion.
+  \item Gateway error rate exceeds 1\% for more than one minute after promotion.
+  \item Apex reports the adapter's mTLS handshake failing against the ledger cluster.
+\end{itemize}
+\end{warnbox}
+
+\subsection{Step 1 -- Revert Gateway Upstream}
+If the blue slot has not yet been retired (Step 6 of Section~\ref{sec:integration-sequence}),
+this alone restores service: point the gateway back at blue.
+
+\begin{cmdbox}[Vertex Cloud CLI]
+\promptline{vertex gateway promote \textbackslash}
+\hspace*{1.4em}-{}-service nimbus-payment-adapter \textbackslash\\
+\hspace*{1.4em}-{}-to blue -{}-drain-timeout 10s
+\end{cmdbox}
+
+Confirm recovery on the Apex \emph{Payment Path} dashboard within 60 seconds. If error rate and
+latency return to baseline, the rollback is complete; skip to Step 4.
+
+\subsection{Step 2 -- Redeploy Blue if Already Retired}
+If blue was already retired, redeploy it from the recorded pre-cutover image tag rather than
+rebuilding.
+
+\begin{cmdbox}[Vertex Cloud CLI]
+\promptline{vertex deploy apply \textbackslash}
+\hspace*{1.4em}-{}-service nimbus-payment-adapter \textbackslash\\
+\hspace*{1.4em}-{}-slot blue -{}-image nimbus-adapter:3.3.6 \textbackslash\\
+\hspace*{1.4em}-{}-env-from nimbus-adapter-prod.env
+\end{cmdbox}
+
+Then repeat Step 1 above to shift traffic back to blue.
+
+\subsection{Step 3 -- Restore the Ledger Snapshot (Duplicate-Write Cases Only)}
+Only required if INT-043 flagged duplicate settlement rows. Restore from the snapshot taken in
+Step 1 of Section~\ref{sec:integration-sequence}; this is destructive to any rows written since
+the snapshot, so confirm with the on-call lead before running it.
+
+\begin{cmdbox}[Vertex Cloud CLI]
+\promptline{vertex db snapshot restore \textbackslash}
+\hspace*{1.4em}-{}-cluster ledger-prod-aps1 \textbackslash\\
+\hspace*{1.4em}-{}-label pre-nimbus-3.4.0-cutover -{}-confirm
+\end{cmdbox}
+
+\subsection{Step 4 -- Post-Rollback Validation}
+Re-run the smoke suite (INT-041, INT-042) against the restored blue slot and confirm the
+ledger consistency query from Section~\ref{sec:validation} returns zero rows. Post the outcome
+in \texttt{\#nexa-change-window} and file an incident record per
+\emph{Apex Monitoring Alert Runbook: Payment Path} (APX-RB-114) before closing the change
+window.

@@ -1,0 +1,28 @@
+\section{Security Analysis}
+\label{sec:security}
+
+We analyze Nimbus-T against a static adversary $\mathcal{A}$ corrupting up to $t-1$ signers before key generation, in the random oracle model for $H$.
+
+\begin{theorem}[Correctness]
+\label{thm:correctness}
+For every $(t,n)$, every $s$ from $\Gen$, every qualified $T$, and every message $m$, if all signers in $T$ follow $\Sign$ honestly, $\Verify(\pk,m,\Sign(\{s_i\}_{i\in T},m)) = 1$.
+\end{theorem}
+\begin{proof}
+Immediate from $z \equiv y+cs \pmod N$ (\Cref{sec:construction}): $[z]\star E_0 = [c]\star([s]\star([y]\star E_0)) = [c]\star\pk\star R$, the accept condition. \qed
+\end{proof}
+
+\begin{theorem}[EUF-CMA security]
+\label{thm:euf-cma}
+If $\GAIP_\secparam$ is $(\tau,\epsilon)$-hard, Nimbus-T is $(\tau', q_H, q_S, \epsilon')$-EUF-CMA secure against any adversary corrupting at most $t-1$ signers, in the random oracle model, with $\tau'\approx\tau$ and $\epsilon' \le q_H\sqrt{\epsilon} + \negl(\secparam)$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+$\mathcal{B}$ embeds a $\GAIP$ instance $(E_0, E_1=[s]\star E_0)$ as $\pk=E_1$. As $\mathcal{A}$ corrupts at most $t-1$ signers, standard $(t,n)$-Shamir simulation lets $\mathcal{B}$ answer $\Share$ queries without knowing $s$: corrupted shares plus $\pk$ fix a unique consistent polynomial. Signing queries are answered by programming $H$: sample $z,c$ first, set $R=[z-cs]\star E_0$ from public values, and program $H(R,m):=c$, indistinguishable by honest-verifier zero-knowledge regardless of how many signers contributed. Given a forgery, $\mathcal{B}$ forks $\mathcal{A}$ for a second transcript $(c^{**},z^{**})$ on the same commitment with $c^*\ne c^{**}$, and extracts $s=(z^*-z^{**})(c^*-c^{**})^{-1}\bmod N$. \qed
+\end{proof}
+
+\begin{theorem}[Robustness]
+\label{thm:robustness}
+Under $\GADDH$, a Nimbus-T session with an untrusted combiner and up to $t-1$ malicious signers either aborts (detected by the per-share check of \Cref{sec:construction}) or outputs $\sigma$ with $\Verify(\pk,m,\sigma)=1$, except with probability $\negl(\secparam)$.
+\end{theorem}
+\begin{proof}[Proof sketch]
+A malicious signer $i$ deviates only in $r_i$ or $z_i$, since $s_i$ is fixed at $\Share$ time and $[s_i]\star E_0$ is public. A $z_i$ passing the per-share check but inconsistent with $(y_i,s_i)$ would let $\mathcal{A}$ bias $z$ relative to $R$ without knowing $y_i$; a hybrid argument over the corrupted indices reduces this to a $\GADDH$ distinguisher, given that some signer in $T$ contributes unpredicted randomness to $R$, which holds whenever fewer than $t$ of $T$ are corrupted --- the information-theoretic limit of any Shamir-based scheme, since $t$ colluding signers always reconstruct $s$ directly. \qed
+\end{proof}

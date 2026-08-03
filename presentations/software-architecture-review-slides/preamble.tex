@@ -1,0 +1,196 @@
+% Preamble for Software Architecture Review Slides
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% Mathematics packages
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\usetikzlibrary{
+  arrows.meta,
+  backgrounds,
+  calc,
+  fit,
+  positioning,
+  shapes.geometric
+}
+
+% Presentation enhancements
+\usepackage[skins,listings,breakable]{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{url}
+
+% Bibliography management
+\usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
+\addbibresource{references.bib}
+
+% Custom Color Definitions (fictional branding: Synapse Systems / Nexa Cloud)
+\definecolor{primaryDark}{HTML}{0D1B2A}    % Deep Navy Blue
+\definecolor{accentCyan}{HTML}{00B4D8}     % Electric Teal
+\definecolor{accentBlue}{HTML}{415A77}     % Muted Steel Blue
+\definecolor{bgLight}{HTML}{F8F9FA}        % Off-White background
+\definecolor{textDark}{HTML}{1F2937}       % Dark Charcoal Text
+\definecolor{colorSuccess}{HTML}{059669}    % Emerald Green
+\definecolor{colorWarning}{HTML}{D97706}    % Amber Orange
+\definecolor{colorDanger}{HTML}{DC2626}     % Rose Red
+
+% Beamer Template Customizations
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor{background canvas}{bg=bgLight}
+\setbeamercolor{normal text}{fg=textDark,bg=bgLight}
+\setbeamercolor{structure}{fg=accentBlue}
+\setbeamercolor{frametitle}{fg=primaryDark,bg=bgLight}
+\setbeamercolor{title}{fg=white}
+\setbeamercolor{subtitle}{fg=accentCyan}
+\setbeamercolor{author}{fg=white!90}
+\setbeamercolor{date}{fg=white!70}
+
+% Typography Fonts
+\setbeamerfont{title}{size=\Large,series=\bfseries}
+\setbeamerfont{subtitle}{size=\large}
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamerfont{framesubtitle}{size=\small,series=\normalfont}
+\setbeamerfont{caption}{size=\small}
+
+% Lists styling
+\setbeamercolor{item}{fg=accentCyan}
+\setbeamercolor{subitem}{fg=accentBlue}
+\setbeamercolor{subsubitem}{fg=textDark!70}
+\setbeamertemplate{itemize items}[circle]
+
+% Custom Frame Title Layout
+\setbeamertemplate{frametitle}{%
+  \vspace*{10pt}%
+  {\usebeamerfont{frametitle}\insertframetitle}%
+  \ifx\insertframesubtitle\empty\else
+    \par\vspace*{2pt}%
+    {\usebeamerfont{framesubtitle}\usebeamercolor[fg]{framesubtitle}\insertframesubtitle}%
+  \fi
+  \par\vspace*{3pt}%
+  \textcolor{accentCyan!50}{\rule{\linewidth}{1.2pt}}%
+  \vspace*{3pt}%
+}
+
+% Custom Footline Layout
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=0.333333\paperwidth,ht=2.25ex,dp=1ex,left]{author in head/foot}%
+      \hspace*{3ex}\color{textDark!50}\scriptsize Synapse Systems Inc.
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=0.333333\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+      \color{textDark!50}\scriptsize Architecture Review: Core API
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=0.333333\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+      \color{textDark!50}\scriptsize\insertframenumber{} / \inserttotalframenumber\hspace*{3ex}
+    \end{beamercolorbox}%
+  }%
+  \vspace*{2ex}%
+}
+
+% Custom Title Frame Command
+\newcommand{\titleframe}{%
+  \begingroup%
+  \setbeamercolor{background canvas}{bg=primaryDark}%
+  \begin{frame}[plain]%
+    \centering%
+    \vspace*{1.2cm}%
+    {\color{white}\usebeamerfont{title}\inserttitle}\par%
+    \vspace*{0.3cm}%
+    {\color{accentCyan}\usebeamerfont{subtitle}\insertsubtitle}\par%
+    \vspace*{1.0cm}%
+    {\color{white!90}\small\insertauthor}\par%
+    \vspace*{0.2cm}%
+    {\color{white!70}\scriptsize\insertinstitute}\par%
+    \vspace*{0.6cm}%
+    {\color{white!50}\scriptsize\insertdate}\par%
+  \end{frame}%
+  \endgroup%
+}
+
+% Custom Box Styles for Architecture Review
+\newtcolorbox{statbox}[2][]{
+  colback=accentCyan!5,
+  colframe=accentCyan!20,
+  coltitle=primaryDark,
+  fonttitle=\bfseries\sffamily\small,
+  title={#2},
+  enhanced,
+  borderline west={3pt}{0pt}{accentCyan},
+  attach boxed title to top left={yshift=-2mm, xshift=2mm},
+  boxed title style={colback=accentCyan!10, colframe=accentCyan!20},
+  boxsep=0.5pt,
+  top=2.5pt,
+  bottom=2.5pt,
+  left=6pt,
+  right=6pt,
+  #1
+}
+
+\newtcolorbox{warningbox}[2][]{
+  colback=colorWarning!5,
+  colframe=colorWarning!20,
+  coltitle=colorWarning!90!black,
+  fonttitle=\bfseries\sffamily\small,
+  title={#2},
+  enhanced,
+  borderline west={3pt}{0pt}{colorWarning},
+  attach boxed title to top left={yshift=-2mm, xshift=2mm},
+  boxed title style={colback=colorWarning!10, colframe=colorWarning!20},
+  boxsep=0.5pt,
+  top=2.5pt,
+  bottom=2.5pt,
+  left=6pt,
+  right=6pt,
+  #1
+}
+
+\newtcolorbox{dangerbox}[2][]{
+  colback=colorDanger!5,
+  colframe=colorDanger!20,
+  coltitle=colorDanger!90!black,
+  fonttitle=\bfseries\sffamily\small,
+  title={#2},
+  enhanced,
+  borderline west={3pt}{0pt}{colorDanger},
+  attach boxed title to top left={yshift=-2mm, xshift=2mm},
+  boxed title style={colback=colorDanger!10, colframe=colorDanger!20},
+  boxsep=0.5pt,
+  top=2.5pt,
+  bottom=2.5pt,
+  left=6pt,
+  right=6pt,
+  #1
+}
+
+\newtcolorbox{successbox}[2][]{
+  colback=colorSuccess!5,
+  colframe=colorSuccess!20,
+  coltitle=colorSuccess!90!black,
+  fonttitle=\bfseries\sffamily\small,
+  title={#2},
+  enhanced,
+  borderline west={3pt}{0pt}{colorSuccess},
+  attach boxed title to top left={yshift=-2mm, xshift=2mm},
+  boxed title style={colback=colorSuccess!10, colframe=colorSuccess!20},
+  boxsep=0.5pt,
+  top=2.5pt,
+  bottom=2.5pt,
+  left=6pt,
+  right=6pt,
+  #1
+}
+
+% Presentation Meta Info
+\title{Synapse Core API Refactoring}
+\subtitle{Migrating to an Event-Driven Microservices Architecture}
+\author[Alex Mercer \and Priya Sharma]{Alex Mercer \and Priya Sharma}
+\institute[Synapse Architecture Committee]{Synapse Architecture Committee \textbullet{} Nexa Cloud Division}
+\date{August 2026}

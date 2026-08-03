@@ -1,0 +1,54 @@
+\section{Executive summary}
+
+The pipeline runner is the controlled execution layer between source-control events
+and changes to runtime environments. It accepts validated pipeline definitions,
+turns them into an immutable execution plan, schedules isolated jobs onto eligible
+runner pools, collects logs and evidence, and mediates deployments through policy
+gates. The design separates the highly available control plane from short-lived,
+untrusted execution workers.
+
+The baseline uses ephemeral runners, workload identity, least-privilege credentials,
+content-addressed artifacts, and signed provenance. Builds have no implicit access to
+deployment credentials. A deployment job receives scoped, short-lived authorization
+only after policy evaluation and, where required, human approval. All control-plane
+mutations and security-sensitive runner actions create append-only audit events.
+
+\begin{decisionbox}[Key architectural decisions]
+The control plane is the system of record; runners are disposable and never authoritative.
+Jobs are delivered using renewable leases rather than fire-and-forget messages.
+Every job runs in a fresh isolation boundary. Secrets are resolved just in time and are
+never persisted in pipeline plans, caches, artifacts, or runner images. Deployments refer
+to immutable artifact digests and use environment-specific policy gates.
+\end{decisionbox}
+
+\subsection{Target outcomes}
+
+\begin{itemize}
+  \item A repository can run its first policy-compliant pipeline within 15 minutes of onboarding.
+  \item A queued job begins within 60 seconds at the 95th percentile under planned load.
+  \item No single runner compromise grants control-plane or cross-tenant access.
+  \item Every production change is attributable to an actor, source revision, artifact digest,
+        policy decision, and deployment result.
+  \item Control-plane recovery preserves accepted jobs and prevents duplicate deployment effects.
+\end{itemize}
+
+\subsection{Primary measures of success}
+
+\begin{table}[htbp]
+\centering
+\caption{Program success measures}
+\label{tab:success-measures}
+\begin{tabularx}{\textwidth}{@{}L{0.28\textwidth}Y L{0.23\textwidth}@{}}
+  \toprule
+  \thead{Measure} & \thead{Definition} & \thead{Target} \\
+  \midrule
+  Adoption & Active repositories using the managed runner platform & $\geq 80\%$ within two quarters \\
+  Change traceability & Production deployments with complete provenance & $100\%$ \\
+  Queue latency & Time from job readiness to lease acquisition & p95 $<60$ s, p99 $<180$ s \\
+  Platform availability & Successful control-plane API service & $99.95\%$ monthly \\
+  Isolation escapes & Confirmed cross-job or cross-tenant isolation failures & 0 \\
+  \bottomrule
+\end{tabularx}
+\end{table}
+
+% -----------------------------------------------------------------------------

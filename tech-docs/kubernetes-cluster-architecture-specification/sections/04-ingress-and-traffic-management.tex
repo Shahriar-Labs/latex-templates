@@ -1,0 +1,28 @@
+\section{Ingress \& Traffic Management}
+
+\subsection{Ingress architecture}
+External traffic reaches the cluster through the Meridian L4 load balancer, which terminates TCP and forwards to an NGINX Ingress Controller deployment running two replicas per availability zone in the \code{general-compute} pool. NGINX performs virtual-host routing and TLS termination; it does not implement business logic. \code{cert-manager} issues and rotates certificates automatically, watching \code{Ingress} and \code{Certificate} resources across every namespace.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l c L L@{}}
+\toprule
+\rowcolor{primary}
+\textcolor{white}{\textbf{Class}} & \textcolor{white}{\textbf{Controller}} & \textcolor{white}{\textbf{Exposure}} & \textcolor{white}{\textbf{TLS Source}} & \textcolor{white}{\textbf{Consumers}} \\
+\midrule
+\code{nginx-public} & NGINX v1.10 & External & Public CA via ACME & Nexa customer portal \\
+\rowcolor{rowgray}
+\code{nginx-internal} & NGINX v1.10 & VPC-only & Apex internal CA & Vertex admin console, Synapse dashboards \\
+\code{nginx-partner} & NGINX v1.10 & Allowlisted & Public CA via ACME & Partner API integrations \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{TLS \& certificate lifecycle}
+Certificates are requested with a 90-day validity and renewed automatically at 30 days remaining. The internal CA used for \code{nginx-internal} is rooted in Meridian KMS and rotated annually; its intermediate is distributed to internal clients through the platform's trust-bundle ConfigMap, refreshed on every node at boot. mTLS between the ingress controller and upstream pods is required for any service handling account or payment data.
+
+\subsection{Rate limiting \& resilience}
+Each \code{Ingress} resource carries a per-route rate limit and connection cap set by the owning team, with platform-wide defaults applied when a route omits them (100 requests/second, burst 50). NGINX is configured with a 30-second upstream timeout and three retries on connection-reset errors only, never on timeouts, to avoid amplifying load into an already-degraded backend.
+
+\begin{warningbox}{Incident History: Noisy-Neighbor Saturation}
+In March 2026, an unrate-limited reporting endpoint on Synapse consumed the shared ingress connection pool during a customer's bulk export, degrading Vertex checkout latency for eleven minutes. Per-route rate limits became mandatory for every new \code{Ingress} manifest after this incident, enforced by an admission policy described in Section 6.
+\end{warningbox}

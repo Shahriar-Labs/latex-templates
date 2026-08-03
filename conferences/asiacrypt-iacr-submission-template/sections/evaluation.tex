@@ -1,0 +1,27 @@
+\section{Implementation and Evaluation}
+\label{sec:eval}
+
+We implemented Nimbus-T in C using the open class-group arithmetic library of~\cite{synapse2025classgroup}, on a 512-bit discriminant parameter set targeting NIST Level~1 (128-bit classical / 64-bit quantum) security, on a Meridian University compute node (Xeon Platinum, 3.2\,GHz). Signer computation was measured per party and summed with combiner computation for end-to-end signing time. We compare against \textbf{Vertex-ISO}, the single-signer base construction~\cite{sterling2019hhs,beullens2020csifish} with no sharing overhead, and \textbf{Apex-GA}~\cite{voss2023apexga}, a prior threshold construction that adds an interactive round between commitment and challenge (\Cref{sec:intro}); both baselines use identical class-group parameters.
+
+\begin{table}[htb]
+\caption{Signature size and running time at the 128-bit security level. Signing time is end-to-end across all $t$ signers plus the combiner; verification is single-party. Best threshold result per column is bold.}
+\label{tab:comparison}
+\centering
+\small
+\begin{tabular}{lccccc}
+  \toprule
+  \textbf{Scheme} & \textbf{$(t,n)$} & \textbf{Sig.\ Size (B)} & \textbf{KeyGen (ms)} & \textbf{Sign (ms)} & \textbf{Verify (ms)} \\
+  \midrule
+  Vertex-ISO      & 1-of-1 & 8{,}944 & 812   & 9{,}820  & 41.2 \\
+  \midrule
+  Apex-GA         & 3-of-5 & 9{,}760 & 1{,}180 & 12{,}640 & 58.9 \\
+  Apex-GA         & 5-of-9 & 9{,}760 & 1{,}240 & 15{,}430 & 63.5 \\
+  \midrule
+  Nimbus-T (Ours) & 3-of-5 & \textbf{9{,}120} & 940   & \textbf{6{,}060}  & \textbf{27.1} \\
+  Nimbus-T (Ours) & 5-of-9 & \textbf{9{,}120} & 1{,}050 & \textbf{7{,}910}  & \textbf{28.7} \\
+  Nimbus-T (Ours) & 7-of-13 & \textbf{9{,}136} & 1{,}190 & \textbf{9{,}740}  & \textbf{31.4} \\
+  \bottomrule
+\end{tabular}
+\end{table}
+
+At $(5,9)$, Nimbus-T cuts signing time by 51\% and verification time by 55\% relative to Apex-GA, while signature size grows only 1.9\% over the non-threshold Vertex-ISO baseline --- the overhead is entirely the qualified-set identifier $T$, since $\Combine$ produces a single class-group exponent rather than a per-signer transcript. The gap with Apex-GA widens with $t$: its interactive round is $O(t)$ per signer and $O(t^2)$ in total messages, whereas Nimbus-T's combiner does $O(t)$ total work regardless of distribution. Signing time in all schemes remains dominated by the 6--10 second isogeny walk itself, the well-known efficiency cost of group-action cryptography relative to lattice schemes, which Nimbus-T does not change --- only the overhead of coordinating $t$ parties around it.

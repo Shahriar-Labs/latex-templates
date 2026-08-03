@@ -1,0 +1,39 @@
+\section{Error model}
+
+Errors contain \field{code}, \field{category}, \field{retryable}, optional
+\field{retry_after}, and a bounded diagnostic \field{detail}. Devices \must base
+retry behavior on the code and authenticated context, not free-form detail text.
+
+\begin{longtable}{@{}L{55mm}L{22mm}L{75mm}@{}}
+  \toprule
+  \textbf{Code} & \textbf{Retryable} & \textbf{Meaning / required action} \\
+  \midrule
+  \endhead
+  \code{UNSUPPORTED\_PROTOCOL} & No & No compatible major protocol version. \\
+  \code{AUTHENTICATION\_FAILED} & After refresh & Refresh credentials once; do not expose credential data. \\
+  \code{MANIFEST\_MALFORMED} & No & Reject before processing nested content. \\
+  \code{SIGNATURE\_INVALID} & No & Quarantine offer and emit a security event. \\
+  \code{SIGNER\_UNTRUSTED} & No & Key absent, revoked, inactive, or outside authorized scope. \\
+  \code{MANIFEST\_EXPIRED} & No & Obtain a newly signed manifest. \\
+  \code{TARGET\_MISMATCH} & No & Product, model, hardware, or group does not match. \\
+  \code{ROLLBACK\_BLOCKED} & No & Candidate violates security-version or sequence policy. \\
+  \code{UNSUPPORTED\_ARTIFACT} & No & No safe compatible alternative is present. \\
+  \code{DEPENDENCY\_UNSATISFIED} & Conditional & Rediscover after dependency installation. \\
+  \code{INSUFFICIENT\_SPACE} & Conditional & Retry after safe cleanup; never erase confirmed slot. \\
+  \code{POLICY\_BLOCKED} & Yes & Wait until power, network, time, or safety condition changes. \\
+  \code{TRANSFER\_FAILED} & Yes & Resume with bounded exponential backoff. \\
+  \code{CHUNK\_HASH\_MISMATCH} & Limited & Refetch from another URI; alert after repeated mismatch. \\
+  \code{ARTIFACT\_HASH\_MISMATCH} & Limited & Discard artifact; do not stage. \\
+  \code{INSTALL\_FAILED} & Platform-specific & Keep confirmed image and collect bounded diagnostics. \\
+  \code{HEALTH\_CHECK\_FAILED} & No & Roll back trial image. \\
+  \code{TRIAL\_TIMEOUT} & No & Bootloader rolls back after deadline/attempt limit. \\
+  \code{COMMAND\_EXPIRED} & No & Ignore command and preserve safe state. \\
+  \code{INTERNAL\_ERROR} & Yes & Back off; avoid reboot loops and fleet storms. \\
+  \bottomrule
+\end{longtable}
+
+Error codes are stable API values. New codes may be added; an unknown code is
+handled according to its authenticated \field{retryable} flag, with a conservative
+local retry cap. Security categories always override \field{retryable=true}.
+
+% -----------------------------------------------------------------------------

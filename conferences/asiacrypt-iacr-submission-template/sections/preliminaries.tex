@@ -1,0 +1,24 @@
+\section{Preliminaries}
+\label{sec:prelims}
+
+\paragraph{Notation.}
+For security parameter $\secparam \in \mathbb{N}$, $\negl(\secparam)$ denotes a negligible function. We write $\Z$ for the integers and $\F_p$ for the field of $p$ elements, and $x \xleftarrow{\$} S$ for sampling $x$ uniformly from a finite set $S$. Signers are indexed by $i \in [n] = \{1,\dots,n\}$; a subset $T \subseteq [n]$ with $|T| = t$ is a \emph{qualified set}.
+
+\paragraph{Group Actions on Isogeny Classes.}
+Let $\OrderO$ be an imaginary quadratic order and $\EllSet\ell\ell_p(\OrderO)$ the set of $\F_p$-isomorphism classes of ordinary elliptic curves with endomorphism ring $\OrderO$. The ideal class group $\ClGrp(\OrderO)$ acts freely and transitively on $\EllSet\ell\ell_p(\OrderO)$ via isogeny walks: fixing $E_0$, every reachable curve is $[s]\star E_0$ for a unique $s \in \ClGrp(\OrderO)$, and $s \mapsto [s]\star E_0$ is a \emph{hard homogeneous space}~\cite{sterling2019hhs}, believed one-way even against quantum adversaries --- the best known attack is a Kuperberg-style subexponential algorithm~\cite{ashcombe2020kuperberg}, superpolynomial at our parameter sizes. Following the factor-base precomputation of~\cite{beullens2020csifish}, we use class groups with known explicit structure, $\ClGrp(\OrderO) \cong \Z/N\Z$ for a public class number $N$, so a secret is simply an exponent $s \in \Z_N$.
+
+\paragraph{Hardness Assumptions.}
+\begin{definition}[Group Action Inverse Problem, $\GAIP$]
+\label{def:gaip}
+Given $E_0$ and $E_1 = [s]\star E_0$ for $s \xleftarrow{\$} \Z_N$, output $s$. $\GAIP_\secparam$ is $(\tau,\epsilon)$-hard if every $\tau$-time adversary succeeds with probability at most $\epsilon$.
+\end{definition}
+
+\begin{definition}[Decisional Group Action Assumption, $\GADDH$]
+\label{def:gaddh}
+No PPT distinguisher separates $(E_0,[a]\star E_0,[b]\star E_0,[ab]\star E_0)$ from $(E_0,[a]\star E_0,[b]\star E_0,[c]\star E_0)$ for independent $a,b,c \xleftarrow{\$} \Z_N$ with advantage better than $\negl(\secparam)$, where $[ab]\star E_0$ abbreviates $[a]\star([b]\star E_0)$.
+\end{definition}
+
+$\GAIP$ underlies unforgeability of the base scheme; $\GADDH$ is used only in \Cref{sec:security} for robustness of the threshold combination step.
+
+\paragraph{Threshold Signature Syntax.}
+A $(t,n)$-threshold scheme is $(\Gen,\Share,\Sign,\Combine,\Verify)$: $\Gen$ samples $s \in \Z_N$ and $\pk = [s]\star E_0$; $\Share$ distributes $s$ into shares such that any $t$ determine $s$ and any $t{-}1$ reveal nothing; $\Sign$, run by a qualified $T$, produces $\sigma$ without reconstructing $s$, invoking $\Combine$ through an untrusted combiner; $\Verify$ is single-party and identical to the base scheme's. We require correctness, EUF-CMA unforgeability against up to $t{-}1$ corrupted signers, and robustness against up to $t{-}1$ malicious participants.

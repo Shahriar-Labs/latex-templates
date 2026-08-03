@@ -1,0 +1,50 @@
+\section{Introduction}
+
+\subsection{Purpose}
+This runbook specifies the exact, repeatable sequence of steps required to integrate the
+Nimbus Payment Gateway (adapter release \texttt{v3.4.0}) into the Nexa Core Platform, and to
+validate that the integration behaves correctly before, during, and after the production
+cutover. It is written for the engineer holding the pager during the change window, not as a
+design reference: every command below is copy-pasteable and every validation step has an
+explicit pass/fail condition. Architectural rationale lives in the companion
+\emph{Microservices Integration Interface Design Document}; this document assumes that design
+is final and focuses on execution.
+
+\subsection{Scope}
+\begin{itemize}
+  \item \textbf{In scope:} deployment of the Nimbus adapter service into the
+    Vertex Cloud production cluster, schema changes required by the adapter, smoke and load
+    validation, monitoring hookup in Apex, and rollback procedures.
+  \item \textbf{Out of scope:} Nimbus's internal settlement reconciliation jobs (covered by
+    Nimbus's own operations runbook), and the Meridian storefront checkout UI changes (tracked
+    separately by the Meridian integration team).
+\end{itemize}
+
+\subsection{Audience}
+IT operations and platform engineers executing or approving the change window; Synapse QA
+engineers running validation; on-call responders who may need to execute rollback without
+having read the design document first.
+
+\subsection{Revision History}
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabularx}{\textwidth}{@{}l l l Y@{}}
+    \toprule
+    \textbf{Version} & \textbf{Date} & \textbf{Author} & \textbf{Summary of Changes} \\
+    \midrule
+    1.0 & 2026-04-02 & D. Alcaraz (Nexa) & Initial draft, staging-only procedure. \\
+    2.0 & 2026-05-19 & R. Okafor (Synapse QA) & Added load-test validation matrix and rollback triggers. \\
+    2.1 & 2026-06-11 & D. Alcaraz (Nexa) & Corrected synctex-unrelated adapter port from 8443 to 8843. \\
+    3.0 & 2026-07-14 & M. Sundberg (Vertex Cloud) & Production cutover sequence, blue/green promotion steps, Apex dashboard links. \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Document control log.}
+\end{table}
+
+\subsection{Related Documents}
+\begin{itemize}
+  \item \emph{Microservices Integration Interface Design Document}, RB-2201, Nexa Platform Engineering.
+  \item \emph{Vertex Cloud Production Access and Change Management Policy}, VC-POL-009.
+  \item \emph{Apex Monitoring Alert Runbook: Payment Path}, APX-RB-114.
+\end{itemize}

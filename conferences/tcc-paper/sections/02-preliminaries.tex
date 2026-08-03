@@ -1,0 +1,93 @@
+\section{Preliminaries}
+\label{sec:prelim}
+
+For $n\in\N$, write $[n]=\{1,\ldots,n\}$.  Sampling $x$ uniformly from a
+finite set $S$ is denoted $x\getsR S$.  All algorithms receive the unary
+security parameter $1^\lambda$.  A function is negligible if it eventually
+falls below the inverse of every positive polynomial.  Probabilities are over
+the coins of all algorithms and the random oracle.
+
+\subsection{Min-entropy with side information}
+
+The min-entropy of a discrete random variable $X$ is
+\[
+  H_\infty(X)=-\log_2\max_x\Pr[X=x].
+\]
+For jointly distributed $(X,Z)$, we use the worst-case conditional quantity
+\begin{equation}
+  H_\infty(X\mid Z)
+  =-\log_2\max_{z\in\Supp(Z),x}\Pr[X=x\mid Z=z].
+  \label{eq:conditional-minentropy}
+\end{equation}
+This strong form is convenient for adaptive openings: after every admissible
+history, no particular unopened message has probability greater than $2^{-k}$.
+
+\begin{definition}[Residual $k$-entropy]
+\label{def:residual-entropy}
+Let $M=(M_1,\ldots,M_n)\leftarrow\dist$.  We say that $\dist$ has residual
+$k$-entropy if, for every $i\in[n]$ and every $I\subseteq[n]\setminus\{i\}$,
+\[
+  H_\infty(M_i\mid M_I,I)\geq k,
+\]
+where $M_I=(M_j)_{j\in I}$.  Public auxiliary information is included as an
+additional conditioned variable when present.
+\end{definition}
+
+The definition excludes, for example, a batch in which all messages are copies
+of one low-entropy secret.  It permits arbitrary correlations so long as every
+still-hidden coordinate retains the stated pointwise uncertainty.
+
+\subsection{Random oracles and programming}
+
+A random oracle $\Hash:\bits^*\to\bits^\tau$ is represented by a lazy-sampled
+table $T$.  A fresh input $X$ receives an independent uniform value
+$T[X]\getsR\bits^\tau$; repeated queries return the stored value.  A simulator
+may program $T[X]:=y$ without changing the distribution provided that $X$ has
+not previously been queried.  We record a bad event whenever programming is
+attempted at a point already in $T$.
+
+The following standard lemma is the engine of our proof.
+
+\begin{lemma}[Identical until bad]
+\label{lem:iub}
+Let games $G_0$ and $G_1$ proceed identically until an event $\bad$, and let
+$b_j$ be the output of $G_j$.  Then
+\[
+  \bigl|\Pr[b_0=1]-\Pr[b_1=1]\bigr|
+  \leq \Pr[\bad].
+\]
+\end{lemma}
+
+\begin{proof}
+Couple the games with identical randomness up to their first divergent step.
+If $\bad$ does not occur, their complete transcripts and outputs agree.
+Taking a union bound over the remaining executions gives the claim.
+\end{proof}
+
+\subsection{Canonical encodings}
+
+For a byte string $x$, define $L(x)$ as a fixed-width encoding of $|x|$
+followed by $x$.  Integers are represented in unsigned big-endian form using a
+public fixed width.  We use
+\begin{align}
+ \Encode(\Tag,sid,i,m;r)
+   ={}& \mathtt{TCC\char`_COM\char`_V1}\,\|\,L(\Tag)\,\|\,L(sid) \notag\\
+      &{}\|\,\mathsf{I2OSP}(i)\,\|\,L(m)\,\|\,L(r).
+  \label{eq:encoding}
+\end{align}
+The literal prefix is an ASCII byte string, not human-readable metadata that
+may be normalized by a transport layer.  Every accepted opening is parsed and
+then re-encoded canonically before hashing.
+
+\begin{lemma}[Context separation]
+\label{lem:context-separation}
+If two strings produced by \cref{eq:encoding} are equal, then their protocol
+tags, session identifiers, positions, messages, and salts are respectively
+equal.
+\end{lemma}
+
+\begin{proof}
+The version prefix and integer width are fixed.  Each variable-length field is
+length-delimited, so a left-to-right parser has exactly one valid parse.
+Equality of encoded strings therefore implies equality field by field.
+\end{proof}

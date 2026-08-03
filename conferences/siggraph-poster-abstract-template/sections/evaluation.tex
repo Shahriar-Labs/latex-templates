@@ -1,0 +1,63 @@
+% sections/evaluation.tex
+\section{Evaluation and Results}
+We evaluate the performance of Synapse-Render on a set of challenging synthetic and real-world scenes. We compare our approach against state-of-the-art inverse rendering baselines, focusing on reconstruction quality, rendering speed, and optimization time.
+
+\subsection{Quantitative Results}
+All experiments were conducted on the Nexa Cloud Platform using a single node equipped with eight NVIDIA H100 GPUs. Table~\ref{tab:results} provides a quantitative comparison on the Nexa Validation Set.
+
+\begin{table}[t]
+  \caption{Quantitative comparison of reconstruction quality and optimization speed on the Nexa Validation Set. Bold indicates the best result.}
+  \label{tab:results}
+  \centering
+  \begin{tabular}{lcccc}
+    \toprule
+    Method & PSNR (dB) $\uparrow$ & SSIM $\uparrow$ & Forward FPS $\uparrow$ & Opt. Time (min) $\downarrow$ \\
+    \midrule
+    Meridian-NeRF & 26.4 & 0.882 & 12.5 & 120.0 \\
+    Vertex-Baseline & 28.4 & 0.915 & 45.0 & 45.5 \\
+    Apex-GS & 31.2 & 0.941 & 90.0 & 25.0 \\
+    \rowcolor{SynapseBlue!10}
+    \textbf{Synapse-Render (Ours)} & \textbf{35.6} & \textbf{0.974} & \textbf{140.0} & \textbf{8.2} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+As shown, Synapse-Render outperforms all baselines. It achieves a peak signal-to-noise ratio (PSNR) of 35.6~dB, representing a 4.2~dB improvement over the closest baseline (Apex-GS), while reducing the optimization time by more than $60\%$.
+
+\subsection{Convergence Analysis}
+Figure~\ref{fig:psnr_curve} illustrates the PSNR convergence curves over 2000 optimization steps. 
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      xlabel={Optimization Steps},
+      ylabel={PSNR (dB)},
+      xmin=0, xmax=2000,
+      ymin=10, ymax=40,
+      xtick={0, 500, 1000, 1500, 2000},
+      ytick={10, 15, 20, 25, 30, 35, 40},
+      legend pos=south east,
+      xmajorgrids=true,
+      ymajorgrids=true,
+      grid style={dashed, gray!30},
+      width=\linewidth,
+      height=6cm,
+      font=\sffamily\small
+    ]
+      \addplot[color=SynapseBlue, mark=*, thick] coordinates {
+        (0, 12.5) (250, 22.1) (500, 28.4) (1000, 32.7) (1500, 34.8) (2000, 35.6)
+      };
+      \addlegendentry{Synapse-Render (Ours)}
+      
+      \addplot[color=VertexIndigo, mark=square*, thick] coordinates {
+        (0, 12.5) (250, 18.5) (500, 22.3) (1000, 26.1) (1500, 27.8) (2000, 28.4)
+      };
+      \addlegendentry{Vertex-Baseline}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Reconstruction quality (PSNR in dB) over the course of optimization steps. Synapse-Render achieves faster convergence and higher final quality compared to the Vertex baseline.}
+  \label{fig:psnr_curve}
+\end{figure}
+
+Due to our boundary-free gradient formulation, Synapse-Render experiences stable, low-variance gradient updates from the very beginning of the optimization. In contrast, the Vertex baseline suffers from high gradient variance, slowing its convergence and leading to sub-optimal local minima.

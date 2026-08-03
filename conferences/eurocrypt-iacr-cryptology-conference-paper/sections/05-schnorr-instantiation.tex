@@ -1,0 +1,80 @@
+\section{Schnorr Instantiation}
+\label{sec:schnorr}
+
+Let $\G=\langle g\rangle$ be a cyclic group of prime order $p$, written
+multiplicatively.  A secret key is $y\getsr\Z_p$ and the public key is
+$Y=g^y$.  To prove knowledge of $y$, the prover samples $r\getsr\Z_p$, sends
+$A=g^r$, receives $c\in\Z_p$, and returns $z=r+cy\bmod p$.  Verification checks
+\begin{equation}
+  \label{eq:schnorr-verify}
+  g^z \stackrel{?}{=} A\,Y^c.
+\end{equation}
+Given accepting transcripts $(A,c,z)$ and $(A,c',z')$ with $c\ne c'$, the
+witness is
+\begin{equation}
+  \label{eq:schnorr-extract}
+  y=(z-z')(c-c')^{-1}\bmod p.
+\end{equation}
+Thus special soundness is perfect.  For signatures, set
+$x=\mathsf{Digest}(m)$ and include the complete, canonical public-key encoding
+in \cref{eq:encoding}.  The response remains one scalar, and the transform adds
+exactly $\rho$ salt bits to an ordinary Schnorr signature.
+
+\subsection{Concrete accounting}
+
+The salt terms are information-theoretic and easy to size independently of the
+group assumption.  \Cref{tab:parameters} reports conservative upper bounds for
+$q_H=2^{40}$ total hash queries and several proof-query budgets.  Values are
+computed directly from
+\[
+  \delta_{\mathrm{salt}}+\delta_{\mathrm{pre}}
+  \le \frac{q_P(q_P-1)}{2^{\rho+1}}+\frac{q_Pq_H}{2^\rho}.
+\]
+They are bounds, not measured failure rates.
+
+\begin{table}[t]
+  \caption{Upper bounds on salt-related bad events for $q_H=2^{40}$.}
+  \label{tab:parameters}
+  \centering
+  \small
+  \begin{tabular}{@{}rrrr@{}}
+    \toprule
+    Salt $\rho$ & Proof queries $q_P$ & Pre-query bound & Collision bound \\
+    \midrule
+    128 & $2^{20}$ & $2^{-68}$ & $<2^{-89}$ \\
+    128 & $2^{32}$ & $2^{-56}$ & $<2^{-65}$ \\
+    192 & $2^{32}$ & $2^{-120}$ & $<2^{-129}$ \\
+    192 & $2^{48}$ & $2^{-104}$ & $<2^{-97}$ \\
+    256 & $2^{64}$ & $2^{-152}$ & $<2^{-129}$ \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+With a $256$-bit challenge, the guessing term $2^{-t}$ is dominated by either
+line of the table.  A $128$-bit salt is adequate for many bounded deployments,
+but a $192$-bit salt gives more comfortable separation when the lifetime proof
+count is uncertain.  The right choice should follow the system-wide query
+budget, not the security level of a single key in isolation.
+
+\subsection{Implementation profile}
+
+The proof assumptions translate into the following interoperable profile.
+
+\begin{enumerate}
+  \item Serialize group elements canonically and reject non-canonical or
+        invalid encodings before hashing or verification.
+  \item Use a fixed ASCII protocol identifier and version byte.  Do not allow
+        callers to select the tag dynamically.
+  \item Encode all variable-length fields with fixed-width lengths, and bind
+        the public key even when it is available from surrounding context.
+  \item Draw each salt from the operating system's cryptographic random-number
+        generator.  Treat RNG failure as a signing failure.
+  \item Reduce the hash output to $\Z_p$ with a specified unbiased method, such
+        as rejection sampling or a standard hash-to-field procedure.
+  \item Verify lengths, group membership, and the equation in
+        \cref{eq:schnorr-verify} before returning success.
+\end{enumerate}
+
+These checks are not cosmetic.  Non-canonical group encodings, for example,
+can violate injectivity even when the high-level tuple in \cref{eq:encoding}
+looks unambiguous.

@@ -1,0 +1,157 @@
+% Packages, colours and custom commands for this template.
+% ================================================================
+% Cloud Infrastructure Architecture Design Document
+% Standalone reference architecture; no external assets required.
+% Compile with: latexmk -pdf main.tex
+% ================================================================
+
+
+% --- Encoding and typography -------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[default]{lato}
+\usepackage{inconsolata}
+\usepackage{microtype}
+\usepackage{amssymb}
+\emergencystretch=2em
+
+% --- Page and document mechanics ---------------------------------
+\usepackage[
+  top=24mm,
+  bottom=24mm,
+  left=22mm,
+  right=22mm,
+  headheight=16pt,
+  footskip=15mm
+]{geometry}
+\usepackage{setspace}
+\setstretch{1.08}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\usepackage{needspace}
+\usepackage{lastpage}
+
+% --- Color --------------------------------------------------------
+\usepackage[dvipsnames,svgnames,table]{xcolor}
+\definecolor{navy}{HTML}{102A43}
+\definecolor{blue}{HTML}{1261A0}
+\definecolor{cyan}{HTML}{0E7490}
+\definecolor{teal}{HTML}{0F766E}
+\definecolor{green}{HTML}{2F855A}
+\definecolor{amber}{HTML}{B7791F}
+\definecolor{red}{HTML}{C53030}
+\definecolor{ink}{HTML}{243B53}
+\definecolor{muted}{HTML}{627D98}
+\definecolor{line}{HTML}{D9E2EC}
+\definecolor{pale}{HTML}{F4F7FA}
+\definecolor{bluepale}{HTML}{EAF4FC}
+\definecolor{greenpale}{HTML}{EAF7F2}
+\definecolor{amberpale}{HTML}{FFF8E6}
+\definecolor{redpale}{HTML}{FDEDED}
+
+% --- Tables, lists, and graphics ---------------------------------
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,calc,backgrounds,shapes.geometric}
+\usepackage[most]{tcolorbox}
+\usepackage{fontawesome5}
+
+\renewcommand{\arraystretch}{1.28}
+\setlength{\tabcolsep}{5.5pt}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{Z}{>{\centering\arraybackslash}X}
+
+\setlist[itemize]{leftmargin=1.35em,itemsep=2pt,topsep=3pt,label=\textcolor{blue}{\small\textbullet}}
+\setlist[enumerate]{leftmargin=1.6em,itemsep=2pt,topsep=3pt,label=\textcolor{blue}{\arabic*.}}
+
+% --- Headings, header, and footer --------------------------------
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\titleformat{\section}
+  {\needspace{4\baselineskip}\Large\bfseries\color{navy}}
+  {\thesection}{0.65em}{}
+  [\vspace{2pt}\color{blue}\titlerule]
+\titleformat{\subsection}
+  {\needspace{3\baselineskip}\large\bfseries\color{ink}}
+  {\thesubsection}{0.65em}{}
+\titleformat{\subsubsection}
+  {\needspace{2\baselineskip}\normalsize\bfseries\color{blue}}
+  {\thesubsubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+\titlespacing*{\subsection}{0pt}{13pt}{5pt}
+\titlespacing*{\subsubsection}{0pt}{9pt}{3pt}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{muted}\textbf{Asteria Cloud Platform} \textbar{} Architecture Design}
+\fancyhead[R]{\small\color{muted}CONFIDENTIAL}
+\fancyfoot[L]{\footnotesize\color{muted}ARC-CLD-001 \textbar{} Version 1.0}
+\fancyfoot[C]{\footnotesize\color{muted}Page \thepage\ of \pageref{LastPage}}
+\fancyfoot[R]{\footnotesize\color{muted}02 August 2026}
+\renewcommand{\headrulewidth}{0.35pt}
+\renewcommand{\footrulewidth}{0.35pt}
+
+% --- Links --------------------------------------------------------
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue,
+  urlcolor=cyan,
+  citecolor=blue,
+  pdftitle={Asteria Cloud Platform -- Infrastructure Architecture Design},
+  pdfauthor={Cloud Platform Engineering},
+  pdfsubject={Production cloud infrastructure reference architecture},
+  pdfkeywords={cloud, architecture, AWS, Kubernetes, security, resilience}
+}
+
+% --- Reusable visual components ----------------------------------
+\newtcolorbox{summarybox}[1][Executive decision]{
+  enhanced,breakable,colback=bluepale,colframe=blue,boxrule=0.7pt,
+  arc=2pt,left=8pt,right=8pt,top=7pt,bottom=7pt,
+  fonttitle=\bfseries\color{navy},title={\faCompass\quad #1}
+}
+\newtcolorbox{securitybox}[1][Security requirement]{
+  enhanced,breakable,colback=greenpale,colframe=teal,boxrule=0.7pt,
+  arc=2pt,left=8pt,right=8pt,top=7pt,bottom=7pt,
+  fonttitle=\bfseries\color{teal},title={\faLock\quad #1}
+}
+\newtcolorbox{warningbox}[1][Attention]{
+  enhanced,breakable,colback=amberpale,colframe=amber,boxrule=0.7pt,
+  arc=2pt,left=8pt,right=8pt,top=7pt,bottom=7pt,
+  fonttitle=\bfseries\color{amber},title={\faExclamationTriangle\quad #1}
+}
+\newtcolorbox{riskbox}[1][Risk]{
+  enhanced,breakable,colback=redpale,colframe=red,boxrule=0.7pt,
+  arc=2pt,left=8pt,right=8pt,top=7pt,bottom=7pt,
+  fonttitle=\bfseries\color{red},title={\faExclamationCircle\quad #1}
+}
+\newcommand{\pill}[2]{\tcbox[on line,boxrule=0pt,arc=8pt,left=5pt,right=5pt,top=2pt,bottom=2pt,colback=#1!13,coltext=#1]{\scriptsize\bfseries #2}}
+\newcommand{\yes}{\textcolor{green}{\faCheckCircle}}
+\newcommand{\no}{\textcolor{red}{\faTimesCircle}}
+\newcommand{\partialstatus}{\textcolor{amber}{\faExclamationCircle}}
+\newcommand{\code}[1]{\texttt{\small #1}}
+\newcommand{\tableheader}{\rowcolor{navy}\color{white}\bfseries}
+
+% --- Diagram styles ----------------------------------------------
+\tikzset{
+  flow/.style={-{Latex[length=2.2mm]},draw=muted,line width=0.7pt},
+  flowblue/.style={-{Latex[length=2.2mm]},draw=blue,line width=0.9pt},
+  dashedflow/.style={-{Latex[length=2.2mm]},draw=muted,dashed,line width=0.7pt},
+  tier/.style={draw=line,fill=white,rounded corners=2pt,minimum height=10mm,
+    align=center,font=\scriptsize\bfseries,text=ink},
+  service/.style={draw=blue!55,fill=bluepale,rounded corners=2pt,minimum height=9mm,
+    align=center,font=\scriptsize,text=ink},
+  data/.style={cylinder,shape border rotate=90,aspect=0.25,draw=teal!65,
+    fill=greenpale,minimum height=10mm,align=center,font=\scriptsize,text=ink},
+  zone/.style={draw=line,dashed,rounded corners=3pt,inner sep=6pt},
+  label/.style={font=\tiny\bfseries,text=muted,fill=white,inner sep=1pt}
+}

@@ -1,0 +1,44 @@
+\section{Transport bindings}
+
+\subsection{HTTPS binding}
+
+The default binding uses HTTPS with \code{Content-Type: application/cbor}.
+
+\begin{tabularx}{\textwidth}{@{}L{27mm}L{20mm}Y@{}}
+  \toprule
+  \textbf{Operation} & \textbf{Method} & \textbf{Path} \\
+  \midrule
+  Discover & POST & \path{/efup/v1/devices/\{device_id\}/discover} \\
+  Accept offer & POST & \path{/efup/v1/devices/\{device_id\}/sessions/\{session_id\}/accept} \\
+  Status event & POST & \path{/efup/v1/devices/\{device_id\}/sessions/\{session_id\}/status} \\
+  Artifact bytes & GET & Signed absolute URI from the manifest, with optional
+    \code{Range: bytes=start-end}. \\
+  \bottomrule
+\end{tabularx}
+
+Successful control responses use HTTP 200; an accepted asynchronous status event
+may use 202. A no-update result is a protocol body with HTTP 200, not HTTP 404.
+Malformed input uses 400, authentication failure 401, authorization failure 403,
+conflict 409, rate limiting 429, and transient service failure 503. Control
+responses \must include \code{Cache-Control: no-store}. Artifact responses may be
+cached if immutable and keyed by artifact identity.
+
+\subsection{MQTT binding}
+
+MQTT 5 deployments use QoS 1 for control messages and status. Recommended topics are:
+
+\begin{lstlisting}
+efup/v1/devices/{device_id}/discover       device -> service
+efup/v1/devices/{device_id}/offer          service -> device
+efup/v1/devices/{device_id}/status         device -> service
+efup/v1/devices/{device_id}/command        service -> device
+\end{lstlisting}
+
+Topic authorization \must restrict a device to its own identifier. Retained offer
+messages are forbidden unless they carry an unambiguous release and expiration
+policy and the device still performs every manifest check. Commands are hints to
+poll, pause, resume, or cancel; they \mustnot contain unsigned replacement
+artifact metadata. Large artifacts should be transferred over HTTPS even when
+control messages use MQTT.
+
+% -----------------------------------------------------------------------------

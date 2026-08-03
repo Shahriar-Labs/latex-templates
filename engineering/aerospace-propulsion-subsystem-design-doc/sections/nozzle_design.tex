@@ -1,0 +1,100 @@
+\section{Nozzle Contour \& Aerodynamic Design}
+The expansion of the combustion products from the throat to the exit plane is designed using the Method of Characteristics (MOC) to produce a shock-free, optimized parabolic contour (Rao Bell nozzle)~\cite{Anderson2003}. This minimizes divergence losses while keeping nozzle length and mass within stage limits.
+
+\subsection{Geometric Profile}
+The expansion ratio $\epsilon = A_e / A_t = 80.0$ yields a high area expansion suited for vacuum operation. The exit diameter $D_e$ is calculated as:
+\begin{equation}
+    D_e = D_t \sqrt{\epsilon} = 158.9 \text{~mm} \cdot \sqrt{80} = 1421.2 \text{~mm} = 1.421 \text{~m}
+\end{equation}
+
+The nozzle convergent section uses a standard $60^\circ$ half-angle convergence, and the divergent section starts at the throat with an initial expansion angle $\theta_i = 18.2^\circ$ and terminates at the exit plane with a terminal angle $\theta_e = 8.5^\circ$. The overall length of the nozzle divergent section is $1.85\text{~m}$, representing an $80\%$ bell nozzle.
+
+\subsection{Thrust Chamber Contour Schematic}
+Figure~\ref{fig:nozzle_contour} illustrates the cross-section of the Nimbus-X thrust chamber, detailing the injector plane, throat section, and divergent bell profile.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}[scale=1.2]
+        % Background shading for flow
+        \fill[highlight!10] 
+            (-3.5, 1.4) -- (-1.2, 1.4) 
+            to[out=0, in=125] (-0.3, 0.4) 
+            to[out=-55, in=180] (0, 0.35) 
+            to[out=0, in=190] (4.5, 1.9) 
+            -- (4.5, -1.9) 
+            to[out=170, in=0] (0, -0.35) 
+            to[out=180, in=55] (-0.3, -0.4) 
+            to[out=-125, in=0] (-1.2, -1.4) 
+            -- (-3.5, -1.4) -- cycle;
+            
+        % Flame core gradient or shading
+        \fill[highlight!30] 
+            (-3.5, 0.8) -- (-1.2, 0.8) 
+            to[out=0, in=120] (-0.3, 0.3) 
+            to[out=-60, in=180] (0, 0.25) 
+            to[out=0, in=195] (4.5, 1.2) 
+            -- (4.5, -1.2) 
+            to[out=165, in=0] (0, -0.25) 
+            to[out=180, in=60] (-0.3, -0.3) 
+            to[out=-120, in=0] (-1.2, -0.8) 
+            -- (-3.5, -0.8) -- cycle;
+
+        % Axis of symmetry
+        \draw[dashed, gray!80, thick] (-3.8, 0) -- (5.0, 0) node[right, black] {Centerline};
+        
+        % Upper Contour
+        \draw[ultra thick, primary] 
+            (-3.5, 1.4) -- (-1.2, 1.4) 
+            to[out=0, in=125] (-0.3, 0.4) 
+            to[out=-55, in=180] (0, 0.35) 
+            to[out=0, in=190] (4.5, 1.9);
+            
+        % Lower Contour
+        \draw[ultra thick, primary] 
+            (-3.5, -1.4) -- (-1.2, -1.4) 
+            to[out=0, in=-125] (-0.3, -0.4) 
+            to[out=55, in=180] (0, -0.35) 
+            to[out=0, in=170] (4.5, -1.9);
+
+        % Injector Face
+        \draw[thick, primary, fill=bordergray] (-3.6, -1.4) rectangle (-3.5, 1.4);
+        \node[rotate=90, font=\scriptsize] at (-3.55, 0) {Injector Face};
+
+        % Throat line and dimensions
+        \draw[dotted, secondary, thick] (0, -0.35) -- (0, 0.35);
+        \draw[<->, secondary] (0, -0.35) -- (0, 0.35) node[midway, left=2pt] {$D_t$};
+        \node[above, secondary] at (0, 0.35) {Throat};
+
+        % Chamber dimensions
+        \draw[<->, secondary] (-2.0, -1.4) -- (-2.0, 1.4) node[midway, right=2pt] {$D_c$};
+        \node[above, secondary] at (-2.0, 1.4) {Chamber};
+        
+        % Exit plane dimensions
+        \draw[dotted, secondary, thick] (4.5, -1.9) -- (4.5, 1.9);
+        \draw[<->, secondary] (4.5, -1.9) -- (4.5, 1.9) node[midway, left=2pt] {$D_e$};
+        \node[above, secondary] at (4.5, 1.9) {Exit};
+
+        % Gas Flow Arrows
+        \draw[-{Stealth[scale=1.2]}, highlight, ultra thick] (-3.0, 0) -- (-2.2, 0) node[above, black, midway, font=\scriptsize\bfseries] {Combustion};
+        \draw[-{Stealth[scale=1.5]}, highlight, ultra thick] (1.0, 0) -- (2.5, 0) node[above, black, midway, font=\scriptsize\bfseries] {Supersonic Expansion};
+
+        % Labels of regions
+        \node[font=\scriptsize\bfseries] at (-2.0, -1.7) {Convergent Zone};
+        \node[font=\scriptsize\bfseries] at (2.2, -2.2) {Divergent Bell Section};
+
+    \end{tikzpicture}
+    \caption{Cross-sectional schematic and flow path of the Nimbus-X thrust chamber.}
+    \label{fig:nozzle_contour}
+\end{figure}
+
+\subsection{Mach Number Profile}
+As the combustion products expand through the convergent-divergent nozzle, the flow transitions from subsonic ($M < 1$) in the chamber to sonic ($M = 1$) at the throat, and supersonic ($M > 1$) in the divergent section. 
+The relationship between Mach number $M$ and area ratio $A/A_t$ is determined by the 1D isentropic relation:
+\begin{equation}
+    \frac{A}{A_t} = \frac{1}{M} \left[ \frac{2}{\gamma+1} \left( 1 + \frac{\gamma-1}{2} M^2 \right) \right]^{\frac{\gamma+1}{2(\gamma-1)}}
+\end{equation}
+For $\gamma = 1.22$ and exit area expansion $\epsilon = 80.0$, this yields an exit Mach number of:
+\begin{equation}
+    M_e = 4.62
+\end{equation}
+resulting in high kinetic energy conversion and directed momentum.

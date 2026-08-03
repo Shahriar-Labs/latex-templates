@@ -1,0 +1,44 @@
+\section{Status reporting and observability}
+
+\subsection{STATUS message}
+
+Status events are monotonic within a session. Each body includes:
+
+\begin{lstlisting}[language={}]
+{
+  "session_id": "4df0b956e28d41cd8e5cb5849b84906a",
+  "sequence": 17,
+  "release_id": "80c43260-26d2-4e1a-a34b-0914c176f85e",
+  "state": "DOWNLOADING",
+  "progress": {
+    "bytes_verified": 104857600,
+    "bytes_total": 188743680,
+    "artifact_id": "ca9f67bd-ecc4-4ec0-ac14-a56a9003a616"
+  },
+  "device_time": "2026-08-02T06:44:10Z",
+  "boot_id": "541790e7-3585-44f3-b88c-bec9528bc242"
+}
+\end{lstlisting}
+
+Required state events are \code{OFFER\_ACCEPTED}, \code{DOWNLOAD\_STARTED},
+\code{DOWNLOAD\_VERIFIED}, \code{STAGED}, \code{ACTIVATION\_SCHEDULED},
+\code{TRIAL\_STARTED}, \code{CONFIRMED}, \code{ROLLED\_BACK}, and
+\code{FAILED}. Devices \should report progress no more frequently than every 30
+seconds or each 5\% increase, whichever is less frequent, to avoid fleet storms.
+
+The service acknowledges the highest contiguous status sequence received.
+Devices retain terminal status until acknowledged or until a locally defined
+minimum retention of seven days. Duplicate events are normal. A service \mustnot
+infer success from silence, download completion, or reboot; only \code{CONFIRMED}
+is terminal success.
+
+\subsection{Privacy and log hygiene}
+
+Logs may contain device, release, campaign, artifact, error, duration, and byte
+counts. They \mustnot contain bearer tokens, private keys, raw device credentials,
+full signed URLs, or unredacted user data. Operators \should apply retention and
+access controls appropriate to device identifiers and location-sensitive network
+metadata. Error detail sent to the service must be bounded and structured, not an
+unrestricted memory dump.
+
+% -----------------------------------------------------------------------------

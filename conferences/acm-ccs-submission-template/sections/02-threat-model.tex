@@ -1,0 +1,50 @@
+\section{Threat Model}
+\label{sec:threat-model}
+
+We consider a multi-tenant encrypted key-value store operated by a cloud
+provider. Each tenant's records are encrypted end-to-end under keys the
+provider never observes, so the confidentiality of record \emph{values} is
+outside our scope; we focus entirely on what leaks from the
+\emph{operation} of the store.
+
+\smallskip
+\noindent\textbf{Adversary.} We assume a persistent, honest-but-curious
+adversary $\mathcal{A}$ who occupies one of the following vantage points:
+(i) the cloud operator hosting the backend, who observes every request
+delivered to storage; (ii) a co-tenant sharing the same physical host, who
+observes access patterns through a coarse side channel (e.g., cache or
+page-fault timing) correlated with backend activity; or (iii) a compelled
+or compromised logging pipeline that retains request metadata. In all
+three cases $\mathcal{A}$ sees, for every request reaching the backend, the
+encrypted record identifiers touched and the byte size of the response.
+$\mathcal{A}$ does \emph{not} see plaintext keys, plaintext values, or the
+tenant-side query before it reaches \sysname{}.
+
+\smallskip
+\noindent\textbf{Auxiliary knowledge.} Consistent with prior leakage-abuse
+literature~\cite{kellaris2016generic,grubbs2018pumpup}, we assume
+$\mathcal{A}$ has approximate, public knowledge of the shape of the key
+distribution for a tenant's workload class (e.g., that a billing table's
+account identifiers follow a roughly Zipfian access frequency, obtained
+from a public pricing page or a competitor's documented schema), but not
+the tenant's live query log or plaintext values.
+
+\smallskip
+\noindent\textbf{Goal.} $\mathcal{A}$'s goal is \emph{reconstruction}: given
+the observed transcript of accesses and volumes over a monitoring window,
+recover a mapping from encrypted identifiers to plaintext keys (or their
+rank order) with better accuracy than random guessing informed only by the
+auxiliary distribution.
+
+\smallskip
+\noindent\textbf{Trust assumptions and non-goals.} We assume the
+\sysname{} gateway itself is trustworthy and operated by the tenant or a
+party the tenant trusts with plaintext query intent --- \sysname{} sees
+unencrypted queries by construction, since it must decide how to batch,
+pad, and reorder them. A compromised gateway is out of scope; deployments
+that cannot accept this assumption should run \sysname{} inside tenant
+infrastructure, upstream of the network boundary the cloud operator
+controls. \sysname{} also does not defend against traffic analysis that
+occurs \emph{before} requests reach the gateway (e.g., an adversary on the
+tenant's own corporate network), nor does it address denial-of-service or
+availability attacks against the backend.

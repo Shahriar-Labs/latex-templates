@@ -1,0 +1,28 @@
+\section{Fleet rollout requirements}
+
+Campaign assignment \should use a stable pseudorandom bucket so that reconnects
+do not move a device between rollout cohorts:
+
+\[
+  \textit{bucket} =
+  \operatorname{uint64}(\operatorname{HMAC}_{K}
+  (\textit{campaign\_id} \parallel \textit{device\_id}))[0..9999].
+\]
+
+The campaign includes devices whose bucket is below the current basis-point
+threshold and that satisfy inventory filters. The HMAC key is a service secret;
+the bucket controls availability, not device-side authorization.
+
+A recommended rollout proceeds through internal devices, 1\%, 5\%, 25\%, 50\%,
+and 100\% cohorts with an observation period at each gate. Automated halt criteria
+should consider confirmation rate, rollback rate, health-check failures, boot
+loops, installation failures, and device-specific safety signals. Success
+denominators must exclude devices that never accepted an offer and separately
+show deferred/offline populations.
+
+The service must support pause and cancellation, but devices remain responsible
+for safe atomic boundaries. Rollout controls \mustnot bypass signed targeting,
+anti-rollback, or health confirmation. Emergency deployment may shorten timing;
+it may not weaken cryptographic acceptance.
+
+% -----------------------------------------------------------------------------

@@ -1,0 +1,50 @@
+\section{Scope and Context}
+
+\subsection{Business context}
+
+Asteria processes merchant catalogs, quotes, orders, and payment-provider tokens for customers in North America and Europe. It has a predictable daily baseline with campaign-driven bursts up to five times normal traffic. The platform must deploy frequently without compromising transaction integrity or auditability.
+
+\subsection{In scope}
+
+\begin{itemize}
+  \item AWS organization, accounts, identity federation, guardrails, and centralized audit logging.
+  \item DNS, edge protection, regional networking, compute, data services, and service-to-service connectivity.
+  \item Continuous delivery, infrastructure as code, secrets, observability, backup, recovery, and cost controls.
+  \item Production and structurally equivalent non-production environments.
+\end{itemize}
+
+\subsection{Out of scope}
+
+Application-domain design, payment-provider implementation, end-user device security, corporate office networking, detailed data-retention schedules, and business continuity outside the technology platform are governed by separate documents.
+
+\subsection{Assumptions and constraints}
+
+\begin{tabularx}{\textwidth}{@{}C{12mm}Y L{35mm}@{}}
+  \toprule
+  \rowcolor{navy}
+  \color{white}\textbf{ID} & \color{white}\textbf{Statement} & \color{white}\textbf{Design effect} \\
+  \midrule
+  A-01 & Stateless services can run concurrently in multiple Availability Zones. & Horizontal scaling \\
+  \rowcolor{pale}
+  A-02 & Card data is tokenized by the payment provider and is not persisted. & Reduced sensitive-data scope \\
+  A-03 & The primary region is \code{us-east-1}; recovery is \code{us-west-2}. & Regional topology \\
+  \rowcolor{pale}
+  C-01 & Production cannot depend on inbound SSH, shared users, or static cloud keys. & Federated, audited access \\
+  C-02 & New managed-service classes require architecture and security review. & Controlled technology growth \\
+  \rowcolor{pale}
+  C-03 & Recovery-region recurring cost should remain below 35\% of primary cost. & Warm, not active-active, recovery \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Architecture principles}
+
+\begin{enumerate}
+  \item \textbf{Design for failure.} Components are replaceable; recovery paths are automated and exercised.
+  \item \textbf{Minimize trust.} Authenticate every workload, authorize the narrow action, and record the decision.
+  \item \textbf{Keep data authoritative.} A single system owns each mutable record; integration is event-driven where practical.
+  \item \textbf{Automate repeatable change.} Consoles are diagnostic tools, not a deployment mechanism.
+  \item \textbf{Expose operational truth.} Every service publishes health, golden signals, ownership, and runbook links.
+  \item \textbf{Cost is a design dimension.} Capacity, retention, and service tiers have explicit value hypotheses.
+\end{enumerate}
+
+% ================================================================

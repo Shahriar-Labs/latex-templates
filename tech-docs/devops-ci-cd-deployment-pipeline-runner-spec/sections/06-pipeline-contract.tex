@@ -1,0 +1,121 @@
+\section{Pipeline contract}
+
+\subsection{Definition discovery and versioning}
+
+The default definition path is \code{.pipeline/pipeline.yaml}. Repositories may select
+another path through an administrator-controlled setting. The pipeline file \must
+declare an explicit schema version. Unknown top-level keys are errors unless the schema
+marks them as extension points. The control plane stores the original file digest, the
+fully resolved plan, the source revision, and the planner version.
+
+Included templates are resolved by immutable revision or signed release digest. A
+floating template reference may be used only if the control plane resolves and records
+its immutable digest before planning. Recursive includes, path traversal, and templates
+outside the authorized organization are rejected.
+
+\subsection{Reference pipeline}
+
+\begin{lstlisting}[caption={Reference pipeline definition},label={lst:pipeline}]
+version: "v1"
+name: service-release
+
+on:
+  pull_request: {}
+  push:
+    branches: [main]
+  manual:
+    inputs:
+      release_ref: {type: string, required: false}
+
+permissions:
+  repository: read
+  artifacts: write
+  id-token: write
+
+concurrency:
+  group: "service-${{ ref.name }}"
+  cancel_in_progress: true
+
+jobs:
+  test:
+    pool: linux-untrusted
+    timeout: 20m
+    matrix:
+      runtime: ["20", "22"]
+    steps:
+      - uses: org/checkout@sha256:4f57...a012
+      - run: npm ci --ignore-scripts
+      - run: npm test
+
+  package:
+    needs: [test]
+    pool: linux-build
+    steps:
+      - uses: org/checkout@sha256:4f57...a012
+      - run: ./scripts/build-image.sh
+      - upload:
+          name: service-image
+          path: out/image.oci
+
+  deploy_staging:
+    needs: [package]
+    environment: staging
+    artifact: "${{ jobs.package.artifacts.service-image.digest }}"
+    steps:
+      - uses: org/deploy@sha256:8c11...9be2
+
+  deploy_production:
+    needs: [deploy_staging]
+    if: "${{ event.type == 'manual' }}"
+    environment: production
+    artifact: "${{ jobs.package.artifacts.service-image.digest }}"
+    steps:
+      - uses: org/deploy@sha256:8c11...9be2
+\end{lstlisting}
+
+\subsection{Expression safety}
+
+Expressions are evaluated by a deterministic, side-effect-free interpreter. They have
+no filesystem, network, clock, random-number, reflection, or dynamic-code access.
+Values carry a type and sensitivity label. Secret-derived values are prohibited in job
+names, cache keys, concurrency groups, conditions visible before authorization, and
+other metadata. String interpolation into a shell command triggers a warning and may
+be denied by policy; values \should be passed using structured environment or input fields.
+
+\subsection{Planning rules}
+
+The planner \must:
+
+\begin{enumerate}
+  \item validate schema, event eligibility, referenced actions, pool names, permissions, and limits;
+  \item expand matrices to a bounded set of jobs (default maximum: 256 jobs per run);
+  \item reject cycles and references to nonexistent jobs or outputs;
+  \item resolve actions and templates to immutable digests;
+  \item compute a canonical plan digest over all execution-relevant fields;
+  \item persist the plan transactionally before any job becomes schedulable; and
+  \item return structured diagnostics containing code, location, message, and remediation.
+\end{enumerate}
+
+\subsection{Limits}
+
+\begin{table}[htbp]
+\centering
+\caption{Default pipeline limits}
+\label{tab:limits}
+\begin{tabularx}{\textwidth}{@{}L{0.33\textwidth}L{0.22\textwidth}Y@{}}
+  \toprule
+  \thead{Limit} & \thead{Default} & \thead{Enforcement} \\
+  \midrule
+  Definition size & 1 MiB & Reject during ingestion \\
+  Jobs after expansion & 256 per run & Reject during planning \\
+  Steps per job & 100 & Reject during planning \\
+  Job wall-clock time & 60 minutes & Kill sandbox; configurable to 6 hours by policy \\
+  Log output & 100 MiB per job & Truncate with explicit terminal marker; retain result metadata \\
+  Artifacts & 20 GiB per job & Deny additional uploads \\
+  Concurrent runs & 20 per repository & Queue with fair scheduling \\
+  Run retention & 90 days & Tier or delete according to policy and legal hold \\
+  \bottomrule
+\end{tabularx}
+\end{table}
+
+% -----------------------------------------------------------------------------

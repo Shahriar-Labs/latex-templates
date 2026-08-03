@@ -1,0 +1,77 @@
+\section{Validation and Testing Procedures}
+\label{sec:validation}
+
+\subsection{Test Case Matrix}
+Table~\ref{tab:testcases} is the acceptance matrix Synapse QA runs at each stage of the
+sequence in Section~\ref{sec:integration-sequence}. All four rows must show
+\textbf{Pass} before the change is considered complete; a \textbf{Fail} in any row triggers the
+rollback procedure in Section~\ref{sec:rollback}.
+
+\begin{table}[h]
+  \centering
+  \small
+  \begin{tabularx}{\textwidth}{@{}l Y l l@{}}
+    \toprule
+    \textbf{Test ID} & \textbf{Description} & \textbf{Method} & \textbf{Result} \\
+    \midrule
+    INT-041 & Payment intent created and confirmed end-to-end through the gateway. & Synapse smoke suite & Pass \\
+    INT-042 & Adapter correctly rejects a malformed currency code (expects HTTP 422). & Synapse smoke suite & Pass \\
+    INT-043 & Ledger row written exactly once per confirmed intent (no duplicate writes under retry). & SQL validation query & Pass \\
+    INT-044 & p95 latency stays under 400\,ms at 250 requests/sec sustained for 10 minutes. & Load test, k6 via Synapse harness & Pass \\
+    \bottomrule
+  \end{tabularx}
+  \caption{Acceptance test matrix for the Nimbus adapter integration.}
+  \label{tab:testcases}
+\end{table}
+
+\subsection{Validation Query: Ledger Write Consistency}
+INT-043 is checked directly against the ledger cluster rather than through the API, so that a
+bug in the adapter's own reporting cannot mask a duplicate write. Run this after the smoke
+suite in Step 3 and again after promotion in Step 4.
+
+\begin{cmdbox}[Ledger Postgres]
+\promptline{psql -h ledger-prod-aps1.vertex.internal -U ro\_validator -d ledger -c \textbackslash}
+\hspace*{1.4em}"SELECT intent\_id, COUNT(*)\\
+\hspace*{1.4em}FROM settlement\_records\\
+\hspace*{1.4em}WHERE created\_at > now() - interval '1 hour'\\
+\hspace*{1.4em}GROUP BY intent\_id HAVING COUNT(*) > 1;"
+\end{cmdbox}
+
+The query must return zero rows. A nonzero result means the adapter is double-writing on
+retry and is a hard rollback trigger regardless of what the latency dashboard shows.
+
+\subsection{Latency Across Test Phases}
+Figure~\ref{fig:latency} plots p50 and p95 latency recorded by the Synapse harness at each test
+phase during the 2026-07-14 cutover rehearsal. Latency rises under load, as expected, but stays
+within the 400\,ms p95 budget through the soak phase.
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        width=0.92\textwidth, height=6cm,
+        ybar, bar width=14pt,
+        ymin=0, ymax=460,
+        ylabel={Latency (ms)},
+        symbolic x coords={Smoke, Integration, Load, Soak},
+        xtick=data,
+        enlarge x limits=0.18,
+        legend style={at={(0.5,-0.22)}, anchor=north, legend columns=-1, font=\small},
+        ylabel style={font=\small}, tick label style={font=\small},
+        axis lines*=left,
+        ymajorgrids, grid style={paperedge},
+        nodes near coords, nodes near coords style={font=\scriptsize},
+      ]
+      \addplot[fill=tealaccent, draw=tealaccent] coordinates {
+        (Smoke,88) (Integration,121) (Load,204) (Soak,218)
+      };
+      \addplot[fill=amberwarn, draw=amberwarn] coordinates {
+        (Smoke,140) (Integration,196) (Load,347) (Soak,362)
+      };
+      \legend{p50, p95}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{p50/p95 latency by test phase, 2026-07-14 cutover rehearsal. The 400\,ms p95 budget
+  from test INT-044 held through the soak phase.}
+  \label{fig:latency}
+\end{figure}

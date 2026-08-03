@@ -1,0 +1,42 @@
+\section{Versioning and Change Management}
+
+\subsection{Semantic Versioning Policy}
+Both REST endpoints and event topics are versioned independently using a major-version suffix
+(\code{/v2}, \code{order.created.v1}). A new major version is required for any breaking
+change: removing a field, changing a field's type, tightening validation, or changing the
+meaning of an existing status code. All other changes are additive and ship in place.
+
+\subsection{Deprecation Timeline}
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}l l l X@{}}
+\toprule
+\textbf{Version} & \textbf{Status} & \textbf{Sunset Date} & \textbf{Notes} \\
+\midrule
+v1 & Deprecated & 2026-09-30 & Superseded by the v2 idempotency-key model \\
+v2 & Current    & --         & Active; described throughout this document \\
+v3 (draft) & Preview & -- & Adds gRPC transport for internal-only calls; REST unaffected \\
+\bottomrule
+\end{tabularx}
+\caption{Contract version status as of the effective date of this document.}
+\end{table}
+
+\subsection{Change Notification Process}
+A breaking change proposal is opened as an RFC against this document at least four weeks
+before the target release, circulated to every owning team listed in Section~2.2, and
+requires sign-off from each consumer team before the new version is published. Non-breaking
+changes are announced in the \code{\#platform-integration} channel and recorded in the
+changelog appendix of the parent architecture document (\code{NEXA-ARCH-000}); no sign-off is
+required.
+
+\subsection{Further Reading}
+The patterns applied throughout this specification, in particular the error envelope, the
+circuit breaker configuration, and the event schema evolution rule, follow established
+distributed-systems practice rather than platform-specific invention. See
+Fowler~\cite{fowler2014microservices} for the service-decomposition rationale,
+Newman~\cite{newman2021building} for API and event contract design more broadly,
+Nygard~\cite{nygard2018release} for the circuit breaker and bulkhead patterns applied in
+Section~5.4, Kleppmann~\cite{kleppmann2017designing} for the delivery-semantics discussion in
+Section~4.4, and \cite{rfc7807} and \cite{rfc6902} for the standards that informed the
+error envelope and future patch-style update endpoints, respectively.

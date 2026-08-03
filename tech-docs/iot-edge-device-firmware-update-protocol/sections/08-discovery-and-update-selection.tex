@@ -1,0 +1,71 @@
+\section{Discovery and update selection}
+
+\subsection{DISCOVER request}
+
+The device sends \code{DISCOVER} at boot after network readiness, on its periodic
+schedule, after an authenticated notification, or on a local operator request.
+The body contains:
+
+\begin{lstlisting}[language={}]
+{
+  "session_id": "4df0b956e28d41cd8e5cb5849b84906a",
+  "model": "gw-x2-revB",
+  "hardware_revision": "B3",
+  "bootloader_version": "2.4.1",
+  "agent_version": "1.3.0",
+  "components": [
+    {
+      "name": "system",
+      "version": "3.7.2",
+      "image_security_version": 42,
+      "digest": "4b1c...9a20"
+    }
+  ],
+  "capabilities": {
+    "artifact_formats": ["raw", "squashfs"],
+    "compression": ["none", "zstd"],
+    "delta": ["bsdiff-v1"],
+    "max_chunk_size": 262144,
+    "installation": "ab-slots",
+    "signature_suites": ["COSE_EdDSA_Ed25519"]
+  },
+  "conditions": {
+    "power_source": "external",
+    "battery_percent": 100,
+    "network": "ethernet",
+    "metered": false,
+    "free_staging_bytes": 536870912
+  }
+}
+\end{lstlisting}
+
+The device \must accurately report security-relevant capabilities and \mustnot
+claim a format or algorithm that it cannot safely install. The service may use
+operational conditions for selection, but the signed manifest remains the sole
+authority for release content and mandatory device-side constraints.
+
+\subsection{Discovery responses}
+
+The update service returns exactly one of:
+
+\begin{itemize}
+  \item \code{NO\_UPDATE}: no applicable campaign, with \field{check_after};
+  \item \code{OFFER}: a signed manifest and campaign metadata;
+  \item \code{DEFER}: a transient service condition, with bounded \field{retry_after}; or
+  \item \code{ERROR}: a permanent request problem.
+\end{itemize}
+
+A \code{NO\_UPDATE} or \code{DEFER} response \mustnot cause the device to remove
+a confirmed image. A server-provided delay is advisory but \should be honored
+within local safety policy. The device \should add 0--10\% random jitter to fleet
+polling and \must cap any server delay to seven days unless locally configured.
+
+\subsection{Offer campaign metadata}
+
+Campaign metadata includes \field{campaign_id}, \field{offered_at}, optional
+\field{not_before}, and optional \field{activation_window}. It is authenticated
+by TLS but does not modify signed manifest semantics. If campaign metadata and
+the manifest conflict, the stricter safe behavior wins. An offer never overrides
+device-side power, thermal, occupancy, maintenance, or regulatory safeguards.
+
+% -----------------------------------------------------------------------------

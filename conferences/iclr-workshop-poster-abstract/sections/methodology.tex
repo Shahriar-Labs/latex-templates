@@ -1,0 +1,119 @@
+% ============================================================
+%  sections/methodology.tex
+% ============================================================
+
+\section{Methodology}
+
+\subsection{Adaptive Sparsity Masks}
+
+Let \(\mathbf{V} \in \R^{N_v \times d}\) and
+\(\mathbf{L} \in \R^{N_l \times d}\) denote the vision and language
+token sequences produced by their respective encoders, where
+\(N_v, N_l\) are token counts and \(d\) is the hidden dimension.
+At each cross-modal attention layer \(\ell\), \modelname{} computes a
+soft retention score for every token:
+\begin{equation}
+  s^{(\ell)}_i = \sigma\!\left(\mathbf{w}^{(\ell)\top} \mathbf{h}^{(\ell)}_i + b^{(\ell)}\right),
+  \label{eq:score}
+\end{equation}
+where \(\mathbf{h}^{(\ell)}_i\) is the hidden state of the \(i\)-th
+token at layer \(\ell\), and \(\mathbf{w}^{(\ell)}, b^{(\ell)}\) are
+learnable parameters. A differentiable top-\(k\) relaxation
+\citep{nguyen2024sparse} converts scores into a binary-like mask
+\(\mathbf{m}^{(\ell)} \in \{0,1\}^{N}\) during training; at inference,
+exact top-\(k\) selection is used.
+
+\subsection{Training Objective}
+
+The overall loss is:
+\begin{equation}
+  \mathcal{L} = \mathcal{L}_{\text{task}} +
+    \lambda \sum_{\ell} \left\| \mathbf{m}^{(\ell)} \right\|_1,
+  \label{eq:loss}
+\end{equation}
+where \(\mathcal{L}_{\text{task}}\) is the downstream cross-entropy
+loss and the \(\ell_1\) term on active masks encourages
+sparsity. We set \(\lambda = 5\times10^{-4}\) in all experiments.
+The model is fine-tuned with AdamW \citep{loshchilov2019adamw} at a
+learning rate of \(3\times10^{-5}\) for 20\,000 steps on
+\dataset{}-train.
+
+\subsection{Architecture Overview}
+
+Figure~\ref{fig:arch} illustrates the \modelname{} pipeline. A
+pre-trained vision encoder (ViT-L/14) and a language encoder
+(BERT-Large) independently produce token sequences that are routed
+through the adaptive mask module before being fed into a shared
+cross-modal transformer. Pruned tokens are dropped from the attention
+computation; their positions are passed to a lightweight \emph{residual
+injector} that re-inserts coarse information for final projection.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}[
+    node distance=6pt and 10pt,
+    block/.style={
+      draw=NexaBlue, fill=NexaLight, rounded corners=3pt,
+      font=\scriptsize\bfseries, align=center,
+      minimum width=1.7cm, minimum height=0.65cm, inner sep=4pt
+    },
+    smallblock/.style={
+      draw=NexaAccent, fill=white, rounded corners=3pt,
+      font=\scriptsize, align=center,
+      minimum width=1.4cm, minimum height=0.55cm, inner sep=3pt
+    },
+    maskblock/.style={
+      draw=NexaGold, fill=NexaGold!15, rounded corners=3pt,
+      font=\scriptsize\bfseries, align=center,
+      minimum width=1.7cm, minimum height=0.65cm, inner sep=4pt
+    },
+    fusionblock/.style={
+      draw=NexaDark, fill=NexaDark, text=white, rounded corners=3pt,
+      font=\scriptsize\bfseries, align=center,
+      minimum width=2.2cm, minimum height=0.65cm, inner sep=4pt
+    },
+    arr/.style={->, >=stealth, thick, color=NexaGray},
+    ]
+    % Vision branch
+    \node[block] (venc) {Vision\\Encoder};
+    \node[maskblock, right=of venc] (vmask) {Vision\\Mask};
+
+    % Language branch
+    \node[block, below=20pt of venc] (lenc) {Language\\Encoder};
+    \node[maskblock, right=of lenc] (lmask) {Language\\Mask};
+
+    % Cross-modal transformer
+    \node[fusionblock,
+          right=22pt of $(vmask.east)!0.5!(lmask.east)$] (xattn)
+      {Cross-Modal\\Transformer};
+
+    % Output
+    \node[smallblock, right=14pt of xattn] (out) {Output\\Head};
+
+    % Arrows vision
+    \draw[arr] (venc) -- (vmask);
+    \draw[arr] (vmask.east) -- ++(6pt,0) |-
+      ([yshift=4pt]xattn.west);
+
+    % Arrows language
+    \draw[arr] (lenc) -- (lmask);
+    \draw[arr] (lmask.east) -- ++(6pt,0) |-
+      ([yshift=-4pt]xattn.west);
+
+    % Output arrow
+    \draw[arr] (xattn) -- (out);
+
+    % FLOPs annotation
+    \node[font=\tiny\color{NexaAccent}, above=3pt of vmask]
+      {retain top-\(k\)};
+    \node[font=\tiny\color{NexaAccent}, below=3pt of lmask]
+      {retain top-\(k\)};
+  \end{tikzpicture}
+  \caption{%
+    \textbf{\modelname{} pipeline.}
+    Adaptive sparsity masks independently prune vision and language
+    tokens before cross-modal attention, cutting FLOPs without
+    modifying the backbone architectures.
+  }
+  \label{fig:arch}
+\end{figure}

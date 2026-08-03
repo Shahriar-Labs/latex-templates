@@ -1,0 +1,57 @@
+\section{Artifacts, caches, logs, and provenance}
+
+\subsection{Artifacts}
+
+Artifact upload follows a two-phase protocol: request a scoped upload grant, upload
+parts directly to object storage, then finalize with manifest, size, media type, and
+SHA-256 digest. The artifact service independently verifies digest and size before
+marking the artifact available. Partial uploads expire automatically.
+
+Artifacts are immutable. Names are friendly references to versions; execution and
+deployment contracts use digests. Encryption is mandatory in transit and at rest.
+Authorization is checked at grant issuance and download. Retention is inherited from
+organization, repository, environment, and legal-hold policy, taking the longest
+applicable duration.
+
+\subsection{Caches}
+
+Caches are keyed by tenant, repository, trust tier, platform, declared key, and an
+internal schema version. Pull-request jobs from forks may read only caches explicitly
+published as non-sensitive and may not overwrite trusted-branch cache entries. Cache
+archives reject absolute paths, traversal, special devices, set-user-ID files, and
+unsafe links. Extraction occurs as an unprivileged user within the sandbox.
+
+Cache entries are scanned opportunistically but always treated as untrusted input.
+Integrity failures cause eviction and a cache miss, not job success. Eviction follows
+quota and least-recently-used policy; correctness must not depend on retention.
+
+\subsection{Logs}
+
+The runner streams ordered log frames containing attempt identifier, step identifier,
+sequence number, monotonic timestamp, stream, and bytes. The service acknowledges
+durable offsets so a reconnect can resume without gaps. Duplicate sequence numbers are
+idempotent. The UI clearly marks missing, delayed, truncated, and redacted segments.
+
+Secret values and registered variants are masked at the runner and again on ingestion.
+The platform also detects common credential formats. Binary output is encoded safely.
+ANSI control sequences are allowlisted to prevent terminal injection. Access to raw
+logs follows repository permissions; download is audited.
+
+\subsection{Provenance and software bill of materials}
+
+Successful package jobs emit signed provenance containing, at minimum:
+
+\begin{itemize}
+  \item source repository and immutable revision;
+  \item pipeline and canonical plan digests;
+  \item action, template, runner-image, and dependency material digests;
+  \item builder identity, pool, attempt, timestamps, parameters, and output digests;
+  \item whether the build was isolated, hermetic, reproducible, and policy-compliant; and
+  \item links to the software bill of materials (SBOM), test evidence, and scan results.
+\end{itemize}
+
+Signing uses a short-lived workload certificate rooted in the platform trust domain.
+Production policy \must verify provenance signature, source eligibility, builder pool,
+required evidence, and artifact digest before deployment.
+
+% -----------------------------------------------------------------------------

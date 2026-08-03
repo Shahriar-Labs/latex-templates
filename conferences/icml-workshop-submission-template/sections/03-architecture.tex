@@ -1,0 +1,44 @@
+\section{System Architecture}
+\label{sec:arch}
+The Vertex-Fed system architecture consists of distributed client nodes coordinated by the Nimbus Topology Controller. Figure~\ref{fig:architecture} illustrates the dynamic connectivity setup, where solid paths represent high-utility active communication channels and dashed lines depict pruned paths.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=1.6cm and 1.8cm,
+    client/.style={circle, draw=primarycolor, fill=bglight, thick, minimum size=1.0cm, align=center, font=\sffamily\footnotesize},
+    server/.style={rectangle, rounded corners, draw=secondarycolor, fill=secondarycolor!10, thick, minimum size=1.2cm, align=center, font=\sffamily\bfseries\footnotesize},
+    active/.style={draw=secondarycolor, thick, <->, >=Stealth},
+    pruned/.style={draw=darkgray!40, dashed, thick, <->, >=Stealth}
+]
+    % Nodes
+    \node[server] (controller) {Nimbus\\Controller};
+    \node[client, below left=of controller] (node1) {Client A\\(Synapse)};
+    \node[client, below right=of controller] (node2) {Client B\\(Nexa)};
+    \node[client, below=2.2cm of controller] (node3) {Client C\\(Vertex)};
+    \node[client, below left=1.2cm and 0.4cm of node3] (node4) {Client D\\(Meridian)};
+    \node[client, below right=1.2cm and 0.4cm of node3] (node5) {Client E\\(Apex)};
+
+    % Active links
+    \draw[active] (controller) -- (node1) node[midway, left] {\footnotesize $\theta \ge 0.4$};
+    \draw[active] (controller) -- (node2) node[midway, right] {\footnotesize $\theta \ge 0.5$};
+    \draw[active] (node1) -- (node3);
+    \draw[active] (node2) -- (node3);
+    \draw[active] (node3) -- (node4);
+    \draw[active] (node3) -- (node5);
+
+    % Pruned links
+    \draw[pruned] (node1) -- (node4) node[midway, left] {\footnotesize $\times$};
+    \draw[pruned] (node2) -- (node5) node[midway, right] {\footnotesize $\times$};
+    \draw[pruned] (node1) -- (node2) node[midway, above] {\footnotesize $\times$};
+
+    % Title background box
+    \begin{scope}[on background layer]
+        \node[draw=bordercolor, fill=bglight!50, dotted, thick, rounded corners, fit=(controller) (node1) (node2) (node4) (node5)] (box) {};
+    \end{scope}
+\end{tikzpicture}
+\caption{Vertex-Fed system topology diagram showing active and pruned communication channels based on the gradient similarity metric.}
+\label{fig:architecture}
+\end{figure}
+
+The distributed agents exchange gradient directions rather than full model updates during the optimization phase. This metadata exchange requires less than 0.1\% of the bandwidth needed for a full parameter push-pull step.

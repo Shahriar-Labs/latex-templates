@@ -1,0 +1,60 @@
+\section{Verification and Validation Concept}
+\label{sec:validation}
+
+Compliance with ISO 26262 ASIL D demands rigorous verification and validation (V\&V) procedures across all stages of system development. The Synapse SbW safety concept is validated through a combination of simulation, laboratory testing, and vehicle-level verification.
+
+\subsection{V\&V Testing Methodologies}
+The validation plan employs three distinct testing paradigms:
+\begin{enumerate}
+    \item \textbf{Software-in-the-Loop (SIL):} Automated regression testing of the control and safety algorithms in a simulated vehicle dynamics environment.
+    \item \textbf{Hardware-in-the-Loop (HIL):} Testing the physical HWA and RWA ECUs in a real-time lab setup where hydraulic actuators simulate physical tire-road interactions.
+    \item \textbf{Vehicle-level Track Testing:} Functional verification on proving grounds to evaluate driver controllability and system response under degraded modes.
+\end{enumerate}
+
+\subsection{Fault Injection Testing on HIL Test Bench}
+Fault injection testing is a critical validation method used to prove that the system transitions to the designated safe state within the FTTI limit when a malfunction occurs. Table~\ref{tab:fault_injection} lists the key fault injection scenarios executed during test bench verification.
+
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Key fault injection scenarios and safety responses.}
+    \label{tab:fault_injection}
+    \begin{tabularx}{\linewidth}{p{1.8cm} X p{3.8cm} l c}
+        \toprule
+        \textbf{Test ID} & \textbf{Fault Simulated} & \textbf{Expected Safe Response} & \textbf{Safety Goal} & \textbf{FTTI Target} \\
+        \midrule
+        FIT\_HWA\_01 & Spurious voltage offset on Torque Sensor Channel A & Control switches to Channel B; driver torque continues without interruption. & SG\_01 & \(50\text{~ms}\) \\
+        FIT\_RWA\_02 & Phase loss on Motor Winding A inverter bridge & HSI isolates Channel A; steering continues using Channel B with half-power. & SG\_02 & \(100\text{~ms}\) \\
+        FIT\_COM\_03 & High electromagnetic noise on FlexRay Channel A & System rejects corrupted frames and switches to Channel B. & SG\_01, SG\_02 & \(50\text{~ms}\) \\
+        FIT\_SYS\_04 & Microcontroller lockup (forced watchdog timeout) & Safety monitor isolates the faulty MCU; standby MCU takes control. & SG\_01, SG\_02 & \(100\text{~ms}\) \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Safety Case Milestones and Audits}
+A formal safety case is prepared compile safety evidence that all SGs are met. The safety development lifecycle is audited at key milestones by external certifiers:
+\begin{itemize}
+    \item \textbf{Milestone 1 (Gate 1):} Concept Phase Audit --- Focuses on the HARA, Safety Goals, and Functional Safety Concept.
+    \item \textbf{Milestone 2 (Gate 2):} System Design Review --- Audits the technical safety concept and schematic designs.
+    \item \textbf{Milestone 3 (Gate 3):} Safety Case Verification --- Reviews the compilation of testing logs, diagnostic coverage analysis, and HIL reports.
+\end{itemize}
+
+\vspace{1.5cm}
+\noindent
+\begin{minipage}{0.48\textwidth}
+    \hrule
+    \vspace{0.5em}
+    \textbf{Elena Rostova} \\
+    Lead Systems Safety Engineer \\
+    Nexa Automotive Controls \\
+    \texttt{e.rostova@nexa.example.com}
+\end{minipage}
+\hfill
+\begin{minipage}{0.48\textwidth}
+    \hrule
+    \vspace{0.5em}
+    \textbf{Jonathan Hayes, PE} \\
+    Director of Automotive Engineering \\
+    Vertex Systems \\
+    \texttt{j.hayes@vertex.example.com}
+\end{minipage}

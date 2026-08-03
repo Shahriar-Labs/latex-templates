@@ -1,0 +1,36 @@
+\section{Experimental Setup}
+
+\subsection{Baselines}
+The shared task organizers released three reference systems, which we use
+as baselines rather than re-implementing prior work ourselves:
+
+\begin{itemize}[leftmargin=1.1em,itemsep=1pt,topsep=2pt]
+  \item \textbf{Nexa-Base} -- a monolingual BiLSTM-CRF tagger per language
+    with exact gazetteer lookup only (no fuzzy matching or reranking);
+  \item \textbf{Synapse-XLM} -- a fine-tuned multilingual transformer
+    tagger, with normalization performed by nearest-neighbor lookup in
+    embedding space against gazetteer entries;
+  \item \textbf{Apex-Multi} -- a multi-task model that jointly predicts
+    span boundaries and normalization in a single decoding pass, the
+    strongest of the three released baselines.
+\end{itemize}
+
+\subsection{Training Details}
+The shared encoder is fine-tuned for 12 epochs with AdamW, peak learning
+rate $3\times10^{-5}$ with linear warmup over the first 6\% of steps and
+linear decay, batch size 32, and gradient clipping at norm 1.0. The
+reranker is trained separately for 20 epochs on span-candidate pairs
+sampled from the training split at a 1:4 positive-to-negative ratio, using
+the frozen encoder's contextual embeddings as one of its input features.
+Per-language reranker thresholds are selected by grid search over the
+development split in increments of 0.02, optimizing normalized F1
+directly. All experiments run on a single 24GB GPU; total training time
+across all four languages is approximately 9 hours.
+
+\subsection{Evaluation Metric}
+Following the shared task's official protocol, we report normalized
+entity F1: a prediction is correct only if the predicted span overlaps the
+gold span \emph{and} the predicted canonical form exactly matches the
+gold canonical form (or both predict \texttt{NIL}). This is stricter than
+standard NER F1, since a system with perfect span detection but a wrong
+normalization still scores zero credit for that mention.

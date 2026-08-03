@@ -1,0 +1,42 @@
+\section{Rollout and migration}
+
+\subsection{Phased delivery}
+
+\begin{longtable}{@{}L{0.13\textwidth}L{0.28\textwidth}L{0.35\textwidth}L{0.16\textwidth}@{}}
+\caption{Delivery phases and exit criteria}\label{tab:rollout}\\
+\toprule
+\thead{Phase} & \thead{Scope} & \thead{Exit criteria} & \thead{Rollback} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Phase} & \thead{Scope} & \thead{Exit criteria} & \thead{Rollback} \\
+\midrule
+\endhead
+0: Foundation & Control plane, one untrusted Linux pool, logs, identity, audit & Threat model approved; end-to-end test; zone failure; no critical findings & Disable event routing \\
+1: Pilot & 5--10 low-risk repositories, build/test only & Four weeks within SLO; support playbook; user success rate $\geq95\%$ & Return repositories to legacy \\
+2: Artifacts & Immutable artifacts, cache, provenance, SBOM & Integrity and isolation tests; artifact recovery exercise & Disable cache; retain artifacts \\
+3: Non-production & Staging environments and adapters & Approval, reconciliation, rollback, and policy tests pass & Revoke environment federation \\
+4: Production canary & Selected services and protected runner pool & Two successful release cycles per service; incident drill & Route deployment to legacy \\
+5: General availability & Standard repositories and environments & Capacity reserve; SLO dashboard; DR exercise; support readiness & Per-tenant routing switch \\
+6: Legacy retirement & Remaining migration and evidence archive & No active dependencies; signed owner acceptance; recovery export & Time-boxed compatibility lane \\
+\bottomrule
+\end{longtable}
+
+\subsection{Repository migration}
+
+The migration tool translates supported legacy constructs, pins reusable actions,
+creates an explicit permission set, and produces a semantic diff. Repositories first
+run in shadow mode without deployment authority. Results, duration, logs, and artifacts
+are compared for at least five representative runs. Cutover is repository-scoped and
+reversible through an event-routing flag. Production credentials are enabled only after
+the owner signs off on evidence and rollback.
+
+\subsection{Feature flags and kill switches}
+
+Flags are typed, owned, audited, and default safe. Required kill switches can stop new
+run admission, planning, leasing by pool, secret issuance, artifact publication, or
+deployments by environment without stopping read-only diagnostics. A global deployment
+stop fails closed and is exercised quarterly. Flag changes affecting security or
+production require dual authorization.
+
+% -----------------------------------------------------------------------------

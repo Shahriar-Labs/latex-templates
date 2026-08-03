@@ -1,0 +1,52 @@
+\section{Introduction and Scope}
+
+\subsection{Purpose}
+This document is the authoritative interface specification for integration between the
+services that make up the Nexa Commerce Platform: the synchronous REST contracts exposed
+through the platform API gateway, the asynchronous message contracts published on the
+\svc{Meridian} event bus, and the error-handling and resilience policies every participating
+service must implement. Read alongside the parent architecture overview
+(\code{NEXA-ARCH-000}), but self-contained for implementing or consuming any interface
+described here.
+
+\subsection{Scope}
+In scope: request/response schemas and status codes for the \code{/v2} API surface; topic
+names, payload schemas, and delivery guarantees for the Meridian event bus; the shared error
+envelope; retry, backoff, and circuit-breaker policy; and the versioning and deprecation
+process. Out of scope: internal implementation details of any single service, database
+schemas, infrastructure-as-code, and UI-facing contracts, each covered by its own document.
+
+\subsection{Intended Audience}
+Software architects and senior engineers at Nexa and at partner organisations (\svc{Synapse},
+\svc{Vertex}, \svc{Nimbus}, \svc{Apex}) who are building against, or operating, any service
+described in Section~2. Familiarity with REST, JSON, and publish/subscribe messaging is
+assumed.
+
+\subsection{Related Documents}
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\textbf{Document} & \textbf{ID} & \textbf{Relationship} \\
+\midrule
+Nexa Commerce Platform --- System Architecture Overview & NEXA-ARCH-000 & Parent document; describes deployment topology and ownership boundaries \\
+Meridian Event Bus --- Operations Runbook & MER-OPS-114 & Referenced for broker capacity, partitioning, and on-call escalation \\
+Synapse Payment Gateway --- Security Addendum & SYN-SEC-042 & Referenced for PCI-scoped fields in payment payloads \\
+Nexa API Gateway --- Authentication Guide & NEXA-SEC-031 & Referenced for token issuance and mTLS certificate rotation \\
+\bottomrule
+\end{tabularx}
+\caption{Documents referenced by this specification.}
+\end{table}
+
+\subsection{Terminology}
+\begin{infobox}[title={Key Terms}]
+\begin{description}[leftmargin=2.4cm,style=nextline]
+  \item[Consumer] A service that reads from a REST endpoint or subscribes to an event topic.
+  \item[Producer] A service that owns and emits a REST resource or an event topic.
+  \item[Idempotency key] A client-supplied unique token that lets a producer safely discard
+    duplicate retries of the same logical request.
+  \item[Envelope] The fixed outer JSON structure wrapping every error response and every
+    event payload on the Meridian bus, described in Sections~4 and 5.
+\end{description}
+\end{infobox}

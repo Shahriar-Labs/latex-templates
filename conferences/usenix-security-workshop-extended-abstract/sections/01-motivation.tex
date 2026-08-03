@@ -1,0 +1,34 @@
+\section{Motivation}
+\label{sec:motivation}
+
+Modern cloud applications decompose a user operation into a chain of calls
+across services, queues, and data stores. Each hop is authenticated, commonly
+with a workload identity or a short-lived token. When an attacker steals such a
+credential, conventional controls still see a valid principal, permitted API,
+and expected source network. The decisive evidence---the initiating request and
+the sequence of transformations that led to the action---is split across
+traces, application logs, and identity systems.
+
+Existing anomaly detectors learn principal-resource or network patterns, but
+credential abuse that remains within a service's normal permission envelope is
+hard to distinguish~\citep{bilge2017risk,siadati2017detecting}. Distributed
+tracing reconstructs request paths~\citep{sigelman2010dapper}, yet trace headers
+are designed for observability, not as integrity-protected security evidence.
+They may be missing, attacker-controlled, or sampled away. Information-flow
+systems provide stronger semantics but usually require invasive application
+changes~\citep{pasquier2017practical}.
+
+We ask whether authenticated \emph{causal context} can make valid-but-abusive
+service credentials visible without requiring a new authorization system. Our
+work makes three contributions:
+
+\begin{itemize}
+  \item a compact context token binding each sensitive action to its initiating
+        request and observed service-call ancestry;
+  \item a detector that scores deviations from learned workflow edges while
+        keeping enforcement out of the request path; and
+  \item a reproducible preliminary evaluation of security coverage, alert
+        volume, latency, and partial-deployment behavior.
+\end{itemize}
+
+% -----------------------------------------------------------------------------

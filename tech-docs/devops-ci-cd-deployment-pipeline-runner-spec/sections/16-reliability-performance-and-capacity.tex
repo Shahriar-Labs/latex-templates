@@ -1,0 +1,70 @@
+\section{Reliability, performance, and capacity}
+
+\subsection{Service objectives}
+
+\begin{table}[htbp]
+\centering
+\caption{Service-level objectives}
+\label{tab:slos}
+\begin{tabularx}{\textwidth}{@{}L{0.30\textwidth}L{0.24\textwidth}Y@{}}
+  \toprule
+  \thead{Indicator} & \thead{Objective} & \thead{Measurement} \\
+  \midrule
+  Control-plane API availability & $99.95\%$ monthly & Valid non-5xx responses, excluding approved maintenance \\
+  Event acceptance latency & p99 $<2$ s & Verified webhook receipt to durable run request \\
+  Planning latency & p95 $<5$ s & Accepted request to persisted plan for definitions within limits \\
+  Ready-to-lease latency & p95 $<60$ s; p99 $<180$ s & Ready timestamp to successful lease, by pool and priority \\
+  Log visibility latency & p95 $<3$ s & Runner frame creation to authorized UI/API visibility \\
+  Cancellation propagation & p95 $<10$ s & Accepted cancel to runner acknowledgement \\
+  Artifact durability & $99.999999999\%$ annual target & Backing store durability plus verification \\
+  Audit export freshness & p99 $<5$ min & Control-plane commit to independent store \\
+  \bottomrule
+\end{tabularx}
+\end{table}
+
+The monthly API error budget at 99.95\% is approximately 21.9 minutes in a
+30.4-day month. If burn rate exceeds 14.4 times budget over one hour or 6 times budget
+over six hours, the on-call team is paged. Exhausting the budget freezes non-remediation
+changes until the service owner approves recovery.
+
+\subsection{Recovery objectives}
+
+The primary control plane has a recovery point objective (RPO) of five minutes and a
+recovery time objective (RTO) of 60 minutes for regional disaster. Within a region,
+availability-zone failure has an RPO of zero for accepted state and an RTO of 15 minutes.
+Artifact durability and replication are governed by the backing store, with metadata
+reconciliation included in recovery exercises.
+
+Regional promotion requires independent confirmation that the primary writer is fenced.
+The recovery controller increments a region epoch; schedulers and runners reject leases
+from older epochs. In-flight deployments enter \code{reconciliation\_required} until
+their target state is observed.
+
+\subsection{Capacity model}
+
+For pool $p$, the minimum warm concurrency is estimated as
+
+\[
+  N_p = \left\lceil \frac{\lambda_p \bar{t}_p}{\rho_p} \right\rceil + B_p,
+\]
+
+where $\lambda_p$ is peak admitted jobs per second, $\bar{t}_p$ is mean job duration,
+$\rho_p$ is target utilization (no more than 0.70 for latency-sensitive pools), and
+$B_p$ is burst and failure reserve. Capacity planning uses p90 job duration and event
+burst profiles in addition to the mean. Protected deployment pools retain at least two
+healthy instances per active region and failure domain policy.
+
+Autoscaling observes ready queue depth, oldest-ready age, lease rate, startup latency,
+resource fit failures, and external quota. Scale-up is predictive where scheduled
+workloads are known. Scale-down drains instances, issues no new leases, and waits for
+completion or the configured maximum drain time.
+
+\subsection{Backpressure and degradation}
+
+Ingress uses per-tenant rate limits and a durable admission queue. When downstream
+systems are degraded, the control plane preserves accepted state and stops leasing
+jobs that cannot complete safely. Noncritical read models, analytics, cache uploads,
+and live log fan-out may degrade before scheduling or audit. Protected deployments
+fail closed when policy, identity, provenance, or audit dependencies are unavailable.
+
+% -----------------------------------------------------------------------------

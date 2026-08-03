@@ -1,0 +1,106 @@
+\section{Target Architecture \& Schema Changes}
+
+The v2.0.0 evolution addresses scaling limits by decomposing wide tables and introducing chronological range partitioning. The architecture diagram below illustrates the migration workflow, staging mechanisms, and validation boundaries.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=1.6cm and 1.8cm,
+    block/.style={
+        rectangle,
+        draw=brandprimary!80,
+        fill=brandbg,
+        thick,
+        rounded corners=4pt,
+        align=center,
+        minimum width=3.0cm,
+        minimum height=1.1cm,
+        font=\sffamily\small
+    },
+    process/.style={
+        rectangle,
+        draw=brandsecondary!80,
+        fill=brandsecondary!10,
+        thick,
+        rounded corners=4pt,
+        align=center,
+        minimum width=3.4cm,
+        minimum height=1.1cm,
+        font=\sffamily\small\bfseries
+    },
+    db/.style={
+        cylinder,
+        shape border rotate=90,
+        draw=brandprimary!80,
+        fill=brandprimary!5,
+        thick,
+        align=center,
+        minimum width=2.0cm,
+        minimum height=1.5cm,
+        font=\sffamily\small
+    },
+    arrow/.style={
+        -stealth,
+        thick,
+        draw=brandsecondary
+    },
+    darrow/.style={
+        stealth-stealth,
+        thick,
+        draw=brandaccent
+    }
+]
+
+% Nodes
+\node (src_db) [db] {\textbf{Synapse DB}\\v1.4.2 (Legacy)};
+\node (migrator) [process, right=of src_db] {Synapse Migration\\Engine (v2.0)};
+\node (staging) [block, below=of migrator] {Apex Dry-Run Staging\\(Staging Clone)};
+\node (tgt_db) [db, right=of migrator] {\textbf{Synapse DB}\\v2.0.0 (Target)};
+\node (verifier) [block, below=of tgt_db] {Nimbus Data\\Integrity Verifier};
+
+% Paths
+\draw [arrow] (src_db) -- (migrator) node[midway, above] {\footnotesize Extract};
+\draw [arrow] (migrator) -- (tgt_db) node[midway, above] {\footnotesize Transform \& Load};
+\draw [arrow] (migrator) -- (staging) node[midway, left] {\footnotesize Verify};
+\draw [darrow] (staging) -- (verifier) node[midway, above] {\footnotesize Audit Checks};
+\draw [arrow] (verifier) -- (tgt_db) node[midway, right] {\footnotesize Sign-off};
+
+% Container boxes drawn manually using calc library
+\begin{scope}[on background layer]
+    \draw[draw=brandborder, fill=brandbg, dashed, rounded corners=6pt] 
+        ($(src_db.west)+(-0.3,-0.5)$) rectangle ($(src_db.east)+(0.3,0.5)$);
+    \node[anchor=south, text=brandmuted, font=\sffamily\scriptsize\bfseries] at ($(src_db.north)+(0,0.5)$) {SOURCE ZONE};
+
+    \draw[draw=brandborder, fill=brandbg, dashed, rounded corners=6pt] 
+        ($(migrator.west)+(-0.3,-1.6)$) rectangle ($(tgt_db.east)+(0.3,0.5)$);
+    \node[anchor=south, text=brandmuted, font=\sffamily\scriptsize\bfseries] at ($(migrator.north)+(1.5,0.5)$) {EVOLUTION \& VALIDATION PIPELINE};
+\end{scope}
+
+\end{tikzpicture}
+\caption{Database Schema Migration and Verification Workflow Architecture.}
+\label{fig:migration_architecture}
+\end{figure}
+
+\subsection{Key Schema Modifications}
+The transition involves major structural alterations. The primary modification decomposes the \texttt{user\_metadata} JSONB object into relational columns and establishes a weekly partition range for the high-volume table \texttt{ledger\_transactions}.
+
+\begin{table}[h]
+\small
+\centering
+\begin{tabularx}{\textwidth}{L{2.8cm} Y Y}
+\toprule
+\textbf{Feature} & \textbf{Legacy v1.4.2 Schema} & \textbf{Evolution v2.0.0 Schema} \\
+\midrule
+\textbf{User Profiles} & Column \texttt{meta} JSONB holding address and system preferences. & Normalized into separate tables: \texttt{user\_addresses} and \texttt{user\_settings}. \\
+\midrule
+\textbf{Transactions} & Single flat table \texttt{ledger\_transactions} with a B-tree index on timestamp. & Partitioned table \texttt{ledger\_transactions} by RANGE on \texttt{transaction\_time} (weekly). \\
+\midrule
+\textbf{Audit Trail} & Text-based append log in table \texttt{audit\_records} with database write triggers. & Encrypted log in table \texttt{audit\_trail} with SHA-256 chaining and sequence verifiers. \\
+\bottomrule
+\end{tabularx}
+\caption{Structural comparison of schema versions v1.4.2 and v2.0.0.}
+\label{tab:schema_comparison}
+\end{table}
+
+\subsection{Migration view-layer backward compatibility}
+To minimize client downtime, temporary PostgreSQL database views are created. These views project the legacy v1.4.2 structure onto the normalized v2.0.0 schema using SQL rewrite rules. This enables legacy clients to perform operations during the execution window.

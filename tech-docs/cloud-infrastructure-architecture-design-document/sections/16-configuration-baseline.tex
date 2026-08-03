@@ -1,0 +1,34 @@
+\section{Configuration Baseline}
+
+\begin{longtable}{@{}L{34mm}L{43mm}L{76mm}@{}}
+  \toprule
+  \rowcolor{navy}
+  \color{white}\textbf{Domain} & \color{white}\textbf{Baseline} & \color{white}\textbf{Implementation note} \\
+  \midrule
+  \endfirsthead
+  \toprule
+  \rowcolor{navy}
+  \color{white}\textbf{Domain} & \color{white}\textbf{Baseline} & \color{white}\textbf{Implementation note} \\
+  \midrule
+  \endhead
+  Regions & \code{us-east-1}, \code{us-west-2} & All other regions denied except explicitly required global services. \\
+  \rowcolor{pale}
+  Availability Zones & Three per region & Resolve account-specific AZ IDs before assigning subnets. \\
+  Kubernetes & Supported EKS release & Upgrade at least one minor version before end of standard support. \\
+  \rowcolor{pale}
+  Node operating system & Minimal managed image & Immutable replacement; no in-place package management. \\
+  Container registry & Private ECR & Tag for humans; deploy by digest; enable scan-on-push. \\
+  \rowcolor{pale}
+  Database & Aurora PostgreSQL & Multi-AZ, deletion protection, performance telemetry, TLS required. \\
+  Object storage & S3 & Block public access at organization and account; versioning enabled. \\
+  \rowcolor{pale}
+  Encryption & Customer-managed KMS keys & Separate production keys; key administrators cannot decrypt data. \\
+  Log retention & 30--90 days hot; archive per policy & Security evidence retained in a separate protected account. \\
+  \rowcolor{pale}
+  Time & Amazon Time Sync Service & Alert on host or application clock drift. \\
+  DNS & Route 53 public/private zones & Changes through code; query logging for protected zones. \\
+  \rowcolor{pale}
+  Certificates & AWS Certificate Manager & Automated renewal alarms and ownership metadata. \\
+  Patching & Rebuild within risk SLA & Critical internet-facing: 72 hours; critical internal: 7 days. \\
+  \bottomrule
+\end{longtable}

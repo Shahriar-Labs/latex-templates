@@ -1,0 +1,48 @@
+\section{Risks and design decisions}
+
+\begin{longtable}{@{}L{0.20\textwidth}L{0.29\textwidth}L{0.33\textwidth}L{0.09\textwidth}@{}}
+\caption{Principal residual risks}\label{tab:risks}\\
+\toprule
+\thead{Risk} & \thead{Consequence} & \thead{Treatment} & \thead{Owner} \\
+\midrule
+\endfirsthead
+\toprule
+\thead{Risk} & \thead{Consequence} & \thead{Treatment} & \thead{Owner} \\
+\midrule
+\endhead
+Sandbox vulnerability & Host or tenant compromise & Micro-VM isolation, patched kernels, egress controls, dedicated trust pools, rapid image deny and rotation & Security \\
+Supply-chain compromise & Malicious build input or deployed output & Digest pinning, mirrors, signatures, provenance, SBOM, independent policy gate & Platform \\
+Credential exfiltration & Unauthorized environment access & Short-lived federation, narrow claims, deny-by-default egress, anomaly detection & Security \\
+Capacity shock & Long queues and delayed releases & Admission control, fair queuing, warm reserve, quota, multi-pool spillover where safe & SRE \\
+Complex policy & Unexpected denial or accidental privilege & Policy testing, explainable decisions, staged rollout, explicit exceptions & Security \\
+Deployment ambiguity & Duplicate or unsafe target change & Idempotency keys, reconciliation, environment serialization, adapter contracts & Service owner \\
+Regional split brain & Duplicate execution and deployments & External fencing, region epoch, certificate revocation, failover drills & SRE \\
+Cost growth & Unsustainable platform spend & Per-tenant metering, budgets, cache and image optimization, rightsizing feedback & Platform \\
+\bottomrule
+\end{longtable}
+
+\subsection{Resolved decisions}
+
+\begin{enumerate}
+  \item \textbf{Ephemeral versus persistent runners:} ephemeral is the default; persistent
+        runners are allowed only for specialized hardware in a dedicated, single-tenant
+        pool with mandatory workspace reset and periodic reimaging.
+  \item \textbf{Push versus pull assignment:} authenticated runner pull with renewable
+        leases avoids inbound access and supports fencing and natural backpressure.
+  \item \textbf{Credential model:} workload identity federation replaces stored cloud keys.
+  \item \textbf{Artifact identity:} digests are authoritative; names and tags are presentation aliases.
+  \item \textbf{Execution semantics:} jobs are at least once at the infrastructure layer;
+        leases, fencing, idempotent adapters, and reconciliation produce safe effects.
+  \item \textbf{Regional operation:} one active scheduling region at a time; recovery is
+        warm standby to keep the split-brain model auditable.
+\end{enumerate}
+
+\subsection{Deferred choices}
+
+The implementation team must record architecture decision records before committing to
+specific database, message broker, micro-VM runtime, policy engine, artifact store, and
+telemetry vendor. These choices may vary without changing the contracts and invariants
+in this specification. Native Windows/macOS isolation, GPU pools, and confidential
+computing are post-baseline capabilities.
+
+% -----------------------------------------------------------------------------

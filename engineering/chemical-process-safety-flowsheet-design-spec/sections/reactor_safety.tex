@@ -1,0 +1,116 @@
+\section{Flowsheet Design \& Safety Configuration}
+\label{sec:safety_config}
+
+The piping and instrumentation design for the oxidation reactor (R-101) incorporates multiple layers of protection, spanning basic process control, safety instrumented shutdowns, and passive relief barriers. Figure~\ref{fig:reactor_pid} illustrates the flowsheet and safety instrumentation schematic.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=0.95, >=Latex, every node/.style={font=\sffamily\scriptsize}]
+  % Draw Reactor Vessel R-101
+  \draw[SafetyNavy, very thick, fill=LightBg, rounded corners=12pt] (-1.5,-2.5) rectangle (1.5,2.0);
+  \node at (0,-0.5) [font=\sffamily\normalsize\bfseries, color=SafetyNavy] {R-101};
+  \node at (0,-0.8) [font=\sffamily\tiny\itshape, color=TechGray] {Oxidation Reactor};
+  
+  % Agitator
+  \draw[thick, TechGray] (0,2.4) -- (0,-1.8);
+  \draw[thick, TechGray] (-0.8,-1.8) -- (0.8,-1.8);
+  \draw[thick, TechGray] (-0.8,-1.6) -- (-0.8,-2.0);
+  \draw[thick, TechGray] (0.8,-1.6) -- (0.8,-2.0);
+  \node at (0,2.6) [draw=TechGray, circle, fill=MutedGray, inner sep=2pt] {M};
+
+  % Cooling Jacket
+  \draw[SafetyTeal, thick, fill=SafetyTeal!10, even odd rule] 
+    (-1.8,-2.7) [rounded corners=15pt] -- (-1.8,1.2) -- (-1.5,1.2) -- (-1.5,-2.4) [rounded corners=12pt] -- (1.5,-2.4) -- (1.5,1.2) -- (1.8,1.2) [rounded corners=15pt] -- (1.8,-2.7) -- cycle;
+  \node at (1.1,-2.0) [color=SafetyTeal, font=\sffamily\tiny\bfseries] {JACKET};
+
+  % Reactant A Feed (Top Left)
+  \draw[->, thick, TechGray] (-3.5, 1.5) -- (-1.5, 1.5);
+  \node at (-3.5, 1.7) [anchor=west, TechGray] {Reactant A Feed};
+  % Control Valve on Feed
+  \draw[fill=white, draw=TechGray] (-2.7, 1.35) -- (-2.3, 1.65) -- (-2.3, 1.35) -- (-2.7, 1.65) -- cycle;
+  \draw[TechGray] (-2.5, 1.5) -- (-2.5, 1.8);
+  \draw[TechGray] (-2.7, 1.8) -- (-2.3, 1.8);
+  \node at (-2.5, 2.0) [font=\sffamily\tiny] {FCV-101};
+
+  % Air/Oxygen Feed (Bottom Left)
+  \draw[->, thick, TechGray] (-3.5, -2.2) -- (-1.5, -2.2);
+  \node at (-3.5, -2.4) [anchor=west, TechGray] {Air Sparger};
+  % Control Valve on Air
+  \draw[fill=white, draw=TechGray] (-2.7, -2.35) -- (-2.3, -2.05) -- (-2.3, -2.35) -- (-2.7, -2.05) -- cycle;
+  \draw[TechGray] (-2.5, -2.2) -- (-2.5, -1.9);
+  \draw[TechGray] (-2.7, -1.9) -- (-2.3, -1.9);
+  \node at (-2.5, -1.7) [font=\sffamily\tiny] {FCV-102};
+
+  % Cooling Water Inlet (Bottom Right to Jacket)
+  \draw[->, thick, SafetyTeal] (-3.5, -1.0) -- (-1.8, -1.0);
+  \node at (-3.5, -0.8) [color=SafetyTeal, anchor=west] {CW Inlet};
+  % Valve
+  \draw[fill=white, draw=SafetyTeal] (-2.7, -1.15) -- (-2.3, -0.85) -- (-2.3, -1.15) -- (-2.7, -0.85) -- cycle;
+  \node at (-2.5, -1.4) [color=SafetyTeal, font=\sffamily\tiny] {TCV-101};
+
+  % Cooling Water Outlet (Top Right from Jacket)
+  \draw[->, thick, SafetyTeal] (1.8, 0.5) -- (3.5, 0.5);
+  \node at (2.2, 0.7) [color=SafetyTeal] {CW Outlet};
+
+  % Product Outlet (Bottom Right)
+  \draw[->, thick, TechGray] (1.5, -1.5) -- (3.5, -1.5);
+  \node at (2.2, -1.3) [TechGray] {Product B};
+  % Valve
+  \draw[fill=white, draw=TechGray] (2.3, -1.65) -- (2.7, -1.35) -- (2.7, -1.65) -- (2.3, -1.35) -- cycle;
+  \node at (2.5, -1.9) [font=\sffamily\tiny] {LCV-101};
+
+  % Normal Gas Vent (Top Right)
+  \draw[->, thick, TechGray] (0.5, 2.0) -- (0.5, 3.2) -- (2.5, 3.2);
+  \node at (2.2, 3.4) [TechGray] {Normal Vent};
+  % Valve
+  \draw[fill=white, draw=TechGray] (1.1, 3.05) -- (1.5, 3.35) -- (1.5, 3.05) -- (1.1, 3.35) -- cycle;
+  \node at (1.3, 3.6) [font=\sffamily\tiny] {PCV-101};
+
+  % Relief Line (Top Left)
+  \draw[->, thick, SafetyAmber] (-0.5, 2.0) -- (-0.5, 3.5) -- (-3.5, 3.5);
+  \node at (-3.5, 3.7) [color=SafetyAmber] {To Flare Header};
+
+  % Rupture Disk (RD-101)
+  \draw[thick, SafetyAmber, fill=white] (-1.4, 3.3) rectangle (-1.0, 3.7);
+  \draw[thick, SafetyAmber] (-1.4, 3.4) to [bend left=45] (-1.0, 3.6);
+  \node at (-1.2, 3.9) [color=SafetyAmber, font=\sffamily\tiny\bfseries] {RD-101};
+
+  % PSV (PSV-101)
+  \draw[thick, SafetyAmber, fill=white] (-2.5, 3.3) -- (-2.1, 3.7) -- (-2.5, 3.7) -- (-2.1, 3.3) -- cycle;
+  \draw[thick, SafetyAmber] (-2.3, 3.5) -- (-2.3, 3.9);
+  \draw[thick, SafetyAmber] (-2.5, 3.9) -- (-2.1, 3.9);
+  \node at (-2.3, 4.1) [color=SafetyAmber, font=\sffamily\tiny\bfseries] {PSV-101};
+
+  % Instrument Lines (Dashed)
+  % Temperature Transmitter (TT-101)
+  \draw[fill=white, draw=SafetyTeal] (0.8, -0.2) circle (0.22);
+  \node at (0.8, -0.2) [color=SafetyTeal, font=\sffamily\tiny\bfseries] {TT};
+  \draw[dashed, SafetyTeal, thick] (0.8, -0.42) -- (0.8, -1.0) -- (-2.3, -1.0);
+  
+  % Pressure Transmitter (PT-101)
+  \draw[fill=white, draw=SafetyNavy] (-0.8, 0.8) circle (0.22);
+  \node at (-0.8, 0.8) [color=SafetyNavy, font=\sffamily\tiny\bfseries] {PT};
+  \draw[dashed, SafetyNavy, thick] (-0.8, 1.02) -- (-0.8, 3.2) -- (1.1, 3.2);
+  
+\end{tikzpicture}
+\caption{Process Flow and Piping \& Instrumentation Diagram (P\&ID Schematic) of the Reactor Safety Systems.}
+\label{fig:reactor_pid}
+\end{figure}
+
+\subsection{Basic Process Control System (BPCS)}
+The BPCS manages the normal steady-state operation of the reactor. The key loops include:
+\begin{itemize}
+    \item \textbf{Reactor Temperature Control (TC-101):} Consists of temperature transmitter TT-101, which transmits a signal to the DCS. The DCS executes a PID algorithm to modulate the cooling water inlet valve TCV-101.
+    \item \textbf{Reactor Pressure Control (PC-101):} Pressure transmitter PT-101 monitors head-space pressure and modulates vent valve PCV-101 to maintain pressure at $3.0 \text{ barg}$.
+    \item \textbf{Liquid Level Control (LC-101):} Level transmitter LT-101 (not shown) modulates LCV-101 on the product outlet line to prevent gas blow-through and maintain liquid volume at $7.0\text{ m}^3$.
+\end{itemize}
+
+\subsection{Safety Instrumented System (SIS) Interlocks}
+To protect against common-cause failures (e.g., cooling water loss, controller freeze), a separate safety instrumented system (SIS) operates independently of the BPCS. The SIS triggers safety-critical actions if safe operating envelopes are violated:
+\begin{itemize}
+    \item \textbf{Interlock I-101 (High Temperature / Emergency Shutdown):} If the reactor temperature exceeds $98^\circ\text{C}$, the SIS closes FCV-101 and FCV-102 to cut off reactant and air feeds, and opens an emergency nitrogen sweep to purge oxygen from the headspace.
+    \item \textbf{Interlock I-102 (High Pressure / Emergency Depressurization):} If the pressure exceeds $5.5 \text{ barg}$, the SIS initiates emergency depressurization through an automated blowdown valve (not shown) routed directly to the low-pressure flare.
+\end{itemize}
+
+\subsection{Passive Relief Barrier}
+As a final layer of defense against mechanical failure, reactor R-101 is equipped with a rupture disk (RD-101) in series with a spring-loaded pressure safety valve (PSV-101) set at the vessel design pressure of $10.0 \text{ barg}$. Placing a rupture disk upstream of the PSV protects the valve from corrosive reactant vapors and prevents any leakage of toxic components during normal operation. A pressure gauge and bleed valve are installed in the interspace between the disk and the valve to monitor for disk pinhole leaks.

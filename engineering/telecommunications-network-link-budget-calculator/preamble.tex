@@ -1,0 +1,163 @@
+% Packages, colours and custom commands for this template.
+% Telecommunications Network Link Budget Calculator --- LaTeX Template
+% Edit the INPUT BLOCK below to evaluate another terrestrial microwave path.
+% Compile with: latexmk -pdf main.tex
+
+% -----------------------------------------------------------------------------
+% Encoding, typography, and page layout
+% -----------------------------------------------------------------------------
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{sourcesanspro}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[a4paper,left=17mm,right=17mm,top=18mm,bottom=18mm,
+            headheight=15pt,includeheadfoot]{geometry}
+\usepackage{microtype}
+\usepackage{ragged2e}
+\usepackage{setspace}
+
+% -----------------------------------------------------------------------------
+% Colour and tables
+% -----------------------------------------------------------------------------
+\usepackage[table]{xcolor}
+\definecolor{navy}{HTML}{102A43}
+\definecolor{blue}{HTML}{1677A7}
+\definecolor{cyan}{HTML}{2CB1BC}
+\definecolor{paleblue}{HTML}{EAF6FA}
+\definecolor{ice}{HTML}{F5F9FC}
+\definecolor{ink}{HTML}{243B53}
+\definecolor{slate}{HTML}{627D98}
+\definecolor{line}{HTML}{BCCCDC}
+\definecolor{green}{HTML}{16865C}
+\definecolor{palegreen}{HTML}{E6F6EF}
+\definecolor{amber}{HTML}{B7791F}
+\definecolor{paleamber}{HTML}{FFF7E6}
+\definecolor{red}{HTML}{C53030}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{colortbl}
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+\newcolumntype{R}{>{\RaggedLeft\arraybackslash}X}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+% -----------------------------------------------------------------------------
+% Mathematics, diagrams, and callouts
+% -----------------------------------------------------------------------------
+\usepackage{amsmath,amssymb}
+\usepackage{siunitx}
+\sisetup{detect-all,group-separator={,},group-minimum-digits=4}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc,positioning,shapes.geometric}
+\usepackage[most]{tcolorbox}
+\usepackage{enumitem}
+\usepackage{caption}
+\captionsetup{font=small,labelfont={bf,color=navy},textfont={color=slate}}
+
+% -----------------------------------------------------------------------------
+% Section style, headers, and PDF metadata
+% -----------------------------------------------------------------------------
+\usepackage{titlesec}
+\titleformat{\section}
+  {\large\bfseries\color{navy}}{}{0pt}{}
+  [{\vspace{2pt}\color{cyan}\titlerule[1.1pt]}]
+\titlespacing*{\section}{0pt}{13pt}{6pt}
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{blue}}{}{0pt}{}
+\titlespacing*{\subsection}{0pt}{9pt}{3pt}
+
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\footnotesize\color{slate}\textbf{NEXUS TELECOM} \textbar\ Network Engineering}
+\fancyhead[R]{\footnotesize\color{slate}LB--MW--018 \textbar\ Rev 1.0}
+\fancyfoot[L]{\footnotesize\color{slate}Illustrative design calculation --- verify inputs before issue}
+\fancyfoot[R]{\footnotesize\color{slate}Page \thepage\ of \pageref{LastPage}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.4pt}
+
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+  pdftitle={18 GHz Point-to-Point Microwave Link Budget},
+  pdfauthor={Nexus Telecom Network Engineering},
+  pdfsubject={Telecommunications network link-budget calculation},
+  pdfkeywords={link budget, microwave, RF, fade margin, availability}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\setlength{\emergencystretch}{2em}
+\renewcommand{\arraystretch}{1.18}
+
+% =============================================================================
+% INPUT BLOCK --- edit these values for a new path
+% =============================================================================
+\newcommand{\ProjectName}{Riverlink Metro Backhaul Expansion}
+\newcommand{\LinkName}{Rooftop Alpha -- Rooftop Bravo}
+\newcommand{\PreparedBy}{A. Rahman, RF Planning Engineer}
+\newcommand{\CheckedBy}{S. Karim, Transmission Lead}
+\newcommand{\IssueDate}{02 August 2026}
+
+\newcommand{\FreqGHz}{18.0}            % GHz
+\newcommand{\PathKm}{12.4}             % km
+\newcommand{\TxPower}{20.0}            % dBm, per carrier
+\newcommand{\TxFeeder}{1.2}            % dB
+\newcommand{\TxConnector}{0.3}         % dB
+\newcommand{\TxGain}{38.6}             % dBi
+\newcommand{\RxGain}{38.6}             % dBi
+\newcommand{\RxFeeder}{1.2}            % dB
+\newcommand{\RxConnector}{0.3}         % dB
+\newcommand{\GasLoss}{0.7}             % dB, clear-air gaseous absorption
+\newcommand{\PolLoss}{0.2}             % dB, polarization mismatch
+\newcommand{\OtherLoss}{1.0}           % dB, implementation allowance
+\newcommand{\BandwidthMHz}{28.0}        % MHz
+\newcommand{\NoiseFigure}{5.0}          % dB
+\newcommand{\RequiredCN}{20.0}          % dB at target BER
+\newcommand{\ImplementationLoss}{2.5}   % dB
+\newcommand{\RequiredMargin}{20.0}       % dB project criterion
+\newcommand{\RainAttenuation}{15.8}      % dB at selected time percentage
+\newcommand{\TargetAvailability}{99.95} % percent
+\newcommand{\AntennaHeightA}{42}         % m AGL
+\newcommand{\AntennaHeightB}{36}         % m AGL
+
+% =============================================================================
+% CALCULATION ENGINE --- values below are derived automatically
+% =============================================================================
+\pgfmathsetmacro{\TxLineLoss}{\TxFeeder+\TxConnector}
+\pgfmathsetmacro{\RxLineLoss}{\RxFeeder+\RxConnector}
+\pgfmathsetmacro{\FSPL}{92.45+20*ln(\FreqGHz)/ln(10)+20*ln(\PathKm)/ln(10)}
+\pgfmathsetmacro{\PropagationLoss}{\FSPL+\GasLoss+\PolLoss+\OtherLoss}
+\pgfmathsetmacro{\EIRP}{\TxPower-\TxLineLoss+\TxGain}
+\pgfmathsetmacro{\ReceivedPower}{\EIRP-\PropagationLoss+\RxGain-\RxLineLoss}
+\pgfmathsetmacro{\NoiseFloor}{-174+10*(ln(\BandwidthMHz)/ln(10)+6)+\NoiseFigure}
+\pgfmathsetmacro{\RxThreshold}{\NoiseFloor+\RequiredCN+\ImplementationLoss}
+\pgfmathsetmacro{\CarrierNoise}{\ReceivedPower-\NoiseFloor}
+\pgfmathsetmacro{\FadeMargin}{\ReceivedPower-\RxThreshold}
+\pgfmathsetmacro{\MarginSurplus}{\FadeMargin-\RequiredMargin}
+\pgfmathsetmacro{\RainResidual}{\FadeMargin-\RainAttenuation}
+\pgfmathsetmacro{\FresnelRadius}{sqrt((0.299792458/\FreqGHz)*(\PathKm*1000/4))}
+\pgfmathsetmacro{\FresnelClearance}{0.6*\FresnelRadius}
+
+\newcommand{\dB}[1]{\pgfmathparse{#1}\pgfmathprintnumber[fixed,precision=1]{\pgfmathresult}\,dB}
+\newcommand{\dBm}[1]{\pgfmathparse{#1}\pgfmathprintnumber[fixed,precision=1]{\pgfmathresult}\,dBm}
+\newcommand{\plainone}[1]{\pgfmathparse{#1}\pgfmathprintnumber[fixed,precision=1]{\pgfmathresult}}
+\newcommand{\plaintwo}[1]{\pgfmathparse{#1}\pgfmathprintnumber[fixed,precision=2]{\pgfmathresult}}
+\newcommand{\resultstatus}{%
+  \ifdim\MarginSurplus pt<0pt
+    \textcolor{red}{\textbf{FAIL}}
+  \else
+    \textcolor{green}{\textbf{PASS}}
+  \fi}
+
+\newtcolorbox{summarybox}[1][]{
+  enhanced,breakable,colback=ice,colframe=line,boxrule=0.5pt,arc=1.5mm,
+  left=3.5mm,right=3.5mm,top=2.5mm,bottom=2.5mm,#1
+}
+\newtcolorbox{notebox}[1][]{
+  enhanced,breakable,colback=paleamber,colframe=amber!65,boxrule=0.5pt,
+  arc=1.5mm,left=3.5mm,right=3.5mm,top=2.5mm,bottom=2.5mm,#1
+}
+
+% =============================================================================

@@ -1,0 +1,45 @@
+\section{Observability and Operations}
+
+\subsection{Telemetry model}
+
+Applications emit structured logs, Prometheus-compatible metrics, and OpenTelemetry traces with consistent service, environment, version, region, zone, and correlation fields. Collection agents buffer and forward telemetry to the managed observability platform. Sensitive fields are filtered before export.
+
+\begin{tabularx}{\textwidth}{@{}L{29mm}Y Y@{}}
+  \toprule
+  \rowcolor{navy}
+  \color{white}\textbf{Signal} & \color{white}\textbf{Required coverage} & \color{white}\textbf{Primary use} \\
+  \midrule
+  Metrics & Rate, errors, duration, saturation; business success counters & Alerting, SLOs, capacity \\
+  \rowcolor{pale}
+  Logs & Structured event, request ID, severity, safe context & Diagnosis and audit \\
+  Traces & Edge-to-database spans with sampled errors and slow paths & Dependency and latency analysis \\
+  \rowcolor{pale}
+  Synthetics & Public journey and private dependency probes & User-visible availability \\
+  Events & Deployments, scaling, configuration, and incident annotations & Change correlation \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{SLO and alert policy}
+
+Availability and latency SLIs are measured at the edge from eligible requests. Fast-burn and slow-burn error-budget alerts page only for actionable user impact. Resource alerts create tickets unless immediate exhaustion threatens the SLO. Every page identifies the service, symptom, current impact, dashboard, runbook, and escalation owner.
+
+\subsection{Operational ownership}
+
+The platform team owns cloud foundations, clusters, base images, and shared observability. Product teams own service code, dependency behavior, SLOs, runbooks, and first-line response. Security Engineering owns detection policy and leads security incidents. Major incidents use a named incident commander, operations lead, communications lead, and scribe.
+
+\begin{tabularx}{\textwidth}{@{}Y C{22mm}C{22mm}C{22mm}C{22mm}@{}}
+  \toprule
+  \rowcolor{navy}
+  \color{white}\textbf{Activity} & \color{white}\textbf{Platform} & \color{white}\textbf{Product} & \color{white}\textbf{Security} & \color{white}\textbf{SRE} \\
+  \midrule
+  EKS lifecycle & A/R & C & C & C \\
+  \rowcolor{pale}
+  Service deployment & C & A/R & C & C \\
+  SLO and alerting & C & A & C & R \\
+  \rowcolor{pale}
+  Vulnerability response & R & R & A & C \\
+  Regional recovery & A/R & R & C & R \\
+  \bottomrule
+\end{tabularx}
+
+% ================================================================

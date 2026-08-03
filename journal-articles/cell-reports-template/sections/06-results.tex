@@ -1,0 +1,68 @@
+\section{Results}
+
+\subsection{A balanced design exposes treatment and batch structure}
+The demonstration dataset represented 12 plates collected in three batches.
+Each plate contained four vehicle wells, four positive-control wells, and 40
+perturbation wells measured at 6, 24, and 48 h. Perturbations were balanced over
+plate position and batch. Six readouts represented cell count, nuclear area,
+mitochondrial intensity, membrane permeability, reporter activity, and a
+composite stress score. The complete design and analysis sequence are summarized
+in Figure~\ref{fig:workflow}.
+
+Before treatment labels were used, 11 of 576 wells (1.9\%) failed prespecified
+image-quality rules. The excluded wells were distributed across eight plates and
+did not cluster by treatment. Positive-control separation exceeded the acceptance
+threshold on every plate (median robust $Z'$ = 0.61; range, 0.52--0.69). These
+diagnostics supported plate-level normalization and inclusion of all 12 plates.
+
+\subsection{Hierarchical models recover implanted stress-response signals}
+For each readout, we estimated a treatment-by-time effect while accounting for
+plate and batch. At a Benjamini--Hochberg false-discovery rate of 5\%, the model
+recovered 92\% of the 36 implanted strong effects and 58\% of the 24 implanted
+weak effects. One of 180 null treatment--readout combinations was called
+significant, corresponding to an observed false-positive proportion of 0.6\%.
+
+Recovery differed with information content rather than with plate position.
+Strong effects at 24 and 48 h were estimated with smaller uncertainty than
+effects at 6 h, and readouts with lower simulated measurement noise had narrower
+confidence intervals. Representative estimates are shown in
+Table~\ref{tab:effects}. The analysis emphasizes effect estimates and intervals;
+adjusted $p$ values are provided as a complementary decision criterion.
+
+\begin{table}[htbp]
+\centering
+\begin{threeparttable}
+\caption{Representative modeled effects in the synthetic screen}
+\label{tab:effects}
+\begin{tabularx}{\textwidth}{@{}L{0.20\textwidth}L{0.18\textwidth}c c c Y@{}}
+\toprule
+Perturbation & Readout & Time (h) & Effect\tnote{a} & 95\% CI & Adjusted $p$ \\
+\midrule
+Stress-A & Composite score & 24 & 1.34 & 1.09, 1.59 & $<0.001$ \\
+Stress-A & Permeability & 48 & 0.88 & 0.55, 1.21 & $<0.001$ \\
+Stress-B & Reporter activity & 24 & $-0.71$ & $-0.99$, $-0.43$ & 0.002 \\
+Stress-C & Nuclear area & 6 & 0.19 & $-0.08$, 0.46 & 0.240 \\
+Vehicle & Composite score & 48 & 0.02 & $-0.16$, 0.20 & 0.910 \\
+\bottomrule
+\end{tabularx}
+\begin{tablenotes}[flushleft]
+\footnotesize
+\item[a] Effects are standardized differences from the matched vehicle control.
+All values are generated solely for this worked example.
+\end{tablenotes}
+\end{threeparttable}
+\end{table}
+
+\subsection{Sensitivity analyses preserve the principal conclusions}
+We repeated the analysis after replacing median/MAD normalization with control-
+based $z$ scoring and after removing the batch fixed effect. Treatment-effect
+ranks were highly concordant between normalization strategies
+($r_{\mathrm{s}}=0.94$), and 31 of 33 strong-effect discoveries were shared.
+Omitting the batch term reduced concordance to $r_{\mathrm{s}}=0.82$ and widened
+the distribution of null effects, consistent with the known simulation design.
+
+We also varied the image-quality cutoff by $\pm10\%$. This changed the retained
+sample by at most nine wells and did not change the direction of any strong
+effect. Together, these checks show that the main demonstration result---recovery
+of implanted treatment signals with calibrated error---is stable to reasonable
+preprocessing choices but benefits from explicit batch adjustment.

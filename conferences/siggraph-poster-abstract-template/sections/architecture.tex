@@ -1,0 +1,14 @@
+% sections/architecture.tex
+\section{System Architecture}
+Synapse-Render is designed to scale across heterogeneous cloud infrastructure. It leverages a hybrid system architecture combining high-performance localized rendering nodes with distributed storage and coordinate synchronization systems.
+
+\subsection{Distributed Cloud Integration}
+Our implementation runs on the Nexa Cloud Platform, distributing the ray tracing load across a cluster of Nimbus compute nodes. We employ a primary-secondary architecture where the primary node maintains the global state of the scene parameters $\theta$ (the neural representation).
+Each secondary Nimbus node is assigned a subset of the camera views and performs forward path tracing on its local GPU. 
+
+Gradients computed at the secondary nodes are compressed using a custom quantization scheme and transmitted back to the primary node. The primary node aggregates these gradients using the Meridian optimization framework, applying updates and broadcasting the new scene parameters to all secondary nodes.
+
+\subsection{CUDA-Accelerated Hash Grid}
+To achieve real-time query speeds for high-frequency spatial features, we implement a multi-resolution hash grid in CUDA. The grid encodes spatial positions into feature vectors that are interpolated and fed into a shallow multi-layer perceptron (MLP)~\cite{vance2024neural}. 
+
+Unlike standard implementations, our hash tables are stored in GPU shared memory, which reduces memory latency from 400ns to 15ns per lookup. This optimization allows us to achieve up to $2 \times 10^8$ queries per second on a single GPU.

@@ -1,0 +1,141 @@
+%% sections/inverter_performance.tex
+%% Inverter efficiency requirements and availability thresholds
+
+\section{Inverter Performance Requirements}
+
+\subsection{Efficiency Specifications}
+
+Each \textbf{Nimbus NX-3400} central inverter shall demonstrate the weighted efficiency values
+specified in Table~\ref{tab:inverter_eff}. Weighted European Efficiency ($\eta_{\textsc{eu}}$)
+and CEC Efficiency are the primary acceptance metrics.
+
+\begin{table}[H]
+  \centering
+  \caption{Inverter Efficiency Requirements — Nimbus NX-3400}
+  \label{tab:inverter_eff}
+  \begin{tabular}{@{} l S[table-format=2.2] S[table-format=2.2] l @{}}
+    \toprule
+    \rowcolor{SolarMist}
+    \textbf{Metric} & \textbf{Required (\%)} & \textbf{Tested Value (\%)} & \textbf{Status} \\
+    \midrule
+    Peak Efficiency ($\eta_{\max}$)        & 98.50 & 98.71 & \textcolor{green!60!black}{\textbf{Pass}} \\
+    European Weighted ($\eta_{\textsc{eu}}$) & 97.80 & 98.02 & \textcolor{green!60!black}{\textbf{Pass}} \\
+    CEC Efficiency                         & 97.50 & 97.88 & \textcolor{green!60!black}{\textbf{Pass}} \\
+    Night-time Standby Power               & \multicolumn{2}{c}{$\leq \SI{50}{\watt}$}
+                                           & \textcolor{green!60!black}{\textbf{Pass}} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The European Weighted Efficiency is calculated per IEC~61683:
+
+\[
+  \eta_{\textsc{eu}} = 0.03\,\eta_{5\%} + 0.06\,\eta_{10\%} + 0.13\,\eta_{20\%}
+                     + 0.10\,\eta_{30\%} + 0.48\,\eta_{50\%} + 0.20\,\eta_{100\%}
+\]
+
+where $\eta_{x\%}$ denotes inverter efficiency at $x\%$ of rated \textsc{ac} output power.
+
+\subsection{Availability Requirements}
+
+Inverter availability $A_{\text{inv}}$ is defined as:
+
+\[
+  A_{\text{inv}} = \frac{T_{\text{total}} - T_{\text{unplanned}}}{T_{\text{total}}} \times 100\%
+\]
+
+where $T_{\text{unplanned}}$ excludes grid curtailment events and scheduled maintenance windows.
+The minimum contractual availability floor is \highlight{\SI{98.5}{\percent}} per inverter per
+rolling 12-month period.
+
+\begin{minipage}[t]{0.47\linewidth}
+\reqbox{Availability Triggers}{%
+  If \( A_{\text{inv}} < 98.5\% \) for any single inverter in a 90-day window, Nimbus Field
+  Services shall dispatch a Level~2 technician within \textbf{24~hours}.
+  Sustained underperformance $(<97\%$ over 6~months) triggers a hardware audit and potential
+  unit replacement at EPC cost.
+}
+\end{minipage}%
+\hfill%
+\begin{minipage}[t]{0.47\linewidth}
+\reqbox{Response Time SLA}{%
+  \begin{itemize}[leftmargin=1.2em, itemsep=2pt, topsep=2pt]
+    \item Critical fault: \textbf{4~hr} remote, 24~hr on-site.
+    \item Minor fault: 48~hr remote, 5~day on-site.
+    \item Scheduled PM: 30-day advance notice.
+  \end{itemize}
+}
+\end{minipage}
+
+\subsection{Inverter Efficiency vs.\ Loading — PGFPlots Figure}
+
+Figure~\ref{fig:inv_efficiency} illustrates the measured efficiency curve of the Nimbus NX-3400
+across the full loading range, compared to the contractual minimum threshold.
+
+\begin{figure}[H]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=0.82\linewidth,
+      height=6.5cm,
+      xlabel={Load Factor (\%)},
+      ylabel={Inverter Efficiency (\%)},
+      xmin=0, xmax=110,
+      ymin=94, ymax=99.5,
+      xtick={0,10,20,30,40,50,60,70,80,90,100},
+      ytick={94,95,96,97,97.8,98,98.5,99},
+      grid=major,
+      grid style={draw=gray!25, very thin},
+      axis line style={SolarNavy},
+      tick label style={font=\small, color=SolarNavy},
+      label style={font=\small\bfseries, color=SolarNavy},
+      legend style={
+        at={(0.97,0.07)},
+        anchor=south east,
+        font=\small,
+        draw=SolarNavy!40,
+        fill=white,
+        rounded corners=2pt
+      },
+      tick align=outside,
+    ]
+      %% Measured efficiency curve (Nimbus NX-3400)
+      \addplot[
+        color=SolarNavy,
+        very thick,
+        smooth,
+        mark=*,
+        mark size=1.8pt,
+        mark options={fill=SolarNavy}
+      ] coordinates {
+        (5,  95.10)
+        (10, 97.20)
+        (20, 98.10)
+        (30, 98.55)
+        (50, 98.71)
+        (75, 98.60)
+        (100,98.30)
+      };
+      \addlegendentry{Measured ($\eta_{\text{NX-3400}}$)}
+
+      %% Contractual minimum floor
+      \addplot[
+        color=SolarAmber,
+        thick,
+        dashed,
+        domain=0:110
+      ] {97.8};
+      \addlegendentry{EU weighted min.\ (\SI{97.8}{\percent})}
+
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Nimbus NX-3400 measured efficiency curve across loading range.
+           Dashed amber line: contractual EU weighted minimum.}
+  \label{fig:inv_efficiency}
+\end{figure}
+
+\subsection{Harmonic Distortion \& Grid Compliance}
+
+Total Harmonic Distortion (\textsc{thd}) at the point of common coupling (\textsc{pcc}) shall
+not exceed \highlight{3\%} under full load, in conformance with IEEE~519-2022. Each inverter
+shall incorporate active anti-islanding protection compliant with AS~4777.2:2020.

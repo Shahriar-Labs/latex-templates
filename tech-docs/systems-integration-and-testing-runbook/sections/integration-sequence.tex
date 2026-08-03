@@ -1,0 +1,80 @@
+\section{Deployment Sequence}
+\label{sec:integration-sequence}
+
+\subsection{Pre-Deployment Checklist}
+Confirm every item below before opening the change window. Do not proceed if any item is
+unchecked; escalate to the contacts in Section~\ref{sec:appendix}.
+
+\begin{itemize}
+  \item[\statusok] Change window approved in Vertex Cloud change calendar (minimum 2 hours).
+  \item[\statusok] Ledger Postgres cluster snapshot completed within the last 30 minutes.
+  \item[\statusok] Nimbus adapter image \texttt{v3.4.0} present in the Vertex Cloud registry
+    and signature-verified.
+  \item[\statusok] Synapse QA harness green on the staging replica within the last 24 hours.
+  \item[\statusok] Apex on-call engineer notified and dashboards open.
+\end{itemize}
+
+\subsection{Step 1 -- Freeze and Snapshot}
+Announce the freeze in the \texttt{\#nexa-change-window} channel, then take a fresh, named
+snapshot of the ledger cluster so the rollback target in Section~\ref{sec:rollback} is
+unambiguous.
+
+\begin{cmdbox}[Vertex Cloud CLI]
+\promptline{vertex db snapshot create \textbackslash}
+\hspace*{1.4em}-{}-cluster ledger-prod-aps1 \textbackslash\\
+\hspace*{1.4em}-{}-label pre-nimbus-3.4.0-cutover
+\end{cmdbox}
+
+\subsection{Step 2 -- Deploy Adapter to Staging Slot}
+Deploy the new adapter into the idle (green) slot of the blue/green pair. Traffic remains on
+the blue slot throughout this step.
+
+\begin{cmdbox}[Vertex Cloud CLI]
+\promptline{vertex deploy apply \textbackslash}
+\hspace*{1.4em}-{}-service nimbus-payment-adapter \textbackslash\\
+\hspace*{1.4em}-{}-slot green -{}-image nimbus-adapter:3.4.0 \textbackslash\\
+\hspace*{1.4em}-{}-env-from nimbus-adapter-prod.env
+\end{cmdbox}
+
+\subsection{Step 3 -- Run Smoke Tests Against the Green Slot}
+Point the Synapse harness at the green slot directly (bypassing the gateway) to confirm the
+adapter starts cleanly and can reach the ledger cluster.
+
+\begin{cmdbox}[Synapse QA Harness]
+\promptline{synapse-qa run smoke-suite \textbackslash}
+\hspace*{1.4em}-{}-target https://nimbus-adapter-green.internal:8843 \textbackslash\\
+\hspace*{1.4em}-{}-suite payment-intent-basic
+\end{cmdbox}
+
+The suite must report \texttt{0 failures}. If any test fails, do not proceed to Step 4; tear
+down the green slot and investigate.
+
+\subsection{Step 4 -- Promote Green to Live}
+Once smoke tests pass, shift the Nexa API Gateway's upstream pool from blue to green. This is
+the only step that affects live Meridian traffic.
+
+\begin{cmdbox}[Vertex Cloud CLI]
+\promptline{vertex gateway promote \textbackslash}
+\hspace*{1.4em}-{}-service nimbus-payment-adapter \textbackslash\\
+\hspace*{1.4em}-{}-to green -{}-drain-timeout 30s
+\end{cmdbox}
+
+\subsection{Step 5 -- Verify Apex Dashboards}
+Watch the \emph{Payment Path} dashboard in Apex for five minutes. Error rate must remain below
+0.5\% and p95 latency must stay under 400\,ms (see Section~\ref{sec:validation} for the full
+acceptance matrix).
+
+\subsection{Step 6 -- Retire the Blue Slot}
+Once the gateway has run cleanly against green for at least fifteen minutes, decommission the
+old blue slot to free capacity.
+
+\begin{cmdbox}[Vertex Cloud CLI]
+\promptline{vertex deploy retire \textbackslash}
+\hspace*{1.4em}-{}-service nimbus-payment-adapter -{}-slot blue
+\end{cmdbox}
+
+\begin{infobox}[Note]
+Keep the blue slot's image tag recorded even after retirement -- Section~\ref{sec:rollback}
+redeploys from it rather than rebuilding, so the rollback path does not depend on the registry
+still holding old build artifacts beyond the standard 30-day retention.
+\end{infobox}

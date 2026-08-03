@@ -1,0 +1,38 @@
+\section{Data and Integration Architecture}
+
+\subsection{Data services}
+
+\begin{tabularx}{\textwidth}{@{}L{30mm}L{34mm}Y L{28mm}@{}}
+  \toprule
+  \rowcolor{navy}
+  \color{white}\textbf{Data class} & \color{white}\textbf{Service} & \color{white}\textbf{Configuration} & \color{white}\textbf{Recovery} \\
+  \midrule
+  Transactions & Aurora PostgreSQL & Multi-AZ writer, two readers, RDS Proxy, encrypted storage & PITR + cross-region replica \\
+  \rowcolor{pale}
+  Ephemeral cache & ElastiCache Redis & Multi-AZ replication group, TLS, no authoritative records & Rebuild from source \\
+  Objects & Amazon S3 & Versioning, SSE-KMS, lifecycle tiers, block public access & Cross-region replication \\
+  \rowcolor{pale}
+  Work queues & Amazon SQS & Standard queues, DLQ, encryption, age alarms & Replay from source / DLQ \\
+  Domain events & EventBridge & Versioned schemas, archive for critical buses & Archive replay \\
+  \rowcolor{pale}
+  Search & OpenSearch Serverless & Private collection, encrypted indexes & Reindex from S3 / database \\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Database design controls}
+
+Applications connect through RDS Proxy using short-lived credentials. Schema changes use backward-compatible expand/migrate/contract steps. Automated backups retain 35 days; monthly recovery points are copied to the recovery region and protected by logically isolated backup vault controls. Production exports are encrypted, access-logged, time-limited, and prohibited in lower environments unless irreversibly masked.
+
+\subsection{Event delivery contract}
+
+Producers use the transactional outbox pattern where a database mutation and event publication must agree. Consumers are idempotent and record the event identifier. Messages exceeding retry policy move to a dead-letter queue and page only when age or business impact crosses the service threshold.
+
+\begin{warningbox}[Delivery semantics]
+SQS and EventBridge provide at-least-once delivery in this design. Consumers must tolerate duplicates, late arrival, and out-of-order events. Exactly-once business outcomes are achieved with idempotency keys and database constraints, not transport assumptions.
+\end{warningbox}
+
+\subsection{Data lifecycle}
+
+Data owners assign classification, residency, retention, and deletion rules in the data catalog. S3 lifecycle policies transition eligible objects to lower-cost tiers and expire them when retention completes. Database deletion requests propagate through authoritative tables, derived indexes, caches, exports, and backup-expiry procedures with auditable completion.
+
+% ================================================================

@@ -1,0 +1,77 @@
+\section{Materials and Methods}
+
+\subsection{Model Structure and State Variables}
+
+We formulated a continuous-time compartmental model representing the carbon dynamics of a soil volume of $1\,\text{m}^2$ to a depth of $0.2\,\text{m}$. The model tracks five state variables corresponding to carbon pools ($\text{g C m}^{-2}$): litter-derived carbon ($C_L$, Synapse pathway), root-exudate carbon ($C_E$, Vertex pathway), bacterial biomass ($B_B$, Nimbus decomposers), fungal biomass ($B_F$, Meridian decomposers), and predatory biomass ($P$, Apex consumers). A schematic representation of the food web structure is presented in Fig.~\ref{fig:trophic_model}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    pool/.style={rectangle, draw=ecolgreen, fill=ecollight, very thick, minimum width=2.8cm, minimum height=1.2cm, rounded corners=4pt, align=center, font=\sffamily\small},
+    consumer/.style={ellipse, draw=ecolaccent, fill=ecolaccent!5, very thick, minimum width=2.5cm, minimum height=1.2cm, align=center, font=\sffamily\small},
+    arrow/.style={-stealth, very thick, draw=ecoldark!80},
+    flux_label/.style={font=\sffamily\scriptsize\color{ecoldark!90}, midway}
+]
+
+    % Top Consumer (Apex)
+    \node[consumer] (P) at (3.5, 4.5) {\textbf{Apex Predator} ($P$)\\Nematodes / Mites};
+
+    % Decomposers (Nimbus & Meridian)
+    \node[pool] (BB) at (0.5, 2.2) {\textbf{Nimbus Bacteria} ($B_B$)\\Fast Channel};
+    \node[pool] (BF) at (6.5, 2.2) {\textbf{Meridian Fungi} ($B_F$)\\Slow Channel};
+
+    % Resource Pools (Synapse & Vertex)
+    \node[pool] (CL) at (0.5, 0) {\textbf{Synapse Litter} ($C_L$)\\Particulate Organic C};
+    \node[pool] (CE) at (6.5, 0) {\textbf{Vertex Exudates} ($C_E$)\\Dissolved Organic C};
+
+    % Inputs
+    \draw[arrow] (0.5, -1.2) -- (CL) node[flux_label, right] {Litter Input $I_L(t)$};
+    \draw[arrow] (6.5, -1.2) -- (CE) node[flux_label, right] {Exudate Input $I_E(t)$};
+
+    % Trophic Transfers to Decomposers
+    \draw[arrow] (CL) -- (BB) node[flux_label, left] {$g_L(B_B)$};
+    \draw[arrow] (CL) -- (BF) node[flux_label, sloped, above] {$g_L(B_F)$};
+    \draw[arrow] (CE) -- (BB) node[flux_label, sloped, above] {$g_E(B_B)$};
+    \draw[arrow] (CE) -- (BF) node[flux_label, right] {$g_E(B_F)$};
+
+    % Trophic Transfers to Apex
+    \draw[arrow] (BB) -- (P) node[flux_label, sloped, above] {$f_B(B_B, B_F)$};
+    \draw[arrow] (BF) -- (P) node[flux_label, sloped, above] {$f_F(B_B, B_F)$};
+
+    % Respiration/Losses
+    \draw[arrow] (BB) to[bend left=30] (-2.2, 2.2) node[above, font=\sffamily\scriptsize] {Respiration $r_B B_B$};
+    \draw[arrow] (BF) to[bend right=30] (9.2, 2.2) node[above, font=\sffamily\scriptsize] {Respiration $r_F B_F$};
+    \draw[arrow] (P) to[bend right=30] (3.5, 6.2) node[right, font=\sffamily\scriptsize] {Mortality $m_P P$};
+
+\end{tikzpicture}
+\caption{Schematic of the soil food web compartment model. Carbon enters the system via detrital plant litter ($I_L$, Synapse pathway) and root exudates ($I_E$, Vertex pathway). Bacteria (Nimbus) and fungi (Meridian) decompose these pools and are subsequently preyed upon by Apex consumers (nematodes and predatory mites).}
+\label{fig:trophic_model}
+\end{figure}
+
+\subsection{Governing Differential Equations}
+
+The temporal dynamics of the five carbon pools are governed by the following system of non-linear differential equations:
+\begin{align}
+\frac{dC_L}{dt} &= I_L(t) - g_L(B_B) C_L - g_L(B_F) C_L \\
+\frac{dC_E}{dt} &= I_E(t) - g_E(B_B) C_E - g_E(B_F) C_E \\
+\frac{dB_B}{dt} &= e_B \left( g_L(B_B) C_L + g_E(B_B) C_E \right) - r_B B_B - f_B(B_B, B_F) P \\
+\frac{dB_F}{dt} &= e_F \left( g_L(B_F) C_L + g_E(B_F) C_E \right) - r_F B_F - f_F(B_B, B_F) P \\
+\frac{dP}{dt} &= e_P \left( f_B(B_B, B_F) + f_F(B_B, B_F) \right) P - m_P P
+\end{align}
+where $e_B$, $e_F$, and $e_P$ represent assimilation efficiencies; $r_B$ and $r_F$ are microbial respiration rates; and $m_P$ is the mortality rate of the top predator.
+
+The decomposition rates $g_L$ and $g_E$ are modeled using Michaelis-Menten kinetics to reflect enzymatic saturation:
+\begin{equation}
+g_L(B_j) = \frac{k_L \cdot B_j}{K_L + C_L}, \quad g_E(B_j) = \frac{k_E \cdot B_j}{K_E + C_E}
+\end{equation}
+where $k_L$ and $k_E$ are maximum decomposition rates, and $K_L$ and $K_E$ are half-saturation constants.
+
+Predation by Apex consumers is modeled using a Holling Type II functional response with switching, allowing the predator to adjust its preference based on prey densities:
+\begin{equation}
+f_B(B_B, B_F) = \frac{a_B B_B}{1 + a_B h_B B_B + a_F h_F B_F}, \quad f_F(B_B, B_F) = \frac{a_F B_F}{1 + a_B h_B B_B + a_F h_F B_F}
+\end{equation}
+where $a_j$ is the attack rate and $h_j$ is the handling time for prey type $j \in \{B, F\}$.
+
+\subsection{Simulation Settings and Foraging Scenarios}
+
+We simulated the model under three distinct input regimes: (1) \textit{Asynchronous Inputs}: litter and exudation inputs are $180^\circ$ out-of-phase; (2) \textit{Synchronous Inputs}: inputs peak simultaneously; and (3) \textit{Extreme Event Fluctuations}: input cycles are disrupted by randomized rainfall shocks that simulate prolonged drought followed by intense deluge. High-frequency rainfall extremes were modeled by introducing stochastic pulses in $I_E(t)$ with a coefficient of variation ($\text{CV}$) ranging from $0.2$ to $0.8$. Simulations were run for $t = 1000$ days using a fourth-order Runge-Kutta integration scheme with a time step of $dt = 0.1$ day.

@@ -1,0 +1,39 @@
+\section{Configuration}
+\subsection{Traffic Splitting}
+
+\begin{frame}[fragile]{Declarative Route Configuration}{Canary Release Policy (90/10 Split)}
+  Synapse Mesh uses declarative configuration to control traffic routing. Below is the service policy for the billing endpoint.
+  
+  \vspace{0.2cm}
+  \begin{minipage}[t]{0.48\textwidth}
+    \begin{codebox}{Legacy Route Config}
+\begin{lstlisting}[language=json]
+{
+  "service": "nexa-billing",
+  "route": "/v1/pay",
+  "targets": [
+    {"version": "v1.2", "weight": 100}
+  ]
+}
+\end{lstlisting}
+    \end{codebox}
+  \end{minipage}
+  \hfill
+  \begin{minipage}[t]{0.48\textwidth}
+    \begin{codebox}{Canary 90/10 Splitting}
+\begin{lstlisting}[language=json]
+{
+  "service": "nexa-billing",
+  "route": "/v1/pay",
+  "targets": [
+    {"version": "v1.2", "weight": 90},
+    {"version": "v2.0-rc1", "weight": 10}
+  ]
+}
+\end{lstlisting}
+    \end{codebox}
+  \end{minipage}
+  
+  \vspace{0.3cm}
+  Apply this change using: \texttt{synapse apply -f canary-policy.json}
+\end{frame}

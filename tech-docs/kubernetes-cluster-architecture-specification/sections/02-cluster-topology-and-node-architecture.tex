@@ -1,0 +1,77 @@
+\section{Cluster Topology \& Node Architecture}
+
+\subsection{Control plane}
+\texttt{apex-prod-mer1} runs on Meridian Cloud's managed Kubernetes control plane, version 1.29. The control plane is replicated across three availability zones in \texttt{mer-east-1}, with a five-member etcd quorum maintained by the provider and snapshotted every fifteen minutes to object storage with a 30-day retention window. The Kubernetes API server is reachable through two endpoints: a private endpoint peered into the Apex corporate network for interactive \texttt{kubectl} access, and a public endpoint restricted by IP allowlist to the CI/CD deployment runners only. Neither endpoint accepts anonymous or basic-auth requests; all access is mediated by OIDC tokens issued through Synapse Auth.
+
+\subsection{Node pools}
+Worker capacity is split into three pools so that noisy, bursty, or privileged workloads cannot starve one another. Each pool is a separate autoscaling group with its own instance class, taints, and scaling bounds.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l L c c L@{}}
+\toprule
+\rowcolor{primary}
+\textcolor{white}{\textbf{Pool}} & \textcolor{white}{\textbf{Purpose}} & \textcolor{white}{\textbf{Instance Class}} & \textcolor{white}{\textbf{Nodes}} & \textcolor{white}{\textbf{Taints / Labels}} \\
+\midrule
+\code{system} & Add-ons: CoreDNS, Cilium operator, metrics-server, cert-manager & 4 vCPU / 16\,GiB & 3 (fixed) & \code{CriticalAddonsOnly=\allowbreak true:\allowbreak NoSchedule} \\
+\rowcolor{rowgray}
+\code{general-compute} & Vertex API, Nexa portal backend, Synapse ingestion workers & 8 vCPU / 32\,GiB & 6--24 & \code{node-role=\allowbreak general} \\
+\code{stateful-data} & Synapse Postgres, Redis, Kafka & 8 vCPU / 64\,GiB & 3--9 & \code{workload=\allowbreak stateful:\allowbreak NoSchedule} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The \code{system} pool is fixed at three nodes, one per availability zone, and never scales down --- add-ons that the rest of the cluster depends on must not be evicted by capacity pressure elsewhere. The \code{general-compute} and \code{stateful-data} pools scale independently via Cluster Autoscaler, bounded by the ranges above.
+
+\subsection{Cluster topology diagram}
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=8mm and 10mm,
+  >=Latex,
+  font=\small,
+  lbnode/.style={rectangle, rounded corners=3pt, draw=brand, fill=brand!8, minimum width=48mm, minimum height=8mm, font=\small\bfseries, align=center},
+  cpnode/.style={rectangle, rounded corners=2pt, draw=primary, fill=primary!8, minimum width=26mm, minimum height=7mm, font=\scriptsize, align=center},
+  poolbox/.style={rectangle, rounded corners=2pt, draw=dark, thick, minimum width=44mm, minimum height=20mm, align=center, font=\scriptsize\bfseries, label={[font=\scriptsize\bfseries]above:#1}},
+  worker/.style={rectangle, rounded corners=1pt, minimum width=16mm, minimum height=6mm, font=\tiny, align=center}
+]
+
+  \node (lb) [lbnode] {Meridian L4 Load Balancer};
+  \node (cp1) [cpnode, below left=12mm and 4mm of lb] {API Server};
+  \node (cp2) [cpnode, right=4mm of cp1] {etcd (5-node quorum)};
+  \node (cp3) [cpnode, right=4mm of cp2] {Scheduler / CM};
+
+  \node (sys) [poolbox=system pool, below=16mm of cp1, xshift=6mm, draw=dark] {};
+  \node (gen) [poolbox=general-compute pool, right=8mm of sys, draw=brand] {};
+  \node (data) [poolbox=stateful-data pool, right=8mm of gen, draw=accent] {};
+
+  \node (w1) [worker, fill=dark!10, draw=dark] at ($(sys.center)+(0,3mm)$) {CoreDNS};
+  \node (w2) [worker, fill=dark!10, draw=dark] at ($(sys.center)+(0,-5mm)$) {Cilium op.};
+
+  \node (w3) [worker, fill=brand!10, draw=brand] at ($(gen.center)+(-9mm,3mm)$) {Vertex API};
+  \node (w4) [worker, fill=brand!10, draw=brand] at ($(gen.center)+(9mm,3mm)$) {Nexa portal};
+  \node (w5) [worker, fill=brand!10, draw=brand] at ($(gen.center)+(0,-5mm)$) {Synapse ingest};
+
+  \node (w6) [worker, fill=accent!10, draw=accent] at ($(data.center)+(-9mm,3mm)$) {Postgres};
+  \node (w7) [worker, fill=accent!10, draw=accent] at ($(data.center)+(9mm,3mm)$) {Kafka};
+  \node (w8) [worker, fill=accent!10, draw=accent] at ($(data.center)+(0,-5mm)$) {Redis};
+
+  \draw[->, brand] (lb) -- (gen.north);
+  \draw[->, muted, thin] (cp1) -- (sys.north);
+  \draw[->, muted, thin] (cp2) -- (gen.north west);
+  \draw[->, muted, thin] (cp3) -- (data.north);
+
+  \begin{scope}[on background layer]
+    \node[draw=border, fill=light, rounded corners=4pt, fit=(sys)(gen)(data), inner sep=8pt,
+      label={[font=\scriptsize\bfseries, text=muted]below:Cilium eBPF overlay --- pod CIDR 10.64.0.0/14}] {};
+  \end{scope}
+
+\end{tikzpicture}
+\caption{Control plane, node pools, and the shared CNI overlay for \code{apex-prod-mer1}.}
+\label{fig:topology}
+\end{figure}
+
+\subsection{Autoscaling policy}
+\begin{specbox}{AD-04: Pool Segregation Over Bin Packing}
+Earlier revisions of this cluster ran all workloads in a single general-purpose pool. Stateful services were repeatedly evicted during scale-down events triggered by unrelated traffic spikes on the Nexa portal. Segregating pools by workload class costs some bin-packing efficiency but removes that failure mode entirely, and it lets \code{stateful-data} scale on a slower, more conservative policy than \code{general-compute}.
+\end{specbox}
+Horizontal Pod Autoscalers govern individual Deployments; Cluster Autoscaler reconciles pool size against unschedulable pods every 15 seconds and will not scale a pool below its floor even when utilization is low, to preserve quorum for pool-local daemons.

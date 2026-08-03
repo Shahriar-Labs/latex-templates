@@ -1,0 +1,96 @@
+\section{Job lifecycle and scheduling}
+
+\subsection{State model}
+
+The persisted state machine is authoritative. State transitions use compare-and-swap
+semantics and append an event to the run history. Figure~\ref{fig:states} omits
+administrative states for readability.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=8mm and 9mm,
+  state/.style={draw=Primary,rounded corners,fill=LightBlue,minimum width=21mm,minimum height=8mm,align=center,font=\small},
+  terminal/.style={draw=DarkGray,rounded corners,fill=LightGray,minimum width=21mm,minimum height=8mm,align=center,font=\small},
+  flow/.style={-{Latex[length=2mm]},draw=DarkGray,thick},
+  every edge quotes/.style={font=\scriptsize,fill=white,inner sep=1pt}
+]
+  \node[state] (created) {created};
+  \node[state,right=of created] (blocked) {blocked};
+  \node[state,right=of blocked] (ready) {ready};
+  \node[state,right=of ready] (leased) {leased};
+  \node[state,below=of leased] (running) {running};
+  \node[state,left=of running] (finalizing) {finalizing};
+  \node[terminal,left=of finalizing] (success) {succeeded};
+  \node[terminal,below=of finalizing] (failed) {failed};
+  \node[terminal,below=of blocked] (cancelled) {cancelled};
+
+  \draw[flow] (created) -- (blocked);
+  \draw[flow] (blocked) -- node[above,font=\scriptsize]{needs met} (ready);
+  \draw[flow] (ready) -- (leased);
+  \draw[flow] (leased) -- (running);
+  \draw[flow] (running) -- (finalizing);
+  \draw[flow] (finalizing) -- (success);
+  \draw[flow] (finalizing) -- (failed);
+  \draw[flow] (blocked) -- (cancelled);
+  \draw[flow] (ready) |- (cancelled);
+  \draw[flow] (leased) to[bend left=34] node[above,font=\scriptsize]{lease expires} (ready);
+\end{tikzpicture}
+\caption{Simplified job state machine}
+\label{fig:states}
+\end{figure}
+
+A job may also end as \code{timed\_out}, \code{skipped}, or \code{infrastructure\_failed}.
+An infrastructure failure is distinct from a user-command failure and is eligible for
+automatic retry. Terminal states are immutable except through a documented
+administrator correction process that appends, rather than rewrites, history.
+
+\subsection{Lease protocol}
+
+\begin{enumerate}
+  \item An attested runner opens an authenticated long-poll request containing pool,
+        capabilities, current concurrency, image digest, and health status.
+  \item The scheduler selects a ready job and atomically creates an attempt with a unique
+        fencing token and a default 60-second lease.
+  \item The runner acknowledges within 10 seconds and renews every 20 seconds. Renewal
+        proves possession of runner identity and the current fencing token.
+  \item Missing two renewal windows makes the lease suspect; expiry returns the job to
+        ready or creates a retry according to policy.
+  \item Finalization is accepted only for the current attempt and fencing token. Late
+        results are retained as diagnostic events but cannot change job state.
+\end{enumerate}
+
+External deployment effects cannot generally be rolled back by fencing alone. A
+deployment attempt therefore carries an idempotency key derived from environment, run,
+job, attempt, and artifact digest. Deployment adapters \must enforce that key or expose
+a reconciliation operation.
+
+\subsection{Scheduling policy}
+
+Eligibility is a hard filter over pool, platform, architecture, labels, trust tier,
+region, network zone, image policy, and resource request. Selection among eligible jobs
+uses weighted fair queuing across organizations and repositories, with aging to prevent
+starvation. Protected deployment jobs may use a reserved capacity class but cannot
+preempt a running job.
+
+For tenant $i$, the scheduler computes normalized dominant resource share
+
+\[
+  S_i = \max_{r \in R}\left(\frac{u_{i,r}}{w_i C_r}\right),
+\]
+
+where $u_{i,r}$ is current use of resource $r$, $C_r$ is allocatable capacity, and
+$w_i$ is the tenant weight. Among ready queues, the scheduler prefers the lowest
+$S_i$ after applying priority and age bounds. Policy limits prevent a tenant from
+raising priority above its authorized class.
+
+\subsection{Concurrency and cancellation}
+
+A concurrency group serializes runs or selected jobs. Acquisition and release are
+transactional. If \code{cancel\_in\_progress} is true, the prior run receives a
+cancellation request and a bounded grace period; the successor does not enter a
+protected environment until the previous deployment has stopped or reconciled.
+Cancellation is cooperative for 10 seconds and then forceful. Cleanup steps run with
+separate, tightly scoped credentials and a maximum duration.
+
+% -----------------------------------------------------------------------------

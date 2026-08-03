@@ -1,0 +1,67 @@
+\section{Binding and Composition}
+\label{sec:binding}
+
+Binding reduces to finding two distinct random-oracle inputs with the same
+output.  The reduction is unusually direct because verification recomputes
+the full canonical encoding.
+
+\begin{theorem}[Binding]
+\label{thm:binding}
+For an adversary making at most $q_H$ distinct oracle queries,
+\[
+  \Adv^{\mathsf{bind}}_\Pi(\adv)
+  \leq \binom{q_H+2}{2}2^{-\tau}+\varepsilon_{\mathsf{enc}}.
+\]
+\end{theorem}
+
+\begin{proof}
+Two accepted, unequal openings for the same context yield distinct canonical
+inputs $X\neq X'$ by \cref{lem:context-separation}, but verification requires
+$\Hash(X)=C=\Hash(X')$.  Across at most $q_H+2$ evaluated inputs, the birthday
+bound for independent $\tau$-bit outputs gives the stated probability.  A
+non-canonical parser is represented by $\varepsilon_{\mathsf{enc}}$.
+\end{proof}
+
+\subsection{Why every context field matters}
+
+The encoding is not decorative.  Removing fields changes the theorem that can
+be claimed.
+
+\secpar{No protocol tag} Suppose a ballot protocol and a credential protocol
+both hash $(sid,i,m,r)$ with the same oracle.  A commitment produced for one is
+byte-for-byte valid in the other.  Neither local binding nor local hiding is
+violated, yet cross-protocol replay is possible.
+
+\secpar{No session identifier} If positions restart at one in every session,
+a commitment and its later opening can be transplanted to another session.
+An application-level freshness check may stop the replay, but that check then
+becomes a missing hypothesis of the cryptographic composition theorem.
+
+\secpar{No position} Swapping commitments inside a vector preserves validity.
+This may be acceptable for an unordered set, but not for a ballot indexed by
+contest or a proof whose coordinates have different meanings.  Including $i$
+also makes the oracle inputs distinct even when messages and salts repeat.
+
+\secpar{Ambiguous concatenation} Raw concatenation permits tuples such as
+$(\mathtt{a},\mathtt{bc})$ and $(\mathtt{ab},\mathtt{c})$ to share an input.
+Length prefixes or a canonical serialization format are necessary for the
+injectivity used in both main proofs.
+
+\begin{table}[t]
+\caption{Proof obligation associated with each encoded field.}
+\label{tab:fields}
+\centering
+\small
+\begin{tabular}{@{}p{.19\textwidth}p{.31\textwidth}p{.38\textwidth}@{}}
+\toprule
+Field & Binds & Failure if omitted \\
+\midrule
+Version/tag & scheme and format & cross-protocol reinterpretation \\
+Session $sid$ & execution instance & replay across executions \\
+Position $i$ & semantic coordinate & vector permutation or substitution \\
+Message $m$ & committed payload & no message binding \\
+Salt $r$ & fresh entropy & efficient dictionary attack \\
+Lengths/types & parse boundaries & tuple aliasing \\
+\bottomrule
+\end{tabular}
+\end{table}

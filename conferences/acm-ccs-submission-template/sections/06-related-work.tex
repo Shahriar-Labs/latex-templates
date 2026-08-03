@@ -1,0 +1,52 @@
+\section{Related Work}
+\label{sec:related-work}
+
+\smallskip
+\noindent\textbf{Leakage-abuse attacks.} Islam et al.~\cite{islam2012access}
+first demonstrated that access-pattern leakage from searchable encryption
+schemes could be exploited via keyword co-occurrence to recover query
+plaintexts with high confidence. \citet{kellaris2016generic} generalized
+this to range queries, showing that volume leakage alone --- without any
+access-pattern information --- suffices to reconstruct an ordered domain
+under a persistent adversary, which is the attack family we instantiate in
+\S\ref{sec:leakage}. \citet{grubbs2018pumpup} extended reconstruction
+attacks to order-revealing encryption deployments, showing that the
+relative-order leakage such schemes are built to provide is itself
+sufficient for near-complete range recovery; our Apex Store baseline
+reproduces this weakness. \sysname{} differs from this line of work in
+being a defense evaluated against the same attack family rather than a new
+attack.
+
+\smallskip
+\noindent\textbf{Oblivious storage.} Path ORAM~\cite{stefanov2018path} and
+its successors eliminate access-pattern leakage down to a
+poly-logarithmic bandwidth overhead by continuously re-shuffling and
+re-encrypting the entire storage tree on every access. This gives a
+strictly stronger guarantee than \sysname{} provides, at the cost of
+requiring the storage layer itself to implement the ORAM protocol ---
+which rules out deployment in front of an unmodified commercial backend,
+the setting \sysname{} targets. \sysname{} can be seen as trading a
+constant-factor reduction in throughput overhead against a weaker,
+quantifiable leakage bound rather than an asymptotically vanishing one.
+
+\smallskip
+\noindent\textbf{Padding-based countermeasures.} Prior padding schemes for
+encrypted search~\cite{grubbs2018pumpup} typically use a fixed, workload-
+independent bucket schedule, which our Vertex Store baseline models. Our
+evaluation in \S\ref{sec:evaluation} quantifies a gap in this line of work
+that is often noted only informally: padding volumes without also
+decorrelating request timing and dispatch order leaves a persistent
+adversary with most of the correlation signal padding was meant to
+remove, since the identity of \emph{which} padded request corresponds to
+which recurring query is untouched by volume padding alone.
+
+\smallskip
+\noindent\textbf{Differentially private query interfaces.} An orthogonal
+line of work injects noise into query \emph{results} to bound what a
+client can learn about the underlying data~\cite{narayan2019dp}. This
+protects against a different adversary --- a querying client, rather than
+an operator observing the access pattern of a legitimate query --- and is
+complementary to \sysname{}: a deployment concerned with both threats
+could layer a differentially private query interface on top of the
+\sysname{} gateway without conflict, since the two mechanisms act on
+disjoint parts of the request/response path.

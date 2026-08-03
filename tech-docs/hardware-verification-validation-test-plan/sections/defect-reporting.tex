@@ -1,0 +1,58 @@
+\section{Defect Reporting \& Issue Tracking}
+
+\subsection{Defect Classification Workflow}
+When a validation test fails, the testing engineer must log the issue. Defects are tracked dynamically and undergo verification checks before resolution. The lifecycle of a defect is:
+\begin{enumerate}
+    \item \textbf{Identification}: Validation engineer observes a violation of pass/fail criteria.
+    \item \textbf{Filing}: Bug report is created, containing hardware revision, logic analyzer traces, and test vector ID.
+    \item \textbf{Triage}: Hardware design team determines severity and assigns to a resolution owner.
+    \item \textbf{Mitigation}: Design changes are proposed (e.g., PCB trace impedance tuning or firmware register adjustments).
+    \item \textbf{Verification}: The test is rerun on the mitigated board to confirm pass criteria are met.
+\end{enumerate}
+
+\subsection{Defect Severity Definition}
+Defects are classified into four severity levels. Table~\ref{tab:severity} outlines the classification matrix.
+
+\begin{table}[h]
+\small
+\centering
+\begin{tabularx}{\textwidth}{L{2.5cm} L{3.5cm} X}
+\toprule
+\textbf{Severity Level} & \textbf{Systemic Impact} & \textbf{Resolution Deadline} \\
+\midrule
+\rowcolor{brandhighlight!10}
+\textbf{Critical} & System crash, permanent hardware damage, or boot path failure. & Immediate (stop line validation) \\
+\textbf{Major} & High-speed interface link training fails, or memory corruption. & 48 hours \\
+\textbf{Minor} & Minor functional issue with a software bypass (e.g., I2C clock stretch bypass). & 7 business days \\
+\textbf{Cosmetic} & Document inconsistencies, GPIO LED timing mismatch. & Next revision candidate \\
+\bottomrule
+\end{tabularx}
+\caption{Defect severity classification matrix.}
+\label{tab:severity}
+\end{table}
+
+\subsection{Sample Defect Log Entry}
+Below is a sample log entry for an actual verification defect.
+
+\begin{lstlisting}[caption={Defect report log entry (DF-2026-N5-042).}]
+[DEFECT LOG]
+ID: DF-2026-N5-042
+Severity: Major
+Component: PCIe Gen 3 Controller
+Revision: Apex EVB v2.1
+DUT Serial: SN-49201-A
+Tester: Marcus Vance (QA Engineer)
+
+Description:
+During VEC-004 test vector execution, PCIe lanes 0-3 successfully negotiate to L0 state, but lane 4 reports intermittent framing error during active RX states. 
+
+Root Cause:
+PCB trace length matching variance on lane 4 RX pair exceeds 2.5 mil tolerance limit, resulting in dynamic skew under peak load.
+
+Mitigation:
+1. Re-route RX differential pair in PCB revision v2.2.
+2. For v2.1 board testing, apply soft-register offset PCIe_RX_SKEW_CTRL (0x0F48) to delay clock phase by 40 ps on lane 4.
+
+Verification Status:
+Pass (Verified under active skew control firmware patch).
+\end{lstlisting}
