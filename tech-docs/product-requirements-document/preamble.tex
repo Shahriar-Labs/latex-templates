@@ -1,0 +1,124 @@
+% Preamble: packages, colours, custom commands, page geometry
+\usepackage[a4paper,margin=2.2cm,top=2.4cm,bottom=2.6cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage[table]{xcolor}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage[most]{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{hyperref}
+\usepackage{ragged2e}
+\usepackage{multirow}
+\usepackage{setspace}
+\usepackage{etoolbox}
+
+% ---------- Palette ----------
+\definecolor{prdink}{HTML}{1B2333}
+\definecolor{prdslate}{HTML}{4A5568}
+\definecolor{prdaccent}{HTML}{2A5CAA}
+\definecolor{prdteal}{HTML}{0F9B8E}
+\definecolor{prdamber}{HTML}{D98C2B}
+\definecolor{prdrose}{HTML}{C0392B}
+\definecolor{prdpale}{HTML}{EEF2F9}
+\definecolor{prdpalegreen}{HTML}{E6F5F3}
+\definecolor{prdpalered}{HTML}{FBEAEA}
+\definecolor{prdline}{HTML}{D9DEE8}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=prdaccent,
+  urlcolor=prdaccent,
+  citecolor=prdaccent,
+  pdftitle={Product Requirements Document},
+  pdfauthor={Nexa Product Team}
+}
+
+\renewcommand{\familydefault}{\sfdefault}
+\color{prdink}
+
+% ---------- Section styling ----------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{prdink}}
+  {\thesection}{0.6em}{}
+\titlespacing{\section}{0pt}{1.6em}{0.8em}
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{prdaccent}}
+  {\thesubsection}{0.5em}{}
+\titlespacing{\subsection}{0pt}{1.2em}{0.5em}
+
+% ---------- Header / footer ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{prdslate} Product Requirements Document}
+\fancyhead[R]{\small\color{prdslate} Vertex, Inc.}
+\fancyfoot[L]{\small\color{prdslate} Confidential --- Internal Use Only}
+\fancyfoot[R]{\small\color{prdslate} \thepage}
+
+% ---------- Custom commands ----------
+\newcommand{\doclabel}[2]{%
+  \noindent{\small\bfseries\color{prdslate} #1:}~{\small\color{prdink} #2}\par
+}
+
+% NOTE: \color must never sit inside a tabularx `>{}` column-type prefix mixed
+% with an X column -- it desyncs the p-column's box from the X column's box
+% and the shorter cell renders bottom-aligned instead of top-aligned. Apply
+% color per-cell instead via this macro.
+\newcommand{\dcell}[1]{\textbf{\color{prdslate}#1}}
+\newcommand{\dcellaccent}[1]{\textbf{\color{prdaccent}#1}}
+
+\newtcolorbox{statusbox}[1][]{%
+  colback=prdpale,
+  colframe=prdaccent,
+  boxrule=0.6pt,
+  arc=2pt,
+  left=8pt,right=8pt,top=6pt,bottom=6pt,
+  #1
+}
+
+\newtcolorbox{calloutbox}[2][]{%
+  colback=prdpalegreen,
+  colframe=prdteal,
+  boxrule=0.6pt,
+  arc=2pt,
+  fonttitle=\bfseries\small,
+  title=#2,
+  left=8pt,right=8pt,top=6pt,bottom=6pt,
+  #1
+}
+
+\newtcolorbox{riskbox}[2][]{%
+  colback=prdpalered,
+  colframe=prdrose,
+  boxrule=0.6pt,
+  arc=2pt,
+  fonttitle=\bfseries\small,
+  title=#2,
+  left=8pt,right=8pt,top=6pt,bottom=6pt,
+  #1
+}
+
+\newcommand{\priobadge}[1]{%
+  \ifstrequal{#1}{P0}{\tikz[baseline=-0.6ex]\node[fill=prdrose,text=white,rounded corners=2pt,inner sep=2.5pt,font=\scriptsize\bfseries]{P0};}{%
+  \ifstrequal{#1}{P1}{\tikz[baseline=-0.6ex]\node[fill=prdamber,text=white,rounded corners=2pt,inner sep=2.5pt,font=\scriptsize\bfseries]{P1};}{%
+  \tikz[baseline=-0.6ex]\node[fill=prdteal,text=white,rounded corners=2pt,inner sep=2.5pt,font=\scriptsize\bfseries]{P2};}}%
+}
+
+\setlist[itemize]{leftmargin=1.4em,itemsep=0.2em}
+\setlist[enumerate]{leftmargin=1.6em,itemsep=0.2em}
+
+\renewcommand{\arraystretch}{1.25}

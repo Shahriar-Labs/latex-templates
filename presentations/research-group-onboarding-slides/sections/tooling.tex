@@ -1,0 +1,76 @@
+\section{Tooling \& Infrastructure}
+
+\begin{frame}{Core Compute Resources}{The Apex GPU Cluster}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \textbf{Cluster Architecture}
+      \begin{itemize}
+        \item \textbf{GPU Nodes:} 16x DGX H100 nodes, each with 8x 80GB H100 GPUs.
+        \item \textbf{CPU Nodes:} 32x dual-socket EPYC nodes for preprocessing.
+        \item \textbf{Storage Pool:} 2PB high-speed Ceph storage.
+      \end{itemize}
+      
+      \vspace{0.3cm}
+      \textbf{Scheduling Policies}
+      \begin{itemize}
+        \item Always use Slurm to request sessions.
+        \item Keep interactive jobs under 2 hours.
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.46\textwidth}
+      \begin{highlightbox}
+        \textbf{\faServer\ Compute Allocations} \\
+        Compute queues are allocated weekly. Post requests in the \texttt{\#meridian-compute} Slack channel by Sunday night.
+      \end{highlightbox}
+      
+      \vspace{0.2cm}
+      \begin{center}
+        \begin{tikzpicture}[
+          node distance=0.6cm,
+          serverbox/.style={rectangle, draw=primary, fill=bglight, thick, minimum width=2.5cm, minimum height=0.5cm, align=center, font=\tiny}
+        ]
+          \node[serverbox] (s1) {Node 1 (H100 x8)};
+          \node[serverbox, below=0.1cm of s1] (s2) {Node 2 (H100 x8)};
+          \node[serverbox, below=0.1cm of s2] (s3) {Node 3 (H100 x8)};
+          \draw[draw=accent, fill=accent!10, fill opacity=0.1, thick, rounded corners=2pt] ($(s1.north west)+(-0.15,0.15)$) rectangle ($(s3.south east)+(0.15,-0.15)$);
+          \node[accent, anchor=west] at ($(s2.east)+(0.2,0)$) {\scriptsize Slurm Pool};
+        \end{tikzpicture}
+      \end{center}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Software Stack \& Reproducibility}{Standard Dev Stack}
+  \begin{columns}[T]
+    \begin{column}{0.45\textwidth}
+      \textbf{Reproducibility Standards}
+      \begin{itemize}
+        \item \textbf{Strict Formatting:} Use Black and Ruff for Python code.
+        \item \textbf{Containers:} Apptainer/Singularity for cluster runs.
+        \item \textbf{Dependencies:} Manage environments using Pixi or Poetry.
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.51\textwidth}
+      \centering
+      \scriptsize
+      \begin{tabular}{lll}
+        \toprule
+        \textbf{Resource} & \textbf{Platform} & \textbf{Address} \\
+        \midrule
+        Shared Code & GitLab & \texttt{git.nimbus.io} \\
+        Models & Registry & \texttt{reg.nimbus.io} \\
+        Compute & Slurm & \texttt{apex-cluster} \\
+        Wiki & Nimbus Wiki & \texttt{wiki.nimbus.io} \\
+        \bottomrule
+      \end{tabular}
+      
+      \vspace{0.4cm}
+      \begin{accentbox}
+        \scriptsize
+        \textbf{Note:} Accounts for GitLab and the cluster are created during your first onboarding week. Reach out to the admin.
+      \end{accentbox}
+    \end{column}
+  \end{columns}
+\end{frame}

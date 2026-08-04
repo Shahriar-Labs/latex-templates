@@ -1,0 +1,36 @@
+% sections/external_interfaces.tex
+\section{External Interface Requirements}
+
+\subsection{User Interfaces}
+The primary interface is a responsive single-page web application. Key screens: Report
+Editor, Approval Inbox, Batch Console, and Audit Export. All interactive controls must meet
+WCAG~2.1 Level~AA contrast and keyboard-navigation requirements (see NFR-5, Section~5).
+
+\subsection{Hardware Interfaces}
+None. Apex Ledger requires no dedicated client hardware beyond a standard workstation or
+laptop capable of running an evergreen browser; receipt capture on mobile devices is handled
+by the companion mobile application, out of scope for this document.
+
+\subsection{Software Interfaces}
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}l X l@{}}
+\toprule
+\rowcolor{navydark}
+\textcolor{white}{\textbf{Interface}} & \textcolor{white}{\textbf{Purpose}} & \textcolor{white}{\textbf{Protocol}} \\
+\midrule
+Okta SAML IdP & Authentication and role provisioning (FR-1.1, FR-1.2) & SAML 2.0 / HTTPS \\
+\rowcolor{lightgray}
+Meridian Payroll Connect v3 & Reimbursement batch export (FR-4.3) & SFTP, fixed-width file \\
+Nimbus ERP General Ledger & Spend export for GL posting (FR-5.3) & REST/JSON over HTTPS \\
+\rowcolor{lightgray}
+Corporate Card Issuer Feed & Nightly transaction feed for reconciliation (FR-4.2) & SFTP, CSV \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Communications Interfaces}
+All client-server and server-to-server traffic uses TLS~1.2 or higher. The public REST API is
+versioned at \texttt{/api/v3} and returns JSON; webhook callbacks to Meridian's internal
+systems are signed with an HMAC-SHA256 header (\texttt{X-Apex-Signature}) so recipients can
+verify authenticity without a shared secret over the wire.

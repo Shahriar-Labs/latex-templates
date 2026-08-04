@@ -1,0 +1,38 @@
+\section{Risks and Open Questions}
+
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\linewidth}{@{}p{1.2cm}Xp{3.3cm}@{}}
+\toprule
+\rowcolor{prdaccent}
+{\color{white}Risk} & {\color{white}Description} & {\color{white}Mitigation} \\
+\midrule
+R1 & Alert fatigue: if default sensitivity is too aggressive, users mute or unsubscribe
+  before the feature proves value. & Ship conservative default sensitivity; surface
+  ``mark expected'' prominently in the first alert a user receives. \\
+\addlinespace
+R2 & The anomaly-detection service (built for internal ops use) has not been load-tested
+  against customer-facing traffic volumes. & Closed Beta explicitly load-tests at 4x
+  design-partner volume before GA; Engineering owns a go/no-go checkpoint. \\
+\addlinespace
+R3 & Slack delivery depends on the existing Apex--Slack integration, which is
+  independently owned and mid-refactor per ENG-2026-011. & Sync with Platform team
+  before Beta; email remains a fallback channel if Slack delivery slips. \\
+\addlinespace
+R4 & Seasonal metrics (e.g.\ retail traffic) may produce false positives around known
+  events (Black Friday) that the baseline model hasn't seen yet. & Ship a manual
+  ``pause during event'' control as part of maintenance windows (FR-05) instead of
+  waiting for seasonal model maturity. \\
+\bottomrule
+\end{tabularx}
+
+\subsection*{Open questions}
+\begin{enumerate}[label=\textbf{Q\arabic*.}]
+  \item Should sensitivity default vary by metric type (revenue vs.\ operational), or
+    should there be one global default for v1? \emph{Owner: Omar Haddad, due before
+    Beta kickoff.}
+  \item Do we need per-metric alert history retention limits, or does the standard
+    90-day Apex data retention policy apply unchanged? \emph{Owner: Daniel Ruiz.}
+  \item Is a single ``mark expected'' click sufficient signal for the model, or does it
+    need a reason code to avoid overcorrecting the baseline? \emph{Owner: Data Science,
+    resolve during Alpha.}
+\end{enumerate}

@@ -1,0 +1,58 @@
+%%FILE: sections/methods.tex
+\section{Materials and Methods}
+
+\subsection{Animal husbandry and staging}
+
+\emph{Tg(mpeg1:GCaMP6s)}\textsuperscript{nim12} larvae were raised from an
+incross of heterozygous carriers maintained by the Nimbus Neurobiology Lab zebrafish
+facility at $28.5\,^{\circ}$C on a 14\,h:10\,h light:dark cycle. Larvae were screened
+for reporter fluorescence at 3 days post-fertilisation (dpf) under a dissecting
+fluorescence scope and used for imaging at 5--6 dpf, before independent feeding begins.
+All procedures followed the facility's existing animal-use protocol; no new protocol
+was required since imaging is non-invasive and larvae were returned to system water
+after each session.
+
+\subsection{Mounting and imaging}
+
+Larvae were immobilised in 1.5\% low-melting-point agarose in a glass-bottom dish and
+covered with system water containing 0.016\% tricaine. Imaging was performed on the
+lab's existing spinning-disk confocal, using the parameters in
+Table~\ref{tab:imaging-params}. Two mounting orientations were tested during week one
+(dorsal and lateral); dorsal mounting was adopted for all subsequent sessions because
+it captured all three target regions in a single field of view.
+
+\begin{table}[h]
+\centering
+\caption{Imaging parameters used for time-lapse acquisition.}
+\label{tab:imaging-params}
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Objective & 20$\times$ water immersion, NA 1.0 \\
+Excitation & 488\,nm, 4\% laser power \\
+Frame rate & 1\,Hz \\
+Session length & 20\,min (1200 frames) \\
+Z-planes & 5, 3\,\textmu m spacing (max-intensity projection) \\
+Larvae per session & 1 \\
+Sessions completed & 9 (across 4 clutches) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Image analysis pipeline}
+
+Time-lapse stacks were motion-corrected using a rigid registration step (reference
+frame = median projection), then microglial somata were segmented with a simple
+intensity-threshold and watershed step, since cell density was low enough that more
+elaborate segmentation was not needed for this rotation. For each segmented cell,
+mean fluorescence intensity was extracted per frame and converted to $\Delta F/F$
+using a rolling 60-second baseline. Transients were flagged when $\Delta F/F$ exceeded
+2.5 standard deviations of the cell's own baseline noise for at least 3 consecutive
+frames. Region identity (optic tectum, hindbrain, forebrain) was assigned manually
+from anatomical landmarks visible in the same field of view, since no digital brain
+atlas registration was available in the time frame of the rotation.
+
+All analysis code was written in Python (NumPy, scikit-image, pandas) and is stored in
+the lab's shared repository under \texttt{rotations/anand-2026-microglia/}, with a
+short README describing how to reproduce each figure in this report.

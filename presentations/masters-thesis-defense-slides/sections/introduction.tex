@@ -1,0 +1,42 @@
+\section{Introduction}
+
+\begin{frame}{Motivation}
+\begin{columns}[T]
+\begin{column}{0.55\textwidth}
+\begin{itemize}[label=\textbullet]
+\item Modern retrieval systems query \textbf{multiple heterogeneous vector indexes} (graph-based, quantized, exact) with no single index optimal for every workload.
+\item Production platforms such as \textit{Nexa-VDB}, \textit{Synapse Index}, and \textit{Vertex Store} each specialize in a narrow latency--recall regime.
+\item Operators today pick \textbf{one} index at deploy time and live with its worst-case behavior.
+\item $\Rightarrow$ A query that touches a cold shard, a long-tail entity, or a bursty concurrency spike pays for a mismatch nobody chose.
+\end{itemize}
+\end{column}
+\begin{column}{0.4\textwidth}
+\begin{tcolorbox}[colback=thesisnavy,coltext=white,colframe=thesisnavy,arc=3pt,boxrule=0pt]
+\centering
+\footnotesize\textbf{Central Question}\\[4pt]
+\normalsize Can a query router \emph{learn} which index to hit, per query, without hand-tuned rules?
+\end{tcolorbox}
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Research Questions}
+\begin{itemize}[leftmargin=2.4em]
+\item[{\textbf{RQ1.}}] Can per-query features (embedding statistics, historical hit-rate, index load) predict which index minimizes latency at a target recall?
+\item[{\textbf{RQ2.}}] Does a learned router generalize across datasets without per-dataset retuning?
+\item[{\textbf{RQ3.}}] What is the latency overhead of routing itself, and does it stay below the savings it produces?
+\end{itemize}
+\vspace{0.4cm}
+\begin{takeaway}
+\textbf{Thesis statement.} A lightweight, cost-aware router trained on query-time features improves p95 latency by over 40\% versus the best single-index baseline, at equal or better recall.
+\end{takeaway}
+\end{frame}
+
+\begin{frame}{Contributions}
+\begin{itemize}[leftmargin=1.8em]
+\item[{\textbf{1.}}] \textbf{AQR}, an adaptive query router combining a feature extractor with a cost-aware scoring function (Ch.~3).
+\item[{\textbf{2.}}] A reproducible benchmark harness spanning three datasets and four baselines (Ch.~4).
+\item[{\textbf{3.}}] An empirical study showing 34--46\% p95 latency reduction and 4--10 point recall gains across datasets (Ch.~5).
+\item[{\textbf{4.}}] An ablation isolating the contribution of each router component (backup slides).
+\end{itemize}
+\end{frame}

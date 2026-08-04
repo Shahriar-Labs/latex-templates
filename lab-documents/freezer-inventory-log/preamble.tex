@@ -1,0 +1,199 @@
+% preamble.tex -- packages, colours, layout, custom commands
+
+\usepackage[landscape,a4paper,top=1.5cm,bottom=1.6cm,left=1.4cm,right=1.4cm,headheight=26pt,headsep=9pt]{geometry}
+
+\usepackage[T1]{fontenc}
+\usepackage{textcomp}
+\usepackage[table]{xcolor}
+\usepackage{amsmath,amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage[most]{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{pifont}
+\usepackage{siunitx}
+\usepackage{ragged2e}
+\usepackage{lastpage}
+\usepackage[hidelinks]{hyperref}
+\usepackage[round]{natbib}
+
+% ---------------------------------------------------------------- colours
+\definecolor{freezerblue}{HTML}{123A5E}
+\definecolor{vertexteal}{HTML}{0E7C7B}
+\definecolor{alertamber}{HTML}{C17817}
+\definecolor{coldgray}{HTML}{EDF1F4}
+
+\colorlet{ruleGrey}{freezerblue!30!white}
+\colorlet{typeNucleic}{vertexteal!82!white}
+\colorlet{typePlasma}{alertamber!78!white}
+\colorlet{typeCell}{freezerblue!60!white}
+\colorlet{typeTissue}{vertexteal!45!freezerblue}
+\colorlet{typeReagent}{black!16!white}
+\colorlet{typeVacant}{white}
+
+\colorlet{typeNucleicL}{typeNucleic!25!white}
+\colorlet{typePlasmaL}{typePlasma!25!white}
+\colorlet{typeCellL}{typeCell!22!white}
+\colorlet{typeTissueL}{typeTissue!25!white}
+\colorlet{typeReagentL}{typeReagent!35!white}
+\colorlet{alertamberL}{alertamber!12!white}
+
+\pagecolor{white}
+
+% ---------------------------------------------------------------- fonts / rules
+\renewcommand{\familydefault}{\sfdefault}
+
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+\newcommand{\hairline}{\par\noindent{\color{ruleGrey}\rule{\linewidth}{0.5pt}}\par}
+
+% ---------------------------------------------------------------- headers / footers
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.3pt}
+\fancyhead[L]{\small\color{freezerblue}\textbf{Ultra-Low Freezer Inventory Log}}
+\fancyhead[R]{\small\color{freezerblue}Freezer ID: \textsc{FRZ-ULT-07}}
+\fancyfoot[L]{\small\color{freezerblue}Vertex Institute for Genomic Medicine -- Biorepository Core}
+\fancyfoot[R]{\small\color{freezerblue}Page \thepage\ of \pageref{LastPage}}
+
+% ---------------------------------------------------------------- section styling
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{freezerblue}}
+  {\thesection}{0.5em}{}[{\color{ruleGrey}\titlerule[0.8pt]}]
+\titlespacing*{\section}{0pt}{1.3em}{0.7em}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{vertexteal}}
+  {\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{1.0em}{0.4em}
+
+% ---------------------------------------------------------------- section banner
+\newcommand{\sectionbanner}[2]{%
+  \begin{tcolorbox}[
+    enhanced, colback=freezerblue, colframe=freezerblue,
+    boxrule=0pt, arc=1pt, left=10pt, right=10pt, top=6pt, bottom=6pt,
+    before skip=0pt, after skip=1.0em
+  ]
+    {\color{white}\Large\bfseries #1}\\[1pt]
+    {\color{coldgray}\small #2}
+  \end{tcolorbox}
+}
+
+% ---------------------------------------------------------------- badges
+\newtcbox{\badgeok}{on line, colback=vertexteal!14!white, colframe=vertexteal,
+  boxrule=0.4pt, arc=2pt, boxsep=1pt, left=3pt, right=3pt, top=1pt, bottom=1pt,
+  fontupper=\scriptsize\bfseries, colupper=vertexteal}
+\newtcbox{\badgewarn}{on line, colback=alertamber!14!white, colframe=alertamber,
+  boxrule=0.4pt, arc=2pt, boxsep=1pt, left=3pt, right=3pt, top=1pt, bottom=1pt,
+  fontupper=\scriptsize\bfseries, colupper=alertamber}
+\newtcbox{\badgeinfo}{on line, colback=freezerblue!12!white, colframe=freezerblue,
+  boxrule=0.4pt, arc=2pt, boxsep=1pt, left=3pt, right=3pt, top=1pt, bottom=1pt,
+  fontupper=\scriptsize\bfseries, colupper=freezerblue}
+
+\newcommand{\okmark}{{\color{vertexteal}\ding{51}}}
+\newcommand{\failmark}{{\color{alertamber}\ding{55}}}
+
+% ---------------------------------------------------------------- legend square
+\newcommand{\legendsq}[1]{\tikz[baseline=-0.15em]{\draw[gray!50,line width=0.3pt,fill=#1] (0,0) rectangle (0.32,0.32);}}
+
+% ---------------------------------------------------------------- info card
+\newcommand{\infocard}[3]{%
+  \begin{tcolorbox}[
+    enhanced, colback=white, colframe=ruleGrey, boxrule=0.6pt, arc=2pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, width=#3
+  ]
+    {\scriptsize\color{vertexteal}\textbf{#1}}\\[2pt]
+    {\normalsize\color{freezerblue}#2}
+  \end{tcolorbox}
+}
+
+% ---------------------------------------------------------------- title page
+\newcommand{\maketitlepage}{%
+\begin{titlepage}
+\thispagestyle{empty}
+
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[freezerblue] (current page.north west) rectangle ([yshift=-3.6cm]current page.north east);
+  \fill[vertexteal] ([yshift=-3.6cm]current page.north west) rectangle ([yshift=-3.65cm]current page.north east);
+  \begin{scope}
+    \clip (current page.north west) rectangle ([yshift=-3.6cm]current page.north east);
+    \foreach \x in {0.5,1.7,...,29} {
+      \draw[freezerblue!55!vertexteal, line width=0.5pt] ([xshift=\x cm, yshift=0.2cm]current page.north west) -- ([xshift=\x cm+1.1cm, yshift=-3.8cm]current page.north west);
+    }
+  \end{scope}
+  \node[anchor=north west, text=white, font=\scriptsize\bfseries] at ([xshift=1.9cm,yshift=-0.75cm]current page.north west) {VERTEX INSTITUTE FOR GENOMIC MEDICINE -- BIOREPOSITORY CORE};
+  \node[anchor=north west, text=white, font=\Huge\bfseries] at ([xshift=1.9cm,yshift=-1.45cm]current page.north west) {Ultra-Low Freezer Inventory Log};
+  \node[anchor=north west, text=coldgray, font=\normalsize] at ([xshift=1.9cm,yshift=-2.7cm]current page.north west) {\faSnowflake\ Freezer FRZ-ULT-07 \quad$\vert$\quad \faThermometerHalf\ \SI{-80}{\celsius} Mechanical Chest Freezer \quad$\vert$\quad \faFlask\ Vertex Genomic Cohort (VGC-24)};
+\end{tikzpicture}
+
+\vspace*{4.0cm}
+
+\begin{center}
+\begin{minipage}{0.95\linewidth}
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{@{}X X X X@{}}
+\infocard{Freezer ID}{FRZ-ULT-07}{\linewidth} &
+\infocard{Location}{Bldg.\ 4, Rm.\ B-118}{\linewidth} &
+\infocard{Custodian}{Priya Chandran, Biorepository Manager}{\linewidth} &
+\infocard{Record Period}{Jan 2025 -- Jul 2026}{\linewidth} \\[6pt]
+\infocard{Manufacturer / Model}{Nimbus ColdCore ULT-750}{\linewidth} &
+\infocard{Set Point}{\SI{-80}{\celsius}\ ($\pm\SI{3}{\celsius}$ alarm band)}{\linewidth} &
+\infocard{Backup Power}{UPS + emergency generator, 10 min transfer}{\linewidth} &
+\infocard{Principal Investigator}{Dr.\ Elena Marsh}{\linewidth} \\
+\end{tabularx}
+\end{minipage}
+\end{center}
+\par
+
+\vspace{0.5cm}
+
+\begin{center}
+\begin{minipage}{0.95\linewidth}
+\centering
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{@{}*{6}{>{\centering\arraybackslash}X}@{}}
+{\Large\color{vertexteal}\faFile} & {\Large\color{vertexteal}\faBoxes} & {\Large\color{vertexteal}\faTh} & {\Large\color{vertexteal}\faList} & {\Large\color{vertexteal}\faChartBar} & {\Large\color{vertexteal}\faExclamationTriangle} \\
+\scriptsize\color{freezerblue} Overview & \scriptsize\color{freezerblue} Rack Map & \scriptsize\color{freezerblue} Box Detail & \scriptsize\color{freezerblue} Sample Inventory & \scriptsize\color{freezerblue} Temperature Log & \scriptsize\color{freezerblue} SOP \& Standards \\
+\end{tabularx}
+\end{minipage}
+\end{center}
+\par
+
+\vspace{0.5cm}
+
+\begin{center}
+\begin{minipage}{0.95\linewidth}
+\small
+\renewcommand{\arraystretch}{1.2}
+\rowcolors{1}{coldgray}{white}
+\begin{tabularx}{\linewidth}{@{}l X l@{}}
+\rowcolor{freezerblue}
+\textcolor{white}{\textbf{Rev.}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Date}} \\
+A & Freezer commissioned; log opened at VGC-24 cohort launch & 11 Feb 2025 \\
+B & Rack layout re-mapped after 4-shelf rack replacement & 03 Nov 2025 \\
+C & Current revision -- reflects inventory and audits through Jul 2026 & 28 Jul 2026 \\
+\end{tabularx}
+\end{minipage}
+\end{center}
+\par
+
+\vfill
+
+\begin{center}
+{\scriptsize\color{freezerblue} This record is a controlled biorepository document of the Vertex Institute for Genomic Medicine Biorepository Core. \\
+Uncontrolled if printed. Retain per institutional biobanking retention policy (minimum 10 years post study closure).}
+\end{center}
+
+\end{titlepage}
+}

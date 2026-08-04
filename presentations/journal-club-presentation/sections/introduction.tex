@@ -1,0 +1,53 @@
+\begin{frame}{Paper Details \& Context}
+  \citationbanner{Marcus Vance, Sarah Chen, David Kincaid}{Journal of Cloud Computing \& Distributed Networks}{2025}{10.1007/s10586-025-0482-x}
+  
+  \vspace{0.2cm}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{highlightbox}{Core Research Question}
+        How can we allocate incoming client workloads across heterogeneous, geographically-dispersed cloud servers to minimize end-to-end latency and prevent node overload in real-time?
+      \end{highlightbox}
+      
+      \vspace{0.1cm}
+      \textbf{Traditional Approaches:}
+      \begin{itemize}
+        \item \textbf{Round Robin:} Lacks resource awareness.
+        \item \textbf{Least Connections:} High overhead on state sync.
+        \item \textbf{Static Heuristics:} Fails under dynamic spikes.
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.48\textwidth}
+      \textbf{Key Contributions of the Paper:}
+      \begin{itemize}
+        \item Proposed \textbf{NexaBalancer}, a decentralized deep reinforcement learning framework using Proximal Policy Optimization (PPO).
+        \item Modeled server state transitions as a Markov Decision Process (MDP) incorporating network round-trip time.
+        \item Achieved up to 34\% reduction in tail latency compared to traditional load-balancing heuristics in simulation.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Background: Why is this Hard?}
+  \begin{itemize}
+    \item \textbf{Heterogeneous Capacities:} Nodes have varying compute, memory, and bandwidth limits.
+    \item \textbf{Non-Stationary Network Latency:} Transmission delays vary rapidly based on cross-traffic and congestion.
+    \item \textbf{Feedback Delay:} The impact of a routing decision is not immediately observed due to propagation delays.
+  \end{itemize}
+  
+  \vspace{0.3cm}
+  \begin{center}
+    \begin{tikzpicture}[scale=0.85, every node/.style={transform shape}]
+      \node[draw, rectangle, fill=primary, text=white, rounded corners, minimum width=2.5cm, minimum height=1cm] (client) {Client Requests};
+      \node[draw, rectangle, fill=secondary, text=white, rounded corners, minimum width=2.5cm, minimum height=1cm, right=1.5cm of client] (balancer) {NexaBalancer};
+      \node[draw, rectangle, fill=primary, text=white, rounded corners, minimum width=2cm, minimum height=0.6cm, right=1.5cm of balancer, yshift=0.8cm] (node1) {Edge Node A};
+      \node[draw, rectangle, fill=primary, text=white, rounded corners, minimum width=2cm, minimum height=0.6cm, right=1.5cm of balancer, yshift=-0.8cm] (node2) {Edge Node B};
+      
+      \draw[-latex, thick] (client) -- (balancer) node[midway, above] {Ingress};
+      \draw[-latex, thick] (balancer) -- (node1) node[midway, above left] {Route A};
+      \draw[-latex, thick] (balancer) -- (node2) node[midway, below left] {Route B};
+      
+      \path[draw, -latex, thick, dashed] (node1) -| ++(1cm, -1.8cm) -| (balancer) node[pos=0.25, right] {State Feedback (Delayed)};
+    \end{tikzpicture}
+  \end{center}
+\end{frame}

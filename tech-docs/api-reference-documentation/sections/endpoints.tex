@@ -1,0 +1,129 @@
+\section{Data Synchronization Endpoints}
+\label{sec:endpoints}
+The Synchronization API provides tools for managing multi-region sync operations across your Vertex datastores.
+
+\begin{apiendpoint}{GET}{/v2/sync/jobs}{Data Sync}
+Retrieve a paginated list of all active synchronization jobs associated with your account.
+\end{apiendpoint}
+
+\subsubsection{Query Parameters}
+\begin{itemize}
+  \item \code{status} \textit{(string, optional)}: Filter by status (\code{pending}, \code{running}, \code{completed}, \code{failed}).
+  \item \code{limit} \textit{(integer, optional)}: Number of records to return. Default is 20. Max is 100.
+  \item \code{cursor} \textit{(string, optional)}: Pagination cursor for the next page of results.
+\end{itemize}
+
+\noindent
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[codeboxstyle, title={Request Headers}]
+\begin{lstlisting}[language=json,numbers=none]
+GET /v2/sync/jobs?status=running&limit=1 HTTP/1.1
+Host: api.vertex.meridian.net
+Authorization: Bearer eyJhbGc...
+\end{lstlisting}
+  \end{tcolorbox}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[codeboxstyle, title={Response Payload}]
+\begin{lstlisting}[language=json]
+{
+  "data": [
+    {
+      "job_id": "job_vtx_00192a7",
+      "status": "running",
+      "source_region": "us-east-1",
+      "target_region": "eu-west-1",
+      "records_synced": 482910,
+      "created_at": "2026-08-01T12:00:00Z"
+    }
+  ],
+  "pagination": {
+    "next_cursor": "c3luY19qb2JfMDAxOTJhNw",
+    "has_more": true
+  }
+}
+\end{lstlisting}
+  \end{tcolorbox}
+\end{minipage}
+
+\par
+\vspace{1.5em}
+
+\begin{apiendpoint}{POST}{/v2/sync/jobs}{Data Sync}
+Initialize a new real-time synchronization pipeline between source and target clusters.
+\end{apiendpoint}
+
+\subsubsection{Request Body Parameters}
+\begin{itemize}
+  \item \code{source\_id} \textit{(string, required)}: Fictional cluster ID containing primary tables.
+  \item \code{target\_id} \textit{(string, required)}: Target cluster ID to receive replicas.
+  \item \code{sync\_mode} \textit{(string, required)}: The replication level (\code{snapshot}, \code{realtime}, or \code{differential}).
+  \item \code{filters} \textit{(array, optional)}: Specific databases/tables to replicate.
+\end{itemize}
+
+\noindent
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[codeboxstyle, title={Example Request (JSON)}]
+\begin{lstlisting}[language=json]
+{
+  "source_id": "clus_nexa_9910",
+  "target_id": "clus_apex_4201",
+  "sync_mode": "realtime",
+  "filters": ["sales_data", "customers"]
+}
+\end{lstlisting}
+  \end{tcolorbox}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[codeboxstyle, title={Example Response (201 Created)}]
+\begin{lstlisting}[language=json]
+{
+  "job_id": "job_vtx_00192b8",
+  "status": "pending",
+  "source_id": "clus_nexa_9910",
+  "target_id": "clus_apex_4201",
+  "sync_mode": "realtime",
+  "estimated_bytes": 10737418240,
+  "created_at": "2026-08-03T23:25:00Z"
+}
+\end{lstlisting}
+  \end{tcolorbox}
+\end{minipage}
+
+\par
+\vspace{1.5em}
+
+\begin{apiendpoint}{DELETE}{/v2/sync/jobs/\{id\}}{Data Sync}
+Gracefully terminate an active synchronization pipeline. This will stop replication but will not delete synced tables.
+\end{apiendpoint}
+
+\subsubsection{Path Parameters}
+\begin{itemize}
+  \item \code{id} \textit{(string, required)}: The unique job identifier, prefixed with \code{job\_vtx\_}.
+\end{itemize}
+
+\noindent
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[codeboxstyle, title={Example Request}]
+\begin{lstlisting}[language=json,numbers=none]
+DELETE /v2/sync/jobs/job_vtx_00192b8 HTTP/1.1
+Host: api.vertex.meridian.net
+Authorization: Bearer eyJhbGc...
+\end{lstlisting}
+  \end{tcolorbox}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[codeboxstyle, title={Example Response (200 OK)}]
+\begin{lstlisting}[language=json]
+{
+  "job_id": "job_vtx_00192b8",
+  "status": "terminated",
+  "terminated_at": "2026-08-03T23:27:00Z",
+  "final_sync_bytes": 4518290
+}
+\end{lstlisting}
+  \end{tcolorbox}
+\end{minipage}

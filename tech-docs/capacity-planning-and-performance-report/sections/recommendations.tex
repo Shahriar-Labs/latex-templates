@@ -1,0 +1,40 @@
+\section{Recommendations \& Cost Impact}
+\label{sec:recommendations}
+To mitigate the performance degradation and meet the growth requirements of the Meridian enterprise platform, we recommend a two-phase scaling action plan.
+
+\subsection{Proposed Upgrades}
+\begin{enumerate}
+  \item \textbf{Database Node Migration (Compute \& Memory):}
+  Upgrade the current Vertex database nodes from 8~vCPUs / 32\,GB~RAM instances to High-Memory configurations featuring 16~vCPUs and 64\,GB~RAM. This doubles the compute capability and expands database shared buffers, reducing disk read dependencies.
+  \item \textbf{Storage Tier Elevation (Storage \& IOPS):}
+  Migrate database block storage from Standard volumes to Provisioned IOPS volumes. We recommend provisioning 10,000~IOPS per volume to handle peak database writes and eliminate I/O blocking.
+  \item \textbf{Nimbus Rate Limiting:}
+  Configure the Nimbus API Gateway to implement adaptive rate limiting at the tenant level. This protects the Vertex database coordinator from sudden query spikes, maintaining cluster stability.
+\end{enumerate}
+
+\subsection{Cost-Benefit Analysis}
+The financial impact of the proposed upgrades is summarized in Table~\ref{tab:cost_impact}. Fictional pricing is based on Nexa's standard cloud provider agreement.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Monthly infrastructure cost comparison for the Vertex DB Cluster.}
+  \label{tab:cost_impact}
+  \begin{tabularx}{\textwidth}{l X c c r}
+    \toprule
+    \textbf{Component} & \textbf{Configuration} & \textbf{Current Cost} & \textbf{New Cost} & \textbf{Net Monthly Increase} \\
+    \midrule
+    Compute (Primary) & 1$\times$ vCPU/RAM Instance & 360\,\$ & 720\,\$ & +360\,\$ \\
+    \rowcolor{lightgray} Compute (Replica) & 2$\times$ vCPU/RAM Replicas & 720\,\$ & 1,440\,\$ & +720\,\$ \\
+    Storage Capacity & 3$\times$ 500\,GB SSD storage & 150\,\$ & 150\,\$ & 0\,\$ \\
+    \rowcolor{lightgray} Provisioned IOPS & 3$\times$ 10,000 IOPS (New) & 0\,\$ & 1,200\,\$ & +1,200\,\$ \\
+    Nimbus Gateway & Rate limiter logic configuration & 200\,\$ & 320\,\$ & +120\,\$ \\
+    \midrule
+    \textbf{Total} & & \textbf{1,430\,\$} & \textbf{3,830\,\$} & \textbf{+2,400\,\$} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\begin{recommendationbox}{Scaling Timeline}
+  \textbf{Phase 1 (Immediate):} Upgrade the baseline storage to Provisioned IOPS on the Vertex primary node. This resolves the storage write latency problem. (Target: August 15, 2026). \\{}
+  \textbf{Phase 2 (End of Q3):} Perform standard rolling cluster upgrades to migrate node instances to High-Memory formats during the scheduled maintenance window. (Target: September 20, 2026).
+\end{recommendationbox}

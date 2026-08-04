@@ -1,0 +1,101 @@
+\appendix
+
+\begin{frame}[plain]
+  \begin{center}
+    \vspace{1.4cm}
+    {\color{navy}\Large\bfseries Backup: Methods Detail}\par
+    \vspace{0.3cm}
+    {\small\color{slate} Held in reserve for committee questions.}
+  \end{center}
+\end{frame}
+
+\section{Methods Detail (Appendix)}
+
+\begin{frame}{Calibration Head --- Architecture}
+  \begin{table}
+    \centering
+    \small
+    \begin{tabular}{lll}
+      \toprule
+      \textbf{Layer} & \textbf{Type} & \textbf{Output dim.} \\
+      \midrule
+      Input & Token log-prob.\ sequence & variable $\times$ 1 \\
+      1 & 1-D convolution, kernel 5 & variable $\times$ 32 \\
+      2 & Global attention pool & 32 \\
+      3 & Fully connected, ReLU & 16 \\
+      4 & Fully connected, sigmoid & 1 (confidence) \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \par\vspace{6pt}
+  \footnotesize\color{slate}
+  Total added parameters: 1{,}940 -- roughly 0.001\% of the base triage
+  model, which stays entirely frozen.
+\end{frame}
+
+\begin{frame}{Datasets}
+  \begin{table}
+    \centering
+    \small
+    \begin{tabular}{p{2.6cm}p{3.4cm}p{1.4cm}p{1.9cm}}
+      \toprule
+      \textbf{Dataset} & \textbf{Source} & \textbf{Notes} & \textbf{Label rate} \\
+      \midrule
+      MedTriage-Synapse & Synapse Health, 3 pilot EDs & 18{,}400 & 100\% \\
+      Vertex Clinical Archive & Vertex Research Institute & 6{,}100 & 62\% \\
+      Held-out site & Synapse Health, 4th ED (unseen) & 2{,}300 & 100\% \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \par\vspace{6pt}
+  \footnotesize\color{slate}
+  Labels are retrospective nurse-adjudicated triage levels, not the
+  model's own output -- this is what makes error rate measurable.
+\end{frame}
+
+\begin{frame}{Calibration Metric}
+  \small
+  \begin{block}{Expected Calibration Error}
+    \[
+      \mathrm{ECE} = \sum_{m=1}^{M} \frac{|B_m|}{n}
+        \left| \mathrm{acc}(B_m) - \mathrm{conf}(B_m) \right|
+    \]
+  \end{block}
+  \par\vspace{2pt}
+  Notes are grouped into $M{=}15$ equal-width confidence bins $B_m$;
+  $\mathrm{acc}(B_m)$ is the fraction of correct triage calls in the bin
+  and $\mathrm{conf}(B_m)$ is the bin's mean predicted confidence.
+  \par\vspace{4pt}
+  \begin{block}{Conformal coverage guarantee (Aim 2)}
+    \[
+      \mathbb{P}\big[Y \in \mathcal{C}_\lambda(X)\big] \;\geq\; 1 - \alpha
+    \]
+  \end{block}
+  Threshold $\lambda$ is selected on a calibration split so the
+  escalate-to-human tier satisfies this bound at $\alpha = 0.05$.
+\end{frame}
+
+\begin{frame}{Validation Protocol}
+  \begin{table}
+    \centering
+    \small
+    \begin{tabular}{lp{6.6cm}}
+      \toprule
+      \textbf{Check} & \textbf{Procedure} \\
+      \midrule
+      Calibration & ECE and reliability diagram on held-out site,
+        recomputed monthly against fresh nurse labels \\
+      \addlinespace
+      Coverage & Verify escalation rate stays within the 20\% ceiling on
+        a rolling 4-week window \\
+      \addlinespace
+      Drift & KL divergence between this month's and launch-month
+        confidence-score distributions; alert above 0.1 \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+\end{frame}
+
+\begin{frame}[allowframebreaks]{References}
+  \printbibliography
+\end{frame}

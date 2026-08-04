@@ -1,0 +1,87 @@
+\section{Technical Contributions}
+\label{sec:technical_contributions}
+
+The primary engineering contribution during this work term was the redesign and implementation of the \textbf{Provisioning Microservice} (Codename: \emph{Nimbus-Prov}), which handles high-velocity block storage allocation requests.
+
+\subsection{Architectural Redesign}
+The legacy provisioning engine relied on a monolithic Python service that polled a relational SQL database every 5 seconds to locate pending requests. This architecture suffered from database lock contention and significant latency overhead.
+
+As shown in Figure~\ref{fig:arch_comparison}, the new architecture introduces a reactive event-driven flow using Redis Streams~\cite{kleppmann2017designing} as the message broker.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=1.8cm,
+  block/.style={rectangle, draw=PrimaryBlue, fill=LightBg, thick, minimum width=2.5cm, minimum height=1cm, align=center, rounded corners},
+  line/.style={draw=SecondaryTeal, -latex, thick}
+]
+  % Nodes
+  \node [block] (api) {API Gateway\\(Nimbus-Edge)};
+  \node [block, right=of api] (redis) {Redis Streams\\(Event Broker)};
+  \node [block, right=of redis] (prov) {Nimbus-Prov\\(Go Engine)};
+  \node [block, below=of prov] (db) {PostgreSQL\\(Persistence)};
+
+  % Paths
+  \path [line] (api) -- node[above, font=\small] {Publish} (redis);
+  \path [line] (redis) -- node[above, font=\small] {Consume} (prov);
+  \path [line] (prov) -- node[right, font=\small] {Write State} (db);
+  \path [line] (prov.west) -- ++(-1.0, 0) |- node[below, pos=0.25, font=\small] {Ack} (redis.south);
+\end{tikzpicture}
+\caption{Decoupled Event-Driven Provisioning Architecture}
+\label{fig:arch_comparison}
+\end{figure}
+
+\subsection{Microservice Implementation}
+The author wrote the provisioning engine in Go~\cite{donovan2015goprogramming} due to its excellent concurrency primitives (goroutines and channels) and low memory footprint. A core challenge was ensuring idempotent execution to prevent double-provisioning of storage volumes in case of network retries.
+
+An idempotency token based on UUIDv4 is included in each API payload. The service checks the database using a transaction block before executing any allocation routine.
+
+Here is a simplified code snippet of the core transaction check implemented by the author:
+
+\begin{verbatim}
+func ProvisionVolume(ctx context.Context, req *VolumeRequest) error {
+    tx, err := db.BeginTx(ctx, nil)
+    if err != nil {
+        return err
+    }
+    defer tx.Rollback()
+
+    var status string
+    err = tx.QueryRowContext(ctx, 
+        "SELECT status FROM volume_orders WHERE token = $1", 
+        req.IdempotencyToken).Scan(&status)
+    
+    if err == nil {
+        // Order already processed or in progress
+        return ErrDuplicateOrder
+    }
+    
+    // Insert new order and commit
+    _, err = tx.ExecContext(ctx, 
+        "INSERT INTO volume_orders (token, status) VALUES ($1, $2)", 
+        req.IdempotencyToken, "PENDING")
+    
+    return tx.Commit()
+}
+\end{verbatim}
+
+\subsection{Performance Evaluation}
+To validate the architectural transition, stress tests were executed using locust, simulating up to 10,000 concurrent client requests.
+
+The results summarized in Table~\ref{tab:perf_metrics} show a substantial reduction in both average and 99th-percentile (p99) response latencies.
+
+\begin{table}[htbp]
+\centering
+\caption{Performance Comparison between Legacy and Modernized Systems}
+\label{tab:perf_metrics}
+\begin{tabularx}{\textwidth}{lXXX}
+\toprule
+\textbf{Metric} & \textbf{Legacy Monolith} & \textbf{Modernized Go Engine} & \textbf{Improvement (\%)} \\
+\midrule
+Average Latency & 480 ms & 112 ms & 76.6\% \\
+p99 Latency     & 1,240 ms & 280 ms & 77.4\% \\
+Throughput      & 250 req/sec & 1,450 req/sec & 480\% \\
+CPU Utilization & 82\% (4 Cores) & 18\% (2 Cores) & 78.0\% \\
+\bottomrule
+\end{tabularx}
+\end{table}

@@ -1,0 +1,59 @@
+\section{Question 2: Scalable Machine Learning Pipelines \& Distributed Training}
+\label{sec:question2}
+
+\begin{questionbox}{Question Scenario}
+  Analyze the training optimization dynamics for large-scale Deep Learning models under distributed environments. Specifically, evaluate the trade-offs between \textbf{Synchronous SGD} and \textbf{Asynchronous SGD} in terms of convergence rates, gradient staleness, communication topology, and sensitivity to stragglers.
+  
+  Provide a concrete recommendation for \textbf{Synapse AI}'s new multi-node GPU cluster training platform, specifically addressing how to mitigate networking bottlenecks and worker heterogeneity.
+\end{questionbox}
+
+\subsection{Optimization Dynamics: Mathematical Formulation}
+
+Distributed training aim to parallelize the computation of gradients over a dataset $D$ partitioned across $M$ worker nodes. In \textbf{Synchronous Stochastic Gradient Descent (Sync-SGD)}, the parameters $\theta$ at step $t+1$ are updated only after collecting gradients from all $M$ workers:
+
+\begin{equation}
+  \theta_{t+1} = \theta_t - \frac{\eta}{M} \sum_{i=1}^{M} g_i(\theta_t)
+\end{equation}
+
+where $\eta$ is the learning rate, and $g_i(\theta_t) = \nabla L_i(\theta_t)$ represents the local gradient computed by worker $i$ on its local shard of data using the parameters $\theta_t$.
+
+In contrast, \textbf{Asynchronous Stochastic Gradient Descent (Async-SGD)} allows workers to apply updates as soon as they complete their backward pass, without waiting for other nodes. This results in the following update rule:
+
+\begin{equation}
+  \theta_{t+1} = \theta_t - \eta \cdot g_i(\theta_{t-\tau_i})
+\end{equation}
+
+where $\tau_i \ge 0$ is the \emph{staleness factor} of the gradient from worker $i$, reflecting the number of parameter updates that occurred since worker $i$ fetched the parameters from the parameter server.
+
+\subsection{Comparative Analysis}
+
+The trade-offs between synchronous and asynchronous parameter updates are summarized in Table~\ref{tab:sgd_comparison}.
+
+\begin{table}[h]
+  \centering
+  \caption{Comparison of Distributed SGD Variants}
+  \label{tab:sgd_comparison}
+  \medskip
+  \begin{tabularx}{\textwidth}{p{3.5cm} X X}
+    \toprule
+    \textbf{Dimension} & \textbf{Synchronous SGD} & \textbf{Asynchronous SGD} \\
+    \midrule
+    \textbf{Convergence Rate} & Fast (mathematically identical to serial SGD) & Slow / Unstable (gradient staleness degrades optimization path) \\
+    \textbf{Straggler Sensitivity} & High (system throughput bounded by the slowest worker node) & None (workers push updates independently as soon as ready) \\
+    \textbf{Communication Style} & Collective / Blocked (e.g., Ring-AllReduce) & Point-to-Point (Parameter Server model) \\
+    \textbf{Throughput Efficiency} & Low in heterogeneous networks due to sync barrier & High (near-linear scaling of updates per second) \\
+    \textbf{Gradient Staleness} & Zero ($\tau_i = 0$) & Variable ($\tau_i > 0$, requires bounded staleness algorithms) \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{Infrastructure Recommendation for Synapse AI}
+
+For \textbf{Synapse AI}'s new distributed GPU training cluster, we recommend a \textbf{Hybrid Synchronous AllReduce} topology utilizing the \textbf{Ring-AllReduce} pattern. While Async-SGD offers high throughput, the stale gradient problem significantly degrades model convergence and accuracy when scaling beyond 32 nodes.
+
+To mitigate the straggler problem in a synchronous setup, we propose the following multi-layer optimization stack:
+\begin{enumerate}
+  \item \textbf{Gradient Bucketing and Pipelining:} Group gradients into buckets (e.g., 25MB chunks) and overlap the communication of earlier layers' gradients with the backward pass computation of subsequent layers.
+  \item \textbf{Stochastic Polyak Heavy-Ball Acceleration:} Apply momentum buffers at the workers to smooth out the gradient updates, which partially compensates for minor variances in worker speeds.
+  \item \textbf{Heterogeneous Worker Tiering:} Group workers with identical GPU hardware (e.g., H100s vs A100s) into separate logical rings. Implement a hierarchal synchronization scheme where local high-speed rings perform fast synchronous Ring-AllReduce, while cross-ring parameter synchronization occurs asynchronously via a lightweight parameter coordinator.
+\end{enumerate}

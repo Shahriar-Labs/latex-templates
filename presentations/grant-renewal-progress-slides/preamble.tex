@@ -1,0 +1,106 @@
+% Packages
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds}
+\usepackage[skins,breakable]{tcolorbox}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{xcolor}
+\usepackage{amsmath,amssymb}
+\usepackage{fontawesome5}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+
+% ------------------------------------------------------------------
+% Palette
+% ------------------------------------------------------------------
+\definecolor{navy}{RGB}{27,38,59}
+\definecolor{steel}{RGB}{65,90,119}
+\definecolor{gold}{RGB}{197,160,89}
+\definecolor{sage}{RGB}{107,142,111}
+\definecolor{mist}{RGB}{228,229,224}
+\definecolor{brick}{RGB}{176,88,68}
+
+% ------------------------------------------------------------------
+% Beamer skin
+% ------------------------------------------------------------------
+\usetheme{default}
+\usefonttheme{professionalfonts}
+\setbeamertemplate{navigation symbols}{}
+\setbeamersize{text margin left=0.9cm,text margin right=0.9cm}
+
+\setbeamercolor{normal text}{fg=navy}
+\setbeamercolor{frametitle}{fg=navy}
+\setbeamercolor{footline}{bg=mist,fg=steel}
+\setbeamercolor{block title}{fg=white,bg=navy}
+\setbeamercolor{block body}{fg=navy,bg=mist}
+\setbeamercolor{itemize item}{fg=gold}
+\setbeamercolor{itemize subitem}{fg=steel}
+
+\setbeamerfont{frametitle}{series=\bfseries,size=\Large}
+\setbeamerfont{footline}{size=\tiny}
+
+\setbeamertemplate{itemize item}{\textcolor{gold}{\scriptsize\ensuremath{\blacksquare}}}
+\setbeamertemplate{itemize subitem}{\textcolor{steel}{\scriptsize\ensuremath{\bullet}}}
+
+\setbeamertemplate{frametitle}{
+  \vskip0.12cm
+  \leavevmode{\usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}\insertframetitle}\par
+  \ifx\insertframesubtitle\@empty\else
+    \leavevmode{\small\color{steel}\insertframesubtitle}\par
+  \fi
+  \vskip2pt{\color{gold}\rule{\linewidth}{1.4pt}}
+  \vskip2pt
+}
+
+\setbeamertemplate{footline}{
+  \leavevmode
+  \hbox{\begin{beamercolorbox}[wd=\paperwidth,ht=2.8ex,dp=1.3ex,leftskip=0.5cm,rightskip=0.5cm]{footline}
+    \usebeamerfont{footline}Meridian Research Foundation \textbar\ Grant Renewal Review \hfill
+    Vertex Materials Lab \hfill \insertframenumber\,/\,\inserttotalframenumber
+  \end{beamercolorbox}}
+}
+
+% ------------------------------------------------------------------
+% tcolorbox styles
+% ------------------------------------------------------------------
+\tcbset{
+  infobox/.style={
+    colback=mist, colframe=steel, boxrule=0.5pt, arc=2pt,
+    left=5pt, right=5pt, top=2pt, bottom=2pt, fonttitle=\bfseries\footnotesize,
+    coltitle=white, colbacktitle=steel
+  },
+  askbox/.style={
+    colback=navy, colframe=gold, boxrule=1pt, arc=3pt,
+    left=10pt, right=10pt, top=8pt, bottom=8pt,
+    coltext=white
+  },
+  riskbox/.style={
+    colback=white, colframe=brick, boxrule=0.5pt, arc=2pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt
+  }
+}
+
+% ------------------------------------------------------------------
+% Custom commands
+% ------------------------------------------------------------------
+% #1 = percent complete (0-100), #2 = bar color
+\newcommand{\progressbar}[2]{%
+  \begin{tikzpicture}[baseline=-0.5ex]
+    \fill[mist, rounded corners=1.5pt] (0,0) rectangle (2.6,0.34);
+    \fill[#2, rounded corners=1.5pt] (0,0) rectangle ({2.6*#1/100},0.34);
+    \draw[navy, line width=0.3pt, rounded corners=1.5pt] (0,0) rectangle (2.6,0.34);
+    \node[anchor=west, font=\scriptsize\bfseries, text=navy] at (2.75,0.17) {#1\%};
+  \end{tikzpicture}%
+}
+
+% #1 = label text, #2 = fill color, for status chips
+\newcommand{\statuschip}[2]{%
+  \tikz[baseline=-0.5ex]{\node[fill=#2, text=white, font=\scriptsize\bfseries,
+    rounded corners=2pt, inner sep=3pt] {#1};}%
+}

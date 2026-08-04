@@ -1,0 +1,51 @@
+% sections/tradeoffs.tex
+
+\section{Design Trade-offs}
+
+\begin{frame}{Protocol \& Storage Trade-off Matrix}
+  \fontsize{8}{10}\selectfont
+  \renewcommand{\arraystretch}{0.9}
+  \begin{tabularx}{\textwidth}{l X X X l}
+    \rowcolor{primary}
+    \textcolor{white}{\textbf{Decision Point}} & 
+    \textcolor{white}{\textbf{Option A}} & 
+    \textcolor{white}{\textbf{Option B}} & 
+    \textcolor{white}{\textbf{Core Trade-off}} & 
+    \textcolor{white}{\textbf{Verdict}} \\
+    \midrule
+    
+    \textbf{API Protocol} & 
+    gRPC \newline (HTTP/2 multiplex) & 
+    REST \newline (JSON over HTTP/1.1) & 
+    gRPC has lower latency but requires client SDK distribution. & 
+    \textcolor{secondary}{\textbf{gRPC (Internal)}} \\
+    \arrayrulecolor{neutral-dark!30}\hline
+    
+    \textbf{Auth Storage} & 
+    In-memory Cache \newline (Nimbus Local) & 
+    Centralized Cache \newline (Vertex Redis) & 
+    Local has sub-ms reads but introduces replication delay. & 
+    \textcolor{secondary}{\textbf{Hybrid Layer}} \\
+    \arrayrulecolor{neutral-dark!30}\hline
+    
+    \textbf{Config Engine} & 
+    Etcd \newline (Raft consensus) & 
+    Relational DB \newline (Vertex PostgreSQL) & 
+    Etcd is highly resilient but adds infrastructure footprint. & 
+    \textcolor{secondary}{\textbf{Etcd Cluster}} \\
+    \arrayrulecolor{neutral-dark!30}\hline
+    
+    \textbf{Rate Limiting} & 
+    Token Bucket \newline (Local window) & 
+    Sliding Window \newline (Distributed Redis) & 
+    Token Bucket is faster; sliding window prevents edge spikes. & 
+    \textcolor{secondary}{\textbf{Token Bucket}} \\
+    \bottomrule
+  \end{tabularx}
+
+  \vspace{0.2cm}
+  \begin{center}
+    \scriptsize
+    \textcolor{accent}{\faInfoCircle\ \textbf{Architectural Verdict:} Internal inter-service calls use gRPC; external traffic enters via HTTPS/REST. Rate limiting runs locally with asynchronous background synchronization.}
+  \end{center}
+\end{frame}

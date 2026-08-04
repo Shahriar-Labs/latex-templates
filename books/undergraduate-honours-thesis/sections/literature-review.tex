@@ -1,0 +1,61 @@
+% literature-review.tex
+\chapter{Literature Review}
+\label{ch:literature-review}
+
+\section{Classical Cache Replacement Policies}
+Least Recently Used (LRU) evicts the object with the oldest access timestamp, and remains the
+default policy in most CDN and CPU cache implementations because it is simple and requires
+only $O(1)$ bookkeeping per access \citep{whitfield2019caching}. Its well-known weakness is
+susceptibility to scan pollution: a single burst of one-time accesses can flush a working set
+that would otherwise be reused shortly after. Least Frequently Used (LFU) instead tracks
+per-object access counts, which better reflects long-run popularity but adapts poorly to
+sudden shifts, since a previously popular object can retain a high count long after it stops
+being requested \citep{carter2020frequency}. Hybrid schemes such as LRU-K and 2Q attempt to
+combine recency and frequency signals with additional history queues, at the cost of more
+per-object state \citep{osei2021hybrid}.
+
+\section{Adaptive and Learned Caching}
+\label{sec:lit-gap}
+A separate line of work replaces hand-designed heuristics with policies learned from traffic,
+either via reinforcement learning over eviction decisions \citep{nair2022learned} or via
+gradient-boosted models predicting re-access probability \citep{apex2023predictive}. These
+approaches report substantial hit-ratio gains over LRU on production CDN traces, but they
+introduce a training pipeline, a model-serving path in the cache's hot loop, and a
+retraining cadence to track workload drift -- overhead that is difficult to justify for a
+single edge node handling a modest fraction of total traffic. Meridian Labs' internal survey
+of production caching deployments found that fewer than a third of edge operators running
+learned caches retrained on a schedule tighter than once per week, despite documented
+performance decay under drift \citep{whitfield2019caching}.
+
+This gap -- between static heuristics that are cheap but workload-blind, and learned caches
+that are adaptive but operationally heavy -- motivates the design explored in this thesis: an
+adaptive policy that updates a per-object score incrementally, in constant time, without a
+separate training or serving pipeline.
+
+\section{Workload Modelling}
+Prior measurement studies consistently report that CDN request popularity follows a
+Zipf-like distribution, with skew parameter $\theta$ typically in the range $0.7$--$1.0$
+depending on content type \citep{nimbus2021trafficstudy}. Synthetic workload generators built
+on this observation are standard practice in caching research, since raw production traces
+are rarely shareable outside the operator that collected them \citep{synapse2022benchmarking}.
+This thesis follows that convention, described in full in Section~\ref{sec:workload}.
+
+\section{Positioning of This Work}
+Table~\ref{tab:lit-summary} summarises the trade-off space this thesis targets: a policy with
+LRU-level operational simplicity but closer to learned-cache hit ratios.
+
+\begin{table}[h]
+  \centering
+  \caption{Positioning of cache replacement approaches by adaptivity and operational cost.}
+  \label{tab:lit-summary}
+  \begin{tabular}{@{}lcc@{}}
+    \toprule
+    \textbf{Approach} & \textbf{Adapts to skew/drift} & \textbf{Operational cost} \\
+    \midrule
+    LRU / LFU               & Low          & Very low \\
+    LRU-K / 2Q               & Moderate     & Low \\
+    Learned (RL / GBM)       & High         & High \\
+    Gradient-Weighted Cache (this work) & Moderate--High & Low \\
+    \bottomrule
+  \end{tabular}
+\end{table}

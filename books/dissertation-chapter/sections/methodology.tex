@@ -1,0 +1,34 @@
+\section{Theoretical Framework and Methodology}
+
+We formalize the autonomous control problem as a continuous-state Markov Decision Process (MDP) defined by the tuple $\mathcal{M} = (\mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma)$, where $\mathcal{S} \subseteq \mathbb{R}^d$ is the state space, $\mathcal{A} \subseteq \mathbb{R}^m$ is the action space, $\mathcal{P}: \mathcal{S} \times \mathcal{A} \to \Delta(\mathcal{S})$ is the transition probability function, $\mathcal{R}: \mathcal{S} \times \mathcal{A} \to \mathbb{R}$ is the reward function, and $\gamma \in [0, 1)$ is the discount factor.
+
+\subsection{Epistemic Uncertainty Estimation via Deep Ensembles}
+
+To quantify the epistemic uncertainty of the state-action value function $Q(s, a)$, we employ a bootstrap ensemble of $K$ distinct neural networks parametrized by $\{\theta_k\}_{k=1}^K$ \cite{marchetti2023calibration}. Each network is trained on a randomized subset of the replay buffer $\mathcal{D}$. The ensemble mean and variance of the $Q$-value predictions are defined respectively as:
+\begin{equation}
+    \mu_Q(s, a) = \frac{1}{K} \sum_{k=1}^K Q_{\theta_k}(s, a)
+\end{equation}
+\begin{equation}
+    \sigma^2_Q(s, a) = \frac{1}{K - 1} \sum_{k=1}^K \left( Q_{\theta_k}(s, a) - \mu_Q(s, a) \right)^2
+\end{equation}
+
+The variance $\sigma^2_Q(s, a)$ serves as a proxy for the epistemic uncertainty. In regions of the state-action space that have been extensively explored, the networks converge to similar predictions, yielding a low variance. Conversely, in unexplored or novel states, the random initialization of the networks causes their predictions to diverge, leading to a high variance.
+
+\subsection{The Apex Safety Filter}
+
+To guarantee safety during online deployment, we introduce the Apex Safety Filter (ASF), which wraps the active DRL policy. Let $\pi_{\text{active}}(s) = \arg\max_a \mu_Q(s, a)$ denote the primary policy. The filter constantly monitors the epistemic uncertainty of the chosen action, $\sigma^2_Q(s, \pi_{\text{active}}(s))$. If this uncertainty exceeds a critical threshold $\tau_{\text{safe}}$, the control input is overridden by a robust, model-predictive control policy $\pi_{\text{safe}}(s)$ designed to steer the agent back to a high-confidence state.
+
+The formal control selection rule is given by:
+\begin{equation}
+    u(t) = \begin{cases}
+        \pi_{\text{active}}(s(t)) & \text{if } \sigma^2_Q(s(t), \pi_{\text{active}}(s(t))) \leq \tau_{\text{safe}} \\
+        \pi_{\text{safe}}(s(t)) & \text{otherwise}
+    \end{cases}
+\end{equation}
+
+\begin{theorembox}{Uncertainty Bounded Safety Guarantee}
+    Assume the true transition dynamics $P(s' \mid s, a)$ lie within an $\epsilon$-ball of the ensemble model predictions with probability $1 - \delta$ when $\sigma^2_Q(s, a) \leq \tau_{\text{safe}}$. Then, under the control law in Equation (3.4), the state trajectories are guaranteed to remain within a compact safety set $\mathcal{C} \subset \mathcal{S}$ for all time $t \geq 0$, provided $s(0) \in \mathcal{C}$.
+\end{theorembox}
+
+This formulation allows the agent to aggressively optimize performance in familiar environments while guaranteeing that out-of-distribution transitions trigger an immediate, safe fallback response.
+

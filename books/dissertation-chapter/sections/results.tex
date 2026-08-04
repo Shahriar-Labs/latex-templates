@@ -1,0 +1,59 @@
+\section{Experimental Evaluation}
+
+We evaluated the proposed Apex Control Loop inside the high-fidelity Nimbus drone flight simulator. The simulator was modified to inject non-stationary wind gust profiles and dynamic physical payload changes at runtime, mimicking real-world deployment anomalies. We compared our approach against three standard baselines:
+\begin{enumerate}
+    \item \textbf{Naive DRL:} A standard soft actor-critic (SAC) agent without uncertainty awareness.
+    \item \textbf{MC-Dropout:} An agent utilizing Monte Carlo Dropout to estimate uncertainty.
+    \item \textbf{Robust DRL:} An agent trained with domain randomization but no active safety filter.
+\end{enumerate}
+
+\subsection{System Architecture Flow}
+
+The interactions between the physical plant, the neural network ensemble, and the safety filter are illustrated in Figure 3.1. The architecture utilizes real-time sensor streams from the Nimbus platform, processes them through the ensemble to evaluate the confidence metrics, and routes the action accordingly.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[
+        node distance = 1.8cm,
+        box/.style = {draw, rectangle, fill=bglight, line width=1.5pt, minimum width=3.5cm, minimum height=1.0cm, align=center, rounded corners=3pt, draw=primary},
+        highlight/.style = {draw, rectangle, fill=secondary!10, line width=1.5pt, minimum width=3.5cm, minimum height=1.0cm, align=center, rounded corners=3pt, draw=secondary},
+        accentbox/.style = {draw, rectangle, fill=accent!10, line width=1.5pt, minimum width=3.5cm, minimum height=1.0cm, align=center, rounded corners=3pt, draw=accent},
+        arrow/.style = {thick, -{Stealth}, draw=primary}
+    ]
+        % Nodes
+        \node (plant) [box] {\textbf{Nimbus Simulator}\\\small(State $s_t$, Sensor Data)};
+        \node (ensemble) [highlight, right=of plant, xshift=1.0cm] {\textbf{Deep Q-Ensemble}\\\small(Estimates $\mu_Q$, $\sigma^2_Q$)};
+        \node (filter) [accentbox, below=of ensemble] {\textbf{Apex Safety Filter}\\\small(Threshold $\tau_{\text{safe}}$ check)};
+        \node (controller) [box, below=of plant] {\textbf{Active / Safe Controller}\\\small(Executes action $u_t$)};
+
+        % Arrows
+        \draw [arrow] (plant) -- node[anchor=south] {State $s_t$} (ensemble);
+        \draw [arrow] (ensemble) -- node[anchor=west] {$\sigma^2_Q(s, a)$} (filter);
+        \draw [arrow] (filter) -- node[anchor=south] {Trigger Check} (controller);
+        \draw [arrow] (controller) -- node[anchor=east] {Action $u_t$} (plant);
+    \end{tikzpicture}
+    \caption{The closed-loop block diagram of the Apex control framework inside the Nimbus simulator. Epistemic uncertainty computed by the ensemble is evaluated in real time to select the control path.}
+\end{figure}
+
+\subsection{Quantitative Performance Metrics}
+
+Table 3.1 summarizes the average trajectory tracking error, the number of safety violations, and the computational latency during a 100-cycle flight envelope test under severe wind shear conditions.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Performance metrics under non-stationary wind shear conditions.}
+    \begin{tabularx}{\linewidth}{Xccc}
+        \toprule
+        \rowcolor{bglight}
+        \textbf{Agent Architecture} & \textbf{Tracking Error (cm)} & \textbf{Safety Violations} & \textbf{Latency (ms)} \\
+        \midrule
+        Naive DRL                   & $48.2 \pm 12.4$              & 18                         & $\mathbf{2.1}$        \\
+        MC-Dropout                  & $34.1 \pm 8.9$               & 7                          & $18.4$                \\
+        Robust DRL                  & $22.5 \pm 5.1$               & 5                          & $2.3$                 \\
+        \textbf{Apex (Ours)}        & $\mathbf{12.3 \pm 2.4}$      & $\mathbf{0}$               & $4.6$                 \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+The empirical results show that the Apex framework achieves a significant reduction in trajectory tracking error while maintaining a zero-safety-violation record. The robust policy handles OOD states gracefully, and the ensemble latency of 4.6 ms is well within the 10 ms real-time control budget of the Nimbus onboard computer, proving the feasibility of online deployment.
+

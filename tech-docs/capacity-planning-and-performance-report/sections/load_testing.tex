@@ -1,0 +1,33 @@
+\section{Load Testing \& Performance Limits}
+\label{sec:load_testing}
+To validate the headroom projections, Nexa's Performance Engineering team performed a series of controlled, synthetic load tests on the staging database environment. The staging cluster replicates the exact CPU and memory specifications of the production Vertex Cluster.
+
+\subsection{Methodology}
+We simulated customer request flows utilizing Apex load-generation agents. The load scenario modeled API read-write requests in an 80:20 ratio. The workload started at 1,000 Requests Per Second (RPS) and was ramped up incrementally over two hours to a peak of 10,000 RPS.
+
+\subsection{Latency \& Throughput Results}
+Table~\ref{tab:load_results} summarizes the response latency percentiles and database health status during key milestones.
+
+\begin{table}[htbp]
+  \centering
+  \caption{System performance metrics under escalated request loads.}
+  \label{tab:load_results}
+  \begin{tabularx}{\textwidth}{c r c c c X}
+    \toprule
+    \textbf{Load Step} & \textbf{Throughput} & \textbf{P50 Latency} & \textbf{P95 Latency} & \textbf{P99 Latency} & \textbf{System Status} \\
+    \midrule
+    Baseline & 1,500 RPS & 12\,ms & 45\,ms & 110\,ms & Optimal; healthy queues \\
+    \rowcolor{lightgray} Step 1 & 3,000 RPS & 18\,ms & 62\,ms & 155\,ms & High disk IOPS saturation \\
+    Step 2 & 5,000 RPS & 35\,ms & 188\,ms & 420\,ms & CPU thread contention \\
+    \rowcolor{lightgray} Step 3 & 7,500 RPS & 98\,ms & 750\,ms & 1,980\,ms & Elevated page-faults \\
+    Limit & 10,000 RPS & 450\,ms & 3,800\,ms & 8,400\,ms & Database connection pool exhausted \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{Identified Bottlenecks}
+The load tests revealed two primary choke points:
+\begin{enumerate}
+  \item \textbf{Disk I/O Blockages:} Above 3,000 RPS, write operations were stalled waiting for available disk channels. The baseline 3,000~IOPS was exhausted, and storage latencies reached a critical average of 42\,ms.
+  \item \textbf{Lock Contention:} At 5,000 RPS, we observed CPU saturation on the Primary coordinator due to row-level locking on the `meridian\_tenant\_balances` table. This led to query queuing, pushing the P99 latency past 420\,ms.
+\end{enumerate}

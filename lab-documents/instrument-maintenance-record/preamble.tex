@@ -1,0 +1,181 @@
+% preamble.tex -- packages, colours, layout, custom commands
+
+\usepackage[a4paper,top=2.3cm,bottom=2.4cm,left=1.9cm,right=1.9cm,headheight=28pt,headsep=10pt]{geometry}
+
+\usepackage[table]{xcolor}
+\usepackage{amsmath,amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage[most]{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{pifont}
+\usepackage{siunitx}
+\usepackage{ragged2e}
+\usepackage[hidelinks]{hyperref}
+\usepackage[round]{natbib}
+
+% ---------------------------------------------------------------- colours
+\definecolor{slateDark}{HTML}{263238}
+\definecolor{slateMid}{HTML}{4B636E}
+\definecolor{steelBlue}{HTML}{3E6B8A}
+\definecolor{slatePale}{HTML}{EBEEF0}
+\definecolor{okGreen}{HTML}{2E7D53}
+\definecolor{amberFlag}{HTML}{B9770E}
+\definecolor{alertRed}{HTML}{A13636}
+
+\colorlet{ruleGrey}{slateMid!35!white}
+\pagecolor{white}
+
+% ---------------------------------------------------------------- fonts / rules
+\renewcommand{\familydefault}{\sfdefault}
+
+\newcommand{\hairline}{\par\noindent{\color{ruleGrey}\rule{\linewidth}{0.5pt}}\par}
+
+% ---------------------------------------------------------------- headers / footers
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.3pt}
+\fancyhead[L]{\small\color{slateMid}\textbf{Instrument Maintenance Record}}
+\fancyhead[R]{\small\color{slateMid}Asset ID: \textsc{Nimbus--QX500--07}}
+\fancyfoot[L]{\small\color{slateMid}Apex Materials Characterisation Core}
+\fancyfoot[R]{\small\color{slateMid}Page \thepage\ of \pageref{LastPage}}
+\usepackage{lastpage}
+
+% ---------------------------------------------------------------- section styling
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{slateDark}}
+  {\thesection}{0.5em}{}[{\color{ruleGrey}\titlerule[0.8pt]}]
+\titlespacing*{\section}{0pt}{1.6em}{0.9em}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{slateMid}}
+  {\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{1.2em}{0.5em}
+
+% ---------------------------------------------------------------- section banner
+\newcommand{\sectionbanner}[2]{%
+  \begin{tcolorbox}[
+    enhanced, colback=slateDark, colframe=slateDark,
+    boxrule=0pt, arc=1pt, left=10pt, right=10pt, top=6pt, bottom=6pt,
+    before skip=0pt, after skip=1.1em
+  ]
+    {\color{white}\Large\bfseries #1}\\[1pt]
+    {\color{slatePale}\small #2}
+  \end{tcolorbox}
+}
+
+% ---------------------------------------------------------------- status badges
+\newtcbox{\badgeok}{on line, colback=okGreen!12!white, colframe=okGreen,
+  boxrule=0.4pt, arc=2pt, boxsep=1pt, left=3pt, right=3pt, top=1pt, bottom=1pt,
+  fontupper=\scriptsize\bfseries, colupper=okGreen}
+\newtcbox{\badgedue}{on line, colback=amberFlag!12!white, colframe=amberFlag,
+  boxrule=0.4pt, arc=2pt, boxsep=1pt, left=3pt, right=3pt, top=1pt, bottom=1pt,
+  fontupper=\scriptsize\bfseries, colupper=amberFlag}
+\newtcbox{\badgeoverdue}{on line, colback=alertRed!12!white, colframe=alertRed,
+  boxrule=0.4pt, arc=2pt, boxsep=1pt, left=3pt, right=3pt, top=1pt, bottom=1pt,
+  fontupper=\scriptsize\bfseries, colupper=alertRed}
+\newtcbox{\badgeinfo}{on line, colback=steelBlue!12!white, colframe=steelBlue,
+  boxrule=0.4pt, arc=2pt, boxsep=1pt, left=3pt, right=3pt, top=1pt, bottom=1pt,
+  fontupper=\scriptsize\bfseries, colupper=steelBlue}
+
+\newcommand{\okmark}{{\color{okGreen}\ding{51}}}
+\newcommand{\failmark}{{\color{alertRed}\ding{55}}}
+
+% ---------------------------------------------------------------- info card (title page)
+\newcommand{\infocard}[3]{%
+  \begin{tcolorbox}[
+    enhanced, colback=white, colframe=ruleGrey, boxrule=0.6pt, arc=2pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt, width=#3
+  ]
+    {\scriptsize\color{slateMid}\textbf{#1}}\\[2pt]
+    {\normalsize\color{slateDark}#2}
+  \end{tcolorbox}
+}
+
+% ---------------------------------------------------------------- title page
+\newcommand{\maketitlepage}{%
+\begin{titlepage}
+\thispagestyle{empty}
+
+\begin{tikzpicture}[remember picture, overlay]
+  \fill[slateDark] (current page.north west) rectangle ([yshift=-4.6cm]current page.north east);
+  \fill[steelBlue] ([yshift=-4.6cm]current page.north west) rectangle ([yshift=-4.65cm]current page.north east);
+  \begin{scope}
+    \clip (current page.north west) rectangle ([yshift=-4.6cm]current page.north east);
+    \foreach \x in {0.5,1.7,...,22} {
+      \draw[slateMid!55!slateDark, line width=0.5pt] ([xshift=\x cm, yshift=0.2cm]current page.north west) -- ([xshift=\x cm+1.1cm, yshift=-4.8cm]current page.north west);
+    }
+  \end{scope}
+  \node[anchor=north west, text=white, font=\scriptsize\bfseries] at ([xshift=1.9cm,yshift=-1.0cm]current page.north west) {APEX MATERIALS CHARACTERISATION CORE};
+  \node[anchor=north west, text=white, font=\Huge\bfseries] at ([xshift=1.9cm,yshift=-1.7cm]current page.north west) {Instrument Maintenance Record};
+  \node[anchor=north west, text=slatePale, font=\normalsize] at ([xshift=1.9cm,yshift=-3.35cm]current page.north west) {Vertex QX-500 Confocal Raman Microscope \quad$\vert$\quad Asset ID Nimbus--QX500--07};
+\end{tikzpicture}
+
+\vspace*{5.3cm}
+
+\begin{center}
+\begin{minipage}{0.94\linewidth}
+\centering
+\renewcommand{\arraystretch}{1.3}
+\begin{tabularx}{\linewidth}{@{}X X X@{}}
+\infocard{Serial Number}{VX-QX500-114487}{\linewidth} &
+\infocard{Location}{Core Facility, Rm.\ 214B}{\linewidth} &
+\infocard{Custodian}{Dr.\ Renata Solis}{\linewidth} \\[6pt]
+\infocard{Commissioned}{14 Mar 2022}{\linewidth} &
+\infocard{Service Contract}{Synapse Instrument Services, Tier~2}{\linewidth} &
+\infocard{Record Period}{Jan 2025 -- Jun 2026}{\linewidth} \\
+\end{tabularx}
+\end{minipage}
+\end{center}
+
+\vspace{1.1cm}
+
+\begin{center}
+\begin{minipage}{0.94\linewidth}
+\centering
+\renewcommand{\arraystretch}{1.0}
+\begin{tabularx}{\linewidth}{@{}*{4}{>{\centering\arraybackslash}X}@{}}
+{\Large\color{steelBlue}\faFile} & {\Large\color{steelBlue}\faCalendar} & {\Large\color{steelBlue}\faHistory} & {\Large\color{steelBlue}\faChartBar} \\
+\scriptsize\color{slateMid} Overview & \scriptsize\color{slateMid} PM Schedule & \scriptsize\color{slateMid} Service History & \scriptsize\color{slateMid} Downtime \\[10pt]
+{\Large\color{steelBlue}\faWrench} & {\Large\color{steelBlue}\faBoxes} & {\Large\color{steelBlue}\faExclamationTriangle} & \\
+\scriptsize\color{slateMid} Calibration & \scriptsize\color{slateMid} Spare Parts & \scriptsize\color{slateMid} Incidents \& Sign-off & \\
+\end{tabularx}
+\end{minipage}
+\end{center}
+
+\vspace{1.2cm}
+
+\begin{center}
+\begin{minipage}{0.94\linewidth}
+\small
+\renewcommand{\arraystretch}{1.2}
+\rowcolors{1}{slatePale}{white}
+\begin{tabularx}{\linewidth}{@{}l X l@{}}
+\rowcolor{slateDark}
+\textcolor{white}{\textbf{Rev.}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Date}} \\
+A & Initial record opened at instrument commissioning & 14 Mar 2022 \\
+B & Annual PM schedule revised to quarterly cadence & 02 Jan 2024 \\
+C & Current revision -- reflects service history through Jun 2026 & 30 Jun 2026 \\
+\end{tabularx}
+\end{minipage}
+\end{center}
+
+\vfill
+
+\begin{center}
+{\scriptsize\color{slateMid} This record is a controlled quality document of the Apex Materials Characterisation Core. \\
+Uncontrolled if printed. Retain for the operating life of the instrument plus five years.}
+\end{center}
+
+\end{titlepage}
+}

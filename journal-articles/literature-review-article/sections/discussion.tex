@@ -1,0 +1,38 @@
+\section{Discussion: Open Gaps}
+\label{sec:discussion}
+
+Reading the four clusters together, rather than as separate literatures, surfaces three gaps that no
+single cluster's papers address on their own.
+
+\subsection{Gap 1: No shared cross-model benchmark}
+
+Every latency-overhead figure in Table~\ref{tab:comparison} is measured against a different baseline
+testbed, so the numbers indicate order of magnitude only, not a ranking. Cluster-internal comparisons
+(e.g.\ Apex against earlier strong-consistency work) are rigorous; cross-cluster comparisons (e.g.\ is
+Synapse's 1.05$\times$ overhead \emph{better} than Meridian's 1.1--1.3$\times$, given they provide
+different guarantees) cannot be made from published numbers alone. A shared benchmark harness --- fixed
+workload traces, fixed topology generator, fixed failure-injection schedule --- would let the field
+compare protocols on the same axis for the first time.
+
+\subsection{Gap 2: Adversarial partitions are under-studied}
+
+Fault-tolerance evaluations across the corpus almost universally model partitions as random link or
+node failures. Only two of the 42 studies model an adversarial partition (one that specifically
+isolates the replica set serving a high-value tenant). Given that edge deployments increasingly serve
+mixed-trust tenants on shared infrastructure, this is a narrower threat model than the deployment
+context warrants.
+
+\subsection{Gap 3: No energy accounting in tunable scheduling}
+
+Cluster C and D papers optimise a staleness bound against latency or bandwidth, but none report the
+energy cost of the refresh traffic their schedulers generate. At edge nodes running on constrained
+power budgets (solar micro-sites, battery-backed base stations), a staleness bound tuned purely for
+bandwidth could still be energy-infeasible. This is a straightforward instrumentation gap rather than a
+fundamental one: the scheduling frameworks in \citet{osei2019vertex} and \citet{nakamura2023meridian}
+already expose the hooks needed to add an energy term to their cost functions.
+
+\begin{keytakeaway}
+The three gaps share a root cause: the field has optimised each protocol against a bespoke evaluation
+setup, so improvements are provably real within a cluster but not provably comparable across clusters.
+A shared benchmark would close all three gaps at once by forcing a common set of reported metrics.
+\end{keytakeaway}

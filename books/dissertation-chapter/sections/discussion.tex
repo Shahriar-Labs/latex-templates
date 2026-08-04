@@ -1,0 +1,14 @@
+\section{Discussion and Safety Bounds}
+
+The experimental results validate the core hypothesis: explicit quantification of epistemic uncertainty provides a reliable mechanism for out-of-distribution detection. By switching control from the active policy to the safe fallback controller before the agent enters unrecoverable states, we avoid the catastrophic failure modes typical of model-free controllers.
+
+\subsection{Sensitivity to the Safety Threshold}
+
+The parameter $\tau_{\text{safe}}$ regulates the trade-off between performance and safety. Setting $\tau_{\text{safe}}$ too low results in an overly conservative controller that frequently triggers the fallback safe policy, reducing overall performance. Conversely, setting $\tau_{\text{safe}}$ too high increases the risk of safety violations because the agent remains in OOD environments longer before triggering the fallback.
+
+\begin{insightbox}{Epistemic Calibration Principle}
+    A critical finding of our study is that the raw ensemble variance $\sigma^2_Q(s, a)$ is uncalibrated unless the individual networks are regularized. Without weight decay or proper scaling, the ensemble can still output low variance in OOD regions. In the Apex framework, we apply temperature scaling to the variance before evaluation, which guarantees that $\sigma^2_Q(s, a)$ correlates strictly with the expected value-function approximation error.
+\end{insightbox}
+
+This calibration is key to the safety guarantee. If the variance is not calibrated, the safety filter may fail to activate in OOD states, defeating the purpose of the architecture. Future work will investigate self-tuning safety thresholds that adapt to the rate of drift in non-stationary environments.
+

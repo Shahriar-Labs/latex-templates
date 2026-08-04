@@ -1,0 +1,38 @@
+% conclusion.tex
+\chapter{Conclusion}
+\label{ch:conclusion}
+
+\section{Summary}
+This thesis set out to test whether a lightweight, per-object adaptive eviction policy could
+improve edge cache performance over static baselines without the operational overhead of a
+learned cache. The Gradient-Weighted Cache (GWC), introduced in
+Section~\ref{sec:gwc-design}, improved hit ratio by 17.5 percentage points over LRU and
+12.1 points over LFU on a stationary Zipfian workload, and retained a substantial advantage
+under simulated popularity drift, at a per-request overhead under 0.11\,microseconds. These
+results were obtained on EdgeSim, a purpose-built simulator described in
+Chapter~\ref{ch:methodology}, across twelve edge nodes and five random seeds per
+configuration.
+
+\section{Limitations}
+As discussed in Section~\ref{ch:discussion}, the central limitation of this work is its
+reliance on synthetic rather than production traffic, and the absence of a direct empirical
+comparison against a learned caching baseline. The single fixed learning rate
+$\alpha = 0.15$, while selected via grid search, was not re-tuned per workload variant, and
+it is plausible that drift-heavy deployments would benefit from an adaptive $\alpha$ itself.
+
+\section{Future Work}
+Three directions follow naturally from this thesis. First, validating GWC against a
+production or anonymised CDN trace would address the synthetic-workload limitation directly.
+Second, implementing a reference reinforcement-learning cache under the same EdgeSim harness
+would allow a fair, apples-to-apples comparison of the adaptivity-versus-overhead trade-off
+sketched qualitatively in Section~\ref{ch:discussion}. Third, an online mechanism for
+adjusting $\alpha$ in response to detected drift -- rather than fixing it in advance -- could
+recover some of the hit-ratio loss observed in Section~\ref{sec:drift-results} without
+sacrificing GWC's constant-time update guarantee.
+
+\begin{keytakeaway}[Closing Statement]
+The core finding of this thesis is not that GWC is the best possible cache policy, but that a
+large share of the benefit typically attributed to learned caching is available from a
+constant-time, hand-designed score -- provided that score accounts for object size as well
+as recency and frequency.
+\end{keytakeaway}

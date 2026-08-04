@@ -1,0 +1,42 @@
+\section{Methodology}
+\label{sec:methodology}
+
+Our methodology relies on aligning local projection manifolds to a global coordinate frame. Let $\mathbf{X}_i$ denote the input feature matrix at node $i$. The local embedding $\mathbf{Z}_i$ is obtained via a non-linear mapping:
+\begin{equation}
+\mathbf{Z}_i = \sigma(\mathbf{W}_i \mathbf{X}_i + \mathbf{b}_i)
+\end{equation}
+where $\mathbf{W}_i$ and $\mathbf{b}_i$ represent the weights and biases of the local projection head, and $\sigma(\cdot)$ is the activation function.
+
+To align these embeddings globally, we minimize a consensus loss function over the shared parameters:
+\begin{equation}
+\mathcal{L}_{\text{global}} = \sum_{i=1}^{N} \mathcal{L}_{\text{local}}(\mathbf{Z}_i) + \lambda \sum_{i \neq j} \mathcal{D}(\mathbf{Z}_i, \mathbf{Z}_j)
+\end{equation}
+where $\mathcal{D}(\cdot, \cdot)$ is a divergence measure, and $\lambda$ is a regularization hyperparameter.
+
+\subsection{Information Flow}
+The information flow of our architecture is depicted in Figure~\ref{fig:architecture}. The features from the Nexa Data layer are mapped through the Synapse embedding space, yielding local maps that are ultimately integrated by the Vertex prediction head.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=1.5cm and 2cm,
+    layer/.style={rectangle, draw=primary, fill=lightbg, thick, rounded corners, minimum width=3cm, minimum height=1cm, align=center, text=darkgray},
+    arrow/.style={-latex, thick, primary}
+]
+    % Nodes
+    \node[layer] (input) {Input Layer \\ (Nexa Data)};
+    \node[layer, right=of input] (embedding) {Embedding Space \\ (Synapse Maps)};
+    \node[layer, right=of embedding] (output) {Prediction Head \\ (Vertex Output)};
+    
+    % Paths
+    \draw[arrow] (input) -- (embedding);
+    \draw[arrow] (embedding) -- (output);
+    
+    % Labels
+    \node[above=0.2cm of input, font=\small\itshape] {Raw Features};
+    \node[above=0.2cm of embedding, font=\small\itshape] {Distributed Rep.};
+    \node[above=0.2cm of output, font=\small\itshape] {Task Decision};
+\end{tikzpicture}
+\caption{Vertex Neural Architecture information flow diagram.}
+\label{fig:architecture}
+\end{figure}

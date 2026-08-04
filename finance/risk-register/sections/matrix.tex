@@ -1,0 +1,84 @@
+\section{Risk Heatmap Matrix}
+The following 5$\times$5 matrix illustrates the scoring system and highlights the active risk profile of Project Meridian before and after mitigation. The matrix colors denote the severity categories: \colorbox{riskGreenBg}{\textcolor{riskGreen}{\bfseries Low (1--4)}}, \colorbox{riskYellowBg}{\textcolor{riskYellow}{\bfseries Medium (5--9)}}, \colorbox{riskOrangeBg}{\textcolor{riskOrange}{\bfseries High (10--15)}}, and \colorbox{riskRedBg}{\textcolor{riskRed}{\bfseries Critical (16--25)}}.
+
+\vspace{0.4cm}
+
+\begin{center}
+\begin{tikzpicture}[scale=1.2, every node/.style={font=\sffamily\small}]
+  % Draw Grid and Cell Backgrounds
+  \foreach \l in {1,...,5} {
+    \foreach \i in {1,...,5} {
+      \pgfmathtruncatemacro{\rating}{\l * \i}
+      \ifnum\rating>15
+        \draw[fill=riskRedBg, draw=bordercolor] (\i-1,\l-1) rectangle (\i,\l);
+        \node[text=riskRed] at (\i-0.5, \l-0.5) {\bfseries\rating};
+      \else\ifnum\rating>9
+        \draw[fill=riskOrangeBg, draw=bordercolor] (\i-1,\l-1) rectangle (\i,\l);
+        \node[text=riskOrange] at (\i-0.5, \l-0.5) {\bfseries\rating};
+      \else\ifnum\rating>4
+        \draw[fill=riskYellowBg, draw=bordercolor] (\i-1,\l-1) rectangle (\i,\l);
+        \node[text=riskYellow] at (\i-0.5, \l-0.5) {\bfseries\rating};
+      \else
+        \draw[fill=riskGreenBg, draw=bordercolor] (\i-1,\l-1) rectangle (\i,\l);
+        \node[text=riskGreen] at (\i-0.5, \l-0.5) {\bfseries\rating};
+      \fi\fi\fi
+    }
+  }
+
+  % Axis Labels
+  \node[rotate=90] at (-1.2, 2.5) {\bfseries Likelihood (Probability) $\rightarrow$};
+  \node at (2.5, -1.2) {\bfseries Impact (Severity) $\rightarrow$};
+
+  % Tick Labels - Likelihood (y-axis)
+  \node[left] at (0, 0.5) {1 -- Rare};
+  \node[left] at (0, 1.5) {2 -- Unlikely};
+  \node[left] at (0, 2.5) {3 -- Possible};
+  \node[left] at (0, 3.5) {4 -- Likely};
+  \node[left] at (0, 4.5) {5 -- Almost Certain};
+
+  % Tick Labels - Impact (x-axis)
+  \node[below, rotate=-15, anchor=north east] at (0.5, 0) {1 -- Negligible};
+  \node[below, rotate=-15, anchor=north east] at (1.5, 0) {2 -- Minor};
+  \node[below, rotate=-15, anchor=north east] at (2.5, 0) {3 -- Moderate};
+  \node[below, rotate=-15, anchor=north east] at (3.5, 0) {4 -- Major};
+  \node[below, rotate=-15, anchor=north east] at (4.5, 0) {5 -- Critical};
+
+  % Active Risks Overlay
+  % Raw risks (solid circles) and residual risks (hollow/dashed circles)
+  % Risk 1 (Regulatory Compliance): L=4, I=4 (score 16) -> residual L=2, I=4 (score 8)
+  \node[circle, fill=primary, text=white, inner sep=1.5pt, font=\scriptsize\bfseries] (R1) at (3.3, 3.7) {R1};
+  \node[circle, draw=primary, line width=1pt, fill=white, text=primary, inner sep=1pt, font=\scriptsize\bfseries] (R1r) at (3.7, 1.3) {R1*};
+  \draw[->, >=stealth, dashed, line width=0.8pt, draw=primary] (R1) -- (R1r);
+
+  % Risk 2 (Data Sync Latency): L=4, I=3 (score 12) -> residual L=2, I=3 (score 6)
+  \node[circle, fill=primary, text=white, inner sep=1.5pt, font=\scriptsize\bfseries] (R2) at (2.3, 3.7) {R2};
+  \node[circle, draw=primary, line width=1pt, fill=white, text=primary, inner sep=1pt, font=\scriptsize\bfseries] (R2r) at (2.7, 1.3) {R2*};
+  \draw[->, >=stealth, dashed, line width=0.8pt, draw=primary] (R2) -- (R2r);
+
+  % Risk 3 (Key Staff Turnover): L=3, I=4 (score 12) -> residual L=2, I=2 (score 4)
+  \node[circle, fill=primary, text=white, inner sep=1.5pt, font=\scriptsize\bfseries] (R3) at (3.7, 2.7) {R3};
+  \node[circle, draw=primary, line width=1pt, fill=white, text=primary, inner sep=1pt, font=\scriptsize\bfseries] (R3r) at (1.7, 1.7) {R3*};
+  \draw[->, >=stealth, dashed, line width=0.8pt, draw=primary] (R3) -- (R3r);
+\end{tikzpicture}
+\end{center}
+
+\vspace{0.3cm}
+\noindent
+\begin{minipage}[t]{0.48\textwidth}
+  \begin{tcolorbox}[title=Risk Profile Summary, colback=lightbg, colframe=primary, arc=4pt]
+    \small
+    \begin{itemize}[label=\textbullet, leftmargin=*]
+      \item \textbf{Total Identified Risks:} 5 key items across core domains.
+      \item \textbf{Pre-Mitigation Profile:} 1 Critical, 2 High, 2 Medium.
+      \item \textbf{Post-Mitigation Profile:} 0 Critical, 0 High, 3 Medium, 2 Low.
+      \item \textbf{Key Focus Area:} Cross-border regulatory compliance and real-time synchronization throughput.
+    \end{itemize}
+  \end{tcolorbox}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+  \begin{tcolorbox}[title=Mitigation Principles, colback=lightbg, colframe=secondary, arc=4pt]
+    \small
+    All critical (red) and high (orange) risks require active mitigation controls and weekly status audits to the project board. Residual risk must be reduced below a score of 10 prior to production launch. Owner columns designate the single point of contact responsible for executing standard operating procedures (SOPs).
+  \end{tcolorbox}
+\end{minipage}

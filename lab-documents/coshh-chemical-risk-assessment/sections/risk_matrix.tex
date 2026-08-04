@@ -1,0 +1,223 @@
+%% ============================================================
+%% sections/risk_matrix.tex  — Severity-likelihood risk matrix
+%%                             and per-substance risk ratings
+%% ============================================================
+
+\newpage
+
+\cossection{\faChartBar\quad Severity--Likelihood Risk Matrix}
+
+\vspace{4pt}
+
+{\small
+Risk scores are the product of \textbf{Severity} (S, 1--5) and \textbf{Likelihood}
+(L, 1--5). Colour banding follows the standard 5-tier scheme used across
+Nexa Biomedical Research Ltd sites.
+}
+
+\vspace{8pt}
+
+%% ---- Risk matrix grid (TikZ) --------------------------------
+\begin{center}
+\begin{tikzpicture}[
+  cell/.style={
+    draw=white, line width=1pt,
+    minimum width=18mm, minimum height=12mm,
+    inner sep=0pt,
+    font=\bfseries\small,
+    text=white
+  },
+  rlabel/.style={font=\footnotesize\bfseries, text=NavyDeep, align=center},
+  clabel/.style={font=\footnotesize\bfseries, text=NavyDeep, align=center}
+]
+
+%% Define row colours by likelihood (bottom=1, top=5)
+%% Matrix: rows = likelihood (1..5 bottom to top), cols = severity (1..5)
+%% Score = row * col; colour bands: 1-4 Low, 5-9 Med, 10-14 High, 15-19 VHigh, 20-25 Crit
+
+\def\cellwidth{18mm}
+\def\cellheight{12mm}
+
+\foreach \lik/\lirow in {1/0, 2/1, 3/2, 4/3, 5/4}{
+  \foreach \sev/\sevcol in {1/0, 2/1, 3/2, 4/3, 5/4}{
+    \pgfmathsetmacro{\score}{\lik * \sev}
+    \pgfmathsetmacro{\scoreint}{int(\score)}
+    % Choose colour based on score
+    \pgfmathparse{int(\score) < 5 ? 1 : 0}
+    \ifnum\pgfmathresult=1
+      \def\fillcol{SageGreen}
+    \else
+      \pgfmathparse{int(\score) < 10 ? 1 : 0}
+      \ifnum\pgfmathresult=1
+        \def\fillcol{MidAmber}
+      \else
+        \pgfmathparse{int(\score) < 15 ? 1 : 0}
+        \ifnum\pgfmathresult=1
+          \def\fillcol{AmberAlert}
+        \else
+          \pgfmathparse{int(\score) < 20 ? 1 : 0}
+          \ifnum\pgfmathresult=1
+            \def\fillcol{DangerRed}
+          \else
+            \def\fillcol{NavyDeep}
+          \fi
+        \fi
+      \fi
+    \fi
+    \fill[\fillcol]
+      ({\sevcol * \cellwidth}, {\lirow * \cellheight})
+      rectangle
+      ({(\sevcol+1) * \cellwidth}, {(\lirow+1) * \cellheight});
+    \draw[white, line width=0.8pt]
+      ({\sevcol * \cellwidth}, {\lirow * \cellheight})
+      rectangle
+      ({(\sevcol+1) * \cellwidth}, {(\lirow+1) * \cellheight});
+    \node[text=white, font=\bfseries\small] at
+      ({(\sevcol + 0.5) * \cellwidth}, {(\lirow + 0.5) * \cellheight})
+      {\scoreint};
+  }
+}
+
+%% Axis labels — Severity (X)
+\foreach \sev/\sevcol in {1/0, 2/1, 3/2, 4/3, 5/4}{
+  \node[clabel] at ({(\sevcol+0.5)*\cellwidth}, {-0.55*\cellheight})
+    {\sev};
+}
+\node[clabel] at ({2.5*\cellwidth}, {-1.1*\cellheight}) {\textbf{Severity (S)}};
+
+%% Axis labels — Likelihood (Y)
+\foreach \lik/\lirow in {1/0, 2/1, 3/2, 4/3, 5/4}{
+  \node[rlabel] at ({-0.6*\cellwidth}, {(\lirow+0.5)*\cellheight})
+    {\lik};
+}
+\node[rlabel, rotate=90] at ({-1.3*\cellwidth}, {2.5*\cellheight})
+  {\textbf{Likelihood (L)}};
+
+%% Box outline
+\draw[NavyDeep, line width=1.5pt] (0,0) rectangle
+  ({5*\cellwidth}, {5*\cellheight});
+
+\end{tikzpicture}
+\end{center}
+
+\vspace{6pt}
+
+%% ---- Risk band legend ----------------------------------------
+\noindent
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[
+    colback=SageGreen!30, colframe=SageGreen, boxrule=0.8pt,
+    arc=3pt, left=6pt, top=3pt, bottom=3pt
+  ]
+    \textbf{\textcolor{SageGreen!80!black}{Low Risk (1--4):}} Acceptable.
+    Standard laboratory procedures apply. Routine monitoring.
+  \end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[
+    colback=MidAmber!30, colframe=MidAmber, boxrule=0.8pt,
+    arc=3pt, left=6pt, top=3pt, bottom=3pt
+  ]
+    \textbf{\textcolor{AmberAlert!80!black}{Medium Risk (5--9):}} Additional
+    controls required. Review monthly. Supervisor awareness mandatory.
+  \end{tcolorbox}
+\end{minipage}
+
+\par
+\vspace{4pt}
+
+\noindent
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[
+    colback=AmberAlert!25, colframe=AmberAlert, boxrule=0.8pt,
+    arc=3pt, left=6pt, top=3pt, bottom=3pt
+  ]
+    \textbf{\textcolor{AmberAlert!90!black}{High Risk (10--14):}} Significant
+    controls essential. Written permit required. Safety officer sign-off.
+  \end{tcolorbox}
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[
+    colback=DangerRed!25, colframe=DangerRed, boxrule=0.8pt,
+    arc=3pt, left=6pt, top=3pt, bottom=3pt
+  ]
+    \textbf{\textcolor{DangerRed}{Critical Risk (15--25):}} Work must not
+    commence without Director approval and independent audit.
+  \end{tcolorbox}
+\end{minipage}
+
+\vspace{10pt}
+
+%% ---- Per-substance risk ratings ----------------------------
+\cossection{\faTable\quad Per-Substance Risk Ratings (Before and After Controls)}
+
+\vspace{4pt}
+
+\noindent
+\begin{tabularx}{\linewidth}{@{}
+  >{\small\bfseries}p{3.0cm}
+  >{\centering\small}p{1.0cm}
+  >{\centering\small}p{1.0cm}
+  >{\centering\small}p{1.2cm}
+  >{\small}X
+  >{\centering\small}p{1.0cm}
+  >{\centering\small}p{1.0cm}
+  >{\centering\small\arraybackslash}p{1.3cm}
+  @{}}
+\toprule
+\rowcolor{NavyDeep}
+\textcolor{white}{\textbf{Substance}} &
+\multicolumn{3}{c}{\textcolor{white}{\textbf{Before Controls}}} &
+\textcolor{white}{\textbf{Key Controls}} &
+\multicolumn{3}{c}{\textcolor{white}{\textbf{After Controls}}} \\
+\rowcolor{NavyDeep!80}
+\textcolor{white}{} &
+\textcolor{white}{\textbf{S}} &
+\textcolor{white}{\textbf{L}} &
+\textcolor{white}{\textbf{Score}} &
+\textcolor{white}{} &
+\textcolor{white}{\textbf{S}} &
+\textcolor{white}{\textbf{L}} &
+\textcolor{white}{\textbf{Score}} \\
+\midrule
+\rowcolor{LightFog}
+DMSO &
+2 & 3 & \cellMed 6 &
+Double gloving; no co-contaminant solutions on open bench &
+2 & 1 & \cellLow 2 \\
+\rowcolor{white}
+Thionyl chloride &
+4 & 3 & \cellCrit 12 &
+Fume hood only; Schlenk line; \mbox{acid-gas} scrubber; face shield &
+4 & 1 & \cellMed 4 \\
+\rowcolor{LightFog}
+Triethylamine &
+3 & 3 & \cellHigh 9 &
+Fume hood; covered containers; no open use &
+3 & 1 & \cellLow 3 \\
+\rowcolor{white}
+DCM &
+3 & 4 & \cellCrit 12 &
+LEV extraction; respiratory monitoring; minimise volumes &
+3 & 2 & \cellMed 6 \\
+\rowcolor{LightFog}
+Sodium hydride &
+5 & 2 & \cellCrit 10 &
+Argon atmosphere; dry glassware; metal spatulas; sand bucket at bench &
+5 & 1 & \cellMed 5 \\
+\rowcolor{white}
+THF (anhydrous) &
+3 & 3 & \cellHigh 9 &
+Inhibitor check; peroxide test before use; antistatic mat; earthed vessels &
+3 & 1 & \cellLow 3 \\
+\bottomrule
+\end{tabularx}
+
+\vspace{4pt}
+{\footnotesize S\,=\,Severity (1--5), L\,=\,Likelihood (1--5). Score\,=\,S$\times$L.
+Colour bands: \riskbadge{SageGreen}{Low}~1--4,
+\riskbadge{MidAmber}{Med}~5--9,
+\riskbadge{AmberAlert}{High}~10--14,
+\riskbadge{DangerRed}{Crit}~$\geq$15.}

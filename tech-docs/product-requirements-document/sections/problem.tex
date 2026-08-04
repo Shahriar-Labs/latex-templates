@@ -1,0 +1,37 @@
+\section{Problem Statement}
+
+\subsection*{The core problem}
+Apex customers only find out about metric anomalies when a human happens to look at the
+right chart at the right time. There is no mechanism today that watches a metric on a
+user's behalf and tells them when it moves outside its normal range.
+
+\begin{riskbox}{Evidence}
+\begin{itemize}
+  \item Support: 34 tickets in the last 90 days include the phrase ``we didn't notice
+    until'' --- median detection lag of \textbf{4.2 days} after a metric anomaly began.
+  \item Churn interviews (Feb 2026, $n=22$): 14 of 22 accounts name ``we found out too
+    late'' as a contributing factor to a near-miss or actual churn event.
+  \item Product analytics: only 9\% of weekly active users open a dashboard more than
+    once per day; the other 91\% are structurally unable to catch same-day anomalies
+    under the current pull model.
+\end{itemize}
+\end{riskbox}
+
+\subsection*{Who feels this}
+\begin{itemize}
+  \item \textbf{Revenue operations leads} who own a pipeline or conversion metric and
+    are accountable for explaining sudden drops to leadership, often after the fact.
+  \item \textbf{Data-reliant engineering teams} who need to know within minutes when an
+    upstream sync or ETL job silently breaks a metric feed, not when a downstream report
+    looks wrong days later.
+  \item \textbf{Customer success managers} who need early warning on account health
+    metrics (usage, ticket volume) to intervene before a renewal conversation goes badly.
+\end{itemize}
+
+\subsection*{Why existing workarounds fail}
+Several accounts have built brittle stopgaps: scheduled CSV exports piped into a
+spreadsheet with manual threshold checks, or a Zapier automation polling the Apex API
+every hour and comparing to a hardcoded number. Both approaches break silently when a
+metric definition changes, produce false positives around normal seasonality (e.g.\ Monday
+traffic spikes), and require an engineer to maintain them. None generalize past the one
+metric they were built for.

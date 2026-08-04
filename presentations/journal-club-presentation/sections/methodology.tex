@@ -1,0 +1,65 @@
+\begin{frame}{Methodology: The NexaBalancer Architecture}
+  The authors formulate the load-balancing problem as a finite MDP:
+  
+  \vspace{0.2cm}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{1. State Space ($S_t$):}
+      \begin{equation*}
+        s_t = [C_i, M_i, L_{i,j}, \lambda_i]
+      \end{equation*}
+      where:
+      \begin{itemize}
+        \item $C_i$: CPU utilization of server $i$
+        \item $M_i$: Memory footprint of server $i$
+        \item $L_{i,j}$: Network latency between client $j$ and server $i$
+        \item $\lambda_i$: Arrival rate of requests
+      \end{itemize}
+      
+      \textbf{2. Action Space ($A_t$):}
+      \begin{itemize}
+        \item Action $a_t \in \{1, \dots, N\}$ corresponds to selecting node $i$ for the incoming batch.
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.48\textwidth}
+      \textbf{3. Reward Function ($R_t$):}
+      \begin{equation*}
+        R_t = - \sum_{k} \left( \alpha \cdot \text{Latency}_k + \beta \cdot \text{DropRate}_k \right)
+      \end{equation*}
+      \begin{itemize}
+        \item penalizes both average response time and dropped packets.
+        \item $\alpha, \beta$ are scaling weights dynamically adjusted during training.
+      \end{itemize}
+      
+      \begin{highlightbox}{PPO Policy Network}
+        Actor-Critic architecture with 3 hidden layers (128 units each). Updates are clipped with $\epsilon = 0.2$ to maintain policy stability.
+      \end{highlightbox}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Methodology: Decentralized Agent Coordination}
+  To prevent centralized bottlenecking, agents run on local switches:
+  
+  \vspace{0.3cm}
+  \begin{center}
+    \begin{tikzpicture}[scale=0.9, every node/.style={transform shape}]
+      \draw[thick, fill=bglight] (0,0) rectangle (10,3.5);
+      
+      \node[draw, circle, fill=secondary, text=white, minimum size=1cm] (agent1) at (2,2) {Agent 1};
+      \node[draw, circle, fill=secondary, text=white, minimum size=1cm] (agent2) at (5,2) {Agent 2};
+      \node[draw, circle, fill=secondary, text=white, minimum size=1cm] (agent3) at (8,2) {Agent 3};
+      
+      \draw[<->, thick, dashed] (agent1) -- (agent2) node[midway, above] {Consensus};
+      \draw[<->, thick, dashed] (agent2) -- (agent3) node[midway, above] {Consensus};
+      \draw[<->, thick, dashed] (agent1) to[out=45, in=135] (agent3);
+      
+      \node[below=0.2cm of agent1] {\footnotesize Switch A};
+      \node[below=0.2cm of agent2] {\footnotesize Switch B};
+      \node[below=0.2cm of agent3] {\footnotesize Switch C};
+      
+      \node[above=0.4cm of agent2, text=primary] {\textbf{Consensus Protocol via Gossip Algorithm}};
+    \end{tikzpicture}
+  \end{center}
+\end{frame}

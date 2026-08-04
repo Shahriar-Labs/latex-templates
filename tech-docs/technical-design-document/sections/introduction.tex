@@ -1,0 +1,37 @@
+\section{Introduction}
+
+\subsection{Document Purpose}
+This document details the architectural design and implementation specifications for the \textbf{Apex Global Storage (AGS)} platform, a geo-replicated, multi-tenant object storage service developed by Apex Labs. The document acts as the definitive design reference for the engineering teams implementing the core replication protocol, metadata engine, and client SDKs.
+
+\subsection{System Overview}
+The Apex Global Storage platform provides secure, high-throughput, and low-latency storage for unstructured data across distributed geographical zones. The core objective is to serve as the unified storage backplane for all subsequent cloud services at Apex, replacing the legacy siloed storage clusters. The system integrates a distributed metadata indexing service (based on a replicated transactional log) and an optimized block writing engine.
+
+\begin{designbox}[Historical Context]
+    The legacy platform, AGS v1, was constrained by a single-leader replication model that incurred prohibitive inter-region latencies for write requests originating outside the primary region. AGS v2 introduces active-active multi-leader replication using a modified consensus protocol \cite{vance2025consensus}, aiming to reduce multi-region write latency by up to 40\%.
+\end{designbox}
+
+\subsection{Scope \& Business Objectives}
+The scope of this design specification covers the software architecture of the storage node controllers, the global coordinator cluster, and the consensus network. It does not cover the low-level physical networking routing tables or hardware procurement schedules. 
+
+The primary business objectives for AGS are:
+\begin{itemize}
+    \item \textbf{Infrastructure Cost Reduction:} Consolidate multi-tenant workloads to achieve up to 35\% higher resource utilization on storage nodes.
+    \item \textbf{Global Regulatory Compliance:} Implement tenant-level geographical partitioning to satisfy strict data sovereignty requirements.
+    \item \textbf{Performance Guarantees:} Enable high-frequency metadata queries with a target P99 latency of less than 20 milliseconds.
+\end{itemize}
+
+\subsection{Design Goals \& Non-Goals}
+To guide the architectural tradeoffs, the team has established the following guidelines:
+
+\subsubsection{Goals}
+\begin{enumerate}
+    \item \textbf{Horizontal Scalability:} The storage capacity and metadata index must scale linearly up to $10^{11}$ objects without system degradation.
+    \item \textbf{Partition Tolerance:} Under partial network partition between any two regions, read and write operations inside the connected regions must continue unaffected.
+    \item \textbf{Strict Multi-Tenancy:} Cryptographic isolation of tenant namespaces and strict rate limiting on api ingress queues.
+\end{enumerate}
+
+\subsubsection{Non-Goals}
+\begin{enumerate}
+    \item \textbf{Arbitrary File System Interface:} AGS will not support POSIX file system compliance or mountable block interfaces (e.g., NFS). Access is strictly via gRPC and RESTful API endpoints.
+    \item \textbf{Real-time Stream Querying:} The metadata service will support index lookups but will not act as a general-purpose search engine for arbitrary blob content.
+\end{enumerate}

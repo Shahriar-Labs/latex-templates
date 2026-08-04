@@ -1,0 +1,68 @@
+% sections/response-procedure.tex
+
+\section{Response Procedure}
+\label{sec:response}
+
+\subsection*{Immediate Actions -- All Spills}
+\begin{enumerate}
+  \item \textbf{Alert} people nearby. Announce ``chemical spill'' clearly; do not shout in a way
+        that causes panic.
+  \item \textbf{Assess} the spill against the three tiers in Section~\ref{sec:classification}.
+        Identify the chemical from the label or Safety Data Sheet (SDS) if at all possible.
+  \item \textbf{Protect} yourself first -- do not walk through vapor, mist, or liquid to reach an
+        exit or an injured colleague; go around.
+  \item \textbf{Act} according to the flowchart below.
+\end{enumerate}
+
+\begin{center}
+\begin{tikzpicture}[
+  box/.style={rectangle, rounded corners=2pt, draw=spillnavy, thick, fill=spilllight,
+    text width=2.7cm, align=center, minimum height=0.9cm, font=\scriptsize, inner sep=2pt},
+  decision/.style={diamond, draw=spillamber, thick, fill=spillpale, aspect=2.6,
+    text width=1.9cm, align=center, inner sep=1pt, font=\scriptsize},
+  danger/.style={rectangle, rounded corners=2pt, draw=spillred, thick, fill=spillred!10,
+    text width=2.7cm, align=center, minimum height=0.9cm, font=\scriptsize, inner sep=2pt},
+  safe/.style={rectangle, rounded corners=2pt, draw=spillteal, thick, fill=spillteal!10,
+    text width=2.7cm, align=center, minimum height=0.9cm, font=\scriptsize, inner sep=2pt},
+  arr/.style={-{Stealth[length=1.8mm]}, thick, draw=spillgray}
+]
+
+\node[box] (detect) at (4.0,0) {Spill detected; alert nearby occupants};
+\node[decision] (tier) at (4.0,-1.9) {Classify: Tier 1?};
+
+\node[safe] (t1) at (0,-3.8) {Don PPE; contain \& neutralize with local spill kit};
+\node[safe] (t1b) at (0,-5.7) {Ventilate area; double-bag and label waste};
+
+\node[danger] (t23) at (8.0,-3.8) {Evacuate immediate area; close doors, leave lights on};
+\node[danger] (call) at (8.0,-5.7) {Call EHS ext.\ 4357 (Tier 2) or Emergency ext.\ 5911 (Tier 3)};
+\node[decision] (tier3) at (8.0,-7.6) {Tier 3, injury, or fire?};
+
+\node[box] (ehs) at (6.0,-9.5) {EHS isolates \& directs Tier 2 cleanup};
+\node[danger] (evac) at (11.0,-9.5) {Pull alarm; evacuate building; await Fire Dept.\ Hazmat Team};
+
+\node[box] (log) at (5.5,-11.7) {Log incident (Section~\ref{sec:reporting} form); notify supervisor};
+\node[safe] (close) at (5.5,-13.1) {Review \& close out};
+
+\draw[arr] (detect) -- (tier);
+\draw[arr] (tier.west) -| node[above,pos=0.25,font=\scriptsize,text=spillteal]{yes} (t1.north);
+\draw[arr] (t1) -- (t1b);
+\draw[arr] (tier.east) -| node[above,pos=0.25,font=\scriptsize,text=spillred]{no} (t23.north);
+\draw[arr] (t23) -- (call);
+\draw[arr] (call) -- (tier3);
+\draw[arr] (tier3.west) -| node[above,pos=0.3,font=\scriptsize,text=spillteal]{no} (ehs.north);
+\draw[arr] (tier3.east) -| node[above,pos=0.3,font=\scriptsize,text=spillred]{yes} (evac.north);
+\draw[arr] (t1b.south) |- (log.west);
+\draw[arr] (ehs.south) |- (log.north);
+\draw[arr] (evac.south) |- (log.east);
+\draw[arr] (log) -- (close);
+
+\end{tikzpicture}
+\captionof{figure}{Chemical spill decision flow, from detection to closure.}
+\label{fig:flowchart}
+\end{center}
+
+\begin{notebox}
+\textbf{\hazicon{\faInfoCircle}\ Any} path through the flowchart above ends at the same
+place: an incident log entry. Even a Tier 1 spill cleaned up in two minutes must be logged --
+this is how the EHS Office spots recurring hazards before they escalate.
+\end{notebox}

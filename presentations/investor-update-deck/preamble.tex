@@ -1,0 +1,185 @@
+% Preamble for "Vertex" -- Monthly Investor Update Deck (metrics-first, single-accent)
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% Mathematics and tables
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{colortbl}
+
+% Diagrams and plots
+\usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+\usetikzlibrary{
+  calc,
+  positioning,
+  shapes.geometric,
+  decorations.pathmorphing,
+  backgrounds
+}
+
+% Presentation enhancements
+\usepackage[skins,breakable]{tcolorbox}
+\usepackage{fontawesome5}
+\usepackage{url}
+
+% Bibliography management
+\usepackage[backend=biber,style=numeric,sorting=none]{biblatex}
+\addbibresource{references.bib}
+
+% Custom Color Definitions -- single disciplined accent, one narrow
+% semantic warning colour reserved for the runway gauge only.
+\definecolor{inkBg}{HTML}{0B0D12}     % Near-black canvas
+\definecolor{panelBg}{HTML}{151822}   % Slightly lifted panel background
+\definecolor{accent}{HTML}{4C7CFF}    % Sole brand accent -- growth, structure, emphasis
+\definecolor{textLight}{HTML}{E7EAF0} % Primary text on dark canvas
+\definecolor{textMuted}{HTML}{828A9C} % Captions, labels, footline
+\definecolor{riskAmber}{HTML}{E0A63E} % Reserved for runway/burn risk markers only
+
+% Beamer Template Customizations
+\setbeamertemplate{navigation symbols}{}
+\setbeamercolor{background canvas}{bg=inkBg}
+\setbeamercolor{normal text}{fg=textLight,bg=inkBg}
+\setbeamercolor{structure}{fg=accent}
+\setbeamercolor{frametitle}{fg=textLight,bg=inkBg}
+\setbeamercolor{title}{fg=textLight}
+\setbeamercolor{subtitle}{fg=accent}
+\setbeamercolor{author}{fg=textLight!90}
+\setbeamercolor{date}{fg=textMuted}
+\setbeamercolor{section in toc}{fg=textLight}
+\setbeamercolor{item}{fg=accent}
+\setbeamercolor{subitem}{fg=accent!70!textMuted}
+\setbeamercolor{itemize/enumerate body}{fg=textLight}
+\setbeamercolor{block title}{fg=textLight,bg=panelBg}
+\setbeamercolor{block body}{fg=textLight,bg=panelBg}
+\setbeamertemplate{itemize items}[circle]
+\setbeamertemplate{enumerate items}[default]
+
+% Typography
+\setbeamerfont{title}{size=\Large,series=\bfseries}
+\setbeamerfont{subtitle}{size=\large}
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamerfont{framesubtitle}{size=\small,series=\normalfont}
+\setbeamerfont{caption}{size=\small}
+
+% Custom Frame Title Layout
+\setbeamertemplate{frametitle}{%
+  \vspace*{6pt}%
+  {\usebeamerfont{frametitle}\usebeamercolor[fg]{frametitle}\insertframetitle}%
+  \ifx\insertframesubtitle\empty\else
+    \par\vspace*{1pt}%
+    {\usebeamerfont{framesubtitle}\color{textMuted}\insertframesubtitle}%
+  \fi
+  \par\vspace*{2pt}%
+  \textcolor{accent!70}{\rule{\linewidth}{1.2pt}}%
+  \vspace*{2pt}%
+}
+
+% Custom Footline Layout
+\setbeamertemplate{footline}{%
+  \leavevmode%
+  \hbox{%
+    \begin{beamercolorbox}[wd=0.4\paperwidth,ht=2.25ex,dp=1ex,left]{author in head/foot}%
+      \hspace*{3ex}\color{textMuted}\scriptsize Vertex \textbullet{} Confidential --- Investors Only
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=0.4\paperwidth,ht=2.25ex,dp=1ex,center]{title in head/foot}%
+      \color{textMuted}\scriptsize Monthly Investor Update --- July 2026
+    \end{beamercolorbox}%
+    \begin{beamercolorbox}[wd=0.2\paperwidth,ht=2.25ex,dp=1ex,right]{date in head/foot}%
+      \color{textMuted}\scriptsize\insertframenumber{} / \inserttotalframenumber\hspace*{3ex}
+    \end{beamercolorbox}%
+  }%
+  \vspace*{2ex}%
+}
+
+% Custom Title Frame Command
+\newcommand{\titleframe}{%
+  \begingroup%
+  \setbeamercolor{background canvas}{bg=inkBg}%
+  \begin{frame}[plain]%
+    \centering%
+    \vspace*{0.9cm}%
+    {\color{textMuted}\scriptsize\sffamily MONTHLY INVESTOR UPDATE \textbullet{} JULY 2026}\par%
+    \vspace*{0.5cm}%
+    {\color{textLight}\usebeamerfont{title}\fontsize{34}{40}\selectfont\sffamily VERTEX}\par%
+    \vspace*{0.25cm}%
+    \textcolor{accent}{\rule{4.2cm}{1.4pt}}\par%
+    \vspace*{0.35cm}%
+    {\color{accent}\usebeamerfont{subtitle}Reliability Infrastructure for Distributed Systems}\par%
+    \vspace*{0.9cm}%
+    {\color{textLight!95}\normalsize Sofia Mar\'in, Co-Founder \& CEO \quad\textbullet{}\quad Rahul Deshmukh, Co-Founder \& CTO}\par%
+    \vspace*{0.2cm}%
+    {\color{textMuted}\small Vertex Systems, Inc.}\par%
+    \vspace*{0.7cm}%
+    {\color{textMuted}\scriptsize \$412K MRR \quad\textbullet{}\quad 164 Paying Customers \quad\textbullet{}\quad 19.6 Months Runway}\par%
+  \end{frame}%
+  \endgroup%
+}
+
+% Panel box (accent framed) -- primary content cards
+\newtcolorbox{panelbox}[2][]{
+  colback=panelBg,
+  colupper=textLight,
+  colframe=accent!45,
+  coltitle=textLight,
+  colbacktitle=panelBg,
+  fonttitle=\bfseries\sffamily\small,
+  title={#2},
+  enhanced,
+  borderline west={3pt}{0pt}{accent},
+  boxrule=0.5pt,
+  top=3pt,
+  bottom=3pt,
+  left=7pt,
+  right=7pt,
+  #1
+}
+
+% Stat card -- large number + label, no title bar
+\newtcolorbox{statcard}[1][]{
+  colback=panelBg,
+  colupper=textLight,
+  colframe=textMuted!30,
+  enhanced,
+  arc=2pt,
+  boxrule=0.5pt,
+  boxsep=1pt,
+  top=4pt,
+  bottom=4pt,
+  left=8pt,
+  right=8pt,
+  halign=center,
+  #1
+}
+
+% Quote / callout box -- risks, notes, board asides
+\newtcolorbox{calloutbox}[1][]{
+  colback=panelBg,
+  colupper=textLight,
+  colframe=riskAmber!55,
+  enhanced,
+  borderline west={3pt}{0pt}{riskAmber},
+  boxsep=2pt,
+  top=5pt,
+  bottom=5pt,
+  left=10pt,
+  right=10pt,
+  #1
+}
+
+\newcommand{\bignum}[3]{%
+  \textcolor{#3}{\large\bfseries #1}\par\vspace{0.5pt}%
+  \textcolor{textMuted}{\scriptsize #2}%
+}
+
+% Presentation Meta Info
+\title{Vertex}
+\subtitle{Reliability Infrastructure for Distributed Systems}
+\author{Sofia Mar\'in \and Rahul Deshmukh}
+\institute{Vertex Systems, Inc.}
+\date{July 2026}

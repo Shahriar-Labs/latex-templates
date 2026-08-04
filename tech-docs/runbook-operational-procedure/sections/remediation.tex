@@ -1,0 +1,97 @@
+\section{Remediation Steps}
+\label{sec:remediation}
+This section contains step-by-step procedures to resolve alerts mapped in Section~\ref{sec:alerts}.
+
+\subsection{NGS Cache Memory Saturation}
+\label{sub:cache_remediation}
+If the alert \texttt{NGS\_Cache\_Saturation} is active, follow these steps immediately to evacuate cache nodes and increase cluster capacity.
+
+\begin{alertbox}{DANGER: DO NOT RESTART ENGINE DIRECTLY}
+    Restarting the entire Vertex Memory Grid cluster under load will cause an immediate cache stampede, routing all auth requests to the Synapse Store database and knocking the database offline. Always scale first, then run target evictions.
+\end{alertbox}
+
+\begin{enumerate}
+    \item \textbf{Check Eviction Policy:} Run the command below to ensure the eviction policy is set to \texttt{volatile-lru}. If it is set to \texttt{noeviction}, change it immediately.
+    \begin{codeblock}{Check Eviction Policy}
+vertex-cli -h cache-cluster.meridian.internal config get maxmemory-policy
+    \end{codeblock}
+    
+    \item \textbf{Set Eviction Policy (if not volatile-lru):} Execute the following configuration change to allow key eviction under memory pressure:
+    \begin{codeblock}{Change Eviction Policy}
+vertex-cli -h cache-cluster.meridian.internal config set maxmemory-policy volatile-lru
+    \end{codeblock}
+    
+    \item \textbf{Scale Memory Cluster Nodes:} Scale the cache deployment up by 4 nodes in the Vertex Cloud Control Plane:
+    \begin{codeblock}{Scale Memory Pods}
+kubectl scale statefulset/vertex-cache-nodes --replicas=8 -n ops-ingress
+    \end{codeblock}
+    
+    \item \textbf{Verify Cluster Re-balancing:} Monitor the re-balance script to verify that keys are being distributed to new nodes:
+    \begin{codeblock}{Monitor Cluster Status}
+vertex-admin-tool --cluster-status --check-balance
+    \end{codeblock}
+\end{enumerate}
+
+\subsection{Latency P99 Spike Response}
+\label{sub:latency_remediation}
+A spike in latency is typically caused by connection queuing or unindexed lookup operations.
+
+\begin{enumerate}
+    \item \textbf{Analyze Dynamic Routing Tables:} Check if dynamic routing tables contain stale endpoints:
+    \begin{codeblock}{Route Validation}
+curl -s http://nimbus-gateway-admin.internal/v1/routes/health | jq '.bad_endpoints'
+    \end{codeblock}
+    
+    \textbf{Action:} If any endpoint reports a status other than \texttt{UP}, prune it using the route administration API:
+    \begin{codeblock}{Prune Unhealthy Endpoint}
+curl -X POST -d '{"status":"PRUNE"}' http://nimbus-gateway-admin.internal/v1/routes/prune
+    \end{codeblock}
+    
+    \item \textbf{Check Thread Saturation:} Identify thread utilization across the ingress proxy pods:
+    \begin{codeblock}{Thread Utilization Diagnostic}
+kubectl exec -it deployment/nimbus-gateway-proxy -n ops-ingress -- top -b -n 1
+    \end{codeblock}
+\end{enumerate}
+
+\subsection{Gateway 5xx Error Mitigation}
+\label{sub:gateway_errors}
+When 5xx errors spike, client requests are being rejected or dropping at the ingress controller.
+
+\begin{warningbox}{IMPACT WARNING: Dynamic Payloads}
+    If the error code is 503, the gateway is failing to reach downstream microservices. Do NOT adjust gateway routing rules unless the downstream microservice status page is verified as Green.
+\end{warningbox}
+
+\begin{enumerate}
+    \item \textbf{Check Gateway Ingress Logs:} Parse the recent access logs for 502/503 errors and look for upstream timeout markers:
+    \begin{codeblock}{Filter Ingress Error Logs}
+kubectl logs -l app=nimbus-gateway --tail=500 | grep -E "HTTP/1.1\" 50[23]" | head -n 20
+    \end{codeblock}
+    
+    \item \textbf{Enable Temporary Rate Throttling:} If downstream services are saturated, apply a global 15\% rate limit to non-premium API keys to allow the downstream systems to recover:
+    \begin{codeblock}{Apply Rate Limiting Override}
+curl -X PUT -H "Content-Type: application/json" \
+  -d '{"throttle_ratio": 0.85, "target_tier": "standard"}' \
+  http://nimbus-gateway-admin.internal/v1/throttling/override
+    \end{codeblock}
+\end{enumerate}
+
+\subsection{Database Connection Pool Exhaustion}
+\label{sub:db_remediation}
+If the database connection pools are saturated, the system will experience cascading request timeouts.
+
+\begin{enumerate}
+    \item \textbf{Inspect Open Database Connections:}
+    \begin{codeblock}{Retrieve Database Pool Usage}
+synapse-cli -h db-primary.meridian.internal -u admin -p --query "SHOW PROCESSLIST"
+    \end{codeblock}
+    
+    \item \textbf{Kill Runaway Queries:} If any query has been running for more than 10 seconds, terminate it:
+    \begin{codeblock}{Terminate Long Running Queries}
+synapse-cli -h db-primary.meridian.internal -u admin -p --query "CALL kill_queries_older_than(10)"
+    \end{codeblock}
+    
+    \item \textbf{Scale Connection Pools:} Adjust the gateway's max pool size configurations dynamically:
+    \begin{codeblock}{Dynamically Scale Database Connections}
+kubectl set env deployment/nimbus-gateway-proxy DB_MAX_CONNECTIONS=150 -n ops-ingress
+    \end{codeblock}
+\end{enumerate}

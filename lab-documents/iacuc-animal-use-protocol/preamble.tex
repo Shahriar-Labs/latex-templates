@@ -1,0 +1,202 @@
+%% ============================================================
+%% preamble.tex — packages, colours, geometry, commands
+%% ============================================================
+
+%% --- Page geometry -------------------------------------------
+\usepackage[letterpaper,
+            top=22mm, bottom=20mm,
+            left=17mm, right=17mm,
+            headheight=24pt]{geometry}
+
+%% --- Core typography ----------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{parskip}
+
+%% --- Colour (must load before colortbl / tcolorbox) ----------
+\usepackage[table]{xcolor}
+
+%% ---- House palette -----------------------------------------
+%  Deep navy    – headings, section bars, primary rules
+\definecolor{ProtocolNavy}{HTML}{1B2A42}
+%  Veterinary teal – secondary headers, welfare/refinement accents
+\definecolor{VetTeal}{HTML}{2A6C6C}
+%  Institutional gold – emphasis, category D marker, dividers
+\definecolor{MeridianGold}{HTML}{B08D57}
+%  Alert red    – Category E, severe pain, warnings
+\definecolor{AlertRed}{HTML}{9B2323}
+%  Light fog    – box/table backgrounds
+\definecolor{LightFog}{HTML}{F1F3F6}
+%  Pale teal    – low-severity table cells
+\definecolor{PaleTeal}{HTML}{DCEAE8}
+
+%% --- Tables --------------------------------------------------
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{makecell}
+
+%% --- Graphics & TikZ ----------------------------------------
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc}
+
+%% --- tcolorbox ----------------------------------------------
+\usepackage[most]{tcolorbox}
+
+%% --- Icons --------------------------------------------------
+\usepackage{fontawesome5}
+
+%% --- Symbols, maths -------------------------------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+%% --- Lists --------------------------------------------------
+\usepackage{enumitem}
+
+%% --- Headers / footers --------------------------------------
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+%% --- Hyperlinks (load last) ------------------------------------
+\usepackage[hidelinks,
+            pdftitle={IACUC Animal Use Protocol Application},
+            pdfauthor={Meridian University IACUC},
+            pdfsubject={Animal Use Protocol}]{hyperref}
+
+%% ============================================================
+%% TCOLORBOX STYLES
+%% ============================================================
+
+%% Section header bar (navy, used in place of \section)
+\tcbset{
+  protsection/.style={
+    colback=ProtocolNavy,
+    colframe=ProtocolNavy,
+    coltext=white,
+    fontupper=\bfseries\large,
+    boxrule=0pt,
+    arc=2pt,
+    left=8pt, right=8pt,
+    top=4pt, bottom=4pt,
+    width=\linewidth,
+    nobeforeafter
+  }
+}
+
+%% Narrative / free-text response block
+\tcbset{
+  narrbox/.style={
+    colback=white,
+    colframe=VetTeal,
+    coltext=black,
+    fontupper=\small,
+    boxrule=0.6pt,
+    arc=1.5pt,
+    left=8pt, right=8pt,
+    top=6pt, bottom=6pt,
+    width=\linewidth,
+    title={#1},
+    colbacktitle=VetTeal,
+    coltitle=white,
+    fonttitle=\bfseries\small,
+    nobeforeafter
+  }
+}
+
+%% Committee / office-use box (grey, dashed frame)
+\tcbset{
+  committeebox/.style={
+    colback=LightFog,
+    colframe=black!55,
+    coltext=black,
+    fontupper=\small,
+    boxrule=1pt,
+    arc=1.5pt,
+    left=9pt, right=9pt,
+    top=6pt, bottom=6pt,
+    width=\linewidth,
+    title={\faLock\ FOR IACUC OFFICE USE ONLY},
+    colbacktitle=black!70,
+    coltitle=white,
+    fonttitle=\bfseries\small,
+    nobeforeafter
+  }
+}
+
+%% Warning / severe-category notice
+\tcbset{
+  warnbox/.style={
+    colback=AlertRed!8,
+    colframe=AlertRed,
+    coltext=black,
+    fontupper=\small,
+    boxrule=1pt,
+    arc=1.5pt,
+    left=8pt, right=8pt,
+    top=5pt, bottom=5pt,
+    width=\linewidth,
+    nobeforeafter
+  }
+}
+
+%% ============================================================
+%% CUSTOM COMMANDS
+%% ============================================================
+
+%% Styled section label (replaces \section)
+\newcommand{\protosection}[1]{%
+  \vspace{8pt}%
+  \begin{tcolorbox}[protsection]
+    #1
+  \end{tcolorbox}%
+  \vspace{3pt}%
+}
+
+%% Sub-heading inside a section
+\newcommand{\protosubheading}[1]{%
+  \vspace{5pt}\noindent{\color{VetTeal}\bfseries\large #1}\vspace{2pt}\par%
+}
+
+%% Empty / filled checkbox glyphs
+\newcommand{\Chk}{\ensuremath{\square}}
+\newcommand{\ChkY}{\ensuremath{\boxtimes}}
+
+%% Signature rule of a given width
+\newcommand{\SigRule}[1][3.4cm]{\makebox[#1]{\hrulefill}}
+
+%% Pain-category severity badge
+\newcommand{\catbadge}[2]{%
+  \tikz[baseline=-0.5ex]\node[
+    fill=#1, text=white,
+    rounded corners=2.5pt,
+    inner sep=3.5pt,
+    font=\bfseries\footnotesize
+  ]{#2};%
+}
+
+%% ============================================================
+%% PAGE STYLE
+%% ============================================================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{ProtocolNavy}{\small\textbf{Meridian University IACUC}}}
+\fancyhead[R]{\textcolor{VetTeal}{\small Animal Use Protocol Application}}
+\fancyfoot[L]{\textcolor{ProtocolNavy!60}{\footnotesize Protocol Ref.\ MU-IACUC-2026-0417}}
+\fancyfoot[R]{\textcolor{ProtocolNavy!60}{\small Page~\thepage~of~\pageref{LastPage}}}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{ProtocolNavy}\leaders\hrule height\headrulewidth\hfill}}
+\renewcommand{\footrule}{\hbox to\headwidth{\color{ProtocolNavy!40}\leaders\hrule height\footrulewidth\hfill}}
+
+%% ============================================================
+%% MISC
+%% ============================================================
+\setlength{\extrarowheight}{2.5pt}
+\renewcommand{\arraystretch}{1.25}
+\setlist[itemize]{leftmargin=*, itemsep=2pt, topsep=3pt}
+\setlist[enumerate]{leftmargin=*, itemsep=2pt, topsep=3pt}

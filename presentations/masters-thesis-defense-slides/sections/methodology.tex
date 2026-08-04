@@ -1,0 +1,69 @@
+\section{Methodology}
+
+\begin{frame}{System Architecture}
+\centering
+\resizebox{0.98\linewidth}{!}{%
+\begin{tikzpicture}[
+  node distance=0.65cm and 0.9cm,
+  box/.style={draw=thesisnavy,thick,fill=thesisnavy!6,rounded corners=2pt,minimum height=0.9cm,minimum width=2.2cm,align=center,font=\footnotesize},
+  idx/.style={draw=thesisteal,thick,fill=thesisteal!10,rounded corners=2pt,minimum height=0.8cm,minimum width=2.1cm,align=center,font=\scriptsize},
+  dec/.style={draw=thesisgold!80!black,thick,fill=thesisgold!15,diamond,aspect=2.4,align=center,font=\scriptsize,inner sep=1pt},
+]
+\node[box] (q) {Incoming\\Query};
+\node[box,right=of q] (fx) {Feature\\Extractor};
+\node[dec,right=1.3cm of fx] (router) {Cost-Aware\\Router};
+
+\node[idx,above right=0.5cm and 1.3cm of router] (hnsw) {HNSW\\Index};
+\node[idx,right=1.3cm of router] (ivf) {IVF-PQ\\Index};
+\node[idx,below right=0.5cm and 1.3cm of router] (flat) {Flat\\Index};
+
+\node[box,right=2.1cm of ivf] (agg) {Aggregator\\\& Ranker};
+
+\draw[->,thick] (q) -- (fx);
+\draw[->,thick] (fx) -- (router);
+\draw[->,thick] (router) -- (hnsw);
+\draw[->,thick] (router) -- (ivf);
+\draw[->,thick] (router) -- (flat);
+\draw[->,thick] (hnsw) -| (agg);
+\draw[->,thick] (ivf) -- (agg);
+\draw[->,thick] (flat) -| (agg);
+\end{tikzpicture}%
+}
+\vspace{0.2cm}
+{\footnotesize The router selects an index per query using extracted features and a learned cost function; results merge in the aggregator.}
+\end{frame}
+
+\begin{frame}{Routing Cost Function}
+Given query $q$ and index $i \in \{\text{HNSW}, \text{IVF-PQ}, \text{Flat}\}$, AQR scores each candidate index by a weighted cost:
+\[
+  \mathrm{cost}(q,i) \;=\; \alpha \cdot \widehat{\ell}_i(q) \;+\; \beta \cdot \big(1 - \widehat{r}_i(q)\big) \;+\; \gamma \cdot \mathrm{load}_i
+\]
+\begin{itemize}
+\item $\widehat{\ell}_i(q)$ --- predicted latency of index $i$ for query $q$ (gradient-boosted regressor, 12 features)
+\item $\widehat{r}_i(q)$ --- predicted recall@10 of index $i$ for query $q$
+\item $\mathrm{load}_i$ --- current queue depth of index $i$, refreshed every 250\,ms
+\item $\alpha,\beta,\gamma$ --- tuned on a held-out validation split ($\alpha{=}0.5,\ \beta{=}0.4,\ \gamma{=}0.1$)
+\end{itemize}
+AQR routes to $\operatorname*{arg\,min}_i \mathrm{cost}(q,i)$, falling back to Flat search when router confidence is below threshold $\tau = 0.62$.
+\end{frame}
+
+\begin{frame}{Experimental Setup}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Dataset} & \textbf{Vectors} & \textbf{Dim.} & \textbf{Query Set} \\
+\midrule
+SIFT1M & 1{,}000{,}000 & 128 & 10{,}000 \\
+GloVe-1.2M & 1{,}200{,}000 & 300 & 10{,}000 \\
+Meridian-Corpus-5M & 5{,}000{,}000 & 768 & 15{,}000 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{0.2cm}
+\normalsize
+\textbf{Baselines:} Static-HNSW, Static-IVF-PQ, Round-Robin, Vertex-Store-style load router.\\
+\textbf{Metrics:} p50/p95/p99 latency, recall@10, throughput (QPS) at fixed concurrency.\\
+\textbf{Hardware:} 8$\times$ vCPU, 32\,GB RAM, single node, warm cache.
+\end{frame}

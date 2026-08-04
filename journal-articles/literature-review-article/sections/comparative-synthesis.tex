@@ -1,0 +1,51 @@
+\section{Comparative Synthesis}
+\label{sec:comparison}
+
+Table~\ref{tab:comparison} synthesises the six representative systems introduced in
+Sections~\ref{sec:thematic}--\ref{sec:chronology} across five evaluation dimensions extracted during
+data extraction (Section~\ref{sec:methodology}): consistency model, staleness bound, latency overhead
+relative to a no-consistency baseline, fault-tolerance mechanism, and the trade-off each system makes
+explicit in its own evaluation.
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}lXXXX@{}}
+\toprule
+\rowcolor{nx@teal}
+\textcolor{white}{\textbf{System}} & \textcolor{white}{\textbf{Model}} &
+\textcolor{white}{\textbf{Staleness bound}} & \textcolor{white}{\textbf{Latency overhead}} &
+\textcolor{white}{\textbf{Fault tolerance}} \\
+\midrule
+Nexa \citep{chen2015nexa} & Strong (lease) & 0 (blocking) & 1.8$\times$ baseline & Lease revocation timeout \\
+\rowcolor{nx@mist}
+Synapse \citep{patel2017synapse} & Eventual (op-based CRDT) & Unbounded, bounded in practice by gossip round & 1.05$\times$ baseline & Continues under partition \\
+Vertex \citep{osei2019vertex} & Tunable & 50--500\,ms, per-tenant & 1.2--1.6$\times$ baseline & Falls back to eventual on SLA breach \\
+\rowcolor{nx@mist}
+Apex \citep{kim2022apex} & Strong (regional consensus) & 0 within region & 1.4$\times$ baseline & Regional quorum re-election \\
+Nimbus \citep{alvarez2021nimbus} & Strong + placement-aware & 0 (blocking) & 1.3$\times$ baseline & Replica-set resize on failure \\
+\rowcolor{nx@mist}
+Meridian \citep{nakamura2023meridian} & Tunable + placement-aware & 20--300\,ms, workload-adaptive & 1.1--1.3$\times$ baseline & Joint re-placement and re-bound on failure \\
+\bottomrule
+\end{tabularx}
+\caption{Cross-cluster comparison of six representative systems on five evaluation dimensions.
+Latency overhead is relative to a no-consistency read-through cache baseline as reported in each
+system's own evaluation; figures are not directly comparable across papers due to differing testbeds,
+and are included to show relative order of magnitude only.}
+\label{tab:comparison}
+\end{table}
+
+Three observations follow directly from the table. First, the latency premium for strong consistency
+has fallen from 1.8$\times$ (Nexa, 2015) to 1.3--1.4$\times$ (Apex/Nimbus, 2021--2022) as sequencer and
+lease designs matured --- the cost of correctness is not fixed, it is an engineering variable that the
+field has been actively driving down. Second, every placement-aware system (Nimbus, Meridian) reports a
+\emph{lower} overhead than its non-placement-aware counterpart in the same cluster, supporting the
+cluster D claim that placement and consistency should not be optimised separately. Third, no system in
+the corpus reports an energy or backhaul-bandwidth cost column, which Section~\ref{sec:discussion}
+identifies as a synthesis gap.
+
+\begin{keytakeaway}
+Placement-aware variants of both strong (Nimbus) and tunable (Meridian) protocols report lower latency
+overhead than their placement-agnostic counterparts, which is the strongest quantitative evidence in
+the corpus that consistency and placement should be co-designed.
+\end{keytakeaway}

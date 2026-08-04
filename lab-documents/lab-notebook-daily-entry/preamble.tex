@@ -1,0 +1,207 @@
+% ============================================================
+%  preamble.tex — packages, colours, commands, geometry
+% ============================================================
+
+% ── Encoding & font ────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% ── Page geometry ──────────────────────────────────────────
+\usepackage[
+  a4paper,
+  top=22mm, bottom=26mm,
+  left=28mm, right=22mm,
+  marginparwidth=0pt,
+  headheight=15pt
+]{geometry}
+
+% ── Colour palette ─────────────────────────────────────────
+\usepackage[table]{xcolor}
+\definecolor{InkBlue}{RGB}{28,57,105}
+\definecolor{Graphite}{RGB}{62,72,83}
+\definecolor{RuledLine}{RGB}{180,196,218}
+\definecolor{PageTint}{RGB}{248,249,252}
+\definecolor{AccentGold}{RGB}{185,149,73}
+\definecolor{LightSteel}{RGB}{220,228,240}
+
+% ── Math ───────────────────────────────────────────────────
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ── Tables ─────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{colortbl}
+
+% ── Graphics & TikZ ────────────────────────────────────────
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, shapes.geometric, decorations.pathmorphing, backgrounds, patterns}
+
+% ── tcolorbox ──────────────────────────────────────────────
+\usepackage[most]{tcolorbox}
+
+% ── Lists ──────────────────────────────────────────────────
+\usepackage{enumitem}
+
+% ── Headers & footers ──────────────────────────────────────
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+% ── Icons ──────────────────────────────────────────────────
+\usepackage{fontawesome5}
+
+% ── Miscellaneous ──────────────────────────────────────────
+\usepackage{hyperref}
+\usepackage{parskip}
+\usepackage{calc}
+\usepackage{etoolbox}
+\usepackage{ragged2e}
+\usepackage{soul}
+
+% ── Paragraph & spacing ────────────────────────────────────
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+
+% ── Custom tcolorbox styles ────────────────────────────────
+
+% Ruled entry block — notebook feel
+\tcbset{
+  notebox/.style={
+    enhanced,
+    breakable,
+    colback=PageTint,
+    colframe=InkBlue,
+    colbacktitle=InkBlue,
+    coltitle=white,
+    fonttitle=\bfseries\small,
+    attach boxed title to top left={xshift=10pt, yshift=-\tcboxedtitleheight/2},
+    boxed title style={
+      colback=InkBlue,
+      colframe=InkBlue,
+      arc=2pt,
+      boxrule=0pt,
+    },
+    boxrule=0.6pt,
+    arc=3pt,
+    left=10pt, right=10pt,
+    top=14pt, bottom=10pt,
+    before skip=10pt,
+    after skip=10pt,
+    drop shadow={opacity=0.08, color=InkBlue},
+  },
+  sideruled/.style={
+    enhanced,
+    breakable,
+    colback=PageTint,
+    colframe=RuledLine,
+    leftrule=3pt,
+    rightrule=0.3pt,
+    toprule=0.3pt,
+    bottomrule=0.3pt,
+    colbacktitle=LightSteel,
+    coltitle=InkBlue,
+    fonttitle=\bfseries\small,
+    attach boxed title to top left={xshift=10pt, yshift=-\tcboxedtitleheight/2},
+    boxed title style={
+      colback=LightSteel,
+      colframe=LightSteel,
+      arc=2pt,
+      boxrule=0pt,
+    },
+    arc=2pt,
+    left=10pt, right=10pt,
+    top=14pt, bottom=10pt,
+    before skip=8pt,
+    after skip=8pt,
+  },
+  obsbox/.style={
+    enhanced,
+    breakable,
+    colback=white,
+    colframe=RuledLine,
+    boxrule=0.5pt,
+    arc=2pt,
+    left=8pt, right=8pt,
+    top=8pt, bottom=8pt,
+    before skip=5pt,
+    after skip=5pt,
+  },
+}
+
+% ── Page style ─────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{%
+  \color{InkBlue}\small\textbf{Nexa Research Institute}%
+  \quad\textcolor{Graphite}{\textbar}\quad
+  \color{Graphite}\small Laboratory Notebook%
+}
+\fancyhead[R]{%
+  \color{Graphite}\small
+  \faBook\;\textbf{Exp\,ID:}\;NRI-2024-0047%
+}
+\fancyfoot[C]{%
+  \color{RuledLine}\rule{0.35\linewidth}{0.4pt}%
+  \quad\color{Graphite}\small Page \thepage\ of \pageref{LastPage}\quad%
+  \color{RuledLine}\rule{0.35\linewidth}{0.4pt}%
+}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{InkBlue}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\footrulewidth}{0pt}
+
+% ── Ruled lines helper (notebook paper illusion) ────────────
+\newcommand{\ruledblock}[1]{%
+  \begin{tikzpicture}[remember picture]
+    \foreach \n in {1,...,#1}{
+      \draw[RuledLine, thin] (0, -\n*5.5mm) -- (\linewidth-2pt, -\n*5.5mm);
+    }
+  \end{tikzpicture}%
+}
+
+% ── Section label style ────────────────────────────────────
+\newcommand{\sectionlabel}[2]{%
+  \vspace{6pt}%
+  \noindent
+  \begin{tikzpicture}
+    \node[
+      fill=InkBlue,
+      text=white,
+      font=\bfseries\footnotesize,
+      inner xsep=8pt,
+      inner ysep=4pt,
+      anchor=west
+    ] (lbl) {#1};
+    \node[
+      right=6pt of lbl,
+      text=Graphite,
+      font=\small,
+      anchor=west
+    ] {#2};
+    \draw[RuledLine, thin] (lbl.south east) ++(6pt,0) -- ++(\linewidth - \pgfkeysvalueof{/pgf/minimum width} - 60pt, 0);
+  \end{tikzpicture}%
+  \vspace{2pt}%
+}
+
+% ── Signature line ─────────────────────────────────────────
+\newcommand{\sigline}[2]{%
+  \begin{minipage}[t]{0.44\linewidth}
+    \vspace{22pt}%
+    {\color{Graphite}\rule{\linewidth}{0.5pt}}\\[2pt]
+    {\footnotesize\color{Graphite}\textbf{#1}\\#2}
+  \end{minipage}%
+}
+
+% ── Inline data pair ───────────────────────────────────────
+\newcommand{\datapair}[2]{%
+  {\footnotesize\color{Graphite}\textbf{#1:}}\;%
+  {\footnotesize\color{InkBlue}#2}%
+}
+
+% ── Observation row background colours ─────────────────────
+\colorlet{obsrowA}{PageTint}
+\colorlet{obsrowB}{white}

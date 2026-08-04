@@ -1,0 +1,35 @@
+\section{Alert-to-Action Mapping}
+\label{sec:alerts}
+The following mapping specifies the entry-point remediation procedures for common alerts triggered by the Prometheus monitor. Locate the alert name in the table below and execute the corresponding remediation steps in Section~\ref{sec:remediation}.
+
+\vspace{1.0em}
+\noindent
+\begin{tabularx}{\textwidth}{@{} l >{\color{slate600}}l c >{\sffamily}X @{}}
+\toprule
+\textbf{Prometheus Alert Name} & \textbf{Severity} & \textbf{Status Page} & \textbf{Initial Diagnostics \& Remediation Link} \\
+\midrule
+\texttt{NGS\_Cache\_Saturation} & \color{alertred}\bfseries CRITICAL & Red & Cache memory usage $>$ 92\%. Perform memory purge and scaling. See Sec.~\ref{sub:cache_remediation}. \\
+\addlinespace
+\texttt{NGS\_Latency\_P99\_Spike} & \color{alertorange}\bfseries WARNING & Yellow & Response latency $>$ 250ms. Check downstream DB queue lag. See Sec.~\ref{sub:latency_remediation}. \\
+\addlinespace
+\texttt{NGS\_HTTP\_5xx\_Rate} & \color{alertred}\bfseries CRITICAL & Red & Gateway error rate $>$ 4\%. Check auth routing pod logs. See Sec.~\ref{sub:gateway_errors}. \\
+\addlinespace
+\texttt{NGS\_DbPool\_Exhausted} & \color{alertorange}\bfseries WARNING & Yellow & Connection pool saturation $>$ 85\%. Scale database connection limits. See Sec.~\ref{sub:db_remediation}. \\
+\bottomrule
+\end{tabularx}
+
+\vspace{2.5em}
+
+\subsection{Standard Diagnostics Commands}
+Before taking remediation steps, run these standard diagnostic scripts to collect system state information. This data will be automatically attached to the incident ticket.
+
+\begin{codeblock}{Diagnostic Script 1: Cluster Health Status Check}
+# Check pod logs and query node status on the Apex Cloud Kubernetes cluster
+kubectl get nodes -o wide --selector=app=nimbus-gateway
+kubectl describe pods -l app=nimbus-gateway | grep -E "Status:|Reason:|Message:"
+\end{codeblock}
+
+\begin{codeblock}{Diagnostic Script 2: Cache Performance Metrics}
+# Retrieve cache hits/misses ratio from the Vertex Memory Grid CLI
+vertex-cli -h cache-cluster.meridian.internal -p 6379 info stats | grep -E "keyspace_|hit_rate"
+\end{codeblock}

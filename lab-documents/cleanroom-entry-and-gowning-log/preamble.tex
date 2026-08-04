@@ -1,0 +1,87 @@
+% preamble.tex -- packages, colours, custom commands, page geometry
+\usepackage[a4paper,margin=1.8cm,top=2.4cm,bottom=2.4cm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[table]{xcolor}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage[skins,breakable]{tcolorbox}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{ragged2e}
+\usepackage{enumitem}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{fontawesome5}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{titlesec}
+\usepackage{multirow}
+\usepackage{hyperref}
+
+% ---- colour palette ----------------------------------------------------
+\definecolor{cleanblue}{HTML}{163A5F}
+\definecolor{cleanblueLight}{HTML}{2F5C8A}
+\definecolor{mistblue}{HTML}{E7EEF4}
+\definecolor{steelgray}{HTML}{5C6773}
+\definecolor{panelgray}{HTML}{F4F6F8}
+\definecolor{amberflag}{HTML}{C97A0C}
+\definecolor{compliantgreen}{HTML}{2E7D4F}
+\definecolor{alertred}{HTML}{B3392C}
+\definecolor{ruleline}{HTML}{C7D2DC}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=cleanblue,
+  citecolor=cleanblue,
+  urlcolor=cleanblueLight
+}
+
+% ---- column helpers ------------------------------------------------------
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+
+% ---- section styling -------------------------------------------------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{cleanblue}}
+  {}{0em}{}[{\color{ruleline}\titlerule[0.8pt]}]
+\titlespacing*{\section}{0pt}{1.4em}{0.8em}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{steelgray}}
+  {}{0em}{}
+\titlespacing*{\subsection}{0pt}{1.0em}{0.5em}
+
+% ---- header / footer ---------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{steelgray}\textbf{QA-LOG-CR-014} \quad Cleanroom Entry \& Gowning Log}
+\fancyhead[R]{\small\color{steelgray}Meridian Therapeutics}
+\fancyfoot[L]{\small\color{steelgray}Rev.\,6 -- Effective 14-Mar-2026}
+\fancyfoot[R]{\small\color{steelgray}Page \thepage\ of \pageref{LastPage}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.3em}
+
+% ---- small reusable commands -------------------------------------------
+% status chip: #1 = fill colour, #2 = text
+\newcommand{\statuschip}[2]{%
+  \tikz[baseline=-0.6ex]\node[rounded corners=2pt,fill=#1,inner sep=3pt,
+    text=white,font=\small\bfseries]{#2};%
+}
+
+\newcommand{\passchip}{\statuschip{compliantgreen}{PASS}}
+\newcommand{\failchip}{\statuschip{alertred}{ALERT}}
+
+% labelled info field used in metadata grids
+\newcommand{\infofield}[2]{%
+  {\small\color{steelgray}\textbf{#1}}\newline
+  {#2}%
+}
+
+% checkbox glyph for gowning steps
+\newcommand{\gcheck}{$\square$}

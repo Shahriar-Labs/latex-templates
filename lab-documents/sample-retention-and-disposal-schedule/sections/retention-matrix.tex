@@ -1,0 +1,93 @@
+% sections/retention-matrix.tex
+
+\section{Retention Matrix}
+
+\subsection{Master Schedule by Sample Class}
+The table below is the controlled reference: LIMS disposal-eligibility flags are generated
+from these values nightly. Storage conditions describe the required state during the
+retention window, not the state at accession.
+
+\small
+\begin{longtable}{@{}p{2.7cm}p{3.5cm}p{2.6cm}p{2.6cm}p{4.4cm}@{}}
+\toprule
+\rowcolor{inkslate}
+\textcolor{white}{\textbf{Sample class}} & \textcolor{white}{\textbf{Regulatory basis}} &
+\textcolor{white}{\textbf{Retention period}} & \textcolor{white}{\textbf{Storage condition}} &
+\textcolor{white}{\textbf{Clock start}} \\
+\midrule
+\endfirsthead
+\rowcolor{inkslate}
+\textcolor{white}{\textbf{Sample class}} & \textcolor{white}{\textbf{Regulatory basis}} &
+\textcolor{white}{\textbf{Retention period}} & \textcolor{white}{\textbf{Storage condition}} &
+\textcolor{white}{\textbf{Clock start}} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{5}{r}{\footnotesize\itshape continued on next page}\\
+\endfoot
+\bottomrule
+\endlastfoot
+
+\rowcolor{mist}
+A -- Whole blood / serum (routine chemistry) & CLIA \S 493.1105(a) & 7 days & 2--8\textdegree C
+  refrigerated & Result release \\
+A -- Whole blood / serum (immunology, send-out confirmatory) & CLIA \S 493.1105(a);
+  ISO 15189 5.5.9 & 14 days & 2--8\textdegree C refrigerated & Result release \\
+A -- Plasma (coagulation panel) & CLIA \S 493.1105(a) & 7 days & $-20$\textdegree C frozen &
+  Result release \\
+\rowcolor{mist}
+A -- Urine (routine urinalysis) & CLIA \S 493.1105(a) & 24 hours & 2--8\textdegree C
+  refrigerated & Receipt \\
+A -- Tissue (histopathology block) & CAP Checklist ANP.12250; ISO 15189 5.5.9 & 10 years &
+  Ambient, archival cabinet & Report sign-out \\
+\rowcolor{mist}
+A -- Tissue (histopathology slide) & CAP Checklist ANP.12250 & 10 years & Ambient, archival
+  cabinet & Report sign-out \\
+A -- Positive microbiology culture & CLIA \S 493.1105(a) & 7 days & 35--37\textdegree C
+  incubated, then discard & Final identification \\
+\rowcolor{mist}
+B -- Biobank plasma / DNA aliquot & IBC Charter Art.\,9; IRB protocol NX-IRB-118 & Duration of
+  consent, max.\ 15 years & $-80$\textdegree C ultra-low freezer & Consent effective date \\
+B -- Biobank tissue block (research) & IBC Charter Art.\,9 & Duration of consent, max.\ 15
+  years & Ambient, archival cabinet & Consent effective date \\
+\rowcolor{mist}
+C -- Certified reference material (in-use vial) & ISO 17034; GLP OECD II.6 & Manufacturer
+  expiry or 5 years, whichever is sooner & Per certificate of analysis & Vial opening date \\
+C -- Reference standard reserve sample & GLP OECD II.6 & 5 years post study closeout &
+  $-20$\textdegree C frozen, desiccated & Study closeout \\
+\rowcolor{mist}
+D -- Stability programme pull & Sponsor contract; GLP OECD II.6 & Per study protocol,
+  min.\ 2 years & As specified in stability protocol & Study closeout \\
+D -- Method development sample & Sponsor contract & 1 year post final report & 2--8\textdegree
+  C refrigerated & Final report issue \\
+\rowcolor{mist}
+E -- Environmental water sample & EPA 40 CFR 141; internal EM programme SOP & 90 days & 2--8
+  \textdegree C refrigerated & Collection date \\
+E -- Environmental surface / air swab & Internal EM programme SOP & 30 days & Ambient, sealed &
+  Collection date \\
+\rowcolor{mist}
+F -- Any class under legal hold & Legal / Quality Assurance directive & Indefinite, until hold
+  released & As per original class & Hold placement date \\
+\end{longtable}
+\normalsize
+
+\subsection{Reading the Matrix}
+\begin{itemize}
+  \item \textbf{Regulatory basis} lists every clause that constrains the period; where more
+        than one applies, the period shown already reflects the longer of the two.
+  \item \textbf{Clock start} is the LIMS-tracked timestamp, not the collection date, except
+        where explicitly noted (environmental samples run from collection).
+  \item A sample straddling two classes (e.g.\ a biobank specimen also used for a clinical
+        confirmatory test) is retained under whichever class yields the longer period, and
+        both class tags remain visible in LIMS.
+  \item Class F overrides every other row for the duration of the hold; on release, the
+        sample reverts to its original class and the clock resumes from the original start
+        date, not the release date.
+\end{itemize}
+
+\begin{warnbox}[Common Deviation]
+The most frequent nonconformance found at internal audit is a Class~A histopathology block
+discarded from a satellite storage cabinet before the 10-year mark because the local log used
+receipt date instead of report sign-out date as the clock start. Cabinet custodians must use
+the LIMS-generated eligibility date, never a manually calculated one.
+\end{warnbox}

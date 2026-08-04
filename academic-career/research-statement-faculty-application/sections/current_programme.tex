@@ -1,0 +1,52 @@
+\section{Current Research Programme}
+
+My current work at the Vertex Institute of Technology expands on these foundations by developing autonomous neuromorphic agents that can learn and adapt post-deployment. This requires moving away from offline training (backpropagation on GPUs) toward real-time, online training directly on edge hardware.
+
+\subsection{Neuromorphic Co-Design Framework}
+To build efficient learning systems, we cannot isolate hardware design from algorithmic development. I have established a \textbf{Neuromorphic Co-Design Loop} that closely couples device behavior with algorithmic feedback, as shown in Figure \ref{fig:co_design}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=1.2cm and 1.8cm,
+    block/.style={
+        rectangle,
+        draw=PrimaryBlue,
+        thick,
+        fill=PrimaryBlue!5,
+        text width=3.8cm,
+        align=center,
+        minimum height=1.3cm,
+        rounded corners=6pt
+    },
+    arrow/.style={
+        -{Latex[length=3mm]},
+        thick,
+        draw=SecondaryTeal
+    }
+]
+    % Nodes
+    \node[block] (materials) {\textbf{Materials \& Devices}\\Phase-Change Memory \& Memristive Oxides};
+    \node[block, right=of materials] (circuits) {\textbf{Circuit Architectures}\\Crossbar Arrays \& Neuron Circuits};
+    \node[block, right=of circuits] (algorithms) {\textbf{Algorithms \& Systems}\\Event-Driven SNNs \& Online Plasticity};
+    
+    % Feedback loop
+    \node[block, below=1.2cm of circuits, fill=SecondaryTeal!5, draw=SecondaryTeal] (co-design) {\textbf{Co-Design Engine}\\Hardware-in-the-Loop Verification};
+
+    % Paths
+    \draw[arrow] (materials) -- (circuits);
+    \draw[arrow] (circuits) -- (algorithms);
+    \draw[arrow] (algorithms) |- (co-design);
+    \draw[arrow] (co-design) -| (materials);
+    
+    % Label
+    \node[above=0.2cm of circuits, color=PrimaryBlue] {\textbf{Neuromorphic Co-Design Framework}};
+\end{tikzpicture}
+\caption{The co-design framework of the Vance Lab, integrating device physics with circuit layout and high-level machine learning algorithms.}
+\label{fig:co_design}
+\end{figure}
+
+\subsection{Online Plasticity and Local Learning Rules}
+In biological brains, synapse modification is governed by local information. For instance, Spike-Timing-Dependent Plasticity (STDP) adjusts synaptic weights based solely on the timing difference between pre- and post-synaptic neuron firings. Local rules eliminate the need for global error propagation pathways, which are computationally expensive to route on silicon. 
+
+My current work focuses on mapping STDP variants to hybrid memristive-CMOS chips \cite{reynolds2025hybrid}. I am designing circuitry that implements a localized \emph{eligibility trace} at each synapse. This allows the system to temporarily log temporal associations and update weights only when an global reward signal (such as dopaminergic reinforcement) is present. This architecture enables self-supervised feature extraction, allowing edge sensors to adapt to shifting environmental inputs (e.g., changes in lighting or acoustic background noise) without human intervention.

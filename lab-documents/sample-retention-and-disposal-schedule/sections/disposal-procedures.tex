@@ -1,0 +1,83 @@
+% sections/disposal-procedures.tex
+
+\section{Disposal Methods}
+
+\subsection{Approved Disposal Routes}
+Disposal method is determined by material type, not by sample class alone -- a Class~A tissue
+block and a Class~E water sample may both require autoclaving if bloodborne pathogens are
+suspected. Table~\ref{tab:disposal-methods} lists the routes approved for use at Nexa
+Diagnostics Laboratory.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{}>{\bfseries}p{3.3cm}Yp{3.4cm}@{}}
+\toprule
+\rowcolor{deepteal}
+\textcolor{white}{Method} & \textcolor{white}{Applicable material} &
+\textcolor{white}{Vendor / route} \\
+\midrule
+Autoclave then landfill & Biohazardous solids: blood tubes, swabs, culture plates, used PPE &
+  On-site autoclave, Unit~3 \\
+\rowcolor{mist}
+Medical waste incineration & Tissue blocks, slides beyond archival hold, pathological waste &
+  Meridian Environmental Services (licensed carrier) \\
+Chemical neutralisation & Reagent-contaminated stability and reference samples & On-site
+  neutralisation bench, SOP QMS-CHEM-009 \\
+\rowcolor{mist}
+Sanitary sewer (treated) & Non-hazardous aqueous samples cleared by EHS & On-site, EHS
+  sign-off required per batch \\
+Secure shred / pulp & Paper chain-of-custody forms superseded by scanned record & On-site
+  cross-cut shredder \\
+\rowcolor{mist}
+Return to sponsor & Reference standards and stability samples where the sponsor contract
+  requires return rather than destruction & Sponsor-nominated courier \\
+\bottomrule
+\end{tabularx}
+\caption{Approved disposal methods and routing.}
+\label{tab:disposal-methods}
+\end{table}
+
+\subsection{Disposal Workflow}
+Every disposal follows the same four-step gate regardless of method; no sample leaves storage
+for destruction without all four steps recorded in LIMS.
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=0.55cm and 1.3cm,
+  procstep/.style={rectangle, rounded corners=3pt, draw=deepteal, fill=paperbg, line width=0.6pt,
+    text width=2.55cm, align=center, minimum height=1.4cm, font=\small},
+  arrow/.style={-Latex, deepteal, line width=0.9pt}
+]
+\node[procstep] (n1) {\textbf{1.} Eligibility flagged by LIMS};
+\node[procstep, right=of n1] (n2) {\textbf{2.} Custodian verifies no legal hold};
+\node[procstep, right=of n2] (n3) {\textbf{3.} Method selected, witness assigned};
+\node[procstep, right=of n3] (n4) {\textbf{4.} Destruction logged and co-signed};
+
+\draw[arrow] (n1) -- (n2);
+\draw[arrow] (n2) -- (n3);
+\draw[arrow] (n3) -- (n4);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Step Detail}
+\begin{enumerate}
+  \item \textbf{Eligibility flagged.} LIMS runs the nightly retention job against
+        Section~3 and marks samples past their retention period as \emph{disposal-eligible}.
+        No manual flagging is permitted.
+  \item \textbf{Hold check.} The storage custodian queries the Legal Hold register before
+        pulling any eligible sample. A sample under Class~F is skipped and remains in place.
+  \item \textbf{Method and witness.} The custodian selects the method from
+        Table~\ref{tab:disposal-methods} and books a second qualified staff member as witness;
+        self-witnessed disposal is not accepted for Class~A or Class~B material.
+  \item \textbf{Record and co-sign.} Both parties complete the disposal record in Section~5,
+        including sample ID, method, date, and quantity, then co-sign. The record is scanned
+        into LIMS within 24 hours; the physical form is retained per Section~3's Class~A
+        record-retention line.
+\end{enumerate}
+
+\begin{noticebox}[Batch Disposal]
+Environmental (Class~E) samples may be disposed of in batches of up to 40 using a single
+disposal record listing all sample IDs, provided every sample in the batch shares the same
+method, date, and witness pair. All other classes require one record per sample.
+\end{noticebox}

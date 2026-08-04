@@ -1,0 +1,90 @@
+\section{System Architecture}
+
+\subsection{Architectural Paradigm}
+Apex Global Storage (AGS) utilizes a decoupled architecture where control plane operations (metadata management) are separated from the data plane operations (block transfer). This separation allows metadata nodes to be optimized for low-latency transaction processing, while data storage nodes are optimized for high-bandwidth disk operations.
+
+\subsection{System Context Diagram}
+The interaction between clients, front-end routing components, the metadata service, and the underlying storage pools is illustrated in Figure~\ref{fig:system_context}.
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[
+        node distance=1.5cm and 1.8cm,
+        block/.style={
+            rectangle,
+            draw=secondary,
+            fill=white,
+            thick,
+            rounded corners,
+            minimum width=2.6cm,
+            minimum height=1.0cm,
+            align=center,
+            font=\sffamily\small
+        },
+        client/.style={
+            rectangle,
+            draw=muted,
+            fill=codebg,
+            thick,
+            rounded corners,
+            minimum width=2.2cm,
+            minimum height=0.85cm,
+            align=center,
+            font=\sffamily\small
+        },
+        database/.style={
+            cylinder,
+            draw=accent,
+            fill=accentlt,
+            shape border rotate=90,
+            aspect=0.25,
+            thick,
+            minimum width=2.2cm,
+            minimum height=1.2cm,
+            align=center,
+            font=\sffamily\small
+        },
+        line/.style={
+            draw,
+            -stealth,
+            thick,
+            color=darkneutral
+        }
+    ]
+        % Nodes
+        \node [client] (client1) {Web Console};
+        \node [client, below=0.35cm of client1] (client2) {Go / Rust SDKs};
+        
+        \node [block, right=1.6cm of $(client1.east)!0.5!(client2.east)$] (gateway) {API Gateway \\ \& Rate Limiter};
+        
+        \node [block, right=1.8cm of gateway] (meta) {Metadata Service \\ (AGS-Meta)};
+        \node [block, below=1.2cm of meta] (storage) {Storage Controller \\ (AGS-Store)};
+        
+        \node [database, right=1.8cm of meta] (db) {Metadata Store \\ (Spanner Instance)};
+        \node [database, right=1.8cm of storage] (s3) {Block Pool \\ (Local NVMe)};
+        
+        % Connections
+        \draw [line] (client1) -- (gateway);
+        \draw [line] (client2) -- (gateway);
+        \draw [line] (gateway) -- node[above, font=\tiny\sffamily] {gRPC / Auth} (meta);
+        \draw [line] (gateway) |- node[near end, below, font=\tiny\sffamily] {Data Streams} (storage);
+        \draw [line] (meta) -- (db);
+        \draw [line] (storage) -- (s3);
+        \draw [line] (storage) -- node[left, font=\tiny\sffamily] {Commit} (meta);
+    \end{tikzpicture}
+    \caption{Apex Global Storage v2 High-Level Architectural Context.}
+    \label{fig:system_context}
+\end{figure}
+
+\subsection{Component Breakdown}
+The system is divided into four main subsystems, which are deployed independently:
+\begin{itemize}
+    \item \textbf{Ingress Gateway (AGS-Gateway):} Decrypts incoming TLS traffic, authenticates tenant credentials, rates limits requests using a token bucket algorithm, and routes requests.
+    \item \textbf{Metadata Engine (AGS-Meta):} Handles namespace resolution, access control checks, directory structures, and file-to-block allocation mapping. It utilizes a distributed CockroachDB backend for transactions \cite{rostova2023metadata}.
+    \item \textbf{Storage Engine (AGS-Store):} Manages raw storage pools on storage nodes. It writes payload streams directly to NVMe-backed block files, bypassing traditional file-system caches to eliminate latency jitter.
+    \item \textbf{Replication Coordinator (AGS-Replica):} Orchestrates async replica synchronization and parity check background tasks.
+\end{itemize}
+
+\begin{warnbox}[Operational Constraint]
+    The AGS-Gateway nodes must have at least 10Gbps network links. Any reduction in interface bandwidth directly leads to client queue backpressure, causing request drops at the load balancer.
+\end{warnbox}

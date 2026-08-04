@@ -1,0 +1,75 @@
+% results.tex
+\chapter{Results}
+\label{ch:results}
+
+\section{Overall Cache Performance}
+Table~\ref{tab:main-results} reports the four primary metrics, averaged across all twelve
+nodes and five seeds, on the stationary Zipfian workload. GWC outperforms both baselines on
+every metric except per-request overhead, where it costs marginally more than LRU but
+remains far cheaper than a learned policy would require.
+
+\begin{table}[h]
+  \centering
+  \caption{Mean performance across 12 nodes / 5 seeds, stationary workload ($\theta = 0.8$).}
+  \label{tab:main-results}
+  \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    \textbf{Policy} & \textbf{Hit ratio} & \textbf{Byte hit ratio} & \textbf{Mean latency} & \textbf{Overhead / req} \\
+    \midrule
+    LRU  & 71.4\% & 64.2\% & 42.3\,ms & 0.04\,\textmu s \\
+    LFU  & 76.8\% & 69.5\% & 38.7\,ms & 0.06\,\textmu s \\
+    GWC  & \textbf{88.9\%} & \textbf{83.1\%} & \textbf{24.1\,ms} & 0.11\,\textmu s \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Figure~\ref{fig:hit-ratio-bars} visualises the hit-ratio comparison from Table~\ref{tab:main-results}.
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}
+    \def\barw{1.6cm}
+    \foreach \name/\val/\xpos/\color in {LRU/71.4/0/thesisgrey, LFU/76.8/2.2/thesisgold, GWC/88.9/4.4/thesisnavy} {
+      \draw[fill=\color, draw=none] (\xpos, 0) rectangle ({\xpos+\barw}, {\val/10});
+      \node[above] at ({\xpos+\barw/2}, {\val/10}) {\small\val\%};
+      \node[below] at ({\xpos+\barw/2}, 0) {\small\name};
+    }
+    \draw[thesisgrey, line width=0.6pt] (-0.4, 0) -- (6.4, 0);
+  \end{tikzpicture}
+  \caption{Cache hit ratio by eviction policy, stationary Zipfian workload.}
+  \label{fig:hit-ratio-bars}
+\end{figure}
+
+\section{Per-Node Variance}
+Hit-ratio variance across the twelve nodes was low for all three policies (standard
+deviation under 2.1 percentage points in every case), indicating that the improvement from
+GWC is consistent across nodes rather than driven by a small number of favourable
+configurations. Full per-node figures are tabulated in Appendix~\ref{app:results}.
+
+\section{Performance Under Popularity Drift}
+\label{sec:drift-results}
+Table~\ref{tab:drift-results} repeats the comparison on the drifting-popularity workload
+described in Section~\ref{sec:workload}. All policies lose hit ratio relative to the
+stationary case, as expected, but LFU degrades most sharply: its frequency counters
+retain stale popularity signal for objects that were popular before the re-ranking event.
+
+\begin{table}[h]
+  \centering
+  \caption{Mean hit ratio under popularity drift (re-ranking every 10,000 requests).}
+  \label{tab:drift-results}
+  \begin{tabular}{@{}lccc@{}}
+    \toprule
+    \textbf{Policy} & \textbf{Stationary hit ratio} & \textbf{Drift hit ratio} & \textbf{Drop} \\
+    \midrule
+    LRU  & 71.4\% & 68.9\% & 2.5 pts \\
+    LFU  & 76.8\% & 63.2\% & 13.6 pts \\
+    GWC  & 88.9\% & 81.7\% & 7.2 pts \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\begin{keytakeaway}[Result Summary]
+GWC's advantage grows under drift relative to LFU: the exponential decay in the frequency
+term of Equation~\ref{eq:gwc-update} lets stale popularity signal fade within roughly
+$1/\alpha \approx 6.7$ accesses, whereas LFU's raw counters never decay.
+\end{keytakeaway}

@@ -1,0 +1,66 @@
+\begin{frame}{Key Result: Heterogeneous Task Stealing}{Outperforming Homogeneous Pipelines}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \textbf{Dynamic Workload Balancing}
+      \begin{itemize}
+        \item Edge nodes exhibit transient resource fluctuations.
+        \item Homogeneous pipelines suffer from \textbf{head-of-line blocking}.
+        \item VertexFlow introduces a zero-overhead task stealing protocol across CPU/GPU cores.
+      \end{itemize}
+      
+      \vspace{0.3cm}
+      \begin{highlightbox}
+        \textbf{Performance Gain:} We achieve a \textbf{5.4$\times$} speedup in end-to-end inference throughput under dynamic load \cite{jenkins2026vertexflow}.
+      \end{highlightbox}
+    \end{column}
+    
+    \begin{column}{0.48\textwidth}
+      \centering
+      \textbf{Throughput Comparison (FPS)}
+      \vspace{0.2cm}
+      
+      \begin{tikzpicture}[scale=0.95]
+        % Draw axes
+        \draw[thick, ->, >=stealth] (0,0) -- (5.5,0) node[right, font=\scriptsize] {Model};
+        \draw[thick, ->, >=stealth] (0,0) -- (0,3.2) node[above, font=\scriptsize] {FPS};
+        
+        % Y-axis labels \& ticks
+        \foreach \y/\label in {0.8/100, 1.6/200, 2.4/300} {
+          \draw (0.1,\y) -- (-0.1,\y) node[left, font=\tiny] {\label};
+          \draw[very thin, gray!20] (0,\y) -- (5,\y);
+        }
+        
+        % Data Bars for ResNet-50
+        % Baseline TFLite: 45 FPS (y = 0.36)
+        \fill[gray!40] (0.5,0) rectangle (1.0,0.36);
+        % VertexFlow: 243 FPS (y = 1.94)
+        \fill[secondary] (1.0,0) rectangle (1.5,1.94);
+        
+        % Data Bars for MobileNetV3
+        % Baseline TFLite: 120 FPS (y = 0.96)
+        \fill[gray!40] (2.5,0) rectangle (3.0,0.96);
+        % VertexFlow: 350 FPS (y = 2.8)
+        \fill[accent] (3.0,0) rectangle (3.5,2.8);
+        
+        % Labels under bars
+        \node[below, font=\scriptsize] at (1.25,-0.1) {ResNet-50};
+        \node[below, font=\scriptsize] at (3.25,-0.1) {MobileNetV3};
+        
+        % Value labels on top of bars
+        \node[above, font=\tiny] at (0.75, 0.36) {45};
+        \node[above, font=\tiny, fg=secondary] at (1.25, 1.94) {\textbf{243}};
+        \node[above, font=\tiny] at (2.75, 0.96) {120};
+        \node[above, font=\tiny, fg=accent] at (3.25, 2.8) {\textbf{350}};
+        
+        % Legend
+        \draw[fill=gray!40] (4.0,2.5) rectangle (4.2,2.7);
+        \node[right, font=\tiny] at (4.3,2.6) {TFLite};
+        \draw[fill=secondary] (4.0,2.1) rectangle (4.2,2.3);
+        \node[right, font=\tiny] at (4.3,2.2) {Ours};
+      \end{tikzpicture}
+      
+      \vspace{0.1cm}
+      \captionof{figure}{VertexFlow throughput vs. standard TFLite runtime.}
+    \end{column}
+  \end{columns}
+\end{frame}

@@ -1,0 +1,49 @@
+% sections/hook.tex -- title slide + the problem statement
+\setcounter{secprog}{1}
+\section{Hook}
+
+{
+\setbeamertemplate{footline}{}
+\begin{frame}[plain]
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[inkblue] (current page.south west) rectangle (current page.north east);
+    \fill[signalteal] (current page.south west) rectangle ([yshift=0.18\paperheight]current page.south east);
+    \node[anchor=south west,text width=11.5cm,align=left] at ([xshift=1cm,yshift=0.52\paperheight]current page.south west)
+      {\color{white}\usebeamerfont{title}\inserttitle\\[6pt]
+       \color{mist}\large\insertsubtitle};
+    \node[anchor=south west,text width=11cm,align=left] at ([xshift=1cm,yshift=0.30\paperheight]current page.south west)
+      {\color{white}\large\insertauthor\\[2pt]
+       \color{mist}\normalsize\insertinstitute};
+    \node[anchor=south west] at ([xshift=1cm,yshift=0.5cm]current page.south west)
+      {\color{white}\small\insertdate};
+  \end{tikzpicture}
+\end{frame}
+}
+
+\begin{frame}
+  \frametitle{Twelve minutes, one question}
+  \framesubtitle{The same ranking model feels instant on one phone and sluggish on the next.}
+  \small
+  \begin{columns}[T]
+    \begin{column}{0.52\textwidth}
+      \begin{block}{The setup}
+        \begin{itemize}
+          \item Nexa's short-video app ranks the next clip on-device to avoid a round trip
+          \item Ranking model: 4.2M parameters, quantized to int8
+          \item Runs on everything from a \$90 entry phone to a flagship
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.44\textwidth}
+      \begin{tcolorbox}[colback=mist,colframe=signalteal,boxrule=0.6pt,arc=2mm,title={\color{white}Field data, 3 weeks},colbacktitle=signalteal]
+        \statword{68\%}{of entry-tier requests missed the 120\,ms budget}\\[4pt]
+        \statword{211\,ms}{median inference on entry-tier hardware}\\[4pt]
+        \statword{9\,pp}{drop in engagement when latency $>$150\,ms}
+      \end{tcolorbox}
+    \end{column}
+  \end{columns}
+  \vspace{3mm}
+  \begin{alertblock}{The question we chase today}
+    Can a small, adaptive cache in front of the model close most of that gap --- without touching accuracy?
+  \end{alertblock}
+\end{frame}

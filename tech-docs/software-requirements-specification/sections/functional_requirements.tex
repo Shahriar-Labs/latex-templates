@@ -1,0 +1,113 @@
+% sections/functional_requirements.tex
+\section{Functional Requirements}
+
+Each requirement below carries a unique identifier of the form \texttt{FR-\emph{n.m}}, used
+verbatim by QA when writing test cases and referenced in the traceability matrix
+(Section~7). Priority reflects Release~3.0 commitments only.
+
+\subsection{User Account and Access Management}
+
+\begin{reqbox}{FR-1.1 --- SSO Authentication}
+The system shall authenticate all users exclusively via Meridian's Okta SAML~2.0 identity
+provider; local username/password accounts shall not be offered to Employee, Approver, or
+Finance Administrator roles. \hfill \priohigh
+\end{reqbox}
+
+\begin{reqbox}{FR-1.2 --- Role-Based Access Control}
+The system shall enforce RBAC with, at minimum, the roles Employee, Approver, Finance
+Administrator, External Auditor, and System Integrator, mapping each Okta group to exactly one
+Apex Ledger role at provisioning time. \hfill \priohigh
+\end{reqbox}
+
+\begin{reqbox}{FR-1.3 --- Session Expiry}
+The system shall terminate an idle browser session after 30 minutes and require
+re-authentication before any state-changing action. \hfill \priomed
+\end{reqbox}
+
+\subsection{Expense Report Submission}
+
+\begin{reqbox}{FR-2.1 --- Line-Item Entry}
+The system shall allow an Employee to add one or more expense line items to a report, each
+capturing date, category (from a controlled vocabulary), amount, currency, merchant, and an
+optional note not exceeding 500 characters. \hfill \priohigh
+\end{reqbox}
+
+\begin{reqbox}{FR-2.2 --- Receipt Attachment}
+The system shall allow an Employee to attach a receipt image or PDF (max 10~MB) to any line
+item and shall block submission of line items over \$25 that lack an attached receipt, per
+Meridian expense policy. \hfill \priohigh
+\end{reqbox}
+
+\begin{reqbox}{FR-2.3 --- Draft Autosave}
+The system shall autosave a report in Draft status at intervals of no more than 60 seconds
+while the Employee is actively editing. \hfill \priomed
+\end{reqbox}
+
+\begin{reqbox}{FR-2.4 --- Policy Validation}
+Upon submission, the system shall validate each line item against the active expense policy
+(per-category caps, disallowed categories) and shall present all violations to the Employee
+in a single pass rather than one at a time. \hfill \priohigh
+\end{reqbox}
+
+\subsection{Approval Workflow}
+
+\begin{reqbox}{FR-3.1 --- Configurable Approval Chain}
+The system shall route a submitted report through a Finance-Administrator-configured approval
+chain of one to three sequential approvers, determined by the Employee's cost center and the
+report total. \hfill \priohigh
+\end{reqbox}
+
+\begin{reqbox}{FR-3.2 --- Approve, Reject, or Return}
+The system shall allow an Approver to Approve, Reject (with mandatory reason code), or Return
+for correction (with mandatory free-text comment) a report awaiting their decision. \hfill \priohigh
+\end{reqbox}
+
+\begin{reqbox}{FR-3.3 --- Delegation}
+The system shall allow an Approver to delegate their pending queue to a named backup Approver
+for a bounded date range, and shall record the original and delegated approver on every
+resulting decision. \hfill \priomed
+\end{reqbox}
+
+\begin{reqbox}{FR-3.4 --- Escalation}
+The system shall escalate a report to the next approver in the chain if the current approver
+takes no action within 5 business days, and shall notify the Finance Administrator of the
+escalation. \hfill \priomed
+\end{reqbox}
+
+\subsection{Reimbursement Processing}
+
+\begin{reqbox}{FR-4.1 --- Batch Assembly}
+The system shall allow a Finance Administrator to assemble all fully approved reports into a
+reimbursement batch, grouped by pay period, and shall prevent a report from appearing in more
+than one open batch. \hfill \priohigh
+\end{reqbox}
+
+\begin{reqbox}{FR-4.2 --- Card-Feed Reconciliation}
+The system shall automatically match corporate-card-fed transactions to submitted line items
+on merchant, date (\(\pm 2\) days), and amount, and shall flag unmatched card transactions for
+manual review. \hfill \priomed
+\end{reqbox}
+
+\begin{reqbox}{FR-4.3 --- Payroll Export}
+The system shall export an approved reimbursement batch to \textit{Meridian Payroll Connect}
+in its documented v3 file format within one business day of batch closure. \hfill \priohigh
+\end{reqbox}
+
+\subsection{Reporting and Audit}
+
+\begin{reqbox}{FR-5.1 --- Audit Log}
+The system shall record an immutable audit entry for every state transition of a report
+(submit, approve, reject, return, escalate, batch, export), capturing actor, timestamp, and
+prior/next state. \hfill \priohigh
+\end{reqbox}
+
+\begin{reqbox}{FR-5.2 --- Auditor Export}
+The system shall allow an External Auditor to export closed reports and their audit trails for
+a selected date range as a signed CSV bundle, without exposing reports outside that range.
+\hfill \priomed
+\end{reqbox}
+
+\begin{reqbox}{FR-5.3 --- Spend Dashboards}
+The system shall provide a Finance Administrator dashboard summarizing spend by category, cost
+center, and pay period, refreshed at least once every 15 minutes. \hfill \priolow
+\end{reqbox}

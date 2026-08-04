@@ -1,0 +1,63 @@
+% sections/risks.tex
+
+\section{Risk and Mitigation}
+
+\begin{frame}{Risk Matrix \& Action Plan}
+  \small
+  \begin{tabularx}{\textwidth}{p{3.2cm} l X l}
+    \rowcolor{primary}
+    \textcolor{white}{\textbf{Identified Risk}} & 
+    \textcolor{white}{\textbf{Severity}} & 
+    \textcolor{white}{\textbf{Mitigation Strategy}} & 
+    \textcolor{white}{\textbf{Owner}} \\
+    \midrule
+    
+    \textbf{Regional Network Partition} \newline Slow database sync across regions. & 
+    \severitybadge{danger}{CRITICAL} & 
+    Configure Vertex DB for active-passive replication with local read fallbacks. & 
+    Infrastructure Team \\
+    \arrayrulecolor{neutral-dark!30}\hline
+    
+    \textbf{Auth Token Latency} \newline Inline signature verification overhead. & 
+    \severitybadge{warning}{MEDIUM} & 
+    Cache verified public keys and use cryptographically signed tokens. & 
+    Security Team \\
+    \arrayrulecolor{neutral-dark!30}\hline
+    
+    \textbf{Config Deployment Failure} \newline Invalid routing config propagation. & 
+    \severitybadge{success}{LOW} & 
+    Implement dry-run verification in CI/CD pipeline before push to Etcd. & 
+    Release Ops \\
+    \bottomrule
+  \end{tabularx}
+
+  \vspace{0.3cm}
+  \begin{center}
+    \scriptsize
+    \textcolor{danger}{\faExclamationTriangle\ \textbf{Key Security Directive:} No external request shall bypass the rate-limiting filter. Under extreme partition conditions, the gateway fails closed to protect databases.}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Future Work \& References}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \textbf{Key Milestones}
+      \begin{itemize}
+        \item[\faCalendar] \textbf{Q3 2026:} Deployment of multi-region test environment.
+        \item[\faCalendar] \textbf{Q4 2026:} Chaos testing and failure mode verification.
+        \item[\faCalendar] \textbf{Q1 2027:} Full migration of external traffic from legacy gateways.
+      \end{itemize}
+      \vspace{0.3cm}
+      \textbf{Review Action Items}
+      \begin{itemize}
+        \item Design and sign off on rate-limit synchronization interval thresholds.
+      \end{itemize}
+    \end{column}
+    
+    \begin{column}{0.48\textwidth}
+      \textbf{References}
+      \nocite{*}
+      \printbibliography[heading=none]
+    \end{column}
+  \end{columns}
+\end{frame}

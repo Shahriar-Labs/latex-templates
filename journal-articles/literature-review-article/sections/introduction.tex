@@ -1,0 +1,50 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Content delivery has moved steadily outward from centralised data centres toward the network edge.
+Where a decade ago a cache miss meant an extra round trip to a regional data centre, today it can mean
+a round trip across a metropolitan area network to a base-station-attached cache, or no round trip at
+all if the content is served from an on-device cache seeded by a nearby peer. This shift lowers latency
+and offloads backbone traffic, but it multiplies the number of places a piece of data can live --- and
+therefore the number of places it can go stale.
+
+\emph{Cache consistency} is the set of guarantees a system makes about how quickly, and under what
+conditions, a write at the origin becomes visible at every cached replica. In a single data centre this
+problem is well understood; at the edge, three properties change the calculus at once: replica count
+grows by one to two orders of magnitude, inter-replica links are heterogeneous (fibre backhaul next to
+lossy wireless hops), and client mobility means the \emph{set} of replicas relevant to a given user
+changes minute to minute. Consequently, protocols designed for rack-scale caching do not transfer
+cleanly, and a distinct body of edge-specific consistency research has grown up since roughly 2014.
+
+\begin{keytakeaway}
+Edge caching does not merely add hops to a cache hierarchy --- it changes the consistency problem
+itself, because replica topology, link quality, and the relevant replica set are all dynamic rather
+than fixed.
+\end{keytakeaway}
+
+\subsection{Why a thematic review}
+
+Existing surveys of caching in networked systems tend to organise the literature by
+\emph{layer} (CDN, mobile edge computing, named-data networking) or by \emph{application}
+(video streaming, IoT telemetry, AR/VR). Both organisations are useful, but they scatter papers that
+address the same consistency problem across different sections, making it hard for a newcomer to see
+which protocols are direct competitors. This review instead organises the field by \emph{consistency
+model} --- the axis that actually determines correctness guarantees, tail latency, and operational
+complexity --- and treats layer and application as secondary, cross-cutting attributes.
+
+\subsection{Scope and contributions}
+
+We restrict scope to protocols whose primary contribution is a consistency mechanism for cached
+\emph{data objects} at or near the network edge; we exclude pure cache-\emph{replacement} policies
+(eviction, admission) and pure \emph{placement} papers that assume strong consistency is given, except
+where placement and consistency are co-designed (Section~\ref{sec:thematic}, cluster D). Within this
+scope, the review contributes:
+
+\begin{enumerate}
+  \item a four-cluster thematic framework (Section~\ref{sec:thematic}) with a concept map showing how
+        the clusters relate and where hybrid systems sit between them;
+  \item a chronological account of how each cluster matured (Section~\ref{sec:chronology});
+  \item a cross-cluster comparison table on five evaluation dimensions
+        (Section~\ref{sec:comparison});
+  \item a discussion of three gaps that recur across all four clusters (Section~\ref{sec:discussion}).
+\end{enumerate}

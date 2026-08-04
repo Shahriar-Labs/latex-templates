@@ -1,0 +1,220 @@
+%% ============================================================
+%% preamble.tex  — packages, colours, geometry, commands
+%% ============================================================
+
+%% --- Page geometry -------------------------------------------
+\usepackage[letterpaper,
+            top=24mm, bottom=22mm,
+            left=18mm, right=18mm,
+            headheight=24pt]{geometry}
+
+%% --- Core typography ------------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{tgtermes}
+\usepackage{tgheros}
+\usepackage{microtype}
+\usepackage{parskip}
+
+%% --- Colour (must load before colortbl / tcolorbox) -----------
+\usepackage[table]{xcolor}
+
+%% ---- House palette --------------------------------------------
+%  Slate ink    – headings, rule lines, section bars
+\definecolor{SlateInk}{HTML}{2E3440}
+%  Hazard amber – EPA/DOT code badges, primary accent
+\definecolor{HazardAmber}{HTML}{C1622D}
+%  Compliance green – pass/complete states, sign-off boxes
+\definecolor{ComplianceGreen}{HTML}{3B7A57}
+%  Warn red     – deficiencies, overdue, non-conforming
+\definecolor{WarnRed}{HTML}{B23A48}
+%  Sand fog     – table row alt, box backgrounds
+\definecolor{SandFog}{HTML}{F3EEE6}
+%  Warm white   – page/box background tint
+\definecolor{WarmWhite}{HTML}{FBFAF8}
+
+%% --- Tables ------------------------------------------------------
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{colortbl}
+\usepackage{makecell}
+\usepackage{pdflscape}
+
+%% --- Graphics & TikZ ----------------------------------------------
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, shapes.geometric, decorations.pathmorphing, backgrounds, patterns}
+
+%% --- tcolorbox -----------------------------------------------------
+\usepackage[most]{tcolorbox}
+
+%% --- Icons ------------------------------------------------------------
+\usepackage{fontawesome5}
+
+%% --- Symbols, maths --------------------------------------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+%% --- Lists --------------------------------------------------------------
+\usepackage{enumitem}
+
+%% --- Headers / footers -----------------------------------------------------
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+%% --- Hyperlinks (load last) ---------------------------------------------------
+\usepackage[hidelinks,
+            pdftitle={Hazardous Waste Disposal Record},
+            pdfauthor={Meridian BioAnalytical Laboratories},
+            pdfsubject={Hazardous Waste Disposal Record}]{hyperref}
+
+%% ============================================================
+%% TCOLORBOX STYLES
+%% ============================================================
+
+%% Section header bar
+\tcbset{
+  sectionbar/.style={
+    colback=SlateInk,
+    colframe=SlateInk,
+    coltext=white,
+    fontupper=\bfseries\large,
+    boxrule=0pt,
+    arc=3pt,
+    left=8pt, right=8pt,
+    top=4pt, bottom=4pt,
+    width=\linewidth,
+    nobeforeafter
+  }
+}
+
+%% Info / notice box
+\tcbset{
+  infobox/.style={
+    colback=SandFog,
+    colframe=HazardAmber,
+    coltext=SlateInk,
+    fontupper=\small,
+    boxrule=1pt,
+    arc=4pt,
+    left=8pt, right=8pt,
+    top=5pt, bottom=5pt,
+    width=\linewidth,
+    nobeforeafter
+  }
+}
+
+%% Warning / regulatory box
+\tcbset{
+  warnbox/.style={
+    colback=WarnRed!10,
+    colframe=WarnRed,
+    coltext=SlateInk,
+    fontupper=\small,
+    boxrule=1.2pt,
+    arc=4pt,
+    left=8pt, right=8pt,
+    top=5pt, bottom=5pt,
+    width=\linewidth,
+    nobeforeafter
+  }
+}
+
+%% Sign-off / certification box
+\tcbset{
+  signoffbox/.style={
+    colback=SandFog,
+    colframe=SlateInk,
+    coltext=SlateInk,
+    fontupper=\small,
+    boxrule=1pt,
+    arc=4pt,
+    left=10pt, right=10pt,
+    top=6pt, bottom=6pt,
+    width=\linewidth,
+    nobeforeafter
+  }
+}
+
+%% Compliance / status box
+\tcbset{
+  compliancebox/.style={
+    colback=ComplianceGreen!10,
+    colframe=ComplianceGreen,
+    coltext=SlateInk,
+    fontupper=\small,
+    boxrule=1.2pt,
+    arc=4pt,
+    left=8pt, right=8pt,
+    top=5pt, bottom=5pt,
+    width=\linewidth,
+    nobeforeafter
+  }
+}
+
+%% ============================================================
+%% CUSTOM COMMANDS
+%% ============================================================
+
+%% Styled section label (replaces \section)
+\newcommand{\hwsection}[1]{%
+  \vspace{6pt}%
+  \begin{tcolorbox}[sectionbar]
+    #1
+  \end{tcolorbox}%
+  \vspace{2pt}%
+}
+
+%% Coloured rule
+\newcommand{\hrulecolor}[2][SlateInk]{%
+  {\color{#1}\rule{\linewidth}{#2}}%
+}
+
+%% EPA / DOT waste code badge
+\newcommand{\epacode}[1]{%
+  \tikz[baseline=-0.5ex]\node[
+    fill=HazardAmber, text=white,
+    rounded corners=2.5pt,
+    inner sep=3pt,
+    font=\bfseries\footnotesize
+  ]{#1};%
+}
+
+%% Status pill (Complete / Pending / Overdue)
+\newcommand{\statuspill}[2]{%
+  \tikz[baseline=-0.5ex]\node[
+    fill=#1, text=white,
+    rounded corners=3pt,
+    inner sep=3pt,
+    font=\bfseries\footnotesize
+  ]{#2};%
+}
+
+%% Check mark / cross for inspection logs
+\newcommand{\cyes}{\textcolor{ComplianceGreen}{\faCheckSquare}}
+\newcommand{\cno}{\textcolor{WarnRed}{\faSquare}}
+
+%% ============================================================
+%% PAGE STYLE
+%% ============================================================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{SlateInk}{\small\textbf{Hazardous Waste Disposal Record}}}
+\fancyhead[R]{\textcolor{HazardAmber}{\small Meridian BioAnalytical Laboratories}}
+\fancyfoot[L]{\textcolor{SlateInk!60}{\footnotesize EPA ID: CAD 004 417 298}}
+\fancyfoot[C]{\textcolor{SlateInk!60}{\small Page~\thepage~of~\pageref{LastPage}}}
+\fancyfoot[R]{\textcolor{SlateInk!60}{\footnotesize Doc.\ MDX-HWDR-2026-0714}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{SlateInk}\leaders\hrule height\headrulewidth\hfill}}
+\renewcommand{\footrule}{\hbox to\headwidth{\color{SlateInk!40}\leaders\hrule height\footrulewidth\hfill}}
+
+%% ============================================================
+%% MISC
+%% ============================================================
+\setlength{\extrarowheight}{3pt}
+\renewcommand{\arraystretch}{1.3}

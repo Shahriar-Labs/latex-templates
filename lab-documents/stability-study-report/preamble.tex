@@ -1,0 +1,166 @@
+% preamble.tex — packages, colours, custom commands, page geometry
+
+\usepackage[a4paper,margin=1.9cm,headheight=32pt,headsep=12pt,footskip=20pt]{geometry}
+
+% ---- fonts / encoding ----
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage{microtype}
+
+% ---- math ----
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ---- colour ----
+\usepackage[table]{xcolor}
+
+% ---- layout / tables ----
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage{siunitx}
+
+% ---- graphics ----
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[most]{tcolorbox}
+
+% ---- lists ----
+\usepackage{enumitem}
+
+% ---- icons ----
+\usepackage{fontawesome5}
+
+% ---- headers / footers / references ----
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{hyperref}
+\usepackage{lastpage}
+
+% =====================================================================
+% Colour palette — regulated stability-testing report
+% =====================================================================
+\definecolor{ssrnavy}{HTML}{1C2B48}     % deep navy — headings, structure
+\definecolor{ssrteal}{HTML}{237A78}     % teal — long-term / primary accent
+\definecolor{ssramber}{HTML}{C57A1F}    % amber — intermediate condition / caution
+\definecolor{ssrred}{HTML}{A8384A}      % muted red — accelerated condition / risk
+\definecolor{ssrmist}{HTML}{EEF2F5}     % pale panel background
+\definecolor{ssrline}{HTML}{CBD5DE}     % hairline on mist background
+\definecolor{ssrink}{HTML}{20262E}      % near-black body text
+\definecolor{ssrslate}{HTML}{5B6672}    % secondary / caption text
+\definecolor{ssrpasstint}{HTML}{E4F1EE} % pass-state tint
+
+\color{ssrink}
+
+% =====================================================================
+% Custom commands
+% =====================================================================
+\newcommand{\degC}{\textsuperscript{\(\circ\)}C}
+\newcommand{\RH}{\%RH}
+
+% label:value inline field
+\newcommand{\infofield}[2]{{\color{ssrteal}\bfseries\small #1:}~{\small #2}}
+
+% condition colour swatches (used consistently: plot, tables, cards)
+\newcommand{\longtermdot}{{\color{ssrteal}\faCircle}}
+\newcommand{\intermediatedot}{{\color{ssramber}\faCircle}}
+\newcommand{\accelerateddot}{{\color{ssrred}\faCircle}}
+
+% status badges for table cells
+\newcommand{\ok}{{\color{ssrteal}\faCheckCircle}}
+\newcommand{\warnflag}{{\color{ssramber}\faExclamationTriangle}}
+
+% section styling
+\titleformat{\section}
+  {\color{ssrnavy}\Large\bfseries}
+  {\thesection}{0.6em}{}
+  [\vspace{-0.3em}{\color{ssrline}\titlerule[1.1pt]}]
+\titlespacing*{\section}{0pt}{1.0em}{0.4em}
+
+\titleformat{\subsection}
+  {\color{ssrteal}\large\bfseries}
+  {\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{0.7em}{0.25em}
+
+\titleformat{\subsubsection}
+  {\color{ssrslate}\bfseries}
+  {\thesubsubsection}{0.5em}{}
+\titlespacing*{\subsubsection}{0pt}{0.5em}{0.15em}
+
+% condition summary card (used three-up in Methodology via minipages)
+\newtcolorbox{conditioncard}[2]{%
+  enhanced, colback=white, colframe=#1,
+  boxrule=0.7pt, arc=2pt, left=6pt, right=6pt, top=5pt, bottom=5pt,
+  before skip=2pt, after skip=2pt,
+  title={#2}, coltitle=white, colbacktitle=#1,
+  fonttitle=\small\bfseries, boxsep=1pt
+}
+
+% shelf-life conclusion box
+\newtcolorbox{shelflifebox}{%
+  enhanced, breakable,
+  colback=ssrpasstint, colframe=ssrteal,
+  boxrule=0.8pt, arc=3pt, left=10pt, right=10pt, top=6pt, bottom=6pt,
+  before skip=4pt, after skip=4pt,
+  title={\faChartLine\ \textbf{Shelf-Life Conclusion}},
+  coltitle=white, colbacktitle=ssrteal,
+  fonttitle=\normalsize\bfseries, boxsep=1pt
+}
+
+% general note / caution box
+\newtcolorbox{noteboxx}{%
+  enhanced, breakable,
+  colback=ssrmist, colframe=ssramber,
+  boxrule=0.7pt, arc=2pt, left=8pt, right=8pt, top=5pt, bottom=5pt,
+  before skip=3pt, after skip=3pt,
+  title={\faExclamationTriangle\ \textbf{Analyst Note}},
+  coltitle=white, colbacktitle=ssramber,
+  fonttitle=\small\bfseries, boxsep=1pt
+}
+
+% plain field box for metadata grid panels
+\newtcolorbox{fieldbox}[1][]{%
+  enhanced, colback=white, colframe=ssrline,
+  boxrule=0.6pt, arc=2pt, left=7pt, right=7pt, top=5pt, bottom=5pt,
+  before skip=2pt, after skip=2pt,
+  #1
+}
+
+% list styling
+\setlist[itemize]{leftmargin=1.3em, itemsep=0.15em, topsep=0.2em}
+\setlist[enumerate]{leftmargin=1.6em, itemsep=0.15em, topsep=0.2em}
+
+\sisetup{detect-weight=true, detect-family=true, table-format=3.1}
+
+% header / footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{ssrslate}Meridian Analytical Laboratories \textbar\ Stability Testing Group}
+\fancyhead[R]{\small\color{ssrslate}\textbf{Protocol STB-24-0087} Rev.\,2}
+\fancyfoot[L]{\footnotesize\color{ssrslate}CONFIDENTIAL}
+\fancyfoot[C]{\footnotesize\color{ssrslate}Page \thepage\ of \pageref{LastPage}}
+\fancyfoot[R]{\footnotesize\color{ssrslate}Apex Pharmaceuticals, Inc.}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=ssrteal,
+  citecolor=ssrteal,
+  urlcolor=ssrteal,
+  pdftitle={Stability Study Report --- Nexapram Tablets, 20 mg --- STB-24-0087},
+  pdfauthor={Meridian Analytical Laboratories}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.25em}
+
+\renewcommand{\bibfont}{\footnotesize}
+\setlength{\bibsep}{1pt}

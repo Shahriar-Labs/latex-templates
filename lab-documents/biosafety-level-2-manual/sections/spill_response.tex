@@ -1,0 +1,172 @@
+% ============================================================
+%  sections/spill_response.tex
+%  Section 3 — Spill Response and Emergency Procedures
+%  Includes the TikZ spill-response flowchart
+% ============================================================
+
+\section{Spill Response and Emergency Procedures}
+\label{sec:spill}
+
+Biological spills at BSL-2 must be managed calmly and systematically. The response
+differs depending on whether aerosolisation is likely (e.g., centrifuge failure,
+pressurised container breach) or unlikely (e.g., overturned culture flask on bench).
+The following flowchart provides decision logic for both scenarios.
+
+% -----------------------------------------------------------
+\subsection{Spill Response Flowchart}
+% -----------------------------------------------------------
+
+\vspace{8pt}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance = 0.55cm and 1.0cm,
+  startstop/.style = {
+    rectangle, rounded corners=5pt,
+    minimum width=4.0cm, minimum height=0.82cm,
+    text centered, draw=BSLdark, fill=BSLdark,
+    font=\sffamily\bfseries\footnotesize\color{white}
+  },
+  process/.style = {
+    rectangle,
+    minimum width=4.4cm, minimum height=0.82cm,
+    text width=4.2cm,
+    text centered, draw=BSLmid, fill=BSLtabalt,
+    font=\sffamily\footnotesize\color{BSLdark}
+  },
+  decision/.style = {
+    diamond, aspect=2.6,
+    minimum width=4.8cm, minimum height=0.9cm,
+    text width=3.8cm,
+    text centered, draw=BSLamber, fill=BSLwarn,
+    font=\sffamily\bfseries\footnotesize\color{BSLdark}
+  },
+  danger/.style = {
+    rectangle,
+    minimum width=4.4cm, minimum height=0.82cm,
+    text width=4.2cm,
+    text centered, draw=BSLdangerborder, fill=BSLdanger,
+    font=\sffamily\footnotesize\color{BSLdangerborder}
+  },
+  arrow/.style = {->, thick, color=BSLmid},
+  label/.style = {font=\sffamily\tiny\color{BSLmid}}
+]
+
+% ---- nodes ----
+\node (spill)    [startstop]                          {SPILL DETECTED};
+\node (d1)       [decision, below=of spill]           {Aerosol likely?\\\scriptsize(centrifuge, pressurised vessel)};
+\node (evac)     [danger,   below left=1.2cm and 0.4cm of d1]  {Evacuate room.\newline Alert all personnel.\newline Close door.};
+\node (alert)    [process,  below=of evac]            {Call Biosafety Emergency:\newline \textbf{+1 (617) 555-0194}};
+\node (wait)     [process,  below=of alert]           {Wait 30 minutes outside for aerosol to settle.};
+\node (ppe1)     [process,  below right=1.2cm and 0.4cm of d1] {Don appropriate PPE:\newline coat, double gloves, face shield.};
+\node (cover)    [process,  below=of ppe1]            {Cover spill with paper towels.\newline Do not spread material.};
+\node (decon)    [process,  below=of cover]           {Apply 10\% bleach around then over spill. Contact 20 min.};
+\node (rejoin)   [process,  below=of wait]            {Re-enter with full PPE.\newline Confirm aerosol settled.};
+\node (d2)       [decision, below=4.5cm of d1]        {Spill contained \&\newline risk neutralised?};
+\node (collect)  [process,  below=of d2]              {Collect material with absorbents.\newline Seal in biohazard bag.};
+\node (bso)      [danger,   right=1.4cm of d2]        {Contact BSO immediately.\newline Do NOT proceed alone.};
+\node (decon2)   [process,  below=of collect]         {Decontaminate area with fresh 10\% bleach. Clean \& dispose.};
+\node (report)   [process,  below=of decon2]          {Complete Incident Report (Form MRI-INC-01) within 24~h.};
+\node (done)     [startstop,below=of report]          {INCIDENT CLOSED};
+
+% ---- arrows ----
+\draw[arrow] (spill)  -- (d1);
+\draw[arrow] (d1)     -| node[label, above, pos=0.25]{Yes} (evac);
+\draw[arrow] (d1)     -| node[label, above, pos=0.25]{No}  (ppe1);
+\draw[arrow] (evac)   -- (alert);
+\draw[arrow] (alert)  -- (wait);
+\draw[arrow] (wait)   -- (rejoin);
+\draw[arrow] (ppe1)   -- (cover);
+\draw[arrow] (cover)  -- (decon);
+\draw[arrow] (rejoin) |- (d2);
+\draw[arrow] (decon)  |- (d2);
+\draw[arrow] (d2)     -- node[label, right]{Yes} (collect);
+\draw[arrow] (d2)     -- node[label, above]{No}  (bso);
+\draw[arrow] (collect) -- (decon2);
+\draw[arrow] (decon2) -- (report);
+\draw[arrow] (report) -- (done);
+
+\end{tikzpicture}
+\caption{BSL-2 Biological Spill Response Decision Flowchart}
+\label{fig:spill_flowchart}
+\end{figure}
+
+\vspace{4pt}
+
+% -----------------------------------------------------------
+\subsection{Step-by-Step Spill Response Procedures}
+% -----------------------------------------------------------
+
+\subsubsection{Minor Bench Spill (No Aerosol Risk)}
+
+\begin{procedurebox}[Minor Bench Spill Protocol]
+\begin{enumerate}[leftmargin=1.6em, itemsep=3pt,
+                  label=\textbf{\color{BSLmid}\arabic*.}]
+  \item \textbf{Alert:} Notify others in the room. If the spill involves a known
+        pathogen, verbally announce ``biological spill'' so colleagues can take
+        appropriate precautions.
+  \item \textbf{PPE:} Don double gloves, safety glasses, and lab coat if not
+        already wearing them. Add a face shield if splashing is possible.
+  \item \textbf{Contain:} Place dry paper towels over the spill without pressing
+        down. Work from the outer edges toward the centre.
+  \item \textbf{Disinfect:} Carefully pour 10\% bleach around the perimeter of
+        the towels, then over the top. Allow \textbf{20 minutes} contact time.
+  \item \textbf{Collect:} Using forceps or a dust pan (never bare hands), collect
+        the soaked towels and place in a biohazard bag.
+  \item \textbf{Re-clean:} Wipe the area with fresh 10\% bleach, followed by 70\%
+        ethanol to remove bleach residue from equipment surfaces.
+  \item \textbf{Report:} Document the spill using Form~MRI-INC-01. Minor spills
+        not involving personnel exposure may be reported to the PI within 24~h.
+\end{enumerate}
+\end{procedurebox}
+
+\subsubsection{Major Spill or Centrifuge Accident (Aerosol Risk)}
+
+\begin{dangerbox}[Aerosol-Generating Spill — Immediate Actions]
+\small
+\textbf{Do not attempt cleanup until the room has been evacuated for at least
+30 minutes} to allow aerosols to settle and/or be removed by the ventilation system.
+Failure to observe this wait time may result in inhalation exposure.
+\end{dangerbox}
+
+\begin{procedurebox}[Aerosol Spill Protocol]
+\begin{enumerate}[leftmargin=1.6em, itemsep=3pt,
+                  label=\textbf{\color{BSLmid}\arabic*.}]
+  \item \textbf{Stop work. Evacuate immediately.} Hold breath and exit. Post
+        ``Do Not Enter -- Biological Spill'' sign on the door.
+  \item \textbf{Remove contaminated clothing} at the door threshold; bag and seal
+        immediately. Wash exposed skin and eyes for 15~minutes at the nearest
+        eyewash / safety shower.
+  \item \textbf{Call the Biosafety Emergency Line} (+1 617-555-0194) and your
+        Principal Investigator within 15~minutes.
+  \item \textbf{Wait 30 minutes} before re-entry (aerosol settling time).
+  \item \textbf{Re-enter with full PPE}: double gloves, N95 respirator, face
+        shield, solid-front gown, boot covers.
+  \item \textbf{Proceed as Minor Spill steps 3--7} for cleanup.
+\end{enumerate}
+\end{procedurebox}
+
+% -----------------------------------------------------------
+\subsection{Medical Emergencies and Exposure Incidents}
+% -----------------------------------------------------------
+
+\begin{infobox}[Exposure Incident Response]
+\small
+\begin{tabular}{@{}L{3.2cm} L{10cm}@{}}
+\textbf{Needlestick / cut:} & Remove gloves; wash thoroughly with soap and water for
+                               5--10~min. Do not squeeze or suction the wound. Report
+                               immediately to Employee Health (Building~1, Room~22). \\[4pt]
+\textbf{Eye splash:}         & Irrigate with eyewash for minimum 15~min. Report to
+                               Employee Health and Biosafety Office immediately. \\[4pt]
+\textbf{Ingestion:}          & Do not induce vomiting. Contact Poison Control
+                               (1-800-222-1222) and Employee Health. \\[4pt]
+\textbf{All exposures:}      & Must be reported within 4~hours using Form~MRI-INC-01.
+                               Post-exposure prophylaxis (PEP) availability is agent-specific;
+                               Employee Health will advise. \\
+\end{tabular}
+\end{infobox}
+
+\begin{warningbox}[Never delay seeking medical attention to complete paperwork.]
+Form MRI-INC-01 can be completed after receiving initial medical evaluation.
+The priority is your health and safety.
+\end{warningbox}

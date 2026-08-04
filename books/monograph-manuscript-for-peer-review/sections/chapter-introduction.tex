@@ -1,0 +1,110 @@
+% sections/chapter-introduction.tex
+\chapter{The Problem of Distributed Attention}
+\label{ch:introduction}
+
+Every organisation that moved its research and development work out of a
+shared building and into a shared calendar made the same tacit bet: that
+coordination, once handled by walking to someone's desk, could be
+re-implemented in software without much loss. The bet has mostly paid off in
+throughput. It has not paid off in attention. This book is about the gap
+between those two ledgers.
+
+\section{Two Kinds of Load}
+
+Cognitive load theory\index{cognitive load theory}, in its classical
+formulation, distinguishes intrinsic load -- the load imposed by a task's own
+complexity -- from extraneous load, the load imposed by how the task is
+presented \citep{sweller1988cognitive}. That distinction has organised four
+decades of instructional-design research, and it organises most managerial
+thinking about ``focus'' in the workplace too: reduce interruptions, batch
+notifications, protect calendar blocks. The implicit model is that attention
+is consumed by tasks and merely \emph{interrupted} by coordination.
+
+Fieldwork at Nexa\index{Nexa}, Synapse\index{Synapse}, and
+Vertex\index{Vertex} suggests the implicit model has the causal arrow
+partly backwards. Coordination in a distributed team is not an
+interruption of task work; for a research engineer or data scientist
+juggling four asynchronous threads across three time zones, tracking
+\emph{who currently owns what, and whether they know it,} is itself a
+standing cognitive task -- one that runs continuously, in the background,
+whether or not any single message demands a reply.\footnote{Compare the
+notion of transactive memory in small groups, where knowledge of
+\emph{who knows what} is itself a resource the group maintains
+\citep{wegner1986transactive}. The claim of this book is that in distributed
+settings the maintenance of that resource carries a measurable load of its
+own.} I term this standing task \textbf{ambient coordination
+load}\index{ambient coordination load}: the cost of keeping a distributed
+map of ownership, status, and obligation current enough to act on.
+
+\begin{fieldexcerpt}[title={Field note, Vertex, week 6}]
+``I have Slack, I have the ticket tracker, I have two calendars because the
+platform team never migrated off the old one, and I have my actual editor.
+None of them agree with each other about what I'm supposed to be doing
+right now. Half my day is just \emph{reconciling} them.''\\[2pt]
+\hfill--- Staff engineer, platform infrastructure group
+\end{fieldexcerpt}
+
+The reconciliation this engineer describes -- checking one system of record
+against another, resolving which of several partial pictures is current --
+is not idle friction. Coded across the transcripts described in
+Chapter~\ref{ch:methodology}, it accounted for a median of 47 minutes of a
+9-hour working day, concentrated in short, high-frequency bursts rather than
+long blocks. Standard cognitive-load instruments, built around discrete
+tasks with a clear start and end, are not well suited to measuring load that
+is distributed across the day in this way.\footnote{The methodological
+challenge is not new to this study; see the discussion of ``distributed
+cognition in the wild'' in \citet{hutchins1995cognition}, and the extension
+to computer-mediated work in \citet{hollan2000distributed}.}
+
+\section{A Conceptual Map}
+
+Figure~\ref{fig:model} sketches the relationship this book develops between
+the two load types and the coordination scaffolding that sits between them.
+Task load and ambient coordination load are not competitors for the same
+fixed attentional budget in any simple additive sense; the fieldwork
+suggests instead that elevated coordination load actively \emph{degrades}
+the budget available for task load, through the recurring cost of context
+re-establishment after every channel switch.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw=inkblue, thick, rounded corners=2pt, minimum width=3.1cm,
+              minimum height=1.05cm, align=center, font=\small},
+  lbl/.style={font=\scriptsize\itshape, color=slategray}
+]
+  \node[box, fill=parchment] (task) {Task Load};
+  \node[box, fill=white, right=2.6cm of task] (coord) {Ambient\\ Coordination Load};
+  \node[box, fill=parchment, below=1.3cm of $(task)!0.5!(coord)$] (budget) {Effective\\ Attentional Budget};
+
+  \draw[-{Latex[length=2.2mm]}, thick, color=inkblue] (task) -- (budget);
+  \draw[-{Latex[length=2.2mm]}, thick, color=claret] (coord) -- (budget);
+  \draw[-{Latex[length=2.2mm]}, thick, dashed, color=claret]
+        (coord) to[bend right=25] node[lbl, above, sloped] {degrades} (task);
+\end{tikzpicture}
+\caption{Ambient coordination load acts on the attentional budget both
+directly and by degrading the residual capacity available for task load.}
+\label{fig:model}
+\end{figure}
+
+\section{Contributions and Chapter Map}
+
+The book makes three contributions. First, it names and operationalises
+ambient coordination load\index{ambient coordination load} as distinct from
+task-level cognitive load, drawing the boundary with reference to
+transactive memory theory \citep{wegner1986transactive} and situated,
+distributed accounts of cognition \citep{hutchins1995cognition,
+hollan2000distributed}. Second, it reports an eighteen-month, three-site
+field study -- described in Part Two -- that measures this load using
+instrumentation data rather than self-report alone, addressing a
+long-standing reliability concern in the self-report literature. Third, it
+proposes, in Part Three, a small set of organisational design levers that
+the field sites themselves converged on independently, without prompting
+from the research team.
+
+Part One (Chapters~\ref{ch:introduction}--\ref{ch:literature}) lays the
+conceptual groundwork. Part Two
+(Chapters~\ref{ch:methodology}--\ref{ch:findings}) presents the field study.
+Part Three (Chapter~\ref{ch:conclusion}) draws out implications for teams,
+managers, and the tool-builders whose products mediate so much of this
+load in the first place.

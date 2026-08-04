@@ -1,0 +1,31 @@
+\chapter{Anticipated Questions \& Answers}
+\label{ch:questions}
+
+This section details typical questions expected from the examination panel, alongside prepared answers that focus on defending key thesis contributions.
+
+\begin{questionbox}{Why did you choose deep reinforcement learning over classic Model Predictive Control for real-time trajectory generation?}
+While Model Predictive Control (MPC) provides robust safety guarantees through online optimization, it suffers from two major limitations in our application:
+\begin{enumerate}
+  \item \textbf{Computational Latency:} The optimization problem becomes non-convex in the presence of arbitrary dynamic obstacles, leading to execution latencies exceeding 150 ms.
+  \item \textbf{Sensor Integration:} MPC cannot directly process high-dimensional spatial sensor data (like LiDAR point clouds) without substantial preprocessing overhead.
+\end{enumerate}
+By utilizing \sys{SynapseNet}, we shift the computational burden to offline training. During online deployment, inference requires only 11.4 ms, enabling fast feedback loops. Safety is maintained by deploying the \sys{Apex} Safety Filter, which runs as a lightweight supervisory layer.
+\end{questionbox}
+
+\begin{questionbox}{How do you guarantee that the safety filter will not lead to deadlocks in highly cluttered environments?}
+The \sys{Apex} Safety Filter operates by projecting the nominal DRL control input onto a set of safe control inputs defined by Control Barrier Functions (CBFs). In dense clutter, this projection can result in a null control space or local minima (deadlocks). We resolve this using a two-stage approach:
+\begin{enumerate}
+  \item \textbf{State Expansion:} When the safe control set becomes empty, the controller inflates safety boundaries and executes a recovery sequence that redirects the drone along its historical trajectory.
+  \item \textbf{Active Sensing:} The agent performs small rotational maneuvers to gather missing spatial data in blind spots, resolving occlusions that cause false-positive local minima.
+\end{enumerate}
+This ensures that the UAV retreats safely rather than becoming trapped or colliding.
+\end{questionbox}
+
+\begin{questionbox}{Your thesis assumes bounded sensor noise. How does the system handle complete sensor dropout or hardware failure?}
+Under extreme sensor dropouts, the assumption of bounded noise is violated. In this case:
+\begin{itemize}
+  \item The epistemic uncertainty estimation module of \sys{SynapseNet} detects a massive spike in out-of-distribution indicators, causing the uncertainty metric to exceed our critical threshold ($\theta_{max} = 0.85$).
+  \item The \sys{Apex} Safety Filter immediately overrides the navigation system and triggers a fallback protocol: the quadcopter transitions to an autonomous hover state, utilizing low-level optical flow and inertial sensors to perform a controlled descent.
+\end{itemize}
+This fail-safe mechanism ensures the UAV lands safely even in the event of primary sensor failure.
+\end{questionbox}

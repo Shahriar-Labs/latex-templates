@@ -1,0 +1,71 @@
+% sections/method.tex -- the caching approach
+\setcounter{secprog}{2}
+\section{Method}
+
+\begin{frame}
+  \frametitle{A two-tier cache in front of the model}
+  \framesubtitle{Hot tier for repeats, warm tier for near-neighbours, cloud for the rest}
+  \begin{center}
+  \begin{tikzpicture}[
+      scale=0.82,transform shape,
+      node distance=6mm and 7mm,
+      box/.style={draw,rounded corners=2pt,fill=mist,minimum height=0.9cm,minimum width=2.1cm,align=center,font=\small},
+      decision/.style={draw,shape=diamond,fill=white,minimum width=1.7cm,minimum height=1.2cm,align=center,font=\scriptsize,aspect=2,inner sep=1pt},
+      accent/.style={draw,rounded corners=2pt,fill=signalteal,text=white,minimum height=0.9cm,minimum width=2.1cm,align=center,font=\small},
+      warm/.style={draw,rounded corners=2pt,fill=emberamber,text=white,minimum height=0.9cm,minimum width=2.1cm,align=center,font=\small},
+      arr/.style={->,thick,paletext}
+    ]
+    \node[box] (req) {User\\request};
+    \node[decision, right=of req] (hot) {Hot-tier\\hit?};
+    \node[accent, above right=5mm and 9mm of hot] (return1) {Return cached\\ranking};
+    \node[decision, right=13mm of hot] (warmq) {Warm-tier\\near hit?};
+    \node[warm, above right=5mm and 9mm of warmq] (return2) {Blend \& return\\(2\,ms refine)};
+    \node[box, right=13mm of warmq] (cloud) {Nexa cloud\\model call};
+    \node[box, below=7mm of warmq] (update) {Update hot + warm\\tiers (LRU-2)};
+
+    \draw[arr] (req) -- (hot);
+    \draw[arr] (hot) -- node[above,font=\tiny]{yes} (return1);
+    \draw[arr] (hot) -- node[below,font=\tiny]{no} (warmq);
+    \draw[arr] (warmq) -- node[above,font=\tiny]{yes} (return2);
+    \draw[arr] (warmq) -- node[below,font=\tiny]{no} (cloud);
+    \draw[arr] (cloud) |- (update);
+    \draw[arr] (return2.south) |- (update.east);
+  \end{tikzpicture}
+  \end{center}
+  \vspace{1mm}
+  \small
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Hot tier}
+        Exact-match cache on (user, session context), keyed by a 32-bit fingerprint. 4k entries, sub-millisecond lookup.
+      \end{block}
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \begin{block}{Warm tier}
+        LSH over the last embedding; a 2\,ms refinement pass blends the neighbour's ranking with fresh signals.
+      \end{block}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}
+  \frametitle{What we varied, what we held fixed}
+  \framesubtitle{Three factors, one ablation grid, same eval set across all runs}
+  \begin{table}
+    \centering
+    \small
+    \begin{tabular}{@{}lll@{}}
+      \toprule
+      \textbf{Factor} & \textbf{Levels tested} & \textbf{Held fixed} \\
+      \midrule
+      Hot-tier size & 1k / 4k / 16k entries & Eviction: LRU-2 \\
+      Warm-tier radius & 0.05 / 0.10 / 0.20 (cosine) & Refine budget: 2\,ms \\
+      Device tier & entry / mid / flagship & Model weights (int8, frozen) \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \vspace{3mm}
+  \begin{alertblock}{Why this matters for a 12-minute talk}
+    The full grid is 27 runs $\times$ 3 device tiers. Today I show the configuration that won on the held-out validation split --- 4k hot / 0.10 radius --- and how it generalizes across hardware.
+  \end{alertblock}
+\end{frame}

@@ -1,0 +1,153 @@
+% preamble.tex — packages, colours, custom commands, page geometry
+\usepackage[letterpaper,margin=1.5cm,headheight=32pt,headsep=12pt,footskip=20pt]{geometry}
+
+% ---- fonts / encoding ----
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage{microtype}
+
+% ---- math ----
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ---- color ----
+\usepackage[table]{xcolor}
+
+% ---- layout / tables ----
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{siunitx}
+
+% ---- graphics ----
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[most]{tcolorbox}
+
+% ---- lists ----
+\usepackage{enumitem}
+
+% ---- icons ----
+\usepackage{fontawesome5}
+
+% ---- headers/footers ----
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+% ---- misc ----
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{hyperref}
+\usepackage{ragged2e}
+\usepackage{lastpage}
+
+% =====================================================================
+% Color Palette
+% =====================================================================
+\definecolor{cleanprimary}{RGB}{30,58,138}    % deep navy
+\definecolor{cleansecondary}{RGB}{13,148,136} % teal
+\definecolor{cleanaccent}{RGB}{217,119,6}    % amber
+\definecolor{cleanbg}{RGB}{248,250,252}       % very light slate
+\definecolor{cleanline}{RGB}{226,232,240}     % border gray
+\definecolor{cleanpass}{RGB}{22,163,74}       % green
+\definecolor{cleanalert}{RGB}{220,38,38}      % red
+\definecolor{cleantext}{RGB}{30,41,59}        % slate 800
+
+\color{cleantext}
+
+% =====================================================================
+% Custom Commands
+% =====================================================================
+\newcommand{\mthree}{\text{m}\textsuperscript{3}}
+\newcommand{\um}{\text{\textmu m}}
+\newcommand{\cfu}{\text{CFU}}
+
+\newcommand{\passbadge}{{\color{cleanpass}\faCheckCircle\ \textbf{COMPLIANT}}}
+\newcommand{\alertbadge}{{\color{cleanaccent}\faExclamationTriangle\ \textbf{ALERT}}}
+\newcommand{\actionbadge}{{\color{cleanalert}\faTimesCircle\ \textbf{ACTION}}}
+
+\newcommand{\headerfield}[2]{%
+  {\color{cleanprimary}\bfseries\small #1:}~{\small #2}%
+}
+
+% section styling
+\titleformat{\section}
+  {\color{cleanprimary}\Large\bfseries}
+  {\thesection}{0.6em}{}
+  [\vspace{-0.3em}{\color{cleansecondary}\titlerule[1.2pt]}]
+\titlespacing*{\section}{0pt}{1.0em}{0.4em}
+
+\titleformat{\subsection}
+  {\color{cleansecondary}\large\bfseries}
+  {\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{0.8em}{0.3em}
+
+% custom tcolorbox
+\newtcolorbox{summarybox}[1][]{%
+  enhanced, breakable,
+  colback=cleanbg, colframe=cleanprimary,
+  boxrule=0.8pt, arc=3pt, left=10pt, right=10pt, top=6pt, bottom=6pt,
+  before skip=6pt, after skip=6pt,
+  title={\faInfoCircle\ \textbf{Executive Summary}},
+  coltitle=white, colbacktitle=cleanprimary,
+  fonttitle=\small\bfseries,
+  boxsep=2pt,
+  #1
+}
+
+\newtcolorbox{alertbox}[1][]{%
+  enhanced, breakable,
+  colback=cleanbg, colframe=cleanaccent,
+  boxrule=0.8pt, arc=3pt, left=10pt, right=10pt, top=6pt, bottom=6pt,
+  before skip=6pt, after skip=6pt,
+  title={\faExclamationTriangle\ \textbf{Monitoring Alert Notice}},
+  coltitle=white, colbacktitle=cleanaccent,
+  fonttitle=\small\bfseries,
+  boxsep=2pt,
+  #1
+}
+
+\newtcolorbox{verdictbox}[1][]{%
+  enhanced, breakable,
+  colback=cleanpass!10!white, colframe=cleanpass,
+  boxrule=0.8pt, arc=3pt, left=10pt, right=10pt, top=6pt, bottom=6pt,
+  before skip=6pt, after skip=6pt,
+  title={\faCheckCircle\ \textbf{Cleanroom Certification Status}},
+  coltitle=white, colbacktitle=cleanpass,
+  fonttitle=\small\bfseries,
+  boxsep=2pt,
+  #1
+}
+
+\setlist[itemize]{leftmargin=1.3em, itemsep=0.15em, topsep=0.2em}
+\setlist[enumerate]{leftmargin=1.6em, itemsep=0.15em, topsep=0.2em}
+
+\sisetup{detect-weight=true, detect-family=true}
+
+% header / footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{cleanprimary}\textbf{Synapse Biologics} \textbar\ Quality Control (Microbiology)}
+\fancyhead[R]{\small\color{cleanprimary}\textbf{RP-EM-2026-0804} Rev.\,0}
+\fancyfoot[L]{\footnotesize\color{cleantext}CONFIDENTIAL}
+\fancyfoot[C]{\footnotesize\color{cleantext}Page \thepage\ of \pageref{LastPage}}
+\fancyfoot[R]{\footnotesize\color{cleantext}Apex Manufacturing Facility \textbar\ Cleanroom Facility}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=cleansecondary,
+  citecolor=cleansecondary,
+  urlcolor=cleansecondary,
+  pdftitle={Cleanroom Environmental Monitoring Report},
+  pdfauthor={Synapse Biologics QA}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.3em}

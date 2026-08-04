@@ -1,0 +1,51 @@
+\section{Error Handling}
+\label{sec:errors}
+The Vertex Core API returns standard HTTP response codes to indicate the success or failure of an API request.
+In general:
+\begin{itemize}
+  \item Codes in the \code{2xx} range indicate success.
+  \item Codes in the \code{4xx} range indicate an error that failed because of the information provided (e.g., a missing parameter, authentication failure, etc.).
+  \item Codes in the \code{5xx} range indicate an error on the Vertex server infrastructure.
+\end{itemize}
+
+\subsection{Error Response Body}
+When a request fails, additional diagnostics are returned in the response body as a JSON object containing the error details:
+\begin{lstlisting}[language=json]
+{
+  "error": {
+    "code": "INVALID_PARAMETER",
+    "message": "The request body parameter 'sync_mode' is invalid.",
+    "doc_url": "https://docs.vertex.meridian.net/errors/INVALID_PARAMETER",
+    "details": [
+      {
+        "field": "sync_mode",
+        "issue": "Must be one of: snapshot, realtime, differential"
+      }
+    ]
+  }
+}
+\end{lstlisting}
+
+\subsection{Error Codes and Types}
+Table \ref{tab:error-codes} lists the common API-specific errors that you may encounter while integrating with the Vertex Core API.
+
+\begin{table}[h]
+\centering
+\sffamily
+\small
+\begin{tabularx}{\linewidth}{l l L}
+\toprule
+\textbf{API Error Code} & \textbf{HTTP Status} & \textbf{Description} \\
+\midrule
+\code{UNAUTHORIZED} & 401 Unauthorized & The access token provided is invalid or has expired. Obtain a new token using \code{/v2/auth/token}. \\
+\code{FORBIDDEN} & 403 Forbidden & Your organization lacks the permissions required to access the requested resource. \\
+\code{RESOURCE\_NOT\_FOUND} & 404 Not Found & The requested resource (e.g. cluster ID or job ID) does not exist or belongs to another tenant. \\
+\code{INVALID\_PARAMETER} & 400 Bad Request & One or more request parameters (query, header, or body) failed to meet validation requirements. \\
+\code{RATE\_LIMIT\_EXCEEDED} & 429 Too Many Requests & The client has exceeded its rate limit. Backoff is required before sending more requests. \\
+\code{LEDGER\_LOCKED} & 409 Conflict & The operation could not be completed because the target replication ledger is currently locked for maintenance. \\
+\code{INTERNAL\_ERROR} & 500 Server Error & An internal error occurred in the Vertex replication service. Retry after standard backoff intervals. \\
+\bottomrule
+\end{tabularx}
+\caption{Vertex Core API Common Error Codes}
+\label{tab:error-codes}
+\end{table}

@@ -1,0 +1,98 @@
+\section{Design Matrix and Run Order}
+
+\subsection*{3.1 Design geometry}
+The eight factorial vertices of the \(2^{3}\) cube are labelled below in standard Yates
+notation; each letter present indicates that factor is at its \emph{high} level, and
+\((1)\) denotes all factors low. Three additional centre-point replicates (not shown on the
+cube) sit at the geometric middle and are used only to test for curvature.
+
+\begin{center}
+\begin{tikzpicture}[
+    scale=1.05,
+    vertex/.style={circle, fill=doeprimary, draw=white, line width=0.6pt, minimum size=5pt, inner sep=0pt},
+    lbl/.style={font=\small\bfseries, color=doeprimary}
+  ]
+  \def\side{3.0}
+  \def\dx{1.3}
+  \def\dy{0.85}
+
+  % front face (C = -1)
+  \coordinate (A) at (0,0);
+  \coordinate (B) at (\side,0);
+  \coordinate (C) at (\side,\side);
+  \coordinate (D) at (0,\side);
+  % back face (C = +1)
+  \coordinate (E) at ($(A)+(\dx,\dy)$);
+  \coordinate (F) at ($(B)+(\dx,\dy)$);
+  \coordinate (G) at ($(C)+(\dx,\dy)$);
+  \coordinate (H) at ($(D)+(\dx,\dy)$);
+
+  % back face (dashed, drawn first so it sits behind)
+  \draw[doerule, dashed, line width=0.8pt] (E) -- (F) -- (G) -- (H) -- cycle;
+  \draw[doerule, dashed, line width=0.8pt] (A) -- (E);
+  \draw[doerule, dashed, line width=0.8pt] (D) -- (H);
+  \draw[doeaccent, line width=1.1pt] (B) -- (F);
+  \draw[doeaccent, line width=1.1pt] (C) -- (G);
+
+  % front face (solid)
+  \draw[doeprimary, line width=1.2pt] (A) -- (B) -- (C) -- (D) -- cycle;
+
+  \foreach \p in {A,B,C,D,E,F,G,H} { \node[vertex] at (\p) {}; }
+
+  \node[lbl, below left=2pt and 2pt of A] {(1)};
+  \node[lbl, below right=2pt and 2pt of B] {a};
+  \node[lbl, above right=2pt and 2pt of C] {ab};
+  \node[lbl, above left=2pt and 2pt of D] {b};
+  \node[lbl, left=4pt of E] {c};
+  \node[lbl, right=4pt of F] {ac};
+  \node[lbl, above right=1pt and 2pt of G] {abc};
+  \node[lbl, above left=1pt and 2pt of H] {bc};
+
+  % axis arrows
+  \draw[-latex, doeink, line width=0.8pt] ($(A)+(-0.9,0)$) -- ($(B)+(0.35,0)$) node[right, font=\scriptsize] {A};
+  \draw[-latex, doeink, line width=0.8pt] ($(A)+(0,-0.6)$) -- ($(D)+(0,0.35)$) node[above, font=\scriptsize] {B};
+  \draw[-latex, doeink, line width=0.8pt] ($(A)+(-0.55,-0.35)$) -- ($(E)+(0.25,0.18)$) node[above, font=\scriptsize] {C};
+\end{tikzpicture}
+\end{center}
+
+\subsection*{3.2 Randomized run sheet}
+Execute runs strictly in \textbf{Run Order}; \textbf{Std Order} is the Yates reference used
+only for analysis. Random seed: 7719 (Mersenne Twister, drawn 01 Aug 2026, witnessed by Quality).
+Fill \(Y_1\), \(Y_2\), and the operator/timestamp fields immediately after each run --- do not
+batch-fill at the end of the shift.
+
+\vspace{0.3em}
+\begin{center}
+\renewcommand{\arraystretch}{1.15}
+\scriptsize
+\setlength{\tabcolsep}{3.6pt}
+\begin{tabular}{@{}c c c c c c c c c c c@{}}
+\toprule
+\rowcolor{doeprimary}
+\textcolor{white}{\textbf{Run}} & \textcolor{white}{\textbf{Std}} &
+\textcolor{white}{\textbf{A}} & \textcolor{white}{\textbf{B}} & \textcolor{white}{\textbf{C}} &
+\textcolor{white}{\textbf{T (\(^\circ\)C)}} & \textcolor{white}{\textbf{Cat \%}} &
+\textcolor{white}{\textbf{t (min)}} & \textcolor{white}{\textbf{\(Y_1\) (\%)}} &
+\textcolor{white}{\textbf{\(Y_2\) (MPa)}} & \textcolor{white}{\textbf{Op/Time}} \\
+\midrule
+1  & 7  & \(-1\) & \(+1\) & \(+1\) & 170 & 1.4 & 12 & & & \\
+2  & 3  & \(-1\) & \(+1\) & \(-1\) & 170 & 1.4 & 8  & & & \\
+3  & 10 & \(0\)  & \(0\)  & \(0\)  & 185 & 1.1 & 10 & & & \\
+4  & 1  & \(-1\) & \(-1\) & \(-1\) & 170 & 0.8 & 8  & & & \\
+5  & 5  & \(-1\) & \(-1\) & \(+1\) & 170 & 0.8 & 12 & & & \\
+6  & 8  & \(+1\) & \(+1\) & \(+1\) & 200 & 1.4 & 12 & & & \\
+7  & 2  & \(+1\) & \(-1\) & \(-1\) & 200 & 0.8 & 8  & & & \\
+8  & 11 & \(0\)  & \(0\)  & \(0\)  & 185 & 1.1 & 10 & & & \\
+9  & 4  & \(+1\) & \(+1\) & \(-1\) & 200 & 1.4 & 8  & & & \\
+10 & 9  & \(0\)  & \(0\)  & \(0\)  & 185 & 1.1 & 10 & & & \\
+11 & 6  & \(+1\) & \(-1\) & \(+1\) & 200 & 0.8 & 12 & & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{notebox}[Worked example --- how to record a response]
+Suppose Run~4 (all factors low) yields 44 of 50 panels passing and a mean tensile of
+36.2~MPa, read at 07{:}42 by operator J.\,Okafor. Enter: \(Y_1 = \mathbf{88.0}\),
+\(Y_2 = \mathbf{36.2}\), Op./Time = \textbf{JO / 07:42}. Record the failing-panel defect
+mode in the Appendix notes field, not on this sheet.
+\end{notebox}

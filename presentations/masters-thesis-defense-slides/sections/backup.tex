@@ -1,0 +1,72 @@
+\appendix
+\dividerframe{Backup Slides}
+
+\section{Backup}
+
+\begin{frame}{Anticipated Question: Why Not an End-to-End Learned Router?}
+\textbf{Q:} Why use a hand-specified cost function instead of learning the routing decision end-to-end?\\[6pt]
+\textbf{A:}
+\begin{itemize}
+\item An end-to-end policy (e.g.\ a contextual bandit over indexes) needs online exploration, which is risky in a production serving path.
+\item The decomposed cost model ($\widehat{\ell}$, $\widehat{r}$, load) is independently testable, and each term can be swapped without retraining the whole router.
+\item We tried a direct policy-gradient router in early experiments; it matched AQR's recall but needed 8$\times$ more training queries to converge to a stable policy.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Anticipated Question: Feature Extractor Overhead}
+\textbf{Q:} Doesn't computing per-query features add back the latency you're trying to remove?\\[6pt]
+\textbf{A:}
+\begin{itemize}
+\item Feature extraction is dominated by a cached PCA projection (128-d) --- 0.4\,ms median.
+\item Combined with router inference (0.7\,ms), total overhead is 1.1\,ms, versus 18--27\,ms saved on p95.
+\item A heavier 768-d feature set gained only $+$0.6 recall points for $+$2.3\,ms overhead --- not worth it, so we kept the lighter extractor.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Anticipated Question: Scaling Beyond 5M Vectors}
+\textbf{Q:} Your largest corpus is 5M vectors. Does AQR hold up at 100M+?\\[6pt]
+\textbf{A:}
+\begin{itemize}
+\item Router cost is per-query, not per-corpus, so inference latency is corpus-size-independent.
+\item What changes at scale is per-index latency variance --- exactly the signal the cost model conditions on, so routing value should \emph{increase}, not decrease.
+\item Not yet measured; a 100M-vector run on sharded Meridian-Corpus is the first item in future work.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Backup: Hyperparameters}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{center}
+\begin{tabular}{lc}
+\toprule
+\textbf{Hyperparameter} & \textbf{Value} \\
+\midrule
+$\alpha$ (latency weight) & 0.5 \\
+$\beta$ (recall weight) & 0.4 \\
+$\gamma$ (load weight) & 0.1 \\
+Confidence threshold $\tau$ & 0.62 \\
+Feature dimensionality & 128 (PCA) \\
+Cost-model retrain interval & 6 hours \\
+Regressor & gradient-boosted trees, 200 estimators \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}{Backup: Per-Dataset Latency Breakdown}
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Dataset} & \textbf{p50 (ms)} & \textbf{p95 (ms)} & \textbf{p99 (ms)} \\
+\midrule
+SIFT1M & 6 & 15 & 22 \\
+GloVe-1.2M & 9 & 19 & 28 \\
+Meridian-Corpus-5M & 11 & 24 & 37 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{0.2cm}
+\footnotesize All figures for AQR at concurrency 16; see main results for baseline comparisons.
+\end{frame}

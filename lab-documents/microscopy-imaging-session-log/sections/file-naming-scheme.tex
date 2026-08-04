@@ -1,0 +1,58 @@
+\section{Image File Naming Scheme}
+
+Every raw file from this facility follows a fixed eight-token pattern so that
+downstream scripts can parse metadata directly from the filename without
+reading embedded TIFF tags. The pattern is:
+
+\begin{center}
+\texttt{\textbf{YYYYMMDD\_SAMPLEID\_REP\_OBJ\_CHANNEL\_zNN-NN\_tNN.tif}}
+\end{center}
+
+The worked example below is frame 004 from the acquisition log
+(\S\ref{sec:acqlog}), with each token colour-matched to its definition in
+the table beneath it.
+
+\begin{center}
+\begin{tikzpicture}[
+  every node/.style={font=\footnotesize\ttfamily, rounded corners=2pt, minimum height=1.9em, inner sep=3pt},
+  node distance=1pt
+]
+\node[fill=mistgray, draw=inkslate] (t1) {20260803};
+\node[fill=fluorblue!20, draw=fluorblue, right=of t1] (t2) {NX-SLD014};
+\node[fill=fluorgreen!20, draw=fluorgreen, right=of t2] (t3) {R1};
+\node[fill=amberflag!20, draw=amberflag, right=of t3] (t4) {60x};
+\node[fill=fluorred!20, draw=fluorred, right=of t4] (t5) {DAPI};
+\node[fill=fluorfar!20, draw=fluorfar, right=of t5] (t6) {z01-15};
+\node[fill=mistgray, draw=inkslate, right=of t6] (t7) {t01};
+\node[fill=paperwhite, draw=fluorgray, right=of t7] (t8) {.tif};
+\end{tikzpicture}
+\end{center}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{@{}l l p{6.4cm}@{}}
+\toprule
+\rowcolor{inkslate}
+\textcolor{paperwhite}{\textbf{Token}} & \textcolor{paperwhite}{\textbf{Example}} & \textcolor{paperwhite}{\textbf{Meaning}} \\
+\midrule
+Date          & \texttt{20260803}  & Acquisition date, ISO 8601, no separators \\
+Sample ID     & \texttt{NX-SLD014} & LIMS slide/sample identifier \\
+\rowcolor{fluorgreen!12}
+Replicate     & \texttt{R1}         & Biological replicate number on this slide \\
+Objective     & \texttt{60x}        & Nominal magnification of the objective used \\
+\rowcolor{fluorred!12}
+Channel       & \texttt{DAPI}       & Filter cube / channel name (matches \S2) \\
+Z-range       & \texttt{z01-15}     & First--last plane index of the Z-stack \\
+\rowcolor{fluorfar!12}
+Timepoint     & \texttt{t01}        & Field/timepoint index within the replicate \\
+Extension     & \texttt{.tif}       & Uncompressed 16-bit TIFF, one channel per file \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{tcolorbox}[infobox,title=\faFile\ Survey-Pass Variant]
+Survey frames drop the Z-range and timepoint tokens in favour of a single
+field index, e.g.\ \texttt{20260803\_NX-SLD014\_R1\_20x\_GFP\_f01.tif}. The
+\texttt{f}-prefixed field index is never reused across passes, so survey and
+detail filenames for the same physical location will not collide.
+\end{tcolorbox}

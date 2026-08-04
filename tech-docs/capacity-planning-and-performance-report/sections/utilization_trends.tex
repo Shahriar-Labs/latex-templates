@@ -1,0 +1,71 @@
+\section{Utilization Trends \& Headroom Analysis}
+We compiled metrics from Nexa's production monitoring suite over the last six months (February 2026 to July 2026) to identify capacity trajectories. A consistent increase in average and peak utilization was observed across the Vertex cluster.
+
+\subsection{Historical Resource Trends}
+Figure~\ref{fig:utilization_trends} highlights the growth in CPU and memory utilization.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[capacitytrend, title={Average \& Peak Resource Utilization (6-Month Trend)}]
+      % CPU Average
+      \addplot[color=primary, mark=*, thick] coordinates {
+        (0, 38)
+        (1, 41)
+        (2, 45)
+        (3, 52)
+        (4, 58)
+        (5, 66)
+      };
+      \addlegendentry{Average CPU (\%)}
+      
+      % CPU Peak
+      \addplot[color=primary, mark=square*, dashed, thick] coordinates {
+        (0, 55)
+        (1, 59)
+        (2, 63)
+        (3, 72)
+        (4, 79)
+        (5, 88)
+      };
+      \addlegendentry{Peak CPU (\%)}
+
+      % Memory Average
+      \addplot[color=secondary, mark=triangle*, thick] coordinates {
+        (0, 52)
+        (1, 55)
+        (2, 58)
+        (3, 62)
+        (4, 69)
+        (5, 76)
+      };
+      \addlegendentry{Average Memory (\%)}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Six-month historical utilization trends for the primary database node in the Vertex Cluster.}
+  \label{fig:utilization_trends}
+\end{figure}
+
+\subsection{Headroom Analysis}
+Based on linear extrapolation of our current growth trends (approx. 5\% monthly increase in base traffic), we computed the remaining headroom before resource saturation. Saturation is defined as exceeding 85\% average utilization or 95\% peak utilization.
+
+Table~\ref{tab:headroom} presents the projected saturation dates for the critical system metrics.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Vertex Database Cluster resource headroom and saturation projections.}
+  \label{tab:headroom}
+  \begin{tabularx}{\textwidth}{l c c r X}
+    \toprule
+    \textbf{Metric} & \textbf{Current Value} & \textbf{Growth Rate} & \textbf{Provisional Limit} & \textbf{Projected Saturation} \\
+    \midrule
+    Primary CPU (Peak) & 88\% & +5.1\% / Mo & 95\% & September 2026 \\
+    \rowcolor{lightgray} Primary Memory & 76\% & +4.0\% / Mo & 85\% & October 2026 \\
+    Disk Storage & 320\,GB & +22\,GB / Mo & 450\,GB (90\%) & January 2027 \\
+    \rowcolor{lightgray} Storage IOPS & 2,850 & +8.5\% / Mo & 3,000 (Baseline) & August 2026 \\
+    Replica CPU (Peak) & 46\% & +3.2\% / Mo & 95\% & May 2027 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\textbf{Analysis:} The disk IOPS metrics and primary CPU peak utilization are critical bottlenecks. High storage write-wait latency has already begun degrading API response times, as detailed in Section~\ref{sec:load_testing}.

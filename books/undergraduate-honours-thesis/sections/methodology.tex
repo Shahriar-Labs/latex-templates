@@ -1,0 +1,81 @@
+% methodology.tex
+\chapter{Methodology}
+\label{ch:methodology}
+
+\section{The Gradient-Weighted Cache}
+\label{sec:gwc-design}
+GWC maintains, for every cached object $i$, a utility score $u_i$ updated on each access
+$t$ according to
+
+\begin{equation}
+  u_i \leftarrow (1 - \alpha)\, u_i + \alpha \left( \frac{f_i}{\log_2(s_i + 2)} \right)
+  \label{eq:gwc-update}
+\end{equation}
+
+\noindent where $f_i$ is an exponentially decayed access-frequency counter, $s_i$ is the
+object size in kilobytes, and $\alpha \in (0,1)$ is a learning-rate constant fixed at
+$\alpha = 0.15$ for all experiments (chosen by grid search over $\{0.05, 0.10, 0.15, 0.20,
+0.30\}$ on a held-out warm-up trace, reported in Appendix~\ref{app:results}). On cache-full
+insert, GWC evicts the object with the lowest $u_i$, breaking ties by oldest access time.
+The size term in the denominator biases the policy toward retaining small, frequently
+requested objects over large ones with comparable frequency -- a deliberate choice, since a
+single evicted large object frees space for several smaller ones.
+
+Unlike LRU-K or 2Q, GWC requires only one floating-point value and one timestamp per cached
+object, and the update in Equation~\ref{eq:gwc-update} is $O(1)$ regardless of cache
+occupancy. No separate training phase, model file, or offline fitting step is required.
+
+\section{EdgeSim Testbed}
+Experiments were run on EdgeSim, a discrete-event simulator built for this thesis that models
+a configurable number of edge nodes, each with its own bounded cache and its own request
+stream. EdgeSim was chosen over a production trace replay because it allows controlled
+manipulation of skew, burstiness, and object-size distribution -- each isolated as an
+independent variable in Section~\ref{sec:experimental-design}. The testbed configuration used
+throughout this thesis is summarised in Table~\ref{tab:testbed-config}.
+
+\begin{table}[h]
+  \centering
+  \caption{EdgeSim testbed configuration used in all reported experiments.}
+  \label{tab:testbed-config}
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    \textbf{Parameter} & \textbf{Value} \\
+    \midrule
+    Edge nodes                  & 12 \\
+    Cache size per node         & 256\,MB \\
+    Requests per node           & 50,000 \\
+    Object size distribution    & Log-normal, $\mu=8.2$, $\sigma=1.1$ (KB) \\
+    Popularity distribution     & Zipfian, $\theta = 0.8$ \\
+    Catalogue size               & 20,000 distinct objects \\
+    Warm-up requests (discarded) & 5,000 per node \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\section{Synthetic Workload Generation}
+\label{sec:workload}
+Request popularity was drawn from a Zipfian distribution with $\theta = 0.8$, in line with
+the traffic characteristics reported in Section~\ref{ch:literature-review} for general web
+and media CDN traffic. To model popularity drift -- a scenario static policies handle poorly
+-- a second workload variant re-ranks the 500 most popular objects every 10,000 requests,
+simulating a trending-content shift. Both variants are used in Chapter~\ref{ch:results};
+the drifting variant is reported separately in Section~\ref{sec:drift-results}.
+
+\section{Experimental Design}
+\label{sec:experimental-design}
+Each of the three policies (LRU, LFU, GWC) was run against both workload variants on all
+twelve simulated nodes, with five random seeds per configuration to account for
+sampling variance. The metrics recorded per run were:
+
+\begin{itemize}
+  \item \textbf{Hit ratio} -- fraction of requests served from cache.
+  \item \textbf{Byte hit ratio} -- fraction of bytes served from cache, which weights large
+        objects more heavily than the request-count hit ratio.
+  \item \textbf{Mean retrieval latency} -- simulated latency, with a cache hit fixed at
+        4\,ms and a cache miss (origin fetch) fixed at 48\,ms plus queuing delay.
+  \item \textbf{Per-request policy overhead} -- wall-clock time spent in the eviction
+        policy's bookkeeping code, measured on the reference simulation host.
+\end{itemize}
+
+All reported figures in Chapter~\ref{ch:results} are means across the five seeds, with 95\%
+confidence intervals computed via the $t$-distribution.

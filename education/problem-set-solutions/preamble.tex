@@ -1,0 +1,161 @@
+% preamble.tex -- packages, colours, custom commands, page geometry
+
+\usepackage[a4paper,left=1in,right=1.9in,top=1.1in,bottom=1.2in,%
+            marginparwidth=1.5in,marginparsep=0.3in]{geometry}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{fontawesome5}
+\usepackage[bottom]{footmisc}
+\usepackage[colorlinks=true,linkcolor=inkblue,citecolor=inkblue,urlcolor=inkblue]{hyperref}
+
+% ---------- colour palette ----------
+\definecolor{inkblue}{RGB}{27,47,79}
+\definecolor{slate}{RGB}{90,101,117}
+\definecolor{parchment}{RGB}{246,244,238}
+\definecolor{accentgold}{RGB}{178,132,58}
+\definecolor{correctgreen}{RGB}{55,105,79}
+\definecolor{rubricgrey}{RGB}{237,236,232}
+
+% ---------- headers / footers ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\color{slate}\textsc{Math 204 --- Differential Equations}}
+\fancyhead[R]{\small\color{slate}Problem Set 4 Solutions}
+\fancyfoot[C]{\small\color{slate}\thepage}
+
+% ---------- section styling ----------
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{inkblue}}
+  {\thesection}{0.6em}{}
+\titlespacing*{\section}{0pt}{2.2em}{1em}
+
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{inkblue}}
+  {\thesubsection}{0.6em}{}
+\titlespacing*{\subsection}{0pt}{1.4em}{0.6em}
+
+% ---------- problem restatement box ----------
+\newtcolorbox{problembox}[1]{%
+  enhanced,
+  breakable,
+  colback=parchment,
+  colframe=inkblue,
+  boxrule=0.6pt,
+  left=10pt, right=10pt, top=8pt, bottom=8pt,
+  arc=1pt,
+  title={#1},
+  fonttitle=\bfseries\color{white},
+  colbacktitle=inkblue,
+  attach boxed title to top left={xshift=10pt,yshift=-2mm},
+  boxed title style={colframe=inkblue,colback=inkblue,arc=1pt,boxrule=0pt}
+}
+
+% ---------- final answer box ----------
+\newtcolorbox{finalbox}{%
+  enhanced,
+  colback=correctgreen!8,
+  colframe=correctgreen,
+  boxrule=0.7pt,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+  arc=1pt,
+  fonttitle=\bfseries,
+  title={\faCheck\ Final Answer},
+  colbacktitle=correctgreen,
+  coltitle=white,
+  attach boxed title to top left={xshift=8pt,yshift=-2mm},
+  boxed title style={colframe=correctgreen,colback=correctgreen,arc=1pt,boxrule=0pt}
+}
+
+% ---------- worked-solution step list ----------
+\newlist{steps}{enumerate}{1}
+\setlist[steps]{%
+  label=\textbf{\color{inkblue}Step \arabic*.},
+  leftmargin=1.6cm,
+  itemsep=6pt,
+  topsep=4pt
+}
+
+% ---------- rubric margin note ----------
+\newcommand{\rubric}[2]{%
+  \marginpar{%
+    \begin{tcolorbox}[
+      enhanced,
+      colback=rubricgrey,
+      colframe=accentgold,
+      boxrule=0.5pt,
+      arc=0.5pt,
+      left=4pt,right=4pt,top=3pt,bottom=3pt,
+      fontupper=\footnotesize
+    ]
+      \textbf{\color{accentgold}\faPen\ #1 pt} \\{}
+      #2
+    \end{tcolorbox}%
+  }%
+}
+
+% ---------- cover sheet ----------
+\newcommand{\coversheet}{%
+  \begin{titlepage}
+    \begin{tikzpicture}[remember picture,overlay]
+      \fill[inkblue] (current page.north west) rectangle
+        ([yshift=-3.2cm]current page.north east);
+      \fill[accentgold] (current page.north west) rectangle
+        ([yshift=-3.2cm,xshift=4pt]current page.north west);
+      \node[anchor=west,text=white,font=\Huge\bfseries]
+        at ([xshift=1.4cm,yshift=-1.6cm]current page.north west)
+        {Problem Set 4 --- Solutions};
+    \end{tikzpicture}
+    \vspace*{4.4cm}
+
+    \begin{center}
+      {\Large\color{slate} Applied Mathematics 204: Differential Equations}\\[0.3cm]
+      {\large\color{slate} Meridian University --- Department of Mathematics}\\[1.2cm]
+    \end{center}
+
+    \begin{center}
+    \begin{tcolorbox}[
+      width=0.82\textwidth,
+      colback=parchment,
+      colframe=inkblue,
+      boxrule=0.6pt,
+      arc=1pt,
+      left=14pt,right=14pt,top=10pt,bottom=10pt
+    ]
+      \begin{tabular}{@{}ll@{}}
+        \textbf{Instructor:} & Dr.\ Nadia Farrow \\
+        \textbf{Teaching Assistant:} & Owen Kessler \\
+        \textbf{Assigned:} & Week 9, Term 2 \\
+        \textbf{Due:} & Friday, Week 10, 5:00 PM \\
+        \textbf{Total marks:} & 40 \\
+      \end{tabular}
+    \end{tcolorbox}
+    \end{center}
+
+    \vfill
+    \begin{center}
+      \small\color{slate}
+      This solution set is provided for study purposes. Marking rubric notes\\
+      appear in the margin beside each worked step.
+    \end{center}
+    \vspace{1cm}
+  \end{titlepage}
+}

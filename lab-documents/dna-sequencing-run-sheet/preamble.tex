@@ -1,0 +1,217 @@
+% ============================================================
+%  preamble.tex  —  DNA Sequencing Run Sheet
+%  Synapse Genomics Core Facility
+%  Packages, colours, geometry, and custom commands
+% ============================================================
+
+% ---------- Page geometry ----------
+\usepackage[
+  top=2.3cm, bottom=2.7cm,
+  left=2.3cm, right=2.3cm,
+  headheight=30pt
+]{geometry}
+
+% ---------- Encoding & fonts ----------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+\usepackage{lmodern}
+\usepackage[scaled=0.94]{helvet}
+
+% ---------- Colour ----------
+\usepackage[table]{xcolor}
+
+% House palette — genomics violet
+\definecolor{SeqViolet}{HTML}{5B2C83}
+\definecolor{SeqVioletDark}{HTML}{3A1B57}
+\definecolor{SeqDark}{HTML}{221B2E}
+\definecolor{SeqLavender}{HTML}{F4EFFA}
+\definecolor{SeqTeal}{HTML}{1E8A84}
+\definecolor{SeqRule}{HTML}{C9B8DE}
+\definecolor{SeqGray}{HTML}{6B6577}
+\definecolor{SeqPaper}{HTML}{FCFBFE}
+
+% Status colours
+\definecolor{SeqPass}{HTML}{1E7A46}
+\definecolor{SeqPassBg}{HTML}{E6F4EA}
+\definecolor{SeqWarn}{HTML}{9C6B00}
+\definecolor{SeqWarnBg}{HTML}{FBF1DA}
+\definecolor{SeqFail}{HTML}{B0323A}
+\definecolor{SeqFailBg}{HTML}{FBE7E8}
+
+% Nucleotide base colours (Sanger-style base colour convention)
+\definecolor{BaseA}{HTML}{3E8E5B}
+\definecolor{BaseC}{HTML}{2E6DA4}
+\definecolor{BaseG}{HTML}{2A2233}
+\definecolor{BaseT}{HTML}{C0392B}
+
+% ---------- Graphics & diagrams ----------
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, shapes.geometric, backgrounds}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable, most}
+
+% ---------- Tables ----------
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{colortbl}
+\usepackage{longtable}
+\usepackage{multirow}
+
+% ---------- Lists ----------
+\usepackage{enumitem}
+
+% ---------- Headers & footers ----------
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+% ---------- Section formatting ----------
+\usepackage{titlesec}
+
+% ---------- Hyperlinks ----------
+\usepackage[
+  colorlinks=true,
+  linkcolor=SeqVioletDark,
+  urlcolor=SeqTeal,
+  citecolor=SeqTeal,
+  bookmarksnumbered=true,
+  pdfstartview=FitH
+]{hyperref}
+
+% ---------- Symbols ----------
+\usepackage{fontawesome5}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ---------- Misc ----------
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{float}
+\usepackage{caption}
+
+% ============================================================
+%  Typography & section styling
+% ============================================================
+
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+
+\titleformat{\section}
+  {\color{SeqVioletDark}\large\bfseries\sffamily}
+  {\color{SeqViolet}\thesection}{0.8em}{}
+  [\vspace{-4pt}\color{SeqViolet}\rule{\linewidth}{1.4pt}\vspace{2pt}]
+
+\titleformat{\subsection}
+  {\color{SeqTeal}\normalsize\bfseries\sffamily}
+  {\color{SeqTeal}\thesubsection}{0.7em}{}
+
+\titlespacing{\section}{0pt}{14pt}{6pt}
+\titlespacing{\subsection}{0pt}{10pt}{4pt}
+
+% ============================================================
+%  Header / footer
+% ============================================================
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{SeqRule}\leaders\hrule height \headrulewidth\hfill}}
+\fancyhead[L]{\color{SeqGray}\sffamily\footnotesize\textbf{Synapse Genomics Core Facility}}
+\fancyhead[R]{\color{SeqViolet}\sffamily\footnotesize\bfseries DNA Sequencing Run Sheet}
+\fancyfoot[L]{\color{SeqGray}\sffamily\tiny Run SGC-RUN-2026-0447 \textbullet{} Confidential}
+\fancyfoot[C]{\color{SeqVioletDark}\sffamily\footnotesize\thepage\ of \pageref{LastPage}}
+\fancyfoot[R]{\color{SeqGray}\sffamily\tiny Template Rev.\ 2.0}
+
+% ============================================================
+%  Custom tcolorbox environments
+% ============================================================
+
+% Generic info panel
+\newtcolorbox{infobox}[1][]{
+  enhanced, breakable,
+  colback=SeqLavender, colframe=SeqViolet,
+  leftrule=3pt, toprule=0.5pt, bottomrule=0.5pt, rightrule=0.5pt,
+  arc=2pt, outer arc=2pt,
+  fonttitle=\sffamily\bfseries\small\color{SeqVioletDark},
+  title={\faInfoCircle\quad #1},
+}
+
+% Warning / deviation panel
+\newtcolorbox{warnbox}[1][]{
+  enhanced,
+  colback=SeqWarnBg, colframe=SeqWarn,
+  leftrule=3pt, toprule=0.5pt, bottomrule=0.5pt, rightrule=0.5pt,
+  arc=2pt, outer arc=2pt,
+  fonttitle=\sffamily\bfseries\small\color{SeqWarn},
+  title={\faExclamationTriangle\quad #1},
+}
+
+% Stat tile (run parameters panel)
+\newtcolorbox{stattile}[1][]{
+  enhanced, colback=SeqPaper, colframe=SeqRule,
+  boxrule=0.6pt, arc=3pt, outer arc=3pt,
+  left=8pt, right=8pt, top=7pt, bottom=7pt,
+  valign=center,
+  title={#1}, fonttitle=\sffamily\footnotesize\color{SeqGray},
+  attach title to upper={\par\vspace{2pt}},
+  coltitle=SeqGray,
+}
+
+% Sample card (sample sheet grid)
+\newtcolorbox{samplecard}[1][]{
+  enhanced, colback=white, colframe=SeqRule,
+  boxrule=0.6pt, arc=3pt, outer arc=3pt,
+  left=9pt, right=9pt, top=6pt, bottom=7pt,
+  fonttitle=\sffamily\bfseries\small\color{white},
+  colbacktitle=SeqViolet, coltitle=white,
+  title={#1},
+  attach boxed title to top left={yshift=-2mm, xshift=6mm},
+  boxed title style={colback=SeqViolet, colframe=SeqViolet, arc=2pt, boxrule=0pt},
+}
+
+% ============================================================
+%  Convenience commands
+% ============================================================
+
+% Nucleotide barcode chip
+\newcommand{\ntchip}[2]{%
+  \tikz[baseline=-0.5ex]{\node[fill=#1, text=white, font=\ttfamily\bfseries\scriptsize,
+    inner sep=1.6pt, minimum width=4.3mm, minimum height=4.3mm, rounded corners=1pt]{#2};}%
+}
+\newcommand{\bA}{\ntchip{BaseA}{A}}
+\newcommand{\bC}{\ntchip{BaseC}{C}}
+\newcommand{\bG}{\ntchip{BaseG}{G}}
+\newcommand{\bT}{\ntchip{BaseT}{T}}
+
+% QC status chips
+\newcommand{\passchip}{%
+  \tikz[baseline=-0.5ex]{\node[fill=SeqPassBg, draw=SeqPass, text=SeqPass,
+    font=\sffamily\bfseries\scriptsize, inner sep=2.5pt, rounded corners=2pt]{\faCheckCircle\ PASS};}%
+}
+\newcommand{\warnstatchip}{%
+  \tikz[baseline=-0.5ex]{\node[fill=SeqWarnBg, draw=SeqWarn, text=SeqWarn,
+    font=\sffamily\bfseries\scriptsize, inner sep=2.5pt, rounded corners=2pt]{\faExclamationTriangle\ WATCH};}%
+}
+\newcommand{\failchip}{%
+  \tikz[baseline=-0.5ex]{\node[fill=SeqFailBg, draw=SeqFail, text=SeqFail,
+    font=\sffamily\bfseries\scriptsize, inner sep=2.5pt, rounded corners=2pt]{\faTimesCircle\ FAIL};}%
+}
+
+% Small violet section tag
+\newcommand{\seqtag}[1]{%
+  \tikz[baseline=-0.5ex]{\node[fill=SeqViolet, text=white, font=\sffamily\bfseries\tiny,
+    inner sep=3pt, rounded corners=2pt]{#1};}%
+}
+
+% Table helpers
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+\captionsetup{
+  font={small,sf},
+  labelfont={bf,color=SeqVioletDark},
+  labelsep=period,
+  skip=6pt
+}

@@ -1,0 +1,95 @@
+\section{Agarose Gel Electrophoresis Image (UV Transillumination)}
+
+The high-resolution digitized gel image below shows the fluorescent bands after 80 minutes of separation. The lane alignments and size estimations were performed using the Meridian BioSciences Gel Analysis Suite.
+
+\begin{center}
+\begin{tikzpicture}[>=latex, scale=0.88]
+  % Define colors locally
+  \definecolor{GelBg}{HTML}{09101D}     % Very dark slate blue for UV background
+
+  % Draw the physical gel body
+  \draw[fill=GelBg, draw=GelNavy, line width=1.5pt, rounded corners=6pt] (0,0) rectangle (13.5,6.2);
+
+  % Draw the sample wells at the top
+  \foreach \x in {1.5, 2.8, 4.1, 5.4, 6.7, 8.0, 9.3, 10.6, 11.9} {
+    \fill[black!40] (\x-0.45, 5.5) rectangle (\x+0.45, 5.7);
+    \draw[black!20, line width=0.5pt] (\x-0.45, 5.5) rectangle (\x+0.45, 5.7);
+  }
+
+  % Draw lane numbers above the wells
+  \foreach \x/\l in {1.5/1, 2.8/2, 4.1/3, 5.4/4, 6.7/5, 8.0/6, 9.3/7, 10.6/8, 11.9/9} {
+    \node[white, font=\small\sffamily\bfseries] at (\x, 5.9) {\l};
+  }
+
+  % Draw a vertical reference scale (bp) on the left side of the gel
+  \foreach \y/\s in {5.0/10k, 4.5/5k, 4.0/3k, 3.5/2k, 3.0/1.5k, 2.5/1k, 2.0/750, 1.5/500, 1.0/250, 0.5/100} {
+    \draw[gray!70, dashed, opacity=0.3] (0.5, \y) -- (13.0, \y);
+    \node[cyan!40, anchor=east, font=\tiny\sffamily] at (0.95, \y) {\s};
+  }
+
+  % Define local band macro for drawing glowing bands
+  % #1: x position, #2: y position, #3: opacity (intensity)
+  \newcommand{\drawband}[3]{%
+    % Glow
+    \fill[cyan, opacity={#3*0.22}, rounded corners=2pt] (#1-0.43, #2-0.08) rectangle (#1+0.43, #2+0.08);%
+    % Inner Core
+    \fill[white!90!cyan, opacity=#3, rounded corners=0.8pt] (#1-0.38, #2-0.04) rectangle (#1+0.38, #2+0.04);%
+  }
+
+  % LANE 1: DNA Ladder (M-100bp)
+  \drawband{1.5}{5.0}{0.9}   % 10k
+  \drawband{1.5}{4.5}{0.8}   % 5k
+  \drawband{1.5}{4.0}{0.85}  % 3k
+  \drawband{1.5}{3.5}{0.9}   % 2k
+  \drawband{1.5}{3.0}{0.9}   % 1.5k
+  \drawband{1.5}{2.5}{1.0}   % 1k (Brighter reference band)
+  \drawband{1.5}{2.0}{0.8}   % 750
+  \drawband{1.5}{1.5}{1.0}   % 500 (Brighter reference band)
+  \drawband{1.5}{1.0}{0.75}  % 250
+  \drawband{1.5}{0.5}{0.7}   % 100
+
+  % LANE 2: Negative Control (NC-01)
+  \drawband{2.8}{0.3}{0.2}   % primer dimer (very faint)
+
+  % LANE 3: Positive Control (PC-04 - 3kb)
+  \drawband{4.1}{4.0}{0.95}  % strong 3k band
+  \drawband{4.1}{0.3}{0.15}  % primer dimer
+
+  % LANE 4: SMP-09 (PCR exon 4 - 1.5kb)
+  \drawband{5.4}{3.0}{0.85}  % strong 1.5k band
+  \drawband{5.4}{0.3}{0.22}  % primer dimer
+
+  % LANE 5: SMP-10 (PCR exon 4 - 1.5kb, low yield)
+  \drawband{6.7}{3.0}{0.35}  % weak 1.5k band
+  \drawband{6.7}{0.3}{0.35}  % primer dimer
+
+  % LANE 6: SMP-11 (Digest - 2kb \& 1kb)
+  \drawband{8.0}{3.5}{0.75}  % 2k band
+  \drawband{8.0}{2.5}{0.80}  % 1k band
+
+  % LANE 7: SMP-12 (Digest - 2kb \& 1kb)
+  \drawband{9.3}{3.5}{0.70}  % 2k band
+  \drawband{9.3}{2.5}{0.75}  % 1k band
+
+  % LANE 8: SMP-13 (PCR Exon 5 - Failed)
+  \drawband{10.6}{0.3}{0.55} % Very bright primer dimer (failed)
+
+  % LANE 9: SMP-14 (PCR Exon 5 - 750bp)
+  \drawband{11.9}{2.0}{0.92} % strong 750bp band
+  \drawband{11.9}{0.3}{0.18} % primer dimer
+
+  % Annotations
+  \node[white, font=\tiny\sffamily, anchor=south] at (1.5, 0.05) {Ladder};
+  \node[white, font=\tiny\sffamily, anchor=south] at (2.8, 0.05) {Neg};
+  \node[white, font=\tiny\sffamily, anchor=south] at (4.1, 0.05) {Pos};
+  \node[white, font=\tiny\sffamily, anchor=south] at (5.4, 0.05) {SMP-09};
+  \node[white, font=\tiny\sffamily, anchor=south] at (6.7, 0.05) {SMP-10};
+  \node[white, font=\tiny\sffamily, anchor=south] at (8.0, 0.05) {SMP-11};
+  \node[white, font=\tiny\sffamily, anchor=south] at (9.3, 0.05) {SMP-12};
+  \node[white, font=\tiny\sffamily, anchor=south] at (10.6, 0.05) {SMP-13};
+  \node[white, font=\tiny\sffamily, anchor=south] at (11.9, 0.05) {SMP-14};
+
+\end{tikzpicture}
+\par\vspace{4pt}
+\small\textbf{Figure 1:} Digital scan of gel GEL-20260804-01 showing fluorescent DNA bands under UV illumination. The migration profile displays the distinct sizes of DNA fragments, which correspond to calculated values in Section~\ref{sec:band_analysis} using standard logarithmic migration models \cite{Sharp1973}.
+\end{center}

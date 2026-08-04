@@ -1,0 +1,37 @@
+\section{System Overview \& Architecture}
+The system under evaluation consists of the core components of Nexa's cloud infrastructure: the Nimbus API Gateway, the Synapse Caching Layer, and the Vertex Database Cluster. Together, they handle the request-response lifecycle of all Meridian applications. Figure~\ref{fig:architecture} illustrates the layout and flow of data between these components.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    node distance=2cm and 1.5cm,
+    box/.style={draw=primary, fill=primary!5!white, thick, rounded corners, minimum width=2.8cm, minimum height=1.2cm, align=center, font=\small\bfseries},
+    dbbox/.style={draw=secondary, fill=secondary!5!white, thick, cylinder, shape border rotate=90, minimum width=2.0cm, minimum height=1.4cm, align=center, font=\small\bfseries},
+    arrow/.style={-{Stealth[scale=1.2]}, thick, color=darkgray}
+  ]
+    % Nodes
+    \node (client) [box, draw=darkgray, fill=lightgray] {Meridian Clients\\(Web \& Mobile)};
+    \node (nimbus) [box, right=of client] {Nimbus\\API Gateway};
+    \node (synapse) [box, above right=of nimbus, yshift=-0.5cm] {Synapse\\Caching Layer};
+    \node (vertexprimary) [dbbox, below right=of nimbus, yshift=0.5cm] {Vertex Primary\\(Write / Read)};
+    \node (vertexreplica) [dbbox, right=of vertexprimary, xshift=0.5cm] {Vertex Replicas\\(Read Only)};
+
+    % Arrows
+    \draw [arrow] (client) -- node[above, font=\tiny] {HTTPS} (nimbus);
+    \draw [arrow, transform canvas={yshift=0.15cm}] (nimbus) -- node[above, font=\tiny] {Cache Read} (synapse);
+    \draw [arrow, transform canvas={yshift=-0.15cm}] (synapse) -- node[below, font=\tiny] {Miss / Return} (nimbus);
+    \draw [arrow] (nimbus) -- node[below left, font=\tiny] {Writes} (vertexprimary);
+    \draw [arrow] (vertexprimary) -- node[above, font=\tiny] {Replication} (vertexreplica);
+    \draw [arrow] (synapse) -| node[right, font=\tiny, near start] {Write-through} (vertexprimary);
+  \end{tikzpicture}
+  \caption{High-level architectural diagram of Nexa's core data-path components.}
+  \label{fig:architecture}
+\end{figure}
+
+\subsection{Resource Configuration}
+The current hardware configurations for the production instances are detailed below:
+\begin{itemize}[noitemsep]
+  \item \textbf{Nimbus API Gateway:} 4$\times$ standard VMs (4 vCPUs, 8\,GB RAM) configured behind an application load balancer.
+  \item \textbf{Synapse Caching Layer:} 3$\times$ cache nodes (2 vCPUs, 16\,GB RAM) using Redis cluster sharding.
+  \item \textbf{Vertex Database Cluster:} 3$\times$ high-compute VMs (8 vCPUs, 32\,GB RAM, 500\,GB SSD storage with 3,000 baseline IOPS).
+\end{itemize}

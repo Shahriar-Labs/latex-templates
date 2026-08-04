@@ -1,0 +1,95 @@
+% sections/architecture.tex
+
+\section{System Architecture}
+
+\begin{frame}{Nexa Cloud Gateway: High-Level Architecture}
+  \begin{center}
+    \begin{tikzpicture}[
+      scale=0.82, transform shape,
+      node distance=0.8cm and 1.2cm,
+      box/.style={
+        draw=primary,
+        fill=bg-light,
+        thick,
+        rounded corners,
+        minimum width=2.2cm,
+        minimum height=0.8cm,
+        align=center,
+        font=\scriptsize\bfseries
+      },
+      module/.style={
+        draw=accent,
+        fill=accent!5,
+        thick,
+        rounded corners,
+        minimum width=1.8cm,
+        minimum height=0.6cm,
+        align=center,
+        font=\tiny\bfseries
+      },
+      arrow/.style={
+        -{Stealth[scale=1.0]},
+        thick,
+        draw=primary
+      },
+      dashedarrow/.style={
+        -{Stealth[scale=1.0]},
+        thick,
+        dashed,
+        draw=neutral-dark
+      }
+    ]
+      % Nodes placement
+      \node[box, fill=secondary!10, draw=secondary] (client) {\faLaptop\\Client Traffic};
+      
+      % Gateway boundaries and internals
+      \node[module, right=1.2cm of client, yshift=0.8cm] (limiter) {\faLock\\Rate Limiter};
+      \node[module, right=1.2cm of client] (auth) {\faKey\\Auth Service};
+      \node[module, right=1.2cm of client, yshift=-0.8cm] (router) {\faRoute\\Dynamic Router};
+      
+      % Draw Gateway boundary box manually
+      \begin{scope}[on background layer]
+        \draw[draw=secondary, fill=secondary!5, dashed, thick, rounded corners] 
+          ($(limiter.north west)+(-0.15,0.12)$) rectangle ($(router.south east)+(0.15,-0.12)$);
+        \node[anchor=south] at ($(limiter.north)+(0,0.12)$) {\tiny\bfseries\textcolor{secondary}{Nexa Edge Proxy}};
+      \end{scope}
+
+      % Microservices (Downstream)
+      \node[box, right=2.8cm of auth] (service2) {\faServer\\Billing Service};
+      \node[box, above=0.3cm of service2] (service1) {\faServer\\User Service};
+      \node[box, below=0.3cm of service2] (service3) {\faServer\\Compute Engine};
+      
+      % Database layer
+      \node[box, right=1.6cm of service2, fill=accent!5, draw=accent] (db) {\faDatabase\\Vertex DB};
+      
+      % Arrows
+      \draw[arrow] (client.east) -- ($(auth.west)+(-0.15,0)$);
+      \draw[arrow] ($(auth.west)+(-0.15,0)$) |- (limiter.west);
+      \draw[arrow] ($(auth.west)+(-0.15,0)$) -- (auth.west);
+      \draw[arrow] ($(auth.west)+(-0.15,0)$) |- (router.west);
+      
+      % Routing to services
+      \draw[arrow] (router.east) -- ($(router.east)+(0.5,0)$) |- (service1.west);
+      \draw[arrow] (router.east) -- ($(router.east)+(0.5,0)$) |- (service2.west);
+      \draw[arrow] (router.east) -- ($(router.east)+(0.5,0)$) |- (service3.west);
+      
+      % DB reads/writes
+      \draw[dashedarrow] (service1.east) -- ($(db.west)+(0,0.2)$);
+      \draw[dashedarrow] (service2.east) -- (db.west);
+      \draw[dashedarrow] (service3.east) -- ($(db.west)+(0,-0.2)$);
+    \end{tikzpicture}
+  \end{center}
+  \vspace{-0.3cm}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item[\faArrowRight] \textbf{Unified Inlet:} Traffic is processed at the proxy boundary where auth and rate-limiting filters run concurrently.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item[\faArrowRight] \textbf{Downstream Security:} Backend services query the multi-region Vertex DB cluster over isolated virtual networks.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}

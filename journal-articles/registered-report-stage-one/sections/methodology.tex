@@ -1,0 +1,90 @@
+\section{Methodology}
+\label{sec:methodology}
+
+\subsection{Study Design}
+This study uses a $2\times 2$ mixed-factorial design. The between-subjects factor is the user interface type (\textbf{UI Type}: Adaptive UI [experimental group using the Apex Focus Engine] vs. Static UI [control group]). The within-subjects factor is the cognitive workload level (\textbf{Task Load}: Low vs. High), which will be manipulated by varying the frequency and density of concurrent events in the simulated environment.
+
+Table~\ref{tab:study_design} summarizes the key characteristics of our study design.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Study Design Summary Table}
+\label{tab:study_design}
+\vspace{0.2cm}
+\begin{tabularx}{\textwidth}{|p{3cm}|L|}
+\hline
+\rowcolor{tablehead}
+\textbf{Design Feature} & \textbf{Implementation Details} \\
+\hline
+Study Type & Randomized Controlled Trial (RCT), Parallel Groups, Mixed-Factorial \\
+\hline
+Blinding & Double-blind (Participants are unaware of their UI condition; data collectors are blind to UI assignments during testing) \\
+\hline
+Task Environment & Multi-Asset Flight Dispatch Simulation (Simulated task on Synapse OS v4.2) \\
+\hline
+Experimental Factor & UI Type (Adaptive vs. Static UI) --- Between-subjects \\
+\hline
+Manipulated Factor & Task Load (Low: 4 active tracks/min vs. High: 12 active tracks/min) --- Within-subjects \\
+\hline
+Trial Order & Counterbalanced block design (Low--High vs. High--Low) with 5-minute washout period \\
+\hline
+Hardware Standard & Uniform workstation: Apex workstation with 27'' monitor, Meridian precision mouse, Vertex HRV-sensor band \\
+\hline
+\end{tabularx}
+\end{table}
+
+\subsection{Trial Flow and Participant Pipeline}
+Figure~\ref{fig:trial_flow} illustrates the progression of a participant through the study session.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=1.8cm,
+    block/.style={rectangle, draw=primary, fill=bglight, thick, text width=4.5cm, align=center, rounded corners, minimum height=1.2cm, font=\sffamily\small},
+    decision/.style={diamond, draw=secondary, fill=secondary!10, thick, text width=2.2cm, align=center, aspect=2, font=\sffamily\small},
+    line/.style={draw, -latex, thick, primary}
+]
+    % Nodes
+    \node [block] (screening) {1. Participant Recruitment \& Pre-screening};
+    \node [block, below of=screening] (consent) {2. Informed Consent \& Baseline HRV Calibration};
+    \node [block, below of=consent] (training) {3. System Training (10 minutes, standard task)};
+    \node [decision, below of=training, yshift=-0.5cm] (randomization) {4. Randomization ($r = 1:1$)};
+    
+    \node [block, left of=randomization, xshift=-2.2cm] (adaptive) {5a. Experimental Group\\(Adaptive UI)};
+    \node [block, right of=randomization, xshift=2.2cm] (static) {5b. Control Group\\(Static UI)};
+    
+    \node [block, below of=randomization, yshift=-2.2cm] (assessment) {6. Test Session (Counterbalanced Load Blocks: Low vs. High)};
+    \node [block, below of=assessment] (debrief) {7. NASA-TLX Survey, Feedback, \& Debriefing};
+
+    % Paths
+    \path [line] (screening) -- (consent);
+    \path [line] (consent) -- (training);
+    \path [line] (training) -- (randomization);
+    \path [line] (randomization) -- node[above, font=\sffamily\scriptsize, near start] {Adaptive} (adaptive);
+    \path [line] (randomization) -- node[above, font=\sffamily\scriptsize, near start] {Static} (static);
+    
+    \path [line] (adaptive) |- (assessment);
+    \path [line] (static) |- (assessment);
+    \path [line] (assessment) -- (debrief);
+\end{tikzpicture}
+\caption{Participant trial progression pipeline from recruitment to debriefing.}
+\label{fig:trial_flow}
+\end{figure}
+
+\subsection{Sampling Plan}
+\textbf{Target Population:} The study will recruit active technical system operators, software developers, and engineering students aged 18--45. Recruitment will be facilitated through the internal registry of the Meridian Institute of Technology and local technical communities. Fictional common names will be used for all participants during internal registry.
+
+\textbf{Sample Size Rationale:} Based on prior pilot data from the Vertex Cognitive Research Labs \citep{chen2025hrv}, we anticipate a medium effect size of Cohen's $d = 0.40$ for our primary between-subjects outcome (NASA-TLX subjective cognitive load). 
+To achieve $90\%$ statistical power ($\alpha = 0.05$, two-tailed, independent-samples $t$-test), a total of $N = 264$ participants is required (132 participants per group).
+
+\textbf{Stopping Rule:} Data collection will terminate exactly when 270 valid participant sessions have been recorded. This minor buffer is added to ensure that if any participant data is corrupted during collection, we still meet our target of $N = 264$ valid datasets.
+
+\textbf{Exclusion Criteria:} 
+Participants will be excluded from the analysis post-hoc if they meet any of the following criteria:
+\begin{enumerate}[label=\lbrack\alph*\rbrack]
+  \item Incomplete execution of the test session (e.g., participant withdrew early or software crashed mid-session).
+  \item Failure of the heart-rate variability (HRV) sensor tracking for more than $20\%$ of the session duration.
+  \item Extreme outliers in reaction times, defined as average Decision Response Time (DRT) exceeding 3 standard deviations from the global sample mean.
+  \item Visual impairment that prevents reading standard display fonts under default lighting conditions.
+\end{enumerate}

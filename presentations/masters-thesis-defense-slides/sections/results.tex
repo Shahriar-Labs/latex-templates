@@ -1,0 +1,129 @@
+\section{Results}
+
+\begin{frame}{Latency: p95 Query Time}
+\begin{columns}[T]
+\begin{column}{0.62\textwidth}
+\centering
+\begin{tikzpicture}[x=1.15cm,y=0.088cm]
+\foreach \y in {0,10,...,60}{
+  \draw[gray!20] (0,\y) -- (5.0,\y);
+}
+\node[font=\tiny,gray,anchor=east] at (-0.15,0) {0};
+\node[font=\tiny,gray,anchor=east] at (-0.15,20) {20};
+\node[font=\tiny,gray,anchor=east] at (-0.15,40) {40};
+\node[font=\tiny,gray,anchor=east] at (-0.15,60) {60};
+\draw[thick] (0,0) -- (0,64);
+\draw[thick] (0,0) -- (5.0,0);
+
+\draw[fill=thesisgray,draw=thesisnavy] (0.3,0) rectangle (0.95,42);
+\node[font=\tiny] at (0.62,45) {42};
+\node[font=\tiny,align=center,anchor=north,yshift=-2pt] at (0.62,0) {Static-\\HNSW};
+
+\draw[fill=thesisgray,draw=thesisnavy] (1.4,0) rectangle (2.05,38);
+\node[font=\tiny] at (1.72,41) {38};
+\node[font=\tiny,align=center,anchor=north,yshift=-2pt] at (1.72,0) {Static-\\IVF-PQ};
+
+\draw[fill=thesisgray,draw=thesisnavy] (2.5,0) rectangle (3.15,51);
+\node[font=\tiny] at (2.82,54) {51};
+\node[font=\tiny,align=center,anchor=north,yshift=-2pt] at (2.82,0) {Round-\\Robin};
+
+\draw[fill=thesisteal,draw=thesisnavy] (3.6,0) rectangle (4.25,24);
+\node[font=\tiny] at (3.92,27) {24};
+\node[font=\tiny,align=center,anchor=north,yshift=-2pt] at (3.92,0) {\textbf{AQR}\\\textbf{(ours)}};
+\end{tikzpicture}
+\end{column}
+\begin{column}{0.34\textwidth}
+\begin{statbox}
+\centering
+{\Large\textbf{--43\%}}\\
+\footnotesize p95 latency vs.\ best baseline
+\end{statbox}
+\vspace{0.3cm}
+\footnotesize Measured on Meridian-Corpus-5M at concurrency 16. AQR's routing overhead ($\approx$1.1\,ms) is included.
+\end{column}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Throughput Scales With Concurrency}
+\centering
+\begin{tikzpicture}[x=1.7cm,y=0.00037cm]
+\foreach \y in {0,2000,...,14000}{
+  \draw[gray!20] (0,\y) -- (4.3,\y);
+  \node[font=\tiny,gray,anchor=east] at (-0.15,\y) {\pgfmathprintnumber{\y}};
+}
+\draw[thick] (0,0) -- (0,15200);
+\draw[thick] (0,0) -- (4.3,0);
+\foreach \x/\lbl in {0/1,1/4,2/8,3/16,4/32}{
+  \node[font=\tiny,anchor=north,yshift=-2pt] at (\x,0) {\lbl};
+}
+\node[font=\tiny,anchor=north,yshift=-14pt] at (2,0) {Concurrency (parallel clients)};
+
+\draw[thesisgray!40!black,thick,dashed] plot coordinates {(0,780) (1,2600) (2,4400) (3,6200) (4,7100)};
+\foreach \x/\y in {0/780,1/2600,2/4400,3/6200,4/7100}{
+  \draw[fill=thesisgray!40!black] (\x,\y) circle (1.6pt);
+}
+
+\draw[thesisteal,thick] plot coordinates {(0,850) (1,3100) (2,5800) (3,9600) (4,14200)};
+\foreach \x/\y in {0/850,1/3100,2/5800,3/9600,4/14200}{
+  \draw[fill=thesisteal] (\x,\y) circle (1.6pt);
+}
+
+\node[font=\tiny,anchor=west,thesisteal] at (4.05,14200) {AQR};
+\node[font=\tiny,anchor=west,thesisgray!40!black] at (4.05,7100) {Best baseline};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Recall@10 Across Datasets}
+\centering
+\begin{tikzpicture}[x=1.0cm,y=0.045cm]
+\foreach \y in {0,20,...,100}{
+  \draw[gray!20] (0,\y) -- (9.2,\y);
+  \node[font=\tiny,gray,anchor=east] at (-0.2,\y) {\y};
+}
+\draw[thick] (0,0) -- (0,108);
+\draw[thick] (0,0) -- (9.2,0);
+
+\draw[fill=thesisgray,draw=thesisnavy] (0.4,0) rectangle (1.1,91.2);
+\node[font=\tiny] at (0.75,94) {91.2};
+\draw[fill=thesisteal,draw=thesisnavy] (1.2,0) rectangle (1.9,96.8);
+\node[font=\tiny] at (1.55,100) {96.8};
+\node[font=\scriptsize,align=center,anchor=north,yshift=-2pt] at (1.15,0) {SIFT1M};
+
+\draw[fill=thesisgray,draw=thesisnavy] (3.3,0) rectangle (4.0,87.5);
+\node[font=\tiny] at (3.65,90.5) {87.5};
+\draw[fill=thesisteal,draw=thesisnavy] (4.1,0) rectangle (4.8,94.1);
+\node[font=\tiny] at (4.45,97) {94.1};
+\node[font=\scriptsize,align=center,anchor=north,yshift=-2pt] at (4.05,0) {GloVe-1.2M};
+
+\draw[fill=thesisgray,draw=thesisnavy] (6.2,0) rectangle (6.9,83.0);
+\node[font=\tiny] at (6.55,86) {83.0};
+\draw[fill=thesisteal,draw=thesisnavy] (7.0,0) rectangle (7.7,92.7);
+\node[font=\tiny] at (7.35,95.7) {92.7};
+\node[font=\scriptsize,align=center,anchor=north,yshift=-2pt] at (6.95,0) {Meridian-\\Corpus-5M};
+
+\node[draw=thesisnavy,fill=thesisgray,inner sep=1.5pt] at (8.6,100) {};
+\node[font=\tiny,anchor=west] at (8.75,100) {Best baseline};
+\node[draw=thesisnavy,fill=thesisteal,inner sep=1.5pt] at (8.6,92) {};
+\node[font=\tiny,anchor=west] at (8.75,92) {AQR};
+\end{tikzpicture}
+\end{frame}
+
+\begin{frame}{Ablation: What Each Component Buys}
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{center}
+\begin{tabular}{lccp{3.4cm}}
+\toprule
+\textbf{Variant} & \textbf{Recall@10} & \textbf{p95 (ms)} & \textbf{Notes} \\
+\midrule
+Full AQR & 92.7 & 24 & feature extractor + cost model + load signal \\
+$-$ Feature extractor & 88.9 & 31 & routes on load signal only \\
+$-$ Cost-aware weighting & 90.1 & 29 & uniform $\alpha,\beta,\gamma$ \\
+\rowcolor{thesisgold!15}
++ Oracle routing (upper bound) & 94.3 & 19 & offline best-index-per-query \\
+\bottomrule
+\end{tabular}
+\end{center}
+\vspace{0.2cm}
+\footnotesize Results on Meridian-Corpus-5M, concurrency~16. AQR recovers 91\% of the oracle's latency gain.
+\end{frame}

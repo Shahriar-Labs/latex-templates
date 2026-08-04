@@ -1,0 +1,81 @@
+% ============================================================
+%  qc_metrics.tex — QC thresholds, results, and status
+% ============================================================
+
+\section{Quality Control Metrics}
+\label{sec:qc-metrics}
+
+Run-level QC metrics were pulled from the SeqCall v5.3 run report following completion of
+Read~2 and cross-checked by the QC reviewer against the acceptance thresholds defined in
+SOP SGC-SOP-021 (\emph{Sequencing Run Acceptance Criteria}). A run is released for
+demultiplexing and delivery only when every metric below meets or exceeds its threshold.
+
+\subsection{Run-Level Metrics}
+
+\rowcolors{2}{white}{SeqLavender}
+\begin{tabularx}{\linewidth}{@{} X C{2.6cm} C{2.2cm} C{2.4cm} @{}}
+\toprule
+\rowcolor{SeqViolet}
+{\color{white}\bfseries Metric} & {\color{white}\bfseries Threshold} & {\color{white}\bfseries Observed} & {\color{white}\bfseries Status} \\
+\midrule
+Clusters Passing Filter (\% PF)    & $\geq$90\%          & 94.2\%          & \passchip \\
+Cluster Density                    & 650--750 K/mm\textsuperscript{2} & 712 K/mm\textsuperscript{2} & \passchip \\
+Error Rate (PhiX alignment)        & $\leq$1.00\%        & 0.42\%          & \passchip \\
+Phasing                            & $\leq$0.20\%        & 0.11\%          & \passchip \\
+Prephasing                         & $\leq$0.20\%        & 0.08\%          & \passchip \\
+Undetermined Index Reads           & $\leq$5.0\%         & 2.3\%           & \passchip \\
+Total Yield (both lanes)           & $\geq$340\,Gb       & 378\,Gb         & \passchip \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Per-Read \%Q30}
+
+\begin{center}
+\begin{tikzpicture}[x=0.092cm, y=1cm]
+  \foreach \v/\lbl/\yy in {96.1/{Read 1 (151 bp)}/3, 93.8/{Read 2 (151 bp)}/2, 97.4/{Index 1 (8 bp)}/1, 97.1/{Index 2 (8 bp)}/0} {
+    \fill[SeqTeal] (0,\yy) rectangle (\v,{\yy+0.55});
+    \node[anchor=west, font=\sffamily\tiny] at (\v+1,{\yy+0.275}) {\v\%};
+    \node[anchor=east, font=\sffamily\footnotesize\color{SeqGray}] at (-1,{\yy+0.275}) {\lbl};
+  }
+  \draw[SeqVioletDark, dashed, thick] (85,-0.3) -- (85,3.85);
+  \node[anchor=south, font=\sffamily\tiny\color{SeqVioletDark}] at (85,3.9) {threshold $\geq$85\%};
+  \draw[SeqGray, thin] (0,-0.3) -- (100,-0.3);
+  \foreach \t in {0,25,50,75,100} {
+    \node[anchor=north, font=\sffamily\tiny\color{SeqGray}] at (\t,-0.4) {\t};
+  }
+\end{tikzpicture}
+\end{center}
+
+All four reads exceed the 85\% \%Q30 acceptance threshold with comfortable margin; Read~2
+shows the expected modest decline relative to Read~1, consistent with normal sequencing-by-
+synthesis chemistry decay over longer reads.
+
+\subsection{Per-Sample Demultiplexing Summary}
+
+\rowcolors{2}{white}{SeqLavender}
+\begin{tabularx}{\linewidth}{@{} l X C{2.0cm} C{2.0cm} @{}}
+\toprule
+\rowcolor{SeqViolet}
+{\color{white}\bfseries Sample} & {\color{white}\bfseries Project} & {\color{white}\bfseries \% of Pool} & {\color{white}\bfseries PF Reads (M)} \\
+\midrule
+VX-2201 & Cohort3-Baseline & 12.9\% & 24.8 \\
+VX-2202 & Cohort3-Baseline & 12.4\% & 23.9 \\
+VX-2203 & Cohort3-Baseline & 13.1\% & 25.2 \\
+VX-2204 & Cohort3-Week4    & 12.6\% & 24.3 \\
+VX-2205 & Cohort3-Week4    & 12.8\% & 24.6 \\
+VX-2206 & Cohort3-Week4    & 12.2\% & 23.5 \\
+VX-2207 & Cohort3-Week8    & 11.9\% & 22.9 \\
+VX-2208 & Cohort3-Week8    & 12.1\% & 23.3 \\
+\midrule
+\rowcolor{SeqLavender}
+\multicolumn{2}{r}{\bfseries Undetermined} & 2.3\% & 4.4 \\
+\bottomrule
+\end{tabularx}
+
+\begin{warnbox}[Observation — Not a Deviation]
+Read~2 \%Q30 (93.8\%) trended 1.1 percentage points below the prior three runs on this
+instrument (typically 94.5--95.5\%). Value remains well above the 85\% acceptance threshold
+and per-sample yields are within normal variance, so no corrective action was taken. Flagged
+here for trend monitoring per SOP SGC-SOP-021 \S6.3; see also the note in
+Section~\ref{sec:sign-off}.
+\end{warnbox}

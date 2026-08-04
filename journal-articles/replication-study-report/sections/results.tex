@@ -1,0 +1,90 @@
+\section{Results}
+We successfully trained the NSR model on Vertex-VQA and evaluated it across five standard VQA question categories: Attribute Identification, Counting, Spatial Comparison, Single-Hop Relational, and Multi-Hop Relational.
+
+\subsection{Performance Comparison}
+Table~\ref{tab:results_comparison} compares the accuracy achieved in our replication study against the original results reported by Chen et al.~\cite{chen2024neural}.
+
+\begin{table}[H]
+\centering
+\caption{Overall Accuracy Comparison by Question Category}
+\label{tab:results_comparison}
+\begin{tabularx}{\textwidth}{l X X r}
+\toprule
+\textbf{Question Category} & \textbf{Original (\%)} & \textbf{Replication (\%)} & \textbf{Difference (\%)} \\
+\midrule
+Attribute Identification & $98.5$ & $98.2$ & $-0.3$ \\
+Counting                 & $94.2$ & $93.8$ & $-0.4$ \\
+Spatial Comparison       & $91.8$ & $91.0$ & $-0.8$ \\
+Single-Hop Relational    & $89.5$ & $88.1$ & $-1.4$ \\
+Multi-Hop Relational     & $85.3$ & $82.1$ & $-3.2$ \\
+\midrule
+\textbf{Overall Average}  & \textbf{91.9} & \textbf{90.6} & \textbf{-1.3} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Effect Size Analysis}
+To visualize the magnitude of differences across different task types, we present an effect size plot (Figure~\ref{fig:effect_size}) showing Cohen's $d$ and its 95\% confidence interval. For counting and attribute tasks, the difference is negligible ($d < 0.1$), whereas for multi-hop relational tasks, we observe a moderate effect ($d = 0.42$).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.9]
+    % Draw Axes
+    \draw[thick, ->] (-3.5,0) -- (3.5,0) node[right] {Cohen's $d$};
+    \draw[dashed, gray] (0,-0.2) -- (0,5);
+    
+    % Y axis labels
+    \node[left] at (-3.5, 4.5) {Attribute ID};
+    \node[left] at (-3.5, 3.5) {Counting};
+    \node[left] at (-3.5, 2.5) {Spatial Comp.};
+    \node[left] at (-3.5, 1.5) {Single-Hop Rel.};
+    \node[left] at (-3.5, 0.5) {Multi-Hop Rel.};
+    
+    % Grid lines (horizontal)
+    \foreach \y in {0.5, 1.5, 2.5, 3.5, 4.5} {
+        \draw[dotted, lightgray] (-3.5, \y) -- (3, \y);
+    }
+    
+    % Data points (x = effect size, y = coordinate)
+    % Attribute ID: d = -0.05 (scaled by 5 to -0.25), CI = [-0.15, 0.05] (scaled to [-0.75, 0.25])
+    \draw[fill=secondarycolor, draw=secondarycolor] (-0.25, 4.5) circle (3pt);
+    \draw[thick, secondarycolor] (-0.75, 4.5) -- (0.25, 4.5);
+    \draw[thick, secondarycolor] (-0.75, 4.4) -- (-0.75, 4.6);
+    \draw[thick, secondarycolor] (0.25, 4.4) -- (0.25, 4.6);
+    
+    % Counting: d = -0.08 (scaled by 5 to -0.40), CI = [-0.18, 0.02] (scaled to [-0.90, 0.10])
+    \draw[fill=secondarycolor, draw=secondarycolor] (-0.40, 3.5) circle (3pt);
+    \draw[thick, secondarycolor] (-0.90, 3.5) -- (0.10, 3.5);
+    \draw[thick, secondarycolor] (-0.90, 3.4) -- (-0.90, 3.6);
+    \draw[thick, secondarycolor] (0.10, 3.4) -- (0.10, 3.6);
+    
+    % Spatial: d = -0.15 (scaled by 5 to -0.75), CI = [-0.28, -0.02] (scaled to [-1.40, -0.10])
+    \draw[fill=secondarycolor, draw=secondarycolor] (-0.75, 2.5) circle (3pt);
+    \draw[thick, secondarycolor] (-1.40, 2.5) -- (-0.10, 2.5);
+    \draw[thick, secondarycolor] (-1.40, 2.4) -- (-1.40, 2.6);
+    \draw[thick, secondarycolor] (-0.10, 2.4) -- (-0.10, 2.6);
+    
+    % Single-Hop: d = -0.28 (scaled by 5 to -1.40), CI = [-0.42, -0.14] (scaled to [-2.10, -0.70])
+    \draw[fill=accentcolor, draw=accentcolor] (-1.40, 1.5) circle (3pt);
+    \draw[thick, accentcolor] (-2.10, 1.5) -- (-0.70, 1.5);
+    \draw[thick, accentcolor] (-2.10, 1.4) -- (-2.10, 1.6);
+    \draw[thick, accentcolor] (-0.70, 1.4) -- (-0.70, 1.6);
+    
+    % Multi-Hop: d = -0.42 (scaled by 5 to -2.10), CI = [-0.58, -0.26] (scaled to [-2.90, -1.30])
+    \draw[fill=accentcolor, draw=accentcolor] (-2.10, 0.5) circle (3pt);
+    \draw[thick, accentcolor] (-2.90, 0.5) -- (-1.30, 0.5);
+    \draw[thick, accentcolor] (-2.90, 0.4) -- (-2.90, 0.6);
+    \draw[thick, accentcolor] (-1.30, 0.4) -- (-1.30, 0.6);
+    
+    % X-Axis ticks (using scaled coordinates corresponding to -0.6, -0.4, -0.2, 0.0, 0.2, 0.4, 0.6)
+    \draw (-3.0, 2pt) -- (-3.0, -2pt) node[anchor=north] {\scriptsize -0.6};
+    \draw (-2.0, 2pt) -- (-2.0, -2pt) node[anchor=north] {\scriptsize -0.4};
+    \draw (-1.0, 2pt) -- (-1.0, -2pt) node[anchor=north] {\scriptsize -0.2};
+    \draw (0.0, 2pt) -- (0.0, -2pt) node[anchor=north] {\scriptsize 0.0};
+    \draw (1.0, 2pt) -- (1.0, -2pt) node[anchor=north] {\scriptsize 0.2};
+    \draw (2.0, 2pt) -- (2.0, -2pt) node[anchor=north] {\scriptsize 0.4};
+    \draw (3.0, 2pt) -- (3.0, -2pt) node[anchor=north] {\scriptsize 0.6};
+\end{tikzpicture}
+\caption{Effect size (Cohen's $d$ with 95\% CI) of accuracy differences between original and replication. Positive values favor replication; negative values favor original. Colors indicate statistical significance (teal = non-significant/negligible, red = significant/moderate).}
+\label{fig:effect_size}
+\end{figure}

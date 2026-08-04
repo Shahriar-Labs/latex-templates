@@ -1,0 +1,50 @@
+\section{Technical Feasibility Assessment}
+\label{sec:technical}
+
+The technical viability of Project Meridian hinges on consolidating disparate database events without introducing security vulnerabilities or transaction processing delays. The architecture proposes a hybrid-cloud design leveraging the \textbf{Vertex} Message Broker as the high-throughput ingestion layer, coupled with a replication pipeline writing to a secure \textbf{Nimbus} Analytics Store.
+
+\vspace{1em}
+\subsection{Proposed System Architecture}
+The diagram below illustrates the proposed data flow from Nexa's core transactional layers through to the reporting interface.
+
+\vspace{1em}
+\begin{center}
+\begin{tikzpicture}[
+  box/.style={rectangle, draw=secondary, fill=white, rounded corners, minimum width=2.6cm, minimum height=1cm, align=center, thick, font=\sffamily\small},
+  cloud/.style={draw=accent, fill=accent!5, rounded corners, minimum width=2.8cm, minimum height=1.2cm, align=center, thick, font=\sffamily\small},
+  arrow/.style={-Latex, thick, secondary}
+]
+  \node[box] (nexa) {Nexa Core\\Databases};
+  \node[box, right=1.2cm of nexa] (vertex) {Vertex\\Message Broker};
+  \node[cloud, right=1.2cm of vertex] (nimbus) {Nimbus\\Analytics Store};
+  \node[box, right=1.2cm of nimbus] (dashboard) {Dashboard UI\\\& Reporting};
+
+  \draw[arrow] (nexa) -- (vertex);
+  \draw[arrow] (vertex) -- (nimbus);
+  \draw[arrow] (nimbus) -- (dashboard);
+\end{tikzpicture}
+\end{center}
+\vspace{1.2em}
+
+This architecture leverages the high-throughput streaming capabilities of Vertex, which acts as a buffer to protect downstream analytics databases from transaction spikes during peak hours. Nimbus provides the low-latency querying capability required for real-time risk dashboards. According to recent performance benchmarks, this database setup handles up to 10,000 writes per second with sub-millisecond replication latency~\cite{nimbus2025cloud}.
+
+\vspace{1.2em}
+\subsection{Technical Risk Assessment}
+While the individual components are mature, integration introduces several risks that must be managed:
+
+\vspace{0.8em}
+\begin{tabularx}{\textwidth}{@{} >{\bfseries}l X X @{}}
+\toprule
+\rowcolor{primary}
+\textcolor{white}{\textbf{Technical Risk}} & \textcolor{white}{\textbf{Potential Impact}} & \textcolor{white}{\textbf{Mitigation Strategy}} \\
+\midrule
+API Rate Limiting & Intermittent data gaps in the dashboard. & Implement token-bucket rate limits and local client-side buffering. \\
+\midrule
+Data Drift & Discrepancies between core and analytics stores. & Deploy automated daily reconciliation jobs to flag anomalies. \\
+\midrule
+Broker Latency & Processing queues backup under peak load. & Auto-scale broker clusters dynamically based on queue depth. \\
+\bottomrule
+\end{tabularx}
+\vspace{0.8em}
+
+Technical feasibility is rated \textbf{High}, as the underlying cloud infrastructure components are already standard across Nexa's production environments.

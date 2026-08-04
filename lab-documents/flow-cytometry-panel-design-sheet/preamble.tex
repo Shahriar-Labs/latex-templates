@@ -1,0 +1,173 @@
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% ─── Page geometry ─────────────────────────────────────────────────
+\usepackage[
+  a4paper,
+  top=20mm, bottom=22mm,
+  left=18mm, right=18mm,
+  headheight=14pt,
+  headsep=10pt,
+  footskip=14pt
+]{geometry}
+
+% ─── Colour palette ────────────────────────────────────────────────
+\usepackage[table,dvipsnames]{xcolor}
+\definecolor{FlowNavy}{HTML}{16324F}
+\definecolor{FlowTeal}{HTML}{0E7C86}
+\definecolor{FlowCoral}{HTML}{C6553F}
+\definecolor{FlowAmber}{HTML}{C98A2C}
+\definecolor{FlowGreen}{HTML}{2E8B57}
+\definecolor{FlowText}{HTML}{27333D}
+\definecolor{FlowLight}{HTML}{F3F7F8}
+\definecolor{FlowRow}{HTML}{E9F1F2}
+\definecolor{FlowBorder}{HTML}{CBDCE1}
+\definecolor{FlowSevHigh}{HTML}{F6DAD3}
+\definecolor{FlowSevMed}{HTML}{F5E6C6}
+\definecolor{FlowSevLow}{HTML}{DCEEE9}
+
+\color{FlowText}
+
+% ─── Core packages ─────────────────────────────────────────────────
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{colortbl}
+\usepackage{multirow}
+\usepackage{enumitem}
+\usepackage{calc}
+\usepackage{etoolbox}
+\usepackage[skip=4pt]{parskip}
+\usepackage{ragged2e}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage[hidelinks,pdfusetitle]{hyperref}
+\usepackage{fontawesome5}
+\usepackage{titlesec}
+\usepackage[most]{tcolorbox}
+
+% ─── TikZ ───────────────────────────────────────────────────────────
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds,patterns,decorations.pathmorphing}
+\tcbuselibrary{skins,breakable,hooks,fitting}
+
+% ─── Section styling ────────────────────────────────────────────────
+\titleformat{\section}
+  {\color{FlowNavy}\large\bfseries\sffamily}
+  {}
+  {0pt}
+  {\colorbox{FlowNavy}{\parbox[c][1.05em][c]{1.7em}{\centering\color{white}\thesection}}\hspace{8pt}}
+  [\vspace{1pt}\color{FlowTeal}\hrule height 1pt\vspace{5pt}]
+
+\titleformat{\subsection}
+  {\color{FlowNavy}\normalsize\bfseries\sffamily}
+  {\thesubsection.}
+  {6pt}
+  {}
+
+\titlespacing*{\section}{0pt}{11pt}{5pt}
+\titlespacing*{\subsection}{0pt}{7pt}{3pt}
+
+% ─── tcolorbox styles ────────────────────────────────────────────────
+\tcbset{
+  flowbox/.style={
+    enhanced,
+    boxrule=0.8pt,
+    arc=3pt,
+    left=8pt, right=8pt, top=4pt, bottom=4pt,
+    fonttitle=\bfseries\small\sffamily,
+  }
+}
+
+\newtcolorbox{infobox}[2][]{
+  flowbox,
+  colframe=FlowNavy,
+  colback=FlowLight,
+  colbacktitle=FlowNavy,
+  coltitle=white,
+  title={\faInfoCircle\hspace{4pt}#2},
+  #1
+}
+
+\newtcolorbox{warnbox}[2][]{
+  flowbox,
+  colframe=FlowCoral,
+  colback=FlowCoral!8!white,
+  colbacktitle=FlowCoral,
+  coltitle=white,
+  title={\faExclamationTriangle\hspace{4pt}#2},
+  #1
+}
+
+\newtcolorbox{qcbox}[2][]{
+  flowbox,
+  colframe=FlowGreen,
+  colback=FlowGreen!6!white,
+  colbacktitle=FlowGreen,
+  coltitle=white,
+  title={\faCheckCircle\hspace{4pt}#2},
+  #1
+}
+
+\newtcolorbox{checklistbox}[2][]{
+  flowbox,
+  colframe=FlowTeal,
+  colback=FlowTeal!6!white,
+  colbacktitle=FlowTeal,
+  coltitle=white,
+  title={\faList\hspace{4pt}#2},
+  #1
+}
+
+% ─── Headers and footers ─────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[FlowNavy] (0,0) rectangle (\paperwidth,0.55cm);
+  \end{tikzpicture}%
+  \vspace{-8pt}%
+  \textcolor{white}{\footnotesize\bfseries APEX IMMUNOLOGY CORE --- PANEL DESIGN SHEET}%
+}
+\fancyhead[R]{%
+  \vspace{-8pt}%
+  \textcolor{white}{\footnotesize FCM-PNL-0142\hspace{8pt}Rev.~2.1}%
+}
+\fancyfoot[C]{\footnotesize\color{gray} Page~\thepage~of~\pageref{LastPage}}
+\fancyfoot[L]{\footnotesize\color{gray} Nexa Life Sciences --- Internal Use Only}
+\fancyfoot[R]{\footnotesize\color{gray} Issued: \today}
+
+% ─── Custom column types ─────────────────────────────────────────────
+\newcolumntype{P}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+
+% ─── Severity swatch macros ───────────────────────────────────────────
+\newcommand{\sevHigh}{\cellcolor{FlowSevHigh}\textbf{\textcolor{FlowCoral}{High}}}
+\newcommand{\sevMed}{\cellcolor{FlowSevMed}\textbf{\textcolor{FlowAmber}{Medium}}}
+\newcommand{\sevLow}{\cellcolor{FlowSevLow}\textbf{\textcolor{FlowGreen}{Low}}}
+\newcommand{\brightBright}{\textbf{\textcolor{FlowTeal}{Bright}}}
+\newcommand{\brightMed}{\textcolor{FlowAmber}{Medium}}
+\newcommand{\brightDim}{\textcolor{FlowCoral}{Dim}}
+
+% ─── List settings ────────────────────────────────────────────────────
+\setlist[itemize,1]{
+  label=\textcolor{FlowTeal}{\faChevronRight},
+  leftmargin=1.2em,
+  itemsep=2pt,
+  parsep=0pt
+}
+\setlist[enumerate,1]{
+  label=\textcolor{FlowNavy}{\textbf{\arabic*.}},
+  leftmargin=1.5em,
+  itemsep=2pt,
+  parsep=0pt
+}
+
+% ─── Checkbox macro for compensation-control checklist ────────────────
+\newcommand{\ctrlbox}{\raisebox{0.1pt}{\faSquare[regular]}\hspace{5pt}}

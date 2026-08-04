@@ -1,0 +1,67 @@
+\section{Escalation Ladder \& Contacts}
+\label{sec:escalation}
+When an incident cannot be resolved within the target restore time (TTR) or requires additional authorization, escalate immediately using the ladder below.
+
+\subsection{Visual Escalation Path}
+The diagram below illustrates the escalation milestones based on elapsed time since the initial alert trigger.
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=1.2cm and 2cm,
+    stepnode/.style={rectangle, draw=primary, fill=bglight, thick, rounded corners=4pt, align=center, minimum width=4.5cm, minimum height=1.2cm, font=\sffamily\small},
+    timenode/.style={circle, draw=accent, fill=accent!10, thick, font=\sffamily\bfseries\small, minimum size=1.2cm},
+    arrow/.style={-latex, thick, primary}
+]
+    % Nodes
+    \node[stepnode] (s1) {\textbf{Level 1: On-Call SRE} \\ Incident triage \& initial runbook execution};
+    \node[timenode, right=of s1] (t1) {0 min};
+    
+    \node[stepnode, below=of s1] (s2) {\textbf{Level 2: Team Lead SRE} \\ Cluster scaling \& traffic throttling approvals};
+    \node[timenode, right=of s2] (t2) {10 min};
+    
+    \node[stepnode, below=of s2] (s3) {\textbf{Level 3: VP of Engineering} \\ Failover execution \& vendor support engagement};
+    \node[timenode, right=of s3] (t3) {20 min};
+    
+    % Connections
+    \draw[arrow] (s1) -- (s2);
+    \draw[arrow] (s2) -- (s3);
+    
+    \draw[arrow] (t1) -- (t2);
+    \draw[arrow] (t2) -- (t3);
+    
+    \draw[dashed, slate600] (s1) -- (t1);
+    \draw[dashed, slate600] (s2) -- (t2);
+    \draw[dashed, slate600] (s3) -- (t3);
+\end{tikzpicture}
+\end{center}
+
+\vspace{1.5em}
+
+\subsection{Contact Directory}
+Use the directory below to contact the team members on duty. Do NOT contact Level 2 or Level 3 unless the escalation milestones in the path above have been reached.
+
+\vspace{1.0em}
+\noindent
+\begin{tabularx}{\textwidth}{@{} l l l >{\ttfamily}l @{}}
+\toprule
+\textbf{Escalation Role} & \textbf{Name} & \textbf{Incident Channel} & \textbf{PagerDuty Alias} \\
+\midrule
+Level 1: On-Call SRE & Julian Vance & \#ops-nimbus-gateway & \faPhone\ @vance-oncall \\
+Level 2: SRE Team Lead & Sarah Jenkins & \#ops-escalations & \faPhone\ @sjenkins-lead \\
+Level 3: VP of Engineering & Elena Rostova & \#ops-emergency & \faPhone\ @erostova-vp \\
+\midrule
+Database Administrator (DBA) & Marcus Vance & \#ops-db-alerts & \faPhone\ @mvance-dba \\
+Vertex Cluster Support & (Vendor Support) & Hot-line: +1-555-0199 & \faPhone\ vertex-priority \\
+\bottomrule
+\end{tabularx}
+
+\vspace{2.5em}
+
+\begin{infobox}{Incident Close-Out Procedure}
+    Once the system is restored to green status, the Level 1 SRE is responsible for:
+    \begin{enumerate}
+        \item Closing the active incident ticket on PagerDuty.
+        \item Running the automated diagnostic capture script and posting the summary to the incident channel.
+        \item Scheduling a post-mortem review within 24 hours of the incident.
+    \end{enumerate}
+\end{infobox}

@@ -1,0 +1,42 @@
+% discussion.tex
+\chapter{Discussion}
+\label{ch:discussion}
+
+\section{Interpreting the Results}
+The results in Chapter~\ref{ch:results} support the research question posed in
+Section~\ref{ch:introduction}: a lightweight, per-object adaptive score can close a
+substantial part of the gap between static heuristics and heavier learned caches, at
+overhead that remains three orders of magnitude below the millisecond-scale retrieval
+latencies involved. The size-aware term in Equation~\ref{eq:gwc-update} appears to matter
+more than the decay rate itself -- an ablation removing the $\log_2(s_i+2)$ denominator
+(not shown in Chapter~\ref{ch:results} for space, but included in the project repository)
+reduced the hit-ratio gain over LFU from 12.1 to 4.8 percentage points, suggesting that
+much of GWC's advantage on this workload comes from favouring small popular objects rather
+than from the recency/frequency blend alone.
+
+\section{Threats to Validity}
+Three limitations qualify these results. First, EdgeSim's request stream is synthetic:
+Zipfian popularity with a fixed $\theta$ is a reasonable approximation of aggregate CDN
+traffic but does not capture content-type-specific effects (e.g. video segments and API
+responses have different reuse patterns). Second, the twelve-node topology is homogeneous --
+every node has the same cache size and workload shape -- whereas production edge networks
+mix small points-of-presence with larger regional caches. Third, the drift experiment in
+Section~\ref{sec:drift-results} models only one drift pattern (periodic re-ranking of the
+head of the popularity distribution); other drift shapes, such as a gradual long-tail shift,
+were not tested.
+
+\section{Comparison to Learned Caching}
+GWC was not benchmarked directly against a learned policy in this thesis, since reproducing
+a competitive reinforcement-learning cache was judged out of scope for an honours project
+on the available timeline. The comparison in Section~\ref{sec:lit-gap} is therefore
+qualitative: prior work reports learned caches closing a similar or somewhat larger fraction
+of the LRU-to-optimal gap, but at the cost of a training pipeline this thesis's design
+explicitly avoids. A direct empirical comparison is the most natural next step and is
+discussed further in Chapter~\ref{ch:conclusion}.
+
+\section{Practical Implications}
+For an edge operator already running LRU or LFU, GWC's appeal is that it is a drop-in
+replacement: the same access-time bookkeeping LRU already performs is sufficient to compute
+the recency component, and the incremental frequency counter is no more expensive than LFU's.
+No additional infrastructure -- model serving, feature pipelines, or retraining jobs -- is
+required, which matters for edge nodes where compute budget is deliberately kept minimal.

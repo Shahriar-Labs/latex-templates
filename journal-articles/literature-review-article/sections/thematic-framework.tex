@@ -1,0 +1,94 @@
+\section{Thematic Framework}
+\label{sec:thematic}
+
+Reading across the 42 studies, four clusters emerge according to \emph{how} a protocol reconciles a
+cached copy with the origin. Figure~\ref{fig:conceptmap} lays the clusters out as a concept map: the
+horizontal axis is not spatial but represents increasing tolerance for temporary divergence, from
+strict (left) to loose (right), with cluster D --- consistency-aware placement --- shown below the
+other three because it is an orthogonal, composable concern rather than a fourth point on that axis.
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[
+  core/.style={draw, ellipse, fill=nx@teal, text=white, font=\small\bfseries,
+               minimum width=3.6cm, minimum height=1.1cm, align=center},
+  cluster/.style={draw, rounded corners=3pt, fill=nx@mist, font=\small,
+                   minimum width=3.2cm, minimum height=1.0cm, align=center},
+  leaf/.style={draw, rounded corners=2pt, fill=white, font=\scriptsize,
+               minimum width=2.6cm, align=center},
+  link/.style={nx@slate, thick},
+  leaflink/.style={nx@gold, thin}
+]
+
+\node[core] (core) {Cache Consistency\\Protocols at the Edge};
+
+\node[cluster, above left=1.0cm and 1.6cm of core] (a) {A. Strong\\Consistency};
+\node[cluster, above right=1.0cm and 1.6cm of core] (b) {B. Eventual\\Consistency};
+\node[cluster, below left=1.0cm and 1.6cm of core] (c) {C. Tunable /\\Hybrid Models};
+\node[cluster, below right=1.6cm and 1.6cm of core] (d) {D. Consistency-Aware\\Placement};
+
+\draw[link] (core) -- (a);
+\draw[link] (core) -- (b);
+\draw[link] (core) -- (c);
+\draw[link] (core) -- (d);
+
+\node[leaf, above=0.55cm of a, xshift=-0.9cm] (a1) {Lease-based\\invalidation};
+\node[leaf, above=0.55cm of a, xshift=0.9cm] (a2) {Sequencer\\consensus};
+\draw[leaflink] (a) -- (a1);
+\draw[leaflink] (a) -- (a2);
+
+\node[leaf, above=0.55cm of b, xshift=0.9cm] (b1) {CRDT\\merge};
+\node[leaf, above=0.55cm of b, xshift=-0.9cm] (b2) {Gossip\\anti-entropy};
+\draw[leaflink] (b) -- (b1);
+\draw[leaflink] (b) -- (b2);
+
+\node[leaf, left=0.55cm of c] (c1) {SLA-driven\\staleness bound};
+\draw[leaflink] (c) -- (c1);
+
+\node[leaf, below=0.55cm of d] (d1) {Joint placement +\\replica-set sizing};
+\draw[leaflink] (d) -- (d1);
+
+\end{tikzpicture}
+\caption{Concept map of the thematic framework. Solid teal links join the core problem to each of the
+four clusters; thin gold links show representative sub-mechanisms within a cluster.}
+\label{fig:conceptmap}
+\end{figure}
+
+\subsection{Cluster A --- Strong consistency}
+
+Strong-consistency protocols guarantee that once a write is acknowledged, every subsequent read at any
+edge replica observes it (or a designated fallback path is used instead of a stale read). The dominant
+mechanisms are lease-based invalidation, where the origin holds a time-bounded lease per replica and
+must revoke it before accepting a conflicting write, and sequencer-based consensus, where a single
+logical sequencer orders all writes and replicas apply them in order. \citet{chen2015nexa} introduced
+the Nexa protocol, the first to bound invalidation latency under wireless jitter rather than assuming a
+wired backhaul, and it remains the most-cited strong-consistency baseline in the corpus.
+
+\subsection{Cluster B --- Eventual consistency}
+
+Eventual-consistency protocols relax the ordering guarantee in exchange for availability during
+partitions. Conflict-free replicated data types (CRDTs) and gossip-based anti-entropy are the two
+dominant mechanisms; both allow a replica to serve a read from local state at any time, resolving
+divergence asynchronously. \citet{patel2017synapse} adapted CRDT merge functions to edge caches with
+asymmetric bandwidth, showing that a naive state-based CRDT saturates uplink capacity on cellular
+backhaul and proposing an operation-based variant instead.
+
+\subsection{Cluster C --- Tunable and hybrid models}
+
+Rather than fixing a single point on the consistency spectrum, cluster C protocols expose a
+per-request or per-object staleness bound that an application or SLA can tune. \citet{osei2019vertex}'s
+Vertex framework was the first to make this bound a first-class scheduling input, trading staleness
+against replica-refresh bandwidth on a per-tenant basis.
+
+\subsection{Cluster D --- Consistency-aware placement}
+
+Cluster D treats \emph{where} a replica is placed and \emph{how consistent} it must be as a joint
+decision rather than two separate problems. \citet{alvarez2021nimbus} showed that placement algorithms
+which ignore consistency cost systematically under-provision replica sets for write-heavy objects,
+motivating a joint placement-and-staleness optimiser.
+
+\begin{keytakeaway}
+No cluster dominates: strong consistency wins on correctness simplicity, eventual consistency wins on
+availability under partition, tunable models trade one for the other explicitly, and placement-aware
+approaches show the first three clusters cannot be evaluated independently of replica topology.
+\end{keytakeaway}

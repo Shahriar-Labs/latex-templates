@@ -1,0 +1,97 @@
+\section{Analysis Plan}
+Fixed in advance, per Quality's pre-registration policy for optimization studies --- the method
+below is not to be altered after responses are observed.
+
+\subsection*{4.1 Effect estimation}
+For each factor, the main effect is the difference between the average response at the high
+level and the average response at the low level, using only the eight factorial runs (centre
+points excluded from effect estimates, used only for the curvature test below):
+\[
+  \text{Effect}_A = \bar{Y}_{A=+1} - \bar{Y}_{A=-1}, \qquad
+  \text{Effect}_{AB} = \frac{(\bar{Y}_{A=+1,B=+1} + \bar{Y}_{A=-1,B=-1}) - (\bar{Y}_{A=+1,B=-1} + \bar{Y}_{A=-1,B=+1})}{2}
+\]
+Two-factor interaction effects (\(AB\), \(AC\), \(BC\)) and the three-factor interaction
+(\(ABC\)) follow the same contrast pattern from the signed table below.
+
+\vspace{0.3em}
+\begin{center}
+\footnotesize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}c c c c c c c c@{}}
+\toprule
+\rowcolor{doeaccent}
+\textcolor{white}{\textbf{Std}} & \textcolor{white}{\textbf{A}} & \textcolor{white}{\textbf{B}} &
+\textcolor{white}{\textbf{C}} & \textcolor{white}{\textbf{AB}} & \textcolor{white}{\textbf{AC}} &
+\textcolor{white}{\textbf{BC}} & \textcolor{white}{\textbf{ABC}} \\
+\midrule
+1 (1) & \(-\) & \(-\) & \(-\) & \(+\) & \(+\) & \(+\) & \(-\) \\
+2 a   & \(+\) & \(-\) & \(-\) & \(-\) & \(-\) & \(+\) & \(+\) \\
+3 b   & \(-\) & \(+\) & \(-\) & \(-\) & \(+\) & \(-\) & \(+\) \\
+4 ab  & \(+\) & \(+\) & \(-\) & \(+\) & \(-\) & \(-\) & \(-\) \\
+5 c   & \(-\) & \(-\) & \(+\) & \(+\) & \(-\) & \(-\) & \(+\) \\
+6 ac  & \(+\) & \(-\) & \(+\) & \(-\) & \(+\) & \(-\) & \(-\) \\
+7 bc  & \(-\) & \(+\) & \(+\) & \(-\) & \(-\) & \(+\) & \(-\) \\
+8 abc & \(+\) & \(+\) & \(+\) & \(+\) & \(+\) & \(+\) & \(+\) \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{4.2 Curvature check}
+Before trusting the linear model, compare the average of the eight factorial runs against the
+average of the three centre-point runs:
+\[
+  \Delta_{\text{curv}} = \bar{Y}_{\text{factorial}} - \bar{Y}_{\text{centre}}
+\]
+If \(\Delta_{\text{curv}}\) is large relative to the pooled centre-point standard deviation
+(rule of thumb: \(|\Delta_{\text{curv}}| > 2\,s_{\text{centre}}\)), a purely linear model is
+inadequate and this study escalates to a central-composite augmentation rather than reporting
+final setpoints from the factorial alone.
+
+\subsection*{4.3 ANOVA skeleton}
+Populate after data entry into the analysis workbook (\texttt{DOE-2026-014-analysis.xlsx});
+this sheet only reserves the structure so reviewers can see the plan before results exist.
+
+\vspace{0.3em}
+\begin{center}
+\footnotesize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}l c c c c c@{}}
+\toprule
+\rowcolor{doeprimary}
+\textcolor{white}{\textbf{Source}} & \textcolor{white}{\textbf{DF}} & \textcolor{white}{\textbf{SS}} &
+\textcolor{white}{\textbf{MS}} & \textcolor{white}{\textbf{F}} & \textcolor{white}{\textbf{p}} \\
+\midrule
+A --- Cure Temperature   & 1 & & & & \\
+B --- Catalyst Loading   & 1 & & & & \\
+C --- Cure Time          & 1 & & & & \\
+AB                       & 1 & & & & \\
+AC                       & 1 & & & & \\
+BC                       & 1 & & & & \\
+ABC                      & 1 & & & & \\
+Curvature                & 1 & & & & \\
+Pure error (centre pts)  & 2 & & & & \\
+\midrule
+Total                    & 10 & & & & \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection*{4.4 Decision rule}
+\begin{itemize}
+  \item Statistical significance: effect retained in the model if \(p < 0.05\).
+  \item Practical significance: an effect below \textbf{1.5 percentage points} of yield is
+        treated as noise regardless of \(p\)-value --- the line's shift-to-shift baseline
+        variation is already \(\pm1.2\) points.
+  \item If \(A\), \(B\), and \(AB\) are all significant, proceed directly to a steepest-ascent
+        confirmation run at the predicted optimum; if only main effects are significant, the
+        centre point already approximates the optimum and no further runs are needed.
+  \item Any run outside its factor's safety constraint (Section~2.3) is excluded from the model
+        and flagged, not silently dropped.
+\end{itemize}
+
+\begin{warnbox}[Do not p-hack]
+Do not add, drop, or re-code runs after seeing partial results. If a run must be voided
+(equipment fault, wrong panel batch), record the reason in the Appendix and re-run at the
+\emph{same} design point with a new randomized slot, drawn by Quality --- not chosen by the
+operator.
+\end{warnbox}

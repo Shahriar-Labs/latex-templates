@@ -1,0 +1,96 @@
+% sections/calibration-curve.tex
+
+\section{Calibration Curve and Regression Analysis}
+
+\subsection{Raw Response Data}
+Table~\ref{tab:caldata} summarises the triplicate peak-area response at each of the
+seven calibration levels.
+
+\begin{table}[h!]
+\centering
+\small
+\caption{Calibration response data, peak area in mAU$\cdot$s (n = 3 per level)}
+\label{tab:caldata}
+\begin{tabularx}{\linewidth}{@{}r r r r r r r@{}}
+\toprule
+\textbf{Level} & \textbf{Conc.\ (ng/mL)} & \textbf{Rep.\ 1} & \textbf{Rep.\ 2} & \textbf{Rep.\ 3} & \textbf{Mean} & \textbf{\%RSD} \\
+\midrule
+1 & 0.500 & 9312.0    & 9587.0    & 9405.0    & 9434.7    & 1.48 \\
+2 & 1.00  & 18420.0   & 18705.0   & 18190.0   & 18438.3   & 1.40 \\
+3 & 2.00  & 37650.0   & 36980.0   & 37420.0   & 37350.0   & 0.91 \\
+4 & 5.00  & 92100.0   & 93850.0   & 91700.0   & 92550.0   & 1.23 \\
+5 & 10.0  & 186500.0  & 184200.0  & 187300.0  & 186000.0  & 0.86 \\
+6 & 20.0  & 369800.0  & 372100.0  & 368500.0  & 370133.3  & 0.49 \\
+7 & 50.0  & 924000.0  & 918500.0  & 927200.0  & 923233.3  & 0.48 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Calibration Curve}
+
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.9\linewidth, height=5.8cm,
+  xlabel={Concentration (ng/mL)},
+  ylabel={Peak Area (mAU$\cdot$s)},
+  xmin=0, xmax=52,
+  ymin=0, ymax=970000,
+  grid=major,
+  grid style={gray!20},
+  axis lines=left,
+  tick label style={font=\small},
+  label style={font=\small},
+  title={\small Calibration Curve --- Zolarvex in Placebo Matrix},
+  yticklabel style={/pgf/number format/fixed, /pgf/number format/1000 sep=\,},
+  legend pos=north west,
+  legend style={font=\footnotesize, draw=nexagray},
+]
+\addplot[nexanavy, thick, domain=0:52, samples=2] {187.4+18486*x};
+\addlegendentry{Least-squares linear fit}
+\addplot[
+  only marks, mark=*, mark size=2pt, nexateal,
+  error bars/.cd, y dir=both, y explicit,
+] table[x=x,y=y,y error=err] {
+x y err
+0.5 9434.7 139.6
+1 18438.3 258.0
+2 37350.0 341.5
+5 92550.0 1140.2
+10 186000.0 1596.9
+20 370133.3 1830.2
+50 923233.3 4400.4
+};
+\addlegendentry{Mean response (n=3), $\pm$SD}
+\end{axis}
+\end{tikzpicture}
+\caption{Mean peak area versus nominal concentration, with error bars showing
+$\pm 1$ standard deviation of the triplicate preparations at each level.}
+\label{fig:calcurve}
+\end{figure}
+
+\subsection{Regression Summary}
+\begin{table}[h!]
+\centering
+\small
+\caption{Linear regression statistics for the calibration curve}
+\label{tab:regstats}
+\begin{tabularx}{0.7\linewidth}{@{}X r@{}}
+\toprule
+\textbf{Parameter} & \textbf{Value} \\
+\midrule
+Slope, $S$ (mAU$\cdot$s per ng/mL) & 18486 \\
+Intercept, $a_0$ (mAU$\cdot$s) & 187.4 \\
+Correlation coefficient, $r^2$ & 0.9998 \\
+Residual standard deviation, $S_{y/x}$ & 612 \\
+Calibration range & 0.5--50\,ng/mL \\
+Levels $\times$ replicates & 7 $\times$ 3 ($n=21$) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The response is linear across the tested range, with $r^2 = 0.9998$ exceeding the SOP
+QC-042 acceptance criterion of $r^2 \geq 0.995$, and no trend in residuals with
+concentration, supporting the unweighted regression model used for the LOD/LOQ
+calculation in Section~5.

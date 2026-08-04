@@ -1,0 +1,153 @@
+% preamble.tex — packages, colours, custom commands, page geometry
+\usepackage[letterpaper,margin=1.9cm,headheight=28pt,headsep=12pt,footskip=26pt]{geometry}
+
+% ---- fonts / encoding ----
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+
+% ---- math ----
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ---- colour ----
+\usepackage[table]{xcolor}
+
+% ---- layout / tables ----
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
+
+% ---- graphics ----
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage[most]{tcolorbox}
+
+% ---- lists ----
+\usepackage{enumitem}
+
+% ---- icons ----
+\usepackage{fontawesome5}
+
+% ---- headers/footers ----
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+% ---- misc ----
+\usepackage{natbib}
+\usepackage{hyperref}
+\usepackage{ragged2e}
+
+% =====================================================================
+% Colour palette — molecular biology, green-forward
+% =====================================================================
+\definecolor{pcrforest}{RGB}{21,84,58}      % primary deep green
+\definecolor{pcrteal}{RGB}{15,110,104}      % secondary teal
+\definecolor{pcrmint}{RGB}{226,241,232}     % pale mint background
+\definecolor{pcrmintline}{RGB}{188,220,201} % mint hairline / border
+\definecolor{pcramber}{RGB}{176,98,24}      % caution amber
+\definecolor{pcrambertint}{RGB}{250,236,220}
+\definecolor{pcrslate}{RGB}{72,80,78}       % secondary text
+\definecolor{pcrink}{RGB}{30,34,33}         % near-black body text
+\definecolor{pcrladder}{RGB}{242,244,243}
+\definecolor{pcrgelbg}{RGB}{18,36,28}       % dark gel background
+\definecolor{pcrband}{RGB}{171,224,150}     % fluorescing band green
+
+\color{pcrink}
+
+% =====================================================================
+% Custom commands
+% =====================================================================
+\newcommand{\uL}{\textmu L}
+\newcommand{\uM}{\textmu M}
+\newcommand{\degC}{\textsuperscript{\(\circ\)}C}
+
+% label:value field, used in metadata grids
+\newcommand{\infofield}[2]{%
+  {\color{pcrteal}\bfseries\small #1:}~{\small #2}%
+}
+
+% section styling
+\titleformat{\section}
+  {\color{pcrforest}\Large\bfseries}
+  {\thesection}{0.6em}{}
+  [\vspace{-0.3em}{\color{pcrmintline}\titlerule[1.1pt]}]
+\titlespacing*{\section}{0pt}{0.9em}{0.5em}
+
+\titleformat{\subsection}
+  {\color{pcrteal}\large\bfseries}
+  {\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{0.7em}{0.3em}
+
+% caution / note boxes
+\newtcolorbox{cautionbox}{%
+  enhanced, breakable,
+  colback=pcrambertint, colframe=pcramber,
+  boxrule=0.6pt, arc=2pt, left=8pt, right=8pt, top=4pt, bottom=4pt,
+  before skip=3pt, after skip=3pt,
+  title={\faExclamationTriangle\ \textbf{Caution}},
+  coltitle=white, colbacktitle=pcramber,
+  fonttitle=\small\bfseries,
+  boxsep=1pt
+}
+
+\newtcolorbox{notebox}{%
+  enhanced, breakable,
+  colback=pcrmint, colframe=pcrteal,
+  boxrule=0.6pt, arc=2pt, left=8pt, right=8pt, top=4pt, bottom=4pt,
+  before skip=3pt, after skip=3pt,
+  title={\faClipboard\ \textbf{Record Note}},
+  coltitle=white, colbacktitle=pcrteal,
+  fonttitle=\small\bfseries,
+  boxsep=1pt
+}
+
+% plain field box (used for metadata grid panels)
+\newtcolorbox{fieldbox}[1][]{%
+  enhanced, colback=white, colframe=pcrmintline,
+  boxrule=0.6pt, arc=2pt, left=7pt, right=7pt, top=5pt, bottom=5pt,
+  before skip=2pt, after skip=2pt,
+  #1
+}
+
+% compact numbered procedure step — inline marker, no box overhead
+\newcounter{stepctr}
+\newcommand{\stepitem}[1]{%
+  \stepcounter{stepctr}%
+  \par\noindent
+  \raisebox{-0.35ex}{\tikz[baseline]{\node[fill=pcrforest, text=white,
+    font=\bfseries\scriptsize, circle, inner sep=0pt,
+    minimum size=13pt] {\thestepctr};}}%
+  ~#1\par\vspace{3pt}%
+}
+
+% list styling
+\setlist[itemize]{leftmargin=1.3em, itemsep=0.15em, topsep=0.2em}
+\setlist[enumerate]{leftmargin=1.6em, itemsep=0.15em, topsep=0.2em}
+
+% header / footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{pcrslate}Nexa Biosciences \textbar\ Molecular Cloning Core}
+\fancyhead[R]{\small\color{pcrslate}\textbf{PCR-SOP-114} Rev.\,3}
+\fancyfoot[L]{\footnotesize\color{pcrslate}CONFIDENTIAL --- Internal Laboratory Record}
+\fancyfoot[C]{\footnotesize\color{pcrslate}Page \thepage\ of \pageref{LastPage}}
+\fancyfoot[R]{\footnotesize\color{pcrslate}2026-07-29}
+\usepackage{lastpage}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=pcrteal,
+  citecolor=pcrteal,
+  urlcolor=pcrteal,
+  pdftitle={PCR Amplification Protocol and Record},
+  pdfauthor={Nexa Biosciences Molecular Cloning Core}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.25em}

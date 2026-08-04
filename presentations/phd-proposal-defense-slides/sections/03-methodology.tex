@@ -1,0 +1,105 @@
+\section{Methodology}
+
+\begin{frame}{Research Design}{Three Phases, Each Gated on the Last}
+  \begin{minipage}[t]{0.32\textwidth}
+    \begin{navybox}{Phase 1}
+      \footnotesize
+      \textbf{Calibrated UQ.} Train an evidential dynamics model on Nexa
+      rollouts; calibrate against held-out terrain shift.
+    \end{navybox}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.32\textwidth}
+    \begin{navybox}{Phase 2}
+      \footnotesize
+      \textbf{Risk-aware policy.} Fold the Phase~1 estimate into a
+      CVaR-constrained policy optimizer; benchmark in simulation.
+    \end{navybox}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.32\textwidth}
+    \begin{navybox}{Phase 3}
+      \footnotesize
+      \textbf{Field validation.} Deploy on the Vertex rover at the Meridian
+      Outcrop Test Range across three terrain classes.
+    \end{navybox}
+  \end{minipage}
+  \par\vspace{10pt}
+
+  \begin{itemize}
+    \item Each phase has a pre-registered go/no-go metric (Phase~1:
+      calibration error $< 0.05$; Phase~2: constraint violation rate
+      $<2\%$ in simulation) before hardware time is committed.
+    \item Phases 1--2 share the same codebase and log format as Phase~3, so
+      no reimplementation happens at the sim-to-real boundary.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Phase 1: Calibrated Uncertainty Quantification}{Single-Pass, Onboard-Feasible}
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{itemize}
+        \item Replace the point-estimate dynamics head with an
+          \textbf{evidential} output layer (Normal-Inverse-Gamma), giving
+          mean, aleatoric, and epistemic variance in one forward pass.
+        \item Train on 40k Nexa rollouts spanning gravel, mud, and debris
+          contact models.
+        \item Calibrate epistemic variance against a held-out
+          \emph{terrain-shift} split, not the training distribution.
+        \item Distill to a 3-layer MLP sized for the rover's Jetson-class
+          onboard compute -- target $<5$\,ms per query.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \begin{copperbox}{Go / no-go}
+        \footnotesize
+        Expected calibration error $<0.05$ on the shift split, at
+        $<5$\,ms/query on target hardware.
+      \end{copperbox}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Phase 2: Risk-Aware Policy Optimization}{A Formal Safety Budget}
+  \begin{block}{CVaR-constrained objective}
+    \[
+      \max_{\theta} \;\; \mathbb{E}_{\tau \sim \pi_\theta}
+        \left[ \sum_{t=0}^{T} \gamma^t \, r_t \right]
+      \quad \text{s.t.} \quad
+      \mathrm{CVaR}_{\alpha}\big[\, C(\tau) \,\big] \;\le\; \delta
+    \]
+  \end{block}
+  \begin{itemize}
+    \item $C(\tau)$ is a per-episode cost built from Phase~1's epistemic
+      variance: the policy pays for acting confidently where the model is
+      unsure.
+    \item $\delta$ is set from the rover's mechanical tolerance (maximum
+      permissible roll/pitch before a stability margin is lost).
+    \item Solved with a Lagrangian relaxation on top of a trust-region
+      policy update, reusing the actor-critic backbone from
+      \cite{chen2025uncertainty}.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Phase 3: Field Validation Protocol}{Meridian Outcrop Test Range}
+  \begin{table}
+    \centering
+    \small
+    \begin{tabular}{lll}
+      \toprule
+      \textbf{Terrain class} & \textbf{Primary hazard} & \textbf{Trials} \\
+      \midrule
+      Loose gravel incline & Loss of traction & 30 runs \\
+      Flooded furrow field & Submerged obstacles & 30 runs \\
+      Post-storm debris field & Unmapped occlusions & 30 runs \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \begin{itemize}
+    \item Each terrain class is run under both the Phase~2 policy and a
+      constrained-but-uncertainty-blind baseline, same random seeds where
+      the simulator permits matched conditions.
+    \item Safety officer holds a hardware e-stop for every run; no trial is
+      scored if the e-stop is used.
+    \item Outcomes logged as the \emph{Outcrop-3} benchmark, released with
+      the dissertation \cite{meridian2026benchmark}.
+  \end{itemize}
+\end{frame}

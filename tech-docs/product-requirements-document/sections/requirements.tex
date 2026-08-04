@@ -1,0 +1,56 @@
+\section{Functional Requirements}
+
+\renewcommand{\arraystretch}{1.35}
+\begin{longtable}{@{}>{\bfseries}p{1.3cm}p{6.7cm}p{1.5cm}p{4.6cm}@{}}
+\toprule
+\rowcolor{prdaccent}
+{\color{white}ID} & {\color{white}Requirement} & {\color{white}Priority} &
+  {\color{white}Acceptance Criteria} \\
+\midrule
+\endfirsthead
+\multicolumn{4}{l}{\small\itshape \ldots continued} \\
+\toprule
+\rowcolor{prdaccent}
+{\color{white}ID} & {\color{white}Requirement} & {\color{white}Priority} &
+  {\color{white}Acceptance Criteria} \\
+\midrule
+\endhead
+FR-01 & Users can subscribe any catalog metric to anomaly monitoring from the metric's
+  detail view. & \priobadge{P0} & Subscribe action visible on every catalog metric;
+  confirmation toast on success; subscription visible in user's alert list within 2s. \\
+\addlinespace
+FR-02 & The detection service evaluates each subscribed metric on its native refresh
+  cadence (hourly or daily) and flags values outside the expected range. & \priobadge{P0}
+  & 95th-percentile detection-to-notification time under 5 minutes for hourly metrics,
+  measured in staging load test. \\
+\addlinespace
+FR-03 & Alert notifications state the metric name, current value, expected range, and
+  percentage deviation in plain language. & \priobadge{P0} & Copy reviewed by Design;
+  no raw z-scores or model internals shown to the end user. \\
+\addlinespace
+FR-04 & Users can choose delivery channel(s) per subscription: in-app, email, Slack. &
+  \priobadge{P0} & At least one channel required at subscribe time; channels editable
+  after creation without re-subscribing. \\
+\addlinespace
+FR-05 & Users can set a maintenance window (start/end timestamp) during which a metric's
+  alerts are suppressed but still logged. & \priobadge{P1} & Suppressed alerts appear
+  greyed out in history with a ``muted'' tag; no notification sent through any channel. \\
+\addlinespace
+FR-06 & Users can mark a received alert as ``expected,'' which retrains the baseline to
+  treat similar magnitude changes as normal going forward. & \priobadge{P1} & Marking
+  expected updates the model within 24h; verified via a repeat-alert suppression test. \\
+\addlinespace
+FR-07 & Workspace admins can view all active subscriptions across the workspace,
+  filterable by metric and by user. & \priobadge{P1} & Admin view loads under 2s for
+  workspaces with up to 500 subscriptions. \\
+\addlinespace
+FR-08 & Users can set alert sensitivity (low / medium / high) per subscribed metric,
+  changing the deviation threshold that triggers a notification. & \priobadge{P2} &
+  Threshold change takes effect on the next evaluation cycle; documented mapping from
+  sensitivity level to standard-deviation multiplier. \\
+\addlinespace
+FR-09 & Subscribed users receive an optional weekly digest summarizing all alerts fired
+  for their subscriptions. & \priobadge{P2} & Digest opt-in default OFF; sent Monday
+  08:00 in the user's workspace timezone. \\
+\bottomrule
+\end{longtable}

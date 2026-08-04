@@ -1,0 +1,39 @@
+\section{Methodology}
+Our replication methodology strictly adheres to the protocol outlined by Chen et al.~\cite{chen2024neural}, with specific exceptions detailed in Section~\ref{sec:deviations}.
+
+\subsection{Model Architecture}
+The NSR framework consists of two main components:
+\begin{itemize}
+    \item \textbf{Visual Parser (VP):} A convolutional backbone combined with an object detection transformer (DETR) to extract object bounding boxes, attributes, and spatial relationships.
+    \item \textbf{Symbolic Program Executor (SPE):} A module that parses natural language questions into functional programs (e.g., \texttt{Filter(color, red)}) and executes them against the extracted visual scene graph.
+\end{itemize}
+
+For this replication, we instantiated the VP using a ResNet-101 backbone pretrained on ImageNet, followed by a standard transformer encoder-decoder. The SPE was implemented using the original domain-specific language (DSL) interpreter.
+
+\subsection{Dataset: Vertex-VQA}
+We utilized the \emph{Vertex-VQA} dataset, which contains $150,000$ image-question pairs. This dataset represents a significant challenge over the original CLEVR benchmark due to:
+\begin{enumerate}
+    \item \textbf{Photorealism:} Natural lighting and occlusion.
+    \item \textbf{Complex Relational Queries:} Questions requiring up to 4 spatial hops.
+\end{enumerate}
+
+\subsection{Experimental Setup}
+All training was performed on an array of Apex Compute H100 accelerators at the Nexa High-Performance Computing facility. The training parameters were kept identical to the original work, as summarized in Table~\ref{tab:hyperparameters}.
+
+\begin{table}[H]
+\centering
+\caption{Hyperparameter Configuration: Original vs. Replication}
+\label{tab:hyperparameters}
+\begin{tabularx}{\textwidth}{l X X}
+\toprule
+\textbf{Hyperparameter} & \textbf{Original Value (Chen et al.)} & \textbf{Replication Value (Ours)} \\
+\midrule
+Learning Rate & $1 \times 10^{-4}$ & $1 \times 10^{-4}$ \\
+Batch Size & $64$ & $64$ \\
+Optimizer & AdamW ($\beta_1=0.9$, $\beta_2=0.999$) & AdamW ($\beta_1=0.9$, $\beta_2=0.999$) \\
+Weight Decay & $0.01$ & $0.01$ \\
+Training Epochs & $40$ & $40$ \\
+Dropout Rate & $0.1$ & $0.1$ \\
+\bottomrule
+\end{tabularx}
+\end{table}

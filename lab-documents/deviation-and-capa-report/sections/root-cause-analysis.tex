@@ -1,0 +1,89 @@
+% sections/root-cause-analysis.tex --- fishbone diagram + 5-whys + root cause statement
+
+\section{Root Cause Analysis}
+
+The investigation team (Priya Nakamura, QA; Marcus Webb, Manufacturing; Elena Cho, QC
+Microbiology; and Dr.\ Samuel Okafor, Site Quality Director) applied a structured 6M
+Ishikawa analysis to enumerate candidate contributing factors, followed by a 5-Whys
+drill-down on the branch judged most probable by convergence of physical evidence.
+
+\subsection{Ishikawa (6M) Diagram}
+
+\begin{figure}[h!]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  bone/.style={thick, meridianteal},
+  spine/.style={very thick, meridiannavy},
+  branch/.style={align=left, text width=3.0cm, font=\scriptsize}
+]
+  % spine and effect
+  \draw[spine,->] (0,0) -- (11.9,0);
+  \node[draw, rounded corners=3pt, fill=meridiannavy, text=white, align=center,
+        text width=3.1cm, font=\small, inner sep=6pt, anchor=west] (effect) at (12.0,0)
+        {\textbf{Environmental Excursion}\\ Grade C Corridor, Batch MB-INS-2451-07};
+
+  % top branches: Man, Method, Measurement
+  \draw[bone] (0.6,0) -- (1.6,2.5);
+  \node[branch, anchor=south] at (1.6,2.6)
+    {\textbf{\normalsize Man}\\[2pt]\textbullet\ Gowning technique inconsistent\\\textbullet\ Refresher training overdue};
+
+  \draw[bone] (4.2,0) -- (5.2,2.5);
+  \node[branch, anchor=south] at (5.2,2.6)
+    {\textbf{\normalsize Method}\\[2pt]\textbullet\ SOP silent on door-propping\\\textbullet\ Transfer path not defined};
+
+  \draw[bone] (7.8,0) -- (8.8,2.5);
+  \node[branch, anchor=south] at (8.8,2.6)
+    {\textbf{\normalsize Measurement}\\[2pt]\textbullet\ Particle counter cal.\ overdue\\\textbullet\ DP drift undetected};
+
+  % bottom branches: Machine, Material, Environment
+  \draw[bone] (0.6,0) -- (1.6,-2.5);
+  \node[branch, anchor=north] at (1.6,-2.6)
+    {\textbf{\normalsize Machine}\\[2pt]\textbullet\ HVAC sensor DP-114 drifted\\\textbullet\ No door alarm interlock};
+
+  \draw[bone] (4.2,0) -- (5.2,-2.5);
+  \node[branch, anchor=north] at (5.2,-2.6)
+    {\textbf{\normalsize Material}\\[2pt]\textbullet\ Gowning fabric lint, lot GX-9\\\textbullet\ Wipe-down solvent residue};
+
+  \draw[bone] (7.8,0) -- (8.8,-2.5);
+  \node[branch, anchor=north] at (8.8,-2.6)
+    {\textbf{\normalsize Environment}\\[2pt]\textbullet\ Adjacent Suite 4 construction dust\\\textbullet\ Seasonal humidity spike};
+\end{tikzpicture}}
+\caption{Ishikawa (6M) diagram enumerating candidate causes for the Grade C corridor
+environmental excursion during Batch MB-INS-2451-07.}
+\label{fig:fishbone}
+\end{figure}
+
+\subsection{Five Whys --- Primary Contributing Branch}
+
+Physical evidence (the out-of-cascade DP reading, the door-propping observation, and the
+sensor's calibration record) converged on the Machine/Measurement branches. The team
+drilled down as follows:
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries}p{2.4cm} X@{}}
+\rowcolor{meridiannavy}
+{\color{white}Question} & {\color{white}Finding} \\
+Why 1 & Viable particle count at EM-C-07 exceeded the Grade C action limit. \\
+Why 2 & Directional airflow cascade into the corridor anteroom had collapsed to
+2\,Pa below the 10\,Pa SOP minimum. \\
+Why 3 & DP sensor DP-114 had drifted out of tolerance and was no longer reporting
+an accurate cascade reading. \\
+Why 4 & DP-114's scheduled calibration, due 28 April 2026, had not been performed;
+the sensor was 47 days overdue at the time of the excursion. \\
+Why 5 & The site metrology calendar treats corridor-level utility sensors as
+non-critical instruments reviewed only on annual audit, so overdue calibrations on
+this asset class do not generate an automated alert. \\
+\end{tabularx}
+\end{center}
+
+\subsection{Root Cause Statement}
+
+\begin{tcolorbox}[infobox]
+\textbf{Root cause:} The Grade C corridor differential-pressure sensor (DP-114) drifted
+undetected because the site's metrology scheduling system does not flag overdue
+calibrations for corridor-level utility instrumentation. This allowed a gradual loss of
+airflow cascade to go unnoticed until a transient door-opening event during material
+transfer permitted sufficient lower-grade air ingress to produce a viable particle
+excursion.
+\end{tcolorbox}

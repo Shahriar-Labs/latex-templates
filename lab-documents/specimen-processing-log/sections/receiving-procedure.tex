@@ -1,0 +1,69 @@
+% sections/receiving-procedure.tex --- narrative procedure + workflow diagram
+
+\section{Receiving and Accessioning Procedure}
+\label{sec:procedure}
+
+Specimens arrive at Central Receiving by pneumatic tube, courier bag, or direct hand delivery
+from inpatient units and affiliated outreach clinics. The accessioning technologist processes
+each specimen through the same five-step workflow before it is released to a testing bench,
+regardless of arrival route.
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=8mm and 9mm,
+  box/.style={rectangle, rounded corners=2pt, draw=ClinicalBlue, fill=ClinicalSky,
+    text width=2.5cm, align=center, minimum height=1.05cm, font=\footnotesize\bfseries\color{ClinicalBlue}},
+  decision/.style={diamond, draw=ClinicalTeal, fill=ClinicalTeal!10, aspect=2.2,
+    text width=1.9cm, align=center, inner sep=1pt, font=\footnotesize\bfseries\color{ClinicalTeal}},
+  goodcome/.style={rectangle, rounded corners=2pt, draw=ClinicalTeal, fill=ClinicalTeal!8,
+    text width=2.7cm, align=center, minimum height=1.0cm, font=\footnotesize\bfseries\color{ClinicalTeal}},
+  badcome/.style={rectangle, rounded corners=2pt, draw=ClinicalCrimson, fill=ClinicalCrimson!8,
+    text width=2.7cm, align=center, minimum height=1.0cm, font=\footnotesize\bfseries\color{ClinicalCrimson}}
+]
+\node[box] (collect) {Specimen Collection};
+\node[box, right=of collect] (transport) {Transport to Laboratory};
+\node[box, right=of transport] (receipt) {Receipt \& Visual Inspection};
+\node[box, right=of receipt] (accession) {Barcode Accession into LIS};
+\node[decision, below=9mm of accession] (ok) {Acceptable?};
+\node[goodcome, below left=9mm and -6mm of ok] (accept) {Routed to Testing Queue};
+\node[badcome, below right=9mm and -6mm of ok] (reject) {Logged as Rejection; Redraw Requested};
+
+\draw[->, thick, ClinicalBlue] (collect) -- (transport);
+\draw[->, thick, ClinicalBlue] (transport) -- (receipt);
+\draw[->, thick, ClinicalBlue] (receipt) -- (accession);
+\draw[->, thick, ClinicalBlue] (accession) -- (ok);
+\draw[->, thick, ClinicalTeal] (ok) -- node[left,font=\scriptsize,ClinicalTeal]{Yes} (accept);
+\draw[->, thick, ClinicalCrimson] (ok) -- node[right,font=\scriptsize,ClinicalCrimson]{No} (reject);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Step-by-Step Requirements}
+\begin{enumerate}
+  \item \textbf{Visual inspection.} Container integrity, fill volume, and clot/hemolysis
+    appearance are checked before the label is scanned, so that a compromised specimen is
+    caught before it is committed to the LIS queue.
+  \item \textbf{Requisition reconciliation.} The two independent patient identifiers on the
+    specimen label (name and date of birth, or name and medical record number) are compared
+    against the electronic or paper requisition. Any discrepancy is a \rejcode{R8} rejection
+    and the specimen is held, not discarded, pending callback.
+  \item \textbf{Barcode accession.} A scan of the specimen label against the LIS work list
+    time-stamps the Received field shown in Section~\ref{sec:log} and generates the
+    Julian-date accession number. This is the moment a specimen becomes traceable end-to-end
+    in the LIS chain of custody.
+  \item \textbf{Acceptability determination.} The technologist applies the criteria in
+    Table~\ref{tab:codes}. Acceptable specimens are routed to the appropriate bench queue
+    (chemistry, hematology, microbiology, or send-out) within five minutes of accessioning.
+  \item \textbf{Rejection handling.} Rejected specimens are retained in the reject holding
+    rack for four hours (in case a pathologist override is requested) before biohazard
+    disposal, and the rejection is logged with the code, time, and technologist initials.
+\end{enumerate}
+
+\subsection{Time-Sensitive and Chain-of-Custody Specimens}
+Specimens for blood gas, ammonia, lactate, and cold agglutinin testing are logged with an
+additional ``iced/room temp'' condition note, since these analytes are rejected under
+\rejcode{R9} if the transport medium does not match the requisitioned collection instructions.
+Specimens collected under a legal chain-of-custody order (forensic toxicology, blood alcohol
+for law enforcement, or paternity testing) bypass the pneumatic tube system entirely and are
+hand-delivered with a signed custody seal; the accessioning technologist countersigns the
+custody form at the moment of receipt and files it with Risk Management, separately from this
+log, per facility policy and the collection guidance in \citet{clsi_gp41}.

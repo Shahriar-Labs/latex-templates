@@ -1,0 +1,40 @@
+\section{Success Metrics}
+
+\subsection*{North star}
+\begin{statusbox}
+\centering
+\Large\bfseries\color{prdaccent} Median anomaly-detection lag\\[2pt]
+\large\color{prdink} 4.2 days \raisebox{0.1em}{\footnotesize$\to$} \textbf{under 1 hour}
+\end{statusbox}
+
+\vspace{0.8em}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\linewidth}{@{}Xp{2.3cm}p{2.3cm}p{3.6cm}@{}}
+\toprule
+\rowcolor{prdpale}
+Metric & Baseline & Target (90 days post-GA) & Measurement \\
+\midrule
+Adoption: workspaces with $\geq$1 active subscription & 0\% & 60\% of paid workspaces &
+  Weekly cohort query on \texttt{alert\_subscriptions} table \\
+\addlinespace
+Detection lag (subscribed metrics only) & 4.2 days (proxy: ticket data) & \textless\,1
+  hour, p95 & Instrumented end-to-end from anomaly timestamp to notification-sent event \\
+\addlinespace
+Alert precision (share of alerts marked useful, not ``expected'' or dismissed) & n/a &
+  \textgreater\,70\% & In-product feedback on each alert (thumbs up / mark expected) \\
+\addlinespace
+Alert fatigue: unsubscribes within 14 days of first alert & n/a & \textless\,10\% &
+  Subscription-lifecycle event log \\
+\addlinespace
+Support tickets citing late anomaly discovery & 34 / quarter & \textless\,15 / quarter &
+  Support ticket tag \texttt{late-detection}, quarterly review \\
+\addlinespace
+Enterprise renewal cohort retention (accounts citing alerting gap) & at risk: \$1.4M ARR
+  & \textgreater\,90\% retained & CS pipeline tagging, reviewed at renewal \\
+\bottomrule
+\end{tabularx}
+
+\subsection*{Guardrail metrics}
+Smart Alerts must not regress the metrics it depends on. Notification-center engagement
+and email open rates are tracked weekly during rollout; if Slack alert volume per
+workspace exceeds 15/day median, sensitivity defaults are revisited before wider rollout.

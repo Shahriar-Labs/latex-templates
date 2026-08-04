@@ -1,0 +1,67 @@
+\begin{frame}{Figure Critique: Over-optimistic Evaluation}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{center}
+        \textbf{Recreated Paper Figure 4}
+        
+        \vspace{0.2cm}
+        \begin{tikzpicture}[scale=0.75, every node/.style={transform shape}]
+          \draw[->, thick] (0,0) -- (5,0) node[below] {Traffic Density (Req/sec $\times 10^3$)};
+          \draw[->, thick] (0,0) -- (0,4) node[rotate=90, anchor=south, yshift=0.2cm] {Avg. Latency (ms)};
+          
+          % Grid lines
+          \draw[gray!20, thin, step=1] (0,0) grid (4.5,3.5);
+          
+          % Baseline curve (Round Robin)
+          \draw[gray, thick, dashed] (0,0.5) plot [smooth] coordinates {(1,0.8) (2,1.5) (3,2.8) (4.5,3.8)};
+          \node[gray, right, scale=0.8] at (4.5,3.8) {Round Robin};
+          
+          % Proposed method curve (NexaBalancer)
+          \draw[secondary, very thick] (0,0.4) plot [smooth] coordinates {(1,0.5) (2,0.8) (3,1.2) (4.5,1.8)};
+          \node[secondary, right, scale=0.8] at (4.5,1.8) {\textbf{NexaBalancer}};
+          
+          % Critique Highlight markers
+          \draw[accent, thick] (3,1.2) circle (0.3);
+          \draw[accent, -latex, thick] (3.3,1.2) -- (4,2.5) node[above, fill=white, draw=accent, rounded corners, scale=0.7] {No error bars!};
+          
+          \draw[accent, thick] (2,1.5) circle (0.3);
+          \draw[accent, -latex, thick] (2,1.8) -- (1,2.8) node[above, fill=white, draw=accent, rounded corners, scale=0.7] {Missing comparison};
+        \end{tikzpicture}
+      \end{center}
+    \end{column}
+    
+    \begin{column}{0.48\textwidth}
+      \begin{critiquebox}{Figure Critique Points}
+        \begin{itemize}
+          \item \textbf{Omission of Variance:} Figure 4 reports mean latency without error bars or confidence intervals, which is misleading for unstable RL policies.
+          \item \textbf{Selective Baseline Comparison:} The figure omits comparison against state-of-the-art decentralized systems, opting for weak baselines (Round Robin).
+          \item \textbf{Unexplained Transitions:} An abrupt slope change near $3 \times 10^3$ req/s is not addressed in the text.
+        \end{itemize}
+      \end{critiquebox}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Strengths \& Limitations Critique}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{strengthsbox}{Strengths}
+        \begin{itemize}
+          \item \textbf{Realistic Formulation:} The inclusion of network propagation latency in the state representation is a major step forward for decentralized systems.
+          \item \textbf{Excellent Scalability:} Gossip-based consensus keeps the communication overhead to $O(\log N)$ where $N$ is the number of switches.
+          \item \textbf{Open Source Commitment:} The authors provided fully reproducible simulator code and scripts.
+        \end{itemize}
+      \end{strengthsbox}
+    \end{column}
+    
+    \begin{column}{0.48\textwidth}
+      \begin{critiquebox}{Limitations \& Concerns}
+        \begin{itemize}
+          \item \textbf{Cold-Start Vulnerability:} PPO algorithm exhibits severe latency spikes during the initial 50 epochs of training.
+          \item \textbf{Sim-to-Real Gap:} The network simulator uses simplified Poisson arrivals; real-world bursty internet traffic may behave differently.
+          \item \textbf{Hardware Constraints:} Deep neural net inference on edge switches is slow without dedicated TPU accelerators.
+        \end{itemize}
+      \end{critiquebox}
+    \end{column}
+  \end{columns}
+\end{frame}

@@ -1,0 +1,50 @@
+\section{Authentication}
+\label{sec:authentication}
+All requests to the Vertex API must be authenticated using JSON Web Tokens (JWT) \cite{rfc7519} passed in the \code{Authorization} HTTP header. Requests without valid credentials will return an \code{HTTP 401 Unauthorized} response.
+
+\begin{apiendpoint}{POST}{/v2/auth/token}{Authentication}
+Retrieve a short-lived JSON Web Token (JWT) using client credentials provided during developer onboarding.
+\end{apiendpoint}
+
+\noindent
+To obtain a token, construct an \code{HTTP POST} request to the \code{/v2/auth/token} endpoint. The request body must contain your client credentials encoded as JSON.
+
+\subsubsection{Request Parameters}
+\begin{itemize}
+  \item \code{client\_id} \textit{(string, required)}: Your organization's unique identifier.
+  \item \code{client\_secret} \textit{(string, required)}: Your API client secret key.
+  \item \code{audience} \textit{(string, optional)}: Target environment identifier. Defaults to \code{vertex-ledger}.
+\end{itemize}
+
+\noindent
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[codeboxstyle, title={Example Request (JSON)}]
+\begin{lstlisting}[language=json]
+{
+  "client_id": "nex_98a72f",
+  "client_secret": "vtx_sec_77218ac89e",
+  "audience": "vertex-ledger-prod"
+}
+\end{lstlisting}
+  \end{tcolorbox}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+  \begin{tcolorbox}[codeboxstyle, title={Example Response (200 OK)}]
+\begin{lstlisting}[language=json]
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsIn...",
+  "expires_in": 3600,
+  "token_type": "Bearer",
+  "scope": "read:jobs write:jobs"
+}
+\end{lstlisting}
+  \end{tcolorbox}
+\end{minipage}
+
+\subsection{Using the Token}
+Once retrieved, include the token in all subsequent requests within the \code{Authorization} header as a Bearer token:
+\begin{lstlisting}[language=json,numbers=none]
+// Example HTTP Header
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsIn...
+\end{lstlisting}

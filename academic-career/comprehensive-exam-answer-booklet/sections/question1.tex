@@ -1,0 +1,71 @@
+\section{Question 1: Geo-Distributed Consensus \& Partition Tolerance}
+\label{sec:question1}
+
+\begin{questionbox}{Question Scenario}
+  Design the replication and consensus architecture for a highly available, geo-distributed database system (Codename: \textbf{Apex Meridian}) deployed across three continental regions: North America, Europe, and Asia-Pacific. 
+  
+  Evaluate the trade-offs of using Paxos \cite{lamport1998part}, Raft \cite{ongaro2014search}, and Byzantine Fault Tolerant (BFT) protocols under network partitions. Specifically, address how the system maintains linearizability while minimizing transaction commit latency for geo-replicated read-write workloads.
+\end{questionbox}
+
+\subsection{Theoretical Foundations: Paxos vs. Raft}
+
+To establish the replication foundation for the \textbf{Apex Meridian} database, we analyze two primary crash-tolerant consensus protocols: Multi-Paxos and Raft. Both protocols operate under the assumption of a non-byzantine environment where nodes may fail by crashing or restarting but do not send malicious or corrupted messages.
+
+\begin{enumerate}
+  \item \textbf{Leader Centricity:} Raft enforces a strong leader model where log entries flow strictly from the leader to the followers. While this simplifies the state machine replication (SMR) design, it creates a potential bottleneck at the leader. Multi-Paxos, conversely, allows for decoupled leader election and proposal processing, enabling optimizations such as Ephemeral Leaders or Multi-Leader topologies.
+  \item \textbf{State Complexity:} Raft maintains a clear, term-based state representation, which makes formal verification and implementation simpler. However, Multi-Paxos provides greater flexibility in out-of-order log commitment, which is crucial for high-throughput database replication.
+\end{enumerate}
+
+\subsection{Byzantine Fault Tolerance (BFT) under Network Partitions}
+
+In scenarios where adversarial behavior or silent memory corruption is anticipated, BFT protocols must be evaluated. BFT protocols require $3f + 1$ nodes to tolerate $f$ Byzantine failures, whereas crash-fault-tolerant (CFT) systems only require $2f + 1$ nodes. 
+
+Under a network partition where the network is split into two isolated components, a CFT system like Raft can only progress in the partition containing a strict majority ($> 50\%$) of nodes. In contrast, BFT protocols require a two-thirds majority to commit blocks, making them highly sensitive to network latency and partitions. For a geo-distributed database like \textbf{Apex Meridian}, the $O(N^2)$ message complexity of BFT protocols over wide-area networks (WAN) is prohibitively expensive, leading to latency inflation.
+
+\subsection{Proposed Architecture for Apex Meridian}
+
+We propose a hybrid architecture that combines Multi-Paxos consensus groups with a Multi-Leader WAN orchestration layer. 
+
+\begin{center}
+\begin{tikzpicture}[>=latex]
+  % Define Styles
+  \tikzset{
+    region/.style={draw, rectangle, rounded corners, minimum width=3.4cm, minimum height=3.8cm, fill=bglight, draw=border, dashed},
+    node/.style={circle, draw, fill=primary, text=white, font=\bfseries\sffamily\small, minimum size=1.0cm},
+    client/.style={rectangle, draw, fill=secondary, text=white, font=\bfseries\sffamily\small, minimum width=1.6cm, minimum height=0.8cm, rounded corners}
+  }
+
+  % Draw Regions
+  \node[region] (R1) at (0,0) {};
+  \node[region] (R2) at (5,2.2) {};
+  \node[region] (R3) at (5,-2.2) {};
+
+  % Region Labels
+  \node[font=\bfseries\sffamily\small\color{primary}] at (0, -1.5) {US-East (Primary)};
+  \node[font=\bfseries\sffamily\small\color{primary}] at (5, 0.7) {EU-West};
+  \node[font=\bfseries\sffamily\small\color{primary}] at (5, -3.7) {AP-South};
+
+  % Draw Nodes
+  \node[node] (N1) at (0, 0.2) {Node A};
+  \node[node] (N2) at (5, 2.4) {Node B};
+  \node[node] (N3) at (5, -2.0) {Node C};
+
+  % Draw Client
+  \node[client] (C) at (-3.8, 0) {Client};
+
+  % Draw Connections / Communication
+  \draw[thick, ->] (C) -- node[above, font=\scriptsize\sffamily] {Write(Key)} (N1);
+  \draw[thick, <->, color=secondary] (N1) -- node[above left, font=\scriptsize\sffamily] {2PC / Consensus} (N2);
+  \draw[thick, <->, color=secondary] (N1) -- node[below left, font=\scriptsize\sffamily] {2PC / Consensus} (N3);
+  \draw[thick, <->, color=accent, dashed] (N2) -- node[right, font=\scriptsize\sffamily] {Heartbeat} (N3);
+
+\end{tikzpicture}
+\end{center}
+
+The database is divided into partitioned Paxos groups (shards). Within each shard, a leader is elected locally within a single region (e.g., US-East) to minimize local write latencies. For cross-region consistency, we use a decentralized transaction manager operating on top of the consensus groups, leveraging two-phase commit (2PC) over Paxos to guarantee linearizability across all partitions without incurring full WAN round-trip times for local read workloads.
+
+This architecture ensures:
+\begin{itemize}
+  \item \textbf{Low-latency Local Reads:} Read requests are served locally by checking the regional replica's lease.
+  \item \textbf{High Partition Tolerance:} In the event of a WAN partition, each regional replica continues serving local reads if it has a valid read-lease, while write availability is preserved in regions that can form a cross-region consensus majority.
+\end{itemize}

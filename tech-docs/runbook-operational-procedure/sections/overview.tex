@@ -1,0 +1,52 @@
+\begin{center}
+    \sffamily
+    \color{primary}
+    \hrule height 2pt
+    \vspace{1em}
+    \begin{minipage}{0.15\textwidth}
+        \centering
+        \tikz[baseline=(char.base)]{
+            \node[draw=accent, fill=accent!10, rounded corners=4pt, inner sep=8pt] (char) {\Huge\color{accent}\faServer};
+        }
+    \end{minipage}%
+    \hfill
+    \begin{minipage}{0.80\textwidth}
+        {\sffamily\bfseries\large\color{accent} APEX CLOUD SERVICES --- INCIDENT RESPONSE} \\
+        \vspace{0.2em}
+        {\sffamily\Huge\bfseries RUNBOOK: Nimbus Gateway Service} \\
+        \vspace{0.3em}
+        {\sffamily\large\color{slate600} Document ID: RNB-NGS-402 --- Version 3.4.1}
+    \end{minipage}
+    \vspace{1.5em}
+    \hrule height 1pt
+\end{center}
+
+\vspace{1.5em}
+
+\section{System Overview}
+\label{sec:overview}
+The \textbf{Nimbus Gateway Service (NGS)} serves as the unified ingress point and API gateway for all external-facing client applications in the Apex Cloud ecosystem. It manages rate limiting, authentication verification, dynamic routing, and payload inspection.
+
+NGS relies on a high-speed distributed cache (Vertex Memory Grid) to validate authentication tokens and throttle traffic. If the memory grid becomes unreachable or experiences high read/write latency, the gateway falls back to the database tier (Synapse Distributed Store), which can quickly saturate database connections and cause cascading failures across the downstream microservices.
+
+The incident response procedures in this runbook are designed in alignment with standard distributed reliability practices described by Jenkins \cite{jenkins2024distributed} and failover mechanics discussed in \cite{rostova2025failover}.
+
+\subsection{Operational Metadata}
+Below is the vital metadata for the Nimbus Gateway Service. SREs should check these channels first during an incident.
+
+\vspace{1.0em}
+\noindent
+\begin{tabularx}{\textwidth}{@{} >{\bfseries\color{primary}}l X >{\bfseries\color{primary}}l X @{}}
+\toprule
+System Code: & NGS-402 & Tier Rating: & Tier-1 (Critical) \\
+Primary Owner: & Meridian Traffic Team & Lead Architect: & Elena Rostova \\
+Slack Channel: & \#ops-nimbus-gateway & PagerDuty Service: & NGS-Ingress-Cluster \\
+Primary Database: & Synapse Store (v12.4) & Cache Cluster: & Vertex Memory Grid \\
+\bottomrule
+\end{tabularx}
+
+\vspace{2.0em}
+
+\begin{infobox}{Important Notice: Service Level Objectives (SLOs)}
+    This runbook is a critical document. During an incident, the Target Time to Acknowledge (TTA) is \textbf{5 minutes}, and the Target Time to Restore (TTR) is \textbf{20 minutes}. Failure to resolve NGS cache saturation within 20 minutes triggers an automatic escalation to the VP of Engineering.
+\end{infobox}

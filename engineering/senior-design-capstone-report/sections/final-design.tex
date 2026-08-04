@@ -1,0 +1,84 @@
+\section{Final Design}
+\label{sec:final-design}
+
+\subsection{Mechanical Architecture}
+The selected chassis is a bolted 20\,mm aluminum-extrusion frame carrying four
+brushless-hub-motor wheels in a differential-steer arrangement, an IP54
+composite payload enclosure with a heated/cooled liner (R-02), and a removable
+battery sled accessible from the rear panel without tools (R-12).
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=0.95,every node/.style={font=\small}]
+  % chassis outline
+  \draw[nexanavy,line width=1.2pt,rounded corners=6pt,fill=fogray]
+    (-2.6,-1.4) rectangle (2.6,1.4);
+  % payload box
+  \draw[steelblue,line width=1pt,rounded corners=3pt,fill=white]
+    (-1.5,0.1) rectangle (1.5,1.15);
+  \node[color=nexanavy] at (0,0.62) {Insulated Payload Bay};
+  % battery sled
+  \draw[signalorange,line width=1pt,rounded corners=2pt,fill=white]
+    (-2.2,-1.15) rectangle (-0.9,-0.35);
+  \node[color=inkgray] at (-1.55,-0.75) {\scriptsize Battery Sled};
+  % compute module
+  \draw[steelblue,line width=1pt,rounded corners=2pt,fill=white]
+    (0.9,-1.15) rectangle (2.2,-0.35);
+  \node[color=inkgray] at (1.55,-0.75) {\scriptsize Compute / Sensors};
+  % wheels
+  \foreach \x/\y in {-2.2/-1.4,2.2/-1.4,-2.2/1.4,2.2/1.4}{
+    \draw[nexanavy,fill=inkgray!70] (\x,\y) circle (0.28);
+  }
+  % LIDAR mast
+  \draw[nexanavy,line width=1pt] (0,1.4) -- (0,1.9);
+  \draw[signalorange,fill=signalorange] (0,1.9) circle (0.12);
+  \node[color=inkgray,anchor=west] at (0.18,1.9) {\scriptsize 2D LIDAR mast};
+\end{tikzpicture}
+\caption{Top-view schematic of the Nimbus chassis layout (not to scale).}
+\label{fig:chassis}
+\end{figure}
+
+\subsection{Perception and Navigation Stack}
+A 2D LIDAR mounted on a raised mast (Figure~\ref{fig:chassis}) provides the
+primary 4\,m-range obstacle field (R-05), fused with wheel odometry and a
+forward RGB camera in an extended Kalman filter following the factored
+localization approach of \citet{montemerlo2002fastslam}. Path planning runs
+a pre-mapped waypoint graph of the three pilot routes with a local
+dynamic-window planner \citep{fox1997dynamic} for pedestrian avoidance,
+chosen over a vector-field-histogram planner \citep{ulrich2000vfh} for its
+lower compute cost on the onboard module; the planner commands a hard stop
+whenever an obstacle enters the 4\,m detection envelope while closing speed
+exceeds the R-06 stopping-distance budget. Differential-drive kinematics for
+the skid-steer controller follow the standard formulation in
+\citet{craig2005introduction}.
+
+\subsection{Power and Compute}
+A 48\,V, 20\,Ah lithium-iron-phosphate pack (chosen for its stable current
+draw at low ambient temperature, unlike the NMC cell it replaced in the fall
+prototype) drives four 150\,W hub motors through independent motor
+controllers, and feeds a 12\,V rail for the compute module, LIDAR, and
+thermal liner via a buck converter bank. See Appendix~\ref{app:bom} for the
+full parts and cost accounting behind this subsystem.
+
+\subsection{Design Alternatives Matrix Summary}
+Table~\ref{tab:decisions} summarizes the final embodiment decision at each
+subsystem boundary, cross-referenced to the trade study in
+Section~\ref{sec:alternatives} and the requirement it primarily satisfies.
+
+\begin{table}[htbp]
+\centering
+\caption{Subsystem design decisions and requirement traceability.}
+\label{tab:decisions}
+\small
+\begin{tabularx}{\textwidth}{@{}lXl@{}}
+\toprule
+\textbf{Subsystem} & \textbf{Final Decision} & \textbf{Req.} \\
+\midrule
+Locomotion   & Four-wheel differential skid-steer, low-durometer skid pads & R-04, R-11 \\
+Battery      & 48\,V 20\,Ah LiFePO$_4$, tool-free rear sled & R-03, R-12 \\
+Perception   & 2D LIDAR (4\,m) + RGB camera, EKF fusion & R-05, R-07 \\
+Enclosure    & IP54 composite shell, heated/cooled liner & R-02, R-09 \\
+Braking      & Regenerative + electromechanical disc, redundant & R-06 \\
+\bottomrule
+\end{tabularx}
+\end{table}

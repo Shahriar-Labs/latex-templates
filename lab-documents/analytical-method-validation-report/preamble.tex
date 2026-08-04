@@ -1,0 +1,162 @@
+% preamble.tex — packages, colours, custom commands, page geometry
+\usepackage[letterpaper,margin=1.6cm,headheight=30pt,headsep=11pt,footskip=22pt]{geometry}
+
+% ---- fonts / encoding ----
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage{microtype}
+
+% ---- math ----
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ---- colour ----
+\usepackage[table]{xcolor}
+
+% ---- layout / tables ----
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{siunitx}
+
+% ---- graphics ----
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage[most]{tcolorbox}
+
+% ---- lists ----
+\usepackage{enumitem}
+
+% ---- icons ----
+\usepackage{fontawesome5}
+
+% ---- headers/footers ----
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+% ---- misc ----
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{hyperref}
+\usepackage{ragged2e}
+\usepackage{lastpage}
+
+% =====================================================================
+% Colour palette — regulated-pharma, navy-forward with amber accent
+% =====================================================================
+\definecolor{valnavy}{RGB}{22,45,77}        % primary deep navy
+\definecolor{valblue}{RGB}{58,102,150}      % secondary steel blue
+\definecolor{valgold}{RGB}{178,132,42}      % accent amber (criteria/highlights)
+\definecolor{valmist}{RGB}{236,241,246}     % pale panel background
+\definecolor{valmistline}{RGB}{200,213,225} % hairline on mist background
+\definecolor{valpass}{RGB}{33,120,72}       % PASS green
+\definecolor{valpasstint}{RGB}{225,240,231}
+\definecolor{valslate}{RGB}{92,102,112}     % secondary text
+\definecolor{valink}{RGB}{25,29,33}         % near-black body text
+
+\color{valink}
+
+% =====================================================================
+% Custom commands
+% =====================================================================
+\newcommand{\degC}{\textsuperscript{\(\circ\)}C}
+\newcommand{\uL}{\textmu L}
+\newcommand{\ugmL}{\textmu g\,mL\textsuperscript{-1}}
+\newcommand{\mgml}{mg\,mL\textsuperscript{-1}}
+\newcommand{\mLmin}{mL\,min\textsuperscript{-1}}
+
+% label:value field, used in metadata grids
+\newcommand{\infofield}[2]{%
+  {\color{valblue}\bfseries\small #1:}~{\small #2}%
+}
+
+% PASS badge for acceptance tables
+\newcommand{\passbadge}{{\color{valpass}\faCheck\ \textbf{PASS}}}
+
+% section styling
+\titleformat{\section}
+  {\color{valnavy}\Large\bfseries}
+  {\thesection}{0.6em}{}
+  [\vspace{-0.3em}{\color{valmistline}\titlerule[1.1pt]}]
+\titlespacing*{\section}{0pt}{0.6em}{0.35em}
+
+\titleformat{\subsection}
+  {\color{valblue}\large\bfseries}
+  {\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{0.5em}{0.2em}
+
+\titleformat{\subsubsection}
+  {\color{valslate}\bfseries}
+  {\thesubsubsection}{0.5em}{}
+\titlespacing*{\subsubsection}{0pt}{0.35em}{0.15em}
+
+% acceptance-criterion callout box
+\newtcolorbox{criteriabox}{%
+  enhanced, breakable,
+  colback=valmist, colframe=valgold,
+  boxrule=0.6pt, arc=2pt, left=8pt, right=8pt, top=4pt, bottom=4pt,
+  before skip=3pt, after skip=3pt,
+  title={\faFile\ \textbf{Acceptance Criteria}},
+  coltitle=white, colbacktitle=valgold,
+  fonttitle=\small\bfseries,
+  boxsep=1pt
+}
+
+% conclusion / verdict box
+\newtcolorbox{verdictbox}{%
+  enhanced, breakable,
+  colback=valpasstint, colframe=valpass,
+  boxrule=0.6pt, arc=2pt, left=8pt, right=8pt, top=4pt, bottom=4pt,
+  before skip=3pt, after skip=3pt,
+  title={\faCheck\ \textbf{Conclusion}},
+  coltitle=white, colbacktitle=valpass,
+  fonttitle=\small\bfseries,
+  boxsep=1pt
+}
+
+% plain field box (used for metadata grid panels)
+\newtcolorbox{fieldbox}[1][]{%
+  enhanced, colback=white, colframe=valmistline,
+  boxrule=0.6pt, arc=2pt, left=7pt, right=7pt, top=5pt, bottom=5pt,
+  before skip=2pt, after skip=2pt,
+  #1
+}
+
+% list styling
+\setlist[itemize]{leftmargin=1.3em, itemsep=0.15em, topsep=0.2em}
+\setlist[enumerate]{leftmargin=1.6em, itemsep=0.15em, topsep=0.2em}
+
+% siunitx defaults for the many two/three-decimal result columns
+\sisetup{detect-weight=true, detect-family=true}
+
+% header / footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{valslate}Vertex Analytical Laboratories \textbar\ Method Validation Group}
+\fancyhead[R]{\small\color{valslate}\textbf{VAL-AM-2026-0417} Rev.\,1}
+\fancyfoot[L]{\footnotesize\color{valslate}CONFIDENTIAL}
+\fancyfoot[C]{\footnotesize\color{valslate}Page \thepage\ of \pageref{LastPage}}
+\fancyfoot[R]{\footnotesize\color{valslate}Meridian Pharmaceuticals, Inc. \textbar\ 2026-05-08}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=valblue,
+  citecolor=valblue,
+  urlcolor=valblue,
+  pdftitle={Analytical Method Validation Report --- AM-HPLC-0142},
+  pdfauthor={Vertex Analytical Laboratories}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.2em}
+
+% compact bibliography — keep the reference list from spilling a near-empty page
+\renewcommand{\bibfont}{\footnotesize}
+\setlength{\bibsep}{1pt}

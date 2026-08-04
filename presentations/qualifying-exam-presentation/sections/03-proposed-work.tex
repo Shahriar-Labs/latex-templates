@@ -1,0 +1,89 @@
+\section{Proposed Work}
+
+\begin{frame}{Aim 1 --- A Single-Pass Confidence Estimator}
+  \begin{navybox}{Approach}
+    Extract token-level log-probabilities the triage model already
+    computes, and train a lightweight calibration head that maps them to
+    a triage-error probability -- no second forward pass, no ensemble.
+  \end{navybox}
+  \par\vspace{6pt}
+  \begin{columns}[T]
+    \begin{column}{0.5\textwidth}
+      \small
+      \textbf{Expected outcome:} ECE below \textbf{0.03} on held-out
+      intake notes, at under \textbf{15\,ms} added latency per call.
+    \end{column}
+    \begin{column}{0.5\textwidth}
+      \small
+      \textbf{Preliminary evidence:} pilot head on 1{,}200 archived notes
+      already reaches ECE \textbf{0.06} -- see reliability plot, next
+      slide.
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Preliminary Result --- Reliability Diagram}
+  \begin{center}
+    \begin{tikzpicture}
+      \begin{axis}[
+          width=7.6cm, height=5.2cm,
+          xlabel={Predicted confidence}, ylabel={Observed accuracy},
+          xmin=0, xmax=1, ymin=0, ymax=1,
+          xtick={0,0.2,0.4,0.6,0.8,1.0},
+          ytick={0,0.2,0.4,0.6,0.8,1.0},
+          tick label style={font=\scriptsize},
+          label style={font=\scriptsize},
+          legend style={font=\scriptsize, at={(0.03,0.97)}, anchor=north west, draw=slate!40},
+          axis lines=left,
+        ]
+        \addplot[dashed, thick, color=slate] coordinates {(0,0) (1,1)};
+        \addlegendentry{Perfect calibration}
+        \addplot[mark=*, thick, color=teal] coordinates {
+          (0.1,0.09) (0.3,0.27) (0.5,0.47) (0.7,0.66) (0.9,0.84) (1.0,0.95)
+        };
+        \addlegendentry{Pilot calibration head}
+        \addplot[mark=*, thick, color=navy!60] coordinates {
+          (0.1,0.09) (0.3,0.31) (0.5,0.58) (0.7,0.81) (0.9,0.94) (1.0,0.98)
+        };
+        \addlegendentry{Raw model logits}
+      \end{axis}
+    \end{tikzpicture}
+  \end{center}
+  \footnotesize\color{slate}
+  Raw logits overstate confidence above 0.5; the calibration head keeps
+  the curve close to the diagonal across the full range.
+\end{frame}
+
+\begin{frame}{Aim 2 --- A Deployable Abstention Rule}
+  \begin{navybox}{Approach}
+    Turn Aim~1's confidence score into a three-tier action: auto-route,
+    flag-for-review, or escalate-to-human -- tuned so escalation coverage
+    stays under the 20\% ceiling the pilot sites set as workable.
+  \end{navybox}
+  \par\vspace{4pt}
+  \begin{itemize}[leftmargin=1.4em, itemsep=2pt]
+    \small
+    \item[\faChartLine] Threshold selection via conformal risk control,
+      following \cite{reyes2021conformal}, adapted to the free-text
+      setting.
+    \item[\faClock] Target: escalation decision adds no more than
+      \textbf{50\,ms} to the existing triage pipeline.
+    \item[\faExclamationTriangle] Failure mode to test explicitly:
+      confidently wrong notes that never trigger escalation.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Aim 3 --- Clinician Trust Under Exposed Uncertainty}
+  \begin{navybox}{Approach}
+    A within-subjects study at one \textbf{Synapse Health} pilot site:
+    nurses review the same note set under three conditions --
+    no score, raw model confidence, and the calibrated Aim~1/2 output.
+  \end{navybox}
+  \par\vspace{6pt}
+  \begin{tealbox}{What we measure}
+    \footnotesize
+    Override accuracy, time-to-decision, and a post-session trust survey
+    adapted from \cite{haddad2022trust}. Framed as an extension: results
+    here are not required for the core dissertation claim.
+  \end{tealbox}
+\end{frame}

@@ -1,0 +1,148 @@
+% preamble.tex — packages, colours, custom commands, page geometry
+\usepackage[letterpaper,margin=1.5cm,headheight=32pt,headsep=12pt,footskip=22pt]{geometry}
+
+% ---- fonts / encoding ----
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage{microtype}
+
+% ---- math ----
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% ---- colour ----
+\usepackage[table]{xcolor}
+\usepackage{colortbl}
+
+% ---- layout / tables ----
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{multirow}
+\usepackage{siunitx}
+\usepackage{parskip} % Globally set parindent to 0pt and add spacing between paragraphs
+
+% ---- graphics ----
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage[most]{tcolorbox}
+
+% ---- lists ----
+\usepackage{enumitem}
+
+% ---- icons ----
+\usepackage{fontawesome5}
+
+% ---- headers/footers ----
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+
+% ---- misc ----
+\usepackage[numbers,sort&compress]{natbib}
+\usepackage{hyperref}
+\usepackage{ragged2e}
+\usepackage{lastpage}
+
+% =====================================================================
+% Colour palette — Biobanking / Clinical Theme (Teal + Dark Gray + Coral)
+% =====================================================================
+\definecolor{biocharcoal}{HTML}{1A2530}  % Deep Charcoal primary text / headers
+\definecolor{bioteal}{HTML}{0D7685}      % Primary Teal
+\definecolor{biolightteal}{HTML}{EBF5F6} % Background light tint for teal boxes
+\definecolor{biocoral}{HTML}{D95D39}     % Coral for warning flags or key numbers
+\definecolor{biomuted}{HTML}{5D707F}     % Muted slate gray secondary text
+\definecolor{biogreen}{HTML}{2B8A4E}     % Active/good status green
+\definecolor{biolightgreen}{HTML}{EAF5EE}% Light green tint
+\definecolor{bioborder}{HTML}{C5D2D6}    % Border gray
+\definecolor{biogray}{HTML}{F3F6F8}      % Light panel background
+
+\color{biocharcoal}
+
+% =====================================================================
+% Custom commands
+% =====================================================================
+\newcommand{\degC}{\textsuperscript{\(\circ\)}C}
+\newcommand{\uL}{\textmu L}
+
+% Field formatting for grids
+\newcommand{\infofield}[2]{%
+  {\color{bioteal}\bfseries\small #1:}~{\small #2}%
+}
+
+% Badges for status flags
+\newcommand{\consentyes}{\mbox{\color{biogreen}\small\faCheckCircle\ \textbf{CONSENT GRANTED}}}
+\newcommand{\consentno}{\mbox{\color{biocoral}\small\faTimesCircle\ \textbf{RESTRICTED}}}
+\newcommand{\qcpass}{\mbox{\color{biogreen}\small\faCheck\ \textbf{QC PASS}}}
+\newcommand{\statusavail}{\mbox{\color{biogreen}\small\faCube\ \textbf{AVAILABLE}}}
+\newcommand{\statusdepleted}{\mbox{\color{biocoral}\small\faMinusCircle\ \textbf{DEPLETED}}}
+\newcommand{\statusreserved}{\mbox{\color{biomuted}\small\faLock\ \textbf{RESERVED}}}
+
+% Section styling
+\titleformat{\section}
+  {\color{bioteal}\Large\bfseries}
+  {\thesection}{0.6em}{}
+  [\vspace{-0.3em}{\color{bioborder}\titlerule[1.2pt]}]
+\titlespacing*{\section}{0pt}{1.0em}{0.4em}
+
+\titleformat{\subsection}
+  {\color{biocharcoal}\large\bfseries}
+  {\thesubsection}{0.5em}{}
+\titlespacing*{\subsection}{0pt}{0.7em}{0.3em}
+
+% Custom boxes
+\newtcolorbox{biobox}[2][]{%
+  enhanced, breakable,
+  colback=white, colframe=bioteal,
+  boxrule=0.8pt, arc=3pt, left=8pt, right=8pt, top=5pt, bottom=5pt,
+  before skip=6pt, after skip=6pt,
+  title={\sffamily\bfseries\color{white}#2},
+  colbacktitle=bioteal,
+  boxed title style={arc=2pt, boxrule=0pt},
+  #1
+}
+
+\newtcolorbox{alertbox}[2][]{%
+  enhanced, breakable,
+  colback=biolightteal!40, colframe=biocoral,
+  boxrule=0.8pt, arc=3pt, left=8pt, right=8pt, top=5pt, bottom=5pt,
+  before skip=6pt, after skip=6pt,
+  title={\sffamily\bfseries\color{white}#2},
+  colbacktitle=biocoral,
+  boxed title style={arc=2pt, boxrule=0pt},
+  #1
+}
+
+\newtcolorbox{plainbox}[1][]{%
+  enhanced, colback=biogray, colframe=bioborder,
+  boxrule=0.6pt, arc=3pt, left=8pt, right=8pt, top=6pt, bottom=6pt,
+  before skip=4pt, after skip=4pt,
+  #1
+}
+
+% list styling
+\setlist[itemize]{leftmargin=1.3em, itemsep=0.15em, topsep=0.2em}
+\setlist[enumerate]{leftmargin=1.6em, itemsep=0.15em, topsep=0.2em}
+
+% siunitx defaults
+\sisetup{detect-weight=true, detect-family=true}
+
+% header / footer
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{biomuted}Synapse BioSciences \textbar\ Biospecimen Repository Group}
+\fancyhead[R]{\small\color{biomuted}\textbf{BTR-2026-X8921} Rev.\,3}
+\fancyfoot[L]{\footnotesize\color{biomuted}CONFIDENTIAL CLINICAL RECORD}
+\fancyfoot[C]{\footnotesize\color{biomuted}Page \thepage\ of \pageref{LastPage}}
+\fancyfoot[R]{\footnotesize\color{biomuted}Synapse Institute \textbar\ ISO 20387 Certified}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=bioteal,
+  citecolor=bioteal,
+  urlcolor=bioteal
+}

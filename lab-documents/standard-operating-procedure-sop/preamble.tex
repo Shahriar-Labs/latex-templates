@@ -1,0 +1,128 @@
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage[margin=0.7in,top=1.35in,bottom=0.9in]{geometry}
+\usepackage[table]{xcolor}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds}
+\usepackage{lastpage}
+\usepackage{fancyhdr}
+\usepackage{fontawesome5}
+\usepackage{float}
+\usepackage{hyperref}
+\usepackage{ragged2e}
+
+% ---- Controlled-document palette ----
+\definecolor{inkblue}{HTML}{1B2A4A}     % Deep governance blue -- headers, rules
+\definecolor{steel}{HTML}{4C6A92}       % Muted steel blue -- subheads, accents
+\definecolor{signalgold}{HTML}{B7862C}  % Amber -- document-control emphasis
+\definecolor{paperwhite}{HTML}{FBFBF9}  % Warm off-white background
+\definecolor{slate}{HTML}{3A3F44}       % Body text grey-black
+\definecolor{hazardred}{HTML}{9E2B25}   % Warning / caution boxes
+\definecolor{hazardbg}{HTML}{FBEEEC}    % Warning background tint
+\definecolor{approvedgreen}{HTML}{2F5D46} % Sign-off / approved accent
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=inkblue,
+  urlcolor=steel,
+  citecolor=steel,
+  pdftitle={Standard Operating Procedure},
+  pdfauthor={Nexa Biosciences}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+
+\setlength{\textfloatsep}{8pt}
+\setlength{\floatsep}{6pt}
+\setlength{\intextsep}{8pt}
+
+% ---- Section formatting ----
+\titleformat{\section}
+  {\color{inkblue}\sffamily\Large\bfseries}
+  {\thesection}{0.7em}{}
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+
+\titleformat{\subsection}
+  {\color{steel}\sffamily\large\bfseries}
+  {\thesubsection}{0.6em}{}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+
+% ---- Document-control running header/footer ----
+\pagestyle{fancy}
+\fancyhf{}
+\setlength{\headheight}{14.5pt}
+\renewcommand{\headrulewidth}{0.8pt}
+\renewcommand{\footrulewidth}{0.6pt}
+\fancyheadoffset{0pt}
+
+\fancyhead[L]{\small\sffamily\color{inkblue}\bfseries SOP-QC-014-03 \color{slate}\mdseries \textbar\ Reagent Handling \& Storage Control}
+\fancyhead[R]{\small\sffamily\color{slate}Rev.\ 4.0 \textbar\ Effective 2026-06-15}
+\fancyfoot[L]{\small\sffamily\color{slate}Nexa Biosciences \textbar\ Quality Assurance}
+\fancyfoot[R]{\small\sffamily\color{slate}Page \thepage\ of \pageref{LastPage}}
+
+\renewcommand{\headrule}{\color{signalgold}\hrule width\headwidth height\headrulewidth}
+\renewcommand{\footrule}{\color{steel}\vskip-\footruleskip\hrule width\headwidth height\footrulewidth}
+
+% ---- CONTROLLED COPY watermark-style corner tag ----
+\newcommand{\controlledtag}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \node[anchor=north east, xshift=-0.55in, yshift=-0.35in,
+          draw=hazardred, thick, rounded corners=2pt, fill=hazardbg,
+          inner sep=3pt, font=\sffamily\tiny\bfseries\color{hazardred}]
+          at (current page.north east) {CONTROLLED COPY -- DO NOT DUPLICATE};
+  \end{tikzpicture}%
+}
+\usepackage{eso-pic}
+\AddToShipoutPictureBG{\controlledtag}
+
+% ---- Reusable custom commands ----
+\newcommand{\sopfield}[2]{\par\noindent{\sffamily\small\color{steel}\textbf{#1}}\newline{\sffamily\small\color{slate}#2}\par}
+
+\newenvironment{procstep}[1]
+  {\noindent\begin{tcolorbox}[
+      enhanced, breakable,
+      colback=paperwhite, colframe=steel!70!inkblue,
+      boxrule=0.6pt, arc=2pt,
+      left=8pt, right=8pt, top=6pt, bottom=6pt,
+      title={\sffamily\bfseries\color{white} Step #1},
+      colbacktitle=inkblue, coltitle=white,
+      fonttitle=\sffamily\bfseries\small,
+      attach boxed title to top left={xshift=8pt, yshift=-2pt},
+      boxed title style={colback=inkblue, boxrule=0pt, arc=2pt},
+      top=12pt
+    ]}
+  {\end{tcolorbox}}
+
+\newtcolorbox{cautionbox}[1][]{
+  enhanced, breakable,
+  colback=hazardbg, colframe=hazardred,
+  boxrule=0.7pt, arc=2pt,
+  left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fonttitle=\sffamily\bfseries\small\color{hazardred},
+  title={\faExclamationTriangle\ CAUTION #1}
+}
+
+\newtcolorbox{notebox}[1][]{
+  enhanced, breakable,
+  colback=paperwhite, colframe=steel,
+  boxrule=0.5pt, arc=2pt,
+  left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fonttitle=\sffamily\bfseries\small\color{steel},
+  title={\faInfoCircle\ NOTE #1}
+}
+
+\setlist[enumerate]{font=\sffamily\bfseries\color{inkblue}}
+\setlist[itemize]{label=\textcolor{steel}{\small\faCaretRight}}

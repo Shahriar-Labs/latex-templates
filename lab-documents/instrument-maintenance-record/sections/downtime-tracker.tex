@@ -1,0 +1,56 @@
+\section{Downtime Tracker}
+\label{sec:downtime}
+
+\sectionbanner{4. Downtime Tracker}{Planned versus unplanned downtime, availability, and reliability metrics.}
+
+\subsection{Monthly Downtime, Jan--Jun 2026}
+
+\begin{center}
+\begin{tikzpicture}
+  \def\scale{0.045}
+  \begin{scope}
+    \draw[ruleGrey, line width=0.5pt] (0,0) -- (12.4,0);
+    \foreach \h/\lbl in {2.25/50h, 4.5/100h}{
+      \draw[ruleGrey, line width=0.3pt] (0,\h) -- (12.4,\h);
+      \node[font=\scriptsize, text=slateMid, anchor=east] at (-0.15,\h) {\lbl};
+    }
+  \end{scope}
+
+  \foreach \i/\m/\pm/\cm in {0/Jan/0/0, 1/Feb/0/0, 2/Mar/2.5/0, 3/Apr/0/0, 4/May/0/0, 5/Jun/0/100.5}{
+    \pgfmathsetmacro{\xpos}{1.9*\i}
+    \pgfmathsetmacro{\hpm}{\pm*\scale}
+    \pgfmathsetmacro{\hcm}{\cm*\scale}
+    \pgfmathsetmacro{\htot}{\hpm+\hcm}
+    \pgfmathsetmacro{\realtot}{\pm+\cm}
+    \draw[fill=steelBlue, draw=steelBlue!70!black, line width=0.3pt] (\xpos,0) rectangle ({\xpos+0.9},{\hpm});
+    \draw[fill=alertRed, draw=alertRed!70!black, line width=0.3pt] (\xpos,{\hpm}) rectangle ({\xpos+0.9},{\htot});
+    \node[font=\scriptsize, text=slateDark] at ({\xpos+0.45},{\htot+0.25}) {\pgfmathprintnumber[fixed,precision=1]{\realtot}h};
+    \node[font=\scriptsize, text=slateMid, below=2pt] at ({\xpos+0.45},0) {\m};
+  }
+
+  \node[font=\scriptsize, text=slateMid, anchor=west] at (13.0,3.2) {\textcolor{steelBlue}{\rule{7pt}{7pt}}\ \ Planned (PM)};
+  \node[font=\scriptsize, text=slateMid, anchor=west] at (13.0,2.6) {\textcolor{alertRed}{\rule{7pt}{7pt}}\ \ Unplanned (CM)};
+\end{tikzpicture}
+\end{center}
+
+\subsection{Reliability Metrics -- Trailing 12 Months}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\linewidth}{@{}X l@{}}
+\toprule
+\rowcolor{slatePale}
+\textbf{Metric} & \textbf{Value} \\
+\midrule
+Scheduled operating hours & 2{,}184~h (6~days/week, 07:00--19:00) \\
+Total downtime (planned + unplanned) & 107.5~h \\
+Availability & 95.1\% \\
+Mean time between failures (MTBF) & 5{,}840~h \\
+Mean time to repair (MTTR) & 21.2~h \\
+Unplanned incidents (12 mo.) & 1 (532~nm laser head failure, Jun 2026) \\
+Longest single outage & 96.0~h (parts transit, laser head return-to-vendor repair) \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+The June 2026 outage is the only unplanned incident in the trailing 12 months and is detailed in Section~\ref{sec:notes}; all bookings during the outage window were relocated to the backup Raman unit in Room 210.

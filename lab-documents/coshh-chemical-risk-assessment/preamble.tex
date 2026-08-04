@@ -1,0 +1,203 @@
+%% ============================================================
+%% preamble.tex  — packages, colours, geometry, commands
+%% ============================================================
+
+%% --- Page geometry -------------------------------------------
+\usepackage[a4paper,
+            top=22mm, bottom=22mm,
+            left=18mm, right=18mm,
+            headheight=14pt]{geometry}
+
+%% --- Core typography ----------------------------------------
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{setspace}
+\usepackage{parskip}
+
+%% --- Colour (must load before colortbl / tcolorbox) ----------
+\usepackage[table]{xcolor}
+
+%% ---- House palette -----------------------------------------
+%  Deep navy   – headings, rule lines, section bars
+\definecolor{NavyDeep}{HTML}{1A2B4A}
+%  Slate blue  – secondary headers, subheadings
+\definecolor{SlateBlue}{HTML}{3A5C8C}
+%  Amber alert – high-risk cells, warning icons
+\definecolor{AmberAlert}{HTML}{D97706}
+%  Sage green  – low-risk cells, tick icons
+\definecolor{SageGreen}{HTML}{4A7C59}
+%  Light fog   – table row alt, box backgrounds
+\definecolor{LightFog}{HTML}{F0F3F7}
+%  Warm white  – page background tint
+\definecolor{WarmWhite}{HTML}{FAFBFC}
+%  Danger red  – severe risk cells
+\definecolor{DangerRed}{HTML}{B91C1C}
+%  Mid amber   – medium risk cells
+\definecolor{MidAmber}{HTML}{F59E0B}
+
+%% --- Tables --------------------------------------------------
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{colortbl}
+\usepackage{makecell}
+
+%% --- Graphics & TikZ ----------------------------------------
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning, calc, shapes.geometric, backgrounds, patterns}
+
+%% --- tcolorbox ----------------------------------------------
+\usepackage[most]{tcolorbox}
+
+%% --- Icons --------------------------------------------------
+\usepackage{fontawesome5}
+
+%% --- Symbols, maths -----------------------------------------
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{wasysym}
+
+%% --- Lists --------------------------------------------------
+\usepackage{enumitem}
+
+%% --- Headers / footers --------------------------------------
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+%% --- Hyperlinks (load last) ----------------------------------
+\usepackage[hidelinks,
+            pdftitle={COSHH Chemical Risk Assessment},
+            pdfauthor={Nexa Biomedical Research Ltd},
+            pdfsubject={Chemical Risk Assessment}]{hyperref}
+
+%% ============================================================
+%% COLOURS for risk matrix
+%% ============================================================
+\newcommand{\cellLow}{\cellcolor{SageGreen!40}}
+\newcommand{\cellMed}{\cellcolor{MidAmber!50}}
+\newcommand{\cellHigh}{\cellcolor{AmberAlert!60}}
+\newcommand{\cellCrit}{\cellcolor{DangerRed!55}}
+
+%% ============================================================
+%% TCOLORBOX STYLES
+%% ============================================================
+
+%% Section header bar
+\tcbset{
+  sectionbar/.style={
+    colback=NavyDeep,
+    colframe=NavyDeep,
+    coltext=white,
+    fontupper=\bfseries\large,
+    boxrule=0pt,
+    arc=3pt,
+    left=8pt, right=8pt,
+    top=4pt, bottom=4pt,
+    width=\linewidth,
+    nobeforeafter
+  }
+}
+
+%% Info / notice box
+\tcbset{
+  infobox/.style={
+    colback=LightFog,
+    colframe=SlateBlue,
+    coltext=NavyDeep,
+    fontupper=\small,
+    boxrule=1pt,
+    arc=4pt,
+    left=8pt, right=8pt,
+    top=5pt, bottom=5pt,
+    width=\linewidth,
+    nobeforeafter
+  }
+}
+
+%% Warning box
+\tcbset{
+  warnbox/.style={
+    colback=AmberAlert!15,
+    colframe=AmberAlert,
+    coltext=NavyDeep,
+    fontupper=\small,
+    boxrule=1.2pt,
+    arc=4pt,
+    left=8pt, right=8pt,
+    top=5pt, bottom=5pt,
+    width=\linewidth,
+    nobeforeafter
+  }
+}
+
+%% Sign-off box
+\tcbset{
+  signoffbox/.style={
+    colback=LightFog,
+    colframe=NavyDeep,
+    coltext=NavyDeep,
+    fontupper=\small,
+    boxrule=1pt,
+    arc=4pt,
+    left=10pt, right=10pt,
+    top=6pt, bottom=6pt,
+    width=\linewidth,
+    nobeforeafter
+  }
+}
+
+%% ============================================================
+%% CUSTOM COMMANDS
+%% ============================================================
+
+%% Styled section label (replaces \section)
+\newcommand{\cossection}[2][NavyDeep]{%
+  \vspace{6pt}%
+  \begin{tcolorbox}[sectionbar]
+    #2
+  \end{tcolorbox}%
+  \vspace{2pt}%
+}
+
+%% Coloured rule
+\newcommand{\hrulecolor}[2][NavyDeep]{%
+  {\color{#1}\rule{\linewidth}{#2}}%
+}
+
+%% Check mark / cross for checklists
+\newcommand{\cyes}{\textcolor{SageGreen}{\faCheckSquare}}
+\newcommand{\cno}{\textcolor{AmberAlert}{\faSquare}}
+
+%% Risk level badge
+\newcommand{\riskbadge}[2]{%
+  \tikz[baseline=-0.5ex]\node[
+    fill=#1, text=white,
+    rounded corners=3pt,
+    inner sep=3pt,
+    font=\bfseries\footnotesize
+  ]{#2};%
+}
+
+%% ============================================================
+%% PAGE STYLE
+%% ============================================================
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{NavyDeep}{\small\textbf{COSHH Chemical Risk Assessment}}}
+\fancyhead[R]{\textcolor{SlateBlue}{\small Nexa Biomedical Research Ltd}}
+\fancyfoot[C]{\textcolor{NavyDeep!60}{\small Page~\thepage~of~\pageref{LastPage}}}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{NavyDeep}\leaders\hrule height\headrulewidth\hfill}}
+\renewcommand{\footrule}{\hbox to\headwidth{\color{NavyDeep!40}\leaders\hrule height\footrulewidth\hfill}}
+
+%% ============================================================
+%% MISC
+%% ============================================================
+\setlength{\extrarowheight}{3pt}
+\renewcommand{\arraystretch}{1.35}

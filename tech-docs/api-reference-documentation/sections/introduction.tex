@@ -1,0 +1,38 @@
+\section{Introduction}
+Welcome to the \textbf{Vertex Core API Reference Manual}. The Vertex Core API provides developers with access to a high-throughput, low-latency distributed data ledger and replication network. Built on top of the robust Vertex Engine, this API enables secure multi-region synchronization, state monitoring, and automated transactional routing.
+
+Whether you are integrating with our platform for financial reconciliation, high-frequency logistics synchronization, or decentralized identity networks, this reference manual outlines the specifications needed to construct correct and efficient integrations.
+
+\subsection{Base Environments}
+All requests to the Vertex API must be directed to one of the following host base URLs:
+\begin{itemize}
+  \item \textbf{Production API Host:} \code{https://api.vertex.meridian.net/v2}
+  \item \textbf{Sandbox API Host:} \code{https://sandbox-api.vertex.meridian.net/v2}
+\end{itemize}
+The sandbox host supports identical functionality to production, but runs on isolated test ledgers with simulated execution times and rate limits.
+
+\subsection{Rate Limits and Throttling}
+To guarantee service availability and prevent abuse, Vertex Core API enforces strict rate limits. Limits are tracked per client identity token and are reported via standard HTTP headers in every response:
+\begin{itemize}
+  \item \code{X-RateLimit-Limit}: The maximum requests permitted per window.
+  \item \code{X-RateLimit-Remaining}: The remaining request allocation in the current window.
+  \item \code{X-RateLimit-Reset}: The Unix epoch timestamp when the current window resets.
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\sffamily
+\begin{tabularx}{\linewidth}{l l C L}
+\toprule
+\textbf{Tier} & \textbf{Hourly Limit} & \textbf{Burst Capacity (rps)} & \textbf{Primary Use Case} \\
+\midrule
+Standard Sandbox & 10,000 & 50 & Application testing and prototyping \\
+Production Team & 50,000 & 200 & Small to mid-scale enterprise workloads \\
+Production Enterprise & 500,000 & 1,500 & High-frequency transaction sync \\
+\bottomrule
+\end{tabularx}
+\caption{Vertex Core API Rate Limit Allocation}
+\label{tab:rate-limits}
+\end{table}
+
+When a limit is exceeded, the API returns an \code{HTTP 429 Too Many Requests} status code, accompanied by a JSON payload describing the backoff requirement (see Section \ref{sec:errors}).

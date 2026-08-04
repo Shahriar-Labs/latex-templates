@@ -1,0 +1,138 @@
+%%FILE: preamble.tex
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage[a4paper,margin=2.4cm,headheight=15pt]{geometry}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{fancyhdr}
+\usepackage{caption}
+\usepackage{natbib}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage{fontawesome5}
+\usepackage[colorlinks=true,linkcolor=rotationteal,citecolor=rotationteal,urlcolor=rotationteal,breaklinks=true]{hyperref}
+
+% ---- Palette ----------------------------------------------------------
+\definecolor{rotationteal}{RGB}{20,74,79}
+\definecolor{rotationgold}{RGB}{198,138,63}
+\definecolor{rotationslate}{RGB}{90,98,104}
+\definecolor{rotationbg}{RGB}{244,241,234}
+
+\hypersetup{pdftitle={Graduate Lab Rotation Report},pdfauthor={Priya Anand}}
+
+% ---- Section styling ---------------------------------------------------
+\titleformat{\section}
+  {\Large\bfseries\color{rotationteal}}
+  {\thesection}{0.5em}{}
+  [{\color{rotationgold}\titlerule[1pt]}]
+\titleformat{\subsection}
+  {\large\bfseries\color{rotationslate}}
+  {\thesubsection}{0.5em}{}
+\titlespacing*{\section}{0pt}{1.4em}{0.8em}
+\titlespacing*{\subsection}{0pt}{1.0em}{0.5em}
+
+% ---- Headers / footers --------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0pt}
+\fancyhead[L]{\small\color{rotationslate}\reporttitle}
+\fancyhead[R]{\small\color{rotationslate}\reportauthor}
+\fancyfoot[C]{\small\color{rotationslate}\thepage}
+
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \renewcommand{\headrulewidth}{0pt}
+  \fancyfoot[C]{\small\color{rotationslate}\thepage}
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.55em}
+
+% ---- Custom boxes ------------------------------------------------------
+\newtcolorbox{aimbox}{%
+  colback=rotationbg, colframe=rotationteal, boxrule=0.8pt,
+  arc=2pt, left=8pt, right=8pt, top=6pt, bottom=6pt
+}
+
+\newtcolorbox{infopanel}[1]{%
+  colback=white, colframe=rotationslate!60, boxrule=0.6pt,
+  arc=2pt, left=6pt, right=6pt, top=5pt, bottom=5pt,
+  title=#1, colbacktitle=rotationteal, coltitle=white,
+  fonttitle=\bfseries\small, boxsep=1pt
+}
+
+\newtcolorbox{supervisorbox}{%
+  colback=rotationgold!12, colframe=rotationgold, boxrule=1pt,
+  arc=3pt, left=10pt, right=10pt, top=8pt, bottom=8pt,
+  breakable
+}
+
+% ---- Caption style -------------------------------------------------------
+\captionsetup{labelfont={bf,color=rotationteal},font=small,margin=1em}
+
+% ---- Cover page ----------------------------------------------------------
+\newcommand{\makecoverpage}{%
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[rotationteal] (current page.north west) rectangle
+    ([yshift=-2.6cm]current page.north east);
+  \fill[rotationgold] ([yshift=-2.6cm]current page.north west) rectangle
+    ([yshift=-2.7cm]current page.north east);
+  \node[anchor=west, color=white, font=\bfseries\Large]
+    at ([xshift=1.4cm,yshift=-1.3cm]current page.north west)
+    {Graduate Lab Rotation Report};
+\end{tikzpicture}
+\vspace*{3.6cm}
+
+\begin{center}
+{\Huge\bfseries\color{rotationteal} \reporttitle \par}
+\vspace{0.5cm}
+{\Large\color{rotationslate} \reportsubtitle \par}
+\end{center}
+
+\vspace{1.6cm}
+\begin{center}
+\begin{tikzpicture}
+  \draw[rotationgold, line width=1pt] (0,0) -- (8,0);
+\end{tikzpicture}
+\end{center}
+\vspace{1.2cm}
+
+\begin{center}
+\begin{minipage}{0.78\textwidth}
+\begin{infopanel}{Rotation Student}
+\textbf{\reportauthor} \\{}
+\reportprogram, \reportdept
+\end{infopanel}
+\par\vspace{0.4cm}
+\begin{infopanel}{Host Laboratory \& Supervisor}
+\reportlab \\{}
+Supervised by \reportsupervisor
+\end{infopanel}
+\par\vspace{0.4cm}
+\begin{infopanel}{Rotation Period}
+\faCalendar\ \reportperiod
+\end{infopanel}
+\end{minipage}
+\end{center}
+
+\vfill
+\begin{center}
+\small\color{rotationslate} Submitted \reportdate
+\end{center}
+\vspace{1cm}
+\end{titlepage}
+}

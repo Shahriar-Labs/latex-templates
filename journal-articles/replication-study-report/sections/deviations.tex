@@ -1,0 +1,31 @@
+\section{Deviations from Original Study}
+\label{sec:deviations}
+Although we aimed for a strict replication, a few notable deviations were introduced, either due to missing information in the original publication or compatibility requirements for the Vertex-VQA dataset.
+
+\begin{deviationbox}{Summary of Deviations}
+We identified three main areas of deviation:
+\begin{enumerate}
+    \item \textbf{Visual Feature Resolution:} The original study processed images at $320 \times 320$ pixels. We increased this to $448 \times 448$ pixels to preserve fine-grained spatial relationships on the denser Vertex-VQA images.
+    \item \textbf{Object Detection Backbone:} The original paper utilized a proprietary, fine-tuned Faster R-CNN model. We substituted this with an open-source ResNet-101 based DETR detector.
+    \item \textbf{Learning Rate Decay:} A cosine annealing scheduler was used instead of the original step decay because we observed optimization instability during early epochs on Vertex-VQA.
+\end{enumerate}
+\end{deviationbox}
+
+\subsection{Impact of Backbone Substitution}
+To quantify the impact of substituting the proprietary backbone with DETR, we ran an ablation study comparing the visual parser outputs.
+Table~\ref{tab:ablation} illustrates that while object localization was comparable, attribute classification (color, material) was slightly less accurate in our open backbone, contributing to the overall $-1.3\%$ drop in downstream reasoning.
+
+\begin{table}[H]
+\centering
+\caption{Visual Parser Ablation Study}
+\label{tab:ablation}
+\begin{tabularx}{\textwidth}{l X X}
+\toprule
+\textbf{Metric} & \textbf{Original Backbone (Proprietary)} & \textbf{Replication Backbone (DETR)} \\
+\midrule
+Object Box AP$_{50}$ & $92.4$ & $91.8$ \\
+Attribute Accuracy (\%) & $96.8$ & $95.1$ \\
+Relation Recall (\%)    & $88.3$ & $86.2$ \\
+\bottomrule
+\end{tabularx}
+\end{table}

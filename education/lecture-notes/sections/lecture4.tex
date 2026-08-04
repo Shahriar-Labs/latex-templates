@@ -1,0 +1,59 @@
+\chapter{Quantum Circuits and the No-Cloning Theorem}
+
+In this lecture, we introduce the circuit model of quantum computation and prove the No-Cloning Theorem, which highlights a key difference between classical and quantum information processing.
+
+\section{Quantum Gates and Unitary Operations}
+
+A quantum gate is a physical device that performs a unitary operation on one or more qubits. Since any quantum process must be reversible (excluding measurement), time evolution is represented by a unitary operator \(U\), satisfying \(U^\dagger U = I\).
+\remark{Common single-qubit gates include the Hadamard gate \(H\), which creates superpositions, and the Pauli gates \(X\), Y, and Z.}
+
+The Hadamard gate is defined as:
+\[
+H = \frac{1}{\sqrt{2}} \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}
+\]
+It maps the basis states as follows:
+\[
+H|0\rangle = \frac{|0\rangle + |1\rangle}{\sqrt{2}} = |+\rangle, \quad H|1\rangle = \frac{|0\rangle - |1\rangle}{\sqrt{2}} = |-\rangle
+\]
+
+\section{The No-Cloning Theorem}
+
+In classical computing, copying information is trivial (e.g., copying a file or duplicating a bit). In quantum information, however, we cannot copy an arbitrary unknown quantum state. This is the celebrated \textbf{No-Cloning Theorem}, first proved by Wootters, Zurek, and Dieks in 1982.
+
+\begin{theorembox}{The No-Cloning Theorem}
+It is impossible to construct a unitary operator \(U\) that can clone an arbitrary unknown quantum state \(|\psi\rangle\) onto a target state \(|e\rangle\). That is, there exists no unitary \(U\) such that for all states \(|\psi\rangle\):
+\[
+U \left( |\psi\rangle \otimes |e\rangle \right) = |\psi\rangle \otimes |\psi\rangle
+\]
+\end{theorembox}
+
+This theorem is central to quantum cryptography: it prevents an eavesdropper from intercepting and copying quantum keys without leaving a trace. We prove this using the linearity of quantum mechanics.
+
+\begin{proofbox}
+Suppose there exists a unitary operator \(U\) that can clone any quantum state. Let \(|\psi\rangle\) and \(|\phi\rangle\) be two arbitrary states. By definition, \(U\) must satisfy:
+\begin{align}
+U \left( |\psi\rangle \otimes |e\rangle \right) &= |\psi\rangle \otimes |\psi\rangle \label{eq:clone1} \\
+U \left( |\phi\rangle \otimes |e\rangle \right) &= |\phi\rangle \otimes |\phi\rangle \label{eq:clone2}
+\end{align}
+Let us compute the inner product of the left-hand sides and the right-hand sides of these equations.
+Since \(U\) is unitary, it preserves the inner product:
+\[
+\left\langle U (\psi \otimes e) \middle| U (\phi \otimes e) \right\rangle = \langle\psi \otimes e | \phi \otimes e\rangle = \langle\psi|\phi\rangle \langle e|e\rangle = \langle\psi|\phi\rangle
+\]
+On the other hand, the inner product of the right-hand sides is:
+\[
+\langle\psi \otimes \psi | \phi \otimes \phi\rangle = \langle\psi|\phi\rangle \langle\psi|\phi\rangle = \left( \langle\psi|\phi\rangle \right)^2
+\]
+For both calculations to be consistent, we must have:
+\[
+\langle\psi|\phi\rangle = \left( \langle\psi|\phi\rangle \right)^2
+\]
+This equation has only two possible solutions:
+\[
+\langle\psi|\phi\rangle = 0 \quad \text{or} \quad \langle\psi|\phi\rangle = 1
+\]
+This implies that \(|\psi\rangle\) and \(|\phi\rangle\) must be either identical or orthogonal.
+Therefore, the cloning machine can only clone states from a fixed set of mutually orthogonal states, and cannot clone an arbitrary unknown quantum state.
+\end{proofbox}
+
+This completes the lecture series on the foundational aspects of quantum information theory. In subsequent courses, we will explore quantum algorithms such as Shor's factoring algorithm and Grover's search algorithm.

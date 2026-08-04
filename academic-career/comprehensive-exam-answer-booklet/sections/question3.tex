@@ -1,0 +1,48 @@
+\section{Question 3: Privacy-Preserving Computation \& Data Governance}
+\label{sec:question3}
+
+\begin{questionbox}{Question Scenario}
+  Evaluate the applicability of \textbf{Homomorphic Encryption (HE)} \cite{chaum1982blind}, \textbf{Secure Multi-Party Computation (SMPC)}, and \textbf{Trusted Execution Environments (TEEs)} for a health-tech platform (Codename: \textbf{Vertex Health}) processing real-time patient telemetry data. 
+  
+  Assess the technologies based on computational latency, scalability, security threat models, and regulatory compliance (e.g., HIPAA and GDPR). Provide an architectural blueprint for securing patient streaming data.
+\end{questionbox}
+
+\subsection{Cryptographic and Hardware Primitives}
+
+Processing sensitive patient telemetry requires executing analytics without exposing raw data in memory. Three main paradigms exist:
+
+\begin{enumerate}
+  \item \textbf{Fully Homomorphic Encryption (FHE):} Allows arbitrary computations directly on ciphertext. The decryption of the result matches the computation performed on the plaintext.
+  \item \textbf{Secure Multi-Party Computation (SMPC):} Computations are split across multiple independent servers using secret sharing schemes (e.g., Shamir's Secret Sharing). No individual server can reconstruct the underlying data.
+  \item \textbf{Trusted Execution Environments (TEEs):} Hardware-based isolation (e.g., Intel SGX, AMD SEV) that runs computations inside secure memory partitions (enclaves), preventing access even from privileged OS-level actors.
+\end{enumerate}
+
+\subsection{Comparative Evaluation}
+
+The cryptographic and performance trade-offs of these technologies are summarized in Table~\ref{tab:privacy_comparison}.
+
+\begin{table}[h]
+  \centering
+  \caption{Evaluation of Privacy-Preserving Technologies}
+  \label{tab:privacy_comparison}
+  \medskip
+  \begin{tabularx}{\textwidth}{l X X X}
+    \toprule
+    \textbf{Technology} & \textbf{Performance Overhead} & \textbf{Trust Assumptions} & \textbf{Vertex Applicability} \\
+    \midrule
+    \textbf{HE (Homomorphic)} & Extremely High ($10^3\times - 10^5\times$ slowdown, high memory expansion) & Cryptographic (Hard mathematical problems like Ring-LWE) & Poor for real-time telemetry; limited to batch analytics. \\
+    \textbf{SMPC} & High (Network-bound, requires multiple communication rounds) & Non-colluding majority of computing nodes & Good for multi-institutional data sharing. \\
+    \textbf{TEEs (Enclaves)} & Low ($1.1\times - 1.5\times$ runtime overhead, hardware acceleration) & Hardware vendor trust (must trust Intel/AMD CPU keys) & Excellent for high-throughput stream processing. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{Deployment Model for Vertex Health}
+
+For \textbf{Vertex Health}'s real-time telemetry platform, we propose a hybrid deployment architecture:
+\begin{itemize}
+  \item \textbf{Ingestion \& Stream Processing (TEEs):} Real-time telemetry (heart rates, blood oxygen levels) is encrypted at the patient gateway and streamed to a cloud-based TEE enclave. Inside the enclave, the data is decrypted, processed for anomaly detection, and re-encrypted. This maintains sub-100ms latency.
+  \item \textbf{Cross-Institutional Research (SMPC):} For longitudinal clinical research across multiple hospitals, patient data summaries are analyzed using SMPC. This allows clinics to run aggregate statistical models without sharing raw records.
+  \item \textbf{Audit \& Storage Encryption (HE):} Patient records are stored in homomorphically encrypted database clusters, allowing basic query operations (such as searching by specific encrypted patient attributes) without decrypting the dataset.
+\end{itemize}
+This multi-layered approach satisfies the security requirements of HIPAA and GDPR, protecting data-in-transit, data-in-use, and data-at-rest.

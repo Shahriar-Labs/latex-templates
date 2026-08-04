@@ -1,0 +1,58 @@
+% introduction.tex
+\chapter{Introduction}
+\label{ch:introduction}
+
+\section{Motivation}
+Modern web and media applications route the majority of user requests through edge caches
+rather than origin servers, since retrieving a cached object at a nearby point of presence is
+an order of magnitude faster than a round trip to a centralised data centre. The effectiveness
+of this architecture rests almost entirely on one decision, repeated billions of times a day:
+when the cache is full and a new object arrives, which existing object should be evicted?
+
+Classical eviction policies such as Least Recently Used (LRU) and Least Frequently Used (LFU)
+were designed decades ago for memory and disk caching, where request patterns were comparatively
+uniform. Edge content delivery traffic looks nothing like that: it is heavily skewed (a small
+number of objects account for most requests), bursty (popularity shifts within minutes during
+a news event or product launch), and heterogeneous in object size. Section~\ref{sec:lit-gap}
+argues that this mismatch leaves measurable performance on the table.
+
+\begin{researchquestion}
+\textbf{Research Question.} Can a lightweight, per-object adaptive scoring policy improve edge
+cache hit ratio and latency over LRU and LFU baselines under realistic skewed workloads, at
+computational overhead low enough for line-rate deployment?
+\end{researchquestion}
+
+\section{Objectives}
+This thesis pursues three concrete objectives:
+\begin{enumerate}
+  \item Design an eviction policy, the Gradient-Weighted Cache (GWC), that combines recency,
+        frequency, and object-size signals into a single incrementally updated utility score.
+  \item Build a reproducible simulation testbed (EdgeSim) capable of replaying synthetic
+        Zipfian-distributed request traces across a multi-node edge topology.
+  \item Empirically compare GWC against LRU and LFU on hit ratio, byte hit ratio, mean
+        latency, and per-request computational overhead.
+\end{enumerate}
+
+\section{Contributions}
+The main contributions of this work are:
+\begin{itemize}
+  \item A formal description of the GWC scoring function and its $O(1)$ amortised update rule
+        (Section~\ref{sec:gwc-design}).
+  \item An open, parameterised workload generator for edge-caching research, calibrated
+        against publicly reported CDN traffic skew ($\theta \approx 0.8$--$1.0$).
+  \item An empirical evaluation across twelve simulated edge nodes showing a 17.5 percentage
+        point hit-ratio improvement over LRU (Chapter~\ref{ch:results}).
+\end{itemize}
+
+\begin{keytakeaway}
+GWC is not a learned cache: it has no training phase, no model to serve, and updates in
+constant time per access. The thesis's central claim is that this is enough to close most
+of the gap to more expensive adaptive schemes.
+\end{keytakeaway}
+
+\section{Thesis Structure}
+Chapter~\ref{ch:literature-review} reviews prior work on cache replacement policies and
+adaptive/learned caching. Chapter~\ref{ch:methodology} describes the GWC algorithm, the
+EdgeSim testbed, and the experimental protocol. Chapter~\ref{ch:results} reports the
+quantitative results. Chapter~\ref{ch:discussion} interprets those results and discusses
+limitations. Chapter~\ref{ch:conclusion} concludes and outlines future work.

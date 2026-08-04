@@ -1,0 +1,84 @@
+\section{Literature Synthesis}
+
+\begin{frame}{Three Threads, One Empty Middle}{A Depth-of-Field View of the Space}
+  \begin{center}
+    \begin{tikzpicture}[font=\small, scale=0.85, transform shape]
+      \begin{scope}[blend group=multiply]
+        \node[ellipse, draw=navy!70, thick, fill=navy!18,
+              minimum width=5.6cm, minimum height=3.6cm]
+              (uq) at (-1.6,0.9) {};
+        \node[ellipse, draw=teal!70, thick, fill=teal!20,
+              minimum width=5.6cm, minimum height=3.6cm]
+              (clin) at (1.6,0.9) {};
+        \node[ellipse, draw=slate!70, thick, fill=slate!22,
+              minimum width=6.4cm, minimum height=3.2cm]
+              (llm) at (0,-1.1) {};
+      \end{scope}
+      \node[align=center, text width=3.1cm] at (-2.6,1.9) {\bfseries Uncertainty\\Quantification};
+      \node[align=center, text width=3.1cm] at (2.6,1.9) {\bfseries Clinical\\Decision Support};
+      \node[align=center, text width=3.4cm] at (0,-2.3) {\bfseries LLM-Based\\Triage Systems};
+      \node[draw=navy, fill=cream, circle, inner sep=1.5pt] (gap) at (0,0.1) {};
+      \node[align=center, text width=2.6cm, fill=cream, rounded corners,
+            inner sep=3pt, draw=navy, thick] at (0,0.1) {\scriptsize\bfseries The gap:\\calibrated,\\single-pass,\\deployable};
+    \end{tikzpicture}
+  \end{center}
+  \vspace{-2pt}
+  \footnotesize\color{slate}
+  Each thread is individually mature; almost nothing sits in the
+  intersection that is also validated on real triage notes.
+\end{frame}
+
+\begin{frame}{Where Existing Work Falls Short}{No Prior Approach Clears All Three Bars}
+  \begin{table}
+    \centering
+    \small
+    \begin{tabular}{lccc}
+      \toprule
+      \textbf{Approach} & \textbf{Calibrated} & \textbf{LLM-based} & \textbf{Abstains} \\
+      \midrule
+      Conformal risk sets \cite{reyes2021conformal} & $\checkmark$ & $\times$ & $\checkmark$ \\
+      Evidential triage nets \cite{park2023hallucination} & $\times$ & $\checkmark$ & $\times$ \\
+      Deployed LLM assistant \cite{voss2024llmtriage} & $\times$ & $\checkmark$ & $\times$ \\
+      \midrule
+      \rowcolor{teal!14}
+      \textbf{Proposed approach} & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \par\vspace{8pt}
+  \begin{notebox}{Reading the table}
+    \footnotesize
+    Conformal methods give calibration guarantees but were built for
+    structured tabular risk scores, not free-text LLM output. The
+    evidential and deployed-assistant lines produce a confidence-looking
+    number, but neither one is checked against held-out error rates
+    before shipping.
+  \end{notebox}
+\end{frame}
+
+\begin{frame}{Related Work}{Three Threads This Proposal Combines}
+  \begin{itemize}[leftmargin=1.4em, itemsep=1pt]
+    \small
+    \item[\faBook] \textbf{Calibration theory.} Malik
+      \cite{malik2023calibrated} and Ibrahim
+      \cite{ibrahim2020ece} establish expected calibration error (ECE) as
+      the standard diagnostic -- the metric this proposal adopts and
+      extends to generative outputs.
+    \item[\faBook] \textbf{Selective prediction.} Novak
+      \cite{novak2024selective} shows abstention rules built on a
+      calibrated score cut error rate sharply at a modest coverage cost --
+      the mechanism Aim~2 adapts to a triage workflow.
+    \item[\faBook] \textbf{Clinical trust in AI.} Haddad
+      \cite{haddad2022trust} finds clinicians recalibrate their own trust
+      \emph{faster} when a tool exposes honest uncertainty, even when
+      that uncertainty is sometimes high.
+  \end{itemize}
+  \par\vspace{3pt}
+  \begin{alertblock}{The gap}
+    \small
+    No published system couples a \emph{single-pass, black-box} confidence
+    estimate directly into an abstention rule for LLM-based triage, then
+    validates that rule against clinician outcomes. Preliminary work
+    \cite{okonkwo2025preliminary} took a first pass at the estimator alone.
+  \end{alertblock}
+\end{frame}

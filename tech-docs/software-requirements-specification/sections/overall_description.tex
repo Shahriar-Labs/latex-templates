@@ -1,0 +1,79 @@
+% sections/overall_description.tex
+\section{Overall Description}
+
+\subsection{Product Perspective}
+Apex Ledger is a new, self-contained system that replaces Meridian's legacy
+spreadsheet-and-email expense process. It exposes a browser-based front end, a versioned REST
+API, and two outbound integrations: a nightly settlement feed to \textit{Meridian Payroll
+Connect} and an on-demand export to the Nimbus ERP general ledger. Figure~\ref{fig:usecase}
+(Section~6) shows the system boundary and the actors that interact with it.
+
+\begin{center}
+\begin{minipage}{0.46\textwidth}
+\begin{tcolorbox}[colback=white,colframe=steelblue,boxrule=0.7pt,arc=2pt,title={\faFile\ System Context},fonttitle=\bfseries\color{white},colbacktitle=steelblue]
+\footnotesize
+Apex Ledger sits between the corporate card issuer feed, the identity provider (SSO), and the
+downstream payroll/ERP systems. It is the single source of truth for expense report status
+from submission through reimbursement.
+\end{tcolorbox}
+\end{minipage}\hfill
+\begin{minipage}{0.46\textwidth}
+\begin{tcolorbox}[colback=white,colframe=steelblue,boxrule=0.7pt,arc=2pt,title={\faLock\ Trust Boundary},fonttitle=\bfseries\color{white},colbacktitle=steelblue]
+\footnotesize
+All traffic crosses the boundary over TLS~1.2+. Card-feed and payroll integrations are
+server-to-server; no browser client ever holds payroll credentials.
+\end{tcolorbox}
+\end{minipage}
+\end{center}
+\par
+
+\subsection{Product Functions}
+At a high level, Apex Ledger provides: (1) expense report authoring with receipt capture,
+(2) configurable multi-step approval workflows, (3) automated reimbursement batching,
+(4) audit and export reporting, and (5) payroll/ERP synchronization. Each function is
+decomposed into numbered functional requirements in Section~3.
+
+\subsection{User Classes and Characteristics}
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}l X c@{}}
+\toprule
+\rowcolor{navydark}
+\textcolor{white}{\textbf{User Class}} & \textcolor{white}{\textbf{Description}} & \textcolor{white}{\textbf{Frequency}} \\
+\midrule
+Employee & Submits expense reports and attaches receipts; the largest user population (approx.\ 4,200 seats). & Daily \\
+\rowcolor{lightgray}
+Approver & Line manager who reviews and approves/rejects reports within their cost center. & Daily \\
+Finance Administrator & Configures policies, runs reimbursement batches, manages exception queues. & Daily \\
+\rowcolor{lightgray}
+External Auditor & Read-only access to closed reports and export logs during audit windows. & Quarterly \\
+System Integrator & Vertex/Meridian technical staff maintaining the payroll and ERP connectors. & As needed \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Operating Environment}
+Server components run as containerized services on Meridian's contracted AWS ap-south-1
+region. The web client targets evergreen Chrome, Edge, Firefox, and Safari (last two major
+versions). No client-side plugin or applet is required.
+
+\subsection{Design and Implementation Constraints}
+\begin{itemize}[leftmargin=1.4em]
+  \item Must integrate with Meridian's existing Okta tenant for SSO (SAML~2.0).
+  \item Payroll batch format is fixed by \textit{Meridian Payroll Connect} v3 API and cannot be
+        renegotiated within this release.
+  \item Data residency: all personally identifiable expense data must remain within the
+        ap-south-1 region per the Vendor Data Handling Policy.
+  \item Release cadence is fixed to Meridian's quarterly change-freeze calendar; no production
+        deploys in the two weeks surrounding fiscal quarter close.
+\end{itemize}
+
+\subsection{Assumptions and Dependencies}
+\begin{itemize}[leftmargin=1.4em]
+  \item Meridian will provide a sandbox card-feed file for integration testing no later than
+        four weeks before UAT.
+  \item Okta group membership accurately reflects the approval hierarchy at go-live; Apex
+        Ledger does not independently validate organizational structure.
+  \item Currency conversion rates are supplied by the existing Nimbus ERP rate table and are
+        treated as authoritative.
+\end{itemize}

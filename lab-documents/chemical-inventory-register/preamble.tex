@@ -1,0 +1,169 @@
+% preamble.tex --- packages, colours, custom commands, page geometry
+
+\usepackage[a4paper,landscape,margin=1.2cm,top=1.5cm,bottom=1.2cm,headsep=8pt,footskip=22pt]{geometry}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage[table]{xcolor}
+\usepackage{colortbl}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds,patterns}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{fontawesome5}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins}
+\usepackage{ragged2e}
+\usepackage[hidelinks]{hyperref}
+
+% ---------- colour palette ----------
+\definecolor{inkynavy}{RGB}{26,38,58}
+\definecolor{hazardred}{RGB}{193,32,38}
+\definecolor{labteal}{RGB}{18,101,110}
+\definecolor{warnamber}{RGB}{200,142,31}
+\definecolor{papergray}{RGB}{244,244,241}
+\definecolor{rowbandgray}{RGB}{237,237,233}
+\definecolor{linegray}{RGB}{200,200,196}
+
+% ---------- spacing ----------
+\setlength{\tabcolsep}{4pt}
+\renewcommand{\arraystretch}{1.05}
+
+% ---------- column types for the register ----------
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash\footnotesize}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash\footnotesize}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash\footnotesize}p{#1}}
+
+% ---------- section headings ----------
+\newcommand{\registersection}[1]{%
+  \par\vspace{6pt}
+  {\color{inkynavy}\Large\bfseries #1}\par
+  \vspace{1pt}
+  {\color{hazardred}\rule{\linewidth}{1.6pt}}\par
+  \vspace{4pt}
+}
+
+% ---------- header / footer ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\footnotesize\color{inkynavy}\bfseries Meridian Life Sciences \textbullet\ Chemical Inventory Register}
+\fancyhead[R]{\footnotesize\color{inkynavy}Doc.\ CHM-INV-REG-014 \quad Rev.\ 6}
+\fancyfoot[L]{\footnotesize\color{linegray}Uncontrolled if printed \textbullet\ Verify against the master register on the LIMS before use}
+\fancyfoot[R]{\footnotesize\color{linegray}Page \thepage\ of \pageref{LastPage}}
+
+% ---------- GHS pictogram machinery ----------
+\tikzset{ghsline/.style={line width=0.9pt, line cap=round, line join=round, black}}
+
+\newcommand{\ghsdiamond}[1]{\node[diamond,draw=hazardred,line width=1pt,fill=white,minimum size=#1,inner sep=0pt] at (0,0) {};}
+
+\newcommand{\ghsExplosive}[1]{%
+\begin{tikzpicture}[baseline=-0.55ex]
+\ghsdiamond{#1}
+\fill (0,0) circle (0.07);
+\foreach \a in {0,45,90,135,180,225,270,315}{\draw[ghsline] (\a:0.11) -- (\a:0.36);}
+\end{tikzpicture}%
+}
+
+\newcommand{\ghsFlammable}[1]{%
+\begin{tikzpicture}[baseline=-0.55ex]
+\ghsdiamond{#1}
+\fill[black] (0,-0.32) .. controls (-0.22,-0.05) and (-0.14,0.22) .. (0,0.36)
+ .. controls (0.14,0.22) and (0.22,-0.05) .. (0,-0.32) -- cycle;
+\end{tikzpicture}%
+}
+
+\newcommand{\ghsOxidizer}[1]{%
+\begin{tikzpicture}[baseline=-0.55ex]
+\ghsdiamond{#1}
+\fill[black] (0,-0.30) circle (0.15);
+\fill[black] (0,0.05) .. controls (-0.13,0.18) and (-0.08,0.32) .. (0,0.38)
+ .. controls (0.08,0.32) and (0.13,0.18) .. (0,0.05) -- cycle;
+\end{tikzpicture}%
+}
+
+\newcommand{\ghsGas}[1]{%
+\begin{tikzpicture}[baseline=-0.55ex]
+\ghsdiamond{#1}
+\draw[ghsline,fill=black] (-0.14,-0.34) rectangle (0.14,0.18);
+\draw[ghsline,fill=black] (-0.05,0.18) rectangle (0.05,0.36);
+\end{tikzpicture}%
+}
+
+\newcommand{\ghsCorrosive}[1]{%
+\begin{tikzpicture}[baseline=-0.55ex]
+\ghsdiamond{#1}
+\draw[ghsline] (-0.30,0.30) -- (-0.10,0.05);
+\draw[ghsline] (0.05,0.34) -- (0.18,0.08);
+\draw[ghsline,line width=1.4pt] (-0.34,-0.02) -- (0.34,-0.02);
+\draw[ghsline] (-0.20,-0.10) -- (-0.26,-0.28);
+\draw[ghsline] (0.10,-0.10) -- (0.16,-0.30);
+\end{tikzpicture}%
+}
+
+\newcommand{\ghsToxic}[1]{%
+\begin{tikzpicture}[baseline=-0.55ex]
+\ghsdiamond{#1}
+\draw[ghsline,fill=black] (0,0.10) circle (0.18);
+\fill[white] (-0.07,0.12) circle (0.03);
+\fill[white] (0.07,0.12) circle (0.03);
+\draw[ghsline] (-0.22,-0.20) -- (0.22,-0.05);
+\draw[ghsline] (-0.22,-0.05) -- (0.22,-0.20);
+\end{tikzpicture}%
+}
+
+\newcommand{\ghsExclamation}[1]{%
+\begin{tikzpicture}[baseline=-0.55ex]
+\ghsdiamond{#1}
+\draw[ghsline,line width=2.6pt] (0,0.36) -- (0,0.02);
+\fill[black] (0,-0.16) circle (0.045);
+\end{tikzpicture}%
+}
+
+\newcommand{\ghsHealthHazard}[1]{%
+\begin{tikzpicture}[baseline=-0.55ex]
+\ghsdiamond{#1}
+\fill[black] (0,0.22) circle (0.10);
+\fill[black] (-0.16,-0.30) -- (0.16,-0.30) -- (0.10,0.06) -- (-0.10,0.06) -- cycle;
+\foreach \a in {60,120,240,300}{\draw[ghsline] (0,-0.10) -- (\a:0.20);}
+\end{tikzpicture}%
+}
+
+\newcommand{\ghsEnvironment}[1]{%
+\begin{tikzpicture}[baseline=-0.55ex]
+\ghsdiamond{#1}
+\draw[ghsline] (-0.34,-0.10) .. controls (-0.15,-0.20) and (0.15,0.00) .. (0.34,-0.10);
+\fill[black] (0.05,0.05) .. controls (-0.10,0.10) and (-0.10,-0.05) .. (0.05,-0.05)
+ -- (0.16,0.10) -- (0.16,-0.10) -- cycle;
+\draw[ghsline] (-0.20,-0.34) -- (-0.20,-0.05);
+\draw[ghsline] (-0.20,-0.10) -- (-0.30,-0.20);
+\draw[ghsline] (-0.20,-0.15) -- (-0.10,-0.25);
+\end{tikzpicture}%
+}
+
+\newcommand{\ghsmini}[1]{\scalebox{0.5}{#1}}
+
+% shorthand for the register table's pictogram column
+\newcommand{\pE}{\ghsmini{\ghsExplosive{1.0cm}}}
+\newcommand{\pF}{\ghsmini{\ghsFlammable{1.0cm}}}
+\newcommand{\pO}{\ghsmini{\ghsOxidizer{1.0cm}}}
+\newcommand{\pG}{\ghsmini{\ghsGas{1.0cm}}}
+\newcommand{\pC}{\ghsmini{\ghsCorrosive{1.0cm}}}
+\newcommand{\pT}{\ghsmini{\ghsToxic{1.0cm}}}
+\newcommand{\pX}{\ghsmini{\ghsExclamation{1.0cm}}}
+\newcommand{\pH}{\ghsmini{\ghsHealthHazard{1.0cm}}}
+\newcommand{\pN}{\ghsmini{\ghsEnvironment{1.0cm}}}
+
+% ---------- hazard-class badge ----------
+\newcommand{\hazcode}[1]{\textcolor{hazardred}{\bfseries #1}}
+
+% ---------- document-control table style ----------
+\newcommand{\docfield}[1]{\textcolor{inkynavy}{\bfseries #1}}

@@ -1,0 +1,74 @@
+\section{Data Model \& Schemas}
+
+\subsection{Metadata Catalog Schema}
+Metadata operations are critical for maintaining strong tenant isolation and tracking object versions. Table~\ref{tab:metadata_schema} defines the layout of the primary database table used by AGS-Meta to store object location mappings.
+
+\begin{table}[h]
+    \centering
+    \sffamily
+    \small
+    \begin{tabularx}{\linewidth}{l l l L}
+        \toprule
+        \textbf{Field Name} & \textbf{SQL Type} & \textbf{Key Type} & \textbf{Description} \\
+        \midrule
+        \texttt{tenant\_id} & \texttt{UUID} & Primary (Composite) & Identifies the customer account owner. \\
+        \texttt{bucket\_name} & \texttt{VARCHAR(63)} & Primary (Composite) & Unique container namespace inside the tenant. \\
+        \texttt{object\_key} & \texttt{VARCHAR(1024)} & Primary (Composite) & Unique identifier path for the stored object. \\
+        \texttt{version\_id} & \texttt{BIGINT} & Primary (Composite) & Monotonically increasing version count. \\
+        \texttt{content\_len} & \texttt{BIGINT} & None & Total size of the payload in bytes. \\
+        \texttt{content\_type} & \texttt{VARCHAR(255)} & None & Standard MIME type of the object data. \\
+        \texttt{block\_map} & \texttt{JSONB} & None & List of byte offset ranges mapped to block IDs. \\
+        \texttt{sha256\_checksum} & \texttt{BYTEA} & None & High-strength payload verification hash. \\
+        \texttt{created\_at} & \texttt{TIMESTAMP} & None & Database write-commit timestamp. \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Schema layout for the core metadata database repository.}
+    \label{tab:metadata_schema}
+\end{table}
+
+\subsection{API Payload Specifications}
+Write requests to the object store are initiated via a gRPC transaction. The protobuf definition in Listing~\ref{lst:grpc_api} illustrates the request and response structure for the object creation sequence.
+
+\begin{lstlisting}[language=c, caption={Protobuf definition for the write path API.}, label={lst:grpc_api}]
+syntax = "proto3";
+package apex.storage.v2;
+
+service ObjectStorageService {
+  rpc InitializeUpload(UploadRequest) returns (UploadResponse);
+}
+
+message UploadRequest {
+  string tenant_id = 1;
+  string bucket_name = 2;
+  string object_key = 3;
+  int64 expected_size = 4;
+}
+
+message UploadResponse {
+  string upload_token = 1;
+  repeated BlockTarget block_targets = 2;
+  int64 expires_at = 3;
+}
+
+message BlockTarget {
+  string block_id = 1;
+  string node_address = 2;
+}
+\end{lstlisting}
+
+\subsection{Tenant Isolation Config}
+Configuration files define the baseline resource allocation constraints per tenant namespace. Below is an example block allocation configuration that dictates replication policy.
+
+\begin{lstlisting}[caption={Sample JSON configuration for tenancy isolation settings.}]
+{
+  "tenant_id": "8b9e4a3b-2f3b-4680-a61f-9e7f8e8e77a1",
+  "namespace_policy": {
+    "default_replication": "3-zone-geo",
+    "placement": ["us-east", "eu-central"],
+    "throttling": {
+      "ingress_mbps": 500.0,
+      "max_qps": 2500
+    }
+  }
+}
+\end{lstlisting}

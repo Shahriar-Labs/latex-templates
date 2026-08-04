@@ -1,0 +1,73 @@
+% sections/results.tex -- result 1 (latency table) and result 2 (hit-rate trend)
+\setcounter{secprog}{3}
+\section{Result I}
+
+\begin{frame}
+  \frametitle{Result I --- latency drops hardest where it hurt most}
+  \framesubtitle{p50 / p95 inference latency, cache vs. no cache, 4k hot / 0.10 warm radius}
+  \begin{table}
+    \centering
+    \small
+    \begin{tabular}{@{}lrrrr@{}}
+      \toprule
+      \textbf{Device tier} & \textbf{p50 base} & \textbf{p50 cached} & \textbf{p95 base} & \textbf{p95 cached} \\
+      \midrule
+      Entry (\$90)   & 211\,ms & 68\,ms  & 340\,ms & 129\,ms \\
+      Mid-range      & 104\,ms & 41\,ms  & 176\,ms & 74\,ms  \\
+      Flagship       & 52\,ms  & 24\,ms  & 88\,ms  & 41\,ms  \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \vspace{2mm}
+  \small
+  \begin{columns}[T]
+    \begin{column}{0.55\textwidth}
+      \begin{block}{Reading the table}
+        \begin{itemize}
+          \item Entry-tier p50 falls \textbf{68\%}, closing most of the gap to flagship
+          \item p95 improves even more --- the cache absorbs worst-case stalls, not just the average
+          \item Accuracy moved by $<$0.3 NDCG points
+        \end{itemize}
+      \end{block}
+    \end{column}
+    \begin{column}{0.45\textwidth}
+      \begin{tcolorbox}[colback=mist,colframe=emberamber,boxrule=0.6pt,arc=2mm,title={\color{white}Budget check},colbacktitle=emberamber]
+        Entry-tier requests under the 120\,ms budget:\\
+        \statword{32\%}{$\rightarrow$} \statword{91\%}{after caching}
+      \end{tcolorbox}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\setcounter{secprog}{4}
+\section{Result II}
+
+\begin{frame}
+  \frametitle{Result II --- the cache keeps learning}
+  \framesubtitle{Hot-tier hit rate over the six-week field trial, entry-tier cohort}
+  \begin{center}
+  \begin{tikzpicture}[scale=0.88,transform shape]
+    \begin{scope}
+      \draw[paletext,thin] (0,0) -- (10,0);
+      \draw[paletext,thin] (0,0) -- (0,3.6);
+      \foreach \x/\lbl in {0/W1,2/W2,4/W3,6/W4,8/W5,10/W6}{
+        \draw[paletext] (\x,0) -- (\x,-0.08) node[below,font=\scriptsize]{\lbl};
+      }
+      \foreach \y/\lbl in {0/0,1.2/25,2.4/50,3.6/75}{
+        \draw[paletext] (0,\y) -- (-0.08,\y) node[left,font=\scriptsize]{\lbl\%};
+      }
+      \draw[signalteal,line width=1.4pt]
+        plot coordinates {(0,1.97) (2,2.59) (4,2.91) (6,3.10) (8,3.24) (10,3.32)};
+      \foreach \x/\y in {0/1.97,2/2.59,4/2.91,6/3.10,8/3.24,10/3.32}{
+        \fill[emberamber] (\x,\y) circle (0.06);
+      }
+      \node[anchor=west,font=\scriptsize,signalteal] at (10.15,3.32) {77\%};
+      \node[anchor=east,font=\scriptsize,signalteal] at (-0.15,1.97) {41\%};
+    \end{scope}
+  \end{tikzpicture}
+  \end{center}
+  \small
+  \begin{block}{Why it climbs}
+    LRU-2 keys off session fingerprints that recur across days; by week 3 the hot tier has seen most recurring contexts twice, so hits stop depending on session length.
+  \end{block}
+\end{frame}

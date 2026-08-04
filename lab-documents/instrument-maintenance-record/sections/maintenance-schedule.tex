@@ -1,0 +1,65 @@
+\section{Preventive Maintenance Schedule}
+\label{sec:schedule}
+
+\sectionbanner{2. Preventive Maintenance Schedule}{Task cadence, ownership, and the 2026 service-visit strip.}
+
+\subsection{2026 Service-Visit Strip}
+
+\begin{center}
+\begin{tikzpicture}[
+  month/.style={circle, draw=slateMid, fill=white, minimum size=5mm, inner sep=0pt, font=\tiny, text=slateMid},
+  done/.style={diamond, draw=okGreen, fill=okGreen!18, minimum size=8mm, inner sep=0pt, font=\tiny\bfseries, text=okGreen},
+  due/.style={diamond, draw=amberFlag, fill=amberFlag!18, minimum size=8mm, inner sep=0pt, font=\tiny\bfseries, text=amberFlag},
+  future/.style={diamond, draw=slateMid, fill=slatePale, minimum size=8mm, inner sep=0pt, font=\tiny\bfseries, text=slateMid},
+  lbl/.style={font=\scriptsize, text=slateDark}
+]
+  \draw[line width=1.4pt, slateMid!60!white] (0,0) -- (13.2,0);
+
+  \foreach \i/\m in {0/J,1/F,2/M,3/A,4/M,5/J,6/J,7/A,8/S,9/O,10/N,11/D}{
+    \node[month] (m\i) at ({0.6+1.1*\i},0) {\m};
+  }
+
+  \node[done, anchor=south] (q1) at (m1.north) [yshift=6mm] {Q1};
+  \node[lbl, above=1pt of q1] {\okmark\ PM done};
+  \draw[okGreen, line width=0.8pt] (m1.north) -- (q1.south);
+
+  \node[done, anchor=south] (q2) at (m4.north) [yshift=6mm] {Q2};
+  \node[lbl, above=1pt of q2] {\okmark\ PM done};
+  \draw[okGreen, line width=0.8pt] (m4.north) -- (q2.south);
+
+  \node[due, anchor=south] (q3) at (m7.north) [yshift=6mm] {Q3};
+  \node[lbl, above=1pt of q3, text=amberFlag] {Due 18 Aug};
+  \draw[amberFlag, line width=0.8pt] (m7.north) -- (q3.south);
+
+  \node[future, anchor=south] (q4) at (m10.north) [yshift=6mm] {Q4};
+  \node[lbl, above=1pt of q4] {Scheduled};
+  \draw[slateMid, line width=0.6pt, dashed] (m10.north) -- (q4.south);
+
+  \node[circle, draw=alertRed, fill=alertRed!18, minimum size=4mm, inner sep=0pt] (cm) at (m5.south) [yshift=-6mm] {};
+  \node[lbl, below=1pt of cm, text=alertRed, font=\scriptsize] {Unplanned CM, 12 Jun};
+  \draw[alertRed, line width=0.7pt] (m5.south) -- (cm.north);
+\end{tikzpicture}
+\end{center}
+
+\subsection{Task Register}
+
+\begin{center}
+\renewcommand{\arraystretch}{1.12}
+\begin{tabularx}{\linewidth}{@{}X l l l@{}}
+\toprule
+\rowcolor{slateDark}
+\textcolor{white}{\textbf{Task}} & \textcolor{white}{\textbf{Frequency}} & \textcolor{white}{\textbf{Owner}} & \textcolor{white}{\textbf{Status}} \\
+\midrule
+Laser power output check (532/785~nm) & Weekly & Facility staff & \badgeok{Current} \\
+CCD dark-current baseline log & Monthly & Facility staff & \badgeok{Current} \\
+Interlock and shutter function test & Monthly & Laser safety officer & \badgeok{Current} \\
+Full optical alignment \& wavelength calibration & Quarterly & Synapse engineer & \badgedue{Due Q3} \\
+TEC cooler performance verification & Semi-annual & Synapse engineer & \badgeok{Current} \\
+Full preventive maintenance overhaul & Annual & Synapse engineer & \badgeinfo{Next: Mar 2027} \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\subsection{Escalation Rule}
+
+If a quarterly or higher-tier task is not closed within 10 working days of its due date, the facility manager escalates to Synapse Instrument Services dispatch and flags the instrument \badgeoverdue{Overdue} on the Core booking calendar until resolved. Users may not book Raman sessions on an instrument flagged overdue for a safety- or calibration-relevant task.

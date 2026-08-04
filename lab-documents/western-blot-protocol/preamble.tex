@@ -1,0 +1,199 @@
+%% preamble.tex — packages, colours, geometry, custom commands
+
+%% ── Page geometry ────────────────────────────────────────────────
+\usepackage[
+  a4paper,
+  top=22mm, bottom=24mm,
+  left=22mm, right=22mm,
+  headheight=14pt
+]{geometry}
+
+%% ── Encoding & fonts ─────────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+%% ── Colour palette ───────────────────────────────────────────────
+\usepackage[table,dvipsnames]{xcolor}
+\definecolor{NexaBlue}{HTML}{1B3A5C}
+\definecolor{NexaTeal}{HTML}{1A8C8A}
+\definecolor{NexaGold}{HTML}{C8883A}
+\definecolor{NexaLight}{HTML}{EDF4F8}
+\definecolor{RowShade}{HTML}{F5F9FB}
+\definecolor{WarnAmber}{HTML}{FBECD7}
+\definecolor{WarnBorder}{HTML}{D97706}
+\definecolor{TipGreen}{HTML}{E3F5EF}
+\definecolor{TipBorder}{HTML}{1A8C8A}
+\definecolor{NoteBlue}{HTML}{E6EFF7}
+\definecolor{NoteBorder}{HTML}{1B3A5C}
+\definecolor{GrayLight}{HTML}{F0F0F0}
+\definecolor{GrayMid}{HTML}{888888}
+\definecolor{DarkText}{HTML}{1C1C2E}
+
+%% ── Core packages ────────────────────────────────────────────────
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{colortbl}
+\usepackage{enumitem}
+\usepackage{calc}
+\usepackage{etoolbox}
+\usepackage{parskip}
+\usepackage{float}
+\usepackage{ragged2e}
+\usepackage{needspace}
+
+%% ── TikZ ─────────────────────────────────────────────────────────
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,backgrounds,patterns}
+
+%% ── tcolorbox ────────────────────────────────────────────────────
+\usepackage[most]{tcolorbox}
+
+%% ── Headers & footers ────────────────────────────────────────────
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+
+%% ── Links ────────────────────────────────────────────────────────
+\usepackage[hidelinks,pdfusetitle]{hyperref}
+
+%% ── FontAwesome5 ─────────────────────────────────────────────────
+\usepackage{fontawesome5}
+
+%% ── Section styling ──────────────────────────────────────────────
+\usepackage{titlesec}
+
+\titleformat{\section}
+  {\color{NexaBlue}\large\bfseries}
+  {}
+  {0pt}
+  {\colorbox{NexaBlue}{\parbox[c][1.05em][c]{\widthof{\thesection}+4pt}{\centering\color{white}\thesection}}\hspace{6pt}}
+  [\vspace{2pt}\color{NexaTeal}\hrule height 1.2pt\vspace{4pt}]
+
+\titleformat{\subsection}
+  {\color{NexaBlue}\normalsize\bfseries}
+  {\thesubsection.}
+  {6pt}
+  {}
+
+\titlespacing*{\section}{0pt}{14pt}{6pt}
+\titlespacing*{\subsection}{0pt}{10pt}{4pt}
+
+%% ── tcolorbox styles ─────────────────────────────────────────────
+\tcbset{
+  notebase/.style={
+    enhanced,
+    colframe=#1!80!black,
+    colback=#1!8!white,
+    boxrule=0.8pt,
+    arc=3pt,
+    left=8pt, right=8pt, top=5pt, bottom=5pt,
+    fonttitle=\bfseries\small,
+  }
+}
+
+\newtcolorbox{notebox}[2][]{
+  notebase=NexaBlue,
+  title={\faInfoCircle\hspace{4pt}#2},
+  #1
+}
+
+\newtcolorbox{warnbox}[2][]{
+  notebase=NexaGold,
+  colframe=WarnBorder,
+  colback=WarnAmber,
+  title={\faExclamationTriangle\hspace{4pt}#2},
+  #1
+}
+
+\newtcolorbox{tipbox}[2][]{
+  notebase=NexaTeal,
+  colframe=TipBorder,
+  colback=TipGreen,
+  title={\faCheckCircle\hspace{4pt}#2},
+  #1
+}
+
+\newtcolorbox{settingsbox}[1]{
+  enhanced,
+  colframe=NexaTeal,
+  colback=NexaLight,
+  colbacktitle=NexaTeal,
+  coltitle=white,
+  boxrule=1pt,
+  arc=4pt,
+  title={\faServer\hspace{4pt}\textbf{#1}},
+  left=10pt, right=10pt, top=6pt, bottom=6pt,
+  fonttitle=\bfseries\small,
+}
+
+\newtcolorbox{stepbox}[1]{
+  enhanced,
+  colframe=NexaBlue,
+  colback=white,
+  colbacktitle=NexaBlue,
+  coltitle=white,
+  boxrule=0.8pt,
+  arc=4pt,
+  title={\small\bfseries Step #1},
+  left=8pt, right=8pt, top=4pt, bottom=4pt,
+  fonttitle=\small\bfseries,
+}
+
+%% ── Page style ───────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+
+\fancyhead[L]{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[NexaBlue] (0,0) rectangle (\paperwidth,0.55cm);
+  \end{tikzpicture}%
+  \vspace{-8pt}%
+  \textcolor{white}{\footnotesize\bfseries NEXA BIOLOGICS — STANDARD OPERATING PROCEDURE}%
+}
+\fancyhead[R]{%
+  \vspace{-8pt}%
+  \textcolor{white}{\footnotesize SOP-NB-WB-004\hspace{8pt}Rev.~2.1}%
+}
+\fancyfoot[C]{\footnotesize\color{GrayMid} Page~\thepage~of~\pageref{LastPage}}
+\fancyfoot[R]{\footnotesize\color{GrayMid} \textcopyright~2025 Nexa Biologics}
+
+%% ── Custom commands ──────────────────────────────────────────────
+\newcommand{\hlcell}[1]{\cellcolor{NexaBlue!12}\textbf{#1}}
+\newcommand{\unit}[1]{\textup{#1}}
+\newcommand{\conc}[2]{#1\,\unit{#2}}
+\newcommand{\rpm}[1]{#1~rpm}
+\newcommand{\degC}[1]{#1\,\textdegree C}
+\newcommand{\mintime}[1]{#1~min}
+\newcommand{\hrtime}[1]{#1~h}
+\newcommand{\mA}[1]{#1~mA}
+\newcommand{\vol}[1]{#1~\ensuremath{\mu} L}
+\newcommand{\secmark}{\textcolor{NexaTeal}{\faCircle[regular]\hspace{4pt}}}
+
+\newcommand{\protocolrow}[3]{%
+  #1 & #2 & #3 \\%
+}
+
+%% ── Table column type ────────────────────────────────────────────
+\newcolumntype{P}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+
+%% ── List settings ────────────────────────────────────────────────
+\setlist[itemize,1]{
+  label=\textcolor{NexaTeal}{\faChevronRight},
+  leftmargin=1.4em,
+  itemsep=2pt,
+  parsep=0pt
+}
+\setlist[enumerate,1]{
+  label=\textcolor{NexaBlue}{\textbf{\arabic*.}},
+  leftmargin=1.8em,
+  itemsep=3pt,
+  parsep=0pt
+}

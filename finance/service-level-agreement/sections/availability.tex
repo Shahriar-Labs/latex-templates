@@ -1,0 +1,70 @@
+%% sections/availability.tex — Availability targets, measurement, and exclusions
+
+\section{Availability Targets}
+\label{sec:availability}
+
+Nexa commits to the Monthly Uptime Percentages set out in Table~\ref{tab:availability} for
+each Service component listed in Table~\ref{tab:services}. Monthly Uptime Percentage is
+calculated as:
+
+\begin{center}
+\begin{tcolorbox}[
+  enhanced, colback=PaleSlate, colframe=SteelBlue,
+  boxrule=0.6pt, arc=4pt, width=0.9\linewidth,
+  top=8pt, bottom=8pt, left=12pt, right=12pt
+]
+\centering
+\[
+  \text{Monthly Uptime \%} \;=\; \left(1 - \frac{\text{Total Downtime Minutes}}{\text{Total Minutes in Month}}\right) \times 100
+\]
+\end{tcolorbox}
+\end{center}
+
+\vspace{4pt}
+\begin{tabularx}{\linewidth}{@{} L{4.4cm} C{2.9cm} C{3.1cm} X @{}}
+  \toprule
+  \textbf{Service Tier} & \textbf{Uptime Target} & \textbf{Max Downtime / Month} & \textbf{Measurement Method} \\
+  \midrule
+  Production --- Compute Fleet    & 99.95\% & 21m 54s  & Synthetic health checks, 60s interval \\
+  Production --- Managed Database & 99.95\% & 21m 54s  & Connection probe \& replication lag check, 60s interval \\
+  Production --- API Gateway      & 99.99\% & 4m 23s   & Synthetic HTTP checks against \texttt{/healthz}, 30s interval \\
+  Production --- Object Storage   & 99.90\% & 43m 50s  & PUT/GET probe suite, 5-minute interval \\
+  Production --- Network \& CDN   & 99.95\% & 21m 54s  & Edge PoP latency \& reachability probes \\
+  \bottomrule
+\end{tabularx}
+\captionof{table}{Monthly availability targets by service component}
+\label{tab:availability}
+
+\subsection{Exclusions}
+
+The following are Excluded Causes and are removed from Downtime Minutes before Monthly
+Uptime Percentage is calculated:
+
+\begin{itemize}
+  \item Scheduled Maintenance performed in accordance with the notice period defined in
+    Section~\ref{sec:scope}.
+  \item Force majeure events, including regional utility outages, natural disasters, and
+    upstream internet backbone failures outside Nexa's reasonable control.
+  \item Degradation caused by the Customer's applications, code, configuration, or
+    misuse of the Service (including exceeding provisioned capacity without prior
+    scaling request).
+  \item Suspension of the Service for non-payment or breach of the Acceptable Use Policy.
+  \item Unavailability of third-party services not operated by Nexa, including
+    Customer-managed DNS providers and Customer's own network links.
+\end{itemize}
+
+\warnbox{%
+  \faExclamationTriangle\enspace\textbf{Note:} Downtime is measured independently per
+  component. A component that misses its target does not affect the Availability
+  calculation of any other component, and Service Credits (Section~\ref{sec:credits}) are
+  calculated and capped separately for each component.
+}
+
+\subsection{Reporting}
+
+Nexa publishes real-time and historical Availability data on the Nexa Status Page
+(\url{https://status.nexacloud.example}) and provides Synapse with a signed monthly
+Availability Report within five (5) business days of each Measurement Window's close via
+the Nexa Console. The Customer may dispute a reported figure in writing within fifteen
+(15) calendar days of receipt; disputes are resolved under the escalation procedure in
+Section~\ref{sec:support}.

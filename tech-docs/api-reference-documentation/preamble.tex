@@ -1,0 +1,182 @@
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+
+% Page geometry
+\usepackage[left=0.75in,right=0.75in,top=0.85in,bottom=0.85in,headheight=15pt]{geometry}
+
+% Color definitions
+\usepackage[table]{xcolor}
+\definecolor{primary}{HTML}{0F172A}      % Slate 900
+\definecolor{secondary}{HTML}{4F46E5}    % Indigo 600
+\definecolor{textcolor}{HTML}{334155}    % Slate 700
+\definecolor{bglight}{HTML}{F8FAFC}      % Slate 50
+\definecolor{borderlight}{HTML}{E2E8F0}  % Slate 200
+
+% Endpoint badges
+\definecolor{getcolor}{HTML}{0D9488}     % Teal 600
+\definecolor{postcolor}{HTML}{2563EB}    % Blue 600
+\definecolor{putcolor}{HTML}{D97706}     % Amber 600
+\definecolor{deletecolor}{HTML}{DC2626}  % Red 600
+
+% Packages
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc,shapes.geometric,decorations.pathmorphing,backgrounds,patterns}
+\usepackage[many]{tcolorbox}
+\tcbuselibrary{skins,listings}
+\usepackage{fontawesome5}
+\usepackage{xstring}
+\usepackage{hyperref}
+
+% Typography - default to Helvetica for clean sans-serif look
+\usepackage[scaled=0.92]{helvet}
+\usepackage{zi4} % Inconsolata monospace font
+\renewcommand{\familydefault}{\sfdefault}
+
+% Table columns
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+% Badge drawing
+\newcommand{\badge}[2]{%
+  \tikz[baseline=(char.base)]{
+    \node[
+      fill=#1,
+      text=white,
+      rounded corners=2px,
+      inner sep=4pt,
+      font=\sffamily\bfseries\scriptsize
+    ] (char) {#2};
+  }%
+}
+\newcommand{\getbadge}{\badge{getcolor}{GET}}
+\newcommand{\postbadge}{\badge{postcolor}{POST}}
+\newcommand{\putbadge}{\badge{putcolor}{PUT}}
+\newcommand{\deletebadge}{\badge{deletecolor}{DELETE}}
+
+% Monospace inline code
+\newcommand{\code}[1]{\texttt{\color{secondary}#1}}
+
+\newcommand{\methodbadge}[1]{%
+  \IfEqCase{#1}{%
+    {GET}{\getbadge}%
+    {POST}{\postbadge}%
+    {PUT}{\putbadge}%
+    {DELETE}{\deletebadge}%
+  }[\badge{secondary}{#1}]%
+}
+
+% API Endpoint box environment
+\newenvironment{apiendpoint}[3]{%
+  \begin{tcolorbox}[
+    colback=bglight,
+    colframe=borderlight,
+    arc=4pt,
+    boxrule=1pt,
+    left=12pt,
+    right=12pt,
+    top=12pt,
+    bottom=12pt,
+    before skip=18pt,
+    after skip=18pt,
+    enhanced,
+    overlay={
+      \node[anchor=north east, xshift=-12pt, yshift=-12pt, font=\sffamily\bfseries\scriptsize\color{secondary}] at (frame.north east) {\uppercase{#3}};
+    }
+  ]%
+  \noindent
+  \methodbadge{#1}\quad \texttt{\large\bfseries\color{primary} #2}
+  \par\vspace{0.8em}
+  \tcbline
+  \vspace{0.8em}
+}{%
+  \end{tcolorbox}%
+}
+
+% Tcolorbox style for code blocks
+\tcbset{
+  codeboxstyle/.style={
+    colback=bglight,
+    colframe=borderlight,
+    arc=4pt,
+    boxrule=1pt,
+    left=8pt,
+    right=8pt,
+    top=8pt,
+    bottom=8pt,
+    coltitle=primary,
+    fonttitle=\sffamily\bfseries\small,
+    attach title to upper,
+    after title={\par\vspace{0.4em}\tcbline\vspace{0.4em}},
+    before skip=10pt,
+    after skip=10pt
+  }
+}
+
+% Header/Footer configuration
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\sffamily\bfseries\color{primary}\faLock \quad VERTEX CORE API REFERENCE}
+\fancyhead[R]{\sffamily\color{textcolor}\small Version 3.4.0}
+\fancyfoot[L]{\sffamily\color{textcolor}\small \copyright\ 2026 Vertex Labs Inc. All rights reserved.}
+\fancyfoot[R]{\sffamily\bfseries\color{primary}\thepage}
+\renewcommand{\headrulewidth}{0.5pt}
+\renewcommand{\footrulewidth}{0.5pt}
+
+% Text color configuration
+\AtBeginDocument{\color{textcolor}}
+
+% Section styling
+\usepackage{titlesec}
+\titleformat{\section}
+  {\color{primary}\normalfont\large\bfseries}
+  {\thesection}{1em}{}[{\color{secondary}\titlerule[1pt]}]
+\titleformat{\subsection}
+  {\color{primary}\normalfont\normalsize\bfseries}
+  {\thesubsection}{1em}{}
+
+% Listings JSON Language definition
+\lstdefinelanguage{json}{
+  basicstyle=\small\ttfamily\color{textcolor},
+  showstringspaces=false,
+  breaklines=true,
+  frame=none,
+  string=[s]{"}{"},
+  stringstyle=\color{secondary},
+  comment=[l]{//},
+  commentstyle=\color{gray}\itshape,
+  literate=
+   *{0}{{{\color{putcolor}0}}}{1}
+    {1}{{{\color{putcolor}1}}}{1}
+    {2}{{{\color{putcolor}2}}}{1}
+    {3}{{{\color{putcolor}3}}}{1}
+    {4}{{{\color{putcolor}4}}}{1}
+    {5}{{{\color{putcolor}5}}}{1}
+    {6}{{{\color{putcolor}6}}}{1}
+    {7}{{{\color{putcolor}7}}}{1}
+    {8}{{{\color{putcolor}8}}}{1}
+    {9}{{{\color{putcolor}9}}}{1}
+    {:}{{{\color{primary}{:}}}}{1}
+    {,}{{{\color{primary}{,}}}}{1}
+    {\{}{{{\color{primary}{\{}}}}{1}
+    {\}}{{{\color{primary}{\}}}}}{1}
+    {[}{{{\color{primary}{[}}}}{1}
+    {]}{{{\color{primary}{]}}}}{1},
+}
+
+% Hyperref setup
+\hypersetup{
+  colorlinks=true,
+  linkcolor=secondary,
+  filecolor=secondary,
+  urlcolor=secondary,
+  citecolor=secondary,
+  pdftitle={Vertex Core API Reference Manual},
+  pdfpagemode=FullScreen,
+}

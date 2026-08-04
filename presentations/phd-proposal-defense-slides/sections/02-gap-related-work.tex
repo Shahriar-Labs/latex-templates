@@ -1,0 +1,54 @@
+\section{Gap and Related Work}
+
+\begin{frame}{Where Existing Work Falls Short}{No Prior Approach Clears All Three Bars}
+  \begin{table}
+    \centering
+    \small
+    \begin{tabular}{lccc}
+      \toprule
+      \textbf{Approach} & \textbf{Uncertainty} & \textbf{Onboard} & \textbf{Field} \\
+      \midrule
+      Model-free RL \cite{nandakumar2022saferl} & $\times$ & $\checkmark$ & $\checkmark$ \\
+      Ensemble-based UQ \cite{garcia2024evidential} & $\checkmark$ & $\times$ & $\times$ \\
+      Constrained policy opt.\ \cite{osei2023constrained} & $\times$ & $\checkmark$ & $\times$ \\
+      \midrule
+      \rowcolor{copper!14}
+      \textbf{Proposed approach} & $\checkmark$ & $\checkmark$ & $\checkmark$ \\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+  \par\vspace{8pt}
+
+  \begin{notebox}{Reading the table}
+    \footnotesize
+    Ensemble methods estimate uncertainty well but need 5--10 forward passes
+    per action -- too slow for the rover's onboard compute. Constrained
+    policy methods run onboard but treat the dynamics model as exact, so the
+    safety margin is only as good as an unmodeled sim-to-real gap.
+  \end{notebox}
+\end{frame}
+
+\begin{frame}{Related Work}{Three Threads This Proposal Combines}
+  \begin{itemize}[leftmargin=1.4em]
+    \item[\faBook] \textbf{Sim-to-real transfer.} Vasquez
+      \cite{vasquez2021fieldrobots} documents the gap this proposal targets:
+      policies tuned in \textbf{Nexa} degrade sharply once terrain friction
+      and compliance leave the training envelope.
+    \item[\faBook] \textbf{Uncertainty quantification.} Garcia
+      \cite{garcia2024evidential} shows evidential deep learning gives
+      single-pass, calibrated variance estimates -- the property Aim~1
+      builds on, absent the ensemble's compute cost.
+    \item[\faBook] \textbf{Safe policy optimization.} Osei
+      \cite{osei2023constrained} and Nandakumar
+      \cite{nandakumar2022saferl} formalize constrained MDPs for field
+      robots, but both assume the risk signal is already given -- Aim~2
+      supplies that signal from Aim~1's estimator.
+  \end{itemize}
+  \par\vspace{6pt}
+  \begin{alertblock}{The gap}
+    No published system couples a \emph{calibrated, single-pass} uncertainty
+    estimate directly into the constraint of a field-deployed policy, then
+    validates the coupling outdoors. Preliminary work
+    \cite{chen2025uncertainty} took the first step in simulation only.
+  \end{alertblock}
+\end{frame}

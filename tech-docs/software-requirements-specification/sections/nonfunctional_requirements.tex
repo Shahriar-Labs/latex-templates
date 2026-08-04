@@ -1,0 +1,45 @@
+% sections/nonfunctional_requirements.tex
+\section{Non-Functional Requirements}
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}l l X@{}}
+\toprule
+\rowcolor{navydark}
+\textcolor{white}{\textbf{ID}} & \textcolor{white}{\textbf{Category}} & \textcolor{white}{\textbf{Requirement}} \\
+\midrule
+NFR-1 & Performance & 95th-percentile API response time shall not exceed 800~ms under 500
+concurrent users; report submission end-to-end shall complete in under 2~s. \\
+\rowcolor{lightgray}
+NFR-2 & Availability & The production service shall meet a 99.9\% monthly uptime SLA, excluding
+pre-announced maintenance windows. \\
+NFR-3 & Security & All data at rest shall be encrypted with AES-256; all data in transit shall
+use TLS~1.2+; the platform shall pass an annual penetration test against OWASP ASVS~4.0
+Level~2 \cite{owaspasvs}. \\
+\rowcolor{lightgray}
+NFR-4 & Scalability & The system shall support linear scale-out to 10,000 registered users and
+50,000 reports/month without architectural change. \\
+NFR-5 & Usability & The web client shall conform to WCAG~2.1 Level~AA; a first-time Employee
+shall be able to submit a compliant report within 5 minutes without training. \\
+\rowcolor{lightgray}
+NFR-6 & Maintainability & Each microservice shall maintain at least 80\% unit-test line
+coverage and expose a \texttt{/healthz} endpoint for orchestration probes. \\
+NFR-7 & Auditability & Audit log entries (FR-5.1) shall be retained for a minimum of 7 years
+and shall be write-once (no update or delete API shall exist for the audit table). \\
+\rowcolor{lightgray}
+NFR-8 & Recoverability & Recovery Point Objective (RPO) of 15 minutes and Recovery Time
+Objective (RTO) of 4 hours for the production database. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{center}
+\begin{minipage}{0.9\textwidth}
+\begin{tcolorbox}[colback=white,colframe=accentteal,boxrule=0.8pt,arc=2pt,title={\faPen\ Rationale --- Why NFR-4 Exists},fonttitle=\bfseries\color{navydark},colbacktitle=lightgray]
+\small
+Meridian's headcount is contracted to grow from 1,900 to 3,500 seats over the two years
+following go-live, driven by the pending acquisition of two regional carriers. NFR-4 exists so
+the platform does not require a re-architecture mid-rollout.
+\end{tcolorbox}
+\end{minipage}
+\end{center}

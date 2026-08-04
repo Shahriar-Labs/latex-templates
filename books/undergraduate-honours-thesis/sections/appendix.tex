@@ -1,0 +1,57 @@
+% appendix.tex
+\chapter{Supplementary Results}
+\label{app:results}
+
+Table~\ref{tab:per-node} reports the hit ratio achieved by each policy on every one of the
+twelve simulated edge nodes, stationary workload, complementing the aggregate figures in
+Table~\ref{tab:main-results}.
+
+\begin{table}[h]
+  \centering
+  \caption{Hit ratio by node, stationary workload, mean of 5 seeds.}
+  \label{tab:per-node}
+  \begin{tabular}{@{}cccc@{}}
+    \toprule
+    \textbf{Node} & \textbf{LRU} & \textbf{LFU} & \textbf{GWC} \\
+    \midrule
+    1  & 70.8\% & 77.1\% & 89.4\% \\
+    2  & 71.9\% & 76.4\% & 88.2\% \\
+    3  & 72.5\% & 77.9\% & 89.9\% \\
+    4  & 70.1\% & 75.6\% & 87.5\% \\
+    5  & 71.6\% & 76.9\% & 88.8\% \\{}
+    6  & 72.0\% & 77.3\% & 89.1\% \\
+    7  & 70.4\% & 75.9\% & 87.9\% \\
+    8  & 71.2\% & 76.5\% & 88.6\% \\
+    9  & 72.8\% & 78.2\% & 90.1\% \\
+    10 & 70.9\% & 76.1\% & 88.0\% \\
+    11 & 71.3\% & 77.0\% & 89.0\% \\
+    12 & 71.5\% & 76.8\% & 88.7\% \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\chapter{Reference Implementation}
+\label{app:code}
+
+Listing~\ref{lst:gwc} gives the reference implementation of the GWC update and eviction
+routine used in EdgeSim, corresponding to Equation~\ref{eq:gwc-update} in
+Section~\ref{sec:gwc-design}.
+
+\begin{lstlisting}[caption={Reference GWC update and eviction routine.}, label={lst:gwc}]
+# alpha: learning rate: object size in KB
+def on_access(cache, key, size_kb, now):
+    entry = cache.get(key)
+    if entry is None:
+        entry = CacheEntry(freq=0.0, util=0.0, size_kb=size_kb)
+        cache.insert(key, entry)
+
+    entry.freq = entry.freq * (1 - ALPHA) + 1.0
+    raw_score = entry.freq / log2(size_kb + 2)
+    entry.util = (1 - ALPHA) * entry.util + ALPHA * raw_score
+    entry.last_access = now
+
+def on_insert_when_full(cache, new_key, new_entry):
+    victim_key = min(cache.keys(), key=lambda k: cache[k].util)
+    cache.evict(victim_key)
+    cache.insert(new_key, new_entry)
+\end{lstlisting}

@@ -1,0 +1,39 @@
+\section{Alternatives Considered}
+
+\subsection{Metadata Indexing Subsystem}
+We evaluated three different database architectures for storing and indexing the object metadata catalog. The major design drivers were low latency read operations, strong serializability for version checks, and automatic multi-region clustering.
+
+\begin{itemize}
+    \item \textbf{Option A: Distributed Dynamo-Style Key-Value Store (Cassandra / ScyllaDB):} This provides exceptionally high write throughput and masterless multi-region availability. However, it lacks support for multi-key ACID transactions, which are necessary for atomic rename and bucket status updates. Implementing transaction protocols at the application layer was deemed too complex and error-prone.
+    \item \textbf{Option B: Spanner-compatible Distributed SQL (CockroachDB):} This platform provides standard SQL support, strict serializability, and automated geo-partitioning \cite{rostova2023metadata}. The primary drawback is that write consensus latencies can spike under high inter-region network jitter.
+    \item \textbf{Option C: Single-Leader SQL Cluster (PostgreSQL + Read Replicas):} Highly familiar to development teams and robust tool chain support. However, it represents a single point of failure for write operations and imposes substantial cross-region network latency penalties.
+\end{itemize}
+
+\subsection{Trade-off Matrix}
+Table~\ref{tab:tradeoff_matrix} outlines the performance and complexity trade-offs for each option. Option B (CockroachDB) was selected due to its strong consistency guarantees, despite slightly higher write latencies.
+
+\begin{table}[h]
+    \centering
+    \sffamily
+    \small
+    \begin{tabularx}{\linewidth}{l C C L}
+        \toprule
+        \textbf{Metric} & \textbf{Option A (ScyllaDB)} & \textbf{Option B (CockroachDB)} & \textbf{Option C (PostgreSQL)} \\
+        \midrule
+        Consistency & Eventual & Strong (Serialisable) & Strong (Primary Only) \\
+        Read Latency & Low ($<$5ms) & Low ($<$10ms) & Low ($<$10ms) \\
+        Write Latency & Low ($<$5ms) & Medium (25--35ms) & High (cross-region) \\
+        Multi-Region & Native & Native & Manual Sharding \\
+        Operational Overhead & Medium & Low & High \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Detailed comparison matrix for the candidate metadata databases.}
+    \label{tab:tradeoff_matrix}
+\end{table}
+
+\subsection{Data Consensus Evaluation}
+For block replication consensus, we compared the Raft consensus protocol against a peer-to-peer quorum consensus system. While Raft simplifies cluster membership changes, it imposes a strict single-leader hierarchy per replica set, which bottlenecks WAN performance. By utilizing client-driven quorum writes \cite{chen2024ags}, AGS v2 allows write operations to achieve local durability within the closest geographical region before asynchronously replicating to peer regions.
+
+\begin{infobox}[Design Conclusion]
+    The combination of a strongly consistent SQL database for global metadata indices (CockroachDB) and an active-active quorum-based data plane (AGS-Store) provides the optimal balance of data integrity, failover capability, and client request performance.
+\end{infobox}

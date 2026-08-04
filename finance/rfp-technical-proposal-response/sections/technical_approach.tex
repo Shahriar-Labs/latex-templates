@@ -1,0 +1,55 @@
+\section{Technical Approach \& System Architecture}
+\label{sec:technical_approach}
+
+The proposed architecture for the Enterprise Digital Ledger \& Integration Hub is designed from the ground up to address Vertex's core requirements: high-throughput transactional integrity, strict cryptographic security, and low-latency integration.
+
+\subsection{Architectural Overview}
+Our system consists of three main logical tiers: the \textbf{Ingestion Layer}, the \textbf{Execution Middleware}, and the \textbf{Cryptographic Persistence Engine}. Figure~\ref{fig:architecture} illustrates the system components and data flow.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=0.8cm and 1.2cm,
+  align=center,
+  box/.style={draw=secondary, fill=bglight, rounded corners=3pt, thick, minimum width=2.8cm, minimum height=0.8cm, font=\scriptsize},
+  accentbox/.style={draw=accent, fill=accentlight, rounded corners=3pt, thick, minimum width=2.8cm, minimum height=0.8cm, font=\scriptsize\bfseries\color{accent}},
+  primarybox/.style={draw=primary, fill=primary!10, rounded corners=3pt, thick, minimum width=3cm, minimum height=1cm, font=\scriptsize\bfseries\color{primary}},
+  arrow/.style={-Latex, thick, color=secondary}
+]
+  % Ingestion Layer
+  \node[box] (apigw) {Vertex API Gateway \\ (TLS 1.3)};
+  \node[box, right=of apigw] (kafka) {Synapse Kafka \\ Broker};
+  
+  % Integration & Middleware Layer
+  \node[accentbox, below=0.8cm of apigw] (engine) {Synapse Hub \\ Processing Engine};
+  \node[box, right=of engine] (iso) {ISO 20022 \\ Converter};
+  
+  % Persistence Layer
+  \node[primarybox, below=0.8cm of engine] (ledger) {Nexa Core Ledger \\ (Double-Entry Core)};
+  \node[primarybox, right=of ledger] (audit) {Nexa Cryptographic \\ Audit Log};
+  
+  % Coordinates & Group Borders
+  \begin{scope}[on background layer]
+    \node[draw=secondary!30, fill=secondary!5, dashed, fit=(apigw) (kafka), inner sep=8pt, label=above:\textbf{\scriptsize Ingestion \& Interface Layer}] (group1) {};
+    \node[draw=accent!30, fill=accent!5, dashed, fit=(engine) (iso), inner sep=8pt, label=left:\textbf{\scriptsize Processing Layer\ \ }] (group2) {};
+    \node[draw=primary!30, fill=primary!5, dashed, fit=(ledger) (audit), inner sep=8pt, label=below:\textbf{\scriptsize Persistence \& Ledger Engine}] (group3) {};
+  \end{scope}
+
+  % Arrows
+  \draw[arrow] (apigw) -- (engine);
+  \draw[arrow] (kafka) -- (engine);
+  \draw[arrow] (iso) -- (engine);
+  \draw[arrow] (engine) -- (ledger);
+  \draw[arrow] (ledger) -- (audit);
+  \draw[arrow, <->] (kafka) -- (iso);
+\end{tikzpicture}
+\caption{System Deployment Architecture \& Data Flow}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Key Design Features}
+\begin{enumerate}
+  \item \textbf{Cryptographic Hashing}: Every ledger block is chained using SHA-256 hash trees (Merkle Trees) similar to blockchain structures, preventing retro-active alteration of historical data.
+  \item \textbf{Consensus Integration}: High-performance transactional consistency is maintained using an optimized Raft consensus algorithm, ensuring zero data loss in failover scenarios.
+  \item \textbf{RESTful and Event-Driven Interfaces}: Vertex applications can invoke transactional commands synchronously via REST APIs, or stream asynchronous processing jobs using Apache Kafka events.
+\end{enumerate}
