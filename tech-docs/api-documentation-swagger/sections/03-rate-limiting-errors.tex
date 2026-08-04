@@ -1,0 +1,53 @@
+\section{Rate Limiting \& Errors}
+Every response carries rate-limit headers, enforced per credential on a rolling one-hour
+window. Exceeding the limit returns \texttt{429} with a \texttt{Retry-After} header.
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}l l X@{}}
+\toprule
+\rowcolor{panelgray}
+\textbf{Header} & \textbf{Example} & \textbf{Meaning} \\
+\midrule
+\texttt{X-RateLimit-Limit} & \texttt{1000} & Requests allowed in the current window \\
+\texttt{X-RateLimit-Remaining} & \texttt{842} & Requests left before throttling \\
+\texttt{X-RateLimit-Reset} & \texttt{1750939200} & Unix timestamp the window resets \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Errors share one JSON shape across every endpoint:
+
+\begin{minipage}[t]{0.46\textwidth}
+\begin{jsonpanel}{ERROR — 404 NOT FOUND}{codebg}
+\begin{lstlisting}
+{
+  "error": {
+    "code": "resource_not_found",
+    "message": "No file 'fl_8a2c9f1e'.",
+    "request_id": "req_4d1f7b2a"
+  }
+}
+\end{lstlisting}
+\end{jsonpanel}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.5\textwidth}
+\small
+\begin{tabularx}{\linewidth}{@{}l X@{}}
+\toprule
+\rowcolor{panelgray}
+\textbf{Status} & \textbf{Error code} \\
+\midrule
+400 & \texttt{invalid\_request} \\
+401 & \texttt{unauthenticated} \\
+403 & \texttt{insufficient\_scope} \\
+404 & \texttt{resource\_not\_found} \\
+409 & \texttt{conflict} \\
+422 & \texttt{validation\_failed} \\
+429 & \texttt{rate\_limited} \\
+500 & \texttt{internal\_error} \\
+\bottomrule
+\end{tabularx}
+\end{minipage}
+\par
+
+% =================================================================

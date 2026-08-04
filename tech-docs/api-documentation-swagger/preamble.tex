@@ -1,0 +1,113 @@
+% Packages, colours and custom commands for this template.
+% API Documentation (Swagger Style) — editable & compilable online at https://letx.app
+% Compiles with pdflatex. REST API reference for a fictional cloud-storage
+% platform (Nimbus), with colour-coded HTTP method badges, parameter tables,
+% and request/response JSON payload panels.
+\usepackage[letterpaper,margin=2.1cm,top=2.1cm,bottom=2.3cm,headheight=15pt]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage[table]{xcolor}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage[skins]{tcolorbox}
+\usepackage{etoolbox}
+\usepackage{fontawesome5}
+\usepackage[hidelinks]{hyperref}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{3.5pt}
+
+% ---------------------------------------------------------------
+% Palette
+% ---------------------------------------------------------------
+\definecolor{navy}{HTML}{162447}
+\definecolor{steel}{HTML}{51617A}
+\definecolor{accent}{HTML}{0F6FDE}
+\definecolor{codebg}{HTML}{F4F6FA}
+\definecolor{panelgray}{HTML}{EEF1F6}
+\definecolor{bordergray}{HTML}{D8DEE8}
+\definecolor{postgreen}{HTML}{1E8E5A}
+\definecolor{putorange}{HTML}{C9752A}
+\definecolor{patchpurple}{HTML}{7C4DBE}
+\definecolor{deletered}{HTML}{C0392B}
+\definecolor{reqblue}{HTML}{E4EEFC}
+\definecolor{respgreen}{HTML}{E5F5EC}
+
+% ---------------------------------------------------------------
+% Section styling
+% ---------------------------------------------------------------
+\titleformat{\section}{\large\bfseries\color{navy}}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalsize\bfseries\color{navy}}{\thesubsection}{0.6em}{}
+\titlespacing*{\section}{0pt}{10pt}{4pt}
+\titlespacing*{\subsection}{0pt}{7pt}{2pt}
+
+% ---------------------------------------------------------------
+% Listings (JSON / cURL panels — plain monospace, no LaTeX escaping needed)
+% ---------------------------------------------------------------
+\lstset{
+  basicstyle=\ttfamily\scriptsize,
+  breaklines=true,
+  columns=fullflexible,
+  showstringspaces=false,
+  keepspaces=true,
+  frame=none,
+  aboveskip=1pt,
+  belowskip=1pt,
+  xleftmargin=0pt
+}
+
+% ---------------------------------------------------------------
+% HTTP method badge
+% ---------------------------------------------------------------
+\newcommand{\httpbadge}[1]{%
+  \ifstrequal{#1}{GET}{\textcolor{white}{\colorbox{accent}{\textbf{\ttfamily\footnotesize\,GET\,}}}}{}%
+  \ifstrequal{#1}{POST}{\textcolor{white}{\colorbox{postgreen}{\textbf{\ttfamily\footnotesize\,POST\,}}}}{}%
+  \ifstrequal{#1}{PUT}{\textcolor{white}{\colorbox{putorange}{\textbf{\ttfamily\footnotesize\,PUT\,}}}}{}%
+  \ifstrequal{#1}{PATCH}{\textcolor{white}{\colorbox{patchpurple}{\textbf{\ttfamily\footnotesize\,PATCH\,}}}}{}%
+  \ifstrequal{#1}{DELETE}{\textcolor{white}{\colorbox{deletered}{\textbf{\ttfamily\footnotesize\,DELETE\,}}}}{}%
+}
+
+% Endpoint header box: method badge + path + one-line summary
+\newtcolorbox{routebox}{
+  colback=panelgray,
+  colframe=bordergray,
+  boxrule=0.6pt,
+  arc=3pt,
+  left=9pt,right=9pt,top=5pt,bottom=5pt,
+  boxsep=1pt
+}
+
+% Small labelled panel for request/response bodies: #1 label  #2 body colour
+\newtcolorbox{jsonpanel}[2]{
+  colback=#2,
+  colframe=bordergray,
+  boxrule=0.5pt,
+  arc=2pt,
+  left=7pt,right=7pt,top=3pt,bottom=4pt,
+  boxsep=1pt,
+  title={#1},
+  fonttitle=\scriptsize\bfseries,
+  colbacktitle=bordergray,
+  coltitle=navy,
+  toptitle=1.5pt,bottomtitle=1.5pt
+}
+
+\newcommand{\infoicon}[1]{\textcolor{accent}{#1}}
+
+% ---------------------------------------------------------------
+% Header / footer
+% ---------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\footnotesize\color{steel}Nimbus API Reference \textbullet\ v2.3}
+\rhead{\footnotesize\color{steel}\ttfamily api.nimbus.dev/v2}
+\cfoot{\footnotesize\color{steel}Page \thepage\ \textbullet\ \href{https://letx.app}{letx.app}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{bordergray}\leaders\hrule height \headrulewidth\hfill}}

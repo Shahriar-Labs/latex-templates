@@ -1,0 +1,121 @@
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Protocol}
+
+We construct an illustrative benchmark from ImageNet-C~\citep{hendrycks2019robustness},
+Cityscapes-C, and ACDC~\citep{sakaridis2021acdc}.  A ViT-B/16 backbone is
+adapted online with batch size 16.  We set $B=0.45$, adapter ratio
+$\gamma=0.25$, temperature $\tau=0.7$, and update with AdamW at
+$2\times10^{-5}$.  Baselines are source-only inference, TENT, EATA, and full
+adaptation using the same unsupervised loss.  Classification uses top-1
+accuracy; segmentation uses mean intersection-over-union (mIoU).  Latency is
+measured after warm-up on one illustrative accelerator.  All values in this
+section are synthetic and serve only to demonstrate reporting conventions.
+
+\begin{table}[t]
+  \centering
+  \caption{Illustrative accuracy and efficiency.  Higher accuracy/mIoU is
+  better; lower latency is better.  Best values are bold.}
+  \label{tab:main}
+  \resizebox{\columnwidth}{!}{%
+  \begin{tabular}{lcccc}
+    \toprule
+    Method & IN-C $\uparrow$ & ACDC $\uparrow$ & Tokens $\downarrow$ & ms $\downarrow$\\
+    \midrule
+    Source only & 54.8 & 52.1 & 100\% & 18.4\\
+    TENT~\citep{wang2021tent} & 60.7 & 55.6 & 100\% & 27.9\\
+    EATA~\citep{niu2022efficient} & 62.3 & 57.1 & 100\% & 25.8\\
+    Full adaptation & \textbf{64.1} & \textbf{59.0} & 100\% & 29.6\\
+    \rowcolor{palegreen}
+    \method{} & 63.3 & 58.4 & \textbf{43\%} & \textbf{19.5}\\
+    \bottomrule
+  \end{tabular}}
+\end{table}
+
+\subsection{Main results}
+
+\Cref{tab:main} shows the central trade-off.  \method{} recovers 8.5 points
+over source-only inference on ImageNet-C and approaches full adaptation within
+0.8 points, while updating fewer than half of all tokens.  The latency gain is
+smaller than the token reduction because patch encoding, routing, and the task
+head remain dense.  On ACDC, the 0.6-point gap to full adaptation suggests that
+the router still identifies regions affected by adverse weather.
+
+\begin{figure}[t]
+  \centering
+  \begin{subfigure}[b]{0.48\columnwidth}
+    \centering
+    \begin{tikzpicture}[x=0.36cm,y=0.36cm]
+      \fill[mist] (0,0) rectangle (8,5);
+      \fill[ink!75] (0,0) -- (8,0) -- (6.2,2.1) -- (1.8,2.1) -- cycle;
+      \fill[cvprblue!35] (0,2.1) rectangle (8,5);
+      \fill[white!85] (0.5,3.9) circle (0.35);
+      \foreach \x/\y/\c in {0.5/0.5/accent,1.5/0.5/accent,2.5/0.5/gold,
+      3.5/0.5/coral,4.5/0.5/coral,5.5/0.5/gold,6.5/0.5/accent,7.5/0.5/accent,
+      0.5/1.5/accent,1.5/1.5/gold,2.5/1.5/coral,3.5/1.5/coral,
+      4.5/1.5/coral,5.5/1.5/coral,6.5/1.5/gold,7.5/1.5/accent,
+      0.5/2.5/accent,1.5/2.5/accent,2.5/2.5/gold,3.5/2.5/gold,
+      4.5/2.5/gold,5.5/2.5/gold,6.5/2.5/accent,7.5/2.5/accent}
+      {\fill[\c,opacity=.42] (\x-.43,\y-.43) rectangle (\x+.43,\y+.43);}
+    \end{tikzpicture}
+    \caption{Localized road shift}
+  \end{subfigure}\hfill
+  \begin{subfigure}[b]{0.48\columnwidth}
+    \centering
+    \begin{tikzpicture}[x=0.36cm,y=0.36cm]
+      \fill[cvprblue!20] (0,0) rectangle (8,5);
+      \fill[ink!70] (0,0) rectangle (8,1.8);
+      \foreach \x in {0.5,1.5,...,7.5}
+        \foreach \y in {0.5,1.5,...,4.5}
+          {\pgfmathparse{int(mod(2*\x+3*\y,5))}
+           \ifnum\pgfmathresult<2
+             \fill[coral,opacity=.40] (\x-.43,\y-.43) rectangle (\x+.43,\y+.43);
+           \else
+             \fill[gold,opacity=.32] (\x-.43,\y-.43) rectangle (\x+.43,\y+.43);
+           \fi}
+    \end{tikzpicture}
+    \caption{Global sensor noise}
+  \end{subfigure}
+  \vspace{-2pt}
+  \begin{minipage}{\columnwidth}
+    \centering\scriptsize
+    \textcolor{accent}{\rule{7pt}{7pt}} reuse \quad
+    \textcolor{gold}{\rule{7pt}{7pt}} adapter \quad
+    \textcolor{coral}{\rule{7pt}{7pt}} full block
+  \end{minipage}
+  \caption{Illustrative routing maps.  Compute follows a localized shift
+  (left), but widespread noise pushes many tokens to expensive paths (right).}
+  \label{fig:routing}
+\end{figure}
+
+\subsection{Ablation and budget sweep}
+
+Removing augmentation agreement increases confident mistakes; removing
+novelty causes the cache to persist after abrupt scene changes
+(\cref{tab:ablation}).  A global threshold saves compute but under-serves rare
+classes.  The complete router gives the strongest accuracy at similar cost.
+
+\begin{table}[t]
+  \centering
+  \caption{Synthetic ablation on ImageNet-C.  ``Full route'' is the fraction
+  of tokens assigned to the most expensive path.}
+  \label{tab:ablation}
+  \begin{tabular}{lccc}
+    \toprule
+    Variant & Acc. $\uparrow$ & ECE $\downarrow$ & Full route $\downarrow$\\
+    \midrule
+    Global threshold & 61.8 & 6.4 & 24\%\\
+    $-$ agreement & 62.1 & 7.0 & 22\%\\
+    $-$ novelty & 62.5 & 5.9 & 20\%\\
+    \rowcolor{palegreen}
+    Complete \method{} & \textbf{63.3} & \textbf{4.7} & \textbf{19\%}\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Varying $B$ from 0.30 to 0.70 yields accuracies of 61.9, 63.3, and 63.8,
+respectively.  The diminishing return above $B=0.45$ indicates that the router
+ranks useful tokens rather than uniformly degrading the network.
+
+% -----------------------------------------------------------------------------

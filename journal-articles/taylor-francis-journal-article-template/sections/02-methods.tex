@@ -1,0 +1,85 @@
+\section{Methods}
+
+\subsection{Study design}
+
+We generated 300 synthetic analysis projects, each representing a common
+read--transform--model--report workflow. Every project contained a tabular input,
+a deterministic preprocessing stage, a regression model, and a rendered summary
+report. Projects were allocated equally to three environment-documentation
+strategies:
+
+\begin{description}[style=nextline]
+  \item[Fully pinned]
+  Direct and transitive dependency versions, operating-system metadata, and a
+  cryptographic lock file were recorded.
+
+  \item[Partially specified]
+  Direct dependencies and their minimum versions were recorded, but transitive
+  versions and system libraries were allowed to vary.
+
+  \item[Unpinned]
+  Package names were recorded without version constraints; the most recent
+  compatible packages were selected at rebuild time.
+\end{description}
+
+Each project was rebuilt 100 times under perturbations representing dependency
+updates, changes in system libraries, and processor-level numerical variation.
+Half of the projects in each strategy recorded an explicit random seed. The
+simulation therefore contained 30,000 rebuild attempts. Figure~\ref{fig:workflow}
+summarizes the design.
+
+\begin{figure}[tbp]
+  \centering
+  \begin{tikzpicture}[
+    node distance=8mm and 8mm,
+    box/.style={draw=tandfblue,rounded corners=2pt,fill=tandfblue!6,
+      minimum width=3.1cm,minimum height=1.15cm,align=center,font=\small},
+    decision/.style={draw=tandfteal,rounded corners=2pt,fill=tandfteal!7,
+      minimum width=3.1cm,minimum height=1.15cm,align=center,font=\small},
+    arrow/.style={-{Latex[length=2.5mm]},thick,tandfblue}
+  ]
+    \node[box] (projects) {Generate 300\\synthetic projects};
+    \node[decision,right=of projects] (strategy) {Assign environment\\documentation strategy};
+    \node[box,right=of strategy] (rebuild) {Run 100 perturbed\\rebuilds per project};
+    \node[decision,below=of rebuild] (measure) {Measure execution\\and numerical deviation};
+    \node[box,left=of measure] (compare) {Estimate effects and\\uncertainty intervals};
+    \draw[arrow] (projects) -- (strategy);
+    \draw[arrow] (strategy) -- (rebuild);
+    \draw[arrow] (rebuild) -- (measure);
+    \draw[arrow] (measure) -- (compare);
+  \end{tikzpicture}
+  \caption{Robustness-testing workflow used in the simulation study. Every
+  synthetic project was evaluated repeatedly under controlled environmental
+  perturbations.}
+  \label{fig:workflow}
+\end{figure}
+
+\subsection{Outcomes}
+
+The primary binary outcome, execution success, indicated that the pipeline
+completed and produced every declared output. For successful rebuilds, numerical
+deviation measured the scaled absolute difference between a rebuilt estimate
+$\hat{\theta}_{ir}$ and the project's reference estimate $\hat{\theta}_{i0}$:
+
+\begin{equation}
+  d_{ir} =
+  \frac{\left|\hat{\theta}_{ir}-\hat{\theta}_{i0}\right|}
+       {\max\!\left(\left|\hat{\theta}_{i0}\right|,\epsilon\right)},
+  \qquad \epsilon = 10^{-8},
+  \label{eq:deviation}
+\end{equation}
+
+where $i$ indexes projects and $r$ indexes rebuilds. We report $100d_{ir}$ as a
+percentage. A rebuild was classified as substantively reproduced when it both
+executed successfully and had $d_{ir}<0.01$.
+
+\subsection{Statistical analysis}
+
+Execution success was summarized by strategy with project-clustered bootstrap
+intervals based on 2,000 resamples. A logistic regression estimated contrasts
+between documentation strategies. Among successful rebuilds, a log-linear model
+estimated associations between numerical deviation, environment strategy, and
+seed control. We included their interaction to test whether the two safeguards
+were redundant. All intervals are two-sided 95\% uncertainty intervals. Because
+the study used synthetic projects and no human or animal data, institutional
+ethics review was not applicable.

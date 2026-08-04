@@ -1,0 +1,80 @@
+\section{Files}
+Endpoints for uploading, retrieving, updating, and removing files.
+
+\subsection{List \& retrieve files}
+\begin{routebox}
+\httpbadge{GET}\hspace{6pt}\texttt{\textbf{/v2/files}}\hspace{10pt}
+\httpbadge{GET}\hspace{6pt}\texttt{\textbf{/v2/files/\{file\_id\}}}\\[3pt]
+{\small List files visible to the caller (most recently modified first), or fetch one
+file's full metadata, including \texttt{download\_url} and \texttt{checksum\_sha256}.}
+\end{routebox}
+
+{\small\textbf{Query parameters (list only)}}
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}p{2.3cm}p{1.3cm}p{1.7cm}X@{}}
+\toprule
+\rowcolor{panelgray}
+\textbf{Name} & \textbf{Type} & \textbf{Required} & \textbf{Description} \\
+\midrule
+\texttt{folder\_id} & string & No & Restrict results to one folder \\
+\texttt{limit} & integer & No & Page size, 1--100, default 20 \\
+\texttt{cursor} & string & No & Opaque pagination cursor from a prior response \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{jsonpanel}{RESPONSE — 200 OK (single file object)}{respgreen}
+\begin{lstlisting}
+{
+  "id": "fl_8a2c9f1e6d4b",
+  "name": "q3-roadmap.pdf",
+  "size_bytes": 482913,
+  "mime_type": "application/pdf",
+  "folder_id": "fd_2b7e1c9a",
+  "modified_at": "2026-06-18T15:41:22Z"
+}
+\end{lstlisting}
+\end{jsonpanel}
+
+\subsection{Upload, update, and delete}
+\begin{routebox}
+\httpbadge{POST}\hspace{6pt}\texttt{\textbf{/v2/files}}\\[3pt]
+{\small Creates a file record and returns a pre-signed upload URL. Send the raw bytes to
+\texttt{upload\_url} within 15 minutes.}
+\end{routebox}
+
+\begin{minipage}[t]{0.48\textwidth}
+\begin{jsonpanel}{REQUEST BODY}{reqblue}
+\begin{lstlisting}
+{
+  "name": "q3-roadmap.pdf",
+  "folder_id": "fd_2b7e1c9a",
+  "mime_type": "application/pdf",
+  "size_bytes": 482913
+}
+\end{lstlisting}
+\end{jsonpanel}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{jsonpanel}{RESPONSE — 201 CREATED}{respgreen}
+\begin{lstlisting}
+{
+  "id": "fl_8a2c9f1e6d4b",
+  "upload_url": "https://upload...",
+  "expires_at": "2026-06-18T16:00Z"
+}
+\end{lstlisting}
+\end{jsonpanel}
+\end{minipage}
+\par
+
+\begin{routebox}
+\httpbadge{PATCH}\hspace{6pt}\texttt{\textbf{/v2/files/\{file\_id\}}}\hspace{10pt}
+\httpbadge{DELETE}\hspace{6pt}\texttt{\textbf{/v2/files/\{file\_id\}}}\\[3pt]
+{\small \texttt{PATCH} renames or moves a file (\texttt{\{"name": ..., "folder\_id":
+...\}}), returning \texttt{200} with the updated object. \texttt{DELETE} moves the file to
+the trash (purged after 30 days); returns \texttt{204 No Content}. Pass
+\texttt{?permanent=true} to skip the trash (requires \texttt{files:hard\_delete}).}
+\end{routebox}
+
+% =================================================================

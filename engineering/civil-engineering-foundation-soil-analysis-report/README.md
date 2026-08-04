@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Civil Engineering Foundation Soil Analysis Report LaTeX template — foundation soil analysis report civil engineering latex. Elegant, compile-tested, editable online at letx.app.**
+**Civil Engineering Foundation Soil Analysis Report LaTeX template — Civil Engineering Foundation Soil Analysis Report. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/engineering/civil-engineering-foundation-soil-analysis-report)**, with real-time collaboration and one-second compiles.
 

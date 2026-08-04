@@ -4,26 +4,24 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Modern freelance invoice LaTeX template — logo block + bold INVOICE header, From/Bill-To blocks, booktabs line items, accent-highlighted totals, and payment-terms & bank-details footer. One page.**
+**Freelance Invoice LaTeX template — Freelance Invoice. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/miscellaneous/freelance-invoice)**, with real-time collaboration and one-second compiles.
 
 ![Freelance Invoice preview](preview.png)
 
 ## Features
-- Bold INVOICE header + logo placeholder block
-- From / Bill-To address blocks
-- Itemized booktabs line-items table
-- Accent-highlighted subtotal / tax / total
-- Payment terms + bank details footer; one page
+- Elegant, modern design
+- Compile-tested
+- Fully editable sample content
 
 ## Use it online (recommended)
 Open **[Freelance Invoice on LetX »](https://letx.app/templates/miscellaneous/freelance-invoice)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/freelance-invoice
+git clone https://github.com/Shahriar-Labs/freelance-invoice.git
+cd freelance-invoice
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

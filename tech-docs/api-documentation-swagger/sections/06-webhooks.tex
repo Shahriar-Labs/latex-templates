@@ -1,0 +1,50 @@
+\section{Webhooks}
+Subscribe to workspace events instead of polling. Nimbus signs every delivery with an
+HMAC-SHA256 signature in the \texttt{X-Nimbus-Signature} header.
+
+\begin{routebox}
+\httpbadge{POST}\hspace{6pt}\texttt{\textbf{/v2/webhooks}}\hspace{10pt}
+\httpbadge{DELETE}\hspace{6pt}\texttt{\textbf{/v2/webhooks/\{webhook\_id\}}}\\[3pt]
+{\small Register an HTTPS endpoint and event list, or unregister one (\texttt{204 No
+Content}).}
+\end{routebox}
+
+\begin{minipage}[t]{0.48\textwidth}
+\begin{jsonpanel}{REQUEST BODY}{reqblue}
+\begin{lstlisting}
+{
+  "url": "https://hooks.example-crm.io/nimbus",
+  "events": ["file.created", "file.deleted"],
+  "secret": "whsec_3f9a7c2e"
+}
+\end{lstlisting}
+\end{jsonpanel}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.48\textwidth}
+\begin{jsonpanel}{DELIVERY — file.created}{codebg}
+\begin{lstlisting}
+{
+  "event": "file.created",
+  "occurred_at": "2026-06-18T15:41Z",
+  "data": { "id": "fl_8a2c9f1e6d4b" }
+}
+\end{lstlisting}
+\end{jsonpanel}
+\end{minipage}
+\par
+
+\begin{center}
+\begin{tabularx}{0.85\linewidth}{@{}l X@{}}
+\toprule
+\rowcolor{panelgray}
+\textbf{Event} & \textbf{Fires when\dots} \\
+\midrule
+\texttt{file.created} & A new file finishes uploading \\
+\texttt{file.deleted} & A file is trashed or permanently deleted \\
+\texttt{folder.shared} & A folder's sharing settings change \\
+\texttt{quota.exceeded} & The workspace storage quota is reached \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+% =================================================================

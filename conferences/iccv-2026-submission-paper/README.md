@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**ICCV 2026 Submission Paper LaTeX template — iccv latex template. Elegant, compile-tested, editable online at letx.app.**
+**ICCV 2026 Submission Paper LaTeX template — ICCV 2026 Submission Paper. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/conferences/iccv-2026-submission-paper)**, with real-time collaboration and one-second compiles.
 

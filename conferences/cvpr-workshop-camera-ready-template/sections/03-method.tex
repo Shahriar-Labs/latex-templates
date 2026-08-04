@@ -1,0 +1,91 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{Setting}
+
+Let a pretrained transformer $f_{\theta}$ receive an unlabelled stream
+$x_1,x_2,\ldots$.  Its patch encoder produces
+$Z_t=[z_{t,1},\ldots,z_{t,N}]\in\R^{N\times d}$.  At test time we optimize an
+unsupervised loss $\mathcal{L}_{\mathrm{tta}}$ but constrain average compute to
+a fraction $B$ of a full forward-and-update pass.
+
+For each token $i$, the router chooses action
+$a_{t,i}\in\{0,1,2\}$: reuse a detached cached feature ($0$), apply a bottleneck
+adapter ($1$), or execute the full trainable block ($2$).  With normalized costs
+$c=[0,\gamma,1]$, the routed representation is
+\begin{equation}
+ \tilde z_{t,i}=\sum_{k=0}^{2}p_{t,i}^{(k)}h_k(z_{t,i}), \qquad
+ p_{t,i}=\operatorname{softmax}\!\left(r_{\phi}(u_{t,i})/\tau\right),
+ \label{eq:routing}
+\end{equation}
+where $h_0,h_1,h_2$ are the three paths and a straight-through Gumbel sample is
+used during training.  Hard $\argmax$ routing is used at inference.
+
+\begin{figure}[t]
+  \centering
+  \begin{tikzpicture}[
+    x=1cm,y=1cm,>=Latex,font=\scriptsize,
+    box/.style={rounded corners=2pt,draw=ink,thick,minimum height=0.62cm,
+                align=center,fill=white},
+    arr/.style={->,thick,draw=ink},
+    route/.style={diamond,aspect=1.6,draw=accent,thick,fill=palegreen,
+                  align=center,inner sep=1.2pt}
+  ]
+    \node[box,fill=mist,minimum width=1.2cm] (frame) at (0,0) {target\\frame};
+    \node[box,minimum width=1.3cm] (patch) at (1.75,0) {patch\\encoder};
+    \node[route] (router) at (3.55,0) {confidence\\router};
+    \node[box,fill=mist,minimum width=1.2cm] (reuse) at (5.55,0.9) {reuse\\cache};
+    \node[box,fill=palegreen,minimum width=1.2cm] (adapt) at (5.55,0) {light\\adapter};
+    \node[box,fill=palecoral,minimum width=1.2cm] (full) at (5.55,-0.9) {full\\block};
+    \node[box,fill=gold!28,minimum width=1.05cm] (head) at (7.25,0) {task\\head};
+    \draw[arr] (frame)--(patch);
+    \draw[arr] (patch)--(router);
+    \draw[arr] (router)--node[above,sloped]{stable} (reuse);
+    \draw[arr] (router)--(adapt);
+    \draw[arr] (router)--node[below,sloped]{novel} (full);
+    \draw[arr] (reuse.east)--(head.west);
+    \draw[arr] (adapt.east)--(head.west);
+    \draw[arr] (full.east)--(head.west);
+    \begin{scope}[on background layer]
+      \node[fit=(reuse)(adapt)(full),fill=mist!35,rounded corners=4pt,
+            inner sep=5pt] {};
+    \end{scope}
+  \end{tikzpicture}
+  \caption{\method{} routes stable tokens through a cached path and allocates
+  more adaptation compute to uncertain or novel regions.}
+  \label{fig:pipeline}
+\end{figure}
+
+\subsection{Confidence-aware routing features}
+
+The router input $u_{t,i}$ contains three normalized signals.  First,
+predictive entropy $e_{t,i}$ measures local uncertainty.  Second, consistency
+$q_{t,i}$ is the Jensen--Shannon divergence between predictions from weakly
+and strongly augmented views.  Third, temporal novelty compares the current
+token with its nearest cached predecessor:
+\begin{equation}
+ n_{t,i}=1-\frac{z_{t,i}^{\top}\bar z_{t-1,i}}
+ {\lVert z_{t,i}\rVert_2\lVert\bar z_{t-1,i}\rVert_2+\epsilon},
+ \qquad u_{t,i}=[e_{t,i},q_{t,i},n_{t,i}].
+ \label{eq:novelty}
+\end{equation}
+An exponential moving average calibrates every feature online.  This prevents
+one signal from dominating as the stream changes.
+
+\subsection{Budgeted adaptation objective}
+
+The task loss is paired with compute and balance terms:
+\begin{align}
+ \mathcal{L}={}&\mathcal{L}_{\mathrm{tta}}
+ +\lambda_b\left(\frac{1}{N}\sum_{i,k}p_{t,i}^{(k)}c_k-B\right)^2
+ +\lambda_h\frac{1}{N}\sum_i H(p_{t,i}).
+ \label{eq:objective}
+\end{align}
+The budget penalty targets rather than merely minimizes compute; the entropy
+term, annealed to zero, avoids premature collapse to one route.  We update
+normalization and adapter parameters for actions 1--2, the final transformer
+block for action 2, and router parameters in both cases.  The cache holds
+detached features, so gradients never cross frames.  The complete decision
+path is summarized in \cref{fig:pipeline}.
+
+% -----------------------------------------------------------------------------

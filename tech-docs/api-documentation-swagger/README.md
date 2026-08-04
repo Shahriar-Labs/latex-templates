@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**API Documentation (Swagger Style) LaTeX template — api documentation latex template. Elegant, compile-tested, editable online at letx.app.**
+**API Documentation (Swagger Style) LaTeX template — API Documentation (Swagger Style). Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/tech-docs/api-documentation-swagger)**, with real-time collaboration and one-second compiles.
 
@@ -12,7 +12,7 @@ Edit and compile this template instantly in your browser — no LaTeX install �
 
 ## Features
 - Elegant, modern design
-- Compile-tested (pdflatex)
+- Compile-tested
 - Fully editable sample content
 
 ## Use it online (recommended)

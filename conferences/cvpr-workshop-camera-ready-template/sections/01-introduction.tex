@@ -1,0 +1,30 @@
+\section{Introduction}
+\label{sec:intro}
+
+Visual models deployed in the wild encounter blur, weather, sensor changes,
+and evolving scene statistics.  Test-time adaptation (TTA) updates a model
+using unlabelled deployment data and can recover substantial accuracy under
+shift~\citep{wang2021tent,niu2022efficient}.  Yet most methods process and
+update every patch uniformly.  This is a poor match for many real scenes: rain
+may obscure only the upper image, a reflection may occupy one window, and
+large background regions may remain stable across adjacent video frames.
+
+Token pruning makes transformer inference cheaper~\citep{rao2021dynamicvit,
+bolya2023tome}, but pruning alone does not decide where adaptation is useful.
+Conversely, current TTA objectives determine \emph{how} to update a model, not
+\emph{which} spatial evidence deserves the computation.  We connect these
+ideas with a small router that selects a compute path for every token.  The
+result, \method, concentrates adaptation on uncertain or novel regions while
+preserving reliable representations.
+
+Our contributions are threefold:
+\begin{itemize}
+  \item We formulate test-time token routing as budgeted three-way assignment
+        among reuse, adapter, and full-transformer paths.
+  \item We combine calibrated entropy, view consistency, and temporal novelty
+        in a stable routing score that requires no target labels.
+  \item We report accuracy--efficiency trade-offs, controlled ablations, and
+        failure cases in a reproducible camera-ready presentation.
+\end{itemize}
+
+% -----------------------------------------------------------------------------
