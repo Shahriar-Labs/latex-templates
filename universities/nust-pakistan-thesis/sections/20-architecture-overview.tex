@@ -1,0 +1,26 @@
+\section{Architecture Overview}
+AeroCycle is organized as two cooperating layers on each node, as shown in
+Figure~\ref{fig:arch}: an application-layer \emph{Volatility Estimator} that consumes raw
+sensor readings and produces a target sleep interval, and a MAC-layer \emph{Negotiation
+Module} that reconciles this target against link-quality feedback before committing to a
+sleep decision.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  block/.style={draw=nustgreen,thick,rounded corners=2pt,fill=nustmist,minimum width=3.4cm,minimum height=1.1cm,align=center,font=\small},
+  arr/.style={-latex,thick,nustslate}
+]
+\node[block] (sensor) {Sensor\\Sampling};
+\node[block,right=1.4cm of sensor] (vol) {Volatility\\Estimator};
+\node[block,right=1.4cm of vol,fill=nustgold!25,draw=nustgold!70!black] (neg) {Negotiation\\Module};
+\node[block,below=1.1cm of neg] (radio) {LoRa\\Radio};
+
+\draw[arr] (sensor) -- (vol);
+\draw[arr] (vol) -- node[above,font=\scriptsize]{target interval} (neg);
+\draw[arr] (neg) -- (radio);
+\draw[arr] (radio.west) -- ++(-3.9,0) |- node[left,pos=0.75,font=\scriptsize]{link SNR} (neg.south);
+\end{tikzpicture}
+\caption{AeroCycle two-layer architecture: application-layer volatility estimation feeds a MAC-layer negotiation module.}
+\label{fig:arch}
+\end{figure}

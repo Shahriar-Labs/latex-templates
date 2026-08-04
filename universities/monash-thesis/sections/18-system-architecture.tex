@@ -1,0 +1,26 @@
+\section{System Architecture}
+
+The candidate microgrid comprises a PV array, a lithium-ion BESS, an aggregated local load, and a point of common coupling with the utility grid, coordinated by the proposed adaptive MPC controller. Figure~\ref{fig:architecture} illustrates the information flow between components.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  comp/.style={rectangle, rounded corners, draw=monashblue, thick, fill=white,
+               minimum width=2.7cm, minimum height=1.1cm, align=center, font=\small},
+  ctrl/.style={rectangle, rounded corners, draw=sandgold, thick, fill=sandgold!12,
+               minimum width=3.4cm, minimum height=1.3cm, align=center, font=\small\bfseries}
+]
+\node[comp] (pv) {PV Array};
+\node[comp, below=0.9cm of pv] (bess) {Battery Storage};
+\node[comp, below=0.9cm of bess] (load) {Local Load};
+\node[ctrl, right=2.8cm of bess] (mpc) {Adaptive MPC\\ Controller};
+\node[comp, right=2.8cm of mpc] (grid) {Utility Grid};
+\draw[->, thick] (pv) -- (mpc);
+\draw[->, thick] (bess) -- (mpc);
+\draw[->, thick] (load) -- (mpc);
+\draw[->, thick] (mpc) -- (grid);
+\draw[->, thick, monashteal, dashed] (mpc.north) to[bend left=30] (bess.east);
+\end{tikzpicture}
+\caption{System architecture: information and setpoint flow between components.}
+\label{fig:architecture}
+\end{figure}

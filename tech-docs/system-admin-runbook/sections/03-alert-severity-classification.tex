@@ -1,0 +1,20 @@
+\section{Alert Severity Classification}
+
+Every incident must be assigned a severity level at the moment of declaration. The severity determines response time commitments, escalation paths, and post-incident review requirements.
+
+\medskip
+\begin{tabularx}{\textwidth}{cll>{\raggedright\arraybackslash}X}
+\toprule
+\textbf{Level} & \textbf{Label} & \textbf{Response} & \textbf{Definition \& Examples} \\
+\midrule
+\rowcolor{alertred!15} SEV-1 & Critical & $<5$ minutes & Complete service outage affecting multiple regions or all customers. Data loss or corruption in progress. Security breach with active exploitation. \textbf{Example:} ncp-api-gateway returning 503 across all zones. \\
+\rowcolor{amber!15} SEV-2 & Major     & $<15$ minutes & Significant service degradation. Partial outage affecting a single region or a subset of customers. \textbf{Example:} ncp-auth-service latency above 5 seconds in eu-west. \\
+\rowcolor{infoblue!10} SEV-3 & Minor     & $<1$ hour   & Isolated issue affecting a single customer or non-critical component. No data loss risk. \textbf{Example:} ncp-object-store slow listing for one tenant bucket. \\
+SEV-4 & Informational & $<24$ hours & Cosmetic issue, planned maintenance notification, or documentation gap. No customer impact. \textbf{Example:} Monitoring dashboard showing stale CPU metrics for ncp-message-queue. \\
+\bottomrule
+\end{tabularx}
+
+\vspace{4pt}
+\begin{critbox}
+\textbf{SEV-1 Declaration Authority:} Only the on-call Lead SRE or Infrastructure Manager may declare or downgrade a SEV-1 incident. Any engineer may declare SEV-2 through SEV-4. All severity changes must be logged in the incident channel with justification.
+\end{critbox}

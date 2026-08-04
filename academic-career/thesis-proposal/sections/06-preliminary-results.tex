@@ -1,0 +1,36 @@
+\section{Preliminary Results}
+We implemented a proof-of-concept version of our profiler and NAS engine on an embedded SoC containing an ARM Cortex-A72 CPU and a Mali-G71 GPU. Preliminary results show that our co-design approach yields a $1.8\times$ speedup compared to standard single-device search baselines (like MobileNetV3) while maintaining equivalent classification accuracy on ImageNet. Figure~\ref{fig:pipeline} outlines the workflow of our proposed three-stage pipeline.
+
+\begin{figure}[htbp]
+    \centering
+    \begin{tikzpicture}[
+        node distance=1.2cm and 2cm,
+        block/.style={
+            rectangle,
+            draw=accent,
+            fill=accent!5,
+            very thick,
+            rounded corners=4pt,
+            align=center,
+            text width=3.3cm,
+            minimum height=1.2cm,
+            font=\small\bfseries
+        },
+        arrow/.style={
+            -{Stealth[scale=1.0]},
+            thick,
+            draw=accent
+        }
+    ]
+        % Nodes
+        \node[block] (step1) {1. Design Space\\Exploration};
+        \node[block, right=of step1] (step2) {2. Hardware-Aware\\Compilation};
+        \node[block, right=of step2] (step3) {3. Dynamic Runtime\\Scheduling};
+        
+        % Arrow lines
+        \draw[arrow] (step1) -- (step2);
+        \draw[arrow] (step2) -- (step3);
+    \end{tikzpicture}
+    \caption{Overview of the proposed three-stage co-design and scheduling framework.}
+    \label{fig:pipeline}
+\end{figure}

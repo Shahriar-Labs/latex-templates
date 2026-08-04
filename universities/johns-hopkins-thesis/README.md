@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Johns Hopkins Thesis LaTeX template — johns hopkins thesis latex template. Elegant, compile-tested, editable online at letx.app.**
+**Johns Hopkins Thesis LaTeX template — Johns Hopkins Thesis. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/universities/johns-hopkins-thesis)**, with real-time collaboration and one-second compiles.
 

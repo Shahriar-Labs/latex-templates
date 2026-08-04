@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**NSERC Grant Proposal LaTeX template — nserc grant proposal latex. Elegant, compile-tested, editable online at letx.app.**
+**NSERC Grant Proposal LaTeX template — NSERC Grant Proposal. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/grants/nserc-grant-proposal)**, with real-time collaboration and one-second compiles.
 
@@ -12,7 +12,7 @@ Edit and compile this template instantly in your browser — no LaTeX install �
 
 ## Features
 - Elegant, modern design
-- Compile-tested (pdflatex)
+- Compile-tested
 - Fully editable sample content
 
 ## Use it online (recommended)

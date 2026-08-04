@@ -1,0 +1,91 @@
+\section{Impact Assessment}
+
+\subsection{Blast Radius}
+
+\setlength{\parskip}{0pt}
+\begin{tabularx}{\linewidth}{@{}
+  >{\bfseries\small}l
+  @{\hspace{6mm}}
+  >{\small\centering\arraybackslash}p{24mm}
+  @{\hspace{4mm}}
+  >{\small\raggedright\arraybackslash}X
+  @{}}
+\toprule
+\small\bfseries\color{ink}Component &
+\small\bfseries\color{ink}Severity &
+\small\bfseries\color{ink}Details \\
+\midrule
+Payment Processing API  & \badge{sev1}{Critical}  & 94\% of requests returning HTTP 503; \$183k revenue loss\\[3pt]
+Checkout Service        & \badge{sev1}{Critical}  & Unable to initiate or complete transactions; cart abandonment spike\\[3pt]
+Order Management Svc    & \badge{sev2}{High}      & Write operations queued; 12-minute backlog at peak\\[3pt]
+Fraud Detection Engine  & \badge{sev2}{High}      & Fallback mode activated; 340 transactions processed without scoring\\[3pt]
+Notification Service    & \badge{sev3}{Medium}    & Email/SMS delays up to 18 min; no data loss\\[3pt]
+Analytics Pipeline      & \badge{sev3}{Medium}    & 47-minute data gap in Redshift; backfill completed post-incident\\[3pt]
+Read Replica Queries    & \pill{statusdone}{None} & Unaffected; read traffic shifted automatically\\[3pt]
+Static Assets / CDN     & \pill{statusdone}{None} & Fully available throughout the incident\\
+\bottomrule
+\end{tabularx}
+\setlength{\parskip}{4pt plus 1pt}
+
+\vspace{4pt}
+
+\subsection{Quantified Impact}
+
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\small\color{accent}}l@{\hspace{8mm}}>{\small\raggedright\arraybackslash}X@{}}
+Users Affected    & $\approx$47\,000 unique sessions unable to complete payment\\
+Duration          & 2 hours 43 minutes (03:17 -- 06:00 UTC)\\
+Revenue Impact    & \$183\,000 estimated (based on avg.\ transaction value \$38.70)\\
+Cloud Cost Overrun& \$24\,000 (emergency Lambda concurrency + RDS multi-AZ resync)\\
+SLA Breach        & Yes --- 99.95\% monthly SLA violated (actual: 99.62\%)\\
+Customer Tickets  & 1\,247 tickets filed; 94 escalated to Tier-2\\
+\end{tabularx}
+
+% ── Blast-Radius Diagram ─────────────────────────────────────
+\subsection{Service Dependency Blast-Radius Diagram}
+
+\begin{center}
+\begin{tikzpicture}[
+    node distance=8mm and 14mm,
+    svc/.style={rounded corners=4pt, minimum width=26mm, minimum height=8mm,
+                font=\tiny\bfseries, align=center, draw, line width=0.8pt},
+    arr/.style={-{Stealth[length=4pt]}, line width=0.8pt},
+]
+
+  % DB (epicentre)
+  \node[svc, fill=sev1!20!white, draw=sev1, text=sev1!60!black]
+    (db) {Aurora Primary\\\tiny(EPICENTRE)};
+
+  % API layer
+  \node[svc, fill=sev1!10!white, draw=sev1, right=22mm of db]
+    (api) {Payment API\\\tiny 94\% error};
+
+  % Downstream
+  \node[svc, fill=sev1!10!white, draw=sev1, above right=6mm and 18mm of api]
+    (checkout) {Checkout Svc\\\tiny Critical};
+
+  \node[svc, fill=sev2!15!white, draw=sev2, right=18mm of api]
+    (order) {Order Mgmt\\\tiny High};
+
+  \node[svc, fill=sev2!15!white, draw=sev2, below right=6mm and 18mm of api]
+    (fraud) {Fraud Engine\\\tiny High / Fallback};
+
+  % Unaffected
+  \node[svc, fill=statusdone!15!white, draw=statusdone, below=10mm of db]
+    (replica) {Read Replica\\\tiny Unaffected};
+
+  \node[svc, fill=sev3!20!white, draw=sev3, above=10mm of db]
+    (notif) {Notification\\\tiny Medium};
+
+  % Arrows
+  \draw[arr, color=sev1]   (db) -- (api);
+  \draw[arr, color=sev1]   (api) -- (checkout);
+  \draw[arr, color=sev2]   (api) -- (order);
+  \draw[arr, color=sev2]   (api) -- (fraud);
+  \draw[arr, color=sev3]   (api) -- (notif);
+  \draw[arr, color=statusdone, dashed] (db) -- (replica)
+    node[midway, font=\tiny, right, color=muted]{auto-failover};
+
+\end{tikzpicture}
+\end{center}
+
+% ── Root Cause Analysis ──────────────────────────────────────

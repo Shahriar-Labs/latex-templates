@@ -1,0 +1,82 @@
+\section{Thesis Outline}
+
+The remainder of this thesis is organised as follows. Chapter~2 reviews
+the relevant literature on deep neural network architectures, model
+compression techniques, and hardware-aware machine learning. Chapter~3
+presents our proposed RANO framework in detail, including the
+mathematical formulation of the joint optimisation problem and the
+alternating minimisation algorithm. Chapter~4 describes our experimental
+methodology and presents comprehensive results across multiple benchmarks
+and hardware platforms. Chapter~5 discusses the implications of our
+findings, limitations of the current approach, and promising directions
+for future research. Finally, Chapter~6 concludes the thesis with a
+summary of key contributions.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  neuron/.style={circle,draw,minimum size=10mm,inner sep=0pt,fill=tsinghulight,draw=tsinghuapurple!60,line width=0.5pt},
+  edge/.style={->,>=stealth,line width=0.4pt,color=grayrule},
+  >=stealth
+]
+  % Input layer
+  \foreach \i in {1,2,3} {
+    \node[neuron] (I\i) at (0,-\i*1.8) {};
+  }
+  \node at (0,0.4) {\small Input};
+
+  % Hidden layer
+  \foreach \i in {1,2,3,4} {
+    \node[neuron] (H\i) at (3,-\i*1.5+0.15) {};
+  }
+  \node at (3,0.4) {\small Hidden};
+
+  % Output layer
+  \foreach \i in {1,2} {
+    \node[neuron] (O\i) at (6,-\i*2.0+0.3) {};
+  }
+  \node at (6,0.4) {\small Output};
+
+  % Connections input→hidden
+  \foreach \i in {1,2,3} {
+    \foreach \j in {1,2,3,4} {
+      \draw[edge] (I\i) -- (H\j);
+    }
+  }
+
+  % Connections hidden→output
+  \foreach \i in {1,2,3,4} {
+    \foreach \j in {1,2} {
+      \draw[edge] (H\i) -- (O\j);
+    }
+  }
+\end{tikzpicture}
+\caption{A feed-forward neural network with one hidden layer. Modern
+deep architectures stack dozens or hundreds of such layers, dramatically
+increasing the computational cost of both training and inference.}
+\label{fig:nn}
+\end{figure}
+
+\begin{table}[htbp]
+\centering
+\caption{Resource constraints of representative edge computing platforms.
+Memory figures refer to RAM available to application code; peak compute
+is measured in FP32 GFLOPS where applicable.}
+\label{tab:devices}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Platform} & \textbf{RAM (GB)} & \textbf{Peak Compute} & \textbf{Power (W)} \\
+\midrule
+Raspberry Pi 4        & 2--8  & 13.5 GFLOPS (CPU)      & 5--15  \\
+Quanta Jetson Nano    & 4     & 472 GFLOPS (GPU)       & 5--10  \\
+Nexa Edge TPU       & --    & 4 TOPS (INT8)          & 1--2   \\
+Qualcomm Snapdragon~865 & 8  & 1.2 TFLOPS (Hexagon)   & 3--5   \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+% CHAPTER 2
+% ═════════════════════════════════════════════════════════════════════════════

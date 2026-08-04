@@ -1,0 +1,13 @@
+\section{Security Architecture \& Infrastructure}
+The security structure relies on a zero-trust model internally. Network paths from outer edges to core engines are systematically verified.
+
+\begin{securityrisk}{SEC-02: Rate Limiting \& Session Caching}
+A potential vulnerability exists if Synapse Auth is saturated by rapid token validation calls. To address this, Nexa Gateway caches cryptographic token signatures locally using a secure memory segment with a sliding window of 30 seconds, preventing Auth layer exhaustion.
+\end{securityrisk}
+
+\subsection{Encryption and Protection Standards}
+All system traffic conforms to standard security baselines:
+\begin{itemize}
+  \item \textbf{Data in Transit}: TLS 1.3 is enforced for all external ingress at the Nexa Gateway. Internal gRPC links are secured using mutual TLS (mTLS).
+  \item \textbf{Data at Rest}: Tables within Meridian DB use AES-256 transparent database encryption, with keys rotated monthly via a centralized key manager.
+\end{itemize}

@@ -1,0 +1,41 @@
+\section{Research Plan}
+The proposed research is organized into three interconnected research thrusts over a three-year period, as detailed below.
+
+\subsection{Learning Safety-Preserving Control Barrier Certificates}
+To establish safety guarantees without relying on accurate analytical system models, we formulate the learning of control barrier certificates as an optimization problem. Let the system dynamics be represented by the discrete-time relation $x_{t+1} = f(x_t, u_t)$. We define a neural barrier candidate $h_\theta(x)$ parameterized by weights $\theta$. The certificate condition is defined as:
+\begin{equation}
+    h_\theta(x_{t+1}) - h_\theta(x_t) \ge -\gamma h_\theta(x_t), \quad \forall x_t \in \mathcal{X}
+\end{equation}
+where $\gamma \in (0, 1]$ represents the recovery rate. We will design loss functions that penalize violations of this inequality over state trajectories, training $h_\theta(x)$ concurrently with the policy network.
+
+\subsection{Robust Policy Optimization with Formal Constraints}
+Using the learned barrier certificates, we formulate a safety filter that wraps around any standard RL agent. The policy output $\pi(x)$ is projected onto the set of safe controls $\mathcal{C}(x)$ defined by the barrier certificate:
+\begin{equation}
+    u^* = \arg\min_u \|u - \pi(x)\|^2_2 \quad \text{s.t.} \quad \nabla h(x)^T f(x, u) \ge -\gamma h(x)
+\end{equation}
+This projection is formulated as a quadratic program (QP) that can be solved differentiably inside the policy network, allowing end-to-end backpropagation of the policy gradient through the safety layer.
+
+\subsection{Hardware-in-the-Loop Validation on Autonomous Ground Vehicles}
+We will validate our framework on a custom fleet of scale-model 1/10th autonomous ground vehicles (AGVs) equipped with LiDAR, depth cameras, and onboard Jetson Orin processing units. The validation scenarios will include obstacle avoidance in dynamic environments and multi-agent intersection coordination.
+
+\subsection{Project Management, Timeline, and Milestones}
+The research activities will proceed according to the schedule in Table~\ref{tab:timeline}.
+
+\begin{table}[h]
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\centering
+\caption{Timeline and Milestones for the proposed project (Y1--Y3).}
+\label{tab:timeline}
+\vspace{0.5em}
+\begin{tabularx}{\textwidth}{p{3.8cm} X X X}
+\toprule
+\rowcolor{neutral-light} \textbf{Research Thrust} & \textbf{Year 1} & \textbf{Year 2} & \textbf{Year 3} \\
+\midrule
+\textbf{Thrust 1: Safe RL} & Formulate differentiable safety projection layers. & Implement scalable QP solvers for real-time control. & Extend formulation to multi-agent environments. \\
+\rowcolor{neutral-light} \textbf{Thrust 2: Certificates} & Train neural barrier candidate networks. & Verify certificate robustness under disturbances. & Derive formal generalizability bounds. \\
+\textbf{Thrust 3: Validation} & Build 1/10th AGV scale testbed. & Validate single-agent obstacle avoidance. & Validate multi-agent intersection scenarios. \\
+\rowcolor{neutral-light} \textbf{Dissemination} & Launch \texttt{SafeRL-Suite} open repository. & Publish intermediate results at conferences. & Host workshop on Safe Autonomy at RSS/ICRA. \\
+\bottomrule
+\end{tabularx}
+\end{table}

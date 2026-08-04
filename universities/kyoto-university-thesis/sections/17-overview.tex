@@ -1,0 +1,33 @@
+\section{Overview}
+
+Figure~\ref{fig:workflow} summarizes the closed-loop discovery pipeline:
+descriptor calculation, surrogate model training, Bayesian acquisition,
+targeted synthesis, and device fabrication/characterization, with
+experimental results fed back into the training set.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=0.9cm and 1.3cm,
+  box/.style={draw=kyotomaroondark, rounded corners=2pt, fill=paperlight, minimum height=1cm, minimum width=2.6cm, align=center, font=\small, text=inkgray},
+  arr/.style={->, kyotomaroon, thick}
+]
+\node[box] (data) {Descriptor\\Dataset ($n{=}214$)};
+\node[box, right=of data] (model) {GBRT\\Surrogate Model};
+\node[box, right=of model] (acq) {Bayesian\\Acquisition};
+\node[box, below=of acq] (synth) {Targeted\\Synthesis};
+\node[box, left=of synth] (fab) {Device\\Fabrication};
+\node[box, left=of fab] (char) {Characterization\\(PCE, $T_{80}$, KPFM)};
+
+\draw[arr] (data) -- (model);
+\draw[arr] (model) -- (acq);
+\draw[arr] (acq) -- (synth);
+\draw[arr] (synth) -- (fab);
+\draw[arr] (fab) -- (char);
+\draw[arr] (char.north) |- ($(data.south)+(0,-0.6)$) -| (data.south);
+\end{tikzpicture}
+\caption{Closed-loop interlayer discovery workflow used in this
+dissertation. Characterization results are fed back into the training
+dataset for subsequent iterations.}
+\label{fig:workflow}
+\end{figure}

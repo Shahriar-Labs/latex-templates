@@ -1,0 +1,54 @@
+\section{Introduction and Literature Review}
+
+The past decade has witnessed an explosion of machine-learning applications in clinical
+medicine, from radiological image analysis~\cite{esteva2017} to early-warning systems for
+sepsis~\cite{reynolds2024}. Yet the performance of these models is fundamentally limited by
+the quantity and diversity of training data they can access. Patient privacy regulations
+such as HIPAA (United States), GDPR (Europe), and PIPEDA (Canada) impose strict constraints
+on cross-institutional data sharing, creating ``data silos'' that fragment the available
+training corpus and bias models toward the demographics of single institutions~\cite{rieke2020}.
+
+\textbf{Federated learning}~\cite{mcmahan2017} has emerged as a promising solution: models
+travel to the data, rather than the reverse. In each round, a central server distributes the
+current global model to participating sites; each site trains locally on its private dataset;
+and only model updates — never raw data — are transmitted back for aggregation. Recent
+surveys confirm rapid adoption in healthcare imaging~\cite{sheller2020} and genomics, yet
+three persistent gaps remain.
+
+\subsection{Privacy Guarantees in Heterogeneous Settings}
+
+Differential privacy (DP) provides a rigorous mathematical framework for bounding
+information leakage from trained models~\cite{abadi2016}. However, existing DP-FL schemes
+assume homogeneous data distributions across sites — an assumption that is demonstrably
+false in healthcare, where patient populations differ markedly in age, comorbidity profiles,
+and imaging-equipment specifications. When sites are heterogeneous, standard DP noise
+calibration either under-protects minority subgroups or over-perturbs the model to the point
+of clinical uselessness~\cite{li2020}. No existing framework provides \emph{adaptive}
+privacy budgeting that scales noise injection to per-site distributional divergence.
+
+\subsection{Interpretable Aggregation Under Distribution Shift}
+
+The dominant aggregation algorithm, Federated Averaging (FedAvg)~\cite{mcmahan2017},
+weights site contributions by local dataset size. When sites differ in disease prevalence —
+one hospital may treat predominantly cardiac patients while another specializes in
+neurology — naive weighting produces a global model that under-performs on low-prevalence
+sites. Recent work on personalized FL~\cite{fallah2020} allows per-site model variants but
+sacrifices the global model entirely. An intermediate approach — interpretable,
+divergence-aware aggregation that produces both a robust global model and transparent
+per-site adaptation metrics — has not been demonstrated.
+
+\subsection{Communication Efficiency in Bandwidth-Constrained Networks}
+
+Hospital IT infrastructure often operates behind strict firewalls with limited outgoing
+bandwidth. State-of-the-art FL requires transmitting full model parameters (potentially
+hundreds of megabytes for modern architectures) dozens of times per training run.
+Gradient-compression techniques~\cite{lin2018} and federated dropout~\cite{caldas2018}
+reduce communication payloads but have not been validated under the joint constraints of
+heterogeneous data \emph{and} privacy noise, where compressed gradients interact
+unpredictably with DP perturbation.
+
+\textbf{This proposal directly addresses all three gaps} through an integrated framework
+that combines adaptive differential privacy, divergence-aware aggregation, and
+privacy-preserving gradient compression into a single, rigorously evaluated system.
+
+% ── 2. Research Aims & Objectives ─────────────────────────────

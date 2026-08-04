@@ -1,0 +1,32 @@
+\section{Detection Latency}
+Despite the energy savings, AeroCycle maintained a 95th-percentile detection latency of
+4.2 seconds during high-volatility events, close to Static-Short (3.1\,s) and substantially
+better than Static-Long (48.6\,s), as visualized in Figure~\ref{fig:latency}.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{scope}
+  \draw[-latex,thick,nustslate] (0,0) -- (0,5) node[above,font=\small]{p95 latency (s)};
+  \foreach \x/\label/\val/\col in {
+    1/{Static-\\Short}/3.1/nustgreen,
+    3/{Static-\\Long}/4.8/nustgold,
+    5/{Contiki-\\MAC}/3.6/nustslate,
+    7/{Aero-\\Cycle}/4.2/nustgreen!60!black}
+  {
+    \pgfmathsetmacro{\h}{\val/48.6*4.6+0.3}
+  }
+  % note: Static-Long latency compressed for display; see table for exact values
+  \draw[fill=nustgreen,draw=nustgreen] (0.6,0) rectangle (1.6,{3.1/5*4.6});
+  \node[below,font=\scriptsize] at (1.1,0) {Static-Short};
+  \draw[fill=nustgold,draw=nustgold!70!black] (2.6,0) rectangle (3.6,4.6);
+  \node[below,font=\scriptsize] at (3.1,0) {Static-Long*};
+  \draw[fill=nustslate,draw=nustslate] (4.6,0) rectangle (5.6,{3.6/5*4.6});
+  \node[below,font=\scriptsize] at (5.1,0) {ContikiMAC};
+  \draw[fill=nustgreen!55!black,draw=nustgreen!55!black] (6.6,0) rectangle (7.6,{4.2/5*4.6});
+  \node[below,font=\scriptsize] at (7.1,0) {AeroCycle};
+\end{scope}
+\end{tikzpicture}
+\caption{95th-percentile detection latency by configuration. *Static-Long bar truncated (actual value 48.6\,s) for readability.}
+\label{fig:latency}
+\end{figure}

@@ -1,0 +1,111 @@
+\section{Site Layout Diagram}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  scale=0.85,
+  site/.style={draw=accent!60,dashed,line width=1.2pt,fill=accent!3},
+  water/.style={draw=cyan!60!blue,line width=1.8pt,decorate,decoration={snake,amplitude=1.2mm,segment length=6mm}},
+  woodland/.style={fill=green!25,draw=green!40,rounded corners=4pt},
+  turbine/.style={draw=dark,fill=white,circle,minimum size=7mm,inner sep=0pt,line width=0.6pt},
+  building/.style={draw=dark,fill=medium!30,minimum width=6mm,minimum height=6mm,inner sep=0pt,line width=0.5pt},
+  road/.style={draw=brown!60!black,line width=2pt},
+  track/.style={draw=brown!40,line width=0.8pt,dashed},
+  arrowline/.style={draw=dark,line width=0.7pt,-{Stealth[length=3mm,width=2.5mm]}},
+]
+
+% Site boundary
+\draw[site] (0.5,1) rectangle (13,9.5);
+\node[anchor=north west,text=accent,font=\footnotesize\bfseries] at (0.5,9.5) {Site Boundary};
+
+% River
+\draw[water] (1,5.2) .. controls (2.5,5.8) and (3.5,4.2) .. (5.5,4.7)
+  .. controls (7,5.0) and (8,4.3) .. (9.5,4.8)
+  .. controls (10.8,5.2) and (11.5,4.5) .. (12.8,5.0);
+\node[anchor=south,text=cyan!60!blue,font=\footnotesize] at (6.5,5.2) {Allt Coire Ardair};
+
+% Woodland
+\fill[woodland] (10,6.5) rectangle (12.5,8.8);
+\foreach \x/\y in {10.3/7.0,10.8/7.3,11.2/6.8,11.6/7.5,12.0/7.1,10.5/7.9,11.0/8.2,11.5/7.8,12.2/8.3,10.7/8.5,11.8/6.6} {
+  \shade[ball color=green!40!brown] (\x,\y) circle (2.5mm);
+}
+\node[anchor=south,text=green!50!black,font=\footnotesize\bfseries] at (11.25,8.9) {Conifer Plantation};
+
+% Turbines
+\foreach \t/\tx/\ty in {T01/3.0/7.5,T02/4.5/8.2,T03/5.8/7.8,T04/7.2/8.5,T05/8.5/8.0,T06/9.8/7.5,
+                        T07/2.8/6.0,T08/4.2/6.5,T09/5.5/6.2,T10/6.8/6.8,T11/8.2/6.3,T12/9.5/6.0,
+                        T13/3.5/3.8,T14/5.0/3.5,T15/6.3/4.0,T16/7.5/3.3,T17/3.0/2.0,T18/6.0/1.8} {
+  \node[turbine] (\t) at (\tx,\ty) {};
+  \draw[line width=0.3pt] (\tx-2mm,\ty) -- (\tx+2mm,\ty);
+  \draw[line width=0.3pt] (\tx,\ty-2mm) -- (\tx,\ty+2mm);
+}
+\node[anchor=north,font=\tiny\bfseries,text=dark] at (T01.south) {T01};
+\node[anchor=north,font=\tiny\bfseries,text=dark] at (T07.south) {T07};
+\node[anchor=north,font=\tiny\bfseries,text=dark] at (T13.south) {T13};
+\node[anchor=north,font=\tiny\bfseries,text=dark] at (T18.south) {T18};
+
+% Access tracks
+\draw[track] (1.2,1.5) -- (3.0,2.0) -- (3.5,3.8) -- (5.0,3.5) -- (6.3,4.0) -- (7.5,3.3) -- (10.0,4.0);
+\draw[track] (3.5,3.8) -- (3.0,6.5);
+\draw[track] (5.0,6.0) -- (5.5,6.2) -- (6.8,6.8) -- (8.2,6.3) -- (9.5,6.0);
+\draw[track] (5.8,7.8) -- (6.8,6.8);
+\draw[track] (7.2,8.5) -- (6.8,6.8);
+\draw[track] (4.5,8.2) -- (5.8,7.8);
+\node[anchor=east,font=\footnotesize\itshape,text=brown!60!black] at (1.0,1.6) {Access Tracks};
+
+% Construction compound
+\draw[fill=gray!15,draw=gray!50,line width=0.8pt] (8.5,1.5) rectangle (11.5,3.0);
+\foreach \x in {8.75,9.45,10.15,10.85} {
+  \draw[gray!40,line width=0.3pt] (\x,1.5) -- (\x,3.0);
+}
+\node[anchor=north,font=\footnotesize,text=dark] at (10.0,1.4) {Construction Compound};
+
+% Substation
+\draw[fill=orange!20,draw=orange!50,line width=0.8pt] (11.8,2.0) rectangle (12.8,2.8);
+\node[anchor=west,font=\footnotesize,text=dark] at (12.9,2.4) {Substation};
+
+% Borrow pit
+\draw[fill=yellow!15,draw=yellow!60!black,line width=0.8pt,dashed] (2.0,7.0) rectangle (3.5,8.0);
+\node[anchor=south,font=\footnotesize,text=yellow!50!black] at (2.75,8.1) {Borrow Pit};
+
+% Road A82
+\draw[road] (-0.2,0.3) -- (13.5,0.3);
+\node[anchor=north,font=\footnotesize\bfseries,text=dark] at (6.5,0.2) {A82 Trunk Road};
+
+% Receptor buildings
+\node[building] (R1) at (13.5,6.5) {};
+\node[anchor=west,font=\footnotesize,text=dark] at (13.6,6.5) {R1 -- Glencoe Village};
+\node[building] (R2) at (0.2,3.5) {};
+\node[anchor=east,font=\footnotesize,text=dark] at (0.1,3.5) {R2 -- Achriabhach};
+
+% Legend
+\draw[fill=white,draw=medium!40,rounded corners=2pt] (0.8,9.8) rectangle (5.0,11.3);
+\node[anchor=north west,font=\footnotesize\bfseries,text=dark] at (1.0,11.1) {Legend};
+\node[anchor=north west,font=\footnotesize] at (1.0,10.8) {{\small\textcolor{cyan!60!blue}{---}} Watercourse};
+\node[anchor=north west,font=\footnotesize] at (1.0,10.4) {{\small\textcolor{green!40!brown}{\textbullet}} Woodland};
+\node[anchor=north west,font=\footnotesize] at (1.0,10.0) {{\small ---} Access Track};
+
+% Scale bar
+\draw[line width=1pt] (9.5,10.5) -- (12.5,10.5);
+\draw[line width=0.6pt] (9.5,10.3) -- (9.5,10.7);
+\draw[line width=0.6pt] (11.0,10.3) -- (11.0,10.7);
+\draw[line width=0.6pt] (12.5,10.3) -- (12.5,10.7);
+\node[anchor=south,font=\footnotesize] at (9.5,10.7) {0};
+\node[anchor=south,font=\footnotesize] at (11.0,10.7) {500\,m};
+\node[anchor=south,font=\footnotesize] at (12.5,10.7) {1\,km};
+
+% North arrow
+\draw[arrowline] (12.5,9.8) -- (12.5,10.8);
+\node[anchor=south,font=\small\bfseries] at (12.5,10.9) {N};
+
+\end{tikzpicture}
+\caption{Site layout diagram showing turbine locations (T01--T18), access tracks, watercourses, and environmental constraints.}
+\label{fig:sitelayout}
+\end{figure}
+
+\newpage
+
+% ============================================================
+% APPENDIX A: PUBLIC COMMENT RESPONSE
+% ============================================================
+\appendix

@@ -1,0 +1,32 @@
+\section{Classical Stochastic Gradient Descent}
+
+The SGD update with learning rate $\eta_t > 0$ is:
+\begin{equation}
+  \theta_{t+1} = \theta_t - \eta_t\, g_t.
+  \label{eq:sgd}
+\end{equation}
+
+Robbins and Monro \cite{robbins1951} established the first convergence proof for SGD, showing
+that $\theta_t$ converges to a root of the regression function almost surely when the learning
+rate satisfies the Robbins--Monro conditions $\sum_t \eta_t = \infty$ and $\sum_t \eta_t^2 <
+\infty$. In the non-convex setting, Ghadimi and Lan \cite{ghadimi2013} proved that SGD with
+fixed step size finds an $\varepsilon$-stationary point (i.e., $\|\nabla\mathcal{L}(\theta)\|^2
+\leq \varepsilon$) in $\mathcal{O}(1/\varepsilon^2)$ iterations.
+
+\subsection{Momentum and Acceleration}
+
+A classical extension is Polyak's heavy-ball momentum \cite{polyak1964}:
+\begin{align}
+  m_t &= \beta m_{t-1} + g_t, \\
+  \theta_{t+1} &= \theta_t - \eta_t\, m_t,
+\end{align}
+where $\beta \in [0,1)$ controls the momentum decay. Momentum accelerates convergence along
+directions of persistent gradient and dampens oscillations in high-curvature directions.
+
+Nesterov's accelerated gradient \cite{nesterov1983} improves on heavy-ball momentum by
+evaluating the gradient at an extrapolated point:
+\begin{align}
+  \theta_{t+1} &= \theta_t - \eta_t\, g(\theta_t + \beta(\theta_t - \theta_{t-1})).
+\end{align}
+This ``lookahead'' yields an optimal $\mathcal{O}(1/t^2)$ convergence rate for convex problems,
+versus $\mathcal{O}(1/t)$ for gradient descent.

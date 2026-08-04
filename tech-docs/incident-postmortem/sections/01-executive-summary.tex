@@ -1,0 +1,21 @@
+\section{Executive Summary}
+
+On \textbf{2024-11-14} at 03:17 UTC, a misconfigured automated maintenance window
+triggered an unplanned failover of the primary Vertex Aurora PostgreSQL cluster
+(\texttt{payments-db-us-east-1}) serving the Payment Processing API. The failover
+propagated a cascade failure into the API Gateway layer due to hardcoded connection
+pool exhaustion logic. Approximately \textbf{47\,000 end users} were unable to
+complete checkout flows for \textbf{2 hours 43 minutes}. Total estimated revenue
+impact is \textbf{\$183\,000} with an additional \$24\,000 in cloud cost overrun
+from emergency scaling actions. This document captures the full timeline, root
+cause analysis, blast radius, and the set of action items committed to by the
+team to prevent recurrence.
+
+\begin{callout}[title={\faIcon{lightbulb}\hspace{4pt}Key Finding}]{accent}
+The failure was \emph{not} caused by the database failover itself (which completed
+successfully in 32\,s) but by the API service's connection pool refusing to
+re-establish connections after the new primary endpoint's DNS propagated, due to a
+missing \texttt{read\_after\_write} retry wrapper introduced in \texttt{v4.7.2}.
+\end{callout}
+
+% ── Incident Timeline (Gantt-style) ──────────────────────────

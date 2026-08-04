@@ -1,0 +1,24 @@
+\section{Placement Policy}
+Algorithm~\ref{alg:placement} sketches the bounded-horizon greedy placement policy. At each decision point, only the $k$ lowest-predicted-latency candidates are evaluated against the remaining cost budget, bounding decision latency to $O(k \log k)$ per request.
+
+\begin{tcolorbox}[
+  colback=white,colframe=bitsnavy,boxrule=0.8pt,arc=2pt,
+  left=10pt,right=10pt,top=8pt,bottom=8pt,
+  title={Algorithm 3.1: Adaptive Latency-Aware Placement},
+  fonttitle=\bfseries\color{white},colbacktitle=bitsnavy,coltitle=white,
+  breakable
+]
+\label{alg:placement}
+\small
+\textbf{Input:} task $\tau$, candidate nodes $N$, cost budget $B$, horizon $k$\\
+\textbf{Output:} assigned node $n^\star$
+\begin{enumerate}[leftmargin=1.6em,itemsep=1pt]
+  \item Predict $\hat{t}_i$ for all $i \in N$ using Eq.~\eqref{eq:predictor}.
+  \item Select top-$k$ candidates $K \subset N$ by ascending $\hat{t}_i$.
+  \item \textbf{for} each $i \in K$ (ascending $\hat{t}_i$):
+  \begin{enumerate}[leftmargin=1.6em,itemsep=1pt]
+    \item \textbf{if} remaining budget $B \geq c_i$: assign $n^\star \gets i$; $B \gets B - c_i$; \textbf{return} $n^\star$.
+  \end{enumerate}
+  \item \textbf{return} lowest-cost node in $K$ (budget-exhausted fallback).
+\end{enumerate}
+\end{tcolorbox}

@@ -1,0 +1,61 @@
+\section{Technical Approach}
+
+\subsection{System Architecture}
+The proposed architecture (Figure~\ref{fig:arch}) consists of three layers: a Sensor Layer providing multi-modal detection and tracking, a Command and Control / Sensor Fusion (C2SF) Layer performing track correlation and engagement management, and an Effector Layer providing tiered non-kinetic and kinetic defeat options. The C2SF node interfaces upward to the base Common Operating Picture (COP) and to higher-echelon air defense C2 via the existing FAAD C2 interface.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=6mm and 6mm,
+  layer/.style={draw=accent, fill=accentlight, rounded corners=2pt, align=center,
+                minimum height=1.0cm, text width=2.9cm, font=\small, thick},
+  hub/.style={draw=accent, fill=accent, text=white, rounded corners=2pt, align=center,
+              minimum height=1.1cm, text width=6.4cm, font=\small\bfseries, thick},
+  ext/.style={draw=midgray, fill=white, rounded corners=2pt, align=center,
+              minimum height=1.0cm, text width=2.9cm, font=\small, thick, dashed},
+  arr/.style={-{Latex[length=2.2mm]}, thick, color=accent}
+]
+\node[layer] (radar) {Radar};
+\node[layer, right=of radar] (eoir) {EO/IR};
+\node[layer, right=of eoir] (rfdf) {RF-DF};
+\node[layer, right=of rfdf] (acou) {Acoustic};
+
+\node[hub, below=10mm of eoir, xshift=13mm] (c2sf) {Command \& Control / Sensor Fusion (C2SF)};
+
+\node[layer, below=10mm of radar, xshift=0mm] (rfdefeat) {RF Defeat};
+\node[layer, right=of rfdefeat] (ew) {EW Jammer};
+\node[layer, right=of ew] (kinetic) {Kinetic Interceptor};
+
+\node[ext, right=14mm of c2sf] (cop) {Base Common\\Operating Picture};
+\node[ext, above=8mm of cop] (higher) {Higher Echelon C2\\(FAAD C2)};
+
+\draw[arr] (radar.south) |- (c2sf.north west);
+\draw[arr] (eoir.south) -- (c2sf.north);
+\draw[arr] (rfdf.south) |- (c2sf.north east);
+\draw[arr] (acou.south) |- (c2sf.north east);
+
+\draw[arr] (c2sf.south) |- (rfdefeat.north);
+\draw[arr] (c2sf.south) -- (ew.north);
+\draw[arr] (c2sf.south) |- (kinetic.north);
+
+\draw[arr] (c2sf.east) -- (cop.west);
+\draw[arr] (cop.north) -- (higher.south);
+\end{tikzpicture}%
+}
+\caption{Three-layer C-UAS system architecture with external interfaces.}
+\label{fig:arch}
+\end{figure}
+
+\subsection{Key Subsystems}
+\begin{reqlist}
+\item \textbf{Sensor Layer:} Government furnished 3D air-surveillance radar augmented by MDT-integrated EO/IR cueing cameras and a passive RF-DF array for early warning against RF-controlled UAS.
+\item \textbf{C2SF Node:} MOSA-compliant fusion engine performing track correlation, IFF cross-check, and operator decision support via a common tactical display.
+\item \textbf{Effector Suite:} Tiered response comprising an RF defeat system (link/GPS disruption), a directional EW jammer, and a kinetic interceptor for high-confidence, high-priority tracks.
+\end{reqlist}
+
+\clearpage
+
+% =====================================================================
+% 5. WORK BREAKDOWN STRUCTURE
+% =====================================================================

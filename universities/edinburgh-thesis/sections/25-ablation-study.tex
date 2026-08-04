@@ -1,0 +1,47 @@
+\section{Ablation Study}
+\label{sec:ablation}
+
+To isolate the contributions of individual design choices, we perform a systematic
+ablation study on LRA and PG-19. The results, presented in Figure~\ref{fig:ablation},
+show that both the context-dependent sparsity of SCA and the multi-resolution
+hierarchy of HMG are essential for the full performance gains.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      ybar,
+      bar width=8pt,
+      width=0.9\linewidth,
+      height=55mm,
+      ymin=35, ymax=82,
+      ylabel={LRA Avg. Accuracy (\%)},
+      ylabel style={font=\small, color=edinburghblue},
+      symbolic x coords={Transformer,SCA (random),SCA (local),SCA,HMG (flat),HMG,SCA+HMG},
+      xtick=data,
+      xticklabel style={font=\footnotesize, rotate=30, anchor=east, align=right},
+      nodes near coords,
+      nodes near coords style={font=\tiny, color=edinburghblue!80},
+      font=\small
+    ]
+      \addplot[fill=edinburghblue!20, draw=edinburghblue!40]  coordinates {(Transformer, 53.7)};
+      \addplot[fill=edinburghblue!30, draw=edinburghblue!50]  coordinates {(SCA (random), 55.1)};
+      \addplot[fill=edinburghblue!40, draw=edinburghblue!60]  coordinates {(SCA (local), 57.3)};
+      \addplot[fill=edinburghblue!60, draw=edinburghblue!80]  coordinates {(SCA, 59.1)};
+      \addplot[fill=saltireblue!30,  draw=saltireblue!50]   coordinates {(HMG (flat), 56.4)};
+      \addplot[fill=saltireblue!50,  draw=saltireblue!70]   coordinates {(HMG, 58.6)};
+      \addplot[fill=saltireblue!70,  draw=saltireblue!90]   coordinates {(SCA+HMG, 60.7)};
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Ablation study on LRA average accuracy. SCA~(random) uses a fixed random
+    sparsity pattern; SCA~(local) restricts sparsity to local windows; HMG~(flat)
+    uses a single-resolution memory bank. Both learned context dependence and
+    multi-resolution hierarchy contribute significantly.}
+  \label{fig:ablation}
+\end{figure}
+
+The gap between SCA with random/local sparsity and the full context-dependent SCA
+underscores the importance of learned, input-aware sparsity patterns. Similarly, the
+improvement from flat to hierarchical memory validates the multi-resolution design.
+
+% ────────────────────────────────────────────────────────────────

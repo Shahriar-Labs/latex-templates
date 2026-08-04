@@ -1,0 +1,63 @@
+\section{Simulation Results}
+
+We simulated a 100-neuron linear network trained on 20 synthetic input patterns drawn
+from a mixture of four Gaussians in $\mathbb{R}^{100}$.  Table~\ref{tab:hebbian-results}
+reports the mean squared weight error (MSWE) at convergence and the number of epochs
+required.
+
+\begin{table}[H]
+\centering
+\caption{Convergence of the Reward-Modulated Hebbian rule under varying reward time
+  constants $\tau_r$ and weight decay $\epsilon$.}
+\label{tab:hebbian-results}
+\setlength{\arrayrulewidth}{0.5pt}
+\begin{tabularx}{0.86\linewidth}{@{}lllcc@{}}
+\toprule
+\textbf{Rule} & $\boldsymbol{\tau_r}$ (ms) & $\boldsymbol{\epsilon}$
+  & \textbf{MSWE} & \textbf{Epochs} \\
+\midrule
+BCM (baseline)         & ---    & 0.01  & $0.142 \pm 0.018$ & 380 \\
+RM-Hebbian             & 20     & 0.01  & $0.083 \pm 0.011$ & 290 \\
+RM-Hebbian             & 50     & 0.01  & $0.071 \pm 0.009$ & 310 \\
+RM-Hebbian             & 100    & 0.01  & $0.069 \pm 0.012$ & 330 \\
+RM-Hebbian             & 50     & 0.005 & $0.065 \pm 0.008$ & 345 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1]
+  % Axes
+  \draw[-Stealth, line width=0.7pt, dupurple] (0,0) -- (7.2,0)
+      node[right, font=\small]{Epochs};
+  \draw[-Stealth, line width=0.7pt, dupurple] (0,0) -- (0,4.2)
+      node[above, font=\small]{MSWE};
+  % Y tick labels
+  \foreach \y/\lab in {0/0, 1/0.04, 2/0.08, 3/0.12, 4/0.16}{
+    \draw[dupurple!40, line width=0.3pt] (0.05,\y) -- (7.0,\y);
+    \node[left, font=\scriptsize, color=neutralgrey] at (0,\y) {\lab};
+  }
+  % X tick labels
+  \foreach \x/\lab in {0/0, 1.75/100, 3.5/200, 5.25/300, 7.0/400}{
+    \node[below, font=\scriptsize, color=neutralgrey] at (\x,0) {\lab};
+  }
+  % BCM curve (piecewise linear approximation)
+  \draw[neutralgrey, line width=1.2pt, dashed]
+    (0,3.55) -- (0.87,3.2) -- (1.75,2.6) -- (2.62,2.1) -- (3.5,1.8)
+    -- (4.38,1.7) -- (5.25,1.62) -- (6.12,1.57) -- (7.0,1.55);
+  % RM-Hebbian curve
+  \draw[dupurple, line width=1.4pt]
+    (0,3.55) -- (0.87,2.8) -- (1.75,2.0) -- (2.62,1.4) -- (3.5,0.95)
+    -- (4.38,0.80) -- (5.25,0.73) -- (6.12,0.69) -- (7.0,0.68);
+  % Legend
+  \draw[dupurple, line width=1.4pt] (4.6,3.8) -- (5.3,3.8);
+  \node[right, font=\scriptsize] at (5.35,3.8) {RM-Hebbian ($\tau_r{=}50$ ms)};
+  \draw[neutralgrey, line width=1.2pt, dashed] (4.6,3.4) -- (5.3,3.4);
+  \node[right, font=\scriptsize] at (5.35,3.4) {BCM baseline};
+\end{tikzpicture}
+\caption{Learning curves for the BCM baseline and the Reward-Modulated Hebbian rule
+  ($\tau_r = 50$~ms) averaged over 10 independent runs.  Shaded error bands are omitted
+  for clarity.}
+\label{fig:learning-curves}
+\end{figure}

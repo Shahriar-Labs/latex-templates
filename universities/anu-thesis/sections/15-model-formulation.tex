@@ -1,0 +1,148 @@
+\section{Model Formulation}
+
+This chapter develops the core methodological contribution of the thesis: a
+hierarchical Bayesian model for joint analysis of multiple data types commonly
+encountered in ecological monitoring. The model accommodates three classes of
+observation simultaneously:
+
+\begin{itemize}[leftmargin=*,itemsep=4pt]
+  \item \textbf{Presence--absence} data from structured surveys (e.g.\ 20~m
+        $\times$ 20~m vegetation plots), where observers record whether each
+        target species was detected during a standardised search;
+  \item \textbf{Count} data from point counts or line transects (e.g.\
+        five-minute avian point counts at permanent monitoring stations);
+  \item \textbf{Presence-only} records from opportunistic citizen-science
+        platforms such as the Atlas of Living Australia (ALA).
+\end{itemize}
+
+\subsection{Observation Models}
+
+Let $s = 1,\dots,S$ index species, $i = 1,\dots,N$ index sites, and
+$k = 1,\dots,K_i$ index replicate visits to site~$i$. The true
+(partially latent) occurrence state of species~$s$ at site~$i$ is denoted by
+$z_{si} \in \{0,1\}$, where $z_{si}=1$ if the species occupies the site.
+
+For presence--absence data with imperfect detection, the observation model is
+\begin{equation}\label{eq:detection}
+  y_{sik}^{\text{(PA)}} \mid z_{si}, p_{si} \sim
+  \operatorname{Bernoulli}\!\big(z_{si}\, p_{sik}\big),
+\end{equation}
+where $p_{sik}$ is the per-visit detection probability. Detection probability
+is modelled on the logit scale as a function of survey-level covariates
+$\mathbf{w}_{ik}$:
+\begin{equation}
+  \operatorname{logit}(p_{sik}) = \gamma_{0s} +
+  \mathbf{w}_{ik}^\top \boldsymbol{\gamma}_s .
+\end{equation}
+
+For count data, the observation model is a zero-inflated Poisson:
+\begin{equation}\label{eq:count}
+  y_{sik}^{\text{(CT)}} \mid z_{si}, \lambda_{si} \sim
+  \begin{cases}
+    0,                                 & \text{with probability } 1 - z_{si}, \\
+    \operatorname{Poisson}(\lambda_{si}), & \text{with probability } z_{si},
+  \end{cases}
+\end{equation}
+where $\lambda_{si}$ is the expected count conditional on occupancy.
+
+\subsection{Process Model}
+
+The latent occupancy state follows a multivariate probit regression on
+environmental covariates $\mathbf{x}_{si}$:
+\begin{equation}\label{eq:process}
+  \Phi^{-1}\big(\psi_{si}\big) =
+  \beta_{0s} + \mathbf{x}_{si}^\top \boldsymbol{\beta}_s + \eta_{si},
+\end{equation}
+where $\Phi^{-1}$ is the probit link, $\psi_{si} = \Pr(z_{si}=1)$ is occupancy
+probability, and $\eta_{si}$ is a spatial random effect that accounts for
+residual spatial autocorrelation.
+
+The spatial random effects for each species are modelled jointly as a
+multivariate Gaussian process:
+\begin{equation}\label{eq:spatial}
+  \boldsymbol{\eta}_s \sim
+  \mathcal{MVN}\!\big(\mathbf{0}, \,\boldsymbol{\Sigma}_s \otimes
+  \mathbf{R}(\phi_s)\big),
+\end{equation}
+where $\boldsymbol{\Sigma}_s$ is the $S \times S$ between-species covariance
+matrix (capturing residual co-occurrence patterns beyond those explained by
+shared environmental responses), $\mathbf{R}(\phi_s)$ is a spatial correlation
+matrix with exponential decay governed by species-specific range parameter
+$\phi_s$, and $\otimes$ denotes the Kronecker product.
+
+\subsection{Priors and Computation}
+
+Weakly informative priors are assigned throughout to regularise the model while
+allowing the data to dominate when sample sizes are adequate:
+\begin{align}
+  \beta_{0s}       &\sim \mathcal{N}(0, 2.5^2), \\
+  \boldsymbol{\beta}_s &\sim \mathcal{N}(\mathbf{0}, 2.5^2\,\mathbf{I}), \\
+  \gamma_{0s}      &\sim \mathcal{N}(0, 1.5^2), \\
+  \phi_s           &\sim \operatorname{Gamma}(2, 2/\bar{\phi}),
+\end{align}
+where $\bar{\phi} = 50$~km (approximately half the maximum distance between
+sites in the study region). The between-species covariance matrix
+$\boldsymbol{\Sigma}_s$ is assigned an LKJ prior with shape parameter
+$\eta = 2$, which mildly penalises extreme correlations.
+
+All models are fitted using Hamiltonian Monte Carlo (HMC) as implemented in
+Stan~\cite{hoffman2014}, accessed through the \texttt{cmdstanr} interface for
+R. Four chains are run for 2{,}000 warm-up iterations followed by 2{,}000
+sampling iterations, yielding 8{,}000 posterior draws per parameter after
+warm-up is discarded. Convergence is assessed using the Gelman--Rubin statistic
+$\hat{R} < 1.05$, effective sample size, and visual inspection of trace plots.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  >=Stealth, node distance=1.6cm and 2.2cm,
+  obs/.style={rectangle, draw=anucrimson!70, fill=anucrimson!8,
+    minimum width=2cm, minimum height=0.8cm, align=center,
+    font=\small, rounded corners=3pt, line width=0.7pt},
+  latent/.style={ellipse, draw=anugold!70, fill=anugold!12,
+    minimum width=2cm, minimum height=0.8cm, align=center,
+    font=\small, line width=0.7pt},
+  param/.style={ellipse, draw=warmbrown!60, fill=warmbrown!8,
+    minimum width=1.8cm, minimum height=0.7cm, align=center,
+    font=\small\itshape, line width=0.6pt},
+  arrow/.style={->, thick, anucrimson!50, shorten >=2pt, shorten <=2pt},
+]
+\node[obs] (yPA) at (0,0) {$y^{\text{(PA)}}_{sik}$ \\[-2pt] {\tiny presence--abs}};
+\node[obs] (yCT) at (4,0) {$y^{\text{(CT)}}_{sik}$ \\[-2pt] {\tiny count}};
+\node[obs] (yPO) at (8,0) {$y^{\text{(PO)}}_{si}$ \\[-2pt] {\tiny presence-only}};
+
+\node[latent] (p) at (0,-2.4) {$p_{sik}$ \\[-2pt] {\tiny detection}};
+\node[latent] (z) at (4,-2.4) {$z_{si}$ \\[-2pt] {\tiny occupancy}};
+\node[latent] (lambda) at (8,-2.4) {$\lambda_{si}$ \\[-2pt] {\tiny intensity}};
+
+\node[param] (gamma) at (-2,-4.4) {$\boldsymbol{\gamma}$};
+\node[param] (beta)  at (4,-4.4) {$\boldsymbol{\beta}$};
+\node[param] (eta)   at (8,-4.4) {$\boldsymbol{\eta}_s$};
+
+\node[param] (mu) at (4,-6.4) {$\mu_\beta, \sigma_\beta$};
+
+\draw[arrow] (p) -- (yPA);
+\draw[arrow] (z) -- (p);
+\draw[arrow] (z) -- (yCT);
+\draw[arrow] (lambda) -- (yCT);
+\draw[arrow] (z) -- (yPO);
+\draw[arrow] (lambda) -- (yPO);
+
+\draw[arrow] (gamma) -- (p);
+\draw[arrow] (beta)  -- (z);
+\draw[arrow] (eta)   -- (z);
+
+\draw[arrow] (mu) -- (beta);
+
+% Bracket for data
+\draw [decorate, decoration={brace, amplitude=6pt, mirror},
+       thick, warmbrown!40] (-0.8,0.6) -- (8.8,0.6)
+  node [midway, above=8pt, font=\footnotesize\itshape\color{warmbrown}]
+  {Observed data};
+\end{tikzpicture}
+\caption{Directed acyclic graph (DAG) of the hierarchical multi-species
+model. Observed nodes (rectangles) are connected to latent states (ellipses)
+and parameters (italic ellipses). The model jointly analyses presence--absence,
+count, and presence-only data through a shared latent occupancy process $z_{si}$.}
+\label{fig:model}
+\end{figure}

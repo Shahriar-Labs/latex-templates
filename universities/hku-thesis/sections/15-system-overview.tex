@@ -1,0 +1,28 @@
+\section{System Overview}
+
+Figure~\ref{fig:architecture} shows the ANRS runtime. A lightweight \emph{telemetry probe} on the device node measures per-layer compute time, current bandwidth, and battery draw at each inference call. These features feed the \emph{policy module}, which selects a partition point $k_t$ from the decision graph in Equation~\ref{eq:objective}, and the \emph{shadow buffer}, which logs the realised latency and energy cost of the chosen partition for use as a training signal on the next update step.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw,rounded corners=2pt,fill=hkupale,draw=hkugreen,line width=0.8pt,minimum width=2.6cm,minimum height=0.9cm,align=center,font=\small},
+  server/.style={draw,rounded corners=2pt,fill=hkugreen,draw=hkudarkgreen,line width=0.8pt,minimum width=2.9cm,minimum height=0.9cm,align=center,font=\small\color{white}},
+  arrow/.style={-{Latex[length=2.2mm]},line width=0.9pt,color=hkugray}
+]
+\node[box] (device) at (0,2.3) {Device Node\\Layers $f_1..f_k$};
+\node[server] (agg) at (7.2,2.3) {Aggregation Node\\Layers $f_{k+1}..f_L$};
+\node[box] (probe) at (0,0) {Telemetry\\Probe};
+\node[box] (policy) at (3.6,0) {Policy\\Module};
+\node[box] (buffer) at (3.6,-1.7) {Shadow\\Buffer};
+
+\draw[arrow] (device) -- (probe);
+\draw[arrow] (probe) -- (policy);
+\draw[arrow] (probe) -- (buffer);
+\draw[arrow] (buffer) -- (policy);
+\draw[arrow] (policy) -- (device.south east);
+\draw[arrow] (policy) -- (agg.south);
+\draw[arrow, dashed] (device) -- node[above,font=\scriptsize,color=hkugray]{activation $s_k$} (agg);
+\end{tikzpicture}
+\caption{ANRS runtime architecture: telemetry drives the policy module, which sets the partition point $k_t$ and logs realised outcomes to the shadow buffer for continuous adaptation.}
+\label{fig:architecture}
+\end{figure}

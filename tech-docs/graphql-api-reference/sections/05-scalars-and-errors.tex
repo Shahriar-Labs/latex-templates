@@ -1,0 +1,48 @@
+\section*{Scalars and Errors}
+
+\vspace{2pt}
+\renewcommand{\arraystretch}{1.15}
+{\footnotesize
+\begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{0.22\textwidth}>{\RaggedRight\arraybackslash}p{0.30\textwidth}>{\RaggedRight\arraybackslash}X}
+\toprule
+\rowcolor{tablehead}
+\textcolor{white}{\bfseries Scalar} & \textcolor{white}{\bfseries Format} & \textcolor{white}{\bfseries Description} \\
+\midrule
+\texttt{DateTime} & ISO 8601 & UTC timestamp: \texttt{"2026-07-15T14:30:00Z"}\\
+\texttt{Date} & ISO 8601 & Calendar date: \texttt{"2026-08-14"}\\
+\texttt{URL} & String & Absolute URL with scheme\\
+\texttt{JSON} & Object & Arbitrary JSON, validated server-side\\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{8pt}
+\renewcommand{\arraystretch}{1.15}
+{\footnotesize
+\begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{0.26\textwidth}>{\RaggedRight\arraybackslash}p{0.16\textwidth}>{\RaggedRight\arraybackslash}X}
+\toprule
+\rowcolor{tablehead}
+\textcolor{white}{\bfseries Error Code} & \textcolor{white}{\bfseries HTTP} & \textcolor{white}{\bfseries Meaning} \\
+\midrule
+\texttt{UNAUTHENTICATED} & 401 & Missing or invalid bearer token\\
+\texttt{FORBIDDEN} & 403 & Token lacks required scope\\
+\texttt{NOT\_FOUND} & 404 & Resource does not exist\\
+\texttt{VALIDATION\_ERROR} & 400 & Input failed server-side validation\\
+\texttt{RATE\_LIMITED} & 429 & Hourly point budget exceeded\\
+\texttt{INTERNAL} & 500 & Unexpected server error; Nexa on-call alerted\\
+\bottomrule
+\end{tabularx}
+}
+
+\vspace{8pt}
+\begin{notebox}
+{\small\textbf{Retry:} For \texttt{RATE\_LIMITED} and \texttt{INTERNAL}, use exponential backoff starting at 1\,s (max 32\,s). All other errors are non-retryable without modifying the request.}
+\end{notebox}
+
+\vfill
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[primary] (current page.south west) rectangle ([yshift=30pt]current page.south east);
+  \node[anchor=south,text=white,font=\footnotesize] at ([yshift=8pt]current page.south) {%
+    Nexa Platform API~~\textbar~~GraphQL v2.4.1~~\textbar~~\faBook\;\;api.nexaplatform.com/docs
+  };
+\end{tikzpicture}

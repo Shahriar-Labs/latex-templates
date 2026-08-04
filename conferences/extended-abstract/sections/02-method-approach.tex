@@ -1,0 +1,32 @@
+\section{Method / Approach}
+
+\textbf{Threshold gate.}\ Let $\mathbf{w} \in \mathbb{R}^d$ be a weight
+vector and $\tau \in \mathbb{R}_{>0}$ a learnable threshold.  We define a
+soft binary mask:
+\begin{equation}
+  m_i = \sigma\!\left(\beta\bigl(|w_i| - \tau\bigr)\right), \quad
+  \hat{w}_i = m_i \cdot w_i,
+  \label{eq:gate}
+\end{equation}
+where $\sigma$ is the sigmoid and $\beta{=}10$ controls gate sharpness.
+During the forward pass, $\hat{\mathbf{w}}$ replaces $\mathbf{w}$; at
+inference, $m_i < 0.5$ entries are hard-zeroed.
+
+\textbf{Gradient rescaling.}\ For pruned weights ($m_i < 0.5$), the
+upstream gradient $\partial\mathcal{L}/\partial w_i$ is multiplied by a
+decay factor $\gamma = 0.05$, ensuring that weights near the threshold
+receive informative—but attenuated—updates.  This prevents gradient
+vanishing in deep layers while sustaining sparsity pressure throughout
+training.
+
+\textbf{Energy objective.}\ A differentiable FLOPs proxy $\Phi$ (based on
+$\ell_1$ norm of masks) is added to the task loss:
+\begin{equation}
+  \mathcal{L}_{\text{total}} = \mathcal{L}_{\text{CE}}
+    + \lambda_\Phi \sum_{\ell} \Phi^{(\ell)},
+  \label{eq:loss}
+\end{equation}
+where $\lambda_\Phi$ is annealed from 0 to $10^{-4}$ over the first
+30\% of training epochs.
+
+% ─── 3. Results ──────────────────────────────────────────────────────────────

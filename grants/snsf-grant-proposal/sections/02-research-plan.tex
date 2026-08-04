@@ -1,0 +1,131 @@
+\section{Research Plan}
+
+\subsection{Background and State of the Art}
+
+Motor learning requires the coordinated activity of primary motor cortex (M1), premotor cortex
+(PMC), and parietal areas that together form the \kw{sensorimotor network}. Classical theories
+characterized learning as strengthening of specific synaptic weights; however, recent population-
+level recordings have revealed that learning manifests as a shift in the \textit{geometry} of
+neural trajectories in high-dimensional state space \cite{shenoy2013,churchland2012}.
+
+Two competing frameworks have emerged. The \textbf{re-aiming hypothesis} proposes that motor
+commands arise from the same computational manifold throughout learning, and improvement reflects
+refined initial conditions. The \textbf{manifold expansion hypothesis} holds that the neural
+subspace itself enlarges as new motor primitives are incorporated. Disambiguating these
+hypotheses requires simultaneous recordings of hundreds of neurons across multiple cortical
+regions at millisecond resolution---a capability that only recently became technically
+feasible with the Neuropixels 2.0 probe family.
+
+Critically, no existing study has tracked \textit{within-session} manifold dynamics at
+sufficient temporal resolution to capture the moment-to-moment reconfiguration events that
+precede skill consolidation. \textbf{NeuroDyn} addresses this gap directly.
+
+\subsection{Specific Aims and Hypotheses}
+
+The project is organized around three interlocking aims:
+
+\begin{tcolorbox}[snsfbox, title={\faBullseye\quad Specific Aims Overview}]
+
+\textbf{Aim 1 --- Characterize population geometry during learning (Months 1--18)}\\
+\textit{Hypothesis:} As animals transition from na\"{i}ve to expert performance on the
+precision-grip task, the intrinsic dimensionality of M1 population activity decreases while
+trajectory curvature increases, reflecting consolidation of a compact motor primitive.
+
+\vspace{6pt}
+\textbf{Aim 2 --- Identify causal inter-areal communication modes (Months 12--36)}\\
+\textit{Hypothesis:} Successful trial-by-trial adaptation is preceded by transient increases
+in directed coherence from PMC to M1 in the beta band (15--30 Hz), reflecting top-down priming
+of the downstream motor manifold.
+
+\vspace{6pt}
+\textbf{Aim 3 --- Build and validate a predictive dynamical model (Months 24--48)}\\
+\textit{Hypothesis:} A recurrent switching linear dynamical system (RSLDS) trained on
+multi-region population data will generalize across animals and predict motor performance from
+neural population state with greater accuracy than single-region models.
+
+\end{tcolorbox}
+
+\subsection{Methodology}
+
+\subsubsection{Animal Model and Behavioral Paradigm}
+
+Adult Long-Evans rats ($n = 24$, 12 male / 12 female) will be trained on a custom-built
+\textit{isometric precision-grip apparatus} that requires animals to modulate grip force within
+a narrow target window ($\pm 8\%$ of peak force) to earn a liquid reward. The task is designed
+to produce a clear learning curve over 10--15 sessions (approximately 3 weeks), enabling repeated
+within-animal measurement of the same neural circuits across learning stages. All procedures will
+be conducted under cantonal veterinary license BE-X-2024-1172.
+
+\subsubsection{Neural Recording Strategy}
+
+Simultaneous multi-region recordings will be performed using two \textbf{Neuropixels 2.0}
+probes (4 shanks, 1280 channels each) chronically implanted in M1 and PMC. This configuration
+enables stable unit isolation across sessions, which is essential for tracking single-neuron
+trajectory membership across learning. Spike sorting will be performed with Kilosort 4,
+followed by manual curation in Phy2. Putative cell-type classification will exploit waveform
+features and spike-train autocorrelations to separate pyramidal cells from interneurons.
+
+\subsubsection{Data Analysis Pipeline}
+
+\begin{enumerate}[leftmargin=*, label=\textbf{Step \arabic*.}, itemsep=4pt]
+  \item \textbf{Dimensionality reduction:} Gaussian-process factor analysis (GPFA) will
+    extract smooth population trajectories. We will track the number of dimensions required to
+    explain 90\% of variance (\textit{participation ratio}) as a function of learning stage.
+  \item \textbf{Manifold geometry:} Persistent homology (Ripser toolkit) will quantify
+    topological changes in the population activity manifold across learning. Geodesic distances
+    between trial-averaged trajectories will be computed on the learned manifold.
+  \item \textbf{Directed connectivity:} Granger-causal spectral analysis and partial directed
+    coherence will quantify frequency-band-specific directed information flow between M1 and PMC
+    on single-trial timescales.
+  \item \textbf{RSLDS model:} A switching linear dynamical system with $K=4$ discrete states
+    will be fitted using expectation-maximization with structured variational inference
+    (jax-ssm library). Cross-validated decoding of behavioral variables will serve as the
+    primary model performance metric.
+\end{enumerate}
+
+\subsubsection{Rigor and Reproducibility}
+
+All analysis code will be deposited on a public GitHub repository under a GPLv3 license within
+30 days of each manuscript submission. Pre-registration of primary hypotheses will be performed
+on OSF prior to data collection. Sample size was determined by a power analysis (power
+$=0.85$, $\alpha=0.05$, two-sided) based on published effect sizes for manifold dimensionality
+changes in motor cortex (Cohen's $d \approx 0.9$). Data will be stored in the DANDI archive
+in NWB:N format.
+
+\vspace{6pt}
+
+%% ─── WORK PLAN TABLE ─────────────────────────────────────────────────────────
+\subsection{Work Plan and Timeline}
+
+\begin{tcolorbox}[snsfbox, title={\faCalendar\quad Project Timeline (48 months)}]
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabularx}{\linewidth}{@{}p{3.4cm} p{2.2cm} X@{}}
+  \toprule
+  \rowcolor{SNSFnavy}
+  \textcolor{white}{\bfseries Milestone} &
+  \textcolor{white}{\bfseries Period} &
+  \textcolor{white}{\bfseries Deliverable} \\
+  \midrule
+  Surgeries \& rig commissioning & M01--M06 & 24 animals implanted; rig software validated\\
+  \rowcolor{rowalt}
+  Aim 1 data collection & M04--M18 & $\geq 180$ sessions; GPFA pipeline benchmarked\\
+  Aim 1 manuscript & M16--M22 & Preprint on bioRxiv; code released\\
+  \rowcolor{rowalt}
+  Aim 2 data collection & M12--M30 & Optogenetic silencing cohort; coherence datasets\\
+  Aim 2 manuscript & M28--M36 & Peer-reviewed journal submission\\
+  \rowcolor{rowalt}
+  RSLDS model development & M24--M40 & Open-source Python package (NeuroDynLib v1.0)\\
+  Aim 3 manuscript & M38--M46 & Submission to \textit{Nature Neuroscience}\\
+  \rowcolor{rowalt}
+  Dissemination \& archiving & M44--M48 & DANDI release; final SNSF report submitted\\
+  \bottomrule
+\end{tabularx}
+\end{center}
+\end{tcolorbox}
+
+\vspace{6pt}
+
+%% ══════════════════════════════════════════════════════════════════════════════
+%% SECTION 3: SIGNIFICANCE AND INNOVATION
+%% ══════════════════════════════════════════════════════════════════════════════

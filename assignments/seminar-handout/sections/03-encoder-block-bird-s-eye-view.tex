@@ -1,0 +1,61 @@
+\section{Encoder Block — Bird's-Eye View}
+
+\begin{center}
+\begin{tikzpicture}[
+  >=Latex,
+  node distance=5mm,
+  every node/.style={font=\small\color{neutral}},
+  box/.style={
+    draw=accent, fill=accentbg, rounded corners=3pt,
+    minimum width=58mm, minimum height=8.5mm, align=center,
+  },
+  addnode/.style={
+    draw=rulecol, fill=white, circle, inner sep=2pt, font=\footnotesize,
+  },
+]
+  \node[box] (mha)  {Multi-Head Self-Attention};
+  \node[addnode, above=of mha]  (a1) {$+$};
+  \node[box, above=of a1] (ff)  {Position-wise Feed-Forward \\ \footnotesize(Linear $\to$ ReLU $\to$ Linear)};
+  \node[addnode, above=of ff]   (a2) {$+$};
+
+  % vertical spine
+  \draw[->] ([yshift=-11mm]mha.south) -- (mha);
+  \draw[->] (mha) -- (a1);
+  \draw[->] (a1)  -- node[right=2pt]{\footnotesize Layer Norm} (ff);
+  \draw[->] (ff)  -- (a2);
+  \draw[->] (a2)  -- ++(0,9mm) node[above]{output \(z\)\quad\footnotesize Layer Norm};
+
+  % residual for MHA
+  \coordinate (in)  at ([yshift=-11mm]mha.south);
+  \draw[->] (in) -- ++(-28mm,0) |- (a1.west);
+
+  % residual for FF
+  \coordinate (mid) at ([xshift=-28mm]a1.west);
+  \draw[->] (mid) -- ([xshift=-28mm]a2.west) -- (a2.west);
+
+  % label
+  \node[right=3mm of mha, font=\footnotesize\itshape, color=neutral!70] {$\times 6$\,layers};
+\end{tikzpicture}
+\end{center}
+
+\textbf{Trace:} token embeddings enter the MHA sub-layer; a residual connection
+bypasses it; the sum is layer-normalised, fed into the feed-forward sub-layer,
+bypassed again, then layer-normalised to produce contextualised representation \(z\).
+
+\medskip
+\begin{center}\small
+\begin{tabularx}{0.82\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+  \toprule
+  Hyperparameter & Transformer-Base value \\
+  \midrule
+  \(d_{\text{model}}\)   & 512 \\
+  \(h\) (heads)           & 8   \\
+  \(d_k = d_v\)           & 64  \\
+  \(d_{ff}\)              & 2048 \\
+  Encoder layers          & 6   \\
+  Total parameters        & 65\,M \\
+  \bottomrule
+\end{tabularx}
+\end{center}
+
+% ─── Summary / Takeaways ──────────────────────────────────

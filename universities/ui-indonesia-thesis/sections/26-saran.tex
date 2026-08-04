@@ -1,0 +1,98 @@
+\section{Saran}
+Untuk penelitian dan pengembangan selanjutnya, penulis menyarankan:
+\begin{enumerate}
+  \item melakukan pengujian \emph{online} melalui \emph{A/B testing} pada
+    lingkungan produksi untuk memvalidasi temuan \emph{offline};
+  \item mengeksplorasi pendekatan \emph{hybrid} yang menggabungkan sinyal
+    konten produk dengan faktor laten kolaboratif; dan
+  \item mengkaji arsitektur berbasis \emph{deep learning}, seperti
+    \emph{neural collaborative filtering}, sebagai pembanding lanjutan.
+\end{enumerate}
+
+\end{onehalfspace}
+
+% =========================================================
+% DAFTAR PUSTAKA
+% =========================================================
+\newpage
+\begin{center}
+{\bfseries\color{uinavy}\large DAFTAR PUSTAKA}
+\end{center}
+\vspace{0.4cm}
+\begin{singlespace}
+\begin{flushleft}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{8pt}
+
+Hardjono, T., Wibisono, A., \& Santoso, D. (2021). Hybrid recommendation
+approaches for fashion e-commerce platforms. \emph{Jurnal Sistem Informasi
+Nusantara}, 9(2), 112--124.
+
+Hu, Y., Koren, Y., \& Volinsky, C. (2008). Collaborative filtering for
+implicit feedback datasets. \emph{Proceedings of the IEEE International
+Conference on Data Mining}, 263--272.
+
+Kusuma, S. R., \& Prabowo, A. (2022). Choice overload and personalization
+strategies in online retail. \emph{Jurnal Manajemen Teknologi Informasi},
+14(1), 45--58.
+
+Prasetyo, B., \& Ramadhani, F. (2023). Time-aware collaborative filtering
+for cold-start users. \emph{Jurnal Ilmu Komputer dan Informasi}, 16(3),
+201--215.
+
+Santoso, W. (2020). Personalisasi pengalaman pengguna pada platform
+e-dagang: Sebuah tinjauan sistematis. \emph{Jurnal Teknologi dan Sistem
+Informasi}, 6(1), 33--47.
+
+Wibisono, A., \& Ananta, R. (2019). Scalability challenges of item-based
+collaborative filtering on large-scale catalogs. \emph{Prosiding Seminar
+Nasional Ilmu Komputer}, 78--86.
+
+\end{flushleft}
+\end{singlespace}
+
+% =========================================================
+% LAMPIRAN
+% =========================================================
+\newpage
+\begin{center}
+{\bfseries\color{uinavy}\large LAMPIRAN}
+\end{center}
+\vspace{0.4cm}
+
+\noindent
+\textbf{Lampiran A. Cuplikan Kueri Konstruksi Matriks Interaksi}
+
+\begin{tcolorbox}[
+  colback=uinavy, colframe=uinavy, arc=1pt,
+  left=8pt, right=8pt, top=6pt, bottom=6pt,
+  fontupper=\footnotesize\ttfamily\color{white}
+]
+SELECT user\_id, product\_id,\\{}
+\phantom{xx}SUM(CASE\\{}
+\phantom{xxxx}WHEN event\_type = 'click' THEN 1\\{}
+\phantom{xxxx}WHEN event\_type = 'add\_to\_cart' THEN 3\\{}
+\phantom{xxxx}WHEN event\_type = 'purchase' THEN 5\\{}
+\phantom{xxxx}ELSE 0\\{}
+\phantom{xx}END) AS interaction\_weight\\{}
+FROM interaction\_log\\{}
+WHERE event\_date BETWEEN '2025-01-01' AND '2025-12-31'\\{}
+GROUP BY user\_id, product\_id;
+\end{tcolorbox}
+
+\vspace{0.6cm}
+\noindent
+\textbf{Lampiran B. Parameter Akhir Model ALS Terpilih}
+
+\begin{center}
+\begin{tabularx}{0.7\textwidth}{@{}Xr@{}}
+\toprule
+\textbf{Parameter} & \textbf{Nilai} \\
+\midrule
+Jumlah faktor laten ($k$) & 64 \\
+Koefisien regularisasi ($\lambda$) & 0,1 \\
+Jumlah iterasi & 20 \\
+Skema pembobotan & \emph{time-decay exponential} \\
+\bottomrule
+\end{tabularx}
+\end{center}

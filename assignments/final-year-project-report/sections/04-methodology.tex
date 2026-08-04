@@ -1,0 +1,124 @@
+\section{Methodology}
+
+\subsection{System Architecture Overview}
+
+The proposed system follows a modular pipeline comprising four stages:
+(i) image acquisition and preprocessing, (ii) data augmentation and dataset
+preparation, (iii) model training and hyperparameter optimisation, and
+(iv) web-based deployment for inference. Figure~\ref{fig:architecture}
+illustrates the high-level system architecture.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.85\textwidth]{architecture.png}
+  \caption{High-level system architecture: from image acquisition to
+           web-based disease diagnosis.}
+  \label{fig:architecture}
+\end{figure}
+
+\subsection{Dataset Description}
+
+The PlantVillage dataset (Hughes \& Salathé, 2015) is used for all
+experiments. It contains 54\,303 colour leaf images across 14 crop species
+and 38 class labels (healthy and diseased). Images are captured under
+controlled laboratory conditions with uniform backgrounds.
+
+\parsp
+For this study, we focus on five economically significant crops: tomato,
+potato, pepper, corn (maize), and apple — totalling 17 disease classes plus
+their healthy counterparts. Table~\ref{tab:dataset} summarises the class
+distribution.
+
+\begin{table}[H]
+  \centering
+  \caption{Dataset composition for selected crops.}
+  \label{tab:dataset}
+  \begin{tabular}{@{}lrrr@{}}
+    \toprule
+    \textbf{Crop}  & \textbf{Disease Classes} & \textbf{Images} & \textbf{Train/Val/Test} \\
+    \midrule
+    Tomato  & 9  & 18\,160 & 12\,712\,/\,2\,724\,/\,2\,724 \\
+    Corn    & 3  &  3\,852 &  2\,696\,/\,  578\,/\,  578 \\
+    Potato  & 2  &  2\,152 &  1\,506\,/\,  323\,/\,  323 \\
+    Pepper  & 1  &  2\,475 &  1\,732\,/\,  371\,/\,  372 \\
+    Apex   & 3  &  3\,171 &  2\,219\,/\,  476\,/\,  476 \\
+    \midrule
+    \textbf{Total} & \textbf{18} & \textbf{29\,810} & \textbf{20\,865\,/\,4\,472\,/\,4\,473} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Data Preprocessing and Augmentation}
+
+All images are resized to $224 \times 224$ pixels (the standard input size
+for most pre-trained architectures) using bilinear interpolation. Pixel
+values are normalised to the $[0, 1]$ range by dividing by 255. Labels are
+one-hot encoded for categorical cross-entropy loss.
+
+\parsp
+To combat overfitting and improve generalisation, the following augmentation
+transformations are applied stochastically during training:
+
+\begin{enumerate}[label=\textcolor{accent}{\textbullet}, leftmargin=2em, itemsep=3pt]
+  \item Random horizontal flip (probability = 0.5)
+  \item Random vertical flip (probability = 0.3)
+  \item Random rotation in $[-30^\circ, +30^\circ]$
+  \item Random zoom (scale factor in $[0.85, 1.15]$)
+  \item Random brightness adjustment ($\pm 20\%$)
+  \item Random contrast adjustment ($\pm 15\%$)
+\end{enumerate}
+
+\subsection{Proposed CNN Architecture}
+
+A custom lightweight CNN is designed from scratch, prioritising parameter
+efficiency without sacrificing discriminative power. The architecture
+comprises five convolutional blocks, each consisting of two $3 \times 3$
+convolutional layers with ReLU activation, followed by batch normalisation,
+$2 \times 2$ max-pooling, and dropout ($p = 0.25$). A global average pooling
+layer replaces fully connected layers at the classifier head, reducing
+parameters by over 80\% compared to a dense flattening approach. The final
+output layer uses softmax activation with 18 units corresponding to the
+disease classes.
+
+\begin{table}[H]
+  \centering
+  \caption{Proposed CNN architecture. \texttt{Conv2D(f, k)} = $f$ filters,
+           $k \times k$ kernel; \texttt{BN} = Batch Normalisation;
+           \texttt{MP} = $2 \times 2$ Max Pooling; \texttt{GAP} = Global
+           Average Pooling.}
+  \label{tab:architecture}
+  \begin{tabular}{@{}llrr@{}}
+    \toprule
+    \textbf{Block} & \textbf{Layers} & \textbf{Output Shape} & \textbf{Params} \\
+    \midrule
+    Input      & ---                                    & $224 \times 224 \times 3$  & 0 \\
+    Block 1    & Conv2D(32,3) $\times$ 2, BN, MP, DO   & $112 \times 112 \times 32$ & 18\,496 \\
+    Block 2    & Conv2D(64,3) $\times$ 2, BN, MP, DO   & $56 \times 56 \times 64$   & 73\,984 \\
+    Block 3    & Conv2D(128,3) $\times$ 2, BN, MP, DO  & $28 \times 28 \times 128$  & 295\,168 \\
+    Block 4    & Conv2D(256,3) $\times$ 2, BN, MP, DO  & $14 \times 14 \times 256$  & 1\,180\,160 \\
+    Block 5    & Conv2D(512,3) $\times$ 2, BN, GAP, DO & $1 \times 1 \times 512$     & 4\,720\,128 \\
+    Classifier & Dense(18) + Softmax                   & 18                        & 9\,234 \\
+    \midrule
+    \multicolumn{3}{l}{\textbf{Total Trainable Parameters}} & \textbf{6\,297\,170} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Training Protocol}
+
+All models are trained for 80 epochs using the Adam optimiser with an initial
+learning rate of $1 \times 10^{-3}$, reduced by a factor of 0.5 when
+validation loss plateaus for 5 consecutive epochs (ReduceLROnPlateau
+callback). Early stopping with a patience of 12 epochs prevents overfitting.
+The batch size is set to 32. Categorical cross-entropy is used as the loss
+function.
+
+\parsp
+Three transfer-learned baselines are evaluated alongside the custom CNN:
+ResNet-50, InceptionV3, and MobileNetV2 — all initialised with
+ImageNet-pretrained weights. The final classification layers are replaced with
+a global average pooling layer, a 256-unit dense layer with ReLU and
+dropout ($p = 0.5$), and an 18-unit softmax output. Only the custom head and
+the last two convolutional blocks are unfrozen during fine-tuning.
+
+% ── 4. Implementation ─────────────────────────────────────────────────────

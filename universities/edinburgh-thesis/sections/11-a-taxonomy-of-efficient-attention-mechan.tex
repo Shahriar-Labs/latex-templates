@@ -1,0 +1,41 @@
+\section{A Taxonomy of Efficient Attention Mechanisms}
+\label{sec:background-taxonomy}
+
+The quadratic complexity of standard self-attention has motivated a large body of work on
+efficient approximations. Table~\ref{tab:taxonomy} provides a structured overview of the
+design space.
+
+\begin{table}[htbp]
+  \centering
+  \caption{A taxonomy of efficient attention mechanisms categorised by sparsity structure,
+    context dependence, and use of external memory.}
+  \label{tab:taxonomy}
+  \begin{tabularx}{\linewidth}{@{}>{\color{edinburghblue}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+    \toprule
+    \textbf{Category} & \textbf{Mechanism} & \textbf{Key Works} \\
+    \midrule
+    Fixed Sparse
+      & Predefined sparsity patterns (local windows, strided, dilated)
+      & \cite{child2019generating, beltagy2020longformer} \\
+    Learned Sparse
+      & Input-dependent sparsity via hashing, clustering, or routing
+      & \cite{kitaev2020reformer, roy2021efficient} \\
+    Low-Rank
+      & Kernelised or linearised attention via feature maps
+      & \cite{katharopoulos2020transformers, choromanski2021rethinking} \\
+    Memory-Augmented
+      & External memory with read/write operations; compression
+      & \cite{rae2019compressive, dai2019transformer} \\
+    Recurrence-Based
+      & Recurrent connection across transformer layers
+      & \cite{dai2019transformer} \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Each category trades off a different dimension of the accuracy--efficiency Pareto frontier.
+Fixed-sparse methods offer predictable speedups but may miss critical long-range
+connections; learned-sparse methods adapt to the input but incur routing overhead;
+low-rank methods achieve linear complexity but can struggle with tasks requiring precise
+token-level interactions. The work presented in this thesis spans the learned-sparse
+(Chapter~\ref{chap:sca}) and memory-augmented (Chapter~\ref{chap:hmg}) categories.

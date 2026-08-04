@@ -1,0 +1,101 @@
+\section{Secondary Endpoints and Multiplicity Adjustment}
+
+\subsection{Hierarchical Testing Procedure}
+
+All confirmatory secondary endpoints will be tested using the fixed-sequence (hierarchical)
+procedure outlined below. Testing proceeds to the next endpoint only if the preceding
+test is significant at $\alpha = 0.025$ (one-sided).
+
+\subsubsection{Multiplicity Adjustment Flowchart}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=7mm and 4mm,
+  box/.style={
+    rectangle, rounded corners=3pt,
+    draw=sapblue, fill=sapfog, thick,
+    text width=72mm, align=center,
+    inner sep=5pt, font=\small
+  },
+  decision/.style={
+    diamond, draw=sapsteel, fill=white, thick,
+    aspect=2.8, align=center, font=\footnotesize,
+    inner sep=2pt
+  },
+  stop/.style={
+    rectangle, rounded corners=3pt,
+    draw=sapwarn, fill=sapwarnbg, thick,
+    text width=52mm, align=center,
+    inner sep=4pt, font=\small\bfseries\color{sapwarn}
+  },
+  arr/.style={-Stealth, thick, color=sapblue},
+  nos/.style={-Stealth, thick, color=sapwarn}
+]
+
+\node[box] (ep1) {\textbf{H1:} Primary — Trough FEV\textsubscript{1} at Wk 52\\\small(MMRM, one-sided $\alpha=0.025$)};
+
+\node[decision, below=of ep1] (d1) {Sig?};
+
+\node[box, below=of d1] (ep2) {\textbf{H2:} SGRQ Total Score at Wk 52\\\small(MMRM)};
+
+\node[decision, below=of ep2] (d2) {Sig?};
+
+\node[box, below=of d2] (ep3) {\textbf{H3:} Exacerbation Rate over 52 Wks\\\small(Negative Binomial)};
+
+\node[decision, below=of ep3] (d3) {Sig?};
+
+\node[box, below=of d3] (ep4) {\textbf{H4:} Peak FEV\textsubscript{1} at Wk 52\\\small(MMRM)};
+
+\node[stop, right=24mm of d1] (stop1) {Stop confirmatory testing};
+\node[stop, right=24mm of d2] (stop2) {Stop confirmatory testing};
+\node[stop, right=24mm of d3] (stop3) {Stop confirmatory testing};
+
+\draw[arr] (ep1) -- (d1);
+\draw[arr] (d1) -- node[left,font=\footnotesize]{Yes} (ep2);
+\draw[arr] (ep2) -- (d2);
+\draw[arr] (d2) -- node[left,font=\footnotesize]{Yes} (ep3);
+\draw[arr] (ep3) -- (d3);
+\draw[arr] (d3) -- node[left,font=\footnotesize]{Yes} (ep4);
+
+\draw[nos] (d1) -- node[above,font=\footnotesize]{No} (stop1);
+\draw[nos] (d2) -- node[above,font=\footnotesize]{No} (stop2);
+\draw[nos] (d3) -- node[above,font=\footnotesize]{No} (stop3);
+
+\end{tikzpicture}
+\end{center}
+
+\begin{tcolorbox}[sapnote, title={\faIcon{shield-alt}\ Family-Wise Error Rate Control}]
+  The fixed-sequence procedure controls the family-wise error rate (FWER) at one-sided
+  $\alpha = 0.025$ under arbitrary correlation among test statistics. No Bonferroni,
+  Holm, or Hochberg adjustments are applied within the sequence.
+  Exploratory endpoints (H5 onward) are not multiplicity-adjusted; $p$-values are nominal.
+\end{tcolorbox}
+
+\subsection{Secondary Analysis Methods}
+
+\begin{tabularx}{\linewidth}{@{}
+  >{\centering\arraybackslash}p{8mm}
+  >{\raggedright\arraybackslash}X
+  >{\raggedright\arraybackslash}p{38mm}
+  >{\centering\arraybackslash}p{16mm}@{}}
+\toprule
+\rowcolor{sapfog}
+\textbf{H\#} & \textbf{Endpoint} & \textbf{Method} & \textbf{TFL Ref} \\
+\midrule
+H2 & SGRQ Total Score change from baseline at Wk 52 & MMRM (same model) & ET-EFF-002 \\
+\addlinespace[2pt]
+H3 & Annualised rate of moderate/severe COPD exacerbations & Negative Binomial GLM, log(time on study) offset & ET-EFF-003 \\
+\addlinespace[2pt]
+H4 & Peak FEV\textsubscript{1} (2h post-dose) change from BL at Wk 52 & MMRM & ET-EFF-004 \\
+\addlinespace[2pt]
+H5 & Proportion of FEV\textsubscript{1} responders ($\geq$100 mL) at Wk 52 & Logistic regression; OR + 95\% CI & ET-EFF-005 \\
+\addlinespace[2pt]
+H6 & Time to first moderate/severe exacerbation & Kaplan--Meier; log-rank; Cox PH & ET-EFF-006 \\
+\bottomrule
+\end{tabularx}
+
+\clearpage
+
+% ============================================================
+%  SECTION 6 — SAFETY ANALYSES
+% ============================================================

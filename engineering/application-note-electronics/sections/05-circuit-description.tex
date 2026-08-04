@@ -1,0 +1,74 @@
+\section{Circuit Description}
+
+\subsection{Power Stage}
+The power stage uses the SSC61830, a peak-current-mode synchronous buck
+converter controller with integrated 30\,V / 2.5\,A high-side and low-side
+MOSFETs. The controller switches at a fixed frequency of 500\,kHz, set
+internally, and regulates the output through an external resistive feedback
+divider. Figure~\ref{fig:schematic} shows the simplified schematic of the
+power stage.
+
+\begin{figure}[H]
+\centering
+\begin{circuitikz}[every node/.append style={font=\scriptsize}]
+% --- input source and ground rail ---
+\draw (0,0) to[V, l={$V_{IN}$ = 5\,V}] (0,3.4);
+\draw (0,0) node[ground]{};
+\draw (0,0) -- (10.3,0);
+% --- VIN rail ---
+\draw (0,3.4) -- (4.2,3.4);
+\draw (1.6,3.4) node[circ]{};
+\draw (1.6,3.4) to[C, l={$C_{IN}$}] (1.6,0);
+\draw (1.6,0) node[circ]{};
+\draw (3.4,3.4) node[circ]{};
+% --- EN tied to VIN ---
+\draw (4.2,2.6) -- (3.4,2.6) -- (3.4,3.4);
+% --- controller IC ---
+\draw (4.2,0.8) rectangle (6.6,4.0);
+\node[font=\bfseries\small] at (5.4,2.65) {U1};
+\node[font=\scriptsize] at (5.4,2.2) {SSC61830};
+\node[anchor=south,font=\scriptsize] at ($(4.2,3.4)+(0.4,0.05)$) {VIN};
+\node[anchor=north,font=\scriptsize] at ($(4.2,2.6)+(0.35,-0.05)$) {EN};
+\node[anchor=south,font=\scriptsize] at ($(6.6,3.0)+(-0.35,0.05)$) {SW};
+\node[anchor=north,font=\scriptsize] at ($(6.6,1.4)+(-0.35,-0.05)$) {FB};
+\node[anchor=north,font=\scriptsize] at (5.4,0.75) {GND};
+\draw (5.4,0.8) -- (5.4,0);
+\draw (5.4,0) node[circ]{};
+% --- SW node, inductor, Vout ---
+\draw (6.6,3.0) -- (7.4,3.0);
+\draw (7.4,3.0) to[L, l={$L_1$ = 2.2\,\textmu H}] (9.0,3.0);
+\draw (9.0,3.0) node[circ]{};
+% --- feedback divider ---
+\draw (9.0,3.0) to[R, l={$R_1$ = 45.0\,k$\Omega$}] (9.0,1.4);
+\draw (9.0,1.4) node[circ]{};
+\draw (9.0,1.4) -- (6.6,1.4);
+\draw (9.0,1.4) to[R, l={$R_2$ = 10.0\,k$\Omega$}] (9.0,0);
+\draw (9.0,0) node[circ]{};
+% --- output capacitor ---
+\draw (9.0,3.0) -- (9.6,3.0);
+\draw (9.6,3.0) to[C, l={$C_{OUT}$}] (9.6,0);
+\draw (9.6,0) node[circ]{};
+% --- load resistor ---
+\draw (9.6,3.0) -- (10.3,3.0);
+\draw (10.3,3.0) to[R, l={$R_L$}] (10.3,0);
+\end{circuitikz}
+\caption{Simplified schematic of the 5\,V-to-3.3\,V, 2\,A synchronous buck
+converter built around the SSC61830 controller.}
+\label{fig:schematic}
+\end{figure}
+
+\subsection{Feedback Network Design}
+The SSC61830 regulates its feedback (FB) pin to an internal reference,
+$V_{REF} = 0.6$\,V. The output voltage is set by the resistive divider $R_1$,
+$R_2$ according to:
+\begin{equation}
+V_{OUT} = V_{REF}\left(1+\dfrac{R_1}{R_2}\right)
+\label{eq:fb}
+\end{equation}
+Choosing $R_2 = 10.0\,\mathrm{k}\Omega$ (a divider current of approximately
+60\,\textmu A) and solving Equation~\eqref{eq:fb} for a 3.3\,V output gives
+$R_1 = 45.0\,\mathrm{k}\Omega$. Both resistors use 1\% tolerance thin-film
+parts to hold the output within the $\pm2\%$ requirement of REQ-2 across
+process and temperature.
+
+% ===========================================================================

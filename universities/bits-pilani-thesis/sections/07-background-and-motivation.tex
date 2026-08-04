@@ -1,0 +1,21 @@
+\section{Background and Motivation}
+The proliferation of latency-sensitive applications -- augmented-reality retail experiences, autonomous inspection drones, and real-time logistics tracking -- has pushed computation away from centralised data centres and toward the network edge. Figure~\ref{fig:continuum} illustrates the resulting three-tier \emph{edge-cloud continuum}: constrained device-tier sensors, latency-favourable edge clusters positioned near points of presence, and elastic cloud regions offering near-unbounded capacity at higher round-trip cost.
+
+\begin{figure}[htb]
+\centering
+\begin{tikzpicture}[
+  tier/.style={rectangle,rounded corners=3pt,draw=bitsnavy,line width=1pt,minimum width=8.6cm,minimum height=1.3cm,align=center},
+  node distance=0.9cm
+]
+\node[tier,fill=bitsnavy!85,text=white] (cloud) {\textbf{Cloud Tier} -- Elastic compute, high capacity, higher RTT (Nimbus Region)};
+\node[tier,fill=bitsmaroon!75,text=white,below=of cloud] (edge) {\textbf{Edge Tier} -- Regional clusters, bounded capacity, low RTT};
+\node[tier,fill=bitsgold!70,text=bitsnavy,below=of edge] (device) {\textbf{Device Tier} -- Sensors, cameras, mobile clients (Nexa Retail stores)};
+\draw[-{Latex[length=2.5mm]},bitsgray,line width=1pt] (device.north) -- (edge.south);
+\draw[-{Latex[length=2.5mm]},bitsgray,line width=1pt] (edge.north) -- (cloud.south);
+\draw[{Latex[length=2.5mm]}-{Latex[length=2.5mm]},bitsgray,line width=0.8pt,dashed] ($(edge.east)+(0.2,0)$) -- ++(0.9,0) node[right,align=left,font=\tiny\color{bitsgray}] {telemetry\\feedback};
+\end{tikzpicture}
+\caption{The three-tier edge-cloud continuum considered in this thesis.}
+\label{fig:continuum}
+\end{figure}
+
+Scheduling decisions in this continuum must jointly reason about compute placement, network latency, and monetary cost, under workload patterns that shift on the order of seconds. Static or single-objective schedulers -- common in current commercial offerings including Vertex CloudOps and Apex Fabric -- either under-utilise edge capacity during quiet periods or violate service-level agreements (SLAs) during bursts.

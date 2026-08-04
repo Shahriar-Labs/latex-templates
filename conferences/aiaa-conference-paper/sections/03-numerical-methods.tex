@@ -1,0 +1,32 @@
+\section{Numerical Methods}
+\label{sec:methods}
+%------------------------------------------------------------------
+
+\subsection{Gauss--Lobatto Collocation}
+
+The continuous optimal control problem is transcribed using Gauss–Lobatto
+collocation on $N$ mesh intervals, each containing a fixed number of interior
+collocation points.  State variables are represented as Lagrange polynomials
+over each interval; defect constraints enforce consistency between the polynomial
+derivative and the right-hand side of Eq.~(\ref{eq:eom}) at all collocation
+points.  The resulting NLP has approximately $7(N+1)$ decision variables (six
+state components plus mass) plus $3N$ control variables (two thrust angles and
+one throttle level per interval).
+
+\subsection{Initial Guess Strategy}
+
+Shaped analytic thrust profiles based on the exponential sinusoid method
+\cite{wall2009} provide feasible initial guesses without prior knowledge of
+the optimal costates.  A homotopy continuation scheme progressively tightens
+the equations of motion tolerance to warm-start the NLP solver from the analytic
+guess, reducing sensitivity to initialization.
+
+\subsection{NLP Solver and Implementation}
+
+The NLP is solved with IPOPT 3.14 using the MA57 direct linear solver.  Analytic
+first- and second-order derivatives are computed via algorithmic differentiation
+(CasADi 3.6).  All computations are performed on a workstation with 64~GB RAM;
+a typical 360-day transfer trajectory with $N = 300$ mesh intervals converges
+in under 90 seconds.
+
+%------------------------------------------------------------------

@@ -1,0 +1,45 @@
+\section{Interface Specification (API Endpoints)}
+The system exposes external rest endpoints through Nexa Gateway. The primary endpoints for handling requests are structured as follows:
+
+% Table: API Specification (Exactly 3 & per row for 4 columns)
+\begin{table}[h]
+\centering
+\sffamily\small
+\begin{tabularx}{\linewidth}{|l|l|l|X|}
+\hline
+\rowcolor{primary}
+\textcolor{white}{\textbf{Method}} & \textcolor{white}{\textbf{Endpoint}} & \textcolor{white}{\textbf{Auth}} & \textcolor{white}{\textbf{Description / Response}} \\
+\hline
+\texttt{POST} & \texttt{/v1/auth/token} & None & Authenticates clients via Synapse Auth, issuing short-lived JWT. Returns \texttt{200 OK} with payload. \\
+\hline
+\rowcolor{lightbg}
+\texttt{GET} & \texttt{/v1/telemetry/nodes} & JWT & Fetches node status metrics from Vertex Core. Returns \texttt{200 OK} with JSON node list. \\
+\hline
+\texttt{POST} & \texttt{/v1/jobs/submit} & JWT & Submits process payload to Vertex Core, publishing event to Nimbus Queue. Returns \texttt{202 Accepted}. \\
+\hline
+\rowcolor{lightbg}
+\texttt{GET} & \texttt{/v1/reports/summary} & API Key & Queries Meridian DB via Vertex Analytics for data aggregation. Returns \texttt{200 OK} with report URL. \\
+\hline
+\end{tabularx}
+\caption{Nexa Gateway API Definition}
+\end{table}
+
+\subsection{Sample Transaction Payload}
+Below is the default JSON payload structure submitted to the \texttt{/v1/jobs/submit} endpoint:
+
+\begin{lstlisting}[caption=Transaction Request JSON Payload]
+{
+  "transaction_id": "tx-8890214-vtx",
+  "client_origin": "nexa-web-portal",
+  "timestamp": 1781512080,
+  "payload": {
+    "module": "vertex_billing_engine",
+    "action": "process_invoice",
+    "details": {
+      "account_id": "acc-meridian-9901",
+      "amount_usd": 12450.00,
+      "currency": "USD"
+    }
+  }
+}
+\end{lstlisting}

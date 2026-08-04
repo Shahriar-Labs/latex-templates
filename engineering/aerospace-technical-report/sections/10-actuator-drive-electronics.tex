@@ -1,0 +1,29 @@
+\section{Actuator Drive Electronics}
+Each electro-hydrostatic actuator incorporates a local servo-loop closed
+at 800~Hz with a proportional-integral (PI) current regulator. The command
+signal from the FCC is a $\pm 10$~V analog reference representing desired
+surface position. Figure~\ref{fig:eha} shows the drive-electronics interface.
+
+\begin{figure}[H]
+\centering
+\begin{circuitikz}[american, scale=0.95]
+  \draw (0,0) node[op amp, noinv input up] (opamp) {};
+  \draw (opamp.+) to[short, -o] ++(-1.8,0) node[left] {$V_{\text{cmd}}$};
+  \draw (opamp.-) to[short] ++(0,-1.2) coordinate (fb) to[short] (fb -| opamp.out)
+        to[short] (opamp.out);
+  \draw (fb) to[R=$R_f$, *-] ++(0,-1.4) node[ground] {};
+  \draw (opamp.out) to[short, -o] ++(0.8,0) node[right] {$V_{\text{out}}$};
+  \draw (opamp.up) node[above=3pt] {$+15\,\text{V}$};
+  \draw (opamp.down) node[below=3pt] {$-15\,\text{V}$};
+  \node[draw=accent, fill=accent!5, rounded corners=2pt, fit=(opamp),
+    inner sep=18pt, label={[font=\footnotesize\bfseries]north west:EHA Servo Amp}] {};
+\end{circuitikz}
+\caption{EHA servo-amplifier interface — PI current regulator, $f_s=800$~Hz.}
+\label{fig:eha}
+\end{figure}
+
+\newpage
+
+% ══════════════════════════════════════════════════════════════════════════
+% 3.0  REQUIREMENTS AND TRACEABILITY
+% ══════════════════════════════════════════════════════════════════════════

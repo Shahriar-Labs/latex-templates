@@ -1,0 +1,30 @@
+\section{Experimental Setup}
+
+\subsection{Hardware Configuration}
+
+The testbed consists of 64 heterogeneous edge nodes distributed across four racks, summarized in Table~\ref{tab:nodes}. All nodes run Ubuntu 22.04 LTS with kernel 6.5 and Docker 24.0.
+
+\begin{table}[htbp]
+\centering
+\caption{Edge cluster node configuration.}
+\label{tab:nodes}
+\begin{tabularx}{\textwidth}{l*{3}{>{\centering\arraybackslash}X}}
+\toprule
+\textbf{Tier} & \textbf{Count} & \textbf{CPU} & \textbf{Memory} \\
+\midrule
+Standard & 36 & 8-core x86 & 32 GB \\{}
+GPU-Enhanced & 16 & 12-core + Lumina T4 & 64 GB \\{}
+High-Memory & 12 & 16-core & 128 GB \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Workload Traces}
+
+We use three workload profiles derived from production traces at Vertex Cloud Services, sanitized and released for academic use:
+
+\begin{itemize}[leftmargin=*,itemsep=4pt]
+    \item \textbf{Video Analytics Pipeline.} 480p and 720p streams processed through object detection (YOLO-style) and frame differencing. Target latency: 50~ms per frame.
+    \item \textbf{IoT Stream Aggregation.} Time-series window aggregation (median, percentile, anomaly score) over sensor streams at ingress rates up to 10\,000 events per second per node.
+    \item \textbf{Inference Serving.} Bert-medium and ResNet-50 serving behind a load balancer, with Poisson arrival at mean 200 queries per second.
+\end{itemize}

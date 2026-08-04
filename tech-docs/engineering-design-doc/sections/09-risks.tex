@@ -1,0 +1,16 @@
+\section{Risks}
+% ============================================================
+
+\begin{tabularx}{\linewidth}{@{}K@{\hspace{6mm}}l@{\hspace{4mm}}l@{\hspace{4mm}}V@{}}
+\toprule
+Risk & Likelihood & Severity & Mitigation \\
+\midrule
+TiDB write-stall under GC pressure & Medium & High & Tune \icode{gc\_life\_time} to 10\,min; pre-warm GC worker thread pool. \\
+Kafka consumer lag spike & Low & Medium & Auto-scaling consumer group (KEDA); dead-letter queue for retries. \\
+Redis idempotency store OOM & Low & High & TTL = 24\,h; eviction policy \icode{allkeys-lru}; cluster sharding by \icode{merchant\_id}. \\
+Dual-write divergence (Phase 1) & Medium & Critical & Nightly recon job halts Phase on $>$ 0.01\,\% delta; automatic rollback flag. \\
+Vendor lock-in (TiDB) & Low & Medium & Protobuf schema + CQRS read tier decoupled; CockroachDB migration path documented. \\
+\bottomrule
+\end{tabularx}
+
+% ============================================================

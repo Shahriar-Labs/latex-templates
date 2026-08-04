@@ -1,0 +1,72 @@
+\section{Results}
+We evaluate the performance of \texttt{DeepTransient} on a simulated LSST dataset containing 50,000 light curves across four main classes: Type Ia Supernovae (SN Ia), Core-Collapse Supernovae (SN CC), Tidal Disruption Events (TDE), and Active Galactic Nuclei (AGN).
+
+\subsection{Performance Comparison}
+Table~\ref{tab:metrics} shows the comparison of \texttt{DeepTransient} with baseline models. Our model achieves a micro-averaged F1-score of 0.950, outperforming the classical Random Forest baseline by more than 10\%.
+
+\begin{table}[htbp]
+\centering
+\caption{Classification metrics (Precision, Recall, and F1-score) of different models evaluated on the simulated Rubin LSST transient dataset.}
+\label{tab:metrics}
+\vspace{0.3cm}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Classifier Model} & \textbf{Precision} & \textbf{Recall} & \textbf{F1-score} \\
+\midrule
+Random Forest (Baseline) & 0.852 & 0.841 & 0.846 \\
+Gradient Boosted Trees   & 0.871 & 0.865 & 0.868 \\
+LSTM (Photometry only)   & 0.893 & 0.887 & 0.890 \\
+\textbf{DeepTransient}    & \textbf{0.954} & \textbf{0.946} & \textbf{0.950} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+We also analyze the sensitivity of the model to the training sample size. As shown in Figure~\ref{fig:performance}, our deep learning pipeline scales significantly better with larger datasets compared to the baseline Random Forest model, which exhibits asymptotic performance beyond 30,000 samples.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.75\textwidth,
+    height=6cm,
+    axis lines=left,
+    grid=both,
+    grid style={line width=.1pt, draw=gray!10},
+    major grid style={line width=.2pt, draw=gray!20},
+    xlabel={Training Set Size (thousands)},
+    ylabel={F1-Score},
+    xmin=5, xmax=55,
+    ymin=0.70, ymax=0.98,
+    xtick={10,20,30,40,50},
+    ytick={0.75,0.80,0.85,0.90,0.95},
+    legend pos=south east,
+    legend style={draw=none, fill=none, font=\small},
+    line width=0.8pt,
+    cycle list={
+        {accentcolor, mark=*},
+        {gray, mark=square*}
+    }
+]
+\addplot[accentcolor, mark=*, thick] coordinates {
+    (10, 0.762)
+    (20, 0.845)
+    (30, 0.898)
+    (40, 0.931)
+    (50, 0.950)
+};
+\addlegendentry{DeepTransient}
+
+\addplot[mutedgray, dashed, mark=square*, thick] coordinates {
+    (10, 0.721)
+    (20, 0.784)
+    (30, 0.825)
+    (40, 0.841)
+    (50, 0.846)
+};
+\addlegendentry{Baseline Random Forest}
+
+\end{axis}
+\end{tikzpicture}
+\caption{Classification performance (F1-score) of the \texttt{DeepTransient} pipeline compared to the baseline Random Forest classifier as a function of the training sample size.}
+\label{fig:performance}
+\end{figure}

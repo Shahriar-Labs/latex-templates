@@ -1,0 +1,36 @@
+\section{Mechanism Description}
+\label{sec:sca}
+
+\subsection{Context-Dependent Sparsity Controller}
+
+Given queries $Q \in \mathbb{R}^{n \times d}$ and keys $K \in \mathbb{R}^{n \times d}$,
+SCA first computes a \textit{sparsity score} for each query--key pair using a lightweight
+controller network:
+
+\begin{equation}
+  S(Q,K) = \sigma\!\left( Q\,W_s\,K^{\top} \oslash \sqrt{d} \right),
+  \label{eq:sparsity-score}
+\end{equation}
+
+where $W_s \in \mathbb{R}^{d \times d}$ is a learned projection, $\sigma$ denotes the
+sigmoid function, and $\oslash$ indicates element-wise division by the broadcast scalar.
+For each query $q_i$, we retain the top-$k$ keys according to $S(q_i, \cdot)$, where
+$k = \lceil c\sqrt{n} \rceil$ for a configurable constant $c$. This yields worst-case
+complexity $\mathcal{O}(n k d) = \mathcal{O}(c\, n^{3/2} d)$.
+
+\subsection{Gated Attention with Sparsity Mask}
+
+Let $\mathcal{M} \in \{0,1\}^{n \times n}$ be the binary mask indicating retained
+query--key pairs. The SCA output is computed as:
+
+\begin{equation}
+  \operatorname{SCA}(Q,K,V) = \operatorname{softmax}\!\left(
+    \frac{QK^{\top}}{\sqrt{d_k}} + \log \mathcal{M}
+  \right) V ,
+  \label{eq:sca}
+\end{equation}
+
+where we add $\log 0 = -\infty$ for masked-out positions, ensuring they receive zero
+weight after the softmax. Crucially, the sparsity controller $S$ is trained end-to-end
+with the main objective; the top-$k$ selection is treated as a straight-through estimator
+during backpropagation \cite{bengio2013estimating}.

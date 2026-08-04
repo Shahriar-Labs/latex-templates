@@ -1,0 +1,77 @@
+\section{Adaptive Gradient Methods}
+
+The key limitation of SGD is its use of a single, isotropic learning rate for all parameters.
+When the Hessian is ill-conditioned — with eigenvalues spanning many orders of magnitude, as is
+typical in deep networks — a learning rate small enough to stabilize the steepest directions
+slows convergence to a crawl in flat directions.
+
+\subsection{AdaGrad}
+
+Duchi et al.\ \cite{duchi2011} introduced AdaGrad, which maintains a per-parameter learning
+rate that scales inversely with the $\ell_2$ norm of all historical gradients:
+\begin{equation}
+  \theta_{t+1} = \theta_t - \eta \frac{g_t}{\sqrt{G_t + \varepsilon}},
+\end{equation}
+where $G_t = \sum_{s=1}^{t} g_s^2$ (element-wise). AdaGrad adapts rapidly to sparse features
+but suffers from monotonic learning rate decay, causing premature stagnation on non-sparse
+problems.
+
+\subsection{RMSProp and Adam}
+
+RMSProp \cite{tieleman2012} replaces the cumulative sum with an exponential moving average,
+preventing the learning rate from decaying to zero:
+\begin{equation}
+  v_t = \beta_2 v_{t-1} + (1-\beta_2) g_t^2.
+\end{equation}
+
+Adam \cite{kingma2015} further adds a momentum term (Equations~\ref{eq:adam_m}--\ref{eq:adam_update}),
+creating an algorithm that adapts step sizes \emph{and} accumulates gradient direction. Adam's
+default hyperparameters ($\beta_1=0.9$, $\beta_2=0.999$, $\varepsilon=10^{-8}$) have proven
+remarkably robust across architectures and problem domains.
+
+\subsection{Known Issues and Variants}
+
+Reddi et al.\ \cite{reddi2018} identified a flaw in Adam's original convergence proof and
+demonstrated a simple convex counterexample on which Adam diverges. Their proposed fix,
+AMSGrad, replaces the moving average with a running maximum:
+\begin{equation}
+  \hat{v}_t = \max(\hat{v}_{t-1}, v_t).
+\end{equation}
+While theoretically sound, AMSGrad often underperforms Adam in practice.
+
+Loshchilov and Hutter \cite{loshchilov2019} observed that $\ell_2$ regularization interacts
+poorly with adaptive step sizes and proposed \emph{decoupled weight decay} (AdamW), which
+applies weight decay directly to the parameters:
+\begin{equation}
+  \theta_{t+1} = \theta_t - \eta_t\left(\frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \varepsilon}
+    + \lambda\theta_t\right).
+\end{equation}
+AdamW is now the standard implementation across frameworks.
+
+\begin{table}[tb]
+  \centering
+  \caption{Summary of adaptive optimization algorithms. $g_t$ is the stochastic gradient;
+    $m_t$ and $v_t$ are first- and second-moment estimates; $\eta_t$ is the learning rate.}
+  \label{tab:algorithms}
+  \begin{tabular}{@{}lll@{}}
+    \toprule
+    \textbf{Algorithm} & \textbf{Key Update} & \textbf{Reference}\\
+    \midrule
+    SGD           & $\theta_{t+1} = \theta_t - \eta_t g_t$ & \cite{robbins1951}\\
+    AdaGrad       & $\theta_{t+1} = \theta_t - \eta\,g_t/\sqrt{G_t+\varepsilon}$ & \cite{duchi2011}\\
+    RMSProp       & $v_t = \beta_2 v_{t-1} + (1-\beta_2)g_t^2$ & \cite{tieleman2012}\\
+    Adam          & $\theta_{t+1} = \theta_t - \eta_t\,\hat{m}_t/(\sqrt{\hat{v}_t}+\varepsilon)$ & \cite{kingma2015}\\
+    AMSGrad       & $\hat{v}_t = \max(\hat{v}_{t-1}, v_t)$ & \cite{reddi2018}\\
+    AdamW         & Decoupled weight decay & \cite{loshchilov2019}\\
+    \textbf{Nadam} & Nesterov + NPG framework & This work\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Table~\ref{tab:algorithms} summarizes the key algorithms in the adaptive optimization family.
+Note that all methods share a common structure — gradient preprocessing followed by a
+(possibly coordinate-wise) scaled descent step — which motivates the unified analysis developed
+in Chapter~3.
+
+
+% ── Chapter 3 ────────────────────────────────────────────────────────

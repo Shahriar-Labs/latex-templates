@@ -1,0 +1,17 @@
+\section{Model Specification}
+
+We observe a $p$-dimensional return series $\{\mathbf{r}_t\}_{t=1}^{T}$. The generative model is:
+
+\begin{dukebox}[title={Hierarchical Model},colbacktitle=DukeBlue!15]
+\begin{align}
+K &\sim \operatorname{Poisson}^{+}(\lambda_0) \label{eq:priork} \\
+q_{ii} &\sim \operatorname{Beta}(a_0, b_0), \qquad i=1,\dots,K \label{eq:priordiag} \\
+\boldsymbol{\mu}_k &\sim \mathcal{N}_p(\mathbf{0}, \tau^{-1}\mathbf{I}), \qquad k=1,\dots,K \label{eq:priormean} \\
+\boldsymbol{\Sigma}_k &\sim \mathcal{W}^{-1}_p(\nu_0, \mathbf{S}_0), \qquad k=1,\dots,K \label{eq:priorsigma} \\
+s_1 &\sim \operatorname{Categorical}(\boldsymbol{\pi}_0) \nonumber \\
+s_t \mid s_{t-1} &\sim \operatorname{Categorical}(\mathbf{q}_{s_{t-1},\cdot}), \qquad t=2,\dots,T \nonumber \\
+\mathbf{r}_t \mid s_t &\sim \mathcal{N}_p(\boldsymbol{\mu}_{s_t}, \boldsymbol{\Sigma}_{s_t}), \qquad t=1,\dots,T \nonumber
+\end{align}
+\end{dukebox}
+
+\noindent The innovation is the prior on $K$: a zero-truncated Poisson with rate $\lambda_0$, combined with a reversible-jump mechanism~\cite{green1995} that proposes birth, death, and split-merge moves on the state space.

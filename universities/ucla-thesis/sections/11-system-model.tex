@@ -1,0 +1,135 @@
+\section{System Model}
+
+We model the edge infrastructure as a set of \(N\) heterogeneous nodes
+\(\mathcal{N} = \{n_1, n_2, \dots, n_N\}\). Each node \(n_i\) is characterized
+by a capacity vector \(\mathbf{c}_i = (c_i^{\text{CPU}}, c_i^{\text{MEM}},
+c_i^{\text{NET}})\) and an energy-efficiency coefficient \(\eta_i\) (operations
+per joule). Workloads arrive as a sequence of tasks \(\tau_1, \tau_2, \dots\),
+each with a demand vector \(\mathbf{d}_t = (d_t^{\text{CPU}}, d_t^{\text{MEM}},
+d_t^{\text{NET}})\) and a latency deadline \(\ell_t\).
+
+\subsection{Forecasting Module}
+
+The forecasting module uses a gated recurrent unit (GRU) network with two
+layers and 64 hidden units per layer, trained online using stochastic gradient
+descent with momentum. The input features include the previous 12 timesteps of
+workload demand, time-of-day embeddings, and a binary weekend/holiday indicator.
+The output is a predictive distribution over demand for the next four timesteps.
+
+\begin{figure}[htbp]
+\centering
+\singlespacing
+\begin{tikzpicture}[
+  node distance=1.6cm,
+  box/.style={rectangle,rounded corners=4pt,draw=uclablue!60,fill=uclablue!8,
+    text width=2.8cm,align=center,minimum height=1cm,font=\small},
+  arrow/.style={->,>=stealth,thick,color=ucladark}
+]
+\node[box] (input) {Historical\\Demand};
+\node[box,right=of input] (gru) {GRU\\Forecaster};
+\node[box,right=of gru] (ro) {Robust\\Optimizer};
+\node[box,right=of ro] (assign) {Node\\Assignment};
+
+\draw[arrow] (input) -- (gru);
+\draw[arrow] (gru) -- (ro);
+\draw[arrow] (ro) -- (assign);
+\end{tikzpicture}
+\caption{High-level architecture of the Meridian Scheduler.}
+\label{fig:meridian}
+\end{figure}
+
+\subsection{Optimization Formulation}
+
+At each decision epoch, Meridian solves the following robust integer program:
+
+\begin{equation}
+\label{eq:rip}
+\begin{aligned}
+\operatorname*{minimize}_{\mathbf{x} \in \{0,1\}^{N \times T}} \quad
+  & \sum_{i=1}^{N} \sum_{t=1}^{T} \gamma_i \cdot x_{i,t}
+  \;+\;
+  \lambda \sum_{i=1}^{N} \eta_i^{-1} \cdot z_i \\[6pt]
+\text{subject to} \quad
+  & \sum_{i=1}^{N} x_{i,t} = 1 \qquad \forall\, t \in \{1,\dots,T\} \\
+  & \sum_{t=1}^{T} \mathbf{d}_t \cdot x_{i,t}
+      \;\preceq\; \mathbf{c}_i + \varepsilon\cdot \mathbf{1}
+      \qquad \forall\, i \in \{1,\dots,N\} \\
+  & z_i = \max\!\bigl(0,\; \textstyle\sum_{t} x_{i,t} - \theta_i\bigr)
+      \qquad \forall\, i
+\end{aligned}
+\end{equation}
+
+Here \(x_{i,t}=1\) if task \(t\) is assigned to node \(i\), \(\gamma_i\) is the
+per-task cost on node \(i\), \(\lambda\) is a penalty on energy usage, \(z_i\)
+captures overload beyond the nominal threshold \(\theta_i\), and \(\varepsilon\)
+is the robustness budget derived from the forecast uncertainty.
+
+\begin{theorem}[Competitive Ratio]
+\label{thm:competitive}
+Assuming the forecast error is bounded by \(\varepsilon\) and node capacities
+are non-decreasing, Meridian achieves a competitive ratio of
+\(1 - e^{-1} \approx 0.632\) against the offline optimal algorithm.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The proof follows from a potential-function argument. Let \(\Phi_k\)
+be the total residual capacity after \(k\) tasks. We show that
+\(\Phi_{k+1} \geq (1 - 1/N) \cdot \Phi_k\) in expectation, which telescopes
+to the claimed bound. The full proof appears in Appendix~A.
+\end{proof}
+
+% ═══════════════════════════════════════════
+%  BIBLIOGRAPHY (manual entries for pdflatex compat)
+% ═══════════════════════════════════════════
+\begin{thebibliography}{99}
+
+\bibitem{bonomi2012fog}
+F.~Bonomi, R.~Milito, J.~Zhu, and S.~Addepalli.
+\newblock Fog computing and its role in the internet of things.
+\newblock In \emph{Proceedings of the First Edition of the MCC Workshop on Mobile
+  Cloud Computing}, pages 13--16. ACM, 2012.
+
+\bibitem{ha2014towards}
+K.~Ha, P.~Pillai, W.~Richter, Y.~Abe, and M.~Satyanarayanan.
+\newblock Just-in-time provisioning for cyber foraging.
+\newblock In \emph{Proceedings of the 11th Annual International Conference on
+  Mobile Systems, Applications, and Services (MobiSys)}, pages 153--166. ACM, 2013.
+
+\bibitem{hazan2016introduction}
+E.~Hazan.
+\newblock Introduction to online convex optimization.
+\emph{Foundations and Trends in Optimization}, 2(3--4):157--325, 2016.
+
+\bibitem{mach2017mobile}
+P.~Mach and Z.~Becvar.
+\newblock Mobile edge computing: A survey on architecture and computation
+  offloading.
+\emph{IEEE Communications Surveys \& Tutorials}, 19(3):1628--1656, 2017.
+
+\bibitem{mao2017survey}
+Y.~Mao, C.~You, J.~Zhang, K.~Huang, and K.~B. Letaief.
+\newblock A survey on mobile edge computing: The communication perspective.
+\emph{IEEE Communications Surveys \& Tutorials}, 19(4):2322--2358, 2017.
+
+\bibitem{satyanarayanan2009case}
+M.~Satyanarayanan, P.~Bahl, R.~Caceres, and N.~Davies.
+\newblock The case for vm-based cloudlets in mobile computing.
+\emph{IEEE Pervasive Computing}, 8(4):14--23, 2009.
+
+\bibitem{satyanarayanan2017emergence}
+M.~Satyanarayanan.
+\newblock The emergence of edge computing.
+\emph{Computer}, 50(1):30--39, 2017.
+
+\bibitem{shi2016edge}
+W.~Shi, J.~Cao, Q.~Zhang, Y.~Li, and L.~Xu.
+\newblock Edge computing: Vision and challenges.
+\emph{IEEE Internet of Things Journal}, 3(5):637--646, 2016.
+
+\bibitem{yi2015survey}
+S.~Yi, C.~Li, and Q.~Li.
+\newblock A survey of fog computing: Concepts, applications and issues.
+\newblock In \emph{Proceedings of the 2015 Workshop on Mobile Big Data},
+  pages 37--42. ACM, 2015.
+
+\end{thebibliography}

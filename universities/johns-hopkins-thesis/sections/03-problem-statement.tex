@@ -1,0 +1,45 @@
+\section{Problem Statement}
+
+Consider a team of $n$ robots indexed by $i \in \{1, \ldots, n\}$, each operating
+in a shared environment modeled as a Markov decision process (MDP). Unlike the
+standard single-agent MDP, however, the transition dynamics depend on the joint
+action of all agents, and each robot receives only a local, partial observation
+of the global state. Formally, the system is a \textbf{Dec-POMDP} --- a
+decentralized partially observable Markov decision process --- defined by the tuple
+$\langle I, S, \{A_i\}, T, \{O_i\}, \Omega, R, \gamma \rangle$, where:
+
+\vspace{6pt}
+\begin{tcolorbox}[
+  colback=jhulight,
+  colframe=jhublue,
+  arc=4pt,
+  boxrule=0.8pt,
+  left=16pt,
+  right=16pt,
+  top=10pt,
+  bottom=10pt
+]
+\vspace{-4pt}
+\begin{itemize}[leftmargin=*,itemsep=3pt,topsep=0pt]
+  \item $I = \{1, \ldots, n\}$ is the set of agents.
+  \item $S$ is a finite set of world states.
+  \item $A_i$ is the action set of agent $i$; the joint action space is $\mathcal{A} = \times_i A_i$.
+  \item $T(s' \mid s, \mathbf{a})$ is the transition probability from state $s$ to $s'$ under joint action $\mathbf{a}$.
+  \item $O_i$ is the observation set of agent $i$.
+  \item $\Omega(\mathbf{o} \mid s, \mathbf{a})$ is the probability of joint observation $\mathbf{o}$.
+  \item $R(s, \mathbf{a})$ is the immediate team reward.
+  \item $\gamma \in [0, 1)$ is the discount factor.
+\end{itemize}
+\vspace{-4pt}
+\end{tcolorbox}
+\vspace{6pt}
+
+The objective is to find a tuple of local policies $\pi = (\pi_1, \ldots, \pi_n)$
+that maximizes the expected discounted sum of rewards:
+\begin{equation}
+  J(\pi) = \mathbb{E}\left[ \sum_{t=0}^{\infty} \gamma^t \, R(s_t, \mathbf{a}_t) \;\middle|\; \pi \right].
+  \label{eq:objective}
+\end{equation}
+
+Solving the Dec-POMDP exactly is NEXP-complete in the worst case
+\citep{bernstein2002complexity}, which motivates approximate, structured approaches.

@@ -1,0 +1,158 @@
+\section{Implementation}
+
+\subsection{Technology Stack}
+
+The system is implemented using the following tools and libraries:
+
+\begin{table}[H]
+  \centering
+  \caption{Technology stack.}
+  \label{tab:techstack}
+  \begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries}l@{\hspace{6mm}}>{\raggedright\arraybackslash}X@{}}
+    \toprule
+    Component       & Technology \\
+    \midrule
+    Language        & Python 3.10 \\
+    Deep Learning   & TensorFlow 2.13, Keras \\
+    Data Processing & NumPy 1.24, Pandas 2.0, OpenCV 4.8 \\
+    Visualisation   & Matplotlib 3.7, Seaborn 0.12 \\
+    Web Framework   & Flask 2.3 \\
+    Model Serving   & TensorFlow Serving (REST API) \\
+    Frontend        & HTML5, CSS3, vanilla JavaScript \\
+    Environment     & Ubuntu 22.04 LTS, Quanta RTX 3060 (12\,GB VRAM) \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{Data Loading Pipeline}
+
+Listing~\ref{lst:dataloader} shows the custom TensorFlow data pipeline that
+loads images from disk, applies preprocessing, and creates efficient
+\texttt{tf.data.Dataset} objects with prefetching for GPU-optimised training.
+
+\begin{lstlisting}[
+  caption={Data loading and preprocessing pipeline.},
+  label={lst:dataloader},
+]
+import tensorflow as tf
+
+def load_and_preprocess(path, label):
+    image = tf.io.read_file(path)
+    image = tf.image.decode_jpeg(image, channels=3)
+    image = tf.image.resize(image, [224, 224])
+    image = tf.cast(image, tf.float32) / 255.0
+    return image, label
+
+def create_dataset(file_paths, labels, batch_size=32,
+                   augment=False, shuffle=True):
+    dataset = tf.data.Dataset.from_tensor_slices(
+        (file_paths, labels)
+    )
+
+    if shuffle:
+        dataset = dataset.shuffle(buffer_size=1024)
+
+    dataset = dataset.map(
+        load_and_preprocess,
+        num_parallel_calls=tf.data.AUTOTUNE
+    )
+
+    if augment:
+        dataset = dataset.map(
+            augmentation_pipeline,
+            num_parallel_calls=tf.data.AUTOTUNE
+        )
+
+    dataset = dataset.batch(batch_size)
+    dataset = dataset.prefetch(tf.data.AUTOTUNE)
+    return dataset
+\end{lstlisting}
+
+\subsection{Model Definition}
+
+The custom CNN is defined using the Keras Functional API, as shown in
+Listing~\ref{lst:model}. The functional approach is chosen over the
+Sequential API for its flexibility in handling skip connections and
+multi-input architectures during experimentation.
+
+\begin{lstlisting}[
+  caption={Custom CNN model definition (Keras Functional API).},
+  label={lst:model},
+]
+from tensorflow.keras import layers, Model
+
+def conv_block(x, filters, dropout_rate=0.25):
+    x = layers.Conv2D(filters, 3, padding='same',
+                      activation='relu')(x)
+    x = layers.Conv2D(filters, 3, padding='same',
+                      activation='relu')(x)
+    x = layers.BatchNormalization()(x)
+    x = layers.MaxPooling2D(2)(x)
+    x = layers.Dropout(dropout_rate)(x)
+    return x
+
+def build_custom_cnn(input_shape=(224, 224, 3),
+                     num_classes=18):
+    inputs = layers.Input(shape=input_shape)
+
+    x = conv_block(inputs, 32)
+    x = conv_block(x, 64)
+    x = conv_block(x, 128)
+    x = conv_block(x, 256)
+    x = conv_block(x, 512)
+
+    x = layers.GlobalAveragePooling2D()(x)
+    x = layers.Dropout(0.5)(x)
+    outputs = layers.Dense(num_classes,
+                           activation='softmax')(x)
+
+    return Model(inputs, outputs, name='CustomCNN')
+\end{lstlisting}
+
+\subsection{Training Loop and Callbacks}
+
+Model training is orchestrated with TensorFlow's \texttt{model.fit()} API
+augmented by custom callbacks. ModelCheckpoint saves the best weights based
+on validation accuracy, ReduceLROnPlateau dynamically adjusts the learning
+rate, and EarlyStopping halts training when validation loss ceases to
+improve. TensorBoard is used for real-time monitoring of loss curves,
+accuracy trajectories, and gradient histograms.
+
+\begin{lstlisting}[
+  caption={Training configuration with callbacks.},
+  label={lst:training},
+]
+callbacks = [
+    tf.keras.callbacks.ModelCheckpoint(
+        'best_model.h5',
+        monitor='val_accuracy',
+        save_best_only=True,
+        mode='max'
+    ),
+    tf.keras.callbacks.ReduceLROnPlateau(
+        monitor='val_loss',
+        factor=0.5,
+        patience=5,
+        min_lr=1e-6
+    ),
+    tf.keras.callbacks.EarlyStopping(
+        monitor='val_loss',
+        patience=12,
+        restore_best_weights=True
+    ),
+    tf.keras.callbacks.TensorBoard(
+        log_dir='./logs',
+        histogram_freq=1
+    )
+]
+
+history = model.fit(
+    train_dataset,
+    validation_data=val_dataset,
+    epochs=80,
+    callbacks=callbacks,
+    verbose=1
+)
+\end{lstlisting}
+
+% ── 5. Results and Discussion ─────────────────────────────────────────────

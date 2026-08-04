@@ -1,0 +1,30 @@
+\section{System Architecture}
+
+Figure~\ref{fig:architecture} depicts the end-to-end system architecture used in this study. Sensor
+nodes stream readings to an edge gateway, which hosts the adaptive scheduler and performs local
+preprocessing before forwarding aggregated data to a cloud analytics platform.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=0.5cm and 1.3cm,
+  comp/.style={draw=umslate,thick,rounded corners=3pt,fill=umoffwhite,
+               align=center,minimum width=2.6cm,minimum height=1.3cm,font=\small}
+]
+  \node[comp] (sensors) {Sensor Layer\\[1pt]\footnotesize Temp / Humidity / CO$_2$};
+  \node[comp, right=of sensors] (gateway) {Edge Gateway\\[1pt]\footnotesize Adaptive Scheduler};
+  \node[comp, right=of gateway] (cloud) {Cloud Analytics\\[1pt]\footnotesize Synapse Platform};
+  \node[comp, right=of cloud] (dash) {Facilities\\Dashboard};
+
+  \draw[->,thick,umslate] (sensors) -- (gateway);
+  \draw[->,thick,umslate] (gateway) -- (cloud);
+  \draw[->,thick,umslate] (cloud) -- (dash);
+
+  \begin{scope}[on background layer]
+    \draw[fill=umgold!15,draw=none,rounded corners=4pt]
+      ($(sensors.north west)+(-0.25cm,0.25cm)$) rectangle ($(gateway.south east)+(0.25cm,-0.25cm)$);
+  \end{scope}
+\end{tikzpicture}
+\caption{System architecture from sensor layer to facilities dashboard}
+\label{fig:architecture}
+\end{figure}

@@ -1,0 +1,66 @@
+\section{Simulation and Analysis}
+
+\subsection{SPICE Simulation}
+
+The inverting amplifier was also modelled in LTspice for comparison.
+A simplified netlist follows.
+
+\begin{lstlisting}[
+  caption={SPICE netlist for the inverting amplifier.},
+  label={lst:spice}
+]
+* Inverting Amplifier -- LM741 macro-model
+VIN  in  0  SIN(0 0.5 1k)
+VCC  vcc 0  DC 15
+VEE  vee 0  DC -15
+Ri   in  sum  10k
+Rf   sum out  100k
+XU1  0 sum vcc vee out  LM741
+.TRAN 10u 5m
+.AC   DEC 10 10 1Meg
+.PRINT AC V(out)
+.END
+\end{lstlisting}
+
+\subsection{MATLAB / Octave Post-Processing}
+
+Measured oscilloscope traces were exported as CSV and processed with the
+script below.
+
+\begin{lstlisting}[
+  caption={Post-processing script for gain calculation.},
+  label={lst:matlab}
+]
+% gain_analysis.m -- Compute gain from scope CSV export
+data  = readtable('scope_trace.csv');
+t     = data.Time_s;
+vin   = data.Channel1_V;
+vout  = data.Channel2_V;
+
+% peak-to-peak detection
+vin_pp   = max(vin)  - min(vin);
+vout_pp  = max(vout) - min(vout);
+
+gain     = vout_pp / vin_pp;
+gain_dB  = 20 * log10(gain);
+
+fprintf('Gain: %.2f  (%.1f dB)\n', gain, gain_dB);
+
+% plot time-domain overlay for report figure
+figure;
+plot(t, vin, 'b-', 'LineWidth', 1.2); hold on;
+plot(t, vout, 'r--', 'LineWidth', 1.2);
+xlabel('Time (s)'); ylabel('Voltage (V)');
+legend('V_{in}', 'V_{out}'); grid on;
+\end{lstlisting}
+
+\begin{infobox}
+  \textbf{Measurement Uncertainty:} All readings carry an uncertainty
+  of $\pm\qty{2}{\percent}$ from the oscilloscope's vertical amplifier
+  and $\pm\qty{5}{\percent}$ from resistor tolerance.  The combined RSS
+  uncertainty on $|A_v|$ is approximately $\pm\qty{5.4}{\percent}$.
+\end{infobox}
+
+% ═══════════════════════════════════════════════
+%  DISCUSSION
+% ═══════════════════════════════════════════════

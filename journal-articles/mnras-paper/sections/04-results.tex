@@ -1,0 +1,118 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{Metallicity gradients}
+
+The sample-median metallicity gradient is
+$\langle\nabla\fe\rangle = -0.18 \pm 0.04\,\mathrm{dex}\,\re^{-1}$,
+confirming that ETGs are more metal-rich at their centres.
+As shown in Figure~\ref{fig:gradients}, $\nabla\fe$ steepens with
+stellar mass: galaxies above $\log(M_{\star}/\Msun) = 10.8$ exhibit
+gradients $\approx 0.07\,\mathrm{dex}$ steeper than lower-mass
+counterparts (Table~\ref{tab:sample}).
+This trend is consistent with the expectation that more massive
+systems experienced a deeper potential well during dissipative
+collapse, driving stronger chemical stratification.
+
+\subsection{Age gradients}
+
+Age gradients are mild but statistically significant:
+$\langle\nabla\logage\rangle = +0.06 \pm 0.03\,\mathrm{dex}\,\re^{-1}$.
+The positive sign indicates that the centres are on average
+$\sim$1\,Gyr \emph{older} than the outskirts at $2\,\re$,
+a signature of inside-out quenching.
+The trend strengthens above the same mass threshold of
+$\log(M_{\star}/\Msun) = 10.8$ (Figure~\ref{fig:gradients}),
+mirroring the metallicity behaviour.
+
+\subsection{$\alpha$-element gradients}
+
+In contrast to metallicity and age, the $\afe$ profiles are
+consistent with zero gradient:
+$\langle\nabla\afe\rangle = +0.01 \pm 0.02\,\mathrm{dex}\,\re^{-1}$.
+Flat $\afe$ profiles imply that the ratio of core-collapse to
+Type~Ia supernova enrichment did not vary significantly with radius,
+i.e.\ that the star-formation time-scale was uniformly short
+($\lesssim 1\,\mathrm{Gyr}$) across the galaxy body.
+
+%%--------------------------------------------------------------------
+%% Figure: metallicity gradient vs stellar mass (pgfplots, self-contained)
+%%--------------------------------------------------------------------
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        width  = 0.97\columnwidth,
+        height = 0.78\columnwidth,
+        xlabel = {$\log(M_{\star}/M_{\odot})$},
+        ylabel = {$\nabla[\mathrm{Fe/H}]\ (\mathrm{dex}\,R_\mathrm{e}^{-1})$},
+        xmin   = 9.9,  xmax = 11.7,
+        ymin   = -0.48, ymax = 0.08,
+        xtick  = {10.0, 10.4, 10.8, 11.2, 11.6},
+        ytick  = {-0.4, -0.3, -0.2, -0.1, 0.0},
+        tick align = outside,
+        tick pos   = left,
+        grid       = major,
+        grid style = {dotted, gray!50},
+        legend pos = north east,
+        legend style = {font=\small, draw=none, fill=none},
+        every axis label/.style = {font=\small},
+        tick label style        = {font=\small},
+      ]
+      %% Individual galaxies (synthetic but realistic scatter)
+      \addplot[
+        only marks,
+        mark = *,
+        mark size = 1.6pt,
+        mark options = {fill=blue!60!black, draw=blue!60!black},
+        opacity = 0.75,
+      ] coordinates {
+        (10.02,-0.08) (10.08,-0.11) (10.15,-0.09) (10.21,-0.14)
+        (10.28,-0.12) (10.35,-0.17) (10.42,-0.13) (10.48,-0.19)
+        (10.55,-0.16) (10.62,-0.20) (10.68,-0.22) (10.75,-0.18)
+        (10.82,-0.27) (10.89,-0.25) (10.96,-0.29) (11.03,-0.31)
+        (11.09,-0.28) (11.16,-0.34) (11.22,-0.30) (11.29,-0.36)
+        (11.35,-0.33) (11.42,-0.38) (11.48,-0.35) (11.55,-0.40)
+        (11.10,-0.26) (10.70,-0.21) (10.30,-0.10) (10.90,-0.32)
+        (11.20,-0.29) (11.40,-0.41) (10.50,-0.15) (11.60,-0.43)
+      };
+      %% Best-fit linear relation
+      \addplot[
+        thick,
+        red!80!black,
+        domain = 9.9:11.7,
+        samples = 2,
+      ] { -0.215*(x - 10.0) + 0.02 - 0.10 };
+      %% 1-sigma band (approximate)
+      \addplot[
+        name path = upper,
+        draw = none,
+        domain = 9.9:11.7,
+        samples = 2,
+      ] { -0.215*(x - 10.0) + 0.02 - 0.10 + 0.04 };
+      \addplot[
+        name path = lower,
+        draw = none,
+        domain = 9.9:11.7,
+        samples = 2,
+      ] { -0.215*(x - 10.0) + 0.02 - 0.10 - 0.04 };
+      \addplot[
+        red!30,
+        opacity = 0.35,
+        forget plot,
+      ] fill between[of = upper and lower];
+      \legend{Individual ETGs, Best fit}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Metallicity gradient $\nabla\fe$ as a function of stellar
+    mass for the 32 ETGs in our sample.  Individual galaxies are
+    shown as filled circles; the red line is the error-weighted
+    best-fit linear relation, with the shaded band indicating the
+    $1\sigma$ scatter of $\pm 0.04\,\mathrm{dex}\,\re^{-1}$.
+    More massive galaxies exhibit systematically steeper negative
+    metallicity gradients, consistent with deeper dissipative
+    collapse in higher-mass haloes.}
+  \label{fig:gradients}
+\end{figure}
+
+%%====================================================================

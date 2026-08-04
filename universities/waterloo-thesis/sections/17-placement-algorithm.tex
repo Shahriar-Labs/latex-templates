@@ -1,0 +1,32 @@
+\section{Placement Algorithm}
+
+\vspace{6pt}
+Algorithm~\ref{alg:placement} describes the core online scheduling loop.
+
+\begin{tcolorbox}[colback=white,colframe=uwaterlooNavy,title={\textbf{Algorithm 1:} EdgeSched Online Placement}]
+\label{alg:placement}
+\textbf{Input:} Pending workload \(W = (\mathbf{r}, \ell, \tau, \sigma)\)\\
+\textbf{Input:} Node set \(\mathcal{N}\) with current allocations \(\mathcal{A}\)\\
+\textbf{Output:} Target node \(n^*\) or reject
+\vspace{4pt}
+\begin{enumerate}[leftmargin=*,nosep]
+    \item Candidate set \(\mathcal{C} \leftarrow \{n \in \mathcal{N} \mid \mathbf{c}_n - \sum_{w \in \mathcal{A}_n} \mathbf{r}_w \geq \mathbf{r}\}\)
+    \item \textbf{if} \(\mathcal{C} = \emptyset\) \textbf{then return} reject
+    \item For each \(n \in \mathcal{C}\), compute score
+          \(s_n = \text{util}(n) + \lambda \cdot \text{colocatePenalty}(n, W)\)
+    \item Select \(n^* = \arg\min_{n \in \mathcal{C}} \, s_n\)
+    \item \textbf{return} \(n^*\)
+\end{enumerate}
+\vspace{4pt}
+{\small The parameter \(\lambda \in [0, 1]\) trades off utilization against colocation penalty. Higher \(\lambda\) favors dedicated nodes for sensitive workloads.}
+\end{tcolorbox}
+
+\vspace{6pt}
+The colocation penalty function uses the IAM:
+
+\[
+\text{colocatePenalty}(n, W) =
+\frac{1}{|\mathcal{A}_n|} \sum_{w \in \mathcal{A}_n} (1 - a_{\tau_w, \tau})
+\]
+
+This formulation penalizes nodes that already host workloads with high interference affinity against the incoming workload --- effectively implementing soft anti-affinity without the rigidity of hard constraints.

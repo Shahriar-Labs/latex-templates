@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**GraphQL API Reference LaTeX template — graphql api latex template. Elegant, compile-tested, editable online at letx.app.**
+**GraphQL API Reference LaTeX template — GraphQL API Reference. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/tech-docs/graphql-api-reference)**, with real-time collaboration and one-second compiles.
 
@@ -12,7 +12,7 @@ Edit and compile this template instantly in your browser — no LaTeX install �
 
 ## Features
 - Elegant, modern design
-- Compile-tested (pdflatex)
+- Compile-tested
 - Fully editable sample content
 
 ## Use it online (recommended)

@@ -1,0 +1,55 @@
+\section{Results}
+
+Figure~\ref{fig:results} plots the key performance trends. BADC consistently
+outperforms the decentralized baselines and approaches centralized performance
+as the communication graph density increases beyond a modest threshold.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[scale=0.9]
+  % Axes
+  \draw[->, thick, color=jhuslate] (0,0) -- (10.5,0) node[right] {\footnotesize Communication rate (msg/agent/step)};
+  \draw[->, thick, color=jhuslate] (0,0) -- (0,6.5) node[above] {\footnotesize Task completion rate};
+
+  % Grid
+  \foreach \y in {0,1,...,6} {
+    \draw[color=jhulight, thin] (0,\y) -- (10,\y);
+  }
+  \foreach \x in {0,1,...,10} {
+    \draw[color=jhulight, thin] (\x,0) -- (\x,6);
+  }
+
+  % Y-axis labels
+  \foreach \y/\label in {0/0.0, 2/0.4, 4/0.8, 6/1.0} {
+    \node[left,color=jhuslate,font=\footnotesize] at (0,\y) {\label};
+  }
+
+  % BADC (solid blue)
+  \draw[line width=1.4pt, color=jhublue] plot coordinates {
+    (0.5,0.55) (1.5,2.8) (2.5,4.2) (3.5,5.0) (5.0,5.5) (7.0,5.7) (10.0,5.9)
+  };
+  \node[color=jhublue, font=\footnotesize\bfseries] at (8.5,5.5) {BADC};
+
+  % C-MDP (dashed gold, flat at top)
+  \draw[line width=1.2pt, color=jhugold, dashed] plot coordinates {
+    (0.5,2.0) (1.5,4.4) (2.5,5.3) (3.5,5.7) (5.0,5.85) (7.0,5.9) (10.0,5.95)
+  };
+  \node[color=jhugold, font=\footnotesize\bfseries] at (8.5,6.1) {C-MDP};
+
+  % IQL (dotted gray)
+  \draw[line width=1.0pt, color=gray, dotted] plot coordinates {
+    (0.5,0.8) (1.5,1.0) (2.5,1.5) (3.5,2.2) (5.0,3.0) (7.0,3.8) (10.0,4.5)
+  };
+  \node[color=gray, font=\footnotesize] at (8.5,4.2) {IQL};
+
+  % CBBA
+  \draw[line width=1.0pt, color=gray, dashdotted] plot coordinates {
+    (0.5,1.0) (1.5,1.8) (2.5,2.8) (3.5,3.5) (5.0,4.2) (7.0,4.7) (10.0,5.1)
+  };
+  \node[color=gray, font=\footnotesize] at (8.5,4.8) {CBBA};
+\end{tikzpicture}
+\caption{Task completion rate as a function of communication rate. BADC achieves
+near-centralized performance with substantially less communication. Results
+are averaged over 500 trials on the Search \& Rescue domain.}
+\label{fig:results}
+\end{figure}

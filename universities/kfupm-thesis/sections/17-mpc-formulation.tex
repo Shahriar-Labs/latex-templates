@@ -1,0 +1,31 @@
+\section{MPC Formulation}
+At each control step $k$, the scheduler solves, over horizon $H$:
+\begin{equation}
+\min_{\{P_{i,t}\}} \; \sum_{t=k}^{k+H} \left[ \alpha \, c_t \sum_i P_{i,t} + \beta \, \theta_t^2 +
+\gamma \sum_i (V_i - V_{\text{nom}})^2 \right]
+\label{eq:objective}
+\end{equation}
+subject to charger power limits $0 \le P_{i,t} \le P_i^{\max}$, SoC dynamics
+$\mathrm{SoC}_{i,t+1} = \mathrm{SoC}_{i,t} + \eta_i P_{i,t} \Delta t / E_i^{\text{cap}}$, terminal
+SoC targets at each vehicle's departure time, voltage limits from Eq.~\eqref{eq:distflow}, and
+thermal limits from Eq.~\eqref{eq:thermal}. Weights $\alpha$, $\beta$, $\gamma$ trade off cost,
+thermal stress, and voltage quality; values used in this study are given in
+Table~\ref{tab:params}.
+
+\begin{table}[htbp]
+\centering
+\caption{MPC controller parameters}
+\label{tab:params}
+\begin{tabular}{@{}llc@{}}
+\toprule
+\textbf{Parameter} & \textbf{Description} & \textbf{Value} \\
+\midrule
+$H$ & Prediction horizon & 24 steps (6 h) \\
+$\Delta t$ & Control interval & 15 min \\
+$\alpha$ & Cost weight & 1.0 \\
+$\beta$ & Thermal weight & 0.6 \\
+$\gamma$ & Voltage weight & 0.8 \\
+$\tau$ & Transformer thermal constant & 45 min \\
+\bottomrule
+\end{tabular}
+\end{table}

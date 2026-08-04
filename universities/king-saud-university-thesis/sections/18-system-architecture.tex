@@ -1,0 +1,35 @@
+\section{System Architecture}
+Figure~\ref{fig:arch} shows the overall pipeline. Incoming tenant requests
+are summarized by a feature extractor into a fixed-length state vector,
+which is consumed by the RL scheduler agent. The agent's action is a
+placement decision handed to the cluster resource manager, which enacts it
+on the compute nodes. Utilization telemetry is fed back to the agent to
+close the control loop.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    node distance=1.05cm and 0.55cm,
+    box/.style={draw=ksuGreen, line width=1pt, fill=paperCream, rounded corners=2pt,
+                minimum height=1.3cm, minimum width=2.3cm, align=center, font=\small},
+    every node/.style={font=\small}
+  ]
+  \node[box] (req) {Tenant\\Requests};
+  \node[box, right=of req] (feat) {Feature\\Extractor};
+  \node[box, right=of feat, fill=softGreen] (agent) {RL Scheduler\\Agent};
+  \node[box, right=of agent] (mgr) {Cluster Resource\\Manager};
+  \node[box, right=of mgr] (nodes) {Compute\\Nodes};
+
+  \draw[->, line width=0.9pt, ksuGreen] (req) -- (feat);
+  \draw[->, line width=0.9pt, ksuGreen] (feat) -- (agent);
+  \draw[->, line width=0.9pt, ksuGreen] (agent) -- (mgr);
+  \draw[->, line width=0.9pt, ksuGreen] (mgr) -- (nodes);
+
+  \draw[dashed, ->, line width=0.9pt, ksuGold]
+    (nodes.south) -- ++(0,-0.9) -| node[below, pos=0.25, font=\footnotesize\itshape, text=inkGray]
+    {utilization telemetry} (agent.south);
+\end{tikzpicture}
+\caption{Scheduling pipeline: telemetry from compute nodes is fed back to the
+RL agent to close the control loop.}
+\label{fig:arch}
+\end{figure}

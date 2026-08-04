@@ -1,0 +1,47 @@
+\section{Convex Optimization}
+
+\subsection{Overview}
+Gradient-based methods minimize $f:\R^d\to\R$. Key properties: convexity,
+$L$-smoothness ($\|\nabla f(x)-\nabla f(y)\|\le L\|x-y\|$),
+$\mu$-strong convexity ($f(y)\ge f(x)+\nabla f(x)^\top(y-x)+\frac{\mu}{2}\|y-x\|^2$).
+
+\begin{keyresult}{Theorem (GD Convergence Rates)}
+With step size $\eta = 1/L$:
+\begin{align*}
+  \text{Convex, $L$-smooth:}\quad
+    &f(x_T)-f^* \le \frac{L\|x_0-x^*\|^2}{2T} = \bigO{1/T}\\[4pt]
+  \text{$\mu$-strongly convex, $L$-smooth:}\quad
+    &\|x_T-x^*\|^2 \le \left(1-\frac{\mu}{L}\right)^{\!T}\|x_0-x^*\|^2
+    \quad\text{(linear)}
+\end{align*}
+The ratio $\kappa = L/\mu$ is the \term{condition number}; ill-conditioned problems
+($\kappa\gg1$) converge slowly.
+\end{keyresult}
+
+\begin{defbox}{Stochastic Gradient Descent (SGD)}
+Use noisy gradient $g_t = \nabla f_{i_t}(x_t)$ where $i_t \sim \text{Uniform}([n])$.
+Under $\E[g_t\mid x_t]=\nabla f(x_t)$ and $\E[\|g_t\|^2]\le G^2$, with step
+$\eta_t = c/\sqrt{T}$:
+\[
+  \frac{1}{T}\sum_{t=1}^T \E[f(x_t)] - f^* = \bigO{\frac{G\|x_0-x^*\|}{\sqrt{T}}}.
+\]
+\end{defbox}
+
+\textbf{Acceleration \& Variants:}
+\begin{itemize}
+  \item \term{Nesterov momentum}: achieves $\bigO{1/T^2}$ for convex smooth $f$ —
+        optimal for first-order methods
+  \item \term{Adam}: adaptive per-coordinate learning rates; not always convergent
+        for convex $f$ but widely used
+  \item \term{Frank-Wolfe / Conditional Gradient}: projects onto convex set via
+        linear oracle; $\bigO{1/T}$ without matrix inversion
+\end{itemize}
+
+\begin{examtip}
+Know the \emph{lower bounds}: no first-order method can do better than
+$\Omega(1/T^2)$ for convex smooth problems (Nesterov lower bound). Be able to
+state why SGD has an $\bigO{1/\sqrt{T}}$ rate even for smooth strongly-convex
+objectives (variance term dominates).
+\end{examtip}
+
+% ══════════════════════════════════════════════════════════════════════════════

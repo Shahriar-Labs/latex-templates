@@ -1,0 +1,57 @@
+\section{Recent Progress (2020--2026)}
+Over the past six years, the applicant's laboratory at Vertex University has pioneered techniques for verifying neural network properties and structuring neural outputs. Our research has yielded significant progress across two major fronts:
+
+\subsection{Verification of Neural Control Loops}
+We developed the first iteration of the \emph{Meridian Engine}, an open-source verification framework designed to analyze feed-forward neural networks embedded in closed-loop systems. By employing piecewise-linear relaxation techniques combined with abstract interpretation, the Meridian Engine reduced the verification time for medium-sized networks by 40\% compared to state-of-the-art tools. This work was published in the \emph{IEEE Transactions on Automatic Control} (2023) and has been adopted by researchers at Nexa Systems for validating experimental flight controllers.
+
+\subsection{Structured Perception via the Synapse Framework}
+To address the vulnerability of deep learning models to adversarial perturbations, we introduced the \emph{Synapse Framework}. Synapse incorporates symbolic constraints directly into the loss function of convolutional and transformer-based models, forcing the network to respect physical laws (such as kinematics and conservation of energy) during training. Our experiments demonstrated that this regularization improves out-of-distribution generalization by up to 25\%, establishing a foundational building block for Objective 1.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.2cm and 2.2cm,
+    block/.style={
+      draw=nsercnavy,
+      fill=nserclight,
+      thick,
+      rounded corners=4pt,
+      minimum width=3.4cm,
+      minimum height=1.4cm,
+      align=center,
+      font=\small
+    },
+    arrow/.style={
+      ->,
+      >=stealth,
+      color=nsercnavy,
+      thick
+    }
+  ]
+    % Nodes
+    \node[block] (perception) {
+      \textbf{Perception System} \\
+      Deep Neural Network \\
+      (Synapse Framework)
+    };
+    \node[block, right=of perception] (reasoning) {
+      \textbf{Symbolic Reasoning} \\
+      Logical Constraints \\
+      (Meridian Engine)
+    };
+    \node[block, below=1.5cm of reasoning] (action) {
+      \textbf{Control \& Execution} \\
+      Verified Action Loop \\
+      (Apex Platform)
+    };
+    
+    % Connections
+    \draw[arrow] (perception) -- node[above, align=center, font=\footnotesize] {Probabilistic\\Predictions} (reasoning);
+    \draw[arrow] (reasoning) -- node[right, align=center, font=\footnotesize] {Safe\\Policy} (action);
+    
+    % Feedback connection
+    \draw[arrow] (action.west) -| node[above, pos=0.25, align=center, font=\footnotesize] {Feedback} (perception.south);
+  \end{tikzpicture}
+  \caption{Hybrid neural-symbolic feedback loop integrating deep neural perception with symbolic logic verification.}
+  \label{fig:hybrid_loop}
+\end{figure}

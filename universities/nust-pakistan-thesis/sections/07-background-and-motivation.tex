@@ -1,0 +1,33 @@
+\section{Background and Motivation}
+Low-power wide-area networks (LPWANs) such as LoRaWAN have become the dominant substrate for
+long-duration environmental monitoring in agriculture, forestry, and infrastructure
+inspection, owing to their multi-kilometre range and sub-milliwatt idle power draw. A recurring
+deployment obstacle, however, is that battery replacement in remote or physically inaccessible
+terrain is costly, and node lifetime is overwhelmingly dominated by the radio's duty cycle
+rather than sensing or computation \cite{bor2016lora}.
+
+The conventional approach --- a fixed sleep interval configured at deployment time --- forces
+operators into an uncomfortable trade-off. A short interval yields responsive event detection
+but exhausts batteries in a handful of months; a long interval extends lifetime but risks
+missing transient events such as frost onset, irrigation leaks, or structural vibration
+spikes. Figure~\ref{fig:tradeoff} illustrates this tension across three representative static
+configurations.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=1]
+\begin{scope}
+  \draw[-latex,thick,nustslate] (0,0) -- (9,0) node[right,font=\small]{Duty-cycle interval};
+  \draw[-latex,thick,nustslate] (0,0) -- (0,5.2) node[above,font=\small]{Metric value};
+
+  \draw[thick,nustgreen,domain=0.4:8.6,samples=60] plot (\x,{4.6*exp(-0.28*\x)+0.3}) node[right,font=\scriptsize,nustgreen]{Battery drain};
+  \draw[thick,nustgold,domain=0.4:8.6,samples=60] plot (\x,{0.25*\x+0.2}) node[right,font=\scriptsize,nustgold!70!black]{Detection latency};
+
+  \node[draw,circle,fill=nustslate,inner sep=1.2pt] at (3.2,{4.6*exp(-0.28*3.2)+0.3}) {};
+  \node[draw,circle,fill=nustslate,inner sep=1.2pt] at (3.2,{0.25*3.2+0.2}) {};
+  \draw[dashed,nustslate] (3.2,0) -- (3.2,5) node[above,font=\scriptsize]{sweet spot (target)};
+\end{scope}
+\end{tikzpicture}
+\caption{Illustrative trade-off between battery drain and detection latency across static duty-cycle intervals.}
+\label{fig:tradeoff}
+\end{figure}

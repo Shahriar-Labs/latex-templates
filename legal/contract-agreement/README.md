@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Contract Agreement LaTeX template — "contract template latex". Elegant, compile-tested, editable online at letx.app.**
+**Contract Agreement LaTeX template — Contract Agreement. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/legal/contract-agreement)**, with real-time collaboration and one-second compiles.
 
@@ -12,17 +12,16 @@ Edit and compile this template instantly in your browser — no LaTeX install �
 
 ## Features
 - Elegant, modern design
-- Compile-tested (zero errors)
-- Realistic sample content
-- Editable online in your browser
+- Compile-tested
+- Fully editable sample content
 
 ## Use it online (recommended)
 Open **[Contract Agreement on LetX »](https://letx.app/templates/legal/contract-agreement)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/contract-agreement
+git clone https://github.com/Shahriar-Labs/contract-agreement.git
+cd contract-agreement
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

@@ -1,0 +1,23 @@
+\section{Model Predictive Dispatch Formulation}
+At each control step, the MPC layer solves a finite-horizon optimisation that minimises diesel
+fuel consumption and generator switching, subject to battery SoC and load-service constraints:
+
+\begin{equation}
+\min_{\{u_t\}} \; \sum_{k=0}^{H-1} \Big( c_f \, P^{\text{diesel}}_{t+k} +
+c_s \, \left| \Delta u_{t+k} \right| \Big)
+\label{eq:objective}
+\end{equation}
+
+\begin{align}
+\text{s.t.} \quad
+& \text{SoC}_{\min} \le \text{SoC}_{t+k} \le \text{SoC}_{\max}, & \forall k \label{eq:soc} \\
+& P^{\text{PV}}_{t+k} + P^{\text{batt}}_{t+k} + P^{\text{diesel}}_{t+k} \ge P^{\text{load}}_{t+k},
+  & \forall k \label{eq:balance} \\
+& 0 \le P^{\text{diesel}}_{t+k} \le P^{\text{diesel}}_{\max}, & \forall k \label{eq:dieselcap}
+\end{align}
+
+\noindent
+where $c_f$ and $c_s$ weight fuel cost and switching penalty respectively, and $\Delta
+u_{t+k}$ is the change in diesel generator on/off state between consecutive steps. The
+switching penalty term $c_s$ directly targets the generator-cycling problem identified in
+Chapter~1.

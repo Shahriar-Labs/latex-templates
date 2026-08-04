@@ -1,0 +1,51 @@
+\section{Detection Performance}
+Table~\ref{tab:results} compares StreamGuard against the Isolation Forest and centralised
+LSTM autoencoder baselines introduced in Chapter~\ref{ch:litreview}, evaluated on the held-out
+Apex Manufacturing telemetry.
+
+\begin{table}[htbp]
+\centering
+\caption{Detection performance on the held-out evaluation set.}
+\label{tab:results}
+\begin{tabular}{@{}l c c c c@{}}
+\toprule
+Method & Precision & Recall & F1 & Median latency (s) \\
+\midrule
+Isolation Forest & 0.79 & 0.70 & 0.74 & 4.8 \\
+Centralised LSTM autoencoder & 0.83 & 0.79 & 0.81 & 6.1 \\
+\textbf{StreamGuard} & \textbf{0.91} & \textbf{0.88} & \textbf{0.89} & \textbf{2.3} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+  \def\barw{1.1}
+  \begin{scope}
+    \draw[usydgray,thin] (0,0) -- (8.2,0);
+    \foreach \y/\lab in {0/0,1.6/2,3.2/4,4.8/6} {
+      \draw[usydgray!60] (0,\y) -- (8.2,\y);
+      \node[left,font=\tiny,usydgray] at (-0.15,\y) {\lab s};
+    }
+    \fill[pattern=north east lines,pattern color=usydmaroon,draw=usydmaroon]
+      (0.4,0) rectangle (0.4+\barw,4.8*4.8/6);
+    \node[font=\tiny,below] at (0.4+\barw/2,-0.25) {Isolation Forest};
+    \fill[pattern=north east lines,pattern color=usydmaroon,draw=usydmaroon]
+      (2.4,0) rectangle (2.4+\barw,6.1*4.8/6);
+    \node[font=\tiny,below] at (2.4+\barw/2,-0.25) {Centralised LSTM};
+    \fill[usydgold,draw=usydmaroon]
+      (4.4,0) rectangle (4.4+\barw,2.3*4.8/6);
+    \node[font=\tiny,below] at (4.4+\barw/2,-0.25) {StreamGuard};
+  \end{scope}
+\end{tikzpicture}
+\caption{Median end-to-end detection latency by method (lower is better).}
+\label{fig:latency}
+\end{figure}
+
+\begin{tcolorbox}[colback=usydcream,colframe=usydgold,title={Key Finding},
+  fonttitle=\bfseries,colbacktitle=usydgold,coltitle=usydgray]
+StreamGuard reduces median detection latency by 63\% and false-positive rate by 41\%
+relative to the centralised LSTM autoencoder baseline, while the edge pre-filter cuts cloud
+ingestion volume by an estimated 55\%.
+\end{tcolorbox}

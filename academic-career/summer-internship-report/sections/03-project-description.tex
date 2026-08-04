@@ -1,0 +1,37 @@
+\section{Project Description}
+
+\subsection{Customer Churn Prediction using Ensemble Learning}
+
+The project addressed client retention for a major Indian telecom operator with
+over~12~million postpaid subscribers. Monthly churn rates of~3.2\,\% were costing
+the client an estimated~\texteuro\,4.2M in annual recurring revenue. The goal was
+to build a classifier that identifies high-risk subscribers at least~14~days before
+a likely churn event, enabling proactive retention offers.
+
+\textbf{Dataset.} The training corpus comprised~18~months of anonymised subscriber
+records (approx.\ 2.4\,M rows $\times$~47 features) including call-detail records,
+data-usage logs, billing history, complaint tickets, and demographic attributes.
+
+\textbf{Methodology.}
+\begin{enumerate}[leftmargin=18pt,itemsep=2pt,topsep=4pt]
+    \item \textbf{EDA \& Cleaning.} Identified~11\,\% missing values in billing
+          features; imputed via MICE. Detected and winsorised outliers in
+          data-usage and call-duration columns (99th-percentile capping).
+    \item \textbf{Feature Engineering.} Created~14 derived features including
+          usage-decline slope, payment-delay ratio, complaint-frequency index, and
+          a network-switching affinity score.
+    \item \textbf{Modelling.} Benchmarked Logistic Regression, Random Forest,
+          XGBoost, and LightGBM. Built a \textbf{stacked ensemble} with
+          LightGBM~+~XGBoost base learners and a Logistic Regression meta-learner.
+    \item \textbf{Evaluation.} Achieved~0.91~AUC-ROC and~0.83~F1-score on a
+          stratified~20\,\% holdout set. SHAP analysis revealed \emph{complaint
+          frequency} and \emph{data-usage decline} as the strongest churn
+          predictors.
+    \item \textbf{Deployment.} Packaged the inference pipeline as a FastAPI
+          microservice; containerised with Docker and deployed on AWS SageMaker
+          endpoints for batch scoring.
+\end{enumerate}
+
+% ======================================================================
+% WEEKLY ACTIVITY LOG
+% ======================================================================

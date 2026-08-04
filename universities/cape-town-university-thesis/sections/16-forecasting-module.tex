@@ -1,0 +1,21 @@
+\section{Forecasting Module}
+The forecasting module produces a 90-minute-ahead irradiance estimate in 15-minute steps using
+an autoregressive model fitted on each site's historical irradiance series, corrected by a
+cloud-cover proxy derived from short-term irradiance variability. Let $G_t$ denote measured
+global horizontal irradiance at time $t$ and $\hat{G}_{t+k}$ the forecast $k$ steps ahead; the
+module estimates
+
+\begin{equation}
+\hat{G}_{t+k} = \sum_{i=1}^{p} \phi_i\, G_{t-i} \;+\; \beta \, C_t \;+\; \varepsilon_t,
+\label{eq:forecast}
+\end{equation}
+
+\noindent
+where $\phi_i$ are autoregressive coefficients fitted per site, $C_t$ is a normalised
+cloud-cover proxy, $\beta$ its regression weight, and $\varepsilon_t$ residual error.
+
+\begin{keybox}{Definition: Forecast Horizon}
+The forecast horizon $H$ is the number of future 15-minute steps over which the MPC layer
+optimises dispatch at each control step. This work uses $H = 6$ (90 minutes), chosen as the
+shortest horizon that still captures typical cloud-transient duration at the evaluated sites.
+\end{keybox}

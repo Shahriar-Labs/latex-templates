@@ -1,0 +1,210 @@
+% Packages, colours and custom commands for this template.
+% ============================================================
+%  Incident Postmortem Template — elegant, modern, SRE/FinOps
+%  Edit and compile online at https://letx.app
+%  Engine: pdflatex  |  Build: latexmk -pdf main.tex
+% ============================================================
+
+
+% ── Core layout ─────────────────────────────────────────────
+\usepackage[
+  top=18mm, bottom=20mm,
+  left=18mm, right=18mm,
+  includeheadfoot
+]{geometry}
+
+% ── Font & encoding ─────────────────────────────────────────
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage{inconsolata}   % monospace for code blocks
+
+% ── Colour palette ──────────────────────────────────────────
+\usepackage[dvipsnames,table]{xcolor}
+\definecolor{accent}{HTML}{C0392B}        % deep crimson
+\definecolor{accentlt}{HTML}{F5B7B1}      % light crimson tint
+\definecolor{ink}{HTML}{1A1A2E}           % near-black
+\definecolor{muted}{HTML}{6C757D}         % medium grey
+\definecolor{rule}{HTML}{DEE2E6}          % hairline grey
+\definecolor{codebg}{HTML}{F4F4F5}        % code background
+\definecolor{pagebg}{HTML}{FAFAFA}        % slight off-white page
+\definecolor{sev1}{HTML}{C0392B}          % severity 1 red
+\definecolor{sev2}{HTML}{E67E22}          % severity 2 orange
+\definecolor{sev3}{HTML}{F1C40F}          % severity 3 yellow
+\definecolor{statusopen}{HTML}{E74C3C}
+\definecolor{statusinprog}{HTML}{E67E22}
+\definecolor{statusdone}{HTML}{27AE60}
+\definecolor{tabhead}{HTML}{2C3E50}
+
+% ── Packages ────────────────────────────────────────────────
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{tabularx,booktabs,array,multirow,longtable}
+\usepackage{enumitem}
+\usepackage{parskip}
+\usepackage{microtype}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usepackage{fontawesome5}
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,fit,calc}
+\usepackage{pgffor}
+
+% ── Disable parskip vertical spacing inside tables ──────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt plus 1pt}
+
+% ── Page colour ─────────────────────────────────────────────
+\pagecolor{pagebg}
+
+% ── Hyperref setup ──────────────────────────────────────────
+\hypersetup{
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent,
+  pdfauthor={Platform Engineering — Reliability Team},
+  pdftitle={Incident Postmortem: SEV-1 US-EAST-1 Database Failover},
+}
+
+% ── Section styling ─────────────────────────────────────────
+\titleformat{\section}
+  {\color{ink}\large\bfseries}
+  {}
+  {0pt}
+  {\colorbox{ink}{\color{white}\hspace{4pt}%
+    \thesection\hspace{6pt}}%
+  \hspace{6pt}}
+  [\vspace{-2pt}\textcolor{rule}{\rule{\linewidth}{0.4pt}}]
+
+\titlespacing{\section}{0pt}{12pt}{6pt}
+
+\titleformat{\subsection}
+  {\color{ink}\normalsize\bfseries}
+  {\color{accent}\thesubsection.}
+  {5pt}
+  {}
+  []
+\titlespacing{\subsection}{0pt}{8pt}{3pt}
+
+% ── tcolorbox environments ──────────────────────────────────
+
+% Callout box (severity / status banners)
+\newtcolorbox{callout}[2][]{
+  enhanced,
+  colback=#2!8!white,
+  colframe=#2,
+  boxrule=0.6pt,
+  arc=3pt,
+  left=6pt, right=6pt, top=4pt, bottom=4pt,
+  fonttitle=\bfseries\small,
+  coltitle=#2!60!black,
+  #1
+}
+
+% Summary banner at top
+\newtcolorbox{summarybanner}{
+  enhanced,
+  colback=ink,
+  colframe=ink,
+  arc=4pt,
+  left=10pt, right=10pt, top=7pt, bottom=7pt,
+  fontupper=\color{white}\small,
+}
+
+% Code listing box
+\newtcolorbox{codeblock}[1][]{
+  enhanced,
+  colback=codebg,
+  colframe=rule,
+  boxrule=0.5pt,
+  arc=3pt,
+  left=8pt, right=8pt, top=5pt, bottom=5pt,
+  fontupper=\ttfamily\small,
+  #1
+}
+
+% Infobox (blue-ish)
+\newtcolorbox{infobox}{
+  enhanced,
+  colback=accentlt!30!white,
+  colframe=accent,
+  boxrule=0.5pt,
+  arc=3pt,
+  left=8pt, right=8pt, top=5pt, bottom=5pt,
+}
+
+% ── listings config ─────────────────────────────────────────
+\lstset{
+  basicstyle=\ttfamily\footnotesize\color{ink},
+  backgroundcolor=\color{codebg},
+  frame=none,
+  breaklines=true,
+  breakatwhitespace=true,
+  showstringspaces=false,
+  keywordstyle=\color{accent}\bfseries,
+  commentstyle=\color{muted}\itshape,
+  stringstyle=\color{statusinprog},
+  numbers=left,
+  numberstyle=\tiny\color{muted},
+  numbersep=8pt,
+  xleftmargin=14pt,
+  tabsize=2,
+}
+
+% ── Header / Footer ─────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{%
+  \small\color{muted}%
+  \faIcon{shield-alt}\hspace{4pt}%
+  \textbf{\color{ink}Incident Postmortem}%
+  \hspace{6pt}|\hspace{6pt}%
+  SEV-1 \texttt{INC-2024-0847}%
+}
+\fancyhead[R]{\small\color{muted}Platform Engineering \textbullet{} Reliability Team}
+\fancyfoot[C]{\small\color{muted}\thepage}
+\fancyfoot[R]{\small\color{muted}\textit{CONFIDENTIAL — Internal Use Only}}
+
+% ── Helper macros ───────────────────────────────────────────
+\newcommand{\pill}[2]{%
+  \tikz[baseline=(n.base)]\node[rounded corners=2pt,
+    fill=#1!15!white, draw=#1, inner xsep=3pt, inner ysep=2pt,
+    font=\bfseries\tiny, text=#1!70!black](n){#2};%
+}
+
+\newcommand{\badge}[2]{%
+  \tikz[baseline=(n.base)]\node[rounded corners=2pt,
+    fill=#1, inner xsep=5pt, inner ysep=2pt,
+    font=\bfseries\tiny, text=white](n){#2};%
+}
+
+\newcommand{\kv}[2]{%
+  \noindent
+  \begin{tabularx}{\linewidth}{@{}>{\color{accent}\bfseries\small}l@{\hspace{8mm}}>{\raggedright\arraybackslash\small}X@{}}
+    #1 & #2
+  \end{tabularx}%
+}
+
+\newcommand{\sectionrule}{%
+  \vspace{2pt}\textcolor{rule}{\rule{\linewidth}{0.4pt}}\vspace{4pt}%
+}
+
+% ── Action item row macro ───────────────────────────────────
+\newcommand{\actionrow}[5]{%
+  % #1=ID #2=action #3=owner #4=deadline #5=status-colour+label
+  \texttt{\small #1} &
+  \small #2 &
+  \small\textbf{#3} &
+  \small\texttt{#4} &
+  \badge{#5}{\phantom{x}}\hspace{-8pt}\badge{#5}{}%
+}
+
+% ================================================================
+%  DOCUMENT
+% ================================================================

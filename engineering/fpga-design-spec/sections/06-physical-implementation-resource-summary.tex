@@ -1,0 +1,83 @@
+\section{Physical Implementation \& Resource Summary}
+The Vertex-9 core features isolated clock domains to optimize maximum speed paths. Hardware compilation properties are defined below.
+
+\subsection{Clock Domain and Reset Strategy}
+The logic structure relies on three distinct clock domains to prevent timing violation paths:
+\begin{itemize}
+    \item \textbf{System Clock (\texttt{sys\_clk}):} Operates at 250 MHz. Used for DMA controller logic and the ExpressLink physical link layer interface.
+    \item \textbf{Configuration Clock (\texttt{cfg\_clk}):} Operates at 100 MHz. Used for low-speed CSR read/write access.
+    \item \textbf{Core DSP Clock (\texttt{dsp\_clk}):} Runs at 400 MHz. Dedicated to parallel processing arithmetic.
+\end{itemize}
+Asynchronous Clock Domain Crossings (CDC) are isolated using dual-clock FIFOs and dual-flip-flop synchronizers.
+
+\vspace{5pt}
+\noindent
+\begin{minipage}[t]{0.48\textwidth}
+  \begin{tcolorbox}[
+      colback=lightbg,
+      colframe=primary,
+      title=\textbf{Synthesis Directives},
+      coltitle=white,
+      fonttitle=\sffamily\bfseries\small,
+      arc=2mm,
+      height=3.6cm
+  ]
+      \small
+      \begin{itemize}[leftmargin=12pt, nosep]
+          \item \textbf{FSM Encoding:} One-Hot
+          \item \textbf{Resource Sharing:} Disabled
+          \item \textbf{DSP Mapping:} Block RAM limit
+          \item \textbf{Logic Optimization:} Retiming
+          \item \textbf{Boundary Keep:} False
+      \end{itemize}
+  \end{tcolorbox}
+\end{minipage}
+\hfill
+\begin{minipage}[t]{0.48\textwidth}
+  \begin{tcolorbox}[
+      colback=lightbg,
+      colframe=secondary,
+      title=\textbf{Place \& Route Constraints},
+      coltitle=white,
+      fonttitle=\sffamily\bfseries\small,
+      arc=2mm,
+      height=3.6cm
+  ]
+      \small
+      \begin{itemize}[leftmargin=12pt, nosep]
+          \item \textbf{Placement Strategy:} High-Speed
+          \item \textbf{Routing Effort:} Maximum
+          \item \textbf{Physical Optimization:} Enabled
+          \item \textbf{Hold-Time Fix:} Aggressive
+          \item \textbf{Slack Threshold:} 0.05 ns
+      \end{itemize}
+  \end{tcolorbox}
+\end{minipage}
+
+\subsection{Hardware Resource Utilization Metrics}
+Utilization is estimated based on compilation targeting default parameter options.
+
+\noindent
+\begin{tabularx}{\textwidth}{X c c c c c}
+\toprule
+\textbf{Target Device} & \textbf{LUTs} & \textbf{Flip-Flops} & \textbf{BRAM (36Kb)} & \textbf{DSP Slices} & \textbf{\(F_{max}\) (MHz)} \\
+\midrule
+Nexa-Gate Ultra 900 & 12,450 (2.4\%) & 18,900 (1.8\%) & 45 (4.2\%) & 128 (6.7\%) & 450 MHz \\
+Meridian-7 F-Series & 10,800 (1.9\%) & 16,500 (1.5\%) & 38 (3.5\%) & 128 (5.8\%) & 520 MHz \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Physical Top-Level Pin Constraints}
+\noindent
+\begin{tabularx}{\textwidth}{l l c l X}
+\toprule
+\textbf{Port Name} & \textbf{Direction} & \textbf{Width} & \textbf{IO Standard} & \textbf{Description} \\
+\midrule
+\texttt{pcie\_rx\_p/n} & Input & 4 & \texttt{DIFF\_SSTL12} & PCIe Differential Receive Lanes. \\
+\texttt{pcie\_tx\_p/n} & Output & 4 & \texttt{DIFF\_SSTL12} & PCIe Differential Transmit Lanes. \\
+\texttt{sys\_clk\_p/n} & Input & 1 & \texttt{LVDS} & Reference Clock for ExpressLink PLL. \\
+\texttt{adc\_data\_in} & Input & 14 & \texttt{LVDS\_25} & Differential ADC data inputs from SerDes. \\
+\texttt{dac\_data\_out} & Output & 14 & \texttt{LVDS\_25} & Differential DAC data outputs to SerDes. \\
+\texttt{sys\_rst\_n} & Input & 1 & \texttt{LVCMOS18} & Active Low Global Asynchronous Reset. \\
+\bottomrule
+\end{tabularx}

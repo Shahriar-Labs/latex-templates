@@ -1,0 +1,75 @@
+\section*{\centering Drawing Sheet — FIG.\ 1: System Architecture \refnum{100}}
+\addcontentsline{toc}{section}{Drawing Sheet — FIG.\ 1}
+
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=1.1cm and 1.8cm,
+  box/.style={
+    draw=accent, fill=lightgray, thick, rounded corners=4pt,
+    minimum width=2.6cm, minimum height=0.9cm,
+    font=\small\bfseries\color{accent}, align=center
+  },
+  arrow/.style={-{Stealth[length=5pt]}, thick, color=rulecolor},
+  label/.style={font=\scriptsize\color{midgray}}
+]
+  % Input
+  \node[box] (input) {Video\\Capture \refnum{105}};
+
+  % FAM
+  \node[box, right=of input] (fam) {Frame Analysis\\Module \refnum{110}};
+
+  % LCIM
+  \node[box, right=of fam] (lcim) {Convolutional\\Inference \refnum{120}};
+
+  % TA (below LCIM)
+  \node[box, below=of lcim] (ta) {Telemetry\\Aggregator \refnum{150}};
+
+  % Network (feeds TA)
+  \node[box, left=of ta] (net) {Network\\Stack \refnum{155}};
+
+  % DE
+  \node[box, right=of lcim] (de) {Decision\\Engine \refnum{130}};
+
+  % HAL
+  \node[box, right=of de] (hal) {Hardware\\Abstraction \refnum{140}};
+
+  % Encoder
+  \node[box, right=of hal] (enc) {Video\\Encoder \refnum{160}};
+
+  % Output
+  \node[box, right=of enc] (out) {Streaming\\Output \refnum{165}};
+
+  % Arrows
+  \draw[arrow] (input) -- (fam);
+  \draw[arrow] (fam)   -- (lcim) node[midway,above,label]{frames};
+  \draw[arrow] (lcim)  -- (de)   node[midway,above,label]{complexity};
+  \draw[arrow] (ta)    -- (de)   node[midway,right,label]{BW / RTT};
+  \draw[arrow] (net)   -- (ta);
+  \draw[arrow] (de)    -- (hal)  node[midway,above,label]{QP / profile};
+  \draw[arrow] (hal)   -- (enc);
+  \draw[arrow] (enc)   -- (out);
+
+  % Reference box around ANCE core
+  \begin{scope}[on background layer]
+    \node[
+      draw=rulecolor, dashed, thick, rounded corners=6pt,
+      fit=(fam)(lcim)(ta)(de)(hal),
+      inner sep=6pt,
+      label={[font=\footnotesize\color{rulecolor},anchor=north west]north west:ANCE Core \refnum{100}}
+    ] (anceBox) {};
+  \end{scope}
+\end{tikzpicture}}
+\end{center}
+
+\vspace{6pt}
+{\small\color{midgray}
+\textit{FIG.\ 1.} Block diagram of the Adaptive Neural Compression Engine (ANCE) system.
+Reference numerals identify subsystems as defined in the Detailed Description.
+Dashed boundary delineates the inventive ANCE Core \refnum{100}.
+Arrows indicate primary data-flow direction.}
+
+% ============================================================
+%  CLAIMS
+% ============================================================
+\newpage

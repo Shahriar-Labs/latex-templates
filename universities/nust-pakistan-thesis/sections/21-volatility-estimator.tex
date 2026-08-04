@@ -1,0 +1,22 @@
+\section{Volatility Estimator}
+The estimator maintains an exponentially weighted moving average of successive sample
+deltas $\delta_t = |x_t - x_{t-1}|$:
+\begin{equation}
+\hat{v}_t = \alpha \, \delta_t + (1-\alpha)\, \hat{v}_{t-1}, \qquad \alpha \in (0,1)
+\label{eq:ewma}
+\end{equation}
+where $\alpha$ controls responsiveness to recent change. The target sleep interval
+$T_{\text{sleep}}$ is then computed as a function of estimated volatility $\hat{v}_t$ and
+residual battery fraction $b_t \in [0,1]$:
+\begin{equation}
+T_{\text{sleep}} = T_{\min} + (T_{\max} - T_{\min}) \cdot \left(1 - \hat{v}_t^{\,*}\right)^{\gamma} \cdot f(b_t)
+\label{eq:sleep}
+\end{equation}
+where $\hat{v}_t^{\,*}$ is $\hat{v}_t$ normalized against a rolling maximum, $\gamma$ is a
+sensitivity exponent (empirically set to 1.6 in Chapter~5), and $f(b_t)$ is a battery-aware
+damping term that linearly extends sleep as $b_t$ falls below a 20\% reserve threshold.
+
+\begin{infobox}[title={\faLock\ Design Invariant}]
+The estimator never touches the radio directly. All hardware-facing decisions are deferred to
+the Negotiation Module, keeping the volatility computation portable across radio stacks.
+\end{infobox}

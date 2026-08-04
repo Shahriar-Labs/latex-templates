@@ -1,0 +1,80 @@
+\section{Results}
+
+\textbf{Accuracy vs.\ sparsity} (ResNet-50, ImageNet-1K, 90 epochs).
+Table~\ref{tab:accuracy} compares AdaGrad-Prune against three baselines at
+matched sparsity.  AdaGrad-Prune closes the accuracy gap to the dense model
+by $1.4\times$ compared to the next-best method.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Top-1 accuracy at 80\% sparsity (ResNet-50, ImageNet).}
+\label{tab:accuracy}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}Xcc@{}}
+\toprule
+\textbf{Method} & \textbf{Top-1 (\%)} & \textbf{FLOPs$\downarrow$} \\
+\midrule
+Dense baseline  & 76.8 & $1.0\times$ \\
+Magnitude (one-shot) \cite{han2015deep} & 73.4 & $4.1\times$ \\
+GMP \cite{zhu2018prune}          & 74.9 & $4.4\times$ \\
+Lottery-ticket \cite{frankle2019lottery} & 75.2 & $4.6\times$ \\
+\textbf{AdaGrad-Prune (ours)}    & \textbf{76.2} & \textbf{$5.2\times$} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\textbf{Energy measurements} were taken on an STM32H7 MCU (Cortex-M7,
+480\,MHz) running single-image inference.
+Figure~\ref{fig:energy} shows mean energy per inference across four
+sparsity levels.  AdaGrad-Prune achieves $4.7\times$ reduction at 87\%
+sparsity, reaching 0.31\,mJ per image.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+  width=\linewidth,
+  height=4.4cm,
+  xlabel={\small Sparsity (\%)},
+  ylabel={\small Energy (mJ)},
+  xlabel style={color=muted},
+  ylabel style={color=muted},
+  tick label style={font=\small, color=muted},
+  xtick={0,50,70,80,87},
+  ytick={0.3,0.6,0.9,1.2,1.5},
+  ymin=0.2, ymax=1.6,
+  xmin=0,  xmax=92,
+  grid=major,
+  grid style={line width=0.3pt, color=rule},
+  axis line style={color=rule},
+  legend style={
+    font=\footnotesize,
+    fill=white,
+    draw=rule,
+    at={(0.98,0.98)},
+    anchor=north east
+  },
+  cycle list name=color list,
+]
+% Dense baseline (flat line for reference)
+\addplot[color=muted, dashed, thick, mark=none]
+  coordinates {(0,1.46)(50,1.46)(70,1.46)(80,1.46)(87,1.46)};
+\addlegendentry{Dense}
+
+% GMP
+\addplot[color=accent!60, thick, mark=square*, mark size=1.8pt]
+  coordinates {(50,1.10)(70,0.82)(80,0.65)(87,0.55)};
+\addlegendentry{GMP}
+
+% AdaGrad-Prune
+\addplot[color=accent, thick, mark=*, mark size=2pt]
+  coordinates {(50,1.02)(70,0.71)(80,0.51)(87,0.31)};
+\addlegendentry{AdaGrad-Prune}
+
+\end{axis}
+\end{tikzpicture}
+\caption{Energy per inference on STM32H7 vs.\ sparsity level.}
+\label{fig:energy}
+\end{figure}
+
+% ─── 4. Conclusion ───────────────────────────────────────────────────────────

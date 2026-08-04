@@ -1,0 +1,75 @@
+\section{Bench Validation}
+The reference design was built and measured on the bench under the conditions
+of Section~3.1. Figure~\ref{fig:scope} shows representative oscilloscope
+captures of the switch-node waveform and the output ripple voltage at
+$V_{IN} = 5$\,V, $I_{OUT} = 2$\,A.
+
+\begin{figure}[H]
+\centering
+\begin{minipage}[t]{0.48\linewidth}
+\centering
+\begin{tikzpicture}
+\fill[scopebg] (0,0) rectangle (7.2,4.2);
+\foreach \x in {0,0.9,...,7.2}
+  \draw[gridcol,thin] (\x,0) -- (\x,4.2);
+\foreach \y in {0,0.7,...,4.2}
+  \draw[gridcol,thin] (0,\y) -- (7.2,\y);
+\draw[thick,chYellow]
+  (0,0.9) -- (0.15,3.4) -- (1.6,3.4) -- (1.75,0.9) -- (2.4,0.9) --
+  (2.55,3.4) -- (4.0,3.4) -- (4.15,0.9) -- (4.8,0.9) --
+  (4.95,3.4) -- (6.4,3.4) -- (6.55,0.9) -- (7.2,0.9);
+\node[anchor=north west,font=\tiny,text=white] at (0.1,4.15)
+  {CH1 \ 5.00\,V/div \ \ 500\,ns/div};
+\node[anchor=south west,font=\tiny,text=white] at (0.1,0.08)
+  {Freq = 500.3\,kHz \ \ Duty = 66.1\%};
+\draw[gridcol,thick] (0,0) rectangle (7.2,4.2);
+\end{tikzpicture}
+\small\itshape (a) Switch-node (SW) voltage
+\end{minipage}%
+\hfill
+\begin{minipage}[t]{0.48\linewidth}
+\centering
+\begin{tikzpicture}
+\fill[scopebg] (0,0) rectangle (7.2,4.2);
+\foreach \x in {0,0.9,...,7.2}
+  \draw[gridcol,thin] (\x,0) -- (\x,4.2);
+\foreach \y in {0,0.7,...,4.2}
+  \draw[gridcol,thin] (0,\y) -- (7.2,\y);
+\draw[thick,chCyan,samples=150,domain=0:7.2]
+  plot (\x,{2.1+0.2*sin(2*180*\x/0.8)});
+\node[anchor=north west,font=\tiny,text=white] at (0.1,4.15)
+  {CH2 \ 20.0\,mV/div (AC) \ \ 500\,ns/div};
+\node[anchor=south west,font=\tiny,text=white] at (0.1,0.08)
+  {Vpp = 24.6\,mV \ \ Ripple f = 498.7\,kHz};
+\draw[gridcol,thick] (0,0) rectangle (7.2,4.2);
+\end{tikzpicture}
+\small\itshape (b) $V_{OUT}$ ripple, AC-coupled
+\end{minipage}
+\caption{Representative bench oscilloscope captures at $V_{IN}=5$\,V,
+$I_{OUT}=2$\,A. Waveforms are illustrative placeholders for the captured
+screen data.}
+\label{fig:scope}
+\end{figure}
+
+Table~\ref{tab:measured} summarizes key measured parameters against the
+requirements of Section~3.1.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{\linewidth}{@{}p{2.6cm} X >{\centering\arraybackslash}p{2.0cm} >{\centering\arraybackslash}p{2.0cm} >{\centering\arraybackslash}p{1.4cm}@{}}
+\toprule
+\textbf{Parameter} & \textbf{Test Condition} & \textbf{Measured} & \textbf{Spec} & \textbf{Result} \\
+\midrule
+Efficiency & $V_{IN}=5$\,V, $I_{OUT}=1$\,A & 91.4\% & $>$90\% & Pass \\
+$V_{OUT}$ accuracy & $I_{OUT}=0$ to 2\,A & 3.29\,V -- 3.31\,V & 3.3\,V $\pm2$\% & Pass \\
+Output ripple & $I_{OUT}=2$\,A & 24.6\,mV pk-pk & $<$33\,mV & Pass \\
+Quiescent current & Burst mode, no load & 21\,\textmu A & $<$25\,\textmu A & Pass \\
+Load transient (0-2\,A) & 1\,A/\textmu s step & 1.8\% deviation & $<$2\% & Pass \\
+\bottomrule
+\end{tabularx}
+\caption{Summary of measured bench performance.}
+\label{tab:measured}
+\end{table}
+
+% ===========================================================================

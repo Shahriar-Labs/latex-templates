@@ -1,0 +1,31 @@
+\section{System Architecture}
+AL-TO is deployed as a sidecar scheduler co-located with an API gateway, as shown in Figure~\ref{fig:arch}. Incoming requests are annotated with predicted latency and routed to the edge cluster or cloud region that minimises expected SLA violation subject to the current cost budget.
+
+\begin{figure}[htb]
+\centering
+\begin{tikzpicture}[
+  box/.style={rectangle,rounded corners=2pt,draw=bitsnavy,line width=1pt,minimum height=1.0cm,align=center,font=\small},
+  node distance=1.1cm and 1.3cm
+]
+\node[box,fill=bitspale] (client) {Client\\Requests};
+\node[box,fill=bitsnavy,text=white,right=of client] (gw) {API\\Gateway};
+\node[box,fill=bitsmaroon,text=white,right=of gw] (sched) {AL-TO\\Scheduler};
+\node[box,fill=bitsgold!60,above right=0.6cm and 1.3cm of sched] (edge) {Edge\\Cluster};
+\node[box,fill=bitsgold!30,below right=0.6cm and 1.3cm of sched] (cloud) {Cloud\\Region};
+\node[box,fill=bitspale,below=1.0cm of sched,minimum width=3.0cm] (mon) {Telemetry \& Latency Predictor};
+
+\draw[-{Latex[length=2.2mm]}] (client) -- (gw);
+\draw[-{Latex[length=2.2mm]}] (gw) -- (sched);
+\draw[-{Latex[length=2.2mm]}] (sched) -- (edge);
+\draw[-{Latex[length=2.2mm]}] (sched) -- (cloud);
+\draw[-{Latex[length=2.2mm]},dashed,bitsgray] (edge.south) |- (mon.east);
+\draw[-{Latex[length=2.2mm]},dashed,bitsgray] (cloud.south) |- (mon.east);
+\draw[-{Latex[length=2.2mm]},dashed,bitsgray] (mon) -- (sched);
+
+\begin{scope}[on background layer]
+\node[fit=(edge)(cloud)(sched)(mon),draw=bitsgold,dashed,rounded corners=4pt,inner sep=10pt,label={[font=\scriptsize\color{bitsgray}]above:AL-TO sidecar}] {};
+\end{scope}
+\end{tikzpicture}
+\caption{AL-TO deployment architecture alongside an API gateway.}
+\label{fig:arch}
+\end{figure}

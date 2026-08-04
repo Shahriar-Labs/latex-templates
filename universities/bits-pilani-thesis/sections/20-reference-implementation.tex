@@ -1,0 +1,14 @@
+\section{Reference Implementation}
+Listing~\ref{lst:sched} shows a simplified Python implementation of the placement step used in the testbed evaluation.
+
+\begin{lstlisting}[style=bitscode,caption={Simplified AL-TO placement step.},label={lst:sched}]
+def place_task(task, candidates, budget, horizon=5):
+    # candidates: list of Node objects with .predicted_latency, .cost
+    ranked = sorted(candidates, key=lambda n: n.predicted_latency)[:horizon]
+    for node in ranked:
+        if budget >= node.cost:
+            return node, budget - node.cost
+    # fallback: cheapest node among the top-k
+    fallback = min(ranked, key=lambda n: n.cost)
+    return fallback, budget
+\end{lstlisting}

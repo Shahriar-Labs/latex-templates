@@ -1,0 +1,269 @@
+\section*{\color{primaryNavy}4. Test Scenarios \& Acceptance Criteria}
+\sectionline
+
+\begin{tcolorbox}[
+  enhanced,
+  colback=white,
+  colframe=accentBlue,
+  boxrule=1pt,
+  left=12pt,
+  right=12pt,
+  top=10pt,
+  bottom=10pt,
+  sharp corners,
+  title={\textbf{TC-001: User Login \& Multi-Factor Authentication}},
+  fonttitle=\bfseries\color{white},
+  colbacktitle=accentBlue
+]
+  \textbf{Priority:} Critical \hfill \textbf{Assigned To:} Sarah Lin, UAT Tester\\[4pt]
+  \textbf{Precondition:} Valid user credentials exist in the staging identity provider.\\[4pt]
+
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bgLight,
+    colframe=borderGray,
+    boxrule=0.5pt,
+    left=10pt,
+    right=10pt,
+    top=6pt,
+    bottom=6pt,
+    sharp corners,
+    title={Test Steps},
+    fonttitle=\bfseries\color{primaryNavy}
+  ]
+    \begin{enumerate}[nosep, leftmargin=*]
+      \item Navigate to \texttt{https://uat.nimbuspay.internal/login}.
+      \item Enter valid email and password; submit the login form.
+      \item Enter the 6-digit OTP received via authenticator app.
+      \item Verify redirection to the dashboard.
+      \item Attempt login with an expired OTP (30-second window exceeded).
+      \item Attempt login with invalid credentials three times consecutively.
+    \end{enumerate}
+  \end{tcolorbox}
+
+  \vspace{4pt}
+
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bgLight,
+    colframe=statusPass,
+    boxrule=0.5pt,
+    left=10pt,
+    right=10pt,
+    top=6pt,
+    bottom=6pt,
+    sharp corners,
+    title={\passmark\ Acceptance Criteria},
+    fonttitle=\bfseries\color{statusPass}
+  ]
+    \begin{itemize}[nosep, leftmargin=*]
+      \item Successful login redirects to dashboard within 2\,seconds.
+      \item Expired OTP is rejected with message ``Authentication code expired. Request a new code.''
+      \item After three failed attempts, the account is locked for 15\,minutes and an alert is logged.
+      \item All login events (success and failure) are recorded in the audit trail.
+    \end{itemize}
+  \end{tcolorbox}
+\end{tcolorbox}
+
+\vspace{12pt}
+
+\begin{tcolorbox}[
+  enhanced,
+  colback=white,
+  colframe=accentBlue,
+  boxrule=1pt,
+  left=12pt,
+  right=12pt,
+  top=10pt,
+  bottom=10pt,
+  sharp corners,
+  title={\textbf{TC-002: Credit Card Payment Processing}},
+  fonttitle=\bfseries\color{white},
+  colbacktitle=accentBlue
+]
+  \textbf{Priority:} Critical \hfill \textbf{Assigned To:} David Okonkwo, UAT Tester\\[4pt]
+  \textbf{Precondition:} Merchant account \texttt{MER-8842} is active with a valid processor configuration.\\[4pt]
+
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bgLight,
+    colframe=borderGray,
+    boxrule=0.5pt,
+    left=10pt,
+    right=10pt,
+    top=6pt,
+    bottom=6pt,
+    sharp corners,
+    title={Test Steps},
+    fonttitle=\bfseries\color{primaryNavy}
+  ]
+    \begin{enumerate}[nosep, leftmargin=*]
+      \item Initiate a payment of \$149.99 using Visa test card \texttt{4111\,1111\,1111\,1111}.
+      \item Verify that the fraud detection callout to Vertex Shield completes successfully.
+      \item Confirm the transaction appears in the merchant dashboard with status ``Settled.''
+      \item Initiate a payment of \$2,500.00 using Mastercard test card \texttt{5555\,5555\,5555\,4444}.
+      \item Simulate a declined transaction by using card \texttt{4000\,0000\,0000\,0002}.
+      \item Process a partial refund of \$75.00 against the settled Visa transaction.
+    \end{enumerate}
+  \end{tcolorbox}
+
+  \vspace{4pt}
+
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bgLight,
+    colframe=statusPass,
+    boxrule=0.5pt,
+    left=10pt,
+    right=10pt,
+    top=6pt,
+    bottom=6pt,
+    sharp corners,
+    title={\passmark\ Acceptance Criteria},
+    fonttitle=\bfseries\color{statusPass}
+  ]
+    \begin{itemize}[nosep, leftmargin=*]
+      \item Payment authorization completes within 3\,seconds for transactions under \$500.
+      \item Fraud detection response is received and logged; high-risk transactions are flagged for manual review.
+      \item Declined transactions display a clear reason code (e.g., ``Insufficient funds,'' ``Do not honor'').
+      \item Partial refund is processed within one business-day settlement window and reflected in the ledger.
+      \item All payment events are recorded with a unique transaction reference ID.
+    \end{itemize}
+  \end{tcolorbox}
+\end{tcolorbox}
+
+\newpage
+
+\begin{tcolorbox}[
+  enhanced,
+  colback=white,
+  colframe=accentBlue,
+  boxrule=1pt,
+  left=12pt,
+  right=12pt,
+  top=10pt,
+  bottom=10pt,
+  sharp corners,
+  title={\textbf{TC-003: Transaction Report Generation \& Export}},
+  fonttitle=\bfseries\color{white},
+  colbacktitle=accentBlue
+]
+  \textbf{Priority:} High \hfill \textbf{Assigned To:} Sarah Lin, UAT Tester\\[4pt]
+  \textbf{Precondition:} At least 50 transactions exist for merchant \texttt{MER-8842} in the current billing cycle.\\[4pt]
+
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bgLight,
+    colframe=borderGray,
+    boxrule=0.5pt,
+    left=10pt,
+    right=10pt,
+    top=6pt,
+    bottom=6pt,
+    sharp corners,
+    title={Test Steps},
+    fonttitle=\bfseries\color{primaryNavy}
+  ]
+    \begin{enumerate}[nosep, leftmargin=*]
+      \item Navigate to Reports $\rightarrow$ Transaction Summary.
+      \item Set date range from 2026-04-01 to 2026-04-14.
+      \item Apply filter: Payment Type = ``Credit Card,'' Status = ``Settled.''
+      \item Click ``Generate Report'' and verify on-screen preview.
+      \item Export the report in PDF and CSV formats.
+      \item Schedule a recurring weekly report to be emailed to \texttt{finance@nimbuspay.internal}.
+    \end{enumerate}
+  \end{tcolorbox}
+
+  \vspace{4pt}
+
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bgLight,
+    colframe=statusPass,
+    boxrule=0.5pt,
+    left=10pt,
+    right=10pt,
+    top=6pt,
+    bottom=6pt,
+    sharp corners,
+    title={\passmark\ Acceptance Criteria},
+    fonttitle=\bfseries\color{statusPass}
+  ]
+    \begin{itemize}[nosep, leftmargin=*]
+      \item Report preview renders within 5\,seconds for datasets up to 1,000 records.
+      \item PDF export preserves all columns, formatting, and totals.
+      \item CSV export includes headers and is importable into Excel without manual correction.
+      \item Scheduled report is delivered to the specified recipient at the configured interval.
+      \item Report footer displays generation timestamp and data freshness indicator.
+    \end{itemize}
+  \end{tcolorbox}
+\end{tcolorbox}
+
+\vspace{12pt}
+
+\begin{tcolorbox}[
+  enhanced,
+  colback=white,
+  colframe=accentBlue,
+  boxrule=1pt,
+  left=12pt,
+  right=12pt,
+  top=10pt,
+  bottom=10pt,
+  sharp corners,
+  title={\textbf{TC-004: User Role Management \& Access Control}},
+  fonttitle=\bfseries\color{white},
+  colbacktitle=accentBlue
+]
+  \textbf{Priority:} High \hfill \textbf{Assigned To:} David Okonkwo, UAT Tester\\[4pt]
+  \textbf{Precondition:} Admin user \texttt{admin@nimbuspay.internal} is logged in with full privileges.\\[4pt]
+
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bgLight,
+    colframe=borderGray,
+    boxrule=0.5pt,
+    left=10pt,
+    right=10pt,
+    top=6pt,
+    bottom=6pt,
+    sharp corners,
+    title={Test Steps},
+    fonttitle=\bfseries\color{primaryNavy}
+  ]
+    \begin{enumerate}[nosep, leftmargin=*]
+      \item Navigate to Admin $\rightarrow$ User Management.
+      \item Create a new user with role ``Finance Viewer'' and assign to merchant \texttt{MER-8842}.
+      \item Log in as the new Finance Viewer and attempt to access the Payment Processing module.
+      \item From the admin account, modify the user role to ``Finance Manager.''
+      \item Log in as Finance Manager and attempt to process a refund.
+      \item Delete the test user and verify the audit log records the deletion event.
+    \end{enumerate}
+  \end{tcolorbox}
+
+  \vspace{4pt}
+
+  \begin{tcolorbox}[
+    enhanced,
+    colback=bgLight,
+    colframe=statusPass,
+    boxrule=0.5pt,
+    left=10pt,
+    right=10pt,
+    top=6pt,
+    bottom=6pt,
+    sharp corners,
+    title={\passmark\ Acceptance Criteria},
+    fonttitle=\bfseries\color{statusPass}
+  ]
+    \begin{itemize}[nosep, leftmargin=*]
+      \item Finance Viewer can access reports and dashboards but receives a 403 error when attempting payment operations.
+      \item Finance Manager can process refunds up to \$5,000 without additional approval.
+      \item Role changes take effect immediately upon the next user session.
+      \item User deletion cascades correctly: session tokens are invalidated and audit trail is preserved.
+      \item All role modifications and access attempts are logged with timestamp and IP address.
+    \end{itemize}
+  \end{tcolorbox}
+\end{tcolorbox}
+
+\vspace{12pt}

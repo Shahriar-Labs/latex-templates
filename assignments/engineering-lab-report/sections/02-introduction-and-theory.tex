@@ -1,0 +1,74 @@
+\section{Introduction and Theory}
+
+\subsection{Inverting Amplifier}
+
+The inverting amplifier, drawn in Figure~\ref{fig:invamp}, produces an
+output $V_{\text{out}}$ that is an amplified, sign-inverted copy of the
+input $V_{\text{in}}$. Under the ideal op-amp assumptions the closed-loop
+gain is
+\begin{equation}
+  A_{v} \;=\; \frac{V_{\text{out}}}{V_{\text{in}}}
+         \;=\; -\frac{R_{f}}{R_{i}}
+  \label{eq:gain}
+\end{equation}
+where $R_f$ is the feedback resistor and $R_i$ the input resistor.  With
+$R_f=\qty{100}{\kohm}$ and $R_i=\qty{10}{\kohm}$ the theoretical gain is
+$A_v = -10.0$.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{circuitikz}[american,scale=0.95]
+    \draw (0,1.8) node[op amp] (opamp) {};
+    \draw (opamp.-) to[short] ++(-1.4,0) coordinate (sum)
+          to[R,l_=$R_i$\;\qty{10}{\kohm}] ++(-2.6,0)
+          to[short,-o] ++(-0.4,0) node[left]{$V_{\text{in}}$};
+    \draw (sum) to[short,*-] ++(0,1.1) coordinate (fb)
+          to[R,l=$R_f$\;\qty{100}{\kohm}]
+          (fb -| opamp.out) to[short,-*] (opamp.out);
+    \draw (opamp.+) to[short] ++(0,-0.9) node[ground]{};
+    \draw (opamp.out) to[short,-o] ++(1,0) node[right]{$V_{\text{out}}$};
+    \node at (2.2,-2.8) {};
+  \end{circuitikz}
+  \caption{Inverting amplifier.\;\;
+    $R_i=\qty{10}{\kohm},\;R_f=\qty{100}{\kohm}\;\Rightarrow\;A_v=-10$.}
+  \label{fig:invamp}
+\end{figure}
+
+\subsection{Active Low-Pass Filter}
+
+A unity-gain Sallen--Key low-pass filter (Figure~\ref{fig:lpf}) yields a
+second-order Butterworth response when $R_1=R_2=R$ and $C_1=2C_2$.  The
+transfer function is
+\begin{equation}
+  H(s)=\frac{1}{s^{2}R^{2}C_{1}C_{2}+2sRC_{2}+1}
+  \label{eq:tf}
+\end{equation}
+with a cut-off frequency
+$f_c = \bigl(2\pi R\sqrt{C_{1}C_{2}}\,\bigr)^{-1}$.  Using
+$R=\qty{10}{\kohm}$, $C_1=\qty{22}{\nF}$, and $C_2=\qty{10}{\nF}$
+gives $f_c \approx \qty{1.07}{\kHz}$.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{circuitikz}[american,scale=0.95]
+    \draw (0,0) node[op amp] (opamp) {};
+    \draw (opamp.-) to[short] ++(0,1) to[short]
+          (opamp.out |- {(0,1)}) to[short] (opamp.out);
+    \draw (opamp.+) to[short] ++(-1.4,0) coordinate (mid)
+          to[C,l_=$C_2$\;\qty{10}{\nF}] ++(0,-1.3) node[ground]{};
+    \draw (mid) to[R,l_=$R_2$\;\qty{10}{\kohm}] ++(-2.4,0) coordinate (inj)
+          to[R,l_=$R_1$\;\qty{10}{\kohm},-o] ++(-2,0)
+          node[left]{$V_{\text{in}}$};
+    \draw (inj) to[C,l=$C_1$\;\qty{22}{\nF}]
+          (inj |- opamp.out) to[short,-*] (opamp.out);
+    \draw (opamp.out) to[short,-o] ++(1,0) node[right]{$V_{\text{out}}$};
+    \node at (2.2,-2.6) {};
+  \end{circuitikz}
+  \caption{Unity-gain Sallen--Key low-pass filter.\;\;
+    $f_c\approx\qty{1.07}{\kHz}$.}
+  \label{fig:lpf}
+\end{figure}
+
+% ═══════════════════════════════════════════════
+%  EXPERIMENTAL  SETUP
+% ═══════════════════════════════════════════════

@@ -1,0 +1,24 @@
+\section{Differential Privacy Layer}
+Before upload, each client clips its per-example gradient to an $L_2$ norm of $C$ and
+adds Gaussian noise calibrated to a target privacy budget $(\varepsilon, \delta)$. We
+adopt the moments-accountant method to track cumulative privacy loss across
+communication rounds and halt training if the budget is exhausted before convergence.
+
+\begin{table}[htbp]
+\centering
+\caption{FedGuard training hyperparameters.}
+\label{tab:hyperparams}
+\begin{tabularx}{0.85\textwidth}{@{}l X r@{}}
+\toprule
+\textbf{Parameter} & \textbf{Description} & \textbf{Value} \\
+\midrule
+$\alpha$ & Volatility weighting strength & 0.6 \\
+$C$ & Gradient clipping norm & 1.0 \\
+$\varepsilon$ & DP privacy budget (per training run) & 3.0 \\
+$\delta$ & DP failure probability & $10^{-5}$ \\
+Local epochs & Per-round local training epochs & 3 \\
+Rounds & Total federated communication rounds & 120 \\
+Batch size & Local mini-batch size & 32 \\
+\bottomrule
+\end{tabularx}
+\end{table}

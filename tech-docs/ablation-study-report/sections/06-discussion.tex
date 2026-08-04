@@ -1,0 +1,66 @@
+\section{Discussion}
+% ═══════════════════════════════════════════════════════════════
+
+\subsection{Dominant Components}
+Equivariant message-passing and residual connections account for the largest individual
+degradations (\(\Delta = +0.022\) and \(+0.027\) respectively). Removing EquiMP forces
+the model to learn rotation invariance from data alone --- a known failure mode on small
+molecular datasets where spatial symmetries are critical. Removing residual connections
+destabilizes gradient flow in the 6-layer stack, causing training to converge to a
+higher-loss basin.
+
+\subsection{Moderate Contributors}
+Attention-weighted aggregation (\(\Delta = +0.014\)) and layer normalization
+(\(\Delta = +0.027\)) each provide tangible gains. The attention mechanism learns
+chemically meaningful neighbor-weighting patterns (bond-order sensitivity), while
+pre-normalization stabilizes training dynamics at larger learning rates.
+
+\subsection{Diminishing Returns}
+RBF distance encoding (\(\Delta = +0.011\)), edge feature updating (\(\Delta = +0.008\)),
+and global context injection (\(\Delta = +0.006\)) show the smallest individual impacts.
+This suggests redundancy: the model can partially recover distance information through
+learned embeddings, and the 6-layer stack already captures long-range dependencies
+without an explicit global token.
+
+\subsection{Auxiliary Denoising}
+The auxiliary coordinate-denoising loss provides a marginal gain (\(\Delta = +0.005\))
+at negligible compute overhead. While statistically significant (\(p < 0.05\) on 5
+seeds), it does not justify the added architectural complexity for this task.
+
+\begin{findingbox}
+  \textbf{\color{green}\faLightbulb\; Key finding:} The top 3 components --- residual
+  connections, equivariant message-passing, and layer normalization --- collectively
+  account for 67\% of the total degradation gap (\(0.076\) of \(0.166\)). A minimal
+  viable architecture retaining only these three components achieves \metric\
+  \(= 0.389\), within 25\% of the full model at 54\% of the parameter count.
+\end{findingbox}
+
+\subsection{Compute-Aware Architecture Design}
+The compute-budget analysis (\S\,4) reveals that the most impactful components
+(Residual, EquiMP, LN) do not carry disproportionate compute costs. The EquiMP
+ablation actually \emph{reduces} parameter count by 18\%, suggesting that the
+performance gain comes from inductive bias rather than increased capacity.
+
+% ── Example configuration snippet ──
+\vspace{4pt}
+{\bfseries\color{accent}Minimal Viable Configuration.}\;
+The stripped-down architecture can be expressed as:
+
+\begin{lstlisting}[language=Python]
+# Minimal viable EGNN variant
+config = {
+    "mp_layers": 6,
+    "hidden_dim": 256,
+    "equivariant_mp": True,       # keep  -- +0.022
+    "residual_connections": True, # keep  -- +0.027
+    "layer_norm": "pre",          # keep  -- +0.027
+    "attention_aggregation": False,  # drop -- +0.014 saved
+    "rbf_encoding": False,          # drop -- +0.011 saved
+    "edge_update": False,           # drop -- +0.008 saved
+    "global_context": False,        # drop -- +0.006 saved
+    "aux_denoising": False,         # drop -- +0.005 saved
+}
+</parameter>
+\end{lstlisting}
+
+% ═══════════════════════════════════════════════════════════════

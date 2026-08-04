@@ -1,0 +1,68 @@
+\section{The Paxos Protocol}
+
+\begin{frame}{Paxos: Core Ideas}
+\textbf{Developed by Leslie Lamport (1989).} Named after the legislative process on the Greek island of Paxos.
+
+\vspace{10pt}
+\textbf{Three Roles:}
+\begin{itemize}
+  \item \textbf{Proposers:} Initiate consensus by proposing values.
+  \item \textbf{Acceptors:} Vote on proposals; a \emph{majority quorum} must agree.
+  \item \textbf{Learners:} Learn the chosen value once consensus is reached.
+\end{itemize}
+
+\vspace{8pt}
+\textbf{Key Insight:} A process can play multiple roles simultaneously.
+
+\vspace{8pt}
+\begin{tcolorbox}[defblock,title={Safety Property}]
+If any value is chosen, every subsequent chosen value must be identical. Paxos guarantees this even with $f < n/2$ failures.
+\end{tcolorbox}
+\end{frame}
+
+\begin{frame}{Paxos: Phase 1 --- Prepare \& Promise}
+\textbf{Goal:} Elect a leader and learn about any previously chosen values.
+
+\vspace{8pt}
+\begin{enumerate}
+  \item<2-> \textbf{Proposer} selects a unique, monotonically increasing proposal number $n$.
+  \item<3-> Sends $\textsc{Prepare}(n)$ to a \textbf{majority} of acceptors.
+  \item<4-> Each \textbf{Acceptor} that receives $\textsc{Prepare}(n)$:
+    \begin{itemize}
+      \item If $n$ is the highest it has seen, it \textbf{promises} to reject proposals with lower numbers.
+      \item It replies with $\textsc{Promise}(n, v, n')$ where $v$ is the highest-numbered proposal it has already accepted (with number $n' < n$), or $\bot$ if none.
+    \end{itemize}
+  \item<5-> The proposer collects promises. If it hears from a majority, Phase~2 begins.
+\end{enumerate}
+
+\vspace{6pt}
+\onslide<6->{
+\begin{tcolorbox}[exblock,title={Invariant}]
+An acceptor always remembers the highest proposal number it has promised and the highest-numbered proposal it has accepted.
+\end{tcolorbox}
+}
+\end{frame}
+
+\begin{frame}{Paxos: Phase 2 --- Accept \& Learn}
+\textbf{Goal:} Drive the system to choose a single value.
+
+\vspace{8pt}
+\begin{enumerate}
+  \item<2-> The \textbf{Proposer} examines the Promise replies:
+    \begin{itemize}
+      \item If any acceptor returned a previously accepted value, the proposer \textbf{must} use the value with the highest $n'$.
+      \item Otherwise, it is free to propose its own value $v$.
+    \end{itemize}
+  \item<3-> Proposer sends $\textsc{Accept}(n, v)$ to the same majority.
+  \item<4-> Each \textbf{Acceptor} accepts $(n, v)$ \emph{only if} it has not promised a proposal $> n$.
+  \item<5-> When a majority of acceptors have accepted $(n, v)$, the value $v$ is \textbf{chosen}.
+  \item<6-> \textbf{Learners} are notified of the chosen value.
+\end{enumerate}
+
+\vspace{6pt}
+\onslide<7->{
+\begin{tcolorbox}[defblock,title={Chosen Value}]
+A value is \emph{chosen} once a majority of acceptors have accepted it for the same proposal number. All future decisions will agree on this value.
+\end{tcolorbox}
+}
+\end{frame}

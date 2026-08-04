@@ -1,0 +1,216 @@
+\section{Common Operational Procedures}
+
+\subsection{Procedure 4.1: Service Restart}
+
+Restarting a production service requires connection draining and health verification. Never restart more than one service simultaneously without explicit approval from the Infrastructure Manager.
+
+\medskip
+\begin{stepbox}
+\textbf{Step 1 --- Assess Current State}\smallskip
+
+Query the service status and note any active alerts or anomalies.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ ncp-cli service status ncp-api-gateway
+SERVICE              STATUS    UPTIME     CPU%   MEM%    CONNS
+ncp-api-gateway      RUNNING   14d 3h      12%   2.1G     1,847
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{stepbox}
+\textbf{Step 2 --- Notify Affected Teams}\smallskip
+
+Post a heads-up in \texttt{\#ncp-incidents} with the service name, planned restart window, and expected impact duration. Wait for acknowledgement from at least one team lead before proceeding.
+\end{stepbox}
+
+\begin{stepbox}
+\textbf{Step 3 --- Drain Connections}\smallskip
+
+Enable drain mode to stop new connections from reaching the instance while allowing existing requests to complete.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ ncp-cli drain enable ncp-api-gateway --timeout 90
+Drain mode enabled. 1,847 active connections. Waiting...
+All connections drained (87s). Safe to proceed.
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{stepbox}
+\textbf{Step 4 --- Execute Restart}\smallskip
+
+Perform a graceful restart and monitor the service log for errors.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ ncp-cli restart ncp-api-gateway --graceful
+Stopping ncp-api-gateway... [OK]
+Starting ncp-api-gateway... [OK]
+$ ncp-cli logs ncp-api-gateway --since 2m | grep -i error
+(no output -- clean restart)
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{stepbox}
+\textbf{Step 5 --- Verify Health}\smallskip
+
+Confirm the service is accepting traffic and responding within SLA thresholds.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ ncp-cli health-check ncp-api-gateway --sla
+HEALTH CHECK: ncp-api-gateway
+Status:       HEALTHY
+Latency p99:  42ms (SLA: < 100ms)
+Error rate:   0.00% (SLA: < 0.01%)
+All checks passed.
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{successbox}
+Service restart completed successfully. Update the incident ticket if one was open and post a confirmation in \texttt{\#ncp-incidents}. Disable drain mode if it was not automatically cleared: \texttt{\$ ncp-cli drain disable ncp-api-gateway}.
+\end{successbox}
+
+\subsection{Procedure 4.2: Disk Space Emergency Cleanup}
+
+Low disk space on production nodes can cause service failures, database corruption, and log loss. Act immediately when any filesystem exceeds 85\% utilization.
+
+\begin{warningbox}
+\textbf{Do not} delete files from \texttt{/data/ncp/database/} or \texttt{/data/ncp/object-store/} manually. These paths are managed by their respective services and improper cleanup can cause irrecoverable data loss.
+\end{warningbox}
+
+\begin{stepbox}
+\textbf{Step 1 --- Identify Consumption}\smallskip
+
+Locate the largest directories and file types consuming space.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ df -h /data/ncp
+Filesystem      Size   Used   Avail   Use%   Mounted on
+/dev/sdb1       500G   462G    14G    97%    /data/ncp
+
+$ du -sh /data/ncp/* | sort -rh | head -5
+187G    /data/ncp/logs
+142G    /data/ncp/object-store
+ 89G    /data/ncp/database
+ 31G    /data/ncp/temp
+ 13G    /data/ncp/backups
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{stepbox}
+\textbf{Step 2 --- Rotate and Compress Logs}\smallskip
+
+Archive logs older than 7 days and remove raw logs older than 30 days.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ ncp-logrotate --service all --older-than 7d --compress
+Rotating logs older than 7 days...
+  ncp-api-gateway:      compressed 2.3G -> 0.4G
+  ncp-auth-service:     compressed 1.1G -> 0.2G
+  ncp-database-primary: compressed 4.7G -> 0.9G
+Done. Freed approximately 6.6G.
+
+$ find /data/ncp/logs -name "*.log" -mtime +30 -delete
+$ echo $?
+0
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{stepbox}
+\textbf{Step 3 --- Purge Temporary Files}\smallskip
+
+Clear the temp directory. Confirm no active processes are writing to files being removed.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ lsof +D /data/ncp/temp 2>/dev/null | wc -l
+0
+$ rm -rf /data/ncp/temp/*
+$ df -h /data/ncp | grep /data/ncp
+/dev/sdb1       500G   412G    64G    87%    /data/ncp
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{successbox}
+Disk usage reduced from 97\% to 87\%. Monitor for 24 hours. If usage trends above 90\% within that window, escalate to the Infrastructure Manager for capacity planning.
+\end{successbox}
+
+\subsection{Procedure 4.3: TLS Certificate Renewal}
+
+Production TLS certificates are managed by ncp-certbot with automated renewal. Manual intervention is required only when automated renewal fails or when certificates are within 72 hours of expiry.
+
+\begin{warningbox}
+A certificate expiry on ncp-api-gateway will cause a complete platform outage (SEV-1). Certificate renewal must never be deferred once expiry is within the 7-day warning window.
+\end{warningbox}
+
+\begin{stepbox}
+\textbf{Step 1 --- Check Certificate Status}\smallskip
+
+List all managed certificates and their remaining validity periods.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ ncp-certbot list
+CERTIFICATE                  EXPIRY       REMAINING   STATUS
+api.nimbuscloud.io           2026-08-12   28 days     VALID
+auth.nimbuscloud.io          2026-07-18    3 days     RENEWAL_DUE
+console.nimbuscloud.io       2026-09-01   48 days     VALID
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{stepbox}
+\textbf{Step 2 --- Execute Renewal}\smallskip
+
+Renew certificates flagged as \texttt{RENEWAL\_DUE}. The \texttt{-{}-dry-run} flag validates without committing changes.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ ncp-certbot renew auth.nimbuscloud.io --dry-run
+Dry run: auth.nimbuscloud.io
+Challenge type:   DNS-01
+DNS propagation:  OK (4.3s)
+Certificate issued by: Let's Encrypt R11
+Dry run successful. Ready to renew.
+
+$ ncp-certbot renew auth.nimbuscloud.io
+Renewing auth.nimbuscloud.io...
+New certificate fingerprint: A7:F3:...:9C
+Valid until: 2026-10-16
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{stepbox}
+\textbf{Step 3 --- Reload Affected Services}\smallskip
+
+Services that terminated TLS using the old certificate must reload their configuration.
+\end{stepbox}
+
+\begin{cmdbox}
+\begin{Verbatim}[fontsize=\footnotesize]
+$ ncp-cli reload-certs ncp-auth-service
+Reloading TLS certificates for ncp-auth-service... [OK]
+New certificate active. Expires: 2026-10-16.
+\end{Verbatim}
+\end{cmdbox}
+
+\begin{successbox}
+\textbf{Post-Renewal Verification}\\[2pt]
+\begin{tabularx}{\linewidth}{@{}l>{\raggedright\arraybackslash}X@{}}
+\texttt{ncp-certbot list} & Confirm all certificates show VALID status \\
+\texttt{curl -svI ...} & Verify the new expiry date appears in the TLS handshake \\
+\texttt{ncp-cli health-check ncp-auth-service} & Confirm service health after certificate reload \\
+\end{tabularx}
+\end{successbox}

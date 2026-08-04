@@ -1,0 +1,14 @@
+\section{System Overview \& Architecture Goals}
+The Nimbus Cloud Platform is designed to handle high-throughput, low-latency API transactions. To ensure system resilience under heavy loads, the architecture prioritizes decoupling client-facing boundaries from long-running data analytics pipelines.
+
+\subsection{Key Design Objectives}
+The core engineering team has established three main architectural pillars for this revision:
+\begin{enumerate}[label=\textbf{\lbrack R\arabic*\rbrack}]
+  \item \textbf{Secure Perimeter Isolation}: External API interactions are mediated exclusively through the Nexa Gateway.
+  \item \textbf{Decoupled Event Streaming}: Inter-service operations rely on Nimbus Queue, an active-passive AMQP cluster, avoiding direct REST dependencies for background jobs.
+  \item \textbf{Highly Consistent Transaction State}: Transaction records are handled in Meridian DB using primary write and secondary replication configurations to prevent analytical locks.
+\end{enumerate}
+
+\begin{decision}{AD-01: Architectural Decoupling via Message Broker}
+To maintain a high-performing user experience, the Vertex Core engine publishes events directly to Nimbus Queue instead of invoking Vertex Analytics synchronously. This reduces API response times by up to 85\% and protects transactional workloads from analytical query spikes.
+\end{decision}

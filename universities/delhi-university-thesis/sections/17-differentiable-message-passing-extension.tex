@@ -1,0 +1,14 @@
+\section{Differentiable Message Passing Extension}
+
+Our extension replaces the fixed generative weights with a graph neural network (GNN)
+that learns the message-passing schedule jointly with the prediction weights.  The
+update for level $\ell$ becomes:
+\begin{equation}
+  \dot{\mathbf{r}}^{(\ell)} = -\mathbf{r}^{(\ell)}
+    + f_\phi\!\bigl(\boldsymbol{\varepsilon}^{(\ell)},\,\boldsymbol{\varepsilon}^{(\ell+1)}\bigr),
+  \label{eq:dmp}
+\end{equation}
+where $f_\phi$ is a two-layer MLP with parameters $\phi$ learned end-to-end via
+backpropagation through time.  This is the only module in APCA that uses
+gradient-based training; all synaptic weights within the RM-Hebbian pathway are
+updated locally.

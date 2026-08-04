@@ -1,0 +1,97 @@
+\section{PCB Layer Stackup \& Physical Parameters}
+The design utilizes a 6-layer stackup to optimize signal routing, shield critical nets, and distribute power. This structure provides dedicated reference planes directly adjacent to every signal routing layer.
+
+\subsection{Stackup Diagram}
+The physical construction of the board is outlined below. Layer thicknesses have been selected to ensure an overall nominal thickness of 62 mils (1.6 mm).
+
+\vspace{0.4cm}
+\begin{center}
+\begin{tikzpicture}[
+    node distance=0cm,
+    layer/.style={
+        rectangle,
+        draw=black!40,
+        minimum width=8.5cm,
+        minimum height=0.45cm,
+        align=left,
+        inner sep=4pt,
+        font=\scriptsize\bfseries
+    },
+    copper/.style={
+        fill=primary,
+        text=white
+    },
+    gndplane/.style={
+        fill=darktext!90,
+        text=white
+    },
+    dielectric/.style={
+        fill=lightbg,
+        draw=black!25,
+        text=darktext,
+        font=\scriptsize\itshape
+    }
+]
+
+\node[layer, copper] (l1) {L1: TOP - Signal / High-Speed RF};
+\node[layer, dielectric, below=of l1] (d1) {Prepreg (FR-4, Dk=4.2, 4.0 mil)};
+\node[layer, gndplane, below=of d1] (l2) {L2: GND - Reference Plane};
+\node[layer, dielectric, below=of l2] (d2) {Core (FR-4, Dk=4.4, 8.0 mil)};
+\node[layer, copper, below=of d2] (l3) {L3: IN1 - Signal / High-Speed Routing};
+\node[layer, dielectric, below=of l3] (d3) {Prepreg (FR-4, Dk=4.2, 4.0 mil)};
+\node[layer, copper, below=of d3] (l4) {L4: PWR - Power Plane};
+\node[layer, dielectric, below=of l4] (d4) {Core (FR-4, Dk=4.4, 8.0 mil)};
+\node[layer, gndplane, below=of d4] (l5) {L5: GND - Reference Plane};
+\node[layer, dielectric, below=of l5] (d5) {Prepreg (FR-4, Dk=4.2, 4.0 mil)};
+\node[layer, copper, below=of d5] (l6) {L6: BOTTOM - Signal / Power};
+
+% Callout lines and annotations on the right
+\draw[thick, <-] (l1.east) -- +(1.2, 0) node[right, font=\scriptsize] {1.4 mil Copper (1 oz)};
+\draw[thick, <-] (l2.east) -- +(1.2, 0) node[right, font=\scriptsize] {0.7 mil Copper (0.5 oz)};
+\draw[thick, <-] (l3.east) -- +(1.2, 0) node[right, font=\scriptsize] {0.7 mil Copper (0.5 oz)};
+\draw[thick, <-] (l4.east) -- +(1.2, 0) node[right, font=\scriptsize] {0.7 mil Copper (0.5 oz)};
+\draw[thick, <-] (l5.east) -- +(1.2, 0) node[right, font=\scriptsize] {0.7 mil Copper (0.5 oz)};
+\draw[thick, <-] (l6.east) -- +(1.2, 0) node[right, font=\scriptsize] {1.4 mil Copper (1 oz)};
+
+\end{tikzpicture}
+\end{center}
+\vspace{0.2cm}
+
+\subsection{Stackup Specifications}
+Table~\ref{tab:stackup} details the layer properties. The dielectric constant (Dk) is specified at 1 GHz.
+
+\begin{table}[h]
+\centering
+\fontsize{9}{11}\selectfont
+\begin{tabularx}{\textwidth}{c l l p{3.0cm} l l l}
+\rowcolor{primary}
+\color{white}\textbf{Layer} & \color{white}\textbf{Name} & \color{white}\textbf{Type} & \color{white}\textbf{Material} & \color{white}\textbf{Thickness} & \color{white}\textbf{Dk} & \color{white}\textbf{Copper Wt} \\
+\midrule
+- & Solder Mask & Dielectric & Liquid Photo Imageable & 0.8 mil & 3.5 & - \\
+\rowcolor{lightbg}
+1 & TOP & Signal & Copper Foil / FR-4 & 1.4 mil & 4.2 & 1.0 oz \\
+- & Prepreg & Dielectric & FR-4 2116 & 4.0 mil & 4.2 & - \\
+\rowcolor{lightbg}
+2 & GND & Plane & Copper Foil / FR-4 & 0.7 mil & 4.4 & 0.5 oz \\
+- & Core & Dielectric & FR-4 Core & 8.0 mil & 4.4 & - \\
+\rowcolor{lightbg}
+3 & IN1 & Signal & Copper Foil / FR-4 & 0.7 mil & 4.2 & 0.5 oz \\
+- & Prepreg & Dielectric & FR-4 2116 & 4.0 mil & 4.2 & - \\
+\rowcolor{lightbg}
+4 & PWR & Plane & Copper Foil / FR-4 & 0.7 mil & 4.4 & 0.5 oz \\
+- & Core & Dielectric & FR-4 Core & 8.0 mil & 4.4 & - \\
+\rowcolor{lightbg}
+5 & GND & Plane & Copper Foil / FR-4 & 0.7 mil & 4.4 & 0.5 oz \\
+- & Prepreg & Dielectric & FR-4 2116 & 4.0 mil & 4.2 & - \\
+\rowcolor{lightbg}
+6 & BOTTOM & Signal & Copper Foil / FR-4 & 1.4 mil & 4.2 & 1.0 oz \\
+- & Solder Mask & Dielectric & Liquid Photo Imageable & 0.8 mil & 3.5 & - \\
+\bottomrule
+\end{tabularx}
+\caption{Detailed Layer Parameter Table}
+\label{tab:stackup}
+\end{table}
+
+\newpage
+
+% --- Section 4: Impedance & Routing ---

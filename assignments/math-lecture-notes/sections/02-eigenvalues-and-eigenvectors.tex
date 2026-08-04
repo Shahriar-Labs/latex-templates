@@ -1,0 +1,54 @@
+\section{Eigenvalues and Eigenvectors}
+Let $V$ be a vector space over a field $\mathbb{F}$ (typically $\mathbb{R}$ or $\mathbb{C}$) and let $T: V \to V$ be a linear operator.
+
+\begin{definition}{Eigenvalues and Eigenvectors}{eigen_def}
+    A scalar $\lambda \in \mathbb{F}$ is called an \textbf{eigenvalue} of $T$ if there exists a non-zero vector $v \in V$ such that
+    \begin{equation}
+        T(v) = \lambda v.
+    \end{equation}
+    The vector $v$ is called an \textbf{eigenvector} of $T$ corresponding to the eigenvalue $\lambda$. The set of all eigenvectors corresponding to $\lambda$, together with the zero vector, forms a subspace of $V$ called the \textbf{eigenspace} $E_\lambda = \ker(T - \lambda I)$.
+\end{definition}
+
+Before proving our main independence result, we establish a useful criterion for the existence of eigenvalues in terms of the kernel of the shifted operator.
+
+\begin{lemma}{Kernel and Injectivity}{shift_lem}
+    A scalar $\lambda \in \mathbb{F}$ is an eigenvalue of $T$ if and only if the operator $T - \lambda I$ is not injective (i.e., $\ker(T - \lambda I) \neq \{0\}$).
+\end{lemma}
+
+\begin{proof}
+    Suppose $\lambda$ is an eigenvalue of $T$. By Definition~\ref{def:eigen_def}, there exists a non-zero vector $v \in V$ such that $T(v) = \lambda v$. This equation can be rewritten as:
+    \begin{align*}
+        T(v) - \lambda v = 0 &\iff (T - \lambda I)(v) = 0.
+    \end{align*}
+    Since $v \neq 0$, it follows that $v \in \ker(T - \lambda I)$ and thus $\ker(T - \lambda I) \neq \{0\}$, which means $T - \lambda I$ is not injective.
+    
+    Conversely, if $\ker(T - \lambda I) \neq \{0\}$, there exists a non-zero vector $v \in \ker(T - \lambda I)$. Thus, $(T - \lambda I)(v) = 0$, which immediately implies $T(v) = \lambda v$, so $\lambda$ is an eigenvalue of $T$.
+\end{proof}
+
+We now state and prove one of the fundamental theorems of spectral theory.
+
+\begin{theorem}{Linear Independence of Eigenvectors}{lin_indep}
+    Let $T: V \to V$ be a linear operator on a vector space $V$. If $v_1, v_2, \dots, v_k$ are eigenvectors of $T$ corresponding to distinct eigenvalues $\lambda_1, \lambda_2, \dots, \lambda_k$, then the set $\{v_1, v_2, \dots, v_k\}$ is linearly independent.
+\end{theorem}
+
+\begin{proof}
+    We prove the theorem by induction on $k$.
+    
+    \textbf{Base case ($k=1$):} Since $v_1$ is an eigenvector, $v_1 \neq 0$ by definition. A set consisting of a single non-zero vector $\{v_1\}$ is always linearly independent.
+    
+    \textbf{Inductive step:} Assume that the statement holds for $k - 1$ eigenvectors. Let $v_1, v_2, \dots, v_k$ be eigenvectors corresponding to distinct eigenvalues $\lambda_1, \lambda_2, \dots, \lambda_k$, and consider a linear combination:
+    \begin{equation}\label{eq:lc}
+        c_1 v_1 + c_2 v_2 + \dots + c_k v_k = 0,
+    \end{equation}
+    where $c_1, c_2, \dots, c_k \in \mathbb{F}$. Applying the operator $T - \lambda_k I$ to both sides of equation~\eqref{eq:lc} and using $(T - \lambda_k I)v_i = (\lambda_i - \lambda_k)v_i$ yields:
+    \begin{equation}\label{eq:lc_reduced}
+        c_1 (\lambda_1 - \lambda_k) v_1 + c_2 (\lambda_2 - \lambda_k) v_2 + \dots + c_{k-1} (\lambda_{k-1} - \lambda_k) v_{k-1} = 0.
+    \end{equation}
+    By the induction hypothesis, the set $\{v_1, v_2, \dots, v_{k-1}\}$ is linearly independent. Therefore, all coefficients in equation~\eqref{eq:lc_reduced} must be zero:
+    \begin{equation*}
+        c_i (\lambda_i - \lambda_k) = 0 \quad \text{for all } i = 1, 2, \dots, k-1.
+    \end{equation*}
+    Since the eigenvalues are distinct, $\lambda_i \neq \lambda_k$ (meaning $\lambda_i - \lambda_k \neq 0$) for all $i < k$. Consequently, we must have $c_i = 0$ for all $i = 1, 2, \dots, k-1$.
+    
+    Substituting these values back into equation~\eqref{eq:lc} yields $c_k v_k = 0$. Since $v_k \neq 0$ is an eigenvector, we must also have $c_k = 0$. Thus, all coefficients $c_1, c_2, \dots, c_k$ are zero, and the set $\{v_1, v_2, \dots, v_k\}$ is linearly independent.
+\end{proof}

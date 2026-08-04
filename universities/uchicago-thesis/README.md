@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**UChicago Dissertation LaTeX template — uchicago dissertation latex template. Elegant, compile-tested, editable online at letx.app.**
+**UChicago Dissertation LaTeX template — UChicago Dissertation. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/universities/uchicago-thesis)**, with real-time collaboration and one-second compiles.
 

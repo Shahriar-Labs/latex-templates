@@ -1,0 +1,107 @@
+\section{Results: \(\Delta\)-Metric Waterfall}
+% ═══════════════════════════════════════════════════════════════
+
+The waterfall chart below shows how \metric\ degrades as components are sequentially
+removed. Each bar represents the \emph{incremental} increase in \metric\ (\(\Delta\))
+caused by removing that component, stacked cumulatively from the full-model baseline
+(\(0.312\)) to the fully ablated model (\(0.478\)).
+
+\vspace{6pt}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[x=1cm,y=1cm,>=Latex]
+
+  % ── Constants ──
+  \def\bw{1.6}            % bar width
+  \def\gap{0.85}          % gap between bars
+  \def\base{1.6}          % y-coordinate of chart baseline
+  \def\s{34}              % vertical scale factor (cm per MAE unit)
+
+  % Delta values
+  \def\dA{0.77}           % Δ EquiMP   = 0.022 * 34
+  \def\dB{0.49}           % Δ Attn     = 0.014 * 34
+  \def\dC{0.39}           % Δ RBF      = 0.011 * 34
+  \def\dD{0.95}           % Δ Residual = 0.027 * 34
+  \def\dE{0.95}           % Δ LN       = 0.027 * 34
+  \def\dF{2.21}           % Δ All rem. = 0.065 * 34
+
+  % Cumulative tops
+  \pgfmathsetmacro{\tA}{\base + \dA}
+  \pgfmathsetmacro{\tB}{\tA  + \dB}
+  \pgfmathsetmacro{\tC}{\tB  + \dC}
+  \pgfmathsetmacro{\tD}{\tC  + \dD}
+  \pgfmathsetmacro{\tE}{\tD  + \dE}
+  \pgfmathsetmacro{\tF}{\tE  + \dF}
+
+  % X centers
+  \def\xA{2.0}
+  \def\xB{4.45}
+  \def\xC{6.9}
+  \def\xD{9.35}
+  \def\xE{11.8}
+  \def\xF{14.25}
+
+  % ── Bars (waterfall) ──
+  \fill[color=barstart]          (\xA-\bw/2,\base) rectangle (\xA+\bw/2,\tA);
+  \fill[color=barstart!80!barmid] (\xB-\bw/2,\tA)   rectangle (\xB+\bw/2,\tB);
+  \fill[color=barmid!70]         (\xC-\bw/2,\tB)   rectangle (\xC+\bw/2,\tC);
+  \fill[color=barmid!50!amber]   (\xD-\bw/2,\tC)   rectangle (\xD+\bw/2,\tD);
+  \fill[color=amber]             (\xE-\bw/2,\tD)   rectangle (\xE+\bw/2,\tE);
+  \fill[color=red!75]            (\xF-\bw/2,\tE)   rectangle (\xF+\bw/2,\tF);
+
+  % ── Connecting lines ──
+  \draw[slatelight!40,dashed,line width=0.5pt]
+    (\xA+\bw/2,\tA) -- (\xB-\bw/2,\tA)
+    (\xB+\bw/2,\tB) -- (\xC-\bw/2,\tB)
+    (\xC+\bw/2,\tC) -- (\xD-\bw/2,\tC)
+    (\xD+\bw/2,\tD) -- (\xE-\bw/2,\tD)
+    (\xE+\bw/2,\tE) -- (\xF-\bw/2,\tE);
+
+  % ── Delta annotations ──
+  \node[font=\footnotesize\bfseries\color{accentdark},anchor=south] at (\xA,\tA+0.22) {\(+0.022\)};
+  \node[font=\footnotesize\bfseries\color{accentdark},anchor=south] at (\xB,\tB+0.22) {\(+0.014\)};
+  \node[font=\footnotesize\bfseries\color{accentdark},anchor=south] at (\xC,\tC+0.22) {\(+0.011\)};
+  \node[font=\footnotesize\bfseries\color{accentdark},anchor=south] at (\xD,\tD+0.22) {\(+0.027\)};
+  \node[font=\footnotesize\bfseries\color{accentdark},anchor=south] at (\xE,\tE+0.22) {\(+0.027\)};
+  \node[font=\footnotesize\bfseries\color{red},anchor=south]      at (\xF,\tF+0.22) {\(+0.065\)};
+
+  % ── Cumulative MAE labels (right of bars) ──
+  \node[font=\footnotesize\color{slatelight},anchor=west] at (\xA+\bw/2+0.1,\tA-0.1) {\scriptsize 0.334};
+  \node[font=\footnotesize\color{slatelight},anchor=west] at (\xB+\bw/2+0.1,\tB-0.1) {\scriptsize 0.348};
+  \node[font=\footnotesize\color{slatelight},anchor=west] at (\xC+\bw/2+0.1,\tC-0.1) {\scriptsize 0.359};
+  \node[font=\footnotesize\color{slatelight},anchor=west] at (\xD+\bw/2+0.1,\tD-0.1) {\scriptsize 0.386};
+  \node[font=\footnotesize\color{slatelight},anchor=west] at (\xE+\bw/2+0.1,\tE-0.1) {\scriptsize 0.413};
+  \node[font=\footnotesize\color{slatelight},anchor=west] at (\xF+\bw/2+0.1,\tF-0.1) {\scriptsize 0.478};
+
+  % ── Baseline bar ──
+  \fill[color=slatebg] (\xA-\bw/2-0.05,\base-0.6) rectangle (\xA+\bw/2+0.05,\base);
+  \node[font=\footnotesize\bfseries\color{slate},anchor=north] at (\xA,\base-0.65) {Baseline 0.312};
+
+  % ── X-axis labels ──
+  \node[font=\footnotesize\bfseries,anchor=north,align=center,text width=2.2cm] at (\xA,\base-1.35) {Full\\Model};
+  \node[font=\footnotesize\bfseries\color{slatelight},anchor=north,align=center,text width=2.2cm] at (\xB,\base-1.35) {\(-\)EquiMP};
+  \node[font=\footnotesize\bfseries\color{slatelight},anchor=north,align=center,text width=2.2cm] at (\xC,\base-1.35) {\(-\)Attn};
+  \node[font=\footnotesize\bfseries\color{slatelight},anchor=north,align=center,text width=2.2cm] at (\xD,\base-1.35) {\(-\)RBF};
+  \node[font=\footnotesize\bfseries\color{slatelight},anchor=north,align=center,text width=2.2cm] at (\xE,\base-1.35) {\(-\)Res / LN};
+  \node[font=\footnotesize\bfseries\color{slatelight},anchor=north,align=center,text width=2.2cm] at (\xF,\base-1.35) {\(-\)All Rem.};
+
+  % ── Y-axis label ──
+  \node[rotate=90,font=\footnotesize\bfseries\color{slatelight},anchor=south] at (-0.4,\tF/2+1.5) {MAE \(\uparrow\) (\metricunit)};
+
+  % ── Reference line at baseline ──
+  \draw[accent!30,line width=0.6pt] (\xA-\bw/2-0.4,\base) -- (\xF+\bw/2+0.4,\base);
+
+  % ── Total degradation bracket ──
+  \draw[slatelight!50,line width=0.5pt,decorate,decoration={brace,amplitude=6pt}]
+    (\xA-\bw/2-0.3,\base) -- (\xA-\bw/2-0.3,\tF);
+  \node[font=\footnotesize\color{slatelight},anchor=east] at (\xA-\bw/2-0.8,\base/2+\tF/2)
+    {\shortstack{Total\\\(\Delta = 0.166\)}};
+
+\end{tikzpicture}
+\caption*{\footnotesize\color{slatelight}Cumulative waterfall of \metric\ degradation.
+Each bar shows the incremental \(\Delta\) from removing one component. Dotted connectors
+track cumulative \metric\ (right-hand labels). Bar color intensifies with contribution magnitude.}
+\end{figure}
+
+% ═══════════════════════════════════════════════════════════════

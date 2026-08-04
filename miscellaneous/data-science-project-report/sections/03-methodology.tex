@@ -1,0 +1,23 @@
+\section{Methodology}
+We compared logistic regression, random forest, and gradient boosting under 5-fold
+time-aware cross-validation, tuning with Bayesian optimization. The decision threshold was
+chosen to maximize expected retention value, not raw accuracy:
+\begin{equation}
+\text{EV}(\tau)=\sum_{i:\,\hat p_i\ge\tau}\bigl(p_i\cdot v_{\text{save}}-c_{\text{offer}}\bigr),
+\end{equation}
+where $v_{\text{save}}$ is the retained lifetime value and $c_{\text{offer}}$ the incentive cost.
+
+\subsection{Model Comparison}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+  width=0.86\linewidth, height=5.2cm, ybar, bar width=16pt,
+  symbolic x coords={Logistic,RandomForest,GradBoosting},
+  xtick=data, ymin=0.7, ymax=0.95, ylabel={AUC--ROC},
+  nodes near coords, every node near coord/.append style={font=\footnotesize},
+  tick label style={font=\small}, ylabel style={font=\small},
+  ymajorgrids, grid style={light}, axis line style={navy!40}, enlarge x limits=0.3]
+\addplot[fill=accent!75,draw=accent] coordinates {(Logistic,0.812) (RandomForest,0.864) (GradBoosting,0.891)};
+\end{axis}
+\end{tikzpicture}
+\end{center}

@@ -1,0 +1,39 @@
+\section{The NPG Abstraction}
+
+\begin{figure}[tb]
+  \centering
+  \begin{tikzpicture}[scale=1.1,
+    algoblock/.style={rectangle,draw=DarkGray,fill=white,rounded corners=3pt,minimum width=5.5cm,minimum height=0.7cm,font=\small\ttfamily,align=center},
+    arrow/.style={-{Stealth[length=2.5mm]},thick}
+  ]
+    \node[algoblock,fill=Orange!8] (g) {Receive $g_t \in \mathbb{R}^d$};
+    \node[algoblock,below=0.6cm of g] (p) {Compute preconditioner $P_t = \Phi(g_1,\dots,g_t)$};
+    \node[algoblock,below=0.6cm of p] (n) {Normalize: $\tilde{g}_t = P_t^{-1/2}g_t$};
+    \node[algoblock,below=0.6cm of n] (a) {Accumulate momentum: $m_t = \beta_1 m_{t-1} + \tilde{g}_t$};
+    \node[algoblock,below=0.6cm of a,fill=Orange!8] (u) {Update: $\theta_{t+1} = \theta_t - \eta_t\, P_t^{-1/2}m_t$};
+    \draw[arrow] (g) -- (p);
+    \draw[arrow] (p) -- (n);
+    \draw[arrow] (n) -- (a);
+    \draw[arrow] (a) -- (u);
+    \draw[arrow,dashed] (u.east) -- ++(1.2,0) |- (g.east) node[pos=0.75,right,font=\footnotesize] {$t \leftarrow t+1$};
+  \end{tikzpicture}
+  \caption{The Normalized Preconditioned Gradient (NPG) framework. The preconditioner
+    $\Phi$ is an arbitrary positive-definite mapping of the gradient history. Normalization
+    by $P_t^{-1/2}$ decouples update magnitude from preconditioner geometry, enabling
+    a unified convergence analysis.}
+  \label{fig:npg}
+\end{figure}
+
+We define the \textbf{Normalized Preconditioned Gradient} (NPG) algorithm as any iterative
+optimizer that can be expressed in the form:
+\begin{equation}
+  \boxed{\;\theta_{t+1} = \theta_t - \eta_t\, P_t^{-1/2}\,\Psi_t(g_1,\dots,g_t)\;},
+  \label{eq:npg}
+\end{equation}
+where $P_t = \Phi(g_1,\dots,g_t) \succ 0$ is a preconditioner built from the gradient history,
+and $\Psi_t$ is a (possibly momentum-enhanced) direction function bounded in norm by
+$\mathcal{O}(\|g_t\|)$.
+
+Figure~\ref{fig:npg} illustrates the computational graph. Crucially, NPG separates the
+\emph{geometry adaptation} ($P_t$) from the \emph{step direction} ($\Psi_t$), allowing each
+component to be analyzed independently.

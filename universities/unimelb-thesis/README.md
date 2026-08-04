@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**UniMelb Thesis LaTeX template — University of Melbourne thesis LaTeX. Elegant, compile-tested, editable online at letx.app.**
+**UniMelb Thesis LaTeX template — UniMelb Thesis. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/universities/unimelb-thesis)**, with real-time collaboration and one-second compiles.
 
@@ -12,23 +12,22 @@ Edit and compile this template instantly in your browser — no LaTeX install �
 
 ## Features
 - Elegant, modern design
-- Compile-tested (zero errors)
-- Realistic sample content
-- Editable online in your browser
+- Compile-tested
+- Fully editable sample content
 
 ## Use it online (recommended)
 Open **[UniMelb Thesis on LetX »](https://letx.app/templates/universities/unimelb-thesis)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/unimelb-thesis
+git clone https://github.com/Shahriar-Labs/unimelb-thesis.git
+cd unimelb-thesis
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — university thesis templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates) — universities templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
 MIT — free for personal and commercial use. See [LICENSE](LICENSE).

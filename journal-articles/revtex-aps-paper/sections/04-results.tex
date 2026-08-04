@@ -1,0 +1,99 @@
+\section{Results}
+\label{sec:results}
+
+\subsection{Individual dSph constraints}
+
+Table~\ref{tab:results} summarises the median and 95\% credible intervals on
+$\sigma/m$ for each galaxy, together with the inferred core radius $r_{1}$ and
+central DM density $\rho_{0}$.
+All eight galaxies are consistent with a common value of $\sigma/m$,
+motivating a joint hierarchical analysis described below.
+
+\begin{table}[b]
+  \caption{%
+    Inferred SIDM parameters for the eight classical dSphs.
+    Columns give the galaxy name, 1D stellar velocity dispersion $\bar\sigma_{\rm los}$
+    (km\,s$^{-1}$), median core radius $r_1$ (kpc), central DM density
+    $\log_{10}(\rho_0/M_\odot\,\mathrm{kpc}^{-3})$, and 95\% upper limit on
+    $\sigma/m$ (cm$^2$\,g$^{-1}$) from individual fits.
+  }
+  \label{tab:results}
+  \setlength{\tabcolsep}{5pt}
+  \begin{ruledtabular}
+    \begin{tabular}{lcccr}
+      Galaxy      & $\bar\sigma_{\rm los}$ & $r_1$ & $\log\rho_0$ & $(\sigma/m)_{95}$ \\
+      \hline
+      Sculptor    & $9.2$  & $0.29\pm0.06$ & $8.01\pm0.14$ & $2.1$ \\
+      Fornax      & $11.7$ & $0.61\pm0.09$ & $7.66\pm0.11$ & $2.8$ \\
+      Carina      & $6.6$  & $0.25\pm0.07$ & $7.82\pm0.17$ & $3.5$ \\
+      Sextans     & $7.9$  & $0.38\pm0.10$ & $7.54\pm0.20$ & $4.1$ \\
+      Leo I       & $9.0$  & $0.31\pm0.08$ & $7.91\pm0.16$ & $2.6$ \\
+      Leo II      & $6.6$  & $0.19\pm0.06$ & $8.05\pm0.18$ & $3.0$ \\
+      Ursa Minor  & $9.5$  & $0.33\pm0.07$ & $8.12\pm0.13$ & $1.9$ \\
+      Draco       & $10.1$ & $0.27\pm0.05$ & $8.24\pm0.12$ & $1.7$ \\
+    \end{tabular}
+  \end{ruledtabular}
+\end{table}
+
+\subsection{Joint constraint and comparison}
+
+Figure~\ref{fig:posterior} shows the marginalised posterior on $\sigma/m$ from
+the joint hierarchical fit to all eight dSphs.
+The posterior peaks at $\sigma/m \approx 0.4\cmg$ and the 95\% credible upper
+limit is
+\begin{equation}
+  \frac{\sigma}{m} < 1.7\cmg \quad (95\%\;\text{C.L.}),
+  \label{eq:result}
+\end{equation}
+consistent with galaxy-cluster lensing bounds~\cite{Kaplinghat2016} but
+probing a complementary velocity regime $v_{\rm rel}\sim 10\kms$ versus
+$v_{\rm rel}\sim 10^{3}\kms$ for clusters.
+
+\begin{figure}[t]
+  \caption{%
+    Marginalised posterior probability density on $\sigma/m$ from the joint
+    hierarchical Jeans-equation analysis of eight Milky Way dSphs (solid curve).
+    The dashed vertical line marks the 95\% credible upper limit
+    ($1.7\,\mathrm{cm^{2}\,g^{-1}}$).
+    The shaded band indicates the range preferred by the core-cusp problem in
+    simulations ($0.1$--$1\,\mathrm{cm^{2}\,g^{-1}}$).
+  }
+  \label{fig:posterior}
+  \begin{tikzpicture}
+    \begin{axis}[
+        width=\columnwidth,
+        height=0.72\columnwidth,
+        xlabel={$\sigma/m\ [\mathrm{cm^{2}\,g^{-1}}]$},
+        ylabel={$p(\sigma/m\mid\mathbf{d})$},
+        xmin=0, xmax=4,
+        ymin=0, ymax=1.05,
+        xtick={0,1,2,3,4},
+        ytick={0,0.25,0.5,0.75,1.0},
+        tick label style={font=\small},
+        label style={font=\small},
+        axis line style={thin},
+        every axis plot/.append style={thick},
+        clip=false,
+      ]
+      %% Shaded preferred band (0.1--1.0 cm^2/g)
+      \addplot [
+        fill=blue!15, draw=none,
+        domain=0.1:1.0, samples=2,
+      ] {1.05} \closedcycle;
+      %% Posterior: log-normal peak ~0.4, cut off at 4
+      \addplot [
+        color=black, thick,
+        domain=0.02:4.0, samples=200,
+      ] { exp( -0.5*((ln(x)-ln(0.40))*(ln(x)-ln(0.40)))/(0.75*0.75) )
+          / (x * 0.75 * 2.5066) };
+      %% 95% upper limit dashed vertical line
+      \addplot [
+        color=red!70!black, dashed, thick,
+      ] coordinates {(1.7,0) (1.7,0.98)};
+      \node[font=\scriptsize, text=red!70!black, anchor=south west]
+            at (axis cs:1.72,0.55) {95\% C.L.};
+    \end{axis}
+  \end{tikzpicture}
+\end{figure}
+
+% ─────────────────────────────────────────────────────────────────────────────

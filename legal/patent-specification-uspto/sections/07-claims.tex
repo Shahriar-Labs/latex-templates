@@ -1,0 +1,114 @@
+\section{Claims}\label{sec:claims}
+
+What is claimed is:
+
+\setcounter{claimcnt}{0}
+
+\claim{A computer-implemented method for adaptive video compression, the method
+comprising:
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt, topsep=4pt]
+  \item receiving, by a frame analysis module executing on at least one processor, a
+    sequence of video frames and associated motion vector data from a video capture
+    pipeline;
+  \item generating, by a convolutional neural network having a parameter count not
+    exceeding 2.5 million, a complexity score vector for each macroblock partition of
+    each said video frame, wherein said complexity score vector has a dimensionality of
+    at least 32 floating-point values;
+  \item receiving, by a telemetry aggregator, a plurality of network bandwidth
+    measurements and round-trip latency measurements;
+  \item computing, by the telemetry aggregator, a filtered bandwidth estimate using a
+    Kalman filter applied to said network bandwidth measurements;
+  \item determining, by a decision engine, a per-macroblock quantization parameter and
+    an encoding profile index based on said complexity score vector and said filtered
+    bandwidth estimate; and
+  \item encoding, by a video encoder, said video frames using said per-macroblock
+    quantization parameters and said encoding profile index within a maximum
+    end-to-end latency of 4 milliseconds per frame on a 1-gigahertz single-core
+    processor.
+\end{itemize}}
+
+\claim{The method of claim~1, wherein the convolutional neural network comprises
+depthwise-separable convolutional layers and at least one squeeze-and-excitation
+attention block.}
+
+\claim{The method of claim~1, wherein computing the filtered bandwidth estimate
+further comprises maintaining a circular buffer of at least 512 timestamped bandwidth
+samples and updating a Kalman filter state at each new measurement.}
+
+\claim{The method of claim~1, wherein the decision engine comprises a multi-layer
+perceptron having at least three fully connected layers with sigmoid-linear activation
+functions.}
+
+\claim{The method of claim~1, wherein the encoding profile index is selected from a
+set comprising at least a baseline profile, a main profile, and a high profile of the
+H.264/AVC video coding standard.}
+
+\claim{The method of claim~1, further comprising:
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt, topsep=4pt]
+  \item benchmarking, at initialization, at least two hardware execution backends
+    comprising a central processing unit backend, a graphics processing unit backend,
+    and a neural processing unit backend; and
+  \item selecting, for subsequent frame processing, the hardware execution backend
+    whose mean per-frame inference latency satisfies the 4-millisecond latency budget.
+\end{itemize}}
+
+\claim{The method of claim~6, further comprising, upon determining that no hardware
+execution backend satisfies the 4-millisecond latency budget, computing a fallback
+quantization parameter according to the formula:
+\[q_{\text{fb}} = \operatorname{clamp}\!\left(51 - \left\lfloor
+  43 \cdot \hat{b}_t / b_{\max}\right\rfloor,\; 18,\; 42\right)\]}
+
+\claim{A system for adaptive video compression, the system comprising:
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt, topsep=4pt]
+  \item at least one processor;
+  \item a memory storing instructions that, when executed by the at least one
+    processor, implement:
+    \begin{itemize}[leftmargin=1.5em, itemsep=1pt]
+      \item a frame analysis module configured to receive video frames and compute
+        per-macroblock motion vectors;
+      \item a convolutional inference module configured to generate complexity score
+        vectors for each macroblock;
+      \item a telemetry aggregator configured to maintain Kalman-filtered bandwidth
+        and latency estimates; and
+      \item a decision engine configured to jointly process said complexity score
+        vectors and said estimates to produce per-macroblock encoding parameters.
+    \end{itemize}
+\end{itemize}}
+
+\claim{The system of claim~8, further comprising a hardware abstraction layer
+configured to dispatch inference workloads to a selected one of a central processing
+unit, a graphics processing unit, and a neural processing unit based on runtime
+latency benchmarks.}
+
+\claim{The system of claim~8, wherein the convolutional inference module stores model
+weights in IEEE 754 half-precision floating-point format.}
+
+\claim{The system of claim~8, wherein the system is embodied as a dedicated integrated
+circuit module.}
+
+\claim{A non-transitory computer-readable medium storing instructions that, when
+executed by at least one processor, cause the processor to perform:
+\begin{itemize}[leftmargin=1.5em, itemsep=2pt, topsep=4pt]
+  \item analyzing a video frame using a depthwise-separable convolutional neural
+    network to produce per-macroblock complexity scores;
+  \item estimating available network bandwidth via a Kalman filter applied to a
+    plurality of network telemetry measurements;
+  \item selecting per-macroblock quantization parameters and an encoding profile using
+    a trained multi-layer perceptron that jointly processes said complexity scores and
+    said estimated bandwidth; and
+  \item dispatching encoding parameters to a video codec within 4 milliseconds of
+    receiving the corresponding video frame.
+\end{itemize}}
+
+\claim{The computer-readable medium of claim~12, wherein analyzing the video frame
+further comprises extracting motion vectors from a hierarchical block-matching search
+having a maximum search range of $\pm$32 pixels.}
+
+\claim{The computer-readable medium of claim~12, wherein the convolutional neural
+network is quantized to 8-bit integer precision via post-training quantization using a
+representative calibration dataset of at least 5,000 video frames.}
+
+% ============================================================
+%  ABSTRACT
+% ============================================================
+\newpage

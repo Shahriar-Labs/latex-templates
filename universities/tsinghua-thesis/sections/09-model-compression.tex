@@ -1,0 +1,99 @@
+\section{Model Compression}
+
+\subsection{Network Pruning}
+
+Network pruning removes redundant parameters from a trained neural
+network without significantly degrading its accuracy. Early work
+focused on magnitude-based unstructured pruning~\cite{goodfellow2016},
+which eliminates individual weights with small absolute values.
+While effective at reducing parameter counts, unstructured pruning
+produces sparse weight matrices that are difficult to accelerate on
+commodity hardware due to irregular memory access patterns.
+
+Structured pruning addresses this limitation by removing entire
+structural components---channels, filters, or layers---yielding dense
+sub-networks that map efficiently to hardware. Let
+$\mathcal{L}(\mathbf{W})$ denote the task loss and let
+$\|\mathbf{W}\|_0$ be the $\ell_0$ norm (number of non-zero
+parameters). The pruning problem can be formulated as:
+
+\begin{equation}
+\min_{\mathbf{W}} \; \mathcal{L}(\mathbf{W})
+\quad\text{subject to}\quad
+\|\mathbf{W}\|_0 \leq B,
+\label{eq:pruning}
+\end{equation}
+
+where $B$ is a budget on the number of parameters. Because the $\ell_0$
+constraint is non-convex and combinatorial, practical methods rely on
+relaxations, iterative magnitude pruning with fine-tuning, or
+regularisation-based approaches that encourage sparsity during training.
+
+\subsection{Quantisation}
+
+Quantisation reduces the numerical precision of weights and
+activations, typically from 32-bit floating-point (FP32) to 8-bit
+integer (INT8) or even lower. The quantisation function for a tensor
+$\mathbf{x}$ is:
+
+\begin{equation}
+\mathbf{x}_q = \operatorname{round}\!\left(
+\frac{\operatorname{clip}(\mathbf{x}, \alpha, \beta) - \alpha}{s}
+\right),
+\qquad s = \frac{\beta - \alpha}{2^b - 1},
+\label{eq:quant}
+\end{equation}
+
+where $[\alpha, \beta]$ is the clipping range, $b$ is the target
+bit-width, and $s$ is the scale factor. The key challenge is determining
+optimal clipping ranges that minimise the information loss introduced by
+discretisation.
+
+Quantisation-aware training (QAT)~\cite{kingma2014adam} integrates
+simulated quantisation into the forward pass during training while
+maintaining full-precision weights for gradient updates. This allows the
+network to adapt to quantisation errors and typically yields 2--5\%
+higher accuracy than post-training quantisation.
+
+\subsection{Knowledge Distillation}
+
+Knowledge distillation~\cite{goodfellow2016} transfers the
+``dark knowledge'' captured by a large, high-capacity teacher model into
+a smaller, more efficient student model. The student is trained to
+match the softened output distribution of the teacher:
+
+\begin{equation}
+\mathcal{L}_{\text{KD}} =
+\tau^2 \, D_{\text{KL}}\!\left(
+\operatorname{softmax}(\mathbf{z}_t / \tau) \;\big\|\;
+\operatorname{softmax}(\mathbf{z}_s / \tau)
+\right),
+\label{eq:distill}
+\end{equation}
+
+where $\mathbf{z}_t$ and $\mathbf{z}_s$ are the logits of the teacher
+and student, respectively, $\tau$ is a temperature parameter that
+controls the softness of the distributions, and
+$D_{\text{KL}}(\cdot\|\cdot)$ is the Kullback--Leibler divergence.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  box/.style={rectangle,draw,minimum width=22mm,minimum height=8mm,rounded corners=2pt,fill=tsinghulight,draw=tsinghuapurple!60,line width=0.5pt},
+  arrow/.style={->,>=stealth,line width=0.6pt,color=grayrule},
+  >=stealth
+]
+  \node[box,fill=tsinghuapurple!15] (t) at (0,0) {Teacher};
+  \node[box,fill=tsinghuapurple!15] (s) at (5,0) {Student};
+  \node[box] (data) at (2.5,2.5) {Training Data};
+
+  \draw[arrow] (data) -- (t);
+  \draw[arrow] (data) -- (s);
+  \draw[arrow] (t.south) to[out=-30,in=-150] node[below,yshift=-2mm] {\footnotesize soft labels} (s.south);
+  \draw[arrow] (t.east) -- node[above] {\footnotesize $\mathcal{L}_{\text{KD}}$} (s.west);
+\end{tikzpicture}
+\caption{Schematic of knowledge distillation. The teacher model provides
+soft target distributions that guide the training of the compact student
+model, in addition to the ground-truth labels from the training data.}
+\label{fig:distillation}
+\end{figure}

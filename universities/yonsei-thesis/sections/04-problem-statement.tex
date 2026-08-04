@@ -1,0 +1,28 @@
+\section{Problem Statement}
+
+Formally, given a stream of tasks $\mathcal{T} = \{t_1, t_2, \dots, t_n\}$ arriving
+at a coordinator and a set of edge nodes $\mathcal{N} = \{v_1, \dots, v_m\}$ with
+time-varying capacity $c_j(\tau)$, the scheduler must produce an assignment
+$\phi: \mathcal{T} \rightarrow \mathcal{N}$ that minimizes the 95th-percentile
+completion latency subject to per-node capacity constraints:
+
+\begin{equation}
+\min_{\phi} \; P_{95}\big(\text{lat}(t_i)\big) \quad \text{s.t.} \quad
+\sum_{t_i : \phi(t_i) = v_j} w(t_i) \leq c_j(\tau), \; \forall v_j \in \mathcal{N}
+\label{eq:objective}
+\end{equation}
+
+where $w(t_i)$ denotes the resource weight of task $t_i$. Existing schedulers
+typically optimize a proxy of Equation~\ref{eq:objective} (mean latency or raw
+throughput), which under bursty arrival patterns leaves the tail badly exposed.
+
+\begin{keyboxblue}
+\textbf{\color{yonseiblue}Research Questions}
+\begin{enumerate}
+  \item Can short-horizon load forecasting meaningfully reduce tail latency
+        without adding prohibitive scheduling overhead?
+  \item How should priority feedback be structured to avoid reschedule storms
+        under node-failure conditions?
+  \item What overhead-to-benefit ratio is acceptable for production deployment?
+\end{enumerate}
+\end{keyboxblue}

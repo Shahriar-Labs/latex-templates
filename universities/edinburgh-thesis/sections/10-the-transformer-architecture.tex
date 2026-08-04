@@ -1,0 +1,55 @@
+\section{The Transformer Architecture}
+
+The transformer, introduced by Vaswani et al.\ \cite{vaswani2017attention}, has become the
+dominant architecture for sequence processing across natural language processing, computer
+vision, and computational biology. Its core innovation is the \textit{self-attention}
+mechanism, which allows each position in a sequence to attend directly to every other
+position, computing a weighted sum of value vectors:
+
+\begin{equation}
+  \operatorname{Attention}(Q,K,V) = \operatorname{softmax}\!\left(
+    \frac{QK^{\top}}{\sqrt{d_k}}
+  \right) V ,
+  \label{eq:attention}
+\end{equation}
+
+where $Q, K, V \in \mathbb{R}^{n \times d}$ denote the query, key, and value matrices
+respectively, $n$ is the sequence length, and $d_k$ is the per-head dimension. The
+$\operatorname{softmax}$ operation is applied row-wise, producing an $n \times n$ attention
+matrix that encodes pairwise interaction strengths.
+
+\subsection{Multi-Head Attention}
+
+In practice, transformers employ \textit{multi-head attention} (MHA), which projects
+$Q$, $K$, and $V$ into $h$ separate subspaces, computes attention independently in each,
+and concatenates the results:
+
+\begin{equation}
+  \operatorname{MHA}(Q,K,V) = \bigl[\,\operatorname{head}_1 \,\|\; \cdots \;\|\,
+    \operatorname{head}_h\,\bigr]\,W^{O},
+  \label{eq:mha}
+\end{equation}
+
+where $\operatorname{head}_i = \operatorname{Attention}(QW_i^{Q}, KW_i^{K}, VW_i^{V})$ and
+$\|$ denotes concatenation along the feature dimension. Multi-head attention allows the model
+to attend to information from different representation subspaces simultaneously, which has
+been shown to be critical for capturing diverse linguistic phenomena
+\cite{voita2019analyzing}.
+
+\subsection{Positional Encoding}
+
+Since self-attention is permutation-invariant, transformers require an explicit mechanism to
+encode sequence order. The original formulation uses sinusoidal positional encodings:
+
+\begin{equation}
+  \begin{aligned}
+    \operatorname{PE}_{(pos,2i)}   &= \sin\!\left( pos \,/\, 10000^{\,2i/d} \right) ,\\
+    \operatorname{PE}_{(pos,2i+1)} &= \cos\!\left( pos \,/\, 10000^{\,2i/d} \right) ,
+  \end{aligned}
+  \label{eq:positional}
+\end{equation}
+
+where $pos$ is the position and $i$ indexes the dimension. Learned positional embeddings
+\cite{devlin2019bert} and relative position representations \cite{shaw2018self} have since
+become common alternatives, each offering different inductive biases for length
+generalisation.

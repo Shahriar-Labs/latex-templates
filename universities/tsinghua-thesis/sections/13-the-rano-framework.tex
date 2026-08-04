@@ -1,0 +1,73 @@
+\section{The RANO Framework}
+
+\subsection{Problem Formulation}
+
+Let $f(\mathbf{x}; \boldsymbol{\theta})$ denote a neural network
+parameterised by weights $\boldsymbol{\theta}$, and let
+$\mathcal{D} = \{(\mathbf{x}_i, \mathbf{y}_i)\}_{i=1}^{N}$ be a
+training dataset. We seek to find parameters $\boldsymbol{\theta}$ and
+an architecture configuration $\mathbf{a}$ that jointly minimise a
+multi-objective loss:
+
+\begin{equation}
+\min_{\boldsymbol{\theta},\,\mathbf{a}} \;
+\mathcal{L}_{\text{task}}(\boldsymbol{\theta}; \mathcal{D})
++ \lambda_p \, \mathcal{R}_p(\boldsymbol{\theta})
++ \lambda_q \, \mathcal{R}_q(\boldsymbol{\theta})
++ \lambda_h \, \mathcal{C}_h(\mathbf{a}),
+\label{eq:rano}
+\end{equation}
+
+where $\mathcal{L}_{\text{task}}$ is the task-specific loss (e.g.,
+cross-entropy), $\mathcal{R}_p$ is a sparsity-inducing regulariser that
+encourages structured pruning, $\mathcal{R}_q$ is a quantisation
+regulariser that penalises deviations from quantised weight
+representations, and $\mathcal{C}_h$ is a hardware cost model that
+estimates the latency and energy consumption of a given architecture
+configuration on the target device. The coefficients $\lambda_p$,
+$\lambda_q$, and $\lambda_h$ control the trade-off between accuracy and
+each efficiency dimension.
+
+\subsection{Alternating Minimisation}
+
+Directly optimising Equation~\ref{eq:rano} is challenging due to the
+discrete nature of architecture configurations and the non-smoothness of
+quantisation constraints. We adopt an alternating minimisation strategy:
+
+\begin{enumerate}[label=\textbf{Step \arabic*},leftmargin=2.5em]
+  \item \textbf{Architecture update.} With weights fixed, update the
+  architecture configuration $\mathbf{a}$ by solving a discrete
+  optimisation over a pre-defined search space of channel widths, kernel
+  sizes, and layer counts. We use an evolutionary algorithm with a
+  surrogate latency predictor trained on hardware measurements.
+
+  \item \textbf{Weight optimisation.} With the architecture fixed,
+  update weights $\boldsymbol{\theta}$ using stochastic gradient descent
+  with proximal operators that enforce structured sparsity and
+  quantisation constraints. Specifically, after each gradient step, we
+  apply:
+  \begin{itemize}
+    \item Soft thresholding for $\ell_1$-regularised pruning groups.
+    \item Projection onto the set of quantised values for quantisation
+    constraints.
+  \end{itemize}
+
+  \item \textbf{Knowledge distillation.} Periodically, we compute
+  softened predictions from a frozen teacher model and add the
+  distillation loss (Equation~\ref{eq:distill}) to the training
+  objective, weighted by a schedule that decays as training progresses.
+\end{enumerate}
+
+The algorithm alternates between Steps~1 and~2, with Step~3 applied
+every $K$ iterations. This decomposition ensures that each sub-problem
+is tractable while the overall procedure converges to a locally optimal
+solution of the joint objective.
+
+\subsection{Convergence Analysis}
+
+Under mild assumptions---specifically, that the task loss
+$\mathcal{L}_{\text{task}}$ is $L$-smooth and the regularisers are
+convex---the alternating minimisation procedure converges to a
+stationary point of Equation~\ref{eq:rano}. The proof follows from
+standard results in block coordinate descent with non-smooth
+regularisers and is provided in Appendix~A.

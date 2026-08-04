@@ -4,32 +4,30 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Caltech PhD thesis LaTeX template — official Caltech title page, copyright/ORCID page, abstract, table of contents with lists of figures and tables, sample chapters, booktabs tables, numbered equations, and a bibliography. Restrained Caltech-orange headings.**
+**Caltech Thesis LaTeX template — Caltech Thesis. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/universities/caltech-thesis)**, with real-time collaboration and one-second compiles.
 
 ![Caltech Thesis preview](preview.png)
 
 ## Features
-- Official Caltech PhD title page + copyright page
-- Abstract, ToC, list of figures + tables
-- Sample chapters with figures, tables, equations
-- Caltech-orange section rules, tgpagella serif
-- 1-inch margins, one-half spacing
+- Elegant, modern design
+- Compile-tested
+- Fully editable sample content
 
 ## Use it online (recommended)
 Open **[Caltech Thesis on LetX »](https://letx.app/templates/universities/caltech-thesis)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/caltech-thesis
+git clone https://github.com/Shahriar-Labs/caltech-thesis.git
+cd caltech-thesis
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — university thesis templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates) — universities templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
 MIT — free for personal and commercial use. See [LICENSE](LICENSE).

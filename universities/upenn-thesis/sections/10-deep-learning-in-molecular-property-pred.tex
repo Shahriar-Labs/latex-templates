@@ -1,0 +1,21 @@
+\section{Deep Learning in Molecular Property Prediction}
+
+Recent years have witnessed an explosion of interest in applying deep learning to molecular problems. Graph neural networks (GNNs) have emerged as a particularly natural framework for modeling molecular structures, where atoms represent nodes and bonds represent edges \cite{Gilmer2017}. The message-passing paradigm, in which node representations are iteratively updated by aggregating information from neighboring nodes, provides a flexible inductive bias well-suited to chemical systems.
+
+\subsection{Graph Neural Network Architectures}
+
+The fundamental operation in a message-passing neural network can be expressed as:
+
+\begin{equation}\label{eq:mpnn}
+\mathbf{h}_v^{(k+1)} = U\left(\mathbf{h}_v^{(k)},\; \bigoplus_{u \in \mathcal{N}(v)} M\left(\mathbf{h}_v^{(k)}, \mathbf{h}_u^{(k)}, \mathbf{e}_{vu}\right)\right)
+\end{equation}
+
+where $\mathbf{h}_v^{(k)}$ is the feature vector of node $v$ at layer $k$, $\mathcal{N}(v)$ denotes the neighbors of $v$, $\mathbf{e}_{vu}$ is the edge feature between nodes $v$ and $u$, $M$ is the message function, $\bigoplus$ is a permutation-invariant aggregation operator (typically sum, mean, or max), and $U$ is the update function. Both $M$ and $U$ are implemented as learnable neural network layers.
+
+\subsection{Application to Binding Affinity Prediction}
+
+Several groups have applied GNN architectures to binding affinity prediction with promising results. The PDBbind benchmark dataset \cite{Wang2004} provides a standardized evaluation framework, containing approximately 19,000 protein--ligand complexes with experimentally measured binding constants. State-of-the-art GNN-based methods achieve Pearson correlation coefficients in the range of $R = 0.80$ to $0.84$ on PDBbind core sets, representing substantial improvements over classical scoring functions.
+
+\begin{insightbox}[Limitations of Current Approaches]
+Most existing deep learning methods for binding affinity prediction operate exclusively on ligand structures, treating the protein environment implicitly or through pre-computed descriptors. This simplification discards critical information about protein conformational dynamics, solvent effects, and long-range electrostatic interactions that are known to modulate binding thermodynamics.
+\end{insightbox}

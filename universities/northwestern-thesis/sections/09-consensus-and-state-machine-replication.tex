@@ -1,0 +1,9 @@
+\section{Consensus and State Machine Replication}
+
+State machine replication (SMR) is the foundational technique for building fault-tolerant distributed systems \cite{schneider1990}. Under SMR, a deterministic state machine is replicated across $n$ independent servers, and a consensus protocol ensures that all non-faulty replicas process the same sequence of commands. Lamport's Paxos protocol \cite{lamport2001} achieves safety in asynchronous networks but may not terminate under certain failure patterns. Raft \cite{ongaro2014} simplifies the consensus logic by structuring it around leader election and log replication, improving understandability at the cost of throughput under high load.
+
+\begin{defbox}[title=Consensus Safety]
+A consensus protocol satisfies \textit{safety} if no two non-faulty replicas ever decide on different values for the same consensus instance. Formally, if replica $i$ decides value $v$ and replica $j$ decides value $v'$ for instance $k$, then $v = v'$.
+\end{defbox}
+
+More recent work has explored weakening the consensus requirement to improve performance. The Speculative Paxos variant by Ports et al.\ allows replicas to execute commands optimistically before agreement is reached, rolling back only when conflicts are detected. This approach is philosophically aligned with our NRP design, though NRP operates at a coarser granularity better suited to microservice architectures.

@@ -1,0 +1,15 @@
+\section{Methodology}
+In this section, we outline the architecture of the \texttt{DeepTransient} pipeline. The system consists of two primary components: a Light Curve Encoder and a Multi-Modal Classification Network.
+
+\subsection{Light Curve Encoding}
+Let a multi-band light curve be defined as a sequence of observations $\mathcal{O} = \{(t_i, m_i, e_i, b_i)\}_{i=1}^T$, where $t_i$ is the observation time, $m_i$ is the measured magnitude, $e_i$ is the measurement error, and $b_i \in \{u, g, r, i, z, y\}$ is the filter band. Since the measurements are irregularly spaced, we first map them to a regular grid using Gaussian Process (GP) regression.
+
+\subsection{Neural Network Architecture}
+The GP-interpolated curves are passed to a bidirectional Long Short-Term Memory (BiLSTM) network to extract temporal features. Simultaneously, host galaxy metadata (e.g., photometric redshift, spatial offset) are processed by a fully-connected multilayer perceptron (MLP). The outputs of the BiLSTM and MLP are concatenated and fed into a final softmax classifier.
+
+To train the pipeline, we optimize the categorical cross-entropy loss function with $L_2$ regularization:
+\begin{equation}
+\mathcal{L} = -\frac{1}{N} \sum_{i=1}^{N} \sum_{c=1}^{C} y_{i,c} \log(p_{i,c}) + \lambda \|\mathbf{W}\|^2_2
+\label{eq:loss}
+\end{equation}
+where $N$ is the batch size, $C$ is the number of transient classes, $y_{i,c}$ is the true binary label indicator, $p_{i,c}$ is the predicted probability for class $c$, and $\lambda \|\mathbf{W}\|^2_2$ is the regularization term to prevent overfitting.

@@ -1,0 +1,36 @@
+\section{Data \& Methods}
+
+\subsection{Experimental Design and Sequencing}
+
+\textit{A549} cells (ATCC CCL-185) were cultured in triplicate ($n=3$ per condition)
+under normoxia or hypoxia for 24\,h. Total RNA was extracted using the RNeasy Mini Kit
+(Qiagen). Poly-A enriched libraries were prepared with the Illumina TruSeq Stranded
+mRNA kit and sequenced on the \textbf{Illumina NovaSeq 6000} ($2\times150$\,bp;
+mean depth 45 million read pairs per sample).
+
+\subsection{Bioinformatics Pipeline}
+
+\setlength{\parskip}{0pt}
+\begin{tabularx}{\linewidth}{@{}>{\color{teal}\bfseries}l@{\hspace{8mm}}>{\raggedright\arraybackslash}X@{}}
+\toprule
+\textcolor{darkgrey}{Tool} & \textcolor{darkgrey}{Version / Purpose} \\
+\midrule
+\tool{FastQC}         & v0.12.1 --- per-read quality metrics \\
+\tool{Trim Galore!}   & v0.6.10 --- adapter trimming, quality cutoff $Q\ge20$ \\
+\tool{STAR}           & v2.7.11a --- splicing-aware alignment to GRCh38 (Ensembl 110) \\
+\tool{samtools}       & v1.19 --- BAM sorting and indexing \\
+\tool{featureCounts}  & v2.0.6 --- gene-level read summarisation (Ensembl 110 GTF) \\
+\tool{DESeq2}         & v1.44.0 (R 4.4.0) --- variance-stabilised DE analysis \\
+\tool{clusterProfiler}& v4.12.0 --- GO and KEGG over-representation analysis \\
+\tool{MultiQC}        & v1.24 --- aggregated QC report generation \\
+\bottomrule
+\end{tabularx}
+\setlength{\parskip}{5pt}
+
+\vspace{4pt}
+
+Differential expression was called with \tool{DESeq2} using the Wald test.
+Genes with fewer than 10 counts across all samples were pre-filtered. Significance
+thresholds: Benjamini--Hochberg adjusted $p$-value $<0.05$ and $|\log_2\text{FC}|>1$.
+
+%% ── Results ──────────────────────────────────────────────────────────────────

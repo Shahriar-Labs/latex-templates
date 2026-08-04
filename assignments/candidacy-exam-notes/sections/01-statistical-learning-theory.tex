@@ -1,0 +1,44 @@
+\section{Statistical Learning Theory}
+
+\subsection{Overview}
+The PAC (Probably Approximately Correct) framework formalizes when and why empirical risk
+minimization generalizes. Key objects: hypothesis class $\mathcal{H}$, loss $\ell$,
+true risk $R(h)$, empirical risk $\hat{R}_n(h)$.
+
+\begin{keyresult}{Theorem (Hoeffding / Uniform Convergence)}
+For a finite class $|\mathcal{H}|<\infty$ and bounded loss
+$\ell\in[0,1]$, with probability at least $1-\delta$:
+\[
+  \sup_{h\in\mathcal{H}}\bigl|R(h)-\hat{R}_n(h)\bigr|
+  \;\le\; \sqrt{\frac{\ln|\mathcal{H}|+\ln(2/\delta)}{2n}}.
+\]
+The ERM solution $\hat{h}$ satisfies
+$R(\hat{h}) \le R(h^*) + 2\sqrt{\dfrac{\ln|\mathcal{H}|+\ln(2/\delta)}{2n}}$.
+\end{keyresult}
+
+\begin{defbox}{VC Dimension}
+The \term{VC dimension} $\mathrm{VC}(\mathcal{H})$ is the largest set size that
+$\mathcal{H}$ can \emph{shatter}. For binary classification with loss in $\{0,1\}$:
+\[
+  R(\hat{h})-R(h^*) = \bigO{\sqrt{\frac{d\ln(n/d)+\ln(1/\delta)}{n}}},
+  \quad d = \mathrm{VC}(\mathcal{H}).
+\]
+\end{defbox}
+
+\textbf{Outline:}
+\begin{itemize}
+  \item Bias–variance trade-off: $\E[\hat{R}] = \text{bias}^2 + \text{variance} + \sigma^2$
+  \item Rademacher complexity $\mathfrak{R}_n(\mathcal{H})$: tighter than VC for
+        specific function classes (e.g.\ linear classifiers with margin)
+  \item Structural risk minimization: balance $\hat{R}_n(h)$ with a complexity penalty
+  \item Double-descent phenomenon: overparameterized regime can still generalize
+\end{itemize}
+
+\begin{examtip}
+Committees often ask to \emph{derive} the union-bound generalization bound from scratch.
+Remember: apply Hoeffding per hypothesis, then union bound over $|\mathcal{H}|$, then
+set the RHS equal to $\delta$ and solve. Also know the sample complexity:
+$n \ge \dfrac{\ln|\mathcal{H}|+\ln(1/\delta)}{2\varepsilon^2}$.
+\end{examtip}
+
+% ══════════════════════════════════════════════════════════════════════════════

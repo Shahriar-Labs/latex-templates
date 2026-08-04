@@ -1,0 +1,133 @@
+\section{Detailed Description of the Preferred Embodiments}\label{sec:detailed}
+
+The following description is presented to enable any person skilled in the art to make
+and use the invention. Details are set forth for the purpose of explanation and are not
+to be construed as limiting. The scope of the invention is defined solely by the appended
+claims.
+
+\subsection{1.~System Overview}
+
+Referring to FIG.~1 \refnum{100}, the Adaptive Neural Compression Engine (ANCE)
+comprises five principal subsystems arranged in a real-time processing pipeline:
+
+\begin{enumerate}[label=\arabic*., leftmargin=2em, itemsep=3pt]
+  \item \defterm{Frame Analysis Module (FAM)} \refnum{110} — accepts raw YCbCr 4:2:0
+    frames at up to 120\,fps and computes block-level motion vector fields using a
+    hierarchical block-matching algorithm.
+  \item \defterm{Lightweight Convolutional Inference Module (LCIM)} \refnum{120} —
+    a depthwise-separable convolutional network with six convolutional layers, two
+    squeeze-and-excitation blocks, and a final regression head outputting a
+    32-dimensional complexity score vector per macroblock.
+  \item \defterm{Telemetry Aggregator (TA)} \refnum{150} — collects RTCP receiver
+    reports and custom bandwidth probes via a ring buffer of 512 timestamped
+    measurements, maintaining a Kalman-filtered estimate of available bandwidth.
+  \item \defterm{Decision Engine (DE)} \refnum{130} — a multi-layer perceptron
+    (3 layers, 64 hidden units each) that jointly processes LCIM complexity vectors
+    and TA bandwidth estimates to emit per-macroblock QP values and encoding profiles.
+  \item \defterm{Hardware Abstraction Layer (HAL)} \refnum{140} — provides a
+    unified application programming interface (API) to dispatch inference workloads
+    to a CPU, GPU (via OpenCL 3.0), or NPU (via NNAPI / CoreML delegate), selecting
+    the fastest available execution context at runtime.
+\end{enumerate}
+
+\subsection{2.~Frame Analysis Module}
+
+The FAM accepts frames via a shared-memory zero-copy interface. Luma (Y) and chroma
+(Cb, Cr) planes are processed separately. For each 16$\times$16-pixel macroblock
+partition, the FAM computes a motion vector using a three-step hierarchical search with
+a maximum search range of $\pm$32 pixels. Resulting motion magnitude $m_i$ for
+macroblock $i$ is defined by Equation~\eqref{eq:motion}:
+
+\begin{equation}\label{eq:motion}
+  m_i = \sqrt{\Delta x_i^{2} + \Delta y_i^{2}}
+\end{equation}
+
+where $(\Delta x_i,\, \Delta y_i)$ are the horizontal and vertical displacement
+components of the dominant motion vector for macroblock $i$. Motion magnitudes and
+raw luma values are concatenated into a $C \times H \times W$ input tensor delivered
+to the LCIM.
+
+\subsection{3.~Lightweight Convolutional Inference Module (LCIM)}
+
+The LCIM is illustrated in FIG.~3 \refnum{120}. The network architecture is designed
+to fit within a 2.5-million-parameter budget, enabling real-time operation on
+low-power embedded processors. Layer specifications are as follows:
+
+\vspace{4pt}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{accent}}l@{\hspace{6mm}}>{\raggedright\arraybackslash}X@{}}
+  \toprule
+  \rowcolor{lightgray}
+  \textbf{\color{black}Layer} & \textbf{\color{black}Configuration} \\
+  \midrule
+  Conv-1 & $3\!\times\!3$ depthwise, 32 channels, stride 1, ReLU6 \\[2pt]
+  Conv-2 & $1\!\times\!1$ pointwise, 64 channels, BN, ReLU6 \\[2pt]
+  SE-Block-1 & Squeeze ratio $r=4$; channel attention over 64-dim feature map \\[2pt]
+  Conv-3 & $3\!\times\!3$ depthwise, 64 channels, stride 2, ReLU6 \\[2pt]
+  Conv-4 & $1\!\times\!1$ pointwise, 128 channels, BN, ReLU6 \\[2pt]
+  SE-Block-2 & Squeeze ratio $r=4$; 128-dim channel attention \\[2pt]
+  Conv-5--6 & $1\!\times\!1$ pointwise, 64 then 32 channels, ReLU6 \\[2pt]
+  Regression Head & Global average pool $\to$ FC(32), linear activation \\[2pt]
+  \bottomrule
+\end{tabularx}
+\vspace{4pt}
+
+Model weights are stored in IEEE 754 half-precision (FP16) format; quantization to
+INT8 is optionally applied via post-training quantization (PTQ) with a representative
+calibration dataset of 5,000 frames drawn from the \textit{UVG-HD} video benchmark.
+
+\subsection{4.~Telemetry Aggregator and Kalman Filter}
+
+The TA maintains a circular buffer $\mathcal{B}$ of 512 bandwidth samples
+$\{b_t\}$ timestamped at millisecond resolution. A scalar Kalman filter
+estimates true available bandwidth $\hat{b}_t$ according to:
+
+\begin{align}
+  \hat{b}_{t|t-1} &= \hat{b}_{t-1} \\[2pt]
+  K_t             &= \frac{P_{t|t-1}}{P_{t|t-1} + R} \\[2pt]
+  \hat{b}_t       &= \hat{b}_{t|t-1} + K_t\!\left(b_t - \hat{b}_{t|t-1}\right)
+\end{align}
+
+where $R$ is the measurement noise variance, set by default to
+$R = 0.04\,\text{Mbps}^2$, and $P_{t|t-1}$ is the prior error covariance.
+Round-trip latency $\ell_t$ is estimated via exponentially weighted moving average
+with decay constant $\alpha = 0.1$.
+
+\subsection{5.~Decision Engine}
+
+The DE receives a concatenated input vector
+$\mathbf{v} = [\mathbf{c}_i;\, \hat{b}_t;\, \ell_t;\, q_{t-1}]$
+where $\mathbf{c}_i$ is the 32-dimensional LCIM complexity output for macroblock $i$,
+and $q_{t-1}$ is the previously applied QP. The DE outputs a QP value
+$q_i \in [1, 51]$ and an encoding profile index $p \in \{0, 1, 2, 3\}$
+corresponding to \{baseline, main, high, high-10\} H.264/AVC profiles.
+The DE is implemented as a 3-layer fully connected network with 64 hidden units,
+sigmoid-linear activation, and a 35-parameter output head.
+
+\subsection{6.~Hardware Abstraction Layer}
+
+The HAL exposes three dispatch targets through a single \texttt{ance\_infer()}
+function call. At initialization, the HAL benchmarks available backends using
+a 50-frame warm-up sequence and selects the backend whose mean latency per frame
+satisfies the 4\,ms budget. If no backend meets the budget, the HAL falls back to
+a lightweight rule-based QP-selection algorithm described in \secref{sec:fallback}.
+
+\subsection{7.~Fallback Rule-Based QP Selection}\label{sec:fallback}
+
+In the event that no backend meets the 4\,ms latency budget, the ANCE activates a
+deterministic fallback: QP is set to $q_{\text{fb}} = \text{clamp}(51 -
+\lfloor 43 \cdot \hat{b}_t / b_{\max} \rfloor,\, 18,\, 42)$, where
+$b_{\max}$ is the peak bandwidth observed during the current session.
+
+\subsection{8.~Training Methodology}
+
+The LCIM was trained on a corpus of 240,000 video clips (totalling 1.8 billion frames)
+drawn from the following sources: (i) YouTube-UGC dataset (ugc-dataset.github.io);
+(ii) BVI-Texture benchmark; and (iii) proprietary HDR mobile capture data licensed
+from ContentShield Inc.\ under a research agreement. Training employed the Adam
+optimizer ($\eta = 10^{-3}$, $\beta_1 = 0.9$, $\beta_2 = 0.999$) with a cosine
+annealing schedule over 120 epochs on 8$\times$ Quanta A100 GPUs.
+
+% ============================================================
+%  DRAWING SHEET (FIG. 1 — TikZ inline)
+% ============================================================
+\newpage

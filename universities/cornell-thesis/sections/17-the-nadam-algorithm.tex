@@ -1,0 +1,36 @@
+\section{The \textsc{Nadam} Algorithm}
+
+The NPG framework suggests a natural design principle: choose $\Psi_t$ to incorporate the
+strongest possible convergence signal (Nesterov momentum) while relying on $P_t$ solely for
+curvature adaptation. This yields our proposed algorithm, \textbf{\textsc{Nadam}} (Algorithm~1).
+
+\begin{figure}[tb]
+  \centering
+  \fbox{\begin{minipage}{0.88\textwidth}
+  \small
+  \textbf{Algorithm 1}~~\textsc{Nadam}: Normalized Adaptive Descent with Momentum\\[4pt]
+  \textbf{Input:} Learning rate $\eta$, momenta $\beta_1,\beta_2 \in [0,1)$,
+    $\varepsilon > 0$, iterations $T$\\[2pt]
+  \textbf{Initialize:} $\theta_1 \in \mathbb{R}^d$, $m_0 = 0$, $v_0 = 0$\\[2pt]
+  \textbf{for} $t = 1,\dots,T$ \textbf{do}\\
+  \quad $g_t \gets \nabla\ell(\theta_t; \xi_t)$ \hfill $\triangleright$ stochastic gradient\\
+  \quad $v_t \gets \beta_2 v_{t-1} + (1-\beta_2) g_t^2$ \hfill $\triangleright$ second moment\\
+  \quad $\tilde{g}_t \gets g_t / (\sqrt{v_t} + \varepsilon)$ \hfill $\triangleright$ normalize\\
+  \quad $m_t \gets \beta_1 m_{t-1} + (1-\beta_1) \tilde{g}_t$ \hfill $\triangleright$ momentum\\
+  \quad $\tilde{\theta}_t \gets \theta_t - \beta_1\eta\, m_t$ \hfill $\triangleright$ Nesterov lookahead\\
+  \quad $\tilde{g} \gets \nabla\ell(\tilde{\theta}_t; \xi_t)$ \hfill $\triangleright$ gradient at lookahead\\
+  \quad $\theta_{t+1} \gets \theta_t - \eta\left(\beta_1 m_t + (1-\beta_1)\frac{\tilde{g}}{\sqrt{v_t}+\varepsilon}\right)$\\
+  \textbf{end for}
+  \end{minipage}}
+  \caption{The \textsc{Nadam} algorithm. Nesterov-style lookahead is combined with normalized
+    adaptive preconditioning. The key difference from Adam is the gradient evaluation at the
+    extrapolated point $\tilde{\theta}_t$ and the re-weighting of the momentum term.}
+  \label{fig:nadam_algo}
+\end{figure}
+
+The crucial difference between \textsc{Nadam} and Adam is the Nesterov-style lookahead (lines
+5--7 in Algorithm~1). By evaluating the gradient at the extrapolated point $\tilde{\theta}_t$,
+\textsc{Nadam} corrects for the momentum-induced overshoot that causes Adam to oscillate in
+narrow valleys. This correction is particularly impactful in the late stages of training, where
+the loss surface near a minimum is well-approximated by a quadratic and Nesterov acceleration
+is provably optimal.

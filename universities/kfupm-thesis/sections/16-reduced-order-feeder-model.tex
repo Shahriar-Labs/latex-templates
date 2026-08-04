@@ -1,0 +1,18 @@
+\section{Reduced-Order Feeder Model}
+The distribution feeder is represented as a radial network of $M$ buses using a linearized
+DistFlow approximation, which relates bus voltage magnitude to active and reactive power
+injections:
+\begin{equation}
+V_i \approx V_0 - \sum_{j \in \mathcal{A}(i)} \left( r_j P_j + x_j Q_j \right) / V_0,
+\label{eq:distflow}
+\end{equation}
+where $V_i$ is the voltage magnitude at bus $i$, $V_0$ is the substation reference voltage,
+$\mathcal{A}(i)$ is the set of line segments on the path from the substation to bus $i$, and
+$r_j$, $x_j$ are the resistance and reactance of segment $j$. Transformer loading is tracked via
+an aggregate thermal model with time constant $\tau$:
+\begin{equation}
+\tau \frac{d\theta}{dt} = -\theta + K \left( \frac{S(t)}{S_{\text{rated}}} \right)^2,
+\label{eq:thermal}
+\end{equation}
+where $\theta$ is per-unit hot-spot temperature rise, $S(t)$ is instantaneous apparent power,
+and $K$ is a calibration constant fitted to manufacturer loss-of-life curves.

@@ -1,0 +1,29 @@
+\section{Overview}
+Naledi-Forecast comprises two stages: (i) a temporal convolutional encoder that maps the
+observed, gap-marked load history to a point forecast, and (ii) a lightweight Bayesian
+correction layer that recalibrates the encoder's residual distribution using a small
+held-out calibration window.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  block/.style={rectangle, rounded corners, draw=witsblue, fill=witssand, minimum width=2.6cm, minimum height=1cm, align=center, font=\small},
+  arrow/.style={-{Stealth[length=2.2mm]}, thick, witsslate}
+]
+\node[block] (input) {Irregular load\\history};
+\node[block, right=1.4cm of input, fill=white] (mask) {Gap-mask\\encoding};
+\node[block, right=1.4cm of mask] (tcn) {TCN\\encoder};
+\node[block, right=1.4cm of tcn, draw=witsorange] (bayes) {Bayesian\\correction};
+\node[block, right=1.4cm of bayes, fill=white] (out) {Calibrated\\forecast};
+
+\draw[arrow] (input) -- (mask);
+\draw[arrow] (mask) -- (tcn);
+\draw[arrow] (tcn) -- (bayes);
+\draw[arrow] (bayes) -- (out);
+\end{tikzpicture}%
+}
+\caption{Naledi-Forecast pipeline: gap-aware encoding, TCN point prediction, and Bayesian
+recalibration.}
+\label{fig:architecture}
+\end{figure}

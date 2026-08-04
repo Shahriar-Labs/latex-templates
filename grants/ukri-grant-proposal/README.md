@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**UKRI Grant Proposal LaTeX template — ukri grant proposal latex. Elegant, compile-tested, editable online at letx.app.**
+**UKRI Grant Proposal LaTeX template — UKRI Grant Proposal. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/grants/ukri-grant-proposal)**, with real-time collaboration and one-second compiles.
 

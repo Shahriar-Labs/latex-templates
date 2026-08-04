@@ -1,0 +1,39 @@
+\section{Recovery Objectives}
+
+\subsection{Recovery Time and Point Objectives}
+
+The following table defines the recovery objectives for each tier of service. Systems are classified into three tiers based on business impact analysis (BIA) conducted in January 2026.
+
+\begin{tcolorbox}[colback=lightgray, colframe=primary, boxrule=0.5pt, arc=3pt, left=10pt, right=10pt, top=8pt, bottom=8pt]
+\begin{tabularx}{\textwidth}{@{}l c c c X@{}}
+  \toprule
+  \rowcolor{tablehead}
+  \textcolor{white}{\textbf{System Tier}} & \textcolor{white}{\textbf{RTO}} & \textcolor{white}{\textbf{RPO}} & \textcolor{white}{\textbf{MAAO}} & \textcolor{white}{\textbf{Critical Systems}}\\
+  \midrule
+  \rowcolor{tablerow}
+  \textbf{Tier 1} --- Mission Critical & \rto{$\leqslant$ 1 hr} & \rpo{$\leqslant$ 5 min} & 2 hrs & Core Banking, Payment Gateway, Customer Auth\\
+  \textbf{Tier 2} --- Business Critical & \rto{$\leqslant$ 4 hrs} & \rpo{$\leqslant$ 1 hr} & 8 hrs & Digital Banking Platform, CRM, Data Warehouse\\
+  \rowcolor{tablerow}
+  \textbf{Tier 3} --- Operational Support & \rto{$\leqslant$ 24 hrs} & \rpo{$\leqslant$ 24 hrs} & 48 hrs & Internal Wiki, Training Systems, Dev Environments\\
+  \bottomrule
+\end{tabularx}
+\end{tcolorbox}
+
+\subsection{Tier 1 --- Detailed Recovery Targets}
+
+\begin{tabularx}{\textwidth}{@{}l c c X c@{}}
+  \toprule
+  \rowcolor{tablehead}
+  \textcolor{white}{\textbf{System}} & \textcolor{white}{\textbf{RTO}} & \textcolor{white}{\textbf{RPO}} & \textcolor{white}{\textbf{DR Strategy}} & \textcolor{white}{\textbf{Priority}}\\
+  \midrule
+  Core Banking (NexaCore) & 45 min & 0 min & Hot standby --- synchronous replication & 1\\
+  \rowcolor{tablerow}
+  Payment Gateway (PayFlow) & 1 hr & 5 min & Warm standby --- async replication, 5-min sync & 2\\
+  Customer Identity \& Auth (ApexID) & 30 min & 0 min & Active-active across both sites & 1\\
+  \rowcolor{tablerow}
+  Settlement Engine & 1 hr & 5 min & Warm standby --- async replication & 3\\
+  Transaction Ledger (LedgerDB) & 40 min & 0 min & Hot standby --- synchronous replication & 1\\
+  \bottomrule
+\end{tabularx}
+
+\clearpage

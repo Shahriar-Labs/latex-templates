@@ -1,0 +1,21 @@
+\section{Hidden Markov Models in Finance}
+
+Hamilton~\cite{hamilton1989} introduced regime-switching to economics, modeling GDP growth as alternating between expansion and recession states. The framework migrated to finance through applications in volatility modeling~\cite{timmermann2000}, interest rate dynamics~\cite{ang2002}, and tactical asset allocation~\cite{guidolin2007}.
+
+Estimation is typically performed via the expectation-maximization (EM) algorithm or Bayesian MCMC. The EM approach is fast but provides only point estimates; MCMC yields full posterior distributions but scales poorly with the number of assets $p$. A key open problem --- which Chapter~3 addresses --- is determining $K$, the number of regimes, without resorting to information criteria that penalize complexity in an ad-hoc manner.
+
+\begin{table}[H]
+\centering
+\caption{Comparison of regime-switching estimation methods.}
+\label{tab:methods}
+\begin{tabularx}{0.92\textwidth}{@{}l c c c X@{}}
+\toprule
+\textbf{Method} & \textbf{Selects $K$?} & \textbf{Uncertainty} & \textbf{Scalability} \\
+\midrule
+EM + BIC           & Yes (criterion) & Point estimate only         & $\mathcal{O}(T K p^2)$                  \\{}
+Hamilton filter     & No              & Filtered probabilities      & $\mathcal{O}(T K^2)$                    \\{}
+Gibbs sampler       & No              & Full posterior              & $\mathcal{O}(T K^2 p^2)$ per iteration  \\{}
+RJ-MCMC (this work) & Yes (inference) & Full posterior incl.\ $K$   & $\mathcal{O}(T K_{\max}^2 p^2)$ per iter. \\
+\bottomrule
+\end{tabularx}
+\end{table}

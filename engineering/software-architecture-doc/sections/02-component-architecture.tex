@@ -1,0 +1,81 @@
+\section{Component Architecture}
+The system layout features segregated zones. The DMZ manages public client requests, whereas the Internal VPC handles core business logic and database states.
+
+\subsection{Deployment Topology Diagram}
+The diagram below shows the physical deployment boundaries, protocol layers, and component interconnections:
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=1.6cm and 1.8cm,
+  >=stealth,
+  thick,
+  align=center,
+  client/.style={rectangle, draw=primary, fill=primary!5, minimum width=2.2cm, minimum height=1.1cm, rounded corners=2pt, font=\sffamily\small\bfseries},
+  gateway/.style={rectangle, draw=secondary, fill=secondary!5, minimum width=2.5cm, minimum height=1.1cm, rounded corners=2pt, font=\sffamily\small\bfseries},
+  service/.style={rectangle, draw=accent, fill=accent!5, minimum width=2.5cm, minimum height=1.1cm, rounded corners=2pt, font=\sffamily\small\bfseries},
+  auth/.style={rectangle, draw=warningcolor, fill=warningcolor!5, minimum width=2.5cm, minimum height=1.1cm, rounded corners=2pt, font=\sffamily\small\bfseries},
+  queue/.style={rectangle, draw=darkbg, fill=darkbg!5, minimum width=2.5cm, minimum height=1.1cm, rounded corners=2pt, font=\sffamily\small\bfseries},
+  database/.style={cylinder, draw=primary, fill=primary!10, shape border rotate=90, minimum width=1.6cm, minimum height=1.2cm, font=\sffamily\small\bfseries}
+]
+
+  % Nodes Placement
+  \node (user) [client] {Web / Mobile\\Clients};
+  \node (gate) [gateway, right=of user] {Nexa Gateway\\(API Edge)};
+  \node (auth) [auth, above=of gate] {Synapse Auth\\(IAM / OAuth2)};
+  \node (core) [service, right=of gate] {Vertex Core\\(Transaction)};
+  \node (db) [database, below=of core] {Meridian DB\\(PostgreSQL)};
+  \node (queue) [queue, right=of core] {Nimbus Queue\\(Event Broker)};
+  \node (analytics) [service, below=of queue] {Vertex Analytics\\(Reporting)};
+
+  % Node Connections
+  \draw[->] (user) -- node[above, font=\sffamily\tiny] {HTTPS} (gate);
+  \draw[<->] (gate) -- node[right, font=\sffamily\tiny] {gRPC Auth} (auth);
+  \draw[->] (gate) -- node[above, font=\sffamily\tiny] {gRPC Proxy} (core);
+  \draw[<->] (core) -- node[left, font=\sffamily\tiny] {SQL Write} (db);
+  \draw[->] (core) -- node[above, font=\sffamily\tiny] {AMQP Publish} (queue);
+  \draw[->] (queue) -- node[right, font=\sffamily\tiny] {Consume} (analytics);
+  \draw[->] (analytics) -- node[below, font=\sffamily\tiny] {SQL Read} (db);
+
+  % Visual Boundaries
+  \begin{scope}[on background layer]
+    \draw[draw=gray!30, fill=gray!5, dashed, rounded corners]
+      ($(user.south west)+(-0.3,-0.3)$) rectangle ($(gate.north east)+(0.3,0.3)$);
+    \node[font=\sffamily\tiny\bfseries\color{gray}, anchor=south] at ($(user.north)!0.5!(gate.north)+(0,0.3)$) {DMZ ZONE};
+
+    \draw[draw=secondary!30, fill=secondary!5!white, dashed, rounded corners]
+      ($(auth.north west)+(-0.3,0.3)$) rectangle ($(analytics.south east)+(0.3,-0.3)$);
+    \node[font=\sffamily\tiny\bfseries\color{secondary}, anchor=south] at ($(auth.north east)!0.5!(queue.north)+(0,0.3)$) {SECURE VPC SYSTEMS MESH};
+  \end{scope}
+
+\end{tikzpicture}
+\end{center}
+
+\newpage
+
+\subsection{Service Descriptions}
+The detailed architectural properties, framework frameworks, and scaling methodologies are defined below:
+
+% Table: Component Responsibilities (Exactly 2 & per row for 3 columns)
+\begin{table}[h]
+\centering
+\sffamily\small
+\begin{tabularx}{\linewidth}{|l|p{3.5cm}|X|}
+\hline
+\rowcolor{primary}
+\textcolor{white}{\textbf{Component}} & \textcolor{white}{\textbf{Fictional Service}} & \textcolor{white}{\textbf{Responsibility \& Scaling Strategy}} \\
+\hline
+API Gateway & Nexa Gateway & Handles ingress traffic, SSL termination, and rate-limiting. Scaled horizontally via auto-scaling groups. \\
+\hline
+\rowcolor{lightbg}
+Auth Provider & Synapse Auth & Validates client credentials and issues tokens. Uses Redis caching for rapid session verification. \\
+\hline
+Core Engine & Vertex Core & Processes transaction logic and coordinates with backends. Uses thread-pool scaling for high throughput. \\
+\hline
+\rowcolor{lightbg}
+Message Broker & Nimbus Queue & Asynchronously broadcasts tasks to background workers. Configured with clustered active-passive failover. \\
+\hline
+Database & Meridian DB & Primary PostgreSQL instance for transactional state persistence. Configured with a hot-standby read replica. \\
+\hline
+\end{tabularx}
+\caption{System Component Matrix}
+\end{table}

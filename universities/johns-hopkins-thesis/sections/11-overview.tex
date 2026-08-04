@@ -1,0 +1,33 @@
+\section{Overview}
+
+The Belief-Augmented Decentralized Coordination (BADC) framework consists of
+three interacting components: a \textit{local belief tracker}, a
+\textit{consensus module}, and a \textit{planning module}. Figure~\ref{fig:badc-arch}
+illustrates the data flow among these components.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[node distance=2.2cm, auto]
+  \node [block] (obs) {Local Observations};
+  \node [block, right of=obs, xshift=3.5cm] (belief) {Belief Tracker};
+  \node [block, right of=belief, xshift=3.5cm] (consensus) {Consensus Module};
+  \node [block, below of=obs, yshift=-1.8cm] (action) {Action Selection};
+  \node [block, below of=belief, yshift=-1.8cm] (planner) {Submodular Planner};
+  \node [block, below of=consensus, yshift=-1.8cm] (execute) {Execution};
+
+  \draw[->, line] (obs) -- (belief);
+  \draw[->, line] (belief) -- node[above] {$b_i^t$} (consensus);
+  \draw[->, line] (consensus.east) -- ++(1cm,0) |- node[right,yshift=6pt] {to peers} (consensus.east);
+  \draw[->, line] (belief) -- (planner);
+  \draw[->, line] (planner) -- (action);
+  \draw[->, line] (action) -- (execute);
+
+  \draw[->, line, dashed] (consensus.south) -- ++(0,-0.8cm) -| node[below right,yshift=-4pt] {$\tilde{b}_i^t$} (planner.north);
+  \draw[->, line, dashed] (execute.west) -- ++(-5cm,0) |- (obs.south);
+\end{tikzpicture}%
+}
+\caption{Architecture of the BADC framework. Solid lines indicate feedforward
+data flow; dashed lines indicate feedback and inter-agent communication.}
+\label{fig:badc-arch}
+\end{figure}

@@ -1,0 +1,59 @@
+\section{Diagonalization and Computation}
+An $n \times n$ matrix $A$ is diagonalizable if there exists an invertible matrix $P$ and a diagonal matrix $D$ such that $P^{-1} A P = D$. The columns of $P$ are the eigenvectors of $A$, and the diagonal entries of $D$ are the corresponding eigenvalues.
+
+\begin{example}{Diagonalization of a $2 \times 2$ Matrix}{diag_ex}
+    Diagonalize the symmetric matrix:
+    \begin{equation*}
+        A = \begin{pmatrix} 1 & 2 \\ 2 & 1 \end{pmatrix} \in \mathbb{R}^{2 \times 2}.
+    \end{equation*}
+    
+    \textbf{Step 1: Find the eigenvalues.} The characteristic equation is given by $\det(A - \lambda I) = 0$:
+    \begin{align*}
+        \det\begin{pmatrix} 1-\lambda & 2 \\ 2 & 1-\lambda \end{pmatrix} &= 0 \\
+        (1-\lambda)^2 - 4 &= 0 \\
+        \lambda^2 - 2\lambda - 3 &= 0 \\
+        (\lambda - 3)(\lambda + 1) &= 0.
+    \end{align*}
+    Thus, the eigenvalues are $\lambda_1 = 3$ and $\lambda_2 = -1$. Since these are two distinct eigenvalues for a $2 \times 2$ matrix, Theorem~\ref{thm:lin_indep} guarantees that their eigenvectors are linearly independent, and thus $A$ is diagonalizable.
+    
+    \textbf{Step 2: Find the eigenvectors.}
+    
+    \begin{minipage}[t]{0.48\linewidth}
+        \textbf{For $\lambda_1 = 3$:} Solve $(A - 3I)v = 0$:
+        \begin{equation*}
+            \begin{pmatrix} -2 & 2 \\ 2 & -2 \end{pmatrix}\begin{pmatrix} x \\ y \end{pmatrix} = 0 \implies x = y.
+        \end{equation*}
+        Choosing $x = 1$ yields $v_1 = \begin{pmatrix} 1 \\ 1 \end{pmatrix}$.
+    \end{minipage}\hfill
+    \begin{minipage}[t]{0.48\linewidth}
+        \textbf{For $\lambda_2 = -1$:} Solve $(A + I)v = 0$:
+        \begin{equation*}
+            \begin{pmatrix} 2 & 2 \\ 2 & 2 \end{pmatrix}\begin{pmatrix} x \\ y \end{pmatrix} = 0 \implies x = -y.
+        \end{equation*}
+        Choosing $y = -1$ yields $v_2 = \begin{pmatrix} 1 \\ -1 \end{pmatrix}$.
+    \end{minipage}
+    \vspace{0.2cm}
+    
+    \textbf{Step 3: Construct $P$ and $D$.}
+    \begin{equation*}
+        P = \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}, \quad D = \begin{pmatrix} 3 & 0 \\ 0 & -1 \end{pmatrix}.
+    \end{equation*}
+    We verify that $AP = PD$:
+    \begin{align*}
+        AP &= \begin{pmatrix} 1 & 2 \\ 2 & 1 \end{pmatrix}\begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix} = \begin{pmatrix} 3 & -1 \\ 3 & 1 \end{pmatrix}, \\
+        PD &= \begin{pmatrix} 1 & 1 \\ 1 & -1 \end{pmatrix}\begin{pmatrix} 3 & 0 \\ 0 & -1 \end{pmatrix} = \begin{pmatrix} 3 & -1 \\ 3 & 1 \end{pmatrix}.
+    \end{align*}
+    Since $AP = PD$ and $\det(P) = -2 \neq 0$ (so $P$ is invertible), we have $P^{-1} A P = D$.
+\end{example}
+
+\begin{remark}{Non-diagonalizable Matrices}{non_diag}
+    Not all matrices are diagonalizable. A classical example of a non-diagonalizable matrix is the shear matrix:
+    \begin{equation*}
+        B = \begin{pmatrix} 1 & 1 \\ 0 & 1 \end{pmatrix}.
+    \end{equation*}
+    The characteristic equation is $(1-\lambda)^2 = 0$, yielding a single eigenvalue $\lambda = 1$ with algebraic multiplicity 2. However, solving $(B - I)v = 0$ reveals:
+    \begin{equation*}
+        \begin{pmatrix} 0 & 1 \\ 0 & 0 \end{pmatrix}\begin{pmatrix} x \\ y \end{pmatrix} = \begin{pmatrix} 0 \\ 0 \end{pmatrix} \implies y = 0.
+    \end{equation*}
+    The eigenspace $E_1$ is spanned by $\left\{\begin{pmatrix} 1 \\ 0 \end{pmatrix}\right\}$, which has dimension 1 (geometric multiplicity). Since the geometric multiplicity is strictly less than the algebraic multiplicity, $B$ does not possess a basis of eigenvectors and cannot be diagonalized.
+\end{remark}

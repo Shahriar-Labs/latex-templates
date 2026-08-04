@@ -1,0 +1,53 @@
+\section{Preventive Measures \& Long-Term Improvements}
+
+\subsection{Immediate (Complete $\leq$ 30 days)}
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item[\textcolor{accent}{\faIcon{check-square}}]
+    \textbf{Aurora failover integration test} added to \texttt{pytest-asyncio} suite;
+    CI pipeline blocks merge on failure (\texttt{RELY-441} --- \textit{complete}).
+
+  \item[\textcolor{accent}{\faIcon{check-square}}]
+    \textbf{CloudWatch composite alarm} created: \texttt{PoolExhaustion $+$ HighLatency}
+    triggers a dedicated PagerDuty policy with the correct runbook URL attached
+    (\texttt{RELY-442} --- \textit{complete}).
+
+  \item[\textcolor{sev2}{\faIcon{hourglass-half}}]
+    \textbf{Terraform environment isolation}: introduce per-environment Terraform
+    workspaces and a \texttt{prevent\_destroy} lifecycle rule on production RDS
+    maintenance resources (\texttt{RELY-443}).
+
+  \item[\textcolor{sev2}{\faIcon{hourglass-half}}]
+    \textbf{Hotfix track canary re-enabled}: gating removed from hotfix track was a
+    deliberate speed tradeoff; policy updated to require at least a smoke-test pass
+    and explicit SRE sign-off (\texttt{RELY-444}).
+\end{itemize}
+
+\subsection{Medium-Term (30--90 days)}
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item[\textcolor{statusopen}{\faIcon{circle}}]
+    \textbf{RDS Proxy adoption} (\texttt{RELY-446}): RDS Proxy will absorb connection
+    churn during failover at the network layer, making the application-level retry
+    wrapper a belt-and-suspenders safety net rather than the sole recovery mechanism.
+
+  \item[\textcolor{statusopen}{\faIcon{circle}}]
+    \textbf{Chaos Engineering Programme} (\texttt{RELY-447}): Quarterly Aurora
+    failover drills in staging with production-level traffic simulation using AWS
+    Fault Injection Simulator (FIS). Results published to SRE reliability dashboard.
+\end{itemize}
+
+\subsection{FinOps / Cost Controls}
+
+\begin{itemize}[leftmargin=*, itemsep=3pt]
+  \item[\textcolor{statusopen}{\faIcon{circle}}]
+    \textbf{Emergency scaling guardrails} (\texttt{RELY-448}): Set AWS Budgets action
+    to notify and optionally block Lambda concurrency above 1500 units during
+    an incident. Review IAM break-glass permissions for emergency overrides.
+
+  \item[\textcolor{statusdone}{\faIcon{check-circle}}]
+    \textbf{Cost attribution tagging}: all emergency resources deployed during the
+    incident tagged \texttt{incident=INC-2024-0847} for FinOps chargeback reporting.
+\end{itemize}
+
+% ── Lessons Learned ──────────────────────────────────────────

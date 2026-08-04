@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Regulatory Filing (Form S-1) LaTeX template — "S-1 filing latex template". Elegant, compile-tested, editable online at letx.app.**
+**Regulatory Filing (Form S-1) LaTeX template — Regulatory Filing (Form S-1). Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/finance/form-s-1-filing)**, with real-time collaboration and one-second compiles.
 
@@ -12,17 +12,16 @@ Edit and compile this template instantly in your browser — no LaTeX install �
 
 ## Features
 - Elegant, modern design
-- Compile-tested (zero errors)
-- Realistic sample content
-- Editable online in your browser
+- Compile-tested
+- Fully editable sample content
 
 ## Use it online (recommended)
 Open **[Regulatory Filing (Form S-1) on LetX »](https://letx.app/templates/finance/form-s-1-filing)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/form-s-1-filing
+git clone https://github.com/Shahriar-Labs/form-s-1-filing.git
+cd form-s-1-filing
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

@@ -1,0 +1,7 @@
+\section{Online Policy}
+
+The policy module is a two-layer feed-forward network mapping the telemetry vector (bandwidth estimate, device queue depth, battery percentage, previous partition point) to a distribution over the three local actions \{shift earlier, hold, shift later\}. It is updated with an on-policy actor-critic rule every 50 decision epochs using outcomes recorded in the shadow buffer, so that the policy tracks slow drifts in device or network behaviour without requiring a separate offline training phase.
+
+\begin{notebox}
+\textbf{Design note.} Restricting the action space to adjacent-layer moves trades a small amount of convergence speed for a large reduction in per-decision compute, which is essential given the 4\,ms scheduling budget target established in Chapter~1.
+\end{notebox}

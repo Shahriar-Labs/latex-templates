@@ -1,0 +1,41 @@
+\section{Overview}
+
+\begin{minipage}{0.48\textwidth}
+  \raggedright
+  NexaMarket is a multi-tenant marketplace by \textbf{Nexa Inc.} handling customer accounts, merchant storefronts, product catalogs, order processing, payments, and inventory. All timestamps are \texttt{TIMESTAMPTZ}; soft deletes use nullable \texttt{deleted\_at} with partial unique indexes. All monetary columns store integer cents.
+
+  \begin{tcolorbox}[colback=secondary!8,colframe=secondary!40,sharp corners,boxrule=0.3pt,
+    left=3mm,right=3mm,top=1.5mm,bottom=1.5mm,before skip=3pt,after skip=0pt]
+    {\footnotesize\color{primary} 6 tables \textbar{} 4 enums \textbar{} 12 FK \textbar{} 18 indexes \textbar{} \textasciitilde{}20M total rows}
+  \end{tcolorbox}
+\end{minipage}
+\par
+\begin{minipage}{0.48\textwidth}
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.1cm and 1.4cm,
+    scale=0.78, every node/.style={transform shape},
+    entity/.style={rectangle,draw=primary,fill=primary!5,thick,
+      minimum width=2cm,minimum height=0.5cm,font=\small\bfseries,align=center},
+    every path/.style={->,>=stealth,thick}
+  ]
+    \node[entity] (cust)   {customers};
+    \node[entity] (merch)  [right=of cust]   {merchants};
+    \node[entity] (prod)   [below=of merch]  {products};
+    \node[entity] (orders) [below=of cust]   {orders};
+    \node[entity] (txn)    [below=of orders] {transactions};
+    \node[entity] (inv)    [below=of prod]   {inventory};
+
+    \draw[primary]   (cust)  -- node[above,sloped,font=\tiny\color{accent}] {places}   (orders);
+    \draw[secondary] (merch) -- node[above,sloped,font=\tiny\color{accent}] {owns}     (prod);
+    \draw[secondary] (merch) -- node[left,font=\tiny\color{accent}]        {receives}  (txn);
+    \draw[primary]   (orders)-- node[right,font=\tiny\color{accent}]        {funded}    (txn);
+    \draw[accent]    (prod)  -- node[left,font=\tiny\color{accent}]         {tracks in} (inv);
+    \draw[accent,dashed] (orders) -- node[above,sloped,font=\tiny\color{accent}] {reserves} (inv);
+  \end{tikzpicture}
+  \vspace{-3pt}
+  \captionof{figure}{\footnotesize\color{accent}Dashed link via \texttt{order\_items}.}
+\end{minipage}
+\par
+
+% ── TABLE DEFINITIONS ─────────────────────────────────────────────────

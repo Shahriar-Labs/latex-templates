@@ -1,0 +1,31 @@
+\section{The Reward-Modulated Update Rule}
+
+We extend Equation~\eqref{eq:bcm} by multiplying the Hebbian term with a temporally
+smoothed reward signal $\bar{r}(t)$:
+\begin{equation}
+  \tau_w\,\dot{w}_{ij}
+  = \bar{r}(t)\cdot x_i\bigl(x_i - \theta\bigr)x_j
+    - \epsilon\,w_{ij},
+  \label{eq:rmhebb}
+\end{equation}
+\begin{equation}
+  \tau_r\,\dot{\bar{r}} = r(t) - \bar{r}(t),
+  \label{eq:rewardfilter}
+\end{equation}
+where $r(t) \in [-1, 1]$ is the instantaneous reward and $\tau_r$ is the reward
+integration time constant.
+
+\begin{theorem}[Convergence of RM-Hebbian for linear networks]
+\label{thm:convergence}
+Let $\mathbf{W}(t)$ evolve according to Equation~\eqref{eq:rmhebb} with $\bar{r}(t) > 0$
+for all $t \geq 0$.  If the input covariance matrix $\mathbf{C} = \mathbb{E}[\mathbf{x}\mathbf{x}^{\top}]$
+is positive definite, then $\mathbf{W}(t)$ converges to a fixed point $\mathbf{W}^*$
+satisfying $\mathbf{C}\mathbf{W}^{*\top} = \theta\mathbf{I}$.
+\end{theorem}
+
+\begin{proof}
+Define the Lyapunov function $V = \tfrac{1}{2}\,\lVert \mathbf{W} - \mathbf{W}^* \rVert_F^2$.
+A standard calculation using the positive definiteness of $\mathbf{C}$ and the
+positivity of $\bar{r}$ shows $\dot{V} \leq -\kappa V$ for some $\kappa > 0$, giving
+exponential convergence.
+\end{proof}

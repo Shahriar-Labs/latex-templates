@@ -1,0 +1,56 @@
+\section{Frequentist Statistical Methods}
+
+Generalised linear models (GLMs)~\cite{elith2009} entered the ecological
+mainstream during the 1990s and quickly became the workhorse of species
+distribution modelling (SDM). GLMs extend ordinary least-squares regression
+to non-Gaussian response variables through a link function $g(\cdot)$:
+\begin{equation}\label{eq:glm}
+  g(\mathbb{E}[Y_i]) = \beta_0 + \sum_{k=1}^{p} \beta_k\, x_{ik},
+\end{equation}
+where $Y_i$ is the response (e.g.\ binary presence--absence or count) at site
+$i$, and $x_{ik}$ are environmental covariates. For binary data, the canonical
+logit link $g(\mu) = \log(\mu/(1-\mu))$ yields logistic regression, which
+remains the most widely used SDM to this day.
+
+Generalised additive models (GAMs) relax the linearity assumption by replacing
+$\beta_k x_{ik}$ with smooth functions $f_k(x_{ik})$ estimated via penalised
+splines. GAMs provide greater flexibility in capturing non-linear species--
+environment relationships and have been shown to outperform GLMs on a range of
+predictive metrics~\cite{elith2009}. However, both GLMs and GAMs treat
+observations as conditionally independent given covariates—an assumption that
+is routinely violated in spatial data due to autocorrelation arising from
+dispersal limitation, unmeasured environmental gradients, and contagious
+population processes.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  >=Stealth,
+  box/.style={rectangle, draw=warmbrown!50, fill=warmbrown!8,
+    rounded corners=3pt, minimum width=2.6cm, minimum height=0.9cm,
+    align=center, font=\small, line width=0.6pt},
+  arrow/.style={->, thick, warmbrown!60, shorten >=2pt, shorten <=2pt}
+]
+\node[box] (desc) at (0,0) {Descriptive\\Pre-1950};
+\node[box] (freq) at (-3.5,-2.5) {Design-based\\Sampling};
+\node[box] (glm)  at (0,-2.5) {GLM / GAM\\1990s};
+\node[box] (ml)   at (3.5,-2.5) {Machine\\Learning};
+\node[box] (hier) at (-1.8,-5) {Hierarchical\\Bayesian};
+\node[box] (integ) at (1.8,-5) {Integrated\\Models};
+\node[box, fill=anugold!12, draw=anugold!70] (dl) at (0,-7.2)
+  {Deep Learning\\2020s};
+
+\draw[arrow] (desc) -- (freq);
+\draw[arrow] (desc) -- (glm);
+\draw[arrow] (desc) -- (ml);
+\draw[arrow] (freq) -- (hier);
+\draw[arrow] (glm)  -- (hier);
+\draw[arrow] (ml)   -- (integ);
+\draw[arrow] (glm)  -- (integ);
+\draw[arrow] (hier) -- (dl);
+\draw[arrow] (integ) -- (dl);
+\end{tikzpicture}
+\caption{Genealogy of statistical methods applied to ecological monitoring.
+Arrows indicate intellectual lineage and methodological generalisation.}
+\label{fig:methods}
+\end{figure}

@@ -1,0 +1,62 @@
+\section{Findings}
+
+\subsection{Measurement Setup}
+
+All measurements were taken with an Audio Precision APx555 analyzer
+(S/N~APX-2024-039, calibration due 12~Dec~2026) connected to the Core~610
+analog output card (Q-Sys COL4, slot~2, Channels~13--16). The Core~610 was
+isolated on a dedicated VLAN (VLAN~42) with no other Q-LAN traffic during the
+measurement window. Dante channels were muted at the transmitter. All
+measurements used A-weighting per IEC~61672-1, 20~Hz--20~kHz bandwidth,
+30-second averaging window.
+
+\begin{table}[H]
+\centering
+\caption{Noise-floor measurements --- Core~610 Output Channels~13--16}
+\medskip
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+& \multicolumn{4}{c}{\textbf{Measured Noise Floor (dBFS, A-weighted)}} \\
+\cmidrule(lr){2-5}
+\textbf{Condition} & \textbf{Ch.\ 13} & \textbf{Ch.\ 14} & \textbf{Ch.\ 15} & \textbf{Ch.\ 16} \\
+\midrule
+FW 9.8.1, AEC loaded, unassigned                          & $-57.8$ & $-58.1$ & $-57.4$ & $-58.6$ \\
+FW 9.8.1, AEC block removed                               & $-74.2$ & $-73.8$ & $-74.1$ & $-73.5$ \\
+\rowcolor{rowstripe}FW 9.8.3 (TB fix applied)             & $-74.5$ & $-74.1$ & $-74.3$ & $-74.0$ \\
+FW 9.8.3, full signal path at nominal gain                & $-75.1$ & $-74.8$ & $-74.9$ & $-74.7$ \\
+\midrule
+\rowcolor{palebg}\textbf{Specification (ADS AUD-047)}   & $\leq -72.0$ & $\leq -72.0$ & $\leq -72.0$ & $\leq -72.0$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Root Cause Confirmation}
+
+The elevated noise floor is caused by an unterminated processing path within the
+AEC block. When the AEC module is loaded into the Q-Sys design but no conference
+zone is bound to it, the internal adaptive-filter taps float to an
+indeterminate state. The resulting residual samples, which would normally be
+subtracted in a converged echo-cancellation path, are injected directly into the
+output-DSP chain as broadband quantization noise. This behavior is consistent
+with QSC TB-2026-06-14 and was independently verified on a second Core~610 unit
+(S/N~C610-2025-0847) in the laboratory.
+
+\subsection{Impact Assessment}
+
+\begin{itemize}[leftmargin=*, nosep, before=\vspace{4pt}, after=\vspace{0pt}]
+  \item The elevated noise floor is audible as a low-level broadband hiss on the
+        secure-conferencing monitor loudspeakers. It does not affect the primary
+        public-address or emergency-announcement paths (Channels~1--12), which
+        remain within specification.
+  \item The noise does \textbf{not} propagate through the Dante or Q-LAN
+        network; it is confined to the analog output stage of the affected
+        channels.
+  \item For classified briefings (the primary use case for the secure-conferencing
+        path), the noise level, while above specification, does not compromise
+        speech intelligibility. STI measurements on the affected channels returned
+        $0.82$ (\textit{Good} to \textit{Excellent} per IEC~60268-16).
+\end{itemize}
+
+% ============================================================
+%  4.0  SYMBOLS \& ABBREVIATIONS
+% ============================================================

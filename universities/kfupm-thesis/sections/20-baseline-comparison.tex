@@ -1,0 +1,48 @@
+\section{Baseline Comparison}
+Three charging strategies are compared over a representative summer weekday: uncoordinated
+(charge-on-arrival), rule-based staggering, and the proposed MPC scheduler. Table~\ref{tab:results}
+summarizes performance across the three evaluation metrics.
+
+\begin{table}[htbp]
+\centering
+\caption{Performance comparison across charging strategies}
+\label{tab:results}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Metric} & \textbf{Uncoordinated} & \textbf{Rule-Based} & \textbf{MPC (Proposed)} \\
+\midrule
+Peak transformer loading (\%) & 118.6 & 102.3 & \textbf{86.1} \\
+Worst-case voltage dev.\ (\%) & 6.9 & 5.1 & \textbf{4.0} \\
+Energy cost (SAR/day) & 1{,}842 & 1{,}705 & \textbf{1{,}610} \\
+Departure SoC target met (\%) & 94.1 & 96.4 & \textbf{98.7} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Relative to the uncoordinated baseline, the MPC scheduler reduces peak transformer loading by
+27.4\% and improves worst-case voltage deviation by 41.8\%, while simultaneously lowering
+energy cost by 12.6\% and improving SoC target satisfaction. This confirms that thermal,
+voltage, and cost objectives can be jointly improved rather than traded off, primarily because
+the receding-horizon formulation shifts flexible load away from the evening peak without
+delaying vehicles past their required departure times.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{scope}
+  \draw[-Latex,thick] (0,0) -- (9.4,0) node[right,font=\small] {Hour of day};
+  \draw[-Latex,thick] (0,0) -- (0,4.4) node[above,font=\small] {Aggregate load (MW)};
+  \foreach \x/\lab in {0/0,2/4,4/8,6/12,8/16,9.4/20} \draw (\x,0) -- (\x,-0.08) node[below,font=\tiny] {\lab};
+  \draw[kfupmslate,thick] plot[smooth] coordinates {(0,0.6)(1.5,0.5)(3,0.4)(4.5,1.6)(5.5,3.9)(6.5,3.6)(7.5,1.2)(9.4,0.7)};
+  \draw[kfupmgold,thick,dashed] plot[smooth] coordinates {(0,0.6)(1.5,0.6)(3,0.7)(4.5,1.4)(5.5,2.5)(6.5,2.7)(7.5,1.6)(9.4,0.9)};
+  \draw[kfupmgreen,thick] plot[smooth] coordinates {(0,0.6)(1.5,0.9)(3,1.3)(4.5,1.7)(5.5,1.9)(6.5,2.0)(7.5,1.8)(9.4,1.1)};
+  \draw[dashed,color=black!40] (0,3.4) -- (9.4,3.4) node[right,font=\tiny,color=black!60] {Transformer rating};
+\end{scope}
+\node[draw=kfupmslate,fill=white,align=left,font=\tiny,inner sep=4pt] at (2.1,3.9)
+  {\textcolor{kfupmslate}{\rule{1em}{1pt}} Uncoordinated\\
+   \textcolor{kfupmgold}{\rule{1em}{1pt}} Rule-based\\
+   \textcolor{kfupmgreen}{\rule{1em}{1pt}} MPC (proposed)};
+\end{tikzpicture}
+\caption{Aggregate feeder loading profile under the three charging strategies}
+\label{fig:loadprofile}
+\end{figure}

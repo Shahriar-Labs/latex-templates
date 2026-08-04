@@ -1,0 +1,83 @@
+\section{Graph-Theoretic Models}
+
+Graph theory provides a natural language for describing the structural properties of distributed systems. The topology of inter-component communication directly influences failure propagation: a failure at a hub node in a scale-free topology can cascade more broadly than a failure in a regular lattice. Ghedini and Ribeiro \cite{ghedini2011} formalize this intuition by treating components as vertices and communication dependencies as edges, then analyzing the percolation properties of the resulting graph.
+
+Our spectral model (Chapter~\ref{ch:model}) extends this line of work by incorporating edge weights that represent the probability of failure propagation, yielding sharper bounds on cascade size than the binary-edge models previously studied.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparison of resilience protocols. Overhead is measured as throughput reduction relative to a non-replicated baseline.}
+\label{tab:comparison}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Protocol} & \textbf{Replicas} & \textbf{Overhead (\%)} & \textbf{Recovery Model} \\
+\midrule
+Paxos (Classic)            & $2f+1$ & 48.3  & Crash           \\{}
+Raft                       & $2f+1$ & 31.7  & Crash           \\{}
+Speculative Paxos          & $2f+1$ & 18.9  & Crash           \\{}
+NRP (this work)            & $f+1$  & 2.7   & Crash-Recovery  \\{}
+Chain Replication          & $f+1$  & 12.4  & Crash           \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+As shown in Table~\ref{tab:comparison}, NRP achieves substantially lower overhead than consensus-based approaches by requiring only $f+1$ replicas rather than $2f+1$, and by avoiding the message complexity of leader election. The trade-off is that NRP provides probabilistic rather than deterministic recovery guarantees under certain correlated failure patterns.
+
+\vspace{12pt}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=2cm,
+  comp/.style={rectangle,draw=nuPurple!70,fill=nuPurple!8,rounded corners=4pt,minimum width=2.8cm,minimum height=0.9cm,align=center,font=\small},
+  mid/.style={rectangle,draw=nuAccent!70,fill=nuAccent!10,rounded corners=4pt,minimum width=3.2cm,minimum height=0.9cm,align=center,font=\small},
+  arrow/.style={->,>=stealth,thick,nuDark!60}
+]
+  \node[comp] (c1) {Service A\\(Primary)};
+  \node[comp,right=of c1] (c2) {Service B\\(Replica)};
+  \node[mid,below=of $(c1)!0.5!(c2)$] (nrp) {NRP Middleware\\(Checkpoint \& Replay)};
+  \node[comp,below=of nrp] (db) {Shared State\\Store};
+
+  \draw[arrow] (c1) -- (c2);
+  \draw[arrow] (c1) -- (nrp);
+  \draw[arrow] (c2) -- (nrp);
+  \draw[arrow] (nrp) -- (db);
+
+  \node[font=\footnotesize,text=nuGray,below=0.3cm of db] {Recovery log \& snapshots};
+\end{tikzpicture}
+\captionof{figure}{Architecture of the Nexa Resilience Protocol. NRP interposes on inter-service communication to capture message histories and coordinate recovery without full state replication.}
+\label{fig:nrp-arch}
+\end{center}
+
+\begin{thebibliography}{99}
+
+\bibitem{lamport2001}
+L.\ Lamport.
+\newblock Paxos made simple.
+\newblock \textit{ACM SIGACT News}, 32(4):51--58, 2001.
+
+\bibitem{ongaro2014}
+D.\ Ongaro and J.\ Ousterhout.
+\newblock In search of an understandable consensus algorithm.
+\newblock In \textit{Proc.\ USENIX ATC}, pages 305--319, 2014.
+
+\bibitem{schneider1990}
+F.\ B.\ Schneider.
+\newblock Implementing fault-tolerant services using the state machine approach: A tutorial.
+\newblock \textit{ACM Computing Surveys}, 22(4):299--319, 1990.
+
+\bibitem{ghedini2011}
+C.\ Ghedini and C.\ H.\ C.\ Ribeiro.
+\newblock Rethinking failure detection in distributed systems through complex networks.
+\newblock In \textit{Proc.\ IEEE NCA}, pages 243--250, 2011.
+
+\bibitem{yuan2014}
+D.\ Yuan, Y.\ Luo, X.\ Zhuang, G.\ R.\ Rodrigues, X.\ Zhao, Y.\ Zhang, P.\ U.\ Jain, and M.\ Stumm.
+\newblock Simple testing can prevent most critical failures.
+\newblock In \textit{Proc.\ USENIX OSDI}, pages 249--265, 2014.
+
+\bibitem{ports2015}
+D.\ R.\ K.\ Ports, J.\ Li, V.\ Liu, N.\ K.\ Sharma, and A.\ Krishnamurthy.
+\newblock Designing distributed systems using approximate synchrony.
+\newblock In \textit{Proc.\ USENIX OSDI}, pages 443--458, 2015.
+
+\end{thebibliography}

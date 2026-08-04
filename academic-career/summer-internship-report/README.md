@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Summer Internship Report LaTeX template — summer internship report LaTeX template. Elegant, compile-tested, editable online at letx.app.**
+**Summer Internship Report LaTeX template — Summer Internship Report. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/academic-career/summer-internship-report)**, with real-time collaboration and one-second compiles.
 
@@ -12,17 +12,16 @@ Edit and compile this template instantly in your browser — no LaTeX install �
 
 ## Features
 - Elegant, modern design
-- Compile-tested (zero errors)
-- Realistic sample content
-- Editable online in your browser
+- Compile-tested
+- Fully editable sample content
 
 ## Use it online (recommended)
 Open **[Summer Internship Report on LetX »](https://letx.app/templates/academic-career/summer-internship-report)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/summer-internship-report
+git clone https://github.com/Shahriar-Labs/summer-internship-report.git
+cd summer-internship-report
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

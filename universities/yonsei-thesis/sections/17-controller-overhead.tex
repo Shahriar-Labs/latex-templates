@@ -1,0 +1,27 @@
+\section{Controller Overhead}
+
+Figure~\ref{fig:overhead} breaks down per-epoch coordinator time between
+forecasting, feedback computation, and assignment. Combined controller
+overhead stays below 1.2\% of the 250\,ms epoch budget across all
+tested loads.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}
+\begin{scope}
+\foreach \name/\val/\col/\pos in {
+  {Assignment}/68/yonseiblue/0,
+  {Forecast}/22/yonseigold/1,
+  {Feedback}/10/softgray/2}
+{
+  \pgfmathsetmacro{\barheight}{\val/10}
+  \draw[fill=\col, draw=none] (\pos*1.6,0) rectangle ++(1.1,\barheight);
+  \node[font=\scriptsize, above] at (\pos*1.6+0.55,\barheight) {\val\%};
+  \node[font=\scriptsize, below, align=center] at (\pos*1.6+0.55,-0.15) {\name};
+}
+\end{scope}
+\draw[->, draw=softgray] (-0.3,0) -- (5.2,0);
+\end{tikzpicture}
+\caption{Share of per-epoch coordinator time by ATS pipeline stage.}
+\label{fig:overhead}
+\end{figure}

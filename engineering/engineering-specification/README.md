@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Engineering Specification Document LaTeX template — "engineering spec template latex". Elegant, compile-tested, editable online at letx.app.**
+**Engineering Specification Document LaTeX template — Engineering Specification Document. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/engineering/engineering-specification)**, with real-time collaboration and one-second compiles.
 
@@ -12,17 +12,16 @@ Edit and compile this template instantly in your browser — no LaTeX install �
 
 ## Features
 - Elegant, modern design
-- Compile-tested (zero errors)
-- Realistic sample content
-- Editable online in your browser
+- Compile-tested
+- Fully editable sample content
 
 ## Use it online (recommended)
 Open **[Engineering Specification Document on LetX »](https://letx.app/templates/engineering/engineering-specification)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/engineering-specification
+git clone https://github.com/Shahriar-Labs/engineering-specification.git
+cd engineering-specification
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

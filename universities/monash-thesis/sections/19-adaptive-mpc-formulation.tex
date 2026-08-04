@@ -1,0 +1,16 @@
+\section{Adaptive MPC Formulation}
+
+At each dispatch step $k$, the controller solves a finite-horizon optimisation over horizon length $N$, minimising expected operating cost subject to power balance, SOC, and ramp constraints:
+
+\begin{equation}
+\min_{\{p_t\}} \; \sum_{t=k}^{k+N-1} \Big( c_t\, p^{\text{grid}}_t + \lambda\, d_t \Big)
+\label{eq:objective}
+\end{equation}
+
+\begin{equation}
+\text{s.t.} \quad \mathrm{SOC}_{t+1} = \mathrm{SOC}_t + \eta\, p^{\text{batt}}_t \,\Delta t, \qquad
+\mathrm{SOC}^{\min}_t \le \mathrm{SOC}_t \le \mathrm{SOC}^{\max}_t
+\label{eq:soc}
+\end{equation}
+
+where $c_t$ is the time-varying import tariff, $d_t$ the incremental battery degradation cost, $\lambda$ a weighting parameter, and $\mathrm{SOC}^{\min}_t$, $\mathrm{SOC}^{\max}_t$ the reserve-adjusted state-of-charge bounds. The key contribution of this thesis is that $\mathrm{SOC}^{\min}_t$ is not fixed but is recomputed at every step as a function of the exponentially weighted forecast-error variance observed over the preceding $W$ steps, tightening the margin only when recent forecasts have proven unreliable.

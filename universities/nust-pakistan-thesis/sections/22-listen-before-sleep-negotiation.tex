@@ -1,0 +1,26 @@
+\section{Listen-Before-Sleep Negotiation}
+Rather than requiring synchronized clocks, each node broadcasts a short \emph{intent frame}
+containing its computed $T_{\text{sleep}}$ immediately before entering sleep. Neighbouring
+nodes and the gateway use this frame opportunistically to adjust their own listen windows,
+bounding the probability of a missed wake event without a shared time base. The negotiation
+sequence is summarized in Table~\ref{tab:negotiation}.
+
+\begin{table}[H]
+\centering
+\caption{Listen-before-sleep negotiation sequence.}
+\label{tab:negotiation}
+\begin{tabularx}{\textwidth}{@{}clX@{}}
+\toprule
+\rowcolor{nustgreen}
+\textcolor{white}{\bfseries Step} & \textcolor{white}{\bfseries Actor} & \textcolor{white}{\bfseries Action} \\
+\midrule
+1 & Node    & Compute $T_{\text{sleep}}$ via Eq.~\ref{eq:sleep}. \\
+\rowcolor{nustmist}
+2 & Node    & Broadcast intent frame (14 bytes) carrying $T_{\text{sleep}}$ and SNR estimate. \\
+3 & Gateway & Cache intent, adjust receive-window schedule for that node. \\
+\rowcolor{nustmist}
+4 & Node    & Enter low-power sleep for $T_{\text{sleep}}$. \\
+5 & Node    & Wake, sample sensor, return to Step~1. \\
+\bottomrule
+\end{tabularx}
+\end{table}

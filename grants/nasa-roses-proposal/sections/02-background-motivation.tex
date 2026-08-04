@@ -1,0 +1,54 @@
+\section{Background \& Motivation}
+Theoretical models suggest that AGN feedback operates via two distinct modes: the ``quasar mode'' (wind-dominated) and the ``radio mode'' (jet-dominated). In the quasar mode, radiation pressure on gas and dust drives high-velocity outflows that evacuate the galaxy's core. In the radio mode, relativistic jets deposit kinetic energy into the circumgalactic and halo gas, suppressing cooling flows. However, the demarcation between these modes is not absolute; many radio-loud sources host powerful winds, suggesting a complex interplay between radiation and jets.
+
+Ultraviolet spectroscopy provides an ideal tool to study these outflows. Absorption lines such as O\,\text{VI} $\lambda$1032, C\,\text{IV} $\lambda$1549, and N\,\text{V} $\lambda$1240 probe the highly ionized, high-velocity gas that carries the bulk of the kinetic energy. Figure~\ref{fig:outflow_profile} shows a simulated absorption profile representing outflowing gas.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        width=0.9\textwidth,
+        height=6.5cm,
+        xlabel={Outflow Velocity $v_{\mathrm{out}}$ ($\mathrm{km\ s^{-1}}$)},
+        ylabel={Normalized Flux},
+        xmin=-6000, xmax=2000,
+        ymin=0.0, ymax=1.4,
+        xtick={-6000,-4000,-2000,0,2000},
+        ytick={0.0,0.5,1.0,1.2},
+        grid=both,
+        grid style={line width=.1pt, draw=gray!10},
+        major grid style={line width=.2pt, draw=gray!30},
+        legend style={at={(0.05,0.05)}, anchor=south west, cells={anchor=west}, font=\small},
+        title={\textbf{\color{nasablue} Representative O\,\text{VI} Absorption Line Profile}}
+      ]
+      % Analytical model profile
+      \addplot[
+        domain=-6000:2000,
+        samples=150,
+        color=nasablue,
+        thick
+      ] { 1.0 - 0.65*exp(-((x+2500)/900)^2) + 0.15*exp(-((x)/250)^2) };
+      \addlegendentry{Best-fit Model Profile}
+
+      % Archival observations coordinates
+      \addplot[
+        only marks,
+        mark=*,
+        mark size=1.5pt,
+        color=slate
+      ] coordinates {
+        (-5800, 1.01) (-5500, 0.98) (-5200, 0.99) (-4900, 0.94) (-4600, 0.93)
+        (-4300, 0.88) (-4000, 0.81) (-3700, 0.72) (-3400, 0.58) (-3100, 0.44)
+        (-2800, 0.38) (-2500, 0.36) (-2200, 0.39) (-1900, 0.47) (-1600, 0.61)
+        (-1300, 0.76) (-1000, 0.88) (-700, 0.94) (-400, 0.99) (-100, 1.11)
+        (200, 1.08) (500, 1.03) (800, 0.99) (1100, 1.00) (1400, 1.01)
+        (1700, 0.99) (2000, 1.00)
+      };
+      \addlegendentry{HST/COS Archival Observations}
+    \end{axis}
+  \end{tikzpicture}
+  \caption{A representative self-contained profile showing a blue-shifted O\,\text{VI} absorption trough centered at $-2500\text{ km s}^{-1}$. The deep blue line shows our photoionization-driven kinematic wind model fitted to high-resolution HST/COS spectroscopy (gray data points).}
+  \label{fig:outflow_profile}
+\end{figure}
+
+By characterizing the absorption depth, width, and velocity offset, we can calculate the column density and kinematics of the outflow. This allows us to quantify the feedback impact of the AGN on the surrounding host galaxy.

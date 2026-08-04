@@ -1,0 +1,22 @@
+\section{System Architecture Overview}
+
+The Nimbus Cloud Platform (NCP) is a multi-tenant cloud infrastructure platform serving enterprise customers across three geographic regions: us-east, eu-west, and ap-southeast. The platform processes approximately 2.8 million API requests per minute at peak load and maintains a 99.95\% uptime SLA for tier-1 customers.
+
+\begin{infobox}
+NCP runs on a containerized microservices architecture orchestrated by the NCP Orchestrator. All production services are deployed across a minimum of three availability zones per region. Database services use active-passive replication with automated failover triggered at 30 seconds of primary unresponsiveness.
+\end{infobox}
+
+\subsection*{Core Production Services}
+
+\begin{tabularx}{\textwidth}{llX}
+\toprule
+\textbf{Service} & \textbf{Port} & \textbf{Description} \\
+\midrule
+ncp-api-gateway       & 8443 & Primary ingress controller; terminates TLS, enforces rate limits, routes requests to backend services. \\
+ncp-auth-service      & 9090 & Identity and access management; OAuth 2.0 / OIDC provider with hardware MFA enforcement. \\
+ncp-database-primary  & 5432 & Managed PostgreSQL 15 cluster; primary write node for all transactional and session data. \\
+ncp-message-queue     & 5672 & Asynchronous message broker; handles event streaming, job dispatch, and dead-letter queues. \\
+ncp-object-store      & 9000 & S3-compatible blob storage for customer assets, database backups, and static content delivery. \\
+ncp-orchestrator      & 6443 & Container orchestration control plane; manages service deployment, autoscaling, and health probes. \\
+\bottomrule
+\end{tabularx}

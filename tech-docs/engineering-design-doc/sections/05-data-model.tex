@@ -1,0 +1,29 @@
+\section{Data Model}
+% ============================================================
+
+\subsection{TiDB Schema}
+
+\begin{lstlisting}[language=SQL]
+CREATE TABLE ledger_events (
+    event_id        CHAR(36)      NOT NULL,
+    merchant_id     VARCHAR(64)   NOT NULL,
+    amount_cents    BIGINT        NOT NULL,
+    currency        CHAR(3)       NOT NULL DEFAULT 'USD',
+    event_type      ENUM('CHARGE','REFUND','PAYOUT') NOT NULL,
+    idempotency_key CHAR(36)      NOT NULL,
+    created_at      DATETIME(6)   NOT NULL,
+    metadata        JSON,
+    PRIMARY KEY (merchant_id, created_at, event_id)  -- composite PK = shard key
+) PARTITION BY HASH(merchant_id) PARTITIONS 128;
+
+CREATE TABLE ledger_outbox (
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    event_id    CHAR(36)    NOT NULL,
+    payload     BLOB        NOT NULL,  -- serialised proto
+    created_at  DATETIME(6) NOT NULL,
+    published   TINYINT(1)  NOT NULL DEFAULT 0,
+    INDEX idx_unpublished (published, created_at)
+);
+\end{lstlisting}
+
+% ============================================================

@@ -1,0 +1,47 @@
+\section{System Architecture}
+Figure~\ref{fig:architecture} shows the high-level architecture of the proposed controller as
+integrated into an existing hybrid microgrid installation. The forecasting module and MPC
+dispatch layer run on the site's existing embedded controller; no additional field hardware is
+required.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+    node distance=0.9cm and 1.4cm,
+    block/.style={rectangle, rounded corners=2pt, draw=uctblue, fill=uctpale,
+                  minimum width=2.6cm, minimum height=1.1cm, align=center,
+                  font=\small},
+    ctrl/.style={rectangle, rounded corners=2pt, draw=uctgold, fill=white,
+                 line width=1pt, minimum width=3.0cm, minimum height=1.1cm,
+                 align=center, font=\small\bfseries},
+    decision/.style={diamond, draw=uctslate, fill=white, aspect=2,
+                      minimum width=2.2cm, align=center, font=\small},
+    every path/.style={-, thick, color=uctslate}
+]
+
+\node[block] (pv) {PV Array};
+\node[block, below=of pv] (batt) {Battery\\Bank};
+\node[block, below=of batt] (diesel) {Diesel\\Generator};
+
+\node[ctrl, right=2.0cm of batt] (mpc) {MPC Dispatch\\Controller};
+
+\node[block, above=of mpc] (forecast) {Irradiance\\Forecast Module};
+\node[block, below=of mpc] (load) {Village\\Load};
+
+\begin{scope}[on background layer]
+\draw[draw=uctslate, dashed, rounded corners=4pt, fill=white]
+  ($(forecast.north west)+(-0.35,0.35)$) rectangle ($(mpc.south east)+(0.35,-0.35)$);
+\end{scope}
+
+\draw[->] (pv.east) -- ++(0.6,0) |- (mpc.west);
+\draw[->] (batt.east) -- (mpc.west);
+\draw[->] (diesel.east) -- ++(0.6,0) |- (mpc.west);
+\draw[->] (forecast.south) -- (mpc.north);
+\draw[->] (mpc.south) -- (load.north);
+\draw[->] (mpc.west) ++(-0.05,0.35) -- ++(-1.9,0) |- (batt.east);
+
+\end{tikzpicture}
+\caption{High-level architecture: the MPC dispatch controller consumes forecast, battery,
+and load state to schedule PV, battery, and diesel generation.}
+\label{fig:architecture}
+\end{figure}

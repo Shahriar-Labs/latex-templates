@@ -1,0 +1,51 @@
+\section{Concept of Operations (CONOPS)}
+
+\subsection{Operational Scenario}
+A forward operating base (FOB) perimeter is protected by a layered detection ring comprising ground-based radar, electro-optical/infrared (EO/IR) cueing sensors, and passive RF direction-finding (RF-DF) arrays. Upon detection of an inbound Group 1--3 UAS track, sensor data is fused at the C2SF node, correlated against a known-friendly track database, and presented to the engagement authority. Upon authorization, the system cues the appropriate non-kinetic (RF/EW) or kinetic effector based on range, threat classification, and collateral-effect constraints, then performs battle-damage assessment via continued sensor tracking.
+
+\subsection{CONOPS Diagram}
+Figure~\ref{fig:conops} depicts the notional detect-track-identify-engage-assess kill chain protecting the FOB perimeter.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=8mm and 10mm,
+  box/.style={draw=accent, fill=accentlight, rounded corners=2pt, align=center,
+              minimum height=1.05cm, text width=2.35cm, font=\small, thick},
+  asset/.style={draw=accent2, fill=white, rounded corners=2pt, align=center,
+              minimum height=1.0cm, text width=2.6cm, font=\small, thick},
+  arr/.style={-{Latex[length=2.2mm]}, thick, color=accent}
+]
+\node[box] (detect) {Detect\\Radar / EO-IR / RF-DF};
+\node[box, right=of detect] (track) {Track\\Multi-Sensor Fusion};
+\node[box, right=of track] (id) {Identify\\Friend/Foe Correlation};
+\node[box, right=of id] (engage) {Engage\\RF / EW / Kinetic};
+\node[box, right=of engage] (assess) {Assess\\Battle Damage};
+
+\draw[arr] (detect) -- (track);
+\draw[arr] (track) -- (id);
+\draw[arr] (id) -- (engage);
+\draw[arr] (engage) -- (assess);
+
+\node[asset, below=14mm of id] (base) {Protected Asset:\\Forward Operating Base};
+\node[box, below=14mm of detect] (threat) {Threat Track:\\Group 1--3 UAS};
+
+\draw[arr, color=accent2] (threat) -- (detect);
+\draw[arr, dashed] (base.north) -- (id.south);
+\draw[arr, dashed] (assess) -- ++(0,-14mm) -| (base.east);
+\end{tikzpicture}%
+}
+\caption{Layered C-UAS engagement kill chain and CONOPS overview.}
+\label{fig:conops}
+\end{figure}
+
+\begin{noticebox}
+\small\textbf{Engagement authority remains with a human operator at all points in the kill chain}; no fully autonomous lethal engagement is proposed under this architecture, consistent with DoD Directive 3000.09.
+\end{noticebox}
+
+\clearpage
+
+% =====================================================================
+% 3. SYSTEM REQUIREMENTS
+% =====================================================================

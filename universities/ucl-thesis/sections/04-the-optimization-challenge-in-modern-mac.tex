@@ -1,0 +1,29 @@
+\section{The Optimization Challenge in Modern Machine Learning}
+
+The remarkable progress of machine learning over the past decade — from image recognition
+\cite{krizhevsky2012} and natural language understanding \cite{vaswani2017} to protein structure
+prediction \cite{jumper2021} — rests on a deceptively simple foundation: we train models by
+minimizing a loss function. Yet the loss landscapes encountered in practice are anything but
+simple. They are non-convex, high-dimensional, and riddled with saddle points, flat regions, and
+sharp minima that generalize in profoundly different ways.
+
+Consider a typical deep neural network with $d$ parameters, trained on $n$ samples by minimizing
+an empirical risk:
+\begin{equation}
+  \mathcal{L}(\theta) = \frac{1}{n}\sum_{i=1}^{n} \ell(f(x_i;\theta),\, y_i),
+  \label{eq:erm}
+\end{equation}
+where $\theta \in \mathbb{R}^d$, $d$ can range from $10^6$ to $10^{11}$, and $\ell$ is a
+non-convex loss such as cross-entropy. Computing the full gradient $\nabla\mathcal{L}(\theta)$
+at each iteration is computationally prohibitive, so we resort to stochastic estimates computed
+from a minibatch $\mathcal{B}_t$ of size $b \ll n$:
+\begin{equation}
+  g_t = \frac{1}{b}\sum_{i \in \mathcal{B}_t} \nabla\ell(f(x_i;\theta_t),\, y_i).
+  \label{eq:sg}
+\end{equation}
+
+The canonical stochastic gradient descent (SGD) update \cite{robbins1951} is then
+$\theta_{t+1} = \theta_t - \eta_t g_t$, where $\eta_t$ is a learning rate. SGD is theoretically
+well-understood and converges to a stationary point under mild conditions. In practice, however,
+raw SGD converges slowly on problems with ill-conditioned curvature — precisely the regime
+occupied by deep networks \cite{goodfellow2016}.

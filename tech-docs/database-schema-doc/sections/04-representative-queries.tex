@@ -1,0 +1,78 @@
+\section{Representative Queries}
+
+\begin{minipage}{0.48\textwidth}
+  \begin{tcolorbox}[colback=bglight,colframe=accent!40,sharp corners,boxrule=0.3pt,
+    left=2mm,right=2mm,top=1.5mm,bottom=1.5mm,before skip=1pt,after skip=0pt]
+    {\fontsize{6.5}{8}\selectfont\color{primary}\textbf{Active listings}}\\[0.5pt]
+    {\fontsize{5.5}{7}\selectfont\ttfamily
+      SELECT m.store\_name, p.title, p.base\_price\_cents,\\
+      \quad i.quantity\_available\\
+      \quad FROM products p\\
+      \quad JOIN merchants m ON m.id=p.merchant\_id\\
+      \quad JOIN inventory i ON i.product\_id=p.id\\
+      \quad WHERE p.deleted\_at IS NULL\\
+      \qquad AND m.status=`active'\\
+      \qquad AND i.quantity\_available>0\\
+      \quad ORDER BY p.created\_at DESC LIMIT 50;
+    }
+  \end{tcolorbox}
+\end{minipage}
+\par
+\begin{minipage}{0.48\textwidth}
+  \begin{tcolorbox}[colback=bglight,colframe=accent!40,sharp corners,boxrule=0.3pt,
+    left=2mm,right=2mm,top=1.5mm,bottom=1.5mm,before skip=1pt,after skip=0pt]
+    {\fontsize{6.5}{8}\selectfont\color{primary}\textbf{Daily revenue (30d)}}\\[0.5pt]
+    {\fontsize{5.5}{7}\selectfont\ttfamily
+      SELECT DATE(captured\_at) AS day,\\
+      \quad COUNT(*) AS txn\_count,\\
+      \quad SUM(amount\_cents) AS gross,\\
+      \quad SUM(platform\_fee\_cents) AS revenue\\
+      \quad FROM transactions\\
+      \quad WHERE status=`captured'\\
+      \qquad AND captured\_at>=now()-INTERVAL `30d'\\
+      \quad GROUP BY day ORDER BY day DESC;
+    }
+  \end{tcolorbox}
+\end{minipage}
+\par
+
+\vspace{2pt}
+
+\begin{minipage}{0.48\textwidth}
+  \begin{tcolorbox}[colback=bglight,colframe=accent!40,sharp corners,boxrule=0.3pt,
+    left=2mm,right=2mm,top=1.5mm,bottom=1.5mm,before skip=1pt,after skip=0pt]
+    {\fontsize{6.5}{8}\selectfont\color{primary}\textbf{Low-stock alert}}\\[0.5pt]
+    {\fontsize{5.5}{7}\selectfont\ttfamily
+      SELECT p.title, i.sku,\\
+      \quad i.quantity\_available, i.low\_stock\_threshold\\
+      \quad FROM inventory i\\
+      \quad JOIN products p ON p.id=i.product\_id\\
+      \quad WHERE i.quantity\_available\\
+      \qquad <=i.low\_stock\_threshold\\
+      \qquad AND p.deleted\_at IS NULL\\
+      \quad ORDER BY i.quantity\_available ASC;
+    }
+  \end{tcolorbox}
+\end{minipage}
+\par
+\begin{minipage}{0.48\textwidth}
+  \begin{tcolorbox}[colback=secondary!6,colframe=secondary!50,sharp corners,boxrule=0.4pt,
+    left=2mm,right=2mm,top=1.5mm,bottom=1.5mm,before skip=1pt,after skip=0pt]
+    {\fontsize{6.5}{8}\selectfont\color{primary}\textbf{Migration v2.4.1}}
+    \begin{itemize}
+      \item \texttt{inventory.low\_stock\_threshold} added (default 5).
+      \item \texttt{provider\_txn\_id} made nullable; partial unique index.
+      \item GIN trigram index on \texttt{products.title} (pg\_trgm).
+      \item All timestamps migrated to \texttt{TIMESTAMPTZ} in v2.3.0.
+      \item Monthly partitioning for \texttt{customers} and \texttt{orders}.
+    \end{itemize}
+  \end{tcolorbox}
+\end{minipage}
+\par
+
+\vfill
+\begin{center}
+  {\fontsize{6.5}{8}\selectfont\color{accent}
+    Nexa Inc. \textbar{} Internal Documentation \textbar{} Confidential \textbar{} \today
+  }
+\end{center}

@@ -1,0 +1,41 @@
+\section{Context \& Scope}
+% ============================================================
+
+\begin{contextbox}
+\textbf{Problem.}\ The current single-ledger Postgres monolith cannot sustain
+the projected 40$\times$ write throughput required for the 2026 Stripe-level
+merchant-acquiring rollout. P99 write latency breached 800\,ms during the Q3
+Black Friday stress test. This document proposes replacing the hot-path write
+layer with a partitioned, event-sourced ledger backed by Apache Kafka and a
+TiDB-distributed storage tier.
+
+\vspace{4pt}
+\textbf{Scope.}\ Covers the \icode{ledger-write-service}, \icode{ledger-query-service},
+Kafka topic schema, TiDB shard strategy, and the zero-downtime migration plan.
+Out of scope: fraud-scoring pipeline, merchant portal UI, settlement batch jobs.
+\end{contextbox}
+
+\vspace{6pt}
+
+\textbf{Background.}\ Stripe's public post-mortem (2024) attributes 68\,\% of
+payment-latency incidents to single-region database serialisation under high
+concurrency. Our current architecture mirrors this fragility:\ one
+\icode{payments\_ledger} table with 3.2\,B rows, 14 secondary indexes, and
+no horizontal sharding. The re-architecture targets:
+
+\begin{itemize}
+  \item Sub-50\,ms P99 write latency at 50\,k TPS sustained.
+  \item Idempotent, exactly-once debit/credit semantics via outbox pattern.
+  \item GDPR-compliant PII isolation per merchant shard.
+  \item RPO $\leq$ 1\,s, RTO $\leq$ 30\,s in a region failover.
+\end{itemize}
+
+\vspace{4pt}
+
+\begin{warnbox}[Decision Required by 2026-01-20]
+TiDB vs.\ CockroachDB vendor choice is not yet final.
+This doc assumes TiDB; \S11 covers CockroachDB as the primary alternative.
+The infra cost delta is \$180k/yr. Pending CFO sign-off.
+\end{warnbox}
+
+% ============================================================

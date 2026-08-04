@@ -1,0 +1,14 @@
+\section{Motivation}
+
+Real-time perception workloads --- object detection on wearable cameras, keyword spotting on smart speakers, structural-health sensor fusion on bridges --- are increasingly deployed on edge devices with limited compute, memory, and battery capacity. Running an entire deep neural network locally often violates latency or energy budgets; offloading the entire computation to the cloud introduces network latency and raises privacy concerns. The common compromise, \emph{split computing}, partitions a network's layers so that early layers run on-device and later layers run on a nearby edge server or cloud node, with intermediate activations transmitted over the network.
+
+Existing split-computing systems, including the widely cited \textsc{Synapse-RT} scheduler, choose a partition point once at deployment time or re-evaluate it on a coarse timescale (seconds to minutes). This is a poor fit for edge environments where available bandwidth and device load can change within tens of milliseconds, for example when a user starts a video call on a shared Wi-Fi network. A static or slowly-adapting partition point therefore frequently sits far from optimal, producing missed latency service-level objectives (SLOs) or unnecessary battery drain.
+
+\begin{contribbox}[Key Contributions]
+\begin{enumerate}[leftmargin=1.4em,itemsep=2pt]
+  \item A decision-graph formulation of neural network partitioning that supports sub-5\,ms re-evaluation of the partition point at inference time.
+  \item An online reinforcement-learning scheduling policy, ANRS, trained with a shadow-mode replay buffer that requires no offline pretraining phase.
+  \item An open evaluation testbed, \textsc{Nimbus}, simulating 128 heterogeneous edge nodes under realistic bandwidth and battery traces.
+  \item An empirical comparison against static, greedy, and learned baselines across four representative inference workloads.
+\end{enumerate}
+\end{contribbox}

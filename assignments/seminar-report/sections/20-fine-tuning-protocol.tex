@@ -1,0 +1,43 @@
+\section{Fine-Tuning Protocol}
+
+All models are fine-tuned using the HuggingFace Transformers library with a consistent hyperparameter configuration. Listing~\ref{lst:finetune} shows the core training loop.
+
+\begin{lstlisting}[
+  language=Python,
+  caption={Fine-tuning script for transformer models on code-mixed sentiment data.},
+  label={lst:finetune},
+]
+from transformers import AutoModelForSequenceClassification
+from transformers import Trainer, TrainingArguments
+
+model = AutoModelForSequenceClassification.from_pretrained(
+    model_name, num_labels=3
+)
+
+training_args = TrainingArguments(
+    output_dir="./results",
+    num_train_epochs=5,
+    per_device_train_batch_size=32,
+    per_device_eval_batch_size=64,
+    learning_rate=2e-5,
+    warmup_steps=500,
+    weight_decay=0.01,
+    evaluation_strategy="epoch",
+    save_strategy="epoch",
+    load_best_model_at_end=True,
+    metric_for_best_model="f1",
+    logging_dir="./logs",
+)
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_data,
+    eval_dataset=val_data,
+    compute_metrics=compute_metrics_fn,
+)
+
+trainer.train()
+\end{lstlisting}
+
+The function \texttt{compute\_metrics\_fn} returns accuracy, macro-F1, and weighted-F1 scores computed via scikit-learn.

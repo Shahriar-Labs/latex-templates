@@ -1,0 +1,158 @@
+% Packages, colours and custom commands for this template.
+% ============================================================
+%  Clinical Trial Protocol Template — Phase II Oncology
+%  Edit and compile online at https://letx.app
+%  Engine: pdflatex  |  Build: latexmk -pdf main.tex
+% ============================================================
+
+\usepackage{amsmath}
+
+% ── Core layout ─────────────────────────────────────────────
+\usepackage[
+  top=2.4cm, bottom=2.6cm,
+  left=2.6cm, right=2.6cm,
+  headheight=16pt
+]{geometry}
+
+% ── Font: Lato (sans) ────────────────────────────────────────
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{microtype}
+
+% ── Color ───────────────────────────────────────────────────
+\usepackage[table]{xcolor}
+\definecolor{accent}{HTML}{1D4E89}
+\definecolor{accentlt}{HTML}{D6E4F0}
+\definecolor{neutral}{HTML}{4A5568}
+\definecolor{rulegray}{HTML}{B0BEC5}
+\definecolor{pagebg}{HTML}{FAFBFC}
+\definecolor{safetyred}{HTML}{C0392B}
+\definecolor{safetylt}{HTML}{FDEDEC}
+
+% ── Tables ──────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{makecell}
+\renewcommand{\arraystretch}{1.35}
+\setlength{\tabcolsep}{6pt}
+
+% ── Lists ───────────────────────────────────────────────────
+\usepackage{enumitem}
+\setlist[itemize]{leftmargin=1.4em,itemsep=2pt,parsep=0pt,topsep=3pt}
+\setlist[enumerate]{leftmargin=1.6em,itemsep=2pt,parsep=0pt,topsep=3pt}
+
+% ── Spacing ─────────────────────────────────────────────────
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\usepackage{setspace}
+\setstretch{1.10}
+
+% ── Section styling ─────────────────────────────────────────
+\usepackage{titlesec}
+
+\titleformat{\section}
+  {\large\bfseries\color{accent}}
+  {\thesection}{0.7em}{}[{\color{rulegray}\titlerule[0.5pt]}]
+\titlespacing{\section}{0pt}{14pt}{6pt}
+
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{neutral}}
+  {\thesubsection}{0.6em}{}
+\titlespacing{\subsection}{0pt}{10pt}{4pt}
+
+\titleformat{\subsubsection}
+  {\normalsize\itshape\color{neutral}}
+  {\thesubsubsection}{0.5em}{}
+\titlespacing{\subsubsection}{0pt}{7pt}{3pt}
+
+% ── Header / Footer ─────────────────────────────────────────
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyhead[L]{\small\color{neutral}\textbf{Protocol No.\ VNX-NSCLC-201}}
+\fancyhead[R]{\small\color{neutral}CONFIDENTIAL}
+\fancyfoot[L]{\small\color{neutral}Version 2.1 --- 10 June 2025}
+\fancyfoot[C]{\small\color{neutral}Page \thepage\ of \pageref{LastPage}}
+\fancyfoot[R]{\small\color{neutral}Vantrix Oncology, Inc.}
+
+% ── tcolorbox ───────────────────────────────────────────────
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable, most}
+
+\tcbset{
+  infobox/.style={
+    enhanced, breakable,
+    colback=accentlt, colframe=accent, boxrule=0.6pt, arc=3pt,
+    left=8pt, right=8pt, top=5pt, bottom=5pt,
+    fonttitle=\bfseries\color{accent},
+    attach boxed title to top left={yshift=-2mm, xshift=6mm},
+    boxed title style={colback=accent, colframe=accent, arc=2pt,
+                        boxrule=0pt, left=4pt, right=4pt}
+  }
+}
+
+\tcbset{
+  safebox/.style={
+    enhanced, breakable,
+    colback=safetylt, colframe=safetyred, boxrule=0.8pt, arc=3pt,
+    left=8pt, right=8pt, top=5pt, bottom=5pt,
+    fonttitle=\bfseries\color{safetyred},
+    attach boxed title to top left={yshift=-2mm, xshift=6mm},
+    boxed title style={colback=safetyred, colframe=safetyred, arc=2pt,
+                        boxrule=0pt, left=4pt, right=4pt}
+  }
+}
+
+% ── Icons ───────────────────────────────────────────────────
+\usepackage{fontawesome5}
+
+% ── Hyperref ────────────────────────────────────────────────
+\usepackage[
+  colorlinks=true,
+  linkcolor=accent,
+  urlcolor=accent,
+  citecolor=accent,
+  pdftitle={Clinical Trial Protocol VNX-NSCLC-201},
+  pdfauthor={Vantrix Oncology Inc.},
+  pdfsubject={Phase II Clinical Trial Protocol}
+]{hyperref}
+
+% ── TikZ ────────────────────────────────────────────────────
+\usepackage{tikz}
+\usetikzlibrary{positioning,calc}
+
+% ── Page background tint ────────────────────────────────────
+\usepackage{eso-pic}
+\AddToShipoutPictureBG{%
+  \AtPageLowerLeft{%
+    \color{pagebg}\rule{\paperwidth}{\paperheight}%
+  }%
+}
+
+% ── Helper macros ───────────────────────────────────────────
+\newcommand{\xmark}{\textbf{X}}
+\newcommand{\smark}{\textcolor{neutral}{$\circ$}}
+
+\newenvironment{protocolnote}[1]{%
+  \begin{tcolorbox}[infobox, title={#1}]
+}{%
+  \end{tcolorbox}
+}
+
+\newenvironment{safetynote}[1]{%
+  \begin{tcolorbox}[safebox, title={#1}]
+}{%
+  \end{tcolorbox}
+}
+
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{2}
+
+% ════════════════════════════════════════════════════════════

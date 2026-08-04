@@ -1,0 +1,16 @@
+\section{The EdgeFlow Framework}
+
+This dissertation presents EdgeFlow, a hierarchical resource management framework that combines predictive modeling with adaptive online optimization. The core insight is that edge resource allocation can be decomposed into two coupled subproblems operating at different timescales and spatial granularities.
+
+At the global level, a centralized planner periodically solves a convex optimization problem to determine the allocation of computational and network resources across edge nodes. The objective function minimizes a weighted sum of latency and energy consumption subject to capacity constraints:
+
+\begin{equation}
+\min_{\mathbf{x}} \sum_{i=1}^{N} \Bigl( \alpha \cdot L_i(x_i) + \beta \cdot E_i(x_i) \Bigr) \quad \text{s.t.} \quad \sum_{i=1}^{N} x_i \leq C,\;\; x_i \geq 0
+\label{eq:global_opt}
+\end{equation}
+
+where $x_i$ denotes the resource allocation to edge node $i$, $L_i(\cdot)$ models latency as a function of allocation, $E_i(\cdot)$ captures energy consumption, and $\alpha$, $\beta$ are tunable weights. At the local level, each edge node employs a lightweight reinforcement learning agent that adapts to fine-grained workload fluctuations using the global allocation as a soft guideline.
+
+\begin{keyconcept}{Key Insight: Hierarchical Decomposition}
+EdgeFlow separates the allocation problem into a slow-timescale global optimization (seconds to minutes) and a fast-timescale local adaptation (milliseconds). This decomposition is both theoretically justified---the convexity of the global problem ensures local deviations remain bounded---and practically effective across diverse edge workloads.
+\end{keyconcept}

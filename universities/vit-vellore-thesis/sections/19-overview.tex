@@ -1,0 +1,38 @@
+\section{Overview}
+FedGuard follows the standard federated round structure — broadcast, local training,
+upload, aggregate — but modifies two stages: client weighting during aggregation, and
+gradient perturbation before upload. Figure~\ref{fig:architecture} shows the resulting
+end-to-end pipeline across three tiers: edge gateways, a regional aggregator, and the
+central coordination server.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=10mm and 14mm,
+  box/.style={draw=vitnavy,thick,rounded corners=2pt,fill=vitpale,minimum width=2.5cm,minimum height=1cm,align=center,font=\sffamily\small},
+  agg/.style={draw=vitteal,thick,rounded corners=2pt,fill=white,minimum width=3cm,minimum height=1.1cm,align=center,font=\sffamily\small\bfseries},
+  cloud/.style={draw=vitgold,thick,rounded corners=4pt,fill=vitnavy,text=white,minimum width=3.4cm,minimum height=1.2cm,align=center,font=\sffamily\small\bfseries},
+  arr/.style={-Latex,thick,vitgray}
+]
+  \node[box] (e1) {Edge Gateway 1\\\footnotesize vibration, temp};
+  \node[box, below=of e1] (e2) {Edge Gateway 2\\\footnotesize vibration, temp};
+  \node[box, below=of e2] (e3) {Edge Gateway $n$\\\footnotesize vibration, temp};
+
+  \node[agg, right=of e2, xshift=8mm] (agg) {Regional Aggregator\\\footnotesize weighted averaging};
+
+  \node[cloud, right=of agg, xshift=10mm] (cloud) {Central Coordinator\\\footnotesize FedGuard global model};
+
+  \draw[arr] (e1) -- (agg);
+  \draw[arr] (e2) -- (agg);
+  \draw[arr] (e3) -- (agg);
+  \draw[arr, decorate, decoration={pre length=2pt,post length=2pt}] (agg) -- node[above,font=\scriptsize\sffamily,text=vitgray]{DP-noised updates} (cloud);
+  \draw[arr, vitgold] (cloud.north) to[out=150,in=30] node[above,font=\scriptsize\sffamily,text=vitgray]{global model broadcast} (e1.north);
+
+  \begin{scope}[on background layer]
+    \node[draw=vitgray,dashed,rounded corners=3pt,fit=(e1)(e2)(e3),inner sep=6pt,label={[font=\scriptsize\sffamily,text=vitgray]above:Factory Floor}] {};
+  \end{scope}
+\end{tikzpicture}
+\caption{Three-tier FedGuard deployment: edge gateways, regional aggregator, and
+central coordinator.}
+\label{fig:architecture}
+\end{figure}

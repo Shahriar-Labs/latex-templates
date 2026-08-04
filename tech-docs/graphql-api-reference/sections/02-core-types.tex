@@ -1,0 +1,51 @@
+\section*{Core Types}
+
+\subsection*{Project and Task}
+
+\begin{schemabox}[title=Project \& Task Type Definitions]
+type Project \{\\
+\quad id:           ID!\\
+\quad name:         String!\\
+\quad slug:         String!\\
+\quad description:  String\\
+\quad team:         Team!\\
+\quad tasks(\\
+\qquad first:   Int\\
+\qquad after:   String\\
+\qquad status:  TaskStatus\\
+\quad ):            TaskConnection!\\
+\quad createdAt:    DateTime!\\
+\quad updatedAt:    DateTime!\\
+\quad archivedAt:   DateTime\\
+\}\\[2pt]
+enum TaskStatus \{ BACKLOG, TODO, IN\_PROGRESS, IN\_REVIEW, DONE, CANCELLED \}\\[2pt]
+enum TaskPriority \{ P0, P1, P2, P3 \}\\[2pt]
+type Task \{\\
+\quad id:            ID!\\
+\quad title:         String!\\
+\quad description:   String\\
+\quad status:        TaskStatus!\\
+\quad priority:      TaskPriority!\\
+\quad assignee:      User\\
+\quad project:       Project!\\
+\quad labels:        [String!]!\\
+\quad dueDate:       Date\\
+\quad createdAt:     DateTime!\\
+\quad updatedAt:     DateTime!\\
+\}
+\end{schemabox}
+
+\subsection*{User, Team, and Connections}
+
+\begin{schemabox}[title=Supporting Types]
+type User \{ id: ID!,  username: String!,  email: String!,  avatarUrl: String,  role: Role! \}\\[1pt]
+enum Role \{ ADMIN, MEMBER, VIEWER \}\\[1pt]
+type Team \{ id: ID!, name: String!, description: String, members(first: Int, after: String): UserConnection!, projects(first: Int, after: String): ProjectConnection!, createdAt: DateTime! \}\\[1pt]
+type PageInfo \{ endCursor: String, hasNextPage: Boolean!, hasPreviousPage: Boolean!, startCursor: String \}\\[1pt]
+type TaskConnection     \{ edges: [TaskEdge!]!,     pageInfo: PageInfo!, totalCount: Int! \}\\[1pt]
+type TaskEdge           \{ node: Task!,     cursor: String! \}\\[1pt]
+type UserConnection     \{ edges: [UserEdge!]!,     pageInfo: PageInfo!, totalCount: Int! \}\\[1pt]
+type UserEdge           \{ node: User!,     cursor: String! \}\\[1pt]
+type ProjectConnection  \{ edges: [ProjectEdge!]!,  pageInfo: PageInfo!, totalCount: Int! \}\\[1pt]
+type ProjectEdge        \{ node: Project!,  cursor: String! \}
+\end{schemabox}

@@ -1,0 +1,33 @@
+\section{Forecast-Aware and Feedback Scheduling}
+
+A second line of work introduces predictive signals into the scheduling
+loop, typically using time-series models to anticipate node load several
+seconds ahead. These systems reduce reactive thrashing but often incur
+forecasting overhead that is difficult to justify on resource-constrained
+edge coordinators. Feedback-control approaches, drawing on classical PID
+and bang-bang controllers, instead adjust task priority reactively; they
+are cheap to run but can oscillate under correlated failures.
+
+Table~\ref{tab:related} summarizes representative approaches along three
+axes relevant to this thesis: tail-latency awareness, forecasting cost,
+and failure-injection stability.
+
+\begin{table}[h]
+\centering
+\caption{Comparison of representative edge scheduling approaches.}
+\label{tab:related}
+\begin{tabularx}{\textwidth}{@{}l X c c@{}}
+\toprule
+\rowcolor{yonseiblue}
+\textcolor{white}{\textbf{Approach}} & \textcolor{white}{\textbf{Strategy}} & \textcolor{white}{\textbf{Forecast Cost}} & \textcolor{white}{\textbf{Failure Stability}}\\
+\midrule
+Round-robin & Uniform task rotation across nodes & None & Low\\
+Static priority & Fixed class-based queue ordering & None & Medium\\
+\rowcolor{paletint}
+Predictive LSTM & Deep forecast of per-node load & High & Medium\\
+PID feedback & Reactive priority correction & Low & Low--Medium\\
+\rowcolor{paletint}
+\textbf{ATS (this work)} & Lightweight forecast + bounded feedback & \textbf{Low} & \textbf{High}\\
+\bottomrule
+\end{tabularx}
+\end{table}

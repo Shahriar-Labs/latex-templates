@@ -1,0 +1,53 @@
+\section*{Mutations}
+
+Every mutation returns the affected object for single-round-trip reads. Input types follow the naming convention \texttt{*Input} with a corresponding \texttt{*Payload} return type.
+
+\vspace{2pt}
+\begin{schemabox}[title=Mutation Root \& Input Types (Partial)]
+type Mutation \{\\
+\quad createProject(input: CreateProjectInput!): CreateProjectPayload!\\
+\quad updateProject(input: UpdateProjectInput!): UpdateProjectPayload!\\
+\quad archiveProject(id: ID!): ArchiveProjectPayload!\\
+\quad createTask(input: CreateTaskInput!): CreateTaskPayload!\\
+\quad updateTask(input: UpdateTaskInput!): UpdateTaskPayload!\\
+\quad setTaskStatus(id: ID!, status: TaskStatus!): SetTaskStatusPayload!\\
+\}\\[2pt]
+input CreateProjectInput \{ name: String!, teamId: ID!, description: String \}\\
+type CreateProjectPayload \{ project: Project!, clientMutationId: String \}\\[2pt]
+input CreateTaskInput \{ title: String!, projectId: ID!, status: TaskStatus, priority: TaskPriority, assigneeId: ID, labels: [String!], dueDate: Date \}\\
+type CreateTaskPayload \{ task: Task!, clientMutationId: String \}\\[2pt]
+input UpdateTaskInput \{ id: ID!, title: String, description: String, status: TaskStatus, priority: TaskPriority, assigneeId: ID, labels: [String!], dueDate: Date \}\\
+type UpdateTaskPayload \{ task: Task!, clientMutationId: String \}
+\end{schemabox}
+
+\subsection*{Create a Task}
+
+\vspace{2pt}
+\begin{querybox}[title=Mutation: Create Task]
+mutation CreateTask(\$input: CreateTaskInput!) \{\\
+\quad createTask(input: \$input) \{\\
+\qquad task \{ id, title, status, priority, project \{ slug \}, assignee \{ username \} \}\\
+\qquad clientMutationId\\
+\quad \}\\
+\}\\[2pt]
+Variables: \{ "input": \{ "title": "Deploy Vertex auth service to staging", "projectId": "UHJvamVjdC04MjE=", "priority": "P0", "labels": ["infra","auth"], "dueDate": "2026-08-04" \} \}
+\end{querybox}
+
+\vspace{4pt}
+
+\begin{responsebox}[title=Response]
+\{ "data": \{ "createTask": \{ "task": \{ "id": "VGFzay0zMTk=", "title": "Deploy Vertex auth service to staging", "status": "TODO", "priority": "P0", "project": \{ "slug": "meridian-migration" \}, "assignee": null \}, "clientMutationId": null \} \} \}
+\end{responsebox}
+
+\subsection*{Bulk Status Update with Aliases}
+
+Use GraphQL aliases to run multiple mutations in one request.
+
+\vspace{2pt}
+\begin{querybox}[title=Mutation: Bulk Status Update via Aliases]
+mutation BulkStatusUpdate \{\\
+\quad t301: setTaskStatus(id: "VGFzay0zMDE=", status: DONE)       \{ task \{ id, status \} \}\\
+\quad t302: setTaskStatus(id: "VGFzay0zMDI=", status: IN\_REVIEW)  \{ task \{ id, status \} \}\\
+\quad t303: setTaskStatus(id: "VGFzay0zMDM=", status: IN\_PROGRESS) \{ task \{ id, status \} \}\\
+\}
+\end{querybox}

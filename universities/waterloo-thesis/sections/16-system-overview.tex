@@ -1,0 +1,17 @@
+\section{System Overview}
+
+EdgeSched is organized as a pipeline of three stages:
+
+\begin{tcolorbox}[colback=accentSlate!8,colframe=accentSlate!50,title=\textbf{Stage 1: Profiling},coltitle=white,colbacktitle=accentSlate]
+Lightweight agents on each edge node periodically measure resource availability (CPU, memory, GPU, network) and report a compact \textbf{NodeCapability} vector to the scheduler. This profiling runs with \textless 0.1\% CPU overhead on production nodes.
+\end{tcolorbox}
+
+\vspace{8pt}
+\begin{tcolorbox}[colback=accentSlate!8,colframe=accentSlate!50,title=\textbf{Stage 2: Workload Classification},coltitle=white,colbacktitle=accentSlate]
+Incoming workloads are classified by type using a lightweight classifier trained on historical traces. The classifier outputs a resource demand vector \(\mathbf{r}\) and a type label \(\tau\) used for IAM lookup.
+\end{tcolorbox}
+
+\vspace{8pt}
+\begin{tcolorbox}[colback=accentSlate!8,colframe=accentSlate!50,title=\textbf{Stage 3: Placement Optimization},coltitle=white,colbacktitle=accentSlate]
+A constraint-solving layer assigns workloads to nodes, maximizing utilization while respecting capacity limits, SLA constraints, and IAM-based colocation penalties. The solver uses an online greedy algorithm with worst-case guarantee \(O(\log n)\).
+\end{tcolorbox}

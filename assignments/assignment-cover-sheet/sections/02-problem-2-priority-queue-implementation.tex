@@ -1,0 +1,47 @@
+\section{Problem 2:\ Priority Queue Implementation}
+
+The benchmark harness uses the Python implementation shown in Listing~\ref{lst:dijkstra}.
+The key optimisation is \emph{lazy deletion}: rather than implementing a full
+\texttt{decrease\_key} operation, stale heap entries are silently skipped when popped.
+
+\begin{lstlisting}[
+  language=Python,
+  caption={Dijkstra's algorithm with binary heap and lazy deletion.},
+  label={lst:dijkstra}
+]
+import heapq
+from collections.abc import Mapping
+
+def dijkstra(graph: Mapping, source: str) -> dict[str, float]:
+    """Compute single-source shortest paths via binary heap.
+
+    Args:
+        graph: adjacency map {vertex: [(neighbor, weight), ...]}
+        source: starting vertex label
+
+    Returns:
+        distance map {vertex: shortest_path_length}
+    """
+    dist = {v: float('inf') for v in graph}
+    dist[source] = 0.0
+    pq: list[tuple[float, str]] = [(0.0, source)]
+
+    while pq:
+        d, u = heapq.heappop(pq)
+        if d > dist[u]:          # stale entry -- skip
+            continue
+        for v, w in graph[u]:
+            nd = d + w
+            if nd < dist[v]:
+                dist[v] = nd
+                heapq.heappush(pq, (nd, v))
+    return dist
+\end{lstlisting}
+
+\subsection{Correctness}
+
+The algorithm maintains the invariant that when vertex $u$ is popped with distance $d$, that
+distance is optimal. Proof sketch: all edge weights are non-negative, so any alternative path
+through an unvisited vertex $v$ (with $d(v) \ge d$) would have length at least $d$. Lazy
+deletion on line~21 correctly handles vertices that appear multiple times with superseded
+distances --- only the smallest-distance entry for each vertex is ever processed.

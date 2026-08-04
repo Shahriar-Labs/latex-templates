@@ -1,0 +1,40 @@
+\section{Key Concepts}
+
+\begin{keybox}{1\enspace Scaled Dot-Product Attention}
+Given queries \(Q\), keys \(K\), and values \(V\) (each a matrix of row-vectors),
+attention is:
+\[
+  \operatorname{Attention}(Q,K,V)
+  = \operatorname{softmax}\!\left(\frac{QK^{\top}}{\sqrt{d_k}}\right)V
+\]
+The \(\sqrt{d_k}\) scaling prevents vanishingly small softmax gradients when the
+embedding dimension is large.
+\end{keybox}
+
+\vspace{5pt}
+
+\begin{keybox}{2\enspace Multi-Head Attention (MHA)}
+Rather than a single attention function, MHA runs \(h\) heads in parallel on
+learned linear projections, then concatenates and re-projects:
+\[
+  \operatorname{MHA}(Q,K,V)
+  = \operatorname{Concat}(\mathrm{head}_1,\ldots,\mathrm{head}_h)\,W^{O}
+\]
+Different heads capture complementary relational patterns: syntactic agreement,
+coreference, positional proximity, etc.
+\end{keybox}
+
+\vspace{5pt}
+
+\begin{keybox}{3\enspace Positional Encoding}
+Attention is permutation-invariant, so position is injected via sinusoidal signals
+added to the input embeddings:
+\[
+  \mathrm{PE}_{(p,2i)}   = \sin\!\bigl(p/10000^{2i/d}\bigr),\qquad
+  \mathrm{PE}_{(p,2i+1)} = \cos\!\bigl(p/10000^{2i/d}\bigr)
+\]
+Modern variants (RoPE, ALiBi) modify attention scores directly for better
+length generalisation.
+\end{keybox}
+
+% ─── Worked Example / Diagram ─────────────────────────────

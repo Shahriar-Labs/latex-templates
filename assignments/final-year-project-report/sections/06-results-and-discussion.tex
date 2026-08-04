@@ -1,0 +1,142 @@
+\section{Results and Discussion}
+
+\subsection{Classification Performance}
+
+Table~\ref{tab:results} presents the primary classification metrics for all
+four architectures evaluated on the held-out test set. The proposed custom
+CNN achieves 97.8\% accuracy, outperforming MobileNetV2 (95.1\%) and
+InceptionV3 (96.4\%), and trailing ResNet-50 by only 0.4 percentage points
+— despite having 6.3M parameters compared to ResNet-50's 25.6M.
+
+\begin{table}[H]
+  \centering
+  \caption{Classification performance comparison on the test set.}
+  \label{tab:results}
+  \begin{tabular}{@{}lrrrrr@{}}
+    \toprule
+    \textbf{Model}
+      & \textbf{Accuracy (\%)}
+      & \textbf{Precision}
+      & \textbf{Recall}
+      & \textbf{F1-Score}
+      & \textbf{Params (M)} \\
+    \midrule
+    Custom CNN   & 97.8 & 0.978 & 0.977 & 0.977 &  \textbf{6.3} \\
+    ResNet-50    & \textbf{98.2} & \textbf{0.982} & \textbf{0.982} & \textbf{0.982} & 25.6 \\
+    InceptionV3  & 96.4 & 0.964 & 0.963 & 0.963 & 23.9 \\
+    MobileNetV2  & 95.1 & 0.951 & 0.950 & 0.950 &  3.5 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Per-Class Analysis}
+
+Figure~\ref{fig:confusion} displays the normalised confusion matrix for the
+custom CNN on the test set. The model demonstrates strong per-class
+performance, with most disease classes achieving $F_1$-scores above 0.96.
+The lowest-performing classes are early blight (tomato) at 94.7\% and
+northern leaf blight (corn) at 95.2\%, attributable to subtle visual
+similarities with healthy leaves in early-stage infections.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\textwidth]{confusion_matrix.png}
+  \caption{Normalised confusion matrix for the proposed custom CNN on the
+           test set (18 classes).}
+  \label{fig:confusion}
+\end{figure}
+
+\subsection{Inference Latency}
+
+Real-time usability is critical for field deployment. Table~\ref{tab:latency}
+reports average inference latency per image across different hardware
+configurations, measured over 1\,000 forward passes.
+
+\begin{table}[H]
+  \centering
+  \caption{Average inference latency per image (milliseconds).}
+  \label{tab:latency}
+  \begin{tabular}{@{}lrrr@{}}
+    \toprule
+    \textbf{Model}
+      & \textbf{RTX 3060 (GPU)}
+      & \textbf{Corex i7-12700H (CPU)}
+      & \textbf{Raspberry Pi 4} \\
+    \midrule
+    Custom CNN   &  2.1 & 18.7  &  94.3 \\
+    ResNet-50    &  3.8 & 52.4  & 412.7 \\
+    InceptionV3  &  4.1 & 58.9  & 487.2 \\
+    MobileNetV2  & \textbf{1.4} & \textbf{10.2} & \textbf{55.8} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The custom CNN achieves 94.3\,ms on a Raspberry Pi 4 — well within the
+acceptable range for interactive use — while ResNet-50 requires 412.7\,ms,
+making it unsuitable for edge deployment. MobileNetV2 is the fastest across
+all platforms but sacrifices 2.7 percentage points of accuracy compared to
+the custom CNN.
+
+\subsection{Ablation Study}
+
+An ablation study quantifies the contribution of individual components in the
+proposed pipeline. Table~\ref{tab:ablation} reports test accuracy when
+removing one component at a time.
+
+\begin{table}[H]
+  \centering
+  \caption{Ablation study: impact of removing individual components.}
+  \label{tab:ablation}
+  \begin{tabular}{@{}lr@{}}
+    \toprule
+    \textbf{Configuration} & \textbf{Accuracy (\%)} \\
+    \midrule
+    Full proposed pipeline                & 97.8 \\
+    Without data augmentation             & 94.1 \\
+    Without batch normalisation           & 93.5 \\
+    Without dropout regularisation        & 95.2 \\
+    Without ReduceLROnPlateau             & 96.3 \\
+    Without Global Average Pooling (use Flatten) & 96.1 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Data augmentation provides the largest single improvement (+3.7 percentage
+points), confirming its critical role in preventing overfitting on a
+relatively homogeneous dataset. Batch normalisation (+4.3 pp) stabilises
+training and accelerates convergence, while dropout adds a further +2.6 pp
+gain by reducing co-adaptation of feature detectors.
+
+\begin{resultbox}
+\textbf{Key Result.} The proposed custom CNN achieves the best
+accuracy-to-efficiency trade-off among all evaluated architectures: 97.8\%
+accuracy with 6.3M parameters, enabling real-time inference (94.3\,ms) on
+commodity edge hardware. Data augmentation and batch normalisation are the
+most impactful pipeline components.
+\end{resultbox}
+
+\subsection{Comparison with Prior Work}
+
+Table~\ref{tab:comparison} contextualises the results within the broader
+literature. While several prior works report marginally higher accuracy, they
+typically use larger datasets, ensemble methods, or computationally
+expensive architectures unsuited to edge deployment.
+
+\begin{table}[H]
+  \centering
+  \caption{Comparison with published results on PlantVillage dataset.}
+  \label{tab:comparison}
+  \begin{tabular}{@{}llrl@{}}
+    \toprule
+    \textbf{Study} & \textbf{Method} & \textbf{Acc. (\%)} & \textbf{Edge-Ready} \\
+    \midrule
+    Mohanty et al.\ (2016) & GoogLeNet (fine-tuned) & 99.35 & No \\
+    Ferentinos (2018)      & VGG (fine-tuned)      & 99.53 & No \\
+    Too et al.\ (2019)     & DenseNet-121          & 99.75 & No \\
+    Brahimi et al.\ (2017) & ResNet-50 + SVM       & 98.67 & No \\
+    \textbf{This Work}     & Custom CNN (6.3M)     & \textbf{97.80} & \textbf{Yes} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% ── 6. Conclusion and Future Work ─────────────────────────────────────────

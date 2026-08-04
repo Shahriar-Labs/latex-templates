@@ -1,0 +1,49 @@
+\section{Detailed Design}
+
+\subsection{Routing DSL}
+
+Pipelines are declared in YAML and compiled to a binary filter tree at startup:
+
+\begin{tcolorbox}[
+  enhanced, sharp corners,
+  colback=gray!5, colframe=rule, boxrule=0.5pt,
+  fontupper=\small\ttfamily,
+  left=6pt, right=6pt, top=4pt, bottom=4pt,
+  before skip=4pt, after skip=4pt
+]
+pipeline: iot-telemetry-v2\\
+\phantom{xx}filters:\\
+\phantom{xxxx}- field: event\_type\\
+\phantom{xxxxxxxx}eq: sensor.reading\\
+\phantom{xxxx}transforms: [mask\_pii, add\_region]\\
+\phantom{xxxx}route\_to: kafka://telemetry.raw
+\end{tcolorbox}
+
+\subsection{Transformation Plugin API}
+
+Plugins implement the \texttt{Transform} interface (Go):
+
+\begin{tcolorbox}[
+  enhanced, sharp corners,
+  colback=gray!5, colframe=rule, boxrule=0.5pt,
+  fontupper=\small\ttfamily,
+  left=6pt, right=6pt, top=4pt, bottom=4pt,
+  before skip=4pt, after skip=4pt
+]
+type Transform interface \{\\
+\phantom{xxxx}Name() string\\
+\phantom{xxxx}Apply(ctx context.Context, e *Event) (*Event, error)\\
+\}
+\end{tcolorbox}
+
+Plugins are loaded as Go plugins at startup; hot-reload requires a rolling
+restart. Execution order follows declaration order in the pipeline YAML.
+A plugin returning an error triggers the dead-letter-queue (DLQ) path.
+
+\subsection{State \& Persistence}
+
+ESP Core is intentionally stateless. Offset management is delegated to Kafka
+consumer groups. Pipeline configuration is stored in etcd with watch-based
+live propagation ($<\!500\,\mathrm{ms}$ propagation SLO).
+
+%% ─────────────────────────────────────────────────────────────────────────────

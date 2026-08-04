@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Root Cause Analysis Report LaTeX template — root cause analysis latex template. Elegant, compile-tested, editable online at letx.app.**
+**Root Cause Analysis Report LaTeX template — Root Cause Analysis Report. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/engineering/root-cause-analysis-report)**, with real-time collaboration and one-second compiles.
 
@@ -12,7 +12,7 @@ Edit and compile this template instantly in your browser — no LaTeX install �
 
 ## Features
 - Elegant, modern design
-- Compile-tested (pdflatex)
+- Compile-tested
 - Fully editable sample content
 
 ## Use it online (recommended)

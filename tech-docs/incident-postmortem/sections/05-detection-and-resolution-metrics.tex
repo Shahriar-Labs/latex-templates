@@ -1,0 +1,66 @@
+\section{Detection and Resolution Metrics}
+
+\subsection{Key Time Metrics}
+
+\setlength{\parskip}{0pt}
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\small\color{accent}}l@{\hspace{8mm}}>{\small}l@{\hspace{8mm}}>{\small\color{muted}\raggedright\arraybackslash}X@{}}
+\toprule
+\small\bfseries\color{ink}Metric & \small\bfseries\color{ink}Value & \small\bfseries\color{ink}Target / SLO\\
+\midrule
+Time to Detect (TTD)   & 8 min  & $<$ 10 min \textcolor{statusdone}{\faIcon{check-circle}}\\
+Time to Acknowledge (TTA) & 4 min & $<$ 5 min \textcolor{statusdone}{\faIcon{check-circle}}\\
+Time to Mitigate (TTM) & 38 min & $<$ 30 min \textcolor{sev1}{\faIcon{times-circle}}\\
+Time to Resolve (TTR)  & 2h 43m & $<$ 1h \textcolor{sev1}{\faIcon{times-circle}}\\
+Time to Root Cause     & 23 min & $<$ 20 min \textcolor{sev2}{\faIcon{exclamation-circle}}\\
+\bottomrule
+\end{tabularx}
+\setlength{\parskip}{4pt plus 1pt}
+
+\subsection{Error Rate Recovery Visualization}
+
+\vspace{4pt}
+\begin{center}
+\begin{tikzpicture}[x=0.9mm, y=0.032mm]
+
+  % Y axis (error rate %)
+  \foreach \y/\lbl in {0/0\%,2500/25\%,5000/50\%,7500/75\%,10000/100\%}{
+    \draw[color=rule, line width=0.4pt] (0,\y) -- (163,\y);
+    \node[left, font=\tiny\color{muted}] at (-2,\y) {\lbl};
+  }
+
+  % X axis
+  \draw[color=ink, line width=0.8pt] (0,0) -- (163,0);
+  \foreach \x/\lbl in {0/03:00,27/03:27,55/03:55,75/04:15,115/05:15,163/06:03}{
+    \draw[color=ink] (\x,0) -- (\x,-200);
+    \node[below, font=\tiny\ttfamily, color=muted] at (\x,-300) {\lbl};
+  }
+
+  % Y axis line
+  \draw[color=ink, line width=0.8pt] (0,0) -- (0,10000);
+
+  % Error rate polyline (approximate values)
+  \draw[color=sev1, line width=1.2pt]
+    (0,0) -- (17,200) -- (27,9400) -- (35,9600) -- (55,9000)
+    -- (75,2800) -- (95,1800) -- (115,800) -- (135,200) -- (163,50);
+
+  % Shade under curve
+  \fill[color=sev1!15!white, opacity=0.7]
+    (0,0) -- (17,200) -- (27,9400) -- (35,9600) -- (55,9000)
+    -- (75,2800) -- (95,1800) -- (115,800) -- (135,200) -- (163,50) -- (163,0) -- cycle;
+
+  % Annotations
+  \draw[color=accent, dashed, line width=0.7pt] (27,0) -- (27,9400);
+  \node[above, font=\tiny\bfseries\color{accent}, align=center] at (27,9500) {Pool\\exhausted};
+
+  \draw[color=statusdone, dashed, line width=0.7pt] (55,0) -- (55,9000);
+  \node[above, font=\tiny\bfseries\color{statusdone}, align=center] at (55,9200) {Rollback\\applied};
+
+  \node[right, font=\tiny\bfseries\color{sev1}] at (36,9700) {94\% peak};
+
+  % Y axis label
+  \node[rotate=90, font=\small\color{muted}] at (-12,5000) {API Error Rate};
+
+\end{tikzpicture}
+\end{center}
+
+% ── Action Items ─────────────────────────────────────────────

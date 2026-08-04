@@ -1,0 +1,52 @@
+\section{System Block Diagram}
+
+Figure~1 depicts the simplified signal path from the Core~610 analog input
+through the DSP engine to the monitor loudspeakers. The dashed outline
+identifies the affected output stage (Channels~13--16).
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=8mm and 10mm,
+  block/.style={
+    rectangle, draw=accent, fill=palebg,
+    text width=22mm, minimum height=11mm,
+    align=center, font=\footnotesize\sffamily,
+    rounded corners=2pt, line width=0.5pt,
+  },
+  arrow/.style={-{Stealth[scale=0.85]}, thick, color=accent},
+  netarrow/.style={-{Stealth[scale=0.85]}, thick, densely dashed, color=graytext},
+  label/.style={font=\footnotesize\sffamily\color{graytext}},
+]
+
+  \node[block] (in)    {Analog Input\\COL4 (slot 1)};
+  \node[block, right=of in]  (dsp)   {Core DSP Engine\\AEC/Gain/Router};
+  \node[block, right=of dsp] (out)   {Analog Output\\COL4 (slot 2)};
+  \node[block, right=of out] (amp)   {Lab.gruppen\\D~80:4 Amplifier};
+  \node[block, right=of amp] (spk)   {JBL Control\\328CT Speaker};
+
+  \draw[arrow] (in)  -- (dsp) node[midway, above, label] {I$^2$S bus};
+  \draw[arrow] (dsp) -- (out) node[midway, above, label] {I$^2$S bus};
+  \draw[arrow] (out) -- (amp) node[midway, above, label] {Bal.\ line-level};
+  \draw[arrow] (amp) -- (spk) node[midway, above, label] {Spkr-level};
+
+  \node[block, above=of dsp, fill=accent!8, minimum height=10mm]
+    (net) {Q-LAN / Dante\\Network Switch};
+  \draw[netarrow] (net) -- (dsp) node[midway, right, label] {VLAN 42};
+
+  \begin{scope}[on background layer]
+    \node[fit=(out)(amp), draw=red!55!accent, fill=red!8!accent,
+          rounded corners=4pt, inner sep=7pt, dashed, line width=0.6pt] (pb) {};
+  \end{scope}
+  \node[font=\footnotesize\sffamily\color{accent}, below=4pt of pb.south]
+    {Channels 13--16: noise-floor issue localized here};
+
+\end{tikzpicture}
+\caption{Simplified signal path --- Q-Sys Core~610 to secure-conferencing monitor loudspeakers.\\
+         The dashed box highlights the output stage affected by the AEC floating-tap issue.}
+\end{figure}
+
+% ============================================================
+%  APPENDIX A: REVISION HISTORY
+% ============================================================
+\newpage

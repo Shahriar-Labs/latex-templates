@@ -1,0 +1,28 @@
+\section{Model Architecture}
+The proposed framework fuses spatial rainfall grids with sensor time series through a two-branch ConvLSTM architecture, illustrated in Figure~\ref{fig:architecture}. The rainfall branch processes stacked satellite rainfall grids through convolutional layers to extract spatial features, while the sensor branch encodes water-level time series through a stacked LSTM. The two feature streams are concatenated and passed through a fusion ConvLSTM block before a final dense layer produces the water-level forecast.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  block/.style={draw=chulacharcoal, thick, rounded corners=3pt, fill=chularose, minimum width=2.8cm, minimum height=0.9cm, font=\small, align=center},
+  fuse/.style={draw=chulapink, thick, rounded corners=3pt, fill=chulapink!15, minimum width=3.2cm, minimum height=0.9cm, font=\small\bfseries, align=center},
+  arrow/.style={-{Latex[length=2mm]}, thick, chulacharcoal}
+]
+  \node[block] (rain) at (0,3) {Satellite Rainfall\\Grid Sequence};
+  \node[block] (sensor) at (0,0) {IoT Sensor\\Time Series};
+  \node[block] (conv) at (4,3) {Conv2D\\Feature Extractor};
+  \node[block] (lstm) at (4,0) {Stacked LSTM\\Encoder};
+  \node[fuse] (fusion) at (8.4,1.5) {Fusion\\ConvLSTM Block};
+  \node[block] (dense) at (12.6,1.5) {Dense Output\\Water-Level Forecast};
+
+  \draw[arrow] (rain) -- (conv);
+  \draw[arrow] (sensor) -- (lstm);
+  \draw[arrow] (conv) -- (fusion);
+  \draw[arrow] (lstm) -- (fusion);
+  \draw[arrow] (fusion) -- (dense);
+\end{tikzpicture}%
+}
+\caption{Two-branch ConvLSTM fusion architecture combining satellite rainfall grids and IoT sensor time series.}
+\label{fig:architecture}
+\end{figure}

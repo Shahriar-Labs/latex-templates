@@ -1,0 +1,24 @@
+\section{Goals \& Non-Goals}
+% ============================================================
+
+\subsection{Goals}
+\begin{enumerate}
+  \item \textbf{Throughput.}\ Handle 50\,k TPS peak write load with P99 $\leq$ 50\,ms.
+  \item \textbf{Durability.}\ Zero data loss on single-node failure; 3-way
+        replication across AZs.
+  \item \textbf{Idempotency.}\ Duplicate payment events must be deduplicated
+        within a 24\,h window using \icode{idempotency\_key}.
+  \item \textbf{Zero-downtime migration.}\ Dual-write bridge with read-traffic
+        cut-over under feature flag; full cut-over in $\leq$ 4\,h maintenance window.
+  \item \textbf{Observability.}\ Every write emits a structured OpenTelemetry span;
+        Datadog dashboard auto-provisioned via Terraform.
+\end{enumerate}
+
+\subsection{Non-Goals}
+\begin{itemize}
+  \item Real-time fraud inference — remains in the existing ML scoring service.
+  \item Re-architecture of the settlement or reconciliation batch tier.
+  \item Support for non-USD currency ledgers (planned for Q3 2026, separate RFC).
+\end{itemize}
+
+% ============================================================

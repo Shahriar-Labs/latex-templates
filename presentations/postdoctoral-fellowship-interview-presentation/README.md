@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Postdoctoral Fellowship Interview Presentation LaTeX template — postdoc fellowship interview presentation latex beamer. Elegant, compile-tested, editable online at letx.app.**
+**Postdoctoral Fellowship Interview Presentation LaTeX template — Postdoctoral Fellowship Interview Presentation. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/presentations/postdoctoral-fellowship-interview-presentation)**, with real-time collaboration and one-second compiles.
 

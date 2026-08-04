@@ -1,0 +1,26 @@
+\section{Incident Timeline}
+The timeline below details the chronological sequence of events, from initial system warnings to final recovery verification and incident sign-off.
+
+\begin{tabularx}{\textwidth}{>{\raggedright\arraybackslash\small}p{2.2cm} X >{\raggedright\arraybackslash\small}p{3.2cm}}
+  \hline
+  \rowcolor{PrimaryColor}
+  \textcolor{white}{\textbf{Time (UTC)}} & \textcolor{white}{\textbf{Incident Event / Observation}} & \textcolor{white}{\textbf{Logged By}} \\
+  \hline
+  08:15 & Automated health check fails on DB-Primary. Latency spike $>$ 5,000ms. & Nagios Monitoring Agent \\
+  \rowcolor{LightNeutral}
+  08:18 & PagerDuty alerts database reliability engineer (DBRE) on duty. & PagerDuty Automation \\
+  08:22 & Sarah Jenkins (Senior DBRE) logs into console. Memory utilization at 98\%. & Operations Console \\
+  \rowcolor{LightNeutral}
+  08:28 & System memory exhausted. Kernel OOM-killer terminates the PostgreSQL service. & Linux Syslog Daemon \\
+  08:35 & DB fails to restart automatically due to lock file corruption. Active failover initiated. & Dr. Marcus Chen (Lead) \\
+  \rowcolor{LightNeutral}
+  08:42 & Read-only replica promoted to Primary. API services resume partial read function. & Sarah Jenkins \\
+  08:50 & Offending query isolated and blocked at API gateway layer. Write functions restored. & David Vance (Core Dev) \\
+  \rowcolor{LightNeutral}
+  09:00 & Core database fully online. Latency returns to normal ($<$ 50ms). Incident resolved. & Sarah Jenkins \\
+  \hline
+\end{tabularx}
+
+\newpage
+
+% --- SECTION 3: PROBLEM INVESTIGATION ---

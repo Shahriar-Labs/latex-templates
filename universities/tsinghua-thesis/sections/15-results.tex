@@ -1,0 +1,122 @@
+\section{Results}
+
+\subsection{Image Classification}
+
+Table~\ref{tab:imagenet} presents the ImageNet results for ResNet-50
+as the base architecture. All compressed models are evaluated on the
+Quanta Jetson Nano at batch size 1.
+
+\begin{table}[htbp]
+\centering
+\caption{ImageNet-1k results with ResNet-50. Latency measured on Jetson
+Nano (batch size 1). Model size includes weights and activations.}
+\label{tab:imagenet}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Method} & \textbf{Top-1 (\%)} & \textbf{Size (MB)} & \textbf{Latency (ms)} & \textbf{Energy (mJ)} \\
+\midrule
+Baseline (FP32)       & 76.1 & 97.5  & 142.3 & 890 \\
+Unstr.\ pruning       & 74.2 & 9.8   & 118.6 & 720 \\
+Struct.\ pruning      & 75.8 & 32.5  & 50.8  & 310 \\
+INT8 QAT              & 76.0 & 24.4  & 40.6  & 254 \\
+Knowledge dist.\      & 75.3 & 19.5  & 35.6  & 221 \\
+\textbf{RANO (ours)}  & \textbf{76.1} & \textbf{12.2} & \textbf{27.4} & \textbf{175} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+RANO achieves the best trade-off across all metrics. Notably, it matches
+the baseline accuracy while reducing model size by 8$\times$, latency by
+5.2$\times$, and energy consumption by 5.1$\times$. Compared to
+structured pruning alone, RANO delivers an additional 46\% reduction in
+latency without any loss of accuracy, demonstrating the benefit of joint
+optimisation over sequential post-processing.
+
+\subsection{Object Detection}
+
+On the COCO object detection task, we use YOLOv5-s as the base
+architecture. RANO achieves 37.8 mAP@0.5 while reducing inference
+latency from 86.4\,ms to 18.2\,ms on the Jetson Nano (a 4.7$\times$
+speedup). The compressed model occupies only 8.7\,MB, making it suitable
+for deployment on devices with as little as 256\,MB of RAM.
+
+\subsection{Natural Language Inference}
+
+For the GLUE benchmark, we fine-tune a compressed BERT-base
+model~\cite{devlin2019bert}. RANO reduces the model size from 440\,MB to
+55\,MB while retaining 97.3\% of the original accuracy on MNLI and
+96.8\% on QQP. The compressed model runs at 12.3\,ms per inference on
+the Snapdragon 865, compared to 48.7\,ms for the baseline
+BERT-base---a 4.0$\times$ speedup.
+
+\subsection{Ablation Study}
+
+To quantify the contribution of each RANO component, we conduct an
+ablation study on ImageNet with ResNet-50, reported in
+Table~\ref{tab:ablation}.
+
+\begin{table}[htbp]
+\centering
+\caption{Ablation study on ImageNet (ResNet-50). Each row removes one
+component from the full RANO pipeline.}
+\label{tab:ablation}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Configuration} & \textbf{Top-1 (\%)} & \textbf{Size (MB)} & \textbf{Latency (ms)} \\
+\midrule
+Full RANO                  & 76.1 & 12.2 & 27.4 \\
+$-$ Structured pruning     & 76.3 & 24.4 & 40.6 \\
+$-$ Quantisation           & 76.0 & 32.5 & 50.8 \\
+$-$ Knowledge distillation & 74.8 & 12.2 & 27.4 \\
+$-$ Hardware cost model    & 76.0 & 12.8 & 35.1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The results confirm that all components contribute meaningfully.
+Removing structured pruning (retaining only quantisation) increases
+model size by 2$\times$; removing quantisation (retaining only pruning)
+increases latency by 1.9$\times$; removing knowledge distillation causes
+a 1.3-point accuracy drop; and removing the hardware cost model
+increases latency by 28\%, demonstrating that generic compression
+metrics are insufficient for hardware-specific optimisation.
+
+\newpage
+
+% ═════════════════════════════════════════════════════════════════════════════
+% BIBLIOGRAPHY
+% ═════════════════════════════════════════════════════════════════════════════
+\begin{thebibliography}{99}
+
+\bibitem{he2016deep}
+K.~He, X.~Zhang, S.~Ren, and J.~Sun,
+``Deep residual learning for image recognition,''
+in \emph{Proceedings of the IEEE Conference on Computer Vision and
+Pattern Recognition (CVPR)}, 2016, pp.~770--778.
+
+\bibitem{vaswani2017attention}
+A.~Vaswani, N.~Shazeer, N.~Parmar, J.~Uszkoreit, L.~Jones,
+A.~N.~Gomez, {\L}.~Kaiser, and I.~Polosukhin,
+``Attention is all you need,''
+in \emph{Advances in Neural Information Processing Systems (NeurIPS)},
+vol.~30, 2017, pp.~5998--6008.
+
+\bibitem{goodfellow2016}
+I.~Goodfellow, Y.~Bengio, and A.~Courville,
+\emph{Deep Learning}.
+Cambridge, MA: MIT Press, 2016.
+
+\bibitem{kingma2014adam}
+D.~P.~Kingma and J.~Ba,
+``Adam: A method for stochastic optimization,''
+in \emph{Proceedings of the International Conference on Learning
+Representations (ICLR)}, 2015.
+
+\bibitem{devlin2019bert}
+J.~Devlin, M.-W.~Chang, K.~Lee, and K.~Toutanova,
+``BERT: Pre-training of deep bidirectional transformers for language
+understanding,''
+in \emph{Proceedings of the Conference of the North American Chapter of
+the ACL (NAACL-HLT)}, 2019, pp.~4171--4186.
+
+\end{thebibliography}

@@ -1,0 +1,35 @@
+\section{Organization of the Thesis}
+
+The remainder of this thesis is structured as follows. Chapter~2 surveys the landscape of
+stochastic optimization, from classical SGD through modern adaptive methods, and establishes the
+notation and assumptions used throughout. Chapter~3 develops the normalized preconditioned
+gradient framework, proves the main convergence results, and introduces the \textsc{Nadam}
+algorithm. Chapter~4 presents extensive experimental validation. Chapter~5 concludes with a
+summary of findings and directions for future work.
+
+\begin{figure}[tb]
+  \centering
+  \begin{tikzpicture}[
+    node distance=1.2cm,
+    box/.style={rectangle,draw=DarkGray,fill=LightGray,rounded corners=3pt,minimum width=2.8cm,minimum height=0.7cm,font=\small},
+    arrow/.style={-{Stealth[length=3mm]},thick,ColumbiaBlue}
+  ]
+    \node[box] (data) {Training Data};
+    \node[box,below=of data] (model) {Model $f(x;\theta)$};
+    \node[box,below=of model] (loss) {Loss $\mathcal{L}(\theta)$};
+    \node[box,below=of loss] (grad) {Stochastic Gradient $g_t$};
+    \node[box,below=of grad] (update) {Parameter Update};
+    \draw[arrow] (data) -- (model);
+    \draw[arrow] (model) -- (loss);
+    \draw[arrow] (loss) -- (grad);
+    \draw[arrow] (grad) -- (update);
+    \draw[arrow] (update.west) -- ++(-1.2,0) |- (model.west);
+  \end{tikzpicture}
+  \caption{The core training loop studied in this thesis. A model parameterized by $\theta$
+    produces predictions; the loss compares these to ground truth; stochastic gradients computed
+    from a minibatch drive parameter updates. The feedback loop repeats for $T$ iterations.}
+  \label{fig:training_loop}
+\end{figure}
+
+
+% ── Chapter 2 ────────────────────────────────────────────────────────

@@ -1,0 +1,11 @@
+\section{Preliminaries}
+
+Let $\mathcal{L}(\theta) = -\ell_{n}(\theta)$ denote the empirical risk (negative log-likelihood). The unadjusted Langevin algorithm (ULA) \cite{roberts1996} generates a Markov chain $\{\theta_{k}\}_{k \ge 0}$ via the recursion
+
+\begin{equation}\label{eq:ula}
+\theta_{k+1} = \theta_{k} - \eta \nabla\mathcal{L}(\theta_{k}) + \sqrt{2\eta\tau}\,\xi_{k},
+\end{equation}
+
+\noindent where $\eta > 0$ is the step size, $\tau > 0$ is the temperature parameter, and $\xi_{k} \sim \mathcal{N}(0, I_{p})$ are independent Gaussian vectors. Under mild regularity conditions on $\mathcal{L}$, the stationary distribution of \eqref{eq:ula} is proportional to $\exp(-\mathcal{L}(\theta)/\tau)$, making ULA a natural tool for both sampling from and optimizing over the posterior.
+
+However, when $p$ is large and $\mathcal{L}$ is poorly conditioned, the naive ULA update \eqref{eq:ula} mixes prohibitively slowly. The condition number $\kappa = \lambda_{\max}(\nabla^{2}\mathcal{L}) / \lambda_{\min}(\nabla^{2}\mathcal{L})$ can be on the order of $10^{3}$ to $10^{5}$ in the problems we study, forcing $\eta = O(1/\lambda_{\max})$ and yielding a mixing time that scales as $O(\kappa^{2})$.

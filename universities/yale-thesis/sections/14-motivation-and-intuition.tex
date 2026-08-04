@@ -1,0 +1,17 @@
+\section{Motivation and Intuition}
+
+The adaptive methods surveyed in Chapter~2 differ in their precise update rules, yet they all
+share a common template: given a stochastic gradient $g_t$, compute a \emph{preconditioner}
+matrix $P_t \succ 0$ (or its diagonal approximation), and update
+\begin{equation}
+  \theta_{t+1} = \theta_t - \eta_t\, P_t^{-1} g_t.
+  \label{eq:generic_precond}
+\end{equation}
+For SGD, $P_t = I$; for AdaGrad, $P_t = \operatorname{diag}(\sqrt{G_t})$; for Adam,
+$P_t = \operatorname{diag}(\sqrt{\hat{v}_t})$.
+
+The difficulty in analyzing adaptive methods stems from the fact that $P_t$ depends on the
+entire history of gradients, introducing complex statistical dependencies between the
+preconditioner and the current gradient. Our key insight is that these dependencies can be
+bounded through a careful \emph{normalization} argument that decouples the magnitude of the
+update from the geometry of the preconditioner.

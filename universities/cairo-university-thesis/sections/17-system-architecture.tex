@@ -1,0 +1,36 @@
+\section{System Architecture}
+Figure~\ref{fig:architecture} shows the overall system architecture. Each field node
+comprises a capacitive soil-moisture probe, a solar-charged battery supply, a microcontroller
+running the local control loop, and a LoRaWAN radio. Nodes report to a single gateway that
+forwards readings to a lightweight scheduling service, which issues valve-actuation commands
+back to each node.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=1.05cm and 1.7cm,
+  box/.style={rectangle, rounded corners=3pt, draw=cairoblue, thick, fill=sand,
+              minimum width=2.6cm, minimum height=1.05cm, align=center, font=\small},
+  svc/.style={box, fill=cairoblue!12},
+  cloud/.style={ellipse, draw=nilegreen, thick, fill=nilegreen!10,
+                minimum width=3.1cm, minimum height=1.4cm, align=center, font=\small},
+  arr/.style={-{Stealth[length=2.2mm]}, thick, color=cairoblue}
+]
+  \node[box] (probe) {Soil-Moisture\\Probe};
+  \node[box, below=of probe] (pv) {PV Panel +\\Battery};
+  \node[svc, right=of probe] (mcu) {Field Node\\Microcontroller};
+  \node[svc, below=of mcu] (valve) {Solenoid\\Valve Actuator};
+  \node[cloud, right=1.9cm of mcu] (gw) {LoRaWAN\\Gateway};
+  \node[svc, right=of gw] (sched) {Scheduling\\Service};
+
+  \draw[arr] (probe) -- (mcu);
+  \draw[arr] (pv) -- (mcu);
+  \draw[arr] (mcu) -- (valve);
+  \draw[arr] (mcu) -- (gw) node[midway, above, font=\scriptsize] {sensor data};
+  \draw[arr] (gw) -- (sched) node[midway, above, font=\scriptsize] {readings};
+  \draw[arr] (sched.south) .. controls +(0,-1.1) and +(0.4,-1.1) .. (mcu.south)
+        node[midway, below, font=\scriptsize] {irrigation command};
+\end{tikzpicture}
+\caption{Field-node and network architecture of the irrigation control system}
+\label{fig:architecture}
+\end{figure}

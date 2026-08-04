@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Disaster Recovery Plan LaTeX template — disaster recovery plan latex. Elegant, compile-tested, editable online at letx.app.**
+**Disaster Recovery Plan LaTeX template — Disaster Recovery Plan. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/tech-docs/disaster-recovery-plan)**, with real-time collaboration and one-second compiles.
 

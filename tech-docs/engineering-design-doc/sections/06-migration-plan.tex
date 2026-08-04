@@ -1,0 +1,38 @@
+\section{Migration Plan}
+% ============================================================
+
+\begin{warnbox}[Migration Risk: HIGH]
+The existing ledger table has 3.2\,B rows and 14 live consumer services.
+A phased cut-over with automated rollback is mandatory.
+\end{warnbox}
+
+\subsection{Phases}
+
+\begin{tabularx}{\linewidth}{@{}>{\bfseries\color{accent}}l@{\hspace{6mm}}l@{\hspace{4mm}}V@{}}
+\toprule
+Phase & Window & Description \\
+\midrule
+0 & Week 0 & Provision TiDB cluster; schema DDL; seed with last 90d of history via Spark job. Shadow-write mode (writes go to both old DB and TiDB, reads from old). \\
+1 & Week 1--2 & Enable dual-write via feature flag \icode{ledger\_dual\_write}. Monitor TiDB lag vs.\ Postgres baseline. Alert on $>$ 0.1\,\% divergence. \\
+2 & Week 3 & Shift 10\,\% of read traffic to TiDB (canary). Validate P99 latency and correctness via checksum comparison job. \\
+3 & Week 4 & Ramp reads to 100\,\% TiDB. Keep Postgres in standby for 48\,h rollback window. \\
+4 & Week 5 & Disable Postgres writes. Decommission old DB after 30-day hold for audit. \\
+\bottomrule
+\end{tabularx}
+
+\vspace{6pt}
+
+\subsection{Rollback Procedure}
+
+In Phase 1--3, flip \icode{ledger\_dual\_write=false} in LaunchDarkly. Traffic
+immediately reverts to Postgres. Estimated rollback time: $<$ 30\,s (flag
+propagation SLA). Phase 4 rollback requires point-in-time recovery from Postgres
+daily snapshot — RTO $\approx$ 4\,h.
+
+\begin{infobox}[Automated Divergence Check]
+  A nightly reconciliation job (\icode{ledger-recon-job}) runs a row-count and
+  checksum comparison between Postgres and TiDB for the previous 24\,h window.
+  Any delta $>$ 0.01\,\% pages the on-call via PagerDuty and halts Phase advancement.
+\end{infobox}
+
+% ============================================================

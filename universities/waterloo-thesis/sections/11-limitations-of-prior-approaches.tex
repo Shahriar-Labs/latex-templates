@@ -1,0 +1,9 @@
+\section{Limitations of Prior Approaches}
+
+Kubernetes, the dominant container orchestration platform, provides a default scheduler that scores nodes via a weighted sum of resource availability predicates. This approach struggles with edge deployments for three reasons: it assumes homogeneous nodes, it ignores workload colocation effects, and its scheduling overhead becomes significant at the sub-millisecond latency targets required by edge applications.
+
+\begin{tcolorbox}[colback=accentBurgundy!5,colframe=accentBurgundy!50,title=\textbf{Limitation}]
+The Kubernetes default scheduler makes placement decisions node-by-node, evaluating every candidate. For a cluster with \(n\) nodes and \(m\) pending pods, this yields \(O(n m)\) complexity --- acceptable in cloud datacenters, prohibitive at edge scale where \(n\) can reach thousands across metro deployments.
+\end{tcolorbox}
+
+Recent academic schedulers --- FIRMAMENT~\cite{gog2016}, YARN~\cite{vavilapalli2013}, and Apollo~\cite{boutin2014} --- address some of these issues but still operate under cloud-scale assumptions. None model multi-tenant isolation as a first-class constraint, and none account for interference between colocated workloads on resource-constrained edge hardware.

@@ -1,0 +1,75 @@
+\section{System Architecture}
+StreamGuard is organised as a two-stage pipeline: an edge-resident pre-filter that reduces
+uplink volume, and a cloud-hosted ensemble that scores the retained events. Figure~\ref{fig:architecture}
+depicts the data flow from sensor to operator dashboard.
+
+\begin{figure}[htbp]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  node distance=9mm and 11mm,
+  every node/.style={font=\small},
+  stage/.style={draw=usydmaroon,thick,rounded corners=2pt,fill=usydcream,
+                minimum width=2.5cm,minimum height=1.15cm,align=center},
+  arrow/.style={->,thick,usydgray}
+]
+  \node[stage] (sensors) {Edge Sensors\\(412 channels)};
+  \node[stage,right=of sensors] (gateway) {Edge Gateway\\Mahalanobis Filter};
+  \node[stage,right=of gateway,fill=usydgold!25] (cloud) {Cloud Ingestion\\Queue};
+  \node[stage,right=of cloud] (ensemble) {Autoencoder\\Ensemble};
+  \node[stage,right=of ensemble] (dash) {Threshold\\Controller \& Dashboard};
+
+  \draw[arrow] (sensors) -- (gateway);
+  \draw[arrow] (gateway) -- (cloud);
+  \draw[arrow] (cloud) -- (ensemble);
+  \draw[arrow] (ensemble) -- (dash);
+
+  \begin{scope}[on background layer]
+    \fill[usydcream!60] ($(sensors.north west)+(-0.2,0.35)$) rectangle ($(gateway.south east)+(0.2,-0.35)$);
+  \end{scope}
+\end{tikzpicture}}
+\caption{StreamGuard data flow from edge sensors to the operator dashboard.}
+\label{fig:architecture}
+\end{figure}
+
+\subsection{Edge Pre-Filter}
+Each gateway maintains a rolling window of $w$ samples per asset and computes the Mahalanobis
+distance of the current observation $\mathbf{x}_t$ from the windowed mean $\boldsymbol{\mu}_w$
+and covariance $\boldsymbol{\Sigma}_w$:
+\begin{equation}
+d_t = \sqrt{(\mathbf{x}_t - \boldsymbol{\mu}_w)^\top \boldsymbol{\Sigma}_w^{-1} (\mathbf{x}_t - \boldsymbol{\mu}_w)}.
+\label{eq:mahalanobis}
+\end{equation}
+Observations with $d_t$ below a locally calibrated threshold $\tau_{\text{edge}}$ are
+summarised into 30-second aggregates rather than transmitted in full, reducing uplink volume
+while preserving the tail events most likely to be genuine anomalies.
+
+\subsection{Cloud Ensemble}
+Retained events are scored by an ensemble of three temporal autoencoders trained per asset
+class (rotating, thermal, electrical) on six months of historical nominal operation. The
+ensemble anomaly score is the mean reconstruction error across members, which empirically
+reduces variance relative to any single autoencoder.
+
+\subsection{Adaptive Threshold Controller}
+\label{sec:adaptive-threshold}
+To remain stable under seasonal drift, the cloud-side alert threshold $\tau_{\text{cloud}}$ is
+updated with an exponentially weighted control-limit rule:
+\begin{equation}
+\tau_{\text{cloud}}^{(k+1)} = \tau_{\text{cloud}}^{(k)} + \alpha \left( \bar{e}^{(k)} + z\, s^{(k)} - \tau_{\text{cloud}}^{(k)} \right),
+\label{eq:threshold-update}
+\end{equation}
+where $\bar{e}^{(k)}$ and $s^{(k)}$ are the rolling mean and standard deviation of
+reconstruction error over control window $k$, $z$ sets the confidence margin, and
+$\alpha \in (0,1]$ governs adaptation speed. Appendix~\ref{app:derivation} derives the
+steady-state behaviour of this update rule.
+
+\begin{tcolorbox}[colback=usydcream,colframe=usydmaroon,title={Algorithm 3.1: Streaming Threshold Update},
+  fonttitle=\bfseries,colbacktitle=usydmaroon]
+\begin{enumerate}[leftmargin=1.4cm,label=\arabic*.]
+  \item Compute ensemble reconstruction error $e_t$ for each retained event.
+  \item Update rolling statistics $\bar{e}^{(k)}$, $s^{(k)}$ over the current control window.
+  \item Apply the update rule in Equation~\eqref{eq:threshold-update} to obtain $\tau_{\text{cloud}}^{(k+1)}$.
+  \item Flag event as anomalous if $e_t > \tau_{\text{cloud}}^{(k+1)}$; otherwise mark nominal.
+  \item Advance to control window $k{+}1$ once $N$ new events have accumulated.
+\end{enumerate}
+\end{tcolorbox}

@@ -1,0 +1,68 @@
+\section{The Monitoring–Modelling Gap}
+
+Traditional forest monitoring in Australia has relied on periodic field
+inventories conducted by state agencies—the Victorian Forest Monitoring
+Program, the New South Wales Native Vegetation Extent, and various regional
+ecosystem monitoring projects. While these programs provide valuable
+time-series data, their analytical workflows tend to be descriptive rather
+than inferential. Inventory plots are typically summarised with means,
+standard errors, and simple trend lines; formal statistical models that
+propagate uncertainty from observation to prediction are the exception
+rather than the rule.
+
+Concurrently, the ecological modelling community has developed sophisticated
+statistical machinery: generalised linear mixed models (GLMMs), hierarchical
+Bayesian models, integrated population models, and machine-learning classifiers
+such as random forests and boosted regression trees~\cite{elith2009}. Yet
+these tools are rarely deployed in operational monitoring contexts because they
+require specialised expertise, computationally intensive fitting procedures,
+and custom data-preparation pipelines.
+
+This thesis sits at the intersection of these two worlds. The central
+proposition is that modern Bayesian methods—particularly hierarchical models
+estimated via Hamiltonian Monte Carlo (HMC)—can bridge the monitoring–modelling
+gap, delivering ecologically meaningful inference with honest uncertainty that
+propagates naturally through all levels of the data-generating process.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=2cm,
+  box/.style={rectangle, draw=anucrimson!70, fill=anucrimson!8,
+    rounded corners=4pt, minimum width=3cm, minimum height=1cm,
+    align=center, font=\small\sffamily, line width=0.7pt},
+  arrow/.style={->, >=Stealth, shorten >=3pt, shorten <=3pt, thick,
+    anucrimson!55}
+]
+\node[box] (field) {\faTree\ \ Field\\Observations};
+\node[box, right=of field] (remote) {\faSatelliteDish\ \ Remote\\Sensing};
+\node[box, fill=anugold!12, draw=anugold!70, below=of field, xshift=1.5cm]
+  (integrate) {Data\\Integration};
+\node[box, fill=anugold!8, draw=anugold!70, below=of integrate]
+  (model) {Bayesian\\Model};
+\node[box, below=of model] (inference) {Ecological\\Inference};
+\node[box, fill=warmbrown!10, draw=warmbrown!70, below=of inference]
+  (decision) {\faClipboardCheck\ \ Management\\Decisions};
+
+\draw[arrow] (field)  -- (integrate);
+\draw[arrow] (remote) -- (integrate);
+\draw[arrow] (integrate) -- (model);
+\draw[arrow] (model) -- (inference);
+\draw[arrow] (inference) -- (decision);
+
+\draw[arrow, dashed, warmbrown!50] (decision.east) --
+  ++(1.2,0) |- (field.east) node[pos=0.75, right, font=\footnotesize\itshape]
+  {adaptive feedback};
+\end{tikzpicture}
+\caption{Conceptual framework for an integrated ecological monitoring
+pipeline. Field observations and remote-sensing products feed into a Bayesian
+model; posterior inference informs management decisions, which in turn guide
+future data collection through adaptive feedback.}
+\label{fig:framework}
+\end{figure}
+
+Figure~\ref{fig:framework} illustrates the conceptual architecture of the
+monitoring pipeline. The dashed feedback loop—from management decisions back
+to field observations—is a defining feature of adaptive monitoring frameworks
+and one that is particularly well-suited to the Bayesian paradigm, where
+posterior distributions from one monitoring cycle become priors for the next.

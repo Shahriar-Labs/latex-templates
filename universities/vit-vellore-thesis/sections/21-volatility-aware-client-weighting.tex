@@ -1,0 +1,15 @@
+\section{Volatility-Aware Client Weighting}
+Standard FedAvg weights each client's contribution by local sample count, which
+over-represents clients with high-frequency logging regardless of signal quality. We
+instead compute a volatility score $v_i$ for client $i$ from the rolling variance of
+its residual prediction error over the previous round, and weight contributions as
+
+\[
+w_i = \frac{n_i \cdot (1 + \alpha v_i)}{\sum_{j=1}^{N} n_j \cdot (1 + \alpha v_j)},
+\]
+
+where $n_i$ is the local sample count and $\alpha$ (set to 0.6 empirically, see
+Table~\ref{tab:hyperparams}) controls how strongly volatility influences aggregation.
+Intuitively, clients whose local model is still struggling to fit noisy or rapidly
+evolving degradation patterns are given proportionally more influence, accelerating
+global convergence on the hardest machines rather than the most talkative ones.

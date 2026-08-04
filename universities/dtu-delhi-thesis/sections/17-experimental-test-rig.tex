@@ -1,0 +1,38 @@
+\section{Experimental Test Rig}
+Data were acquired from a 5.5\,kW, 415\,V, 4-pole squirrel-cage induction motor coupled to a
+programmable eddy-current dynamometer via a flexible coupling. Two tri-axial MEMS accelerometers
+(sampling rate 25.6\,kHz, $\pm$16\,g range) were mounted on the drive-end and non-drive-end
+bearing housings using magnetic bases. Figure~\ref{fig:rig} shows the layout of the test rig and
+sensor placement.
+
+\begin{figure}[!ht]
+\centering
+\begin{tikzpicture}[
+  block/.style={draw,thick,rounded corners=2pt,fill=dtugray,minimum height=1.1cm,minimum width=2.1cm,align=center,font=\small},
+  sensor/.style={draw,thick,fill=dtumaroon,text=white,circle,minimum size=0.55cm,font=\tiny}
+]
+  \node[block] (motor) {Induction\\ Motor};
+  \node[block,right=1.6cm of motor] (coupling) {Flexible\\ Coupling};
+  \node[block,right=1.6cm of coupling] (dyno) {Eddy-Current\\ Dynamometer};
+
+  \draw[thick] (motor.east) -- (coupling.west);
+  \draw[thick] (coupling.east) -- (dyno.west);
+
+  \node[sensor] (s1) at ([yshift=0.9cm]motor.north) {A1};
+  \node[sensor] (s2) at ([yshift=0.9cm]coupling.north) {A2};
+  \draw[dashed] (s1) -- (motor.north);
+  \draw[dashed] (s2) -- (coupling.north west);
+
+  \node[block,below=1.2cm of coupling,fill=dtunavy,text=white,minimum width=3.4cm]
+    (daq) {DAQ + Signal\\ Conditioning Unit};
+  \draw[->,thick] (s1.south) .. controls +(0,-1.4) and +(-1,1.1) .. (daq.west);
+  \draw[->,thick] (s2.south) -- (daq.north);
+
+  \node[block,below=1.0cm of daq,fill=dtugold,minimum width=3.4cm]
+    (edge) {Edge Gateway\\ (Feature Extraction + ML)};
+  \draw[->,thick] (daq.south) -- (edge.north);
+\end{tikzpicture}
+\caption{Schematic of the induction-motor test rig showing accelerometer placement (A1, A2),
+data-acquisition unit, and edge-inference gateway.}
+\label{fig:rig}
+\end{figure}

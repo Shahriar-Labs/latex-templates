@@ -1,0 +1,54 @@
+\section{The Greedy-BADC Planner}
+
+Algorithm~\ref{alg:greedy} presents the greedy planning procedure. At each
+decision epoch, each agent independently computes a candidate action by
+greedily maximizing the marginal contribution to the estimated team objective,
+using the consensus belief $\tilde{b}_i^t$.
+
+\begin{tcolorbox}[
+  colback=jhulight,
+  colframe=jhublue,
+  arc=4pt,
+  boxrule=0.8pt,
+  left=16pt,
+  right=16pt,
+  top=10pt,
+  bottom=10pt,
+  title={\color{jhublue}\textbf{Algorithm 1: Greedy-BADC Planner}},
+  fonttitle=\bfseries
+]
+\vspace{2pt}
+\textbf{Input:} Consensus belief $\tilde{b}_i^t$, action space $A_i$,
+  objective $F$\\
+\textbf{Output:} Selected action $a_i^*$
+\vspace{4pt}
+\begin{enumerate}[leftmargin=*,itemsep=2pt,topsep=2pt]
+  \item Initialize candidate set $\mathcal{C} \leftarrow \varnothing$
+  \item \textbf{for} each teammate $j \neq i$ \textbf{do}\\[-2pt]
+        \hspace*{12pt} $\hat{a}_j \leftarrow \arg\max_{a \in A_j} F(\tilde{b}_i^t, \mathcal{C} \cup \{a\})$\\[-2pt]
+        \hspace*{12pt} $\mathcal{C} \leftarrow \mathcal{C} \cup \{\hat{a}_j\}$
+  \item \textbf{end for}
+  \item $a_i^* \leftarrow \arg\max_{a \in A_i} F(\tilde{b}_i^t, \mathcal{C} \cup \{a\})$
+  \item \textbf{return} $a_i^*$
+\end{enumerate}
+\vspace{2pt}
+\end{tcolorbox}
+\vspace{8pt}
+
+\begin{theorem}[Approximation Guarantee]
+  \label{thm:approx}
+  Let $F$ be a monotone submodular set function and let $\pi^*$ be an optimal
+  joint policy. The Greedy-BADC planner achieves expected reward
+  $J(\pi_{\text{BADC}}) \geq (1 - 1/e) \, J(\pi^*)$ under the consensus belief
+  model, provided that the communication graph satisfies the conditions of
+  Theorem~\ref{thm:convergence}.
+\end{theorem}
+
+\begin{proof}
+  The result follows from the classical guarantee for greedy maximization of
+  monotone submodular functions \citep{nemhauser1978analysis} combined with
+  the belief-convergence bound of Theorem~\ref{thm:convergence}. The
+  approximation error introduced by imperfect consensus is bounded by
+  $O(\varepsilon)$ and can be made arbitrarily small by increasing the
+  number of consensus rounds.
+\end{proof}

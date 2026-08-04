@@ -1,0 +1,17 @@
+\section{Problem Statement}
+
+We consider a neural network $f = f_L \circ f_{L-1} \circ \cdots \circ f_1$ composed of $L$ layers, deployed across a device node $d$ and an aggregation node $a$ connected by a link with time-varying bandwidth $B(t)$ and round-trip latency $\rho(t)$. A partition point $k \in \{0, \ldots, L\}$ assigns layers $f_1, \ldots, f_k$ to $d$ and layers $f_{k+1}, \ldots, f_L$ to $a$. The end-to-end latency for a given input under partition $k$ is
+
+\begin{equation}
+T(k, t) = \sum_{i=1}^{k} c_i^{d} \;+\; \frac{s_k}{B(t)} + \rho(t) \;+\; \sum_{i=k+1}^{L} c_i^{a},
+\label{eq:latency}
+\end{equation}
+
+\noindent where $c_i^{d}$ and $c_i^{a}$ denote the per-layer compute time on the device and aggregation node respectively, and $s_k$ is the size in bytes of the activation tensor emitted at layer $k$. The scheduling objective is to choose $k_t$ at each decision epoch $t$ to minimise a weighted combination of expected latency and device energy consumption, subject to a hard SLO deadline $T_{\max}$:
+
+\begin{equation}
+k_t^{*} = \arg\min_{k} \; \Big[ \, \lambda \, T(k, t) \;+\; (1-\lambda)\, E(k, t) \, \Big] \quad \text{s.t.} \quad T(k, t) \le T_{\max}.
+\label{eq:objective}
+\end{equation}
+
+Because $B(t)$ and device load evolve continuously and are only partially observable, Equation~\ref{eq:objective} cannot be solved exactly at runtime; Chapter~3 develops a learned approximation that is cheap enough to evaluate at every inference call.

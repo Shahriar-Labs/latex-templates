@@ -1,0 +1,68 @@
+\section{System Architecture}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance = 6mm and 10mm,
+  box/.style  = {
+    draw=neutral, fill=white, rounded corners=4pt,
+    minimum width=26mm, minimum height=9mm,
+    font=\small\bfseries, align=center, inner sep=4pt
+  },
+  source/.style = {box, draw=muted, fill=rule, font=\small},
+  proc/.style   = {box, draw=accent, fill=accentlt, text=accent},
+  sink/.style   = {box, draw=neutral, fill=white},
+  arr/.style    = {-Stealth, thick, color=neutral},
+  lbl/.style    = {font=\scriptsize\color{muted}, midway, above=1pt},
+  every node/.append style={text=neutral}
+]
+
+\node[source] (mobile)  {Mobile Clients};
+\node[source, below=of mobile]  (iot)    {IoT Sensors};
+\node[source, below=of iot]     (svc)    {Backend Svcs};
+
+\node[proc, right=16mm of iot] (ingest) {Ingestion\\Gateway};
+
+\node[proc, right=16mm of ingest] (proc) {ESP Core\\Processor};
+
+\node[sink, right=16mm of proc]  (kafka) {Kafka\\Cluster};
+
+\node[sink, right=14mm of kafka, yshift=9mm]  (dw)    {Data\\Warehouse};
+\node[sink, right=14mm of kafka]              (alert) {Alerting\\Engine};
+\node[sink, right=14mm of kafka, yshift=-9mm] (hook)  {Webhooks};
+
+\node[proc, below=10mm of proc]  (schema) {Schema\\Registry};
+
+\draw[arr] (mobile.east) -- (ingest.north west);
+\draw[arr] (iot.east)    -- (ingest.west);
+\draw[arr] (svc.east)    -- (ingest.south west);
+
+\draw[arr] (ingest.east) -- node[lbl]{events} (proc.west);
+
+\draw[arr, <->] (proc.south) -- node[right, font=\scriptsize\color{muted}]{validate} (schema.north);
+
+\draw[arr] (proc.east)  -- node[lbl]{routed} (kafka.west);
+
+\draw[arr] (kafka.east) -- (dw.west);
+\draw[arr] (kafka.east) -- (alert.west);
+\draw[arr] (kafka.east) -- (hook.west);
+
+\begin{scope}[on background layer]
+  \node[draw=rule, dashed, rounded corners=3pt, inner sep=5pt,
+        fit=(mobile)(iot)(svc),
+        label={[font=\scriptsize\color{muted}]above:Producers}] {};
+  \node[draw=rule, dashed, rounded corners=3pt, inner sep=5pt,
+        fit=(dw)(alert)(hook),
+        label={[font=\scriptsize\color{muted}]above:Consumers}] {};
+\end{scope}
+
+\end{tikzpicture}
+\end{center}
+
+The \textbf{Ingestion Gateway} terminates TLS, authenticates producers (API key /
+service account), and forwards validated raw events to the \textbf{ESP Core
+Processor} over an internal gRPC stream. The Core Processor evaluates declarative
+routing rules, applies transformation plugins, and publishes to \textbf{Kafka}. The
+\textbf{Schema Registry} (Confluent-compatible) is consulted on every event type;
+unknown schemas are rejected with \texttt{422 Unprocessable Entity}.
+
+%% ─────────────────────────────────────────────────────────────────────────────

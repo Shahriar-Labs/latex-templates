@@ -1,0 +1,50 @@
+\section{Belief Tracking with Structured Uncertainty}
+\label{sec:badc-structure}
+
+Each agent $i$ maintains a factored belief state $b_i^t = (b_i^{\text{env}}, b_i^{\text{team}})$,
+where $b_i^{\text{env}} \in \Delta(S)$ tracks the distribution over world states
+and $b_i^{\text{team}}$ tracks the estimated intent of each teammate. The
+separation is motivated by the observation that environmental uncertainty updates
+are driven by local sensor measurements, while teammate-intent uncertainty is
+resolved primarily through communication.
+
+The environmental belief update follows a standard Bayesian filter:
+\begin{equation}
+  b_i^{\text{env}}(s') = \eta \; \Omega(o_i \mid s', a_i) \sum_{s \in S} T(s' \mid s, \mathbf{\hat{a}}) \; b_i^{\text{env}}(s),
+  \label{eq:bayes}
+\end{equation}
+where $\mathbf{\hat{a}}$ denotes agent $i$'s estimate of the joint action
+(derived from $b_i^{\text{team}}$) and $\eta$ is a normalization constant.
+
+\begin{definition}[Consensus Belief]
+  Let $\mathcal{G}^t = (V, E^t)$ be the communication graph at time $t$, where
+  an edge $(i, j) \in E^t$ indicates that agents $i$ and $j$ can exchange messages.
+  The \emph{consensus belief} $\tilde{b}_i^t$ is obtained by applying the push-sum
+  protocol to the local beliefs:
+  \begin{equation}
+    \tilde{b}_i^{t}(x) = \frac{\sum_{j \in \mathcal{N}_i^t \cup \{i\}} w_{ij}^t \, b_j^t(x)}
+                               {\sum_{j \in \mathcal{N}_i^t \cup \{i\}} w_{ij}^t},
+  \end{equation}
+  where $\mathcal{N}_i^t = \{j \mid (i, j) \in E^t\}$ and $w_{ij}^t$ are
+  Metropolis weights based on node degrees.
+\end{definition}
+
+\begin{theorem}[Convergence of BADC Beliefs]
+  \label{thm:convergence}
+  Assume the communication graph sequence $\{\mathcal{G}^t\}_{t \geq 0}$ is
+  uniformly jointly connected. Then for any $\varepsilon > 0$, there exists
+  $T_0$ such that for all $t \geq T_0$ and all agents $i, j$:
+  \begin{equation}
+    \Vert \tilde{b}_i^t - \tilde{b}_j^t \Vert_1 \leq \varepsilon.
+  \end{equation}
+  Moreover, the rate of convergence is geometric in the number of consensus rounds
+  per time step.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+  Under the uniformly jointly connected assumption, the product of stochastic
+  matrices $W^t W^{t-1} \cdots W^{t-B+1}$ is scrambling for sufficiently large
+  window $B$. The result follows from the coefficient of ergodicity bound
+  \citep{seneta2006nonnegative} applied to the push-sum dynamics. A complete
+  proof appears in Appendix~\ref{app:convergence}.
+\end{proof}

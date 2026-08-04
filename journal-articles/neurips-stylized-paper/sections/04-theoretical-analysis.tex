@@ -1,0 +1,45 @@
+\section{Theoretical Analysis}
+\label{sec:theory}
+
+\begin{theorem}
+  \label{thm:span}
+  For a \modelname{} model with $L$ encoder layers and context bank size $k$,
+  each output token has an \emph{effective attention span} of at least
+  $\min(n,\, k \cdot \lfloor L/2 \rfloor)$ tokens.
+\end{theorem}
+
+\begin{proof}
+  By induction on layer depth. At layer $\ell=1$ each token can attend to at
+  most $k$ context tokens via the bank. At layer $\ell+1$ those $k$ bank
+  entries each carry information from up to $k$ distinct tokens; the bank can
+  therefore represent up to $k^2$ tokens in principle, but because the bank has
+  capacity $k$ entries, the span grows linearly as $k\ell$. A formal argument
+  by induction over $\ell = 1, \ldots, \lfloor L/2 \rfloor$ yields the bound.
+\end{proof}
+
+\begin{corollary}
+  With $k = \sqrt{n}$ and $L = \mathcal{O}(\log n)$ layers, \modelname{}
+  achieves full-sequence span in $\mathcal{O}(n \log n)$ total complexity.
+\end{corollary}
+
+% ── Algorithm box ────────────────────────────────────────────
+\begin{algorithm}[!t]
+\DontPrintSemicolon
+\SetAlgoLined
+\KwIn{Token representations $\mathbf{X}^{(\ell)}$, bank size $k$}
+\KwOut{Updated representations $\hat{\mathbf{X}}^{(\ell)}$}
+\BlankLine
+Compute scores $s_i \leftarrow \mathbf{w}_s^\top \mathbf{x}_i^{(\ell)}$, $\forall i$\;
+Select top-$k$ indices $\pi \leftarrow \mathrm{argtopk}(s, k)$\;
+Write bank: $C \leftarrow \softmax(s_\pi / \sqrt{d_c})\, \mathbf{X}_\pi^{(\ell)} W_w$\;
+\BlankLine
+\For{$i \leftarrow 1$ \KwTo $n$}{
+  $a_i \leftarrow \softmax\!\!\left(\mathbf{x}_i^{(\ell)} W_q\, C^\top / \sqrt{d_c}\right)$\;
+  $\hat{\mathbf{x}}_i^{(\ell)} \leftarrow \mathbf{x}_i^{(\ell)} + a_i\, C\, W_v$\;
+}
+\Return $\hat{\mathbf{X}}^{(\ell)}$\;
+\caption{Context Gateway Forward Pass}
+\label{alg:cg}
+\end{algorithm}
+
+% ============================================================

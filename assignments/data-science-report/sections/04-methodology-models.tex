@@ -1,0 +1,18 @@
+\section{Methodology / Models}
+We developed a complete machine learning pipeline starting with feature extraction and encoding. Standard pre-processing involves scaling continuous features using robust scaling (to mitigate outlier impact) and one-hot encoding for categorical variables.
+
+We evaluated four candidate architectures:
+\begin{enumerate}[leftmargin=*]
+    \item \textbf{Logistic Regression (L1-regularized)}: Serves as the linear baseline.
+    \item \textbf{Random Forest Classifier}: Non-linear ensemble model to capture interactive feature thresholds.
+    \item \textbf{XGBoost (Extreme Gradient Boosting)}: Gradient boosted trees optimized with early stopping.
+    \item \textbf{Multi-Layer Perceptron (MLP)}: A feed-forward neural network with two hidden layers ($64 \times 32$).
+\end{enumerate}
+
+\begin{lstlisting}[language=Python, caption={Feature engineering step for customer usage intensity.}]
+def compute_usage_intensity(df):
+    # Calculate ratio of active days to total subscription age
+    df['usage_intensity'] = df['active_days'] / (df['tenure_days'] + 1)
+    df['support_to_usage_ratio'] = df['support_tickets'] / (df['usage_intensity'] + 1e-5)
+    return df
+\end{lstlisting}

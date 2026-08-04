@@ -1,0 +1,53 @@
+\section{Theoretical Analysis}
+
+We establish the following approximation guarantee for SCA:
+
+\begin{theorem}[SCA Approximation Bound]\label{thm:sca-bound}
+  Let $A = \operatorname{softmax}(QK^{\top}/\sqrt{d_k})$ be the full attention matrix
+  and $\hat{A}$ be the SCA attention matrix with $k$ retained keys per query. Assume
+  the attention scores $\langle q_i, k_j \rangle / \sqrt{d_k}$ are bounded. Then there
+  exists a constant $C$ such that for any $\varepsilon > 0$, with
+  $k = \Omega(\log(n)/\varepsilon^2)$, we have
+  $\|A - \hat{A}\|_F \leq \varepsilon \|A\|_F$ with high probability.
+\end{theorem}
+
+The proof proceeds by bounding the contribution of dropped attention weights via
+Hoeffding's inequality and the Lipschitz property of the softmax function. A complete
+derivation is provided in Appendix~A.
+
+% ── Figure: SCA architecture ────────────────────────────────────
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[
+    node distance=5mm and 8mm,
+    block/.style={
+      draw=edinburghblue, fill=edinburghblue!4, rounded corners=3pt,
+      minimum width=28mm, minimum height=9mm, align=center, font=\footnotesize\bfseries
+    },
+    smallblock/.style={
+      draw=saltireblue!60, fill=saltireblue!3, rounded corners=2pt,
+      minimum width=22mm, minimum height=8mm, align=center, font=\footnotesize
+    },
+    arr/.style={->, >=Stealth, thick, edinburghblue!70}
+  ]
+    \node[block] (input) {$Q, K, V$};
+
+    \node[smallblock, below left=8mm and -4mm of input] (controller)
+      {Sparsity Controller\\$\sigma(Q W_s K^{\top}/\sqrt{d})$};
+    \node[smallblock, below right=8mm and -4mm of input] (attn)
+      {Masked Attention\\$\operatorname{softmax}(QK^{\top}/\sqrt{d} + \log\mathcal{M})$};
+
+    \node[block, below=12mm of attn] (output) {Output Projection};
+
+    \draw[arr] (input.south) -- ++(0,-3mm) -| (controller);
+    \draw[arr] (input.south) -- ++(0,-3mm) -| (attn);
+    \draw[arr] (controller) -- node[right,font=\footnotesize] {$\mathcal{M}$} (attn);
+    \draw[arr] (attn) -- (output);
+  \end{tikzpicture}
+  \caption{The Sparse Contextual Attention architecture. The sparsity controller
+    (left) and the masked attention module (right) operate in parallel on shared
+    inputs. The binary mask $\mathcal{M}$ gates the attention computation.}
+  \label{fig:sca-architecture}
+\end{figure}
+
+% ────────────────────────────────────────────────────────────────

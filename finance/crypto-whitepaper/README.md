@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Cryptocurrency Whitepaper LaTeX template — crypto whitepaper latex template. Elegant, compile-tested, editable online at letx.app.**
+**Cryptocurrency Whitepaper LaTeX template — Cryptocurrency Whitepaper. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/finance/crypto-whitepaper)**, with real-time collaboration and one-second compiles.
 
@@ -12,7 +12,7 @@ Edit and compile this template instantly in your browser — no LaTeX install �
 
 ## Features
 - Elegant, modern design
-- Compile-tested (pdflatex)
+- Compile-tested
 - Fully editable sample content
 
 ## Use it online (recommended)

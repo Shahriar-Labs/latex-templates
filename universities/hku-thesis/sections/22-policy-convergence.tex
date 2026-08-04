@@ -1,0 +1,26 @@
+\section{Policy Convergence}
+
+Figure~\ref{fig:convergence} plots P95 latency against the number of scheduling decisions observed since the policy was initialised (cold start, no offline pretraining). The policy stabilises within 2{,}300 decisions, after which latency variance across seeds becomes statistically indistinguishable from the converged-policy baseline.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+  \begin{scope}
+    \draw[->,color=hkugray] (0,0) -- (8.6,0) node[right,font=\small]{Decisions observed};
+    \draw[->,color=hkugray] (0,0) -- (0,4.6) node[above,font=\small]{P95 latency (ms)};
+    \foreach \x/\lbl in {0/0,2.15/1000,4.3/2000,6.45/3000,8.6/4000}
+      \draw (\x,0) -- (\x,-0.08) node[below,font=\scriptsize,color=hkugray]{\lbl};
+    \foreach \y/\lbl in {0/60,1.15/90,2.3/120,3.45/150,4.6/180}
+      \draw (0,\y) -- (-0.08,\y) node[left,font=\scriptsize,color=hkugray]{\lbl};
+
+    \draw[hkugold,line width=1.3pt,smooth]
+      plot coordinates {(0,4.2) (0.6,3.55) (1.2,2.95) (1.8,2.45) (2.4,2.05)
+                         (3.2,1.65) (4.0,1.35) (4.94,1.1) (6.0,0.95) (7.2,0.9) (8.6,0.88)};
+
+    \draw[hkugreen,line width=1pt,dashed] (0,0.88) -- (8.6,0.88);
+    \node[anchor=west,font=\scriptsize,color=hkugreen] at (5.6,1.1) {converged P95 $\approx$ 91\,ms};
+  \end{scope}
+\end{tikzpicture}
+\caption{P95 latency versus scheduling decisions from cold start; the ANRS policy converges within roughly 2,300 decisions and remains stable thereafter.}
+\label{fig:convergence}
+\end{figure}

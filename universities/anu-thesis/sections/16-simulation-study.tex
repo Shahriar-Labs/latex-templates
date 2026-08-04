@@ -1,0 +1,52 @@
+\section{Simulation Study}
+
+A comprehensive simulation study was conducted to evaluate the model's ability
+to recover known parameter values under realistic data configurations.
+Two hundred datasets were generated for each of four scenarios crossing two
+factors: (i) number of species ($S = 5$ or $S = 15$) and (ii) proportion of
+sites with at least one detection (low: 15\%; high: 40\%). Each dataset
+comprised $N = 300$ sites distributed across a $100 \times 100$~km study region.
+
+True occupancy states were simulated from the multivariate probit model
+(Equation~\ref{eq:process}) using environmental covariates extracted from the
+TERN Soil and Landscape Grid of Australia (depth to bedrock, available water
+capacity, and total phosphorus) at 90~m resolution. Detection/non-detection
+data were generated with per-visit detection probabilities drawn from a
+$\operatorname{Beta}(2,5)$ distribution (mean $\approx 0.29$), reflecting the
+low detectability typical of rare forest fauna.
+
+\subsection{Results}
+
+The model recovered occupancy--covariate relationships with low bias across all
+scenarios. Mean absolute error (MAE) for $\boldsymbol{\beta}_s$ was 0.18
+(SD = 0.09) in the high-information scenario ($S = 15$, high detection) and
+0.34 (SD = 0.21) in the most challenging scenario ($S = 5$, low detection).
+Spatial range parameters $\phi_s$ were estimated with greater uncertainty, as
+expected given their dependence on second-order properties of the point pattern,
+but 95\% credible intervals contained the true value in 91\% of replicates.
+
+\begin{table}[htbp]
+\centering
+\caption{Model comparison metrics for four candidate models averaged over 200
+simulation replicates. Lower DIC and WAIC indicate better fit; $\Delta$ values
+are differences from the best-performing model.}
+\label{tab:models}
+\begin{tabularx}{\textwidth}{@{}>{\color{anucrimson}\bfseries}l
+  @{\hspace{6mm}}c@{\hspace{6mm}}c@{\hspace{6mm}}c@{\hspace{6mm}}c@{}}
+\toprule
+Model & DIC & $\Delta$DIC & WAIC & $\Delta$WAIC \\
+\midrule
+GLM (logistic)                 & 4821 & 1243 & 4798 & 1267 \\
+GAM (spatial smooth)           & 4167 &  589 & 4112 &  581 \\
+MaxEnt (presence-only)         & 3892 &  314 & 3856 &  325 \\
+\textbf{Hierarchical Bayesian} & \textbf{3578} & \textbf{---} &
+                                  \textbf{3531} & \textbf{---} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Table~\ref{tab:models} summarises model comparison results. The hierarchical
+Bayesian model outperforms all competitors on both DIC and WAIC, with the
+largest gains observed for species with fewer than 20 occurrence records—the
+very cases where partial pooling of information across species is most
+beneficial.

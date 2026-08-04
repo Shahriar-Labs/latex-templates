@@ -1,0 +1,54 @@
+\section{Problem Investigation}
+Post-incident analysis revealed that the crash occurred due to memory starvation (Out-Of-Memory) on the primary database host. The profiling data collected during the outage showed that the active memory pool was consumed entirely by query execution plans associated with the \texttt{/v2/\allowbreak analytics/\allowbreak transactions} endpoint. 
+
+A newly deployed backend service update included a reporting query that attempted to aggregate transaction histories by customer ID and creation timestamp. However, because the database migration script did not apply a composite index across the \texttt{customer\_id} and \texttt{created\_at} columns, PostgreSQL was forced to execute a sequential scan of 45 million rows. This query, executed concurrently by hundreds of active sessions, led to severe thrashing and eventual system shutdown.
+
+\subsection{Ishikawa (Fishbone) Diagram}
+The Ishikawa diagram below categorizes the contributing factors that led to this critical database outage, highlighting technical deficiencies, process gaps, and organizational constraints.
+
+\vspace{0.2cm}
+\begin{center}
+\resizebox{0.95\textwidth}{!}{%
+\begin{tikzpicture}[
+    >=stealth,
+    node distance=1.5cm,
+    every node/.style={font=\sffamily\small},
+    category/.style={draw, rectangle, fill=PrimaryColor, text=white, rounded corners, minimum width=2.8cm, minimum height=0.9cm, font=\sffamily\bfseries\small},
+    effect/.style={draw, rectangle, fill=WarningColor, text=white, rounded corners, minimum width=3.8cm, minimum height=1.3cm, font=\sffamily\bfseries\large, align=center},
+    cause/.style={font=\sffamily\scriptsize, align=left}
+]
+    % Central spine
+    \draw[ultra thick, PrimaryColor, ->] (0,0) -- (11.8,0);
+    \node[effect] at (14,0) {Database\\Service Outage\\(INC-2026-8941)};
+    
+    % Upper branches
+    \draw[thick, PrimaryColor] (3,0) -- (4.5,2.5) node[above, category] {Technology};
+    \draw[thick, PrimaryColor] (8,0) -- (9.5,2.5) node[above, category] {Process};
+    
+    % Lower branches
+    \draw[thick, PrimaryColor] (3,0) -- (1.5,-2.5) node[below, category] {People};
+    \draw[thick, PrimaryColor] (8,0) -- (6.5,-2.5) node[below, category] {Environment};
+    
+    % Sub-branches - Technology
+    \draw[->, DarkNeutral!80, thick] (1.6, 1.0) node[left, cause] {Missing database indexes\\on transactions table} -- (3.6, 1.0);
+    \draw[->, DarkNeutral!80, thick] (2.2, 2.0) node[left, cause] {Lack of connection pooling\\limits in analytics service} -- (4.2, 2.0);
+    
+    % Sub-branches - Process
+    \draw[->, DarkNeutral!80, thick] (6.6, 1.0) node[left, cause] {No automated migration test\\on large dataset schema} -- (8.6, 1.0);
+    \draw[->, DarkNeutral!80, thick] (7.2, 2.0) node[left, cause] {Manual deployment checklist\\lacked DBRE sign-off} -- (9.2, 2.0);
+    
+    % Sub-branches - People
+    \draw[->, DarkNeutral!80, thick] (4.4, -1.0) node[right, cause] {Lack of SQL optimization\\training for developers} -- (2.4, -1.0);
+    \draw[->, DarkNeutral!80, thick] (3.8, -2.0) node[right, cause] {Overworked database admin\\team handling migrations} -- (1.8, -2.0);
+
+    % Sub-branches - Environment
+    \draw[->, DarkNeutral!80, thick] (9.4, -1.0) node[right, cause] {Sudden customer traffic spike\\post-market release} -- (7.4, -1.0);
+    \draw[->, DarkNeutral!80, thick] (8.8, -2.0) node[right, cause] {Staging vs production scale\\gap in test environment} -- (6.8, -2.0);
+
+\end{tikzpicture}
+}
+\end{center}
+
+\vspace{0.2cm}
+
+% --- SECTION 6: LESSONS LEARNED ---

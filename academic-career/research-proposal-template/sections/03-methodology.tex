@@ -1,0 +1,63 @@
+\section{Methodology}
+
+\subsection{Problem Formalization}
+
+We consider $K$ hospitals, each holding a private dataset
+$\mathcal{D}_k = \{(\mathbf{x}_i, y_i)\}_{i=1}^{n_k}$ drawn from a site-specific distribution
+$P_k(\mathbf{x}, y)$. The goal is to learn a global model
+$\theta^* = \arg\min_\theta \sum_{k=1}^{K} \frac{n_k}{n}\,\mathcal{L}_k(\theta)$ where
+$n = \sum_k n_k$ and $\mathcal{L}_k(\theta)$ is the empirical risk on site $k$, subject to:
+(i)~raw data never leave site $k$; (ii)~the global model satisfies
+$(\varepsilon,\delta)$-differential privacy; and (iii)~total communication per round does
+not exceed $B$ bytes.
+
+\subsection{Adaptive Privacy Budgeting (Aim~1)}
+
+We define the \emph{distributional skew} of site $k$ as
+$D_{\mathrm{JS}}(P_k \,\|\, \bar{P})$ where $\bar{P}$ is a mixture estimate broadcast by the
+server. The per-round privacy budget for site $k$ is
+$\varepsilon_k = \varepsilon_{\mathrm{base}} \cdot \bigl(1 +
+\alpha \cdot D_{\mathrm{JS}}(P_k \,\|\, \bar{P})\bigr)^{-1}$, ensuring that sites with
+atypical data distributions receive proportionally less noise. We track cumulative privacy
+expenditure using a modified moments accountant~\cite{abadi2016} adapted for federated
+rounds. The scheme guarantees $(\sum_r \max_k \varepsilon_k^{(r)}, \delta)$-DP for the full
+training procedure.
+
+\subsection{Divergence-Aware Aggregation (Aim~2)}
+
+After each round $t$, the server receives local updates $\Delta\theta_k^{(t)}$ from
+participating sites. We compute the pairwise Wasserstein-1 distance
+$W_1(\Delta\theta_k^{(t)}, \Delta\theta_j^{(t)})$ using the sliced-Wasserstein approximation
+for computational tractability in high-dimensional parameter space. Site weights are
+assigned as $w_k \propto \bigl(\frac{1}{K-1}\sum_{j \neq k} W_1(\Delta\theta_k,
+\Delta\theta_j)\bigr)^{-1}$, down-weighting outlier sites whose update direction diverges
+from the consensus. The global update becomes
+$\Delta\theta^{(t)} = \sum_k w_k \Delta\theta_k^{(t)}$.
+
+\subsection{Gradient Compression Under DP (Aim~3)}
+
+We adopt top-$k$ sparsification: each site transmits only the $k$ largest-magnitude gradient
+entries, with the remainder accumulated as local residual for the next round. To prevent
+the sparsification mask from leaking private information, we prove that transmitting the
+indices of selected coordinates does not increase the privacy budget beyond the DP noise
+already applied — the indices carry no magnitude information and are post-processed from
+an already-private vector. For further compression, we apply stochastic
+$q$-level quantization to the transmitted values, with quantization bins calibrated to the
+DP noise scale $\sigma$.
+
+\subsection{Evaluation Protocol}
+
+\textbf{Datasets.} We use MIMIC-IV (critical care, $\approx$380\,000 patients) and
+eICU-CRD (multi-center ICU, $\approx$200\,000 patients) split into $K \in \{5, 10, 20\}$
+sites with varying degrees of label-distribution skew (simulated via Dirichlet allocation
+with $\alpha \in \{0.1, 0.5, 1.0\}$).
+
+\textbf{Tasks.} (1)~48-hour in-hospital mortality prediction; (2)~acute kidney injury
+onset within 72\,hours; (3)~length-of-stay prediction ($\leq 3$ vs.\ $> 7$ days).
+
+\textbf{Metrics.} Area under the ROC curve (AUROC), area under the precision-recall curve
+(AUPRC), model calibration (ECE), communication cost (total MB transmitted), and wall-clock
+training time. Privacy metrics: empirical $(\varepsilon,\delta)$ via privacy audit and
+membership-inference attack success rate.
+
+% ── 4. Timeline & Work Plan ───────────────────────────────────

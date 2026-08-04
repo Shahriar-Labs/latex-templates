@@ -1,0 +1,37 @@
+\section{Enumerated Types \& Foreign Keys}
+
+\begin{minipage}{0.48\textwidth}
+  \begin{tcolorbox}[colback=white,colframe=secondary!50,sharp corners,boxrule=0.3pt,
+    left=2mm,right=2mm,top=1.5mm,bottom=1.5mm,before skip=0pt,after skip=1pt]
+    {\fontsize{7}{9}\selectfont\color{primary}\textbf{order\_status} \textbar{} \texttt{pending, confirmed, shipped, delivered, cancelled}}
+  \end{tcolorbox}
+  \begin{tcolorbox}[colback=white,colframe=secondary!50,sharp corners,boxrule=0.3pt,
+    left=2mm,right=2mm,top=1.5mm,bottom=1.5mm,before skip=0pt,after skip=1pt]
+    {\fontsize{7}{9}\selectfont\color{primary}\textbf{merchant\_status} \textbar{} \texttt{pending, active, suspended, closed}}
+  \end{tcolorbox}
+  \begin{tcolorbox}[colback=white,colframe=secondary!50,sharp corners,boxrule=0.3pt,
+    left=2mm,right=2mm,top=1.5mm,bottom=1.5mm,before skip=0pt,after skip=1pt]
+    {\fontsize{7}{9}\selectfont\color{primary}\textbf{payout\_method} \textbar{} \texttt{stripe, wise, bank\_transfer} \hspace{1em} \textbf{txn\_status} \textbar{} \texttt{pending, authorized, captured, refunded, failed}}
+  \end{tcolorbox}
+\end{minipage}
+\par
+\begin{minipage}{0.48\textwidth}
+  \begin{tcolorbox}[schemaframe]
+    \renewcommand{\arraystretch}{1.1}
+    \begin{tabularx}{\linewidth}{p{2.3cm} p{2.5cm} X}
+      \toprule
+      \rowcolor{primary!10}\textbf{Child} & \textbf{Column} & \textbf{Parent (On Delete)} \\
+      \midrule
+      products     & merchant\_id          & merchants.id (CASCADE) \\
+      inventory    & product\_id           & products.id (CASCADE) \\
+      orders       & customer\_id          & customers.id (RESTRICT) \\
+      orders       & shipping\_address\_id & addresses.id (SET NULL) \\
+      transactions & order\_id             & orders.id (RESTRICT) \\
+      transactions & merchant\_id          & merchants.id (RESTRICT) \\
+      \bottomrule
+    \end{tabularx}
+  \end{tcolorbox}
+\end{minipage}
+\par
+
+% ── SAMPLE QUERIES ────────────────────────────────────────────────────

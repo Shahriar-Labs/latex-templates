@@ -1,0 +1,88 @@
+\section{Integration with Sparse Contextual Attention}
+
+HMG is designed to complement SCA rather than replace it. In our joint architecture,
+each transformer layer computes both SCA (for fine-grained local interactions) and
+HMG memory reads (for long-horizon recall), combining their outputs via a learned
+gating mechanism:
+
+\begin{equation}
+  H_{\text{out}} = \alpha \odot \operatorname{SCA}(Q,K,V)
+    + (1-\alpha) \odot \operatorname{MemRead}(Q, \mathcal{M}),
+  \label{eq:joint}
+\end{equation}
+
+where $\alpha = \sigma(W_{\alpha}\, H + b_{\alpha})$ and $\odot$ denotes element-wise
+multiplication. This allows the model to dynamically balance local precision and global
+context depending on the input.
+
+% ── Table: Memory hierarchy configuration ───────────────────────
+\begin{table}[htbp]
+  \centering
+  \caption{Default memory hierarchy configuration used in our experiments.
+    $n=4096$ is the maximum sequence length.}
+  \label{tab:memory-config}
+  \begin{tabularx}{0.75\linewidth}{@{}>{\color{edinburghblue}\bfseries}l@{\hspace{6mm}}>{\centering\arraybackslash}X>{\centering\arraybackslash}X@{}}
+    \toprule
+    \textbf{Level $\ell$} & \textbf{Segment size} & \textbf{Slots} \\
+    \midrule
+    1 & $2^1 = 2$    & 2048 \\
+    2 & $2^2 = 4$    & 1024 \\
+    3 & $2^3 = 8$    &  512 \\
+    4 & $2^4 = 16$   &  256 \\
+    5 & $2^5 = 32$   &  128 \\
+    \midrule
+    \multicolumn{2}{@{}>{\color{edinburghblue}\bfseries}l}{Total memory slots} & 3968 \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+% ── Figure: Memory hierarchy ────────────────────────────────────
+\begin{figure}[htbp]
+  \centering
+\resizebox{\textwidth}{!}{%
+  \begin{tikzpicture}[
+    box/.style={
+      draw=edinburghblue!50, fill=edinburghblue!5, minimum width=10mm,
+      minimum height=6mm, font=\tiny
+    },
+    level/.style={font=\footnotesize\color{edinburghblue}, right=2mm}
+  ]
+    % Level 1
+    \foreach \x in {1,...,16} {
+      \node[box] at (\x*0.72, 0) {};
+    }
+    \node[level] at (12.5, 0) {$\ell = 1$ (2048 slots)};
+
+    % Level 2
+    \foreach \x in {1,...,8} {
+      \node[box, minimum width=20mm, fill=saltireblue!8, draw=saltireblue!50]
+        at (\x*1.44, -0.8) {};
+    }
+    \node[level] at (12.5, -0.8) {$\ell = 2$ (1024 slots)};
+
+    % Level 3
+    \foreach \x in {1,...,4} {
+      \node[box, minimum width=42mm, fill=edinburghblue!8, draw=edinburghblue!60]
+        at (\x*2.88, -1.6) {};
+    }
+    \node[level] at (12.5, -1.6) {$\ell = 3$ (512 slots)};
+
+    % Level 4
+    \foreach \x in {1,...,2} {
+      \node[box, minimum width=86mm, fill=saltireblue!12, draw=saltireblue!60]
+        at (\x*5.76, -2.4) {};
+    }
+    \node[level] at (12.5, -2.4) {$\ell = 4$ (256 slots)};
+
+    % Level 5
+    \node[box, minimum width=174mm, fill=edinburghblue!12, draw=edinburghblue!70]
+      at (5.8, -3.2) {};
+    \node[level] at (12.5, -3.2) {$\ell = 5$ (128 slots)};
+  \end{tikzpicture}}
+  \caption{Multi-resolution memory hierarchy. Higher levels aggregate
+    information from progressively larger token segments, providing
+    compressed representations at multiple temporal scales.}
+  \label{fig:memory-hierarchy}
+\end{figure}
+
+% ────────────────────────────────────────────────────────────────

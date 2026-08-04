@@ -1,0 +1,31 @@
+\section{Methodology}
+The road network is modeled as a graph $G=(V,E)$ where nodes are intersections and edges
+encode adjacency. Each node carries a window of historical flow. The predictor combines a
+graph-convolution over $V$ with a temporal gated unit; the one-step loss is
+
+\begin{equation}
+\mathcal{L}=\frac{1}{|V|}\sum_{v\in V}\bigl\lVert \hat{y}_v - y_v\bigr\rVert_2^2
+           +\lambda\lVert\Theta\rVert_2^2,
+\end{equation}
+
+with $\Theta$ the trainable parameters and $\lambda$ a regularization weight. Data were
+split 70/15/15 by time to avoid leakage.
+
+\subsection{Data Pipeline}
+Raw 30-second counts were cleaned (imputing gaps under 3 minutes), aggregated to 5-minute
+bins, and normalized per detector. Figure~\ref{fig:pipe} summarizes the flow.
+
+\begin{figure}[ht]\centering
+\begin{tikzpicture}[node distance=6mm,every node/.style={font=\small}]
+  \tikzstyle{b}=[draw=accent,fill=soft,rounded corners=3pt,minimum height=9mm,
+                 minimum width=26mm,align=center,text=ink]
+  \node[b](a){Loop\\detectors};
+  \node[b,right=of a](c){Clean \&\\impute};
+  \node[b,right=of c](d){Aggregate\\5-min bins};
+  \node[b,right=of d](e){Normalize\\\& window};
+  \node[b,right=of e](f){Model\\tensors};
+  \foreach \x/\y in {a/c,c/d,d/e,e/f}{\draw[->,accent,thick](\x)--(\y);}
+\end{tikzpicture}
+\caption{End-to-end data pipeline from raw detectors to model-ready tensors.}
+\label{fig:pipe}
+\end{figure}

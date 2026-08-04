@@ -1,0 +1,40 @@
+\section{Background of the Invention}\label{sec:background}
+
+\subsection{Field of the Invention}
+
+The present invention relates to video compression systems and, more particularly, to
+neural-network-driven adaptive bitrate encoding systems that dynamically reconfigure
+codec parameters in response to real-time network telemetry.
+
+\subsection{Description of the Related Art}
+
+Conventional adaptive bitrate (ABR) streaming systems, such as those conforming to
+\defterm{Dynamic Adaptive Streaming over HTTP} (DASH) and Apex HLS, partition encoded
+video into fixed-duration segments and select the next segment's quality level based on
+measured download throughput \refnum{200}. While effective under stable network
+conditions, such heuristic-ladder approaches exhibit two principal shortcomings:
+
+\begin{enumerate}[label=(\roman*), leftmargin=2em, itemsep=2pt]
+  \item \textbf{Lag in quality switching:} Rule-based bitrate ladders require multiple
+    bandwidth samples before upshifting quality, introducing perceptible quality
+    oscillations that degrade the \defterm{Mean Opinion Score} (MOS) by up to 1.8 points
+    on ITU-T P.910 five-point scales.
+  \item \textbf{Scene-agnostic encoding:} Fixed quantization parameter (QP) schedules
+    are blind to scene complexity and motion vectors, over-allocating bits to
+    low-complexity scenes while under-serving fast-motion sequences.
+\end{enumerate}
+
+Prior art disclosures, including U.S.\ Patent No.\ 10,\!484,\!727 (Zhao et al.) and
+U.S.\ Patent Application Publication No.\ US 2021/0160527 A1 (Gupta et al.), describe
+reinforcement-learning agents for bitrate selection but do not address real-time
+in-encoder parameter reconfiguration at frame granularity, nor do they provide a
+hardware-agnostic deployment substrate compatible with mobile system-on-chip (SoC)
+architectures.
+
+There exists, therefore, a need in the art for an adaptive compression engine that (a)
+operates at intra-frame temporal resolution, (b) infers scene complexity jointly with
+network state, and (c) deploys on heterogeneous hardware without modification.
+
+% ============================================================
+%  SUMMARY OF THE INVENTION
+% ============================================================

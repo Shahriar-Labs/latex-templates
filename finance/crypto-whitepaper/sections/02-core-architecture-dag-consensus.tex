@@ -1,0 +1,38 @@
+\section{Core Architecture \& DAG Consensus}
+The Vertex Protocol decouples the ordering of transactions from their execution. The network is maintained by a distributed validator set which structures transaction proposals into a Directed Acyclic Graph.
+
+\subsection{Directed Acyclic Graph Consensus (VertexDAG)}
+Unlike traditional linear chains where blocks are appended sequentially, the Vertex consensus ledger is organized as a DAG. Each vertex in the graph represents a block of transactions, and edges represent parent references.
+
+Each block $B$ must reference at least $k = 3$ parent blocks. The validation rule for block proposal requires verifying all ancestral paths:
+\begin{equation}
+\text{Parents}(B) = \{P_1, P_2, P_3\} \quad \text{s.t.} \quad P_i \in \mathcal{G}_{DAG}
+\end{equation}
+The topological ordering of the DAG is resolved using a virtual voting consensus protocol, eliminating the need for leader election. If a validator proposes a block containing double-spent inputs, the consensus engine resolves conflict by prioritizing the block with the higher cumulative weight:
+\begin{equation}
+W(B) = \text{SelfWeight}(B) + \sum_{C \in \text{Children}(B)} W(C)
+\end{equation}
+
+By using virtual voting, validators arrive at a total ordering of blocks locally, bypassing the network overhead associated with traditional multi-round Byzantine Agreement protocols.
+
+\subsection{Performance Comparison}
+Table 1 demonstrates how the Vertex architecture performs relative to other mainstream layer-1 and layer-2 designs.
+
+\begin{table}[H]
+\centering
+\sffamily
+\small
+\begin{tabularx}{\textwidth}{lXXXX}
+\toprule
+\textbf{Metric} & \textbf{Ethereum L1} & \textbf{Solana} & \textbf{Synapse L2} & \textbf{Vertex Protocol} \\
+\midrule
+Consensus Type & Proof-of-Stake & Proof-of-History & Optimistic Rollup & DAG + ZK-Rollup \\
+Throughput (TPS) & $\sim 15$ & $\sim 2,500$ & $\sim 500$ & $\mathbf{> 50,000}$ \\
+Latency & $12 - 14$ s & $400$ ms & $1 - 2$ s & $\mathbf{< 200}$ \textbf{ms} \\
+Finality Time & $12.8$ min & $12.2$ s & $7$ days (dispute) & $\mathbf{< 1.5}$ \textbf{s} \\
+MEV Protection & None (PBS) & None & Minimal & \textbf{Threshold Cryptography} \\
+\bottomrule
+\end{tabularx}
+\caption{Comparative analysis of primary blockchain architectures and Vertex Protocol performance metrics.}
+\label{tab:comparison}
+\end{table}

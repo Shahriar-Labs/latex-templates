@@ -4,26 +4,24 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**US utility patent application LaTeX template — title/inventor block, Field, Background, Summary, Detailed Description with reference numerals, a numbered Claims list with independent/dependent claims, and an Abstract.**
+**Patent Application LaTeX template — Patent Application. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/miscellaneous/patent-application)**, with real-time collaboration and one-second compiles.
 
 ![Patent Application preview](preview.png)
 
 ## Features
-- Title / inventor / applicant block
-- Field, Background, Summary
-- Detailed Description with reference numerals
-- Numbered Claims (independent + dependent)
-- Abstract; USPTO style
+- Elegant, modern design
+- Compile-tested
+- Fully editable sample content
 
 ## Use it online (recommended)
 Open **[Patent Application on LetX »](https://letx.app/templates/miscellaneous/patent-application)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/patent-application
+git clone https://github.com/Shahriar-Labs/patent-application.git
+cd patent-application
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

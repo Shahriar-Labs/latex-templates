@@ -1,0 +1,20 @@
+\section{The Rise of Adaptive Methods}
+
+To address the conditioning problem, a family of \emph{adaptive} methods has emerged. These
+algorithms maintain per-parameter learning rates that scale inversely with some measure of
+historical gradient magnitude. The most influential of these, Adam \cite{kingma2015}, maintains
+exponential moving averages of both the gradient ($m_t$) and the element-wise squared gradient
+($v_t$):
+\begin{align}
+  m_t &= \beta_1 m_{t-1} + (1-\beta_1) g_t, \label{eq:adam_m}\\
+  v_t &= \beta_2 v_{t-1} + (1-\beta_2) g_t^2, \label{eq:adam_v}\\
+  \theta_{t+1} &= \theta_t - \eta_t \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \varepsilon},
+  \label{eq:adam_update}
+\end{align}
+where $\hat{m}_t$ and $\hat{v}_t$ are bias-corrected estimates, and $\varepsilon > 0$ prevents
+division by zero.
+
+Adam combines the benefits of momentum (via $m_t$) and adaptive step sizes (via $v_t$). It is
+robust to hyperparameter choices, efficient to implement, and consistently outperforms SGD on a
+wide range of benchmarks. As of 2026, Adam and its weight-decoupled variant AdamW
+\cite{loshchilov2019} are the default optimizers in virtually every deep learning framework.

@@ -1,0 +1,59 @@
+\section{ADaM Dataset Specifications}
+
+All analysis datasets will be constructed in accordance with CDISC ADaM v1.3.
+Source SDTM datasets: DM, AE, LB, EG, VS, CM, EX, QS (SGRQ), CE (exacerbations).
+
+\subsection{Dataset Overview}
+
+\begin{tabularx}{\linewidth}{@{}
+  >{\bfseries\color{sapblue}}p{18mm}
+  >{\raggedright\arraybackslash}p{36mm}
+  >{\raggedright\arraybackslash}p{22mm}
+  >{\raggedright\arraybackslash}X@{}}
+\toprule
+\rowcolor{sapfog}
+\textbf{Dataset} & \textbf{Label} & \textbf{Structure} & \textbf{Key Variables} \\
+\midrule
+ADSL & Subject-Level Analysis & One record/subject & USUBJID, TRT01P, SAFFL, ITTFL, PPFL, RANDDT, GOLD, SMOKSTRS \\
+\addlinespace[2pt]
+ADEFF & Primary Efficacy & One record/subject/visit & USUBJID, PARAMCD, AVISIT, AVISITN, AVAL, BASE, CHG, ANL01FL \\
+\addlinespace[2pt]
+ADEXAC & Exacerbation Events & One record/event & USUBJID, STARTDT, ENDDT, SEVER, EXACFL, EXACRATE \\
+\addlinespace[2pt]
+ADAE & Adverse Events & One record/event & USUBJID, AEDECOD, AESOC, AESEV, AESER, AEREL, TEAEFL \\
+\addlinespace[2pt]
+ADLB & Laboratory & One record/subject/param/visit & USUBJID, PARAMCD, AVISIT, AVAL, BASE, CHG, ANRIND \\
+\addlinespace[2pt]
+ADEG & ECG & One record/subject/param/visit & USUBJID, PARAMCD, AVAL, BASE, CHG, QTCFFL \\
+\addlinespace[2pt]
+ADQS & Questionnaire (SGRQ) & One record/subject/param/visit & USUBJID, PARAMCD, AVAL, BASE, CHG, AVALC \\
+\addlinespace[2pt]
+ADPK & Pharmacokinetics & One record/subject/sample & USUBJID, PCTPT, PCORRES, AVAL, DTYPE \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Key ADEFF Derivations}
+
+\begin{itemize}[leftmargin=1.6em, itemsep=2pt]
+  \item \texttt{BASE}: Trough FEV\textsubscript{1} measured at Day 1 (Visit 2) pre-dose.
+        If Day 1 value is missing, use Screening value.
+  \item \texttt{CHG}: \texttt{AVAL} $-$ \texttt{BASE}.
+  \item \texttt{ANL01FL}: \textquoteleft{}Y\textquoteright{} for records included in the
+        primary MMRM (post-baseline scheduled visits, ITT population, no rescue medication
+        within 48\,h of assessment).
+  \item \texttt{AVISIT} mapping: Visits within a protocol-defined window are assigned to
+        the nominal visit label (e.g., any assessment at Day 337$\pm$14 days $\rightarrow$
+        ``Week 48''; Day 365$\pm$14 days $\rightarrow$ ``Week 52'').
+\end{itemize}
+
+\begin{tcolorbox}[sapnote, title={\faIcon{database}\ Data Validation}]
+  All ADaM datasets will be subjected to independent programmer QC (double programming).
+  Validation reports will be filed in the Trial Master File. Discrepancies will be resolved
+  prior to database lock following the Data Management Plan (DMP-ARI-301-v1.4).
+\end{tcolorbox}
+
+\clearpage
+
+% ============================================================
+%  SECTION 9 — TFL SHELLS
+% ============================================================

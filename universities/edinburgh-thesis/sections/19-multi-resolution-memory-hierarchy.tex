@@ -1,0 +1,38 @@
+\section{Multi-Resolution Memory Hierarchy}
+
+Hierarchical Memory Gating introduces a structured external memory bank organised as a
+pyramid of $L$ resolutions. At level $\ell \in \{1, \dots, L\}$, the memory stores
+$\lceil n / 2^{\ell} \rceil$ slots, each aggregating information from a segment of
+$2^{\ell}$ consecutive tokens.
+
+\subsection{Memory Write}
+
+At each transformer layer, the memory is updated via a gated write operation:
+
+\begin{equation}
+  M_{\ell}^{(t)} = (1 - g_{\ell})\, M_{\ell}^{(t-1)} + g_{\ell}\,
+    \operatorname{Agg}_{\ell}\!\bigl(H^{(t)}\bigr),
+  \label{eq:mem-write}
+\end{equation}
+
+where $H^{(t)} \in \mathbb{R}^{n \times d}$ is the hidden state at layer $t$,
+$\operatorname{Agg}_{\ell}$ is a learned aggregation function (we use strided
+convolution with kernel size $2^{\ell}$) that compresses segments into memory slots,
+and $g_{\ell} \in [0,1]$ is an input-dependent gate computed as
+$g_{\ell} = \sigma(W_g\, [\bar{h}; \bar{m}_{\ell}] + b_g)$.
+
+\subsection{Memory Read}
+
+Each attention head can read from the memory bank via a cross-attention operation:
+
+\begin{equation}
+  \operatorname{MemRead}(Q, \mathcal{M}) = \operatorname{softmax}\!\left(
+    \frac{Q\, \tilde{K}^{\top}}{\sqrt{d_k}}
+  \right) \tilde{V},
+  \label{eq:mem-read}
+\end{equation}
+
+where $\tilde{K}, \tilde{V}$ are obtained by flattening the memory slots across all
+resolution levels. Since the total number of memory slots is
+$\sum_{\ell=1}^{L} \lceil n / 2^{\ell} \rceil < n$, the memory read operation is
+cheaper than full self-attention.

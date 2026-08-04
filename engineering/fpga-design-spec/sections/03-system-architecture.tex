@@ -1,0 +1,61 @@
+\section{System Architecture}
+The Vertex-9 core architecture utilizes a decoupled design topology, isolating the host interface domain from the high-frequency DSP processing pipelines. All system control, DMA configuration, and signal parameters are governed by the control and status register file.
+
+\begin{tcolorbox}[
+    colback=lightbg,
+    colframe=bordergray,
+    title=\textbf{Figure 1: Internal FPGA Architecture Block Diagram},
+    coltitle=primary,
+    fonttitle=\sffamily\bfseries\small,
+    arc=3mm,
+    left=10pt,
+    right=10pt,
+    top=10pt,
+    bottom=10pt
+]
+\centering
+\begin{tikzpicture}[
+    box/.style={draw, rectangle, rounded corners=2pt, minimum width=2.2cm, minimum height=1.0cm, align=center, thick, fill=white, draw=primary, font=\sffamily\scriptsize},
+    bus/.style={draw, ->, >=stealth, ultra thick, secondary},
+    signal/.style={draw, ->, >=stealth, thick, accent, dashed},
+    every node/.style={font=\sffamily\scriptsize},
+    scale=0.92,
+    every node/.append style={scale=0.92}
+]
+  % Nodes
+  \node[box] (pcie) at (0,3) {\textbf{ExpressLink Gen3}\\\textbf{Controller}\\Hard IP Block};
+  \node[box] (dma) at (3.5,3) {\textbf{Scatter-Gather}\\\textbf{DMA Engine}\\Vertex Core};
+  \node[box] (regs) at (7,3) {\textbf{CSR Interface}\\\textbf{\& Registers}\\SynapseBus Slave};
+  \node[box] (dsp) at (7,0.5) {\textbf{DSP Pipeline}\\\textbf{Processor}\\Parallel IQ Core};
+  
+  \node[box, fill=accent!5, draw=accent] (ddr) at (11,3) {\textbf{DDR4 Controller}\\\textbf{\& Arbiter}\\SynapseBus Mem};
+  \node[box, fill=accent!5, draw=accent] (phy) at (11,0.5) {\textbf{High-Speed SerDes}\\\textbf{ADC/DAC Interface}\\Vertex Phy};
+  
+  % Arrows
+  \draw[bus] (pcie) -- (dma) node[midway, above] {V-Stream};
+  \draw[bus] (dma) -- (regs) node[midway, above] {SynapseBus-L};
+  \draw[bus] (dma) -- (ddr) node[midway, above, sloped] {V-Bus Master};
+  \draw[bus] (phy) -- (dsp) node[midway, above] {IQ Signals};
+  \draw[bus] (dsp) -- (ddr) node[midway, left] {V-Stream};
+  
+  % Control signals
+  \draw[signal] (regs) -- (dsp) node[midway, left] {Ctrl};
+  \draw[signal] (regs) -- (dma) node[midway, left] {Config};
+  
+  % External labels
+  \draw[<->, thick] (-1.8, 3) -- (pcie) node[midway, above] {PCIe Lanes};
+  \draw[<->, thick] (ddr) -- (13.2, 3) node[midway, above] {DDR4 Memory};
+  \draw[<->, thick] (phy) -- (13.2, 0.5) node[midway, above] {RF Frontend};
+
+\end{tikzpicture}
+\end{tcolorbox}
+
+\subsection{Core Subsystem Descriptions}
+\begin{itemize}
+    \item \textbf{ExpressLink Gen3 Controller:} Fictional hard macro handling physical, link, and transaction layer protocols for host interfacing. Bridges standard system PCIe commands to internal protocols.
+    \item \textbf{Scatter-Gather DMA Engine:} Dedicated controller designed to support ring-buffered, non-contiguous host memory access. Coordinates dual-channel memory-mapped transfers to and from DDR4 RAM.
+    \item \textbf{Control \& Status Registers (CSR):} Interconnect endpoints accessed via the SynapseBus-Lite register protocol. Manages hardware parameter configuration and reports processing health.
+    \item \textbf{DSP Pipeline Processor:} Fixed-point signal processor consisting of parallel multiply-accumulate (MAC) arrays and circular pipeline registers.
+\end{itemize}
+
+% Section 3: Register Map

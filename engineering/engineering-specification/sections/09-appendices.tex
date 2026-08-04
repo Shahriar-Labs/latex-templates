@@ -1,0 +1,86 @@
+\section{Appendices}
+%-----------------------------------------------------------------------
+
+\subsection*{Appendix A\,---\,Structural System Block Diagram}
+
+\vspace{4pt}
+\begin{figure}[h!]
+\centering
+\begin{tikzpicture}[
+  node distance=8mm and 14mm,
+  block/.style={
+    rectangle, draw=accent, fill=white, line width=1pt,
+    minimum width=36mm, minimum height=10mm, align=center,
+    font=\footnotesize\bfseries\color{accent},
+    rounded corners=2pt,
+  },
+  subblock/.style={
+    rectangle, draw=grayrule, fill=revodd, line width=0.6pt,
+    minimum width=30mm, minimum height=8mm, align=center,
+    font=\footnotesize\color{graydark},
+    rounded corners=1pt,
+  },
+  arrow/.style={-{Stealth[length=5pt,width=4pt]}, line width=1pt, color=accentlight},
+  dasharrow/.style={->,dashed,line width=0.8pt,color=grayrule},
+  label/.style={font=\scriptsize\color{graydark}},
+]
+
+% --- Top row: Design inputs ---
+\node[block,fill=accent!8] (loads) {Design Loads\\[-1pt]{\footnotesize\color{graydark}HL-93\,/\,Seismic\,/\,Wind}};
+\node[block,fill=accent!8,right=of loads,xshift=8mm] (codes) {Design Codes\\[-1pt]{\footnotesize\color{graydark}AASHTO\,LRFD\,/\,AISC\,360}};
+
+% --- Middle row: Primary structural system ---
+\node[block,below=18mm of $(loads.south)!0.5!(codes.south)$,minimum width=92mm,minimum height=12mm,fill=accent!5] (supers) {Steel Plate-Girder Superstructure};
+
+% --- Bottom row: Subsystems ---
+\node[subblock,below=14mm of supers,xshift=-34mm] (girders) {Steel Girders\\[-1pt]{\scriptsize ASTM\ A709\ Gr.\,50W}};
+\node[subblock,below=14mm of supers] (frames) {Cross-Frames \&\\[-1pt] Bracing};
+\node[subblock,below=14mm of supers,xshift=34mm] (deck) {Deck Interface\\[-1pt]{\scriptsize Shear Connectors}};
+
+\node[subblock,below=12mm of frames] (bearings) {Bearing\\[-1pt] Assemblies};
+\node[subblock,left=10mm of bearings] (splices) {Field\\[-1pt] Splices};
+\node[subblock,right=10mm of bearings] (joints) {Expansion\\[-1pt] Joints};
+
+% --- Arrows: inputs to superstructure ---
+\draw[arrow] (loads.south) -- ++(0,-7mm) -| (supers.north);
+\draw[arrow] (codes.south) -- ++(0,-7mm) -| (supers.north);
+
+% --- Arrows: superstructure to subsystems ---
+\draw[arrow] (supers.south) -- ++(0,-4mm) -| (girders.north);
+\draw[arrow] (supers.south) -- ++(0,-4mm) -| (frames.north);
+\draw[arrow] (supers.south) -- ++(0,-4mm) -| (deck.north);
+
+% --- Arrows: frames to bearings/splices/joints ---
+\draw[dasharrow] (frames.south) -- (bearings.north);
+\draw[dasharrow] (frames.south) -- (splices.north);
+\draw[dasharrow] (frames.south) -- (joints.north);
+
+% --- Labels ---
+\node[label,below=2mm of girders.south] {\faCheck\ \ Structure checked per REQ-STR-001};
+\node[label,below=2mm of bearings.south] {\faCheck\ \ Verified per REQ-STR-004..007};
+
+% --- Legend box ---
+\node[draw=grayrule,fill=white,rounded corners=2pt,inner sep=6pt,
+      below=4mm of $(splices.south)!0.5!(joints.south)$,yshift=-12mm,
+      align=left,font=\scriptsize\color{graydark}] (legend) {
+  \textbf{Legend}\\[1pt]
+  \tikz\draw[arrow] (0,0) -- (6mm,0);\enspace Load / Design transfer\\[1pt]
+  \tikz\draw[dasharrow] (0,0) -- (6mm,0);\enspace Structural dependency
+};
+
+\end{tikzpicture}
+\caption{Structural system block diagram\,---\,load path and subsystem hierarchy for the I-5\ CRC steel superstructure.}
+\end{figure}
+
+% =====================================================================
+\vspace{10pt}
+\begin{tcolorbox}[
+  enhanced,
+  sharp corners,
+  colback=accent!8,
+  colframe=accent!30,
+  boxrule=0.5pt,
+  left=12pt,right=12pt,top=8pt,bottom=8pt,
+]
+{\footnotesize\color{accent}\faInfoCircle\enspace\textbf{End of Specification\ ENG-SPEC-2026-0147\ Rev.\ B}\hfill\emph{Issued for Construction}\hspace{4pt}}
+\end{tcolorbox}

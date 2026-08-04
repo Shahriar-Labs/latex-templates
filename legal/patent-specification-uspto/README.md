@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Patent Specification (USPTO) LaTeX template — "patent application latex template". Elegant, compile-tested, editable online at letx.app.**
+**Patent Specification (USPTO) LaTeX template — Patent Specification (USPTO). Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/legal/patent-specification-uspto)**, with real-time collaboration and one-second compiles.
 
@@ -12,17 +12,16 @@ Edit and compile this template instantly in your browser — no LaTeX install �
 
 ## Features
 - Elegant, modern design
-- Compile-tested (zero errors)
-- Realistic sample content
-- Editable online in your browser
+- Compile-tested
+- Fully editable sample content
 
 ## Use it online (recommended)
 Open **[Patent Specification (USPTO) on LetX »](https://letx.app/templates/legal/patent-specification-uspto)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/patent-specification-uspto
+git clone https://github.com/Shahriar-Labs/patent-specification-uspto.git
+cd patent-specification-uspto
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

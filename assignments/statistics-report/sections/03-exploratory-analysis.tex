@@ -1,0 +1,69 @@
+\section{Exploratory Analysis}
+Table~\ref{tab:summary_stats} presents descriptive statistics for the variables used in the regression. The average property sales price in our sample is \$\num{482.35} thousand, with a minimum of \$\num{280.00} thousand and a maximum of \$\num{630.00} thousand. The Green Space Index exhibits significant variation, ranging from highly urbanized areas (\qty{12}{\percent} canopy) to heavily forested suburban neighborhoods (\qty{95}{\percent} canopy).
+
+\begin{table}[htbp]
+\centering
+\caption{Descriptive Summary Statistics ($N = 150$)}
+\label{tab:summary_stats}
+\sffamily\small
+\begin{tabular}{l S[table-format=3.2] S[table-format=2.2] S[table-format=3.2] S[table-format=3.2] l}
+\toprule
+\textbf{Variable} & {\textbf{Mean}} & {\textbf{SD}} & {\textbf{Min}} & {\textbf{Max}} & \textbf{Description} \\
+\midrule
+Price & 482.35 & 84.12 & 280.00 & 630.00 & Median sales price (\$1,000s) \\
+GSI & 54.20 & 24.65 & 12.00 & 95.00 & Green Space Index (\%) within 500m \\
+Size & 22.45 & 5.12 & 11.50 & 36.80 & Finished interior area (100 sq ft) \\
+Age & 28.40 & 14.80 & 1.00 & 65.00 & Age of the structure (years) \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Figure~\ref{fig:scatter_plot} illustrates the bivariate relationship between the Green Space Index and home price. The scatter plot reveals a strong, positive, linear trend, suggesting that properties in areas with greater canopy cover command higher prices on average.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.85\textwidth,
+    height=5.2cm,
+    axis lines=left,
+    grid=both,
+    grid style={line width=.1pt, draw=bordergray},
+    major grid style={line width=.2pt, draw=bordergray},
+    xlabel={\sffamily Green Space Index (GSI, \%)},
+    ylabel={\sffamily Median House Price (\$1,000s)},
+    xmin=0, xmax=100,
+    ymin=150, ymax=700,
+    xtick={0,20,40,60,80,100},
+    ytick={200,300,400,500,600,700},
+    tick label style={font=\sffamily\small},
+    xlabel style={font=\sffamily\small, yshift=-2pt},
+    ylabel style={font=\sffamily\small, xshift=-4pt},
+    legend style={font=\sffamily\small, at={(0.05,0.95)}, anchor=north west, draw=bordergray, fill=white},
+]
+\addplot [
+    domain=10:95,
+    samples=100,
+    color=accent,
+    thick,
+    no markers,
+] {4.12*x + 234.5};
+\addlegendentry{OLS Bivariate Trend}
+
+\addplot[
+    only marks,
+    mark=*,
+    mark size=1.8pt,
+    color=accent!60,
+] coordinates {
+    (12, 280) (18, 310) (22, 290) (30, 360) (35, 340)
+    (40, 410) (45, 380) (50, 450) (55, 420) (60, 480)
+    (65, 460) (70, 520) (75, 490) (80, 560) (82, 540)
+    (85, 590) (88, 570) (90, 610) (92, 580) (95, 630)
+};
+\addlegendentry{Sample Properties (n = 20)}
+\end{axis}
+\end{tikzpicture}
+\caption{Scatter plot of Median House Price against Green Space Index with a OLS bivariate trend line.}
+\label{fig:scatter_plot}
+\end{figure}

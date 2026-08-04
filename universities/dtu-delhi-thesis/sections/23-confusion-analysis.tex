@@ -1,0 +1,25 @@
+\section{Confusion Analysis}
+Per-class analysis shows that the outer-race and inner-race defect classes are occasionally
+confused by the SVM and kNN models at 0\% load, where impact energy is lowest and closest to the
+noise floor of the accelerometer. The Random Forest and CNN models retain over 96\% recall for
+both bearing-fault classes even at zero load, attributable to their use of the full 27-feature
+set rather than a reduced subset.
+
+\begin{figure}[!ht]
+\centering
+\begin{tikzpicture}
+  \def\barwidth{0.9}
+  \def\scale{0.045}
+  \begin{scope}
+    \foreach \x/\val/\lbl/\clr in {0/89.6/kNN/dtunavy,1.3/93.8/SVM/dtugold,2.6/97.4/{Random Forest}/dtumaroon,3.9/98.1/CNN/dtunavy}{
+      \draw[fill=\clr!85,draw=black!40] (\x,0) rectangle ++(\barwidth,{\val*\scale});
+      \node[font=\small] at (\x+\barwidth/2,{\val*\scale+0.25}) {\val\%};
+      \node[font=\small,align=center] at (\x+\barwidth/2,-0.4) {\lbl};
+    }
+  \end{scope}
+  \draw[->,thick] (-0.4,0) -- (5.0,0);
+  \draw[->,thick] (-0.4,0) -- (-0.4,5.2) node[above,font=\small] {Accuracy};
+\end{tikzpicture}
+\caption{Test-set accuracy comparison across the four evaluated classifiers.}
+\label{fig:barchart}
+\end{figure}

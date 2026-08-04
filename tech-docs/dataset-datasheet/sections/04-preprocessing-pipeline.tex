@@ -1,0 +1,46 @@
+\section{Preprocessing Pipeline}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+    node distance=7mm,
+    box/.style={
+      rectangle, draw=accent!50, fill=accentlight,
+      text=dark, rounded corners=2mm, minimum width=5.5cm,
+      minimum height=7.5mm, align=center, font=\footnotesize\sffamily
+    },
+    arrow/.style={-{Stealth[scale=0.8]}, thick, accent!60},
+  ]
+  \node[box] (raw)    {\textbf{Raw HTML Pages}\\1.2M pages from 340+ sources};
+  \node[box, below=of raw] (clean) {\textbf{1.} HTML Stripping \& Text Extraction\\trafilatura, preserving paragraph breaks};
+  \node[box, below=of clean] (lang) {\textbf{2.} Language Detection\\FastText, confidence $> 0.9$};
+  \node[box, below=of lang] (dedup) {\textbf{3.} Deduplication\\MinHash LSH, $\theta = 0.85$};
+  \node[box, below=of dedup] (norm)  {\textbf{4.} Normalization\\NFC Unicode, lowercasing, whitespace cleanup};
+  \node[box, below=of norm] (annot) {\textbf{5.} Human Annotation\\14 native-speaker linguists, 7 categories};
+  \node[box, below=of annot] (final) {\textbf{Final Dataset}\\100K articles, 12 languages, CC BY-SA 4.0};
+
+  \draw[arrow] (raw) -- (clean);
+  \draw[arrow] (clean) -- (lang);
+  \draw[arrow] (lang) -- (dedup);
+  \draw[arrow] (dedup) -- (norm);
+  \draw[arrow] (norm) -- (annot);
+  \draw[arrow] (annot) -- (final);
+\end{tikzpicture}
+\caption{End-to-end preprocessing pipeline from raw web pages to the annotated dataset.}
+\end{figure}
+
+\subsection{Key Design Decisions}
+\begin{itemize}
+  \item \textbf{No machine translation.} All articles are natively authored in the target
+        language to avoid translationese artifacts that degrade classifier robustness.
+  \item \textbf{Minimal text alteration.} Only NFC Unicode normalization and lowercasing
+        were applied. Paragraph boundaries, original letter casing, and diacritics are
+        preserved in a parallel \texttt{raw\_text} field.
+  \item \textbf{Multi-stage dedup.} Exact URL dedup $\rightarrow$ near-duplicate detection
+        via MinHash $\rightarrow$ manual inspection of borderline pairs
+        ($0.80 \le \text{sim} < 0.85$).
+\end{itemize}
+
+% ═══════════════════════════════════════════════════════════════
+% 5. DEMOGRAPHIC & LINGUISTIC BREAKDOWN
+% ═══════════════════════════════════════════════════════════════

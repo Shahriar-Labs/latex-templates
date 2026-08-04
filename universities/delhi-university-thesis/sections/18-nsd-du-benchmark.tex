@@ -1,0 +1,63 @@
+\section{NSD-DU Benchmark}
+
+\highlightbox{%
+\textbf{NSD-DU Dataset.} The Neural Scene Decoding -- Delhi University (NSD-DU) benchmark
+comprises 64-channel EEG recordings from 24 healthy adult volunteers (12 female, mean
+age $27.4 \pm 3.1$ years) while they viewed 2400 natural scene images.
+Each image was presented for 500~ms with a 1000~ms inter-stimulus interval.
+The dataset is available for research use through the DU Open Neuroscience Repository
+(DONR-2023-001).%
+}
+
+Table~\ref{tab:nsd-results} summarises prediction-error results on NSD-DU compared with
+the classical Rao--Ballard model.
+
+\begin{table}[H]
+\centering
+\caption{Prediction error (mean $\pm$ SD across 24 participants, lower is better) on the
+  NSD-DU benchmark.  All differences vs.\ Rao--Ballard are significant at $p < 0.001$
+  (paired $t$-test, Holm--Bonferroni corrected).}
+\label{tab:nsd-results}
+\begin{tabularx}{0.9\linewidth}{@{}>{\raggedright\arraybackslash}Xccc@{}}
+\toprule
+\textbf{Model} & \textbf{Param.\ count} & \textbf{Mean error} & \textbf{\% reduction} \\
+\midrule
+Rao--Ballard (1999)           & 12,800  & $0.386 \pm 0.041$ & ---      \\
+Rao--Ballard + GRU top level  & 24,600  & $0.352 \pm 0.038$ & 8.8\%   \\
+APCA (ours, fixed schedule)   & 31,200  & $0.341 \pm 0.035$ & 11.7\%  \\
+APCA (ours, learned schedule) & 38,500  & $\mathbf{0.331 \pm 0.033}$ & \textbf{14.3\%} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  level/.style={
+    rectangle, draw=dupurple, line width=0.7pt, fill=lightgrey,
+    minimum width=2.8cm, minimum height=0.65cm, align=center, font=\small
+  },
+  arrow/.style={-Stealth, dupurple, line width=0.6pt}
+]
+  % Hierarchy levels (right side = higher)
+  \node[level] (L1) at (0,0)   {Level 1\\(V1-like)};
+  \node[level] (L2) at (3.2,0) {Level 2\\(V2/V4-like)};
+  \node[level] (L3) at (6.4,0) {Level 3\\(IT-like)};
+
+  % Top-down predictions
+  \draw[arrow, bend left=25] (L2) to node[above, font=\scriptsize]{prediction} (L1);
+  \draw[arrow, bend left=25] (L3) to node[above, font=\scriptsize]{prediction} (L2);
+
+  % Bottom-up errors
+  \draw[arrow, bend left=25] (L1) to node[below, font=\scriptsize]{error} (L2);
+  \draw[arrow, bend left=25] (L2) to node[below, font=\scriptsize]{error} (L3);
+
+  % Input
+  \node[font=\small] (inp) at (-2.0,0) {Stimulus};
+  \draw[arrow] (inp) -- (L1);
+\end{tikzpicture}
+\caption{Three-level hierarchical predictive-coding network used in the APCA.  Top-down
+  prediction signals (upper arrows) and bottom-up error signals (lower arrows) are
+  computed simultaneously at each time step.}
+\label{fig:pred-coding}
+\end{figure}

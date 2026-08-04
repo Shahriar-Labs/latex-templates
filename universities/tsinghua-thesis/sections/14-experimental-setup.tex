@@ -1,0 +1,84 @@
+\section{Experimental Setup}
+
+\subsection{Datasets and Tasks}
+
+We evaluate RANO on three benchmark tasks spanning distinct domains:
+
+\begin{itemize}
+  \item \textbf{Image classification.} ImageNet-1k~\cite{goodfellow2016}
+  with 1.28 million training images across 1,000 categories. We report
+  top-1 and top-5 accuracy.
+
+  \item \textbf{Object detection.} COCO 2017 with 118k training images
+  and 5k validation images. We report mean average precision at IoU 0.5
+  (mAP@0.5).
+
+  \item \textbf{Natural language inference.} The GLUE benchmark
+  suite~\cite{devlin2019bert}, focusing on the MNLI, QQP, and SST-2
+  tasks. We report accuracy and F1 score as appropriate.
+\end{itemize}
+
+\subsection{Hardware Platforms}
+
+We deploy and benchmark models on four representative edge platforms,
+as summarised in Table~\ref{tab:devices} (Chapter~1). All latency
+measurements are averaged over 1,000 inference runs after a 100-run
+warm-up period to ensure stable thermal conditions.
+
+\subsection{Baselines}
+
+We compare RANO against the following methods:
+
+\begin{itemize}
+  \item \textbf{Unstructured magnitude pruning}~\cite{goodfellow2016}
+  followed by fine-tuning.
+  \item \textbf{Structured channel pruning} with $\ell_1$ regularisation.
+  \item \textbf{INT8 post-training quantisation} with per-channel
+  symmetric scaling.
+  \item \textbf{Quantisation-aware training (QAT)}~\cite{kingma2014adam}
+  with 8-bit weights and activations.
+  \item \textbf{Standard knowledge distillation} with temperature
+  $\tau = 4$ and a fixed teacher model.
+\end{itemize}
+
+\subsection{Implementation Details}
+
+All models are implemented in PyTorch and trained on Quanta A100 GPUs.
+We use the Adam optimiser~\cite{kingma2014adam} with an initial learning
+rate of $10^{-3}$, a cosine annealing schedule, and a batch size of 256.
+Training runs for 200 epochs on ImageNet and 100 epochs on COCO and
+GLUE tasks. The RANO-specific hyperparameters are set to
+$\lambda_p = 10^{-4}$, $\lambda_q = 5 \times 10^{-5}$, and
+$\lambda_h = 10^{-3}$, determined via grid search on a held-out
+validation subset.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  box/.style={rectangle,draw,minimum width=28mm,minimum height=9mm,rounded corners=3pt,fill=tsinghulight,draw=tsinghuapurple!60,line width=0.5pt,font=\footnotesize\bfseries},
+  arrow/.style={->,>=stealth,line width=0.7pt,color=grayrule},
+  >=stealth
+]
+  \node[box] (data) at (0,0) {Dataset};
+  \node[box] (prep) at (3.5,0) {Preprocessing};
+  \node[box] (arch) at (7,0) {Arch.\ Search};
+  \node[box] (train) at (3.5,-2.2) {Train + Prune + Quant};
+  \node[box] (distill) at (7,-2.2) {Distillation};
+  \node[box] (eval) at (3.5,-4.4) {Evaluation};
+  \node[box] (deploy) at (7,-4.4) {Deployment};
+
+  \draw[arrow] (data) -- (prep);
+  \draw[arrow] (prep) -- (arch);
+  \draw[arrow] (arch) -- (train);
+  \draw[arrow] (train) -- (distill);
+  \draw[arrow] (distill) -- (eval);
+  \draw[arrow] (eval) -- (deploy);
+  \draw[arrow,dashed] (distill.south) to[out=-90,in=0] (train.east);
+  \node[font=\footnotesize,color=grayrule] at (8.6,-1.1) {feedback};
+\end{tikzpicture}
+\caption{The RANO training and deployment pipeline. Architecture search
+explores the design space; training jointly applies pruning and
+quantisation; distillation provides feedback from a frozen teacher
+model; evaluation measures both accuracy and hardware metrics.}
+\label{fig:pipeline}
+\end{figure}

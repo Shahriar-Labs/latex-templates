@@ -1,0 +1,57 @@
+\section{Method}
+\label{sec:method}
+
+\subsection{Notation}
+
+Let $\mathbf{X}^{(\ell)} \in \mathbb{R}^{n \times d}$ denote the token
+representations output by encoder layer $\ell$, where $n$ is sequence length
+and $d$ is the model dimension.
+
+\subsection{Context Gateway}
+
+The Context Gateway maps $\mathbf{X}^{(\ell)}$ to an updated representation
+$\hat{\mathbf{X}}^{(\ell)}$ via three sub-operations.
+
+\subsubsection{Context-Bank Write}
+A learned linear projection $W_w \in \mathbb{R}^{d \times d_c}$ maps each token
+to a candidate context vector. We then select the top-$k$ tokens by a learned
+scalar score $s_i = \mathbf{w}_s^\top \mathbf{x}_i^{(\ell)}$ and write their
+projections to the bank:
+\begin{equation}
+  C = \softmax\!\left(\frac{s_{\pi}}{\sqrt{d_c}}\right)
+      \mathbf{X}^{(\ell)}_\pi W_w,
+  \label{eq:write}
+\end{equation}
+where $\pi$ denotes the indices of the top-$k$ scoring tokens and
+$C \in \mathbb{R}^{k \times d_c}$ is the context bank.
+
+\subsubsection{Context-Bank Read}
+Every token reads from the bank via scaled dot-product attention with a single
+head:
+\begin{equation}
+  \hat{\mathbf{x}}_i^{(\ell)} =
+    \mathbf{x}_i^{(\ell)} +
+    \softmax\!\!\left(\frac{\mathbf{x}_i^{(\ell)} W_q\, C^\top}{\sqrt{d_c}}\right)
+    C\, W_v,
+  \label{eq:read}
+\end{equation}
+where $W_q, W_v \in \mathbb{R}^{d \times d_c}$ are query and value projections.
+
+\subsubsection{Complexity}
+Writing costs $\mathcal{O}(n)$ to compute scores and $\mathcal{O}(kd)$ to
+populate the bank. Reading costs $\mathcal{O}(nk)$ per layer. Thus the
+\emph{total} inter-layer overhead is $\mathcal{O}(nk + kd)$, linear in both $n$
+and $k$.
+
+\subsection{Training Objective}
+
+We augment the task loss $\mathcal{L}_{\text{task}}$ with a sparsity regulariser
+that encourages few writes without collapsing to a trivial solution:
+\begin{equation}
+  \mathcal{L} = \mathcal{L}_{\text{task}} +
+                \lambda \sum_\ell \frac{1}{n}\sum_{i=1}^n
+                \log\bigl(1 + e^{-s_i^{(\ell)}}\bigr).
+  \label{eq:loss}
+\end{equation}
+
+% ============================================================

@@ -1,0 +1,19 @@
+\section{The Regime-Switching Perspective}
+
+Financial returns exhibit well-documented stylized facts that violate the i.i.d.\ Gaussian benchmark: volatility clustering, fat tails, leverage effects, and time-varying correlations~\cite{cont2001}. Hidden Markov models (HMMs) provide a parsimonious framework for capturing these features. A $K$-state HMM posits that returns $\mathbf{r}_t \in \mathbb{R}^p$ are drawn from:
+\begin{equation}
+\mathbf{r}_t \mid s_t = k \;\sim\; \mathcal{N}_p\!\left(\boldsymbol{\mu}_k,\; \boldsymbol{\Sigma}_k\right), \qquad k \in \{1,\dots,K\},
+\label{eq:hmm}
+\end{equation}
+where the latent state $s_t$ evolves according to a first-order Markov chain with transition matrix $\mathbf{Q} = (q_{ij})$, and $q_{ij} = \Pr(s_t = j \mid s_{t-1} = i)$.
+
+\begin{definitionbox}
+\textbf{Definition 1 (Regime).} A \textit{regime} is a persistent state of the return-generating process characterized by a distinct pair $(\boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k)$. Regimes typically correspond to macroeconomic environments: expansion (low volatility, positive drift), contraction (elevated volatility, negative drift), and crisis (extreme volatility, correlation breakdown).
+\end{definitionbox}
+
+The critical insight for portfolio construction is that the forward-looking distribution of returns is a \textit{mixture}:
+\begin{equation}
+\Pr(\mathbf{r}_{T+1} \mid \mathcal{F}_T) = \sum_{k=1}^{K} \xi_{T}(k) \;\cdot\; \mathcal{N}_p(\boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k),
+\label{eq:mixture}
+\end{equation}
+where $\xi_T(k) = \Pr(s_{T+1}=k \mid \mathcal{F}_T)$ is the filtered state probability given information up to time $T$. When regimes are persistent, $\xi_T$ concentrates mass on a single component, but the \textit{possibility} of transition fattens the tails.

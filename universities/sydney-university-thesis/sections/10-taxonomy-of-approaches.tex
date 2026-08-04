@@ -1,0 +1,73 @@
+\section{Taxonomy of Approaches}
+Anomaly detection methods for industrial time series broadly fall into four families:
+statistical control-chart methods, classical machine-learning detectors, deep sequence
+models, and hybrid edge--cloud architectures. Figure~\ref{fig:taxonomy} summarises this
+taxonomy and situates the present work.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=8mm and 12mm,
+  every node/.style={font=\small},
+  box/.style={draw=usydmaroon,thick,rounded corners=2pt,fill=usydcream,
+              text width=3.05cm,align=center,minimum height=1.05cm},
+  root/.style={draw=usydmaroon,thick,rounded corners=2pt,fill=usydmaroon,
+               text=white,align=center,minimum height=1.05cm,text width=3.2cm}
+]
+  \node[root] (root) {Anomaly\\Detection Methods};
+  \node[box,below left=14mm and 14mm of root] (stat) {Statistical\\Control Charts};
+  \node[box,below left=14mm and 1mm of root] (ml) {Classical ML\\(Isolation Forest, OCSVM)};
+  \node[box,below right=14mm and 1mm of root] (dl) {Deep Sequence\\Models (LSTM-AE)};
+  \node[box,below right=14mm and 14mm of root,draw=usydgold,line width=1pt] (hybrid) {Hybrid\\Edge--Cloud (this work)};
+
+  \draw[usydgray] (root) -- (stat);
+  \draw[usydgray] (root) -- (ml);
+  \draw[usydgray] (root) -- (dl);
+  \draw[usydgray] (root) -- (hybrid);
+\end{tikzpicture}
+\caption{Taxonomy of anomaly detection approaches for industrial time series.}
+\label{fig:taxonomy}
+\end{figure}
+
+\subsection{Statistical Control Charts}
+Shewhart and CUSUM control charts remain widely used in process monitoring due to their
+interpretability and low computational cost. Their principal weakness is the assumption of a
+stationary nominal distribution, which is routinely violated by seasonal production load and
+tooling wear.
+
+\subsection{Classical Machine Learning}
+Tree-based ensembles such as Isolation Forest, and kernel methods such as one-class SVM,
+capture non-linear nominal boundaries without requiring labelled anomalies. Okafor and
+Lindqvist~\cite{okafor2023} report strong offline performance but note that retraining
+cadence becomes a bottleneck once the sensor fleet exceeds a few hundred channels.
+
+\subsection{Deep Sequence Models}
+Recurrent and convolutional autoencoders learn a compressed representation of nominal
+temporal dynamics and flag high reconstruction error as anomalous. Torres et al.~\cite{torres2022}
+demonstrate strong accuracy on benchmark industrial datasets, though centralised inference
+introduces uplink and latency costs that scale linearly with fleet size.
+
+\subsection{Hybrid Edge--Cloud Architectures}
+A smaller body of work distributes computation between edge devices and a central server.
+Bakr and Sørensen~\cite{bakr2021} propose edge-side compression prior to cloud scoring but
+rely on a fixed compression ratio that does not adapt to operating conditions. This thesis
+extends that direction with an adaptive, statistically grounded pre-filter and a
+closed-loop threshold controller.
+
+\begin{table}[htbp]
+\centering
+\caption{Comparison of representative anomaly detection approaches.}
+\label{tab:litcompare}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}l c c c c@{}}
+\toprule
+Method & Adapts to drift & Edge-aware & Uplink savings & Reported F1 \\
+\midrule
+Shewhart / CUSUM control chart & No & No & --- & 0.61 \\
+Isolation Forest~\cite{okafor2023} & Partial & No & --- & 0.74 \\
+Centralised LSTM autoencoder~\cite{torres2022} & No & No & --- & 0.81 \\
+Fixed-ratio edge compression~\cite{bakr2021} & No & Yes & 38\% & 0.77 \\
+\textbf{StreamGuard (this work)} & \textbf{Yes} & \textbf{Yes} & \textbf{55\%} & \textbf{0.89} \\
+\bottomrule
+\end{tabular}}
+\end{table}

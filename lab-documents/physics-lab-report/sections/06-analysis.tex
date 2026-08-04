@@ -1,0 +1,65 @@
+\section{Analysis}
+A linear regression analysis of $T^2$ as a function of $L$ was performed using the experimental data points. Figure~\ref{fig:plot} shows the plot of $T^2$ versus $L$ along with the best-fit line.
+
+\begin{figure}[h]
+  \centering
+  \begingroup
+  \setlength{\parindent}{0pt}
+  \setlength{\parskip}{0pt}
+  \begin{tikzpicture}
+    \begin{axis}[
+      width=0.85\linewidth,
+      height=4.8cm,
+      xlabel={Pendulum Length $L$ (\si{\meter})},
+      ylabel={Squared Period $T^2$ (\si{\second\squared})},
+      xmin=0.1, xmax=1.1,
+      ymin=0, ymax=4.5,
+      xtick={0.2,0.4,0.6,0.8,1.0},
+      ytick={1.0,2.0,3.0,4.0},
+      grid=both,
+      grid style={line width=.1pt, draw=gray!10},
+      major grid style={line width=.2pt, draw=gray!20},
+      legend pos=north west,
+      axis line style={draw=primary!50},
+      tick label style={font=\small},
+      label style={font=\small\color{primary}},
+      legend style={font=\small, draw=gray!30}
+    ]
+      % Linear Fit Line
+      \addplot[
+        domain=0.2:1.0,
+        samples=2,
+        color=secondary,
+        thick,
+        dashed
+      ] {4.025*x + 0.005};
+      \addlegendentry{Linear Fit ($T^2 = 4.025 L + 0.005$)}
+
+      % Data points with error bars
+      \addplot[
+        only marks,
+        mark=*,
+        mark size=2pt,
+        color=primary,
+        error bars/.cd,
+        y dir=both,
+        y explicit
+      ] table[x=x, y=y, y error=err] {\pendulumdata};
+      \addlegendentry{Experimental Data}
+    \end{axis}
+  \end{tikzpicture}
+  \endgroup
+  \caption{Linear relationship between the squared period $T^2$ and the pendulum length $L$. The dashed line represents the linear least-squares regression model.}
+  \label{fig:plot}
+\end{figure}
+
+The slope of the line of best fit obtained from the regression is:
+\begin{equation*}
+  m = \SI{4.025 \pm 0.036}{\second\squared\per\meter}
+\end{equation*}
+Using Equation~\eqref{eq:g_calculation}, the experimental value for the acceleration due to gravity, $g$, is computed as:
+\begin{equation*}
+  g = \frac{4\pi^2}{4.025\ \si{\second\squared\per\meter}} = \SI{9.808}{\meter\per\second\squared}
+\end{equation*}
+
+% --- Section: Error Analysis ---

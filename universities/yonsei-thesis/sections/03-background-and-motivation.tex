@@ -1,0 +1,45 @@
+\section{Background and Motivation}
+
+The proliferation of latency-sensitive applications --- augmented reality overlays,
+real-time telemetry aggregation, and on-device inference pipelines --- has pushed
+computation away from centralized data centers and toward the network edge. Unlike
+cloud data centers, edge deployments are characterized by heterogeneous hardware,
+intermittent connectivity, and tightly bounded compute budgets per node. A scheduler
+that treats all nodes and tasks uniformly cannot exploit this heterogeneity, and
+naive load-balancing strategies routinely violate the sub-100\,ms response budgets
+that interactive edge workloads require.
+
+Figure~\ref{fig:architecture} sketches the deployment topology considered in this
+thesis: a coordinator tier that receives task submissions, a forecasting module
+that estimates near-term load per node, and a pool of heterogeneous edge workers
+that execute the scheduled tasks.
+
+\begin{figure}[h]
+\centering
+\begin{tikzpicture}[
+  box/.style={draw=yonseiblue, rounded corners=3pt, minimum width=2.6cm, minimum height=1cm, align=center, fill=paletint, font=\small},
+  worker/.style={draw=yonseigold, rounded corners=2pt, minimum width=1.7cm, minimum height=0.8cm, align=center, fill=white, font=\scriptsize},
+  arr/.style={-{Latex[length=2mm]}, draw=softgray, thick}
+]
+\node[box] (coord) {Coordinator};
+\node[box, below=1.2cm of coord] (fc) {Forecast Module};
+\node[box, right=2.6cm of coord] (ctrl) {Priority-Feedback Controller};
+
+\node[worker, below=1.6cm of fc, xshift=-2.4cm] (w1) {Worker A\\(GPU-lite)};
+\node[worker, below=1.6cm of fc] (w2) {Worker B\\(CPU)};
+\node[worker, below=1.6cm of fc, xshift=2.4cm] (w3) {Worker C\\(GPU)};
+
+\draw[arr] (coord) -- (fc);
+\draw[arr] (coord) -- (ctrl);
+\draw[arr] (fc) -- (ctrl);
+\draw[arr] (fc.south) -- (w1.north);
+\draw[arr] (fc.south) -- (w2.north);
+\draw[arr] (fc.south) -- (w3.north);
+
+\begin{scope}[on background layer]
+\node[draw=softgray, dashed, rounded corners=4pt, fit=(w1)(w2)(w3), inner sep=10pt, label={[font=\scriptsize\color{softgray}]below:Heterogeneous edge cluster}] {};
+\end{scope}
+\end{tikzpicture}
+\caption{High-level architecture of the Adaptive Tiered Scheduling (ATS) system.}
+\label{fig:architecture}
+\end{figure}

@@ -1,0 +1,43 @@
+\section{Launch Checklist}
+% ============================================================
+
+\subsection*{\faRocket\ Pre-Launch (Engineering)}
+\begin{itemize}
+  \cdone Unit tests: $\geq$ 90\,\% coverage on \icode{ledger-write-service} (currently 93\,\%).
+  \cdone Integration tests pass against TiDB staging cluster.
+  \cdone Load test: 55\,k TPS for 30\,min in staging (P99 = 38\,ms achieved).
+  \cdone Schema registry: \icode{ChargeRequest v2} registered, backward-compat verified.
+  \copen Chaos test: kill one TiKV node under 30\,k TPS — verify no data loss.
+  \copen Runbook published to Confluence and linked in PagerDuty service.
+  \cblock \textbf{BLOCKED:} TiDB vendor contract not yet signed — see \S1 decision.
+\end{itemize}
+
+\subsection*{\faLock\ Security Review}
+\begin{itemize}
+  \cdone PII fields (\icode{metadata.card\_last4}) encrypted at rest (TiDB TDE enabled).
+  \cdone mTLS between \icode{ledger-write-service} and TiDB cluster.
+  \cdone Rate-limiting enforced at Envoy layer (50 rps / merchant).
+  \copen GDPR data-deletion flow for merchant-shard drop verified with Legal.
+  \copen Pen-test scheduled: 2026-02-03 (external vendor — NCC Group).
+\end{itemize}
+
+\subsection*{\faChartBar\ Observability \& On-Call}
+\begin{itemize}
+  \cdone Datadog dashboard \texttt{ledger-v2-prod} provisioned via Terraform.
+  \cdone PagerDuty rotation updated; on-call rotation covers 3 engineers.
+  \copen Synthetic monitors for \icode{/v2/payments/charge} (every 60\,s) configured.
+  \copen Runbook walkthrough session scheduled with on-call team (2026-01-22).
+\end{itemize}
+
+\subsection*{\faFlag\ Go/No-Go Gate}
+
+\begin{dangerbox}[Hard Gate — All items must be green before Phase 3]
+  \begin{itemize}
+    \item Chaos test (above) passes with zero data loss.
+    \item TiDB contract signed.
+    \item GDPR deletion flow approved by Legal.
+    \item Security pen-test findings rated $\leq$ Medium severity.
+  \end{itemize}
+\end{dangerbox}
+
+% ============================================================

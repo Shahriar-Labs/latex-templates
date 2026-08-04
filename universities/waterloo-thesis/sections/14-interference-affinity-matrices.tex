@@ -1,0 +1,30 @@
+\section{Interference Affinity Matrices}
+
+A core contribution of this work is the \textit{interference affinity matrix} (IAM), which quantifies the performance degradation experienced when two workloads are colocated on the same node.
+
+\vspace{6pt}
+For workload types \(\tau_i, \tau_j\), the affinity coefficient
+\(a_{ij} \in [0, 1]\) represents the fraction of peak throughput retained when both run on a single node:
+
+\[
+a_{ij} = \frac{\text{Throughput}_{\tau_i}^{\text{colocated}}}
+               {\text{Throughput}_{\tau_i}^{\text{dedicated}}}
+\]
+
+\begin{table}[htbp]
+\centering
+\caption{Measured interference affinity coefficients (mean across 64 edge nodes). Lower values indicate stronger interference.}
+\label{tab:iam}
+\begin{tabularx}{\textwidth}{l*{4}{>{\centering\arraybackslash}X}}
+\toprule
+& \textbf{Video} & \textbf{Stream} & \textbf{Inference} & \textbf{Batch} \\
+\midrule
+\textbf{Video Analytics}  & 0.92 & 0.71 & 0.63 & 0.88 \\{}
+\textbf{Stream Processing} & 0.71 & 0.95 & 0.58 & 0.91 \\{}
+\textbf{Inference Serving} & 0.63 & 0.58 & 0.89 & 0.52 \\{}
+\textbf{Batch Processing}  & 0.88 & 0.91 & 0.52 & 0.96 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The IAM values in Table~\ref{tab:iam} reveal a key insight: \textbf{inference workloads} suffer the most from colocation, particularly when paired with batch processing (affinity 0.52). This finding motivates dedicated inference partitions, a design choice we implement in Chapter~\ref{ch:edgesched}.

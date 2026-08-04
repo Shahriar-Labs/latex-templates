@@ -1,0 +1,46 @@
+\section{Synthetic Benchmarks}
+
+We consider three families of synthetic test problems, summarized in Table~\ref{tab:benchmarks}.
+
+\begin{table}[htbp]
+\centering
+\caption{Synthetic benchmark problems. $p$ = parameter dimension; $n$ = sample size; $\kappa$ = condition number of Hessian at optimum.}
+\label{tab:benchmarks}
+\begin{tabularx}{0.92\textwidth}{lrrrX}
+\toprule
+\textbf{Problem} & \textbf{\,$p$\,} & \textbf{\,$n$\,} & \textbf{\,$\kappa$\,} & \textbf{Description} \\
+\midrule
+Logistic bandit & $5\times 10^{3}$ & $10^{5}$ & 820 & Binary outcomes with sparse signal \\
+Lorenz-96 SDE & $1\times 10^{4}$ & $2\times 10^{5}$ & $4.3\times 10^{3}$ & Chaotic atmospheric toy model \\
+Cox--Ingersoll--Ross & $2\times 10^{4}$ & $5\times 10^{4}$ & $1.1\times 10^{4}$ & Multi-factor interest rate dynamics \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\noindent For each problem, we compare SAG against six baseline optimizers: Adam, RMSProp, Adagrad, standard ULA, SGLD \cite{welling2011}, and preconditioned SGLD (pSGLD) \cite{ahn2012}. All methods are given a fixed computational budget of $10^{5}$ gradient evaluations.
+
+\subsection{Convergence Speed}
+
+Figure~\ref{fig:convergence} (appearing in the List of Figures) plots the negative log-likelihood against wall-clock time for the Lorenz-96 problem. SAG reaches a test log-likelihood of $-2.87$ within $1.2\times 10^{3}$ seconds, compared to $-3.41$ for Adam at the same time point and $-4.02$ for standard ULA. The spectral preconditioner yields a roughly $2.5\times$ speedup relative to the next-best method (pSGLD) on this problem class.
+
+\subsection{Posterior Coverage}
+
+\begin{table}[htbp]
+\centering
+\caption{Empirical coverage of 95\% credible intervals across methods on the logistic bandit problem. Nominal coverage target is 0.95.}
+\label{tab:coverage}
+\begin{tabularx}{0.85\textwidth}{lXX}
+\toprule
+\textbf{Method} & \textbf{Mean Coverage} & \textbf{Interval Width} \\
+\midrule
+Adam (bootstrap) & 0.82 & 1.24 \\
+RMSProp (bootstrap) & 0.79 & 1.31 \\
+ULA & 0.88 & 1.08 \\
+SGLD & 0.91 & 0.96 \\
+pSGLD & 0.93 & 0.91 \\
+\textbf{SAG} & \textbf{0.94} & \textbf{0.87} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+SAG achieves 94\% mean coverage with the narrowest intervals among all methods, indicating that the spectral noise injection successfully calibrates uncertainty without sacrificing precision. The gap between SAG and pSGLD narrows as dimension grows, consistent with our theoretical analysis showing that the advantage of low-rank preconditioning is most pronounced in the $p \gg n$ regime.

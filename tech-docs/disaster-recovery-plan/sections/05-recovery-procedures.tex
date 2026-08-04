@@ -1,0 +1,65 @@
+\section{Recovery Procedures}
+
+\subsection{Phase 1: Declaration and Mobilisation (0--30 minutes)}
+
+\begin{tabularx}{\textwidth}{@{}c X l@{}}
+  \toprule
+  \rowcolor{tablehead}
+  \textcolor{white}{\textbf{Step}} & \textcolor{white}{\textbf{Action}} & \textcolor{white}{\textbf{Responsible}}\\
+  \midrule
+  1.1 & Confirm disaster event via monitoring dashboards and on-call engineer verification. & IT Recovery Lead\\
+  \rowcolor{tablerow}
+  1.2 & Notify Crisis Manager with initial impact assessment. & IT Recovery Lead\\
+  1.3 & Crisis Manager convenes the Crisis Management Team within 15 minutes. & Crisis Manager\\
+  \rowcolor{tablerow}
+  1.4 & Declare disaster and activate this DRP. Log activation time in incident management system (NimbusIMS). & Crisis Manager\\
+  1.5 & Send initial stakeholder notification via all communication channels. & Communications Lead\\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Phase 2: Infrastructure Failover (30 minutes--2 hours)}
+
+\begin{tabularx}{\textwidth}{@{}c X l@{}}
+  \toprule
+  \rowcolor{tablehead}
+  \textcolor{white}{\textbf{Step}} & \textcolor{white}{\textbf{Action}} & \textcolor{white}{\textbf{Responsible}}\\
+  \midrule
+  2.1 & Initiate DNS failover to DR site --- update A records for \texttt{*.nexafinancial.com} to Phoenix IP range. TTL: 60 seconds. & Network Lead\\
+  \rowcolor{tablerow}
+  2.2 & Promote DR database replicas to primary. Verify data consistency against last sync timestamp. & Database Lead\\
+  2.3 & Activate DR application servers and validate health checks across all Tier 1 services. & Application Lead\\
+  \rowcolor{tablerow}
+  2.4 & Re-establish VPN tunnels and configure firewall rules at DR site. & Network Lead\\
+  2.5 & Run integration smoke tests on Core Banking and Payment Gateway endpoints. & Application Lead\\
+  \rowcolor{tablerow}
+  2.6 & Confirm external connectivity --- validate that partner banks (Synapse Trust, Meridian Holdings) can reach DR endpoints. & Network Lead\\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Phase 3: Service Restoration and Validation (2--4 hours)}
+
+\begin{tabularx}{\textwidth}{@{}c X l@{}}
+  \toprule
+  \rowcolor{tablehead}
+  \textcolor{white}{\textbf{Step}} & \textcolor{white}{\textbf{Action}} & \textcolor{white}{\textbf{Responsible}}\\
+  \midrule
+  3.1 & Restore Tier 2 systems (Digital Banking Platform, CRM, Data Warehouse). & Application Lead\\
+  \rowcolor{tablerow}
+  3.2 & Execute end-to-end transaction test: deposit, transfer, withdrawal via PayFlow. & QA Lead\\
+  3.3 & Validate customer authentication flows through ApexID. & Security Lead\\
+  \rowcolor{tablerow}
+  3.4 & Reconcile transaction ledger: compare Chicago ledger snapshot with Phoenix replica. Maximum acceptable discrepancy: \textbf{0 transactions}. & Database Lead\\
+  3.5 & Enable customer-facing services and monitor error rates for \textbf{30 minutes} before declaring stable. & Application Lead\\
+  \rowcolor{tablerow}
+  3.6 & Issue status update to all stakeholders confirming service restoration status. & Communications Lead\\
+  \bottomrule
+\end{tabularx}
+
+\subsection{Phase 4: Stabilisation and Return to Normal Operations}
+
+\begin{infobox}
+\textbf{\faClock\ Return to Primary Site}\\[4pt]
+Once the primary Chicago data centre is fully restored and validated, a controlled failback is executed during a pre-scheduled maintenance window. The failback procedure mirrors the failover steps in reverse order, with an additional \textbf{2-hour} data synchronisation window between site deactivation at Phoenix and activation at Chicago.
+\end{infobox}
+
+\clearpage

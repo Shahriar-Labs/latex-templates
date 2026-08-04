@@ -1,0 +1,35 @@
+\section{Probabilistic Graphical Models}
+
+\subsection{Overview}
+PGMs factorize a joint distribution $p(x_1,\ldots,x_n)$ using conditional
+independence encoded by a graph $\mathcal{G}$.
+
+\begin{defbox}{Bayesian Network \& Markov Network}
+\textbf{Bayesian net (DAG):}
+$p(\mathbf{x}) = \prod_{i} p(x_i \mid x_{\mathrm{pa}(i)})$, where pa$(i)$ are
+parents of node $i$. \\[2pt]
+\textbf{Markov network (undirected):}
+$p(\mathbf{x}) = \frac{1}{Z}\prod_{C\in\mathrm{cliques}} \psi_C(\mathbf{x}_C)$,\quad
+$Z = \sum_{\mathbf{x}}\prod_C \psi_C(\mathbf{x}_C)$ (partition function).
+\end{defbox}
+
+\begin{keyresult}{Belief Propagation (Sum-Product)}
+On a tree-structured factor graph, \emph{exact} marginals are computed in
+$\bigO{n \cdot |\mathcal{X}|^2}$ time via message passing:
+\[
+  \mu_{f\to x}(x) = \sum_{\sim x}\Bigl[f(\mathbf{x}_f)\prod_{y\in\mathrm{ne}(f)\setminus x}\mu_{y\to f}(y)\Bigr].
+\]
+On loopy graphs, Loopy BP is approximate but often effective in practice
+(e.g.\ turbo codes, MRFs for image segmentation).
+\end{keyresult}
+
+\textbf{Inference algorithms:}
+\begin{itemize}
+  \item Exact: Variable Elimination, Junction Tree ($\bigO{n\cdot|\mathcal{X}|^{w+1}}$,
+        $w$ = treewidth)
+  \item Approximate: Loopy BP, Mean-Field variational inference (minimize $\mathrm{KL}[q\|p]$),
+        MCMC (Gibbs sampling)
+  \item Latent variable models: EM algorithm maximizes $\Lc(\theta) = \E_q[\log p(\mathbf{x},\mathbf{z};\theta)]$
+\end{itemize}
+
+% ══════════════════════════════════════════════════════════════════════════════

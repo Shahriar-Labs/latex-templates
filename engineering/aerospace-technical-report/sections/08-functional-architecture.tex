@@ -1,0 +1,45 @@
+\section{Functional Architecture}
+The AFCS functional architecture is organized into six processing layers,
+as illustrated in Figure~\ref{fig:arch}. Sensor fusion occurs in the
+\textit{Estimation} layer via a 15-state extended Kalman filter (EKF) outputting
+aircraft state estimates at 200~Hz. The \textit{Guidance} layer computes
+commanded trajectories from the flight management system. The
+\textit{Control Allocation} layer maps generalized force/moment commands
+to individual surface deflections using a real-time quadratic-programming solver.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  node distance=6mm and 10mm,
+  block/.style={rectangle, draw=accent, fill=bggray, rounded corners=2pt,
+    text width=38mm, align=center, minimum height=11mm, font=\small\bfseries,
+    drop shadow={shadow xshift=0.5pt, shadow yshift=-0.5pt, opacity=0.25}},
+  arrow/.style={-{Stealth[scale=0.9]}, accent, thick},
+]
+
+  \node[block] (pilots)  {Pilot Inceptors\\(Stick \& Rudder)};
+  \node[block, right=of pilots] (sensors) {Sensor Suite\\IMU, INS, ADC};
+  \node[block, below=of sensors] (estim)  {State Estimation\\15-State EKF};
+  \node[block, left=of estim] (guid)     {Guidance\\Trajectory Cmd};
+  \node[block, below=of guid] (control)  {Control Law\\$H_\infty$ Robust};
+  \node[block, right=of control] (alloc) {Control Allocation\\QP Solver};
+  \node[block, below=of control] (act)   {Actuators\\EHA Surfaces};
+
+  \draw[arrow] (pilots)  -- (guid);
+  \draw[arrow] (sensors) -- (estim);
+  \draw[arrow] (estim)   -- (control);
+  \draw[arrow] (guid)    -- (control);
+  \draw[arrow] (control) -- (alloc);
+  \draw[arrow] (alloc)   -- (act);
+  \draw[arrow, dashed] (alloc.south) -- ++(0,-4mm) -| (estim.east)
+    node[pos=0.6, above, font=\footnotesize\color{rulegray}]{State feedback};
+
+  \node[fit=(pilots)(guid)(estim)(sensors), draw=accent!25, inner sep=12pt,
+    rounded corners=4pt, label={[accentlight,font=\footnotesize\bfseries]north west:Airframe Interface}] {};
+  \node[fit=(control)(alloc)(act), draw=accent!50, inner sep=10pt,
+    rounded corners=4pt, label={[accent,font=\footnotesize\bfseries]north west:FCC Processing}] {};
+
+\end{tikzpicture}
+\caption{AFCS functional architecture — data flow and processing layers.}
+\label{fig:arch}
+\end{figure}

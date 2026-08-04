@@ -1,0 +1,56 @@
+\section{Architecture}
+% ============================================================
+
+\subsection{System Diagram}
+
+\begin{archbox}
+\begin{center}
+\vspace{2pt}
+\small
+\begin{tabular}{@{}c@{}}
+{\color{accent}\faServer}\ \textbf{API Gateway (Envoy)} \\
+\texttt{POST /v2/payments/charge} \\
+$\downarrow$ \\[2pt]
+{\color{accent}\faCodeBranch}\ \textbf{ledger-write-service} (Go 1.23, 12 replicas) \\
+Validate $\to$ Idempotency check $\to$ Outbox insert \\
+$\downarrow$ \\[2pt]
+{\color{accent}\faStream}\ \textbf{Kafka} — topic \texttt{ledger.events.v2} (128 partitions, 7d retention) \\
+$\downarrow$\hspace{10mm}$\downarrow$ \\[2pt]
+\begin{tabular}{cc}
+{\color{accent}\faDatabase}\ \textbf{TiDB Cluster} &
+{\color{accent}\faSearch}\ \textbf{ledger-query-service} \\
+(3 TiKV nodes $\times$ 3 AZ) & (Elasticsearch 8 read replicas) \\
+\end{tabular} \\[4pt]
+$\downarrow$ \\[2pt]
+{\color{accent}\faChartBar}\ \textbf{Datadog} — SLO dashboards, alerting
+\end{tabular}
+\vspace{2pt}
+\end{center}
+\end{archbox}
+
+\vspace{6pt}
+
+\subsection{Key Design Decisions}
+
+\begin{tabularx}{\linewidth}{@{}K@{\hspace{8mm}}V@{}}
+\toprule
+\textbf{Concern} & \textbf{Decision} \\
+\midrule
+Write path & Outbox pattern: write to \icode{ledger\_outbox} in same TiDB txn, Kafka relay picks up async. Guarantees atomicity without distributed 2PC. \\
+Partition key & \icode{merchant\_id \% 128} — keeps all events for a merchant on one partition (ordering guarantee). \\
+Idempotency & \icode{idempotency\_key} stored in Redis (TTL 24\,h); checked before outbox insert. \\
+Schema evolution & Protobuf v3 with mandatory \icode{schema\_version} field; backward-compat enforced by schema registry. \\
+Fan-out reads & CQRS: query service consumes Kafka and projects into Elasticsearch for merchant-facing queries; TiDB for internal accounting. \\
+\bottomrule
+\end{tabularx}
+
+\vspace{6pt}
+
+\subsection{Outbox Relay}
+
+The relay is a single Go goroutine per TiDB shard using \icode{SELECT FOR UPDATE
+SKIP LOCKED} on the \icode{ledger\_outbox} table. Batch size: 500 rows, flush
+interval: 50\,ms. On Kafka producer ACK the rows are deleted. Relay lag is
+exposed via \icode{ledger\_outbox\_depth\_gauge} (alert if $>$ 10\,k).
+
+% ============================================================

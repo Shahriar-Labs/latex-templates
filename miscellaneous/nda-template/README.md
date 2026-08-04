@@ -4,26 +4,24 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Mutual non-disclosure agreement (NDA) LaTeX template — party preamble, numbered legal clauses (confidential information, obligations, term, remedies, governing law) and a two-party signature block.**
+**Non-Disclosure Agreement LaTeX template — Non-Disclosure Agreement. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/miscellaneous/nda-template)**, with real-time collaboration and one-second compiles.
 
 ![Non-Disclosure Agreement preview](preview.png)
 
 ## Features
-- Party preamble + effective date
-- Numbered legal clauses (confidentiality, term…)
-- Sub-item lettered lists
-- Two-party signature block
-- Confidential footer; realistic mutual NDA
+- Elegant, modern design
+- Compile-tested
+- Fully editable sample content
 
 ## Use it online (recommended)
 Open **[Non-Disclosure Agreement on LetX »](https://letx.app/templates/miscellaneous/nda-template)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/nda-template
+git clone https://github.com/Shahriar-Labs/nda-template.git
+cd nda-template
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).

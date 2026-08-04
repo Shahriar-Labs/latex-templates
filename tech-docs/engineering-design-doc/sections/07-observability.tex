@@ -1,0 +1,34 @@
+\section{Observability}
+% ============================================================
+
+\subsection{SLOs}
+
+\begin{tabularx}{\linewidth}{@{}K@{\hspace{8mm}}l@{\hspace{4mm}}V@{}}
+\toprule
+SLO & Target & Measurement \\
+\midrule
+Write latency P99 & $\leq$ 50\,ms & \icode{ledger\_write\_duration\_ms} histogram (Datadog) \\
+Write availability & 99.99\,\% & 1 -- (5xx / total) over 28-day rolling window \\
+Outbox relay lag & $\leq$ 10k rows & \icode{ledger\_outbox\_depth\_gauge} \\
+Idempotency hit rate & $<$ 0.5\,\% & \icode{ledger\_idempotency\_hit\_total} \\
+Recon divergence & 0\,\% & Nightly batch, alert on any mismatch \\
+\bottomrule
+\end{tabularx}
+
+\vspace{6pt}
+
+\subsection{Key Metrics Emitted}
+
+\begin{lstlisting}[language=Go]
+// Example OpenTelemetry span in ledger-write-service (Go)
+ctx, span := tracer.Start(ctx, "ledger.charge",
+    trace.WithAttributes(
+        attribute.String("merchant_id", req.MerchantId),
+        attribute.Int64("amount_cents",  req.AmountCents),
+        attribute.String("schema_version", strconv.Itoa(int(req.SchemaVersion))),
+    ),
+)
+defer span.End()
+\end{lstlisting}
+
+% ============================================================

@@ -1,0 +1,39 @@
+\section{Register Map (CSR Interface)}
+The control and status register block is accessed via a 32-bit SynapseBus-Lite interface. All registers are 32 bits wide and aligned to 4-byte boundaries.
+
+\noindent
+\begin{tabularx}{\textwidth}{l l c l X}
+\toprule
+\textbf{Offset} & \textbf{Register Name} & \textbf{Access} & \textbf{Reset Value} & \textbf{Description} \\
+\midrule
+0x0000 & \texttt{CTRL\_REG} & R/W & 0x00000000 & Global Control Register. Controls core enabling, resets, and operational modes. \\
+0x0004 & \texttt{STATUS\_REG} & R/O & 0x00000001 & Global Status Register. Exposes FIFO flags, processing status, and errors. \\
+0x0008 & \texttt{INTR\_EN} & R/W & 0x00000000 & Interrupt Enable Register. Enables hardware interrupt sources. \\
+0x000C & \texttt{INTR\_STAT} & R/W1C & 0x00000000 & Interrupt Status Register. Write '1' to clear active interrupt signals. \\
+0x0010 & \texttt{DMA\_SRC\_ADDR} & R/W & 0x00000000 & DMA Source Base Address (Lower 32-bits). \\
+0x0014 & \texttt{DMA\_DST\_ADDR} & R/W & 0x00000000 & DMA Destination Base Address (Lower 32-bits). \\
+0x0018 & \texttt{DMA\_LENGTH} & R/W & 0x00000000 & DMA Transfer Length in bytes. Writing triggers transfer. \\
+0x0020 & \texttt{DSP\_PARAM\_A} & R/W & 0x00004000 & DSP Filter Coefficient A (1.15 fixed-point format). \\
+0x0024 & \texttt{DSP\_PARAM\_B} & R/W & 0x00007FFF & DSP Filter Coefficient B (1.15 fixed-point format). \\
+\bottomrule
+\end{tabularx}
+
+\subsection{Control Register Field Descriptions (CTRL\_REG)}
+The \texttt{CTRL\_REG} controls the general operation of the Vertex-9 DSP core.
+
+\noindent
+\begin{tabularx}{\textwidth}{l l c l X}
+\toprule
+\textbf{Bits} & \textbf{Field Name} & \textbf{Access} & \textbf{Reset} & \textbf{Field Description} \\
+\midrule
+31:16 & \textit{Reserved} & R/O & 0x0000 & Reserved for future expansion. Reads return 0. \\
+15:8  & \texttt{DSP\_MODE} & R/W & 0x00 & Selects processing algorithm: 0x00 (Bypass), 0x01 (FIR Filter), 0x02 (FFT Mode), 0x03 (Correlator). \\
+7:4   & \textit{Reserved} & R/O & 0x0 & Reserved for future expansion. Reads return 0. \\
+3     & \texttt{INTR\_EN\_GL} & R/W & 0x0 & Global Interrupt Enable. Active high. \\
+2     & \texttt{SOFT\_RST} & R/W & 0x0 & Software Reset. Write '1' to reset the DSP pipeline. Self-clearing. \\
+1     & \texttt{RUN} & R/W & 0x0 & Run Enable. Write '1' to start data processing. \\
+0     & \texttt{CORE\_EN} & R/W & 0x0 & Global Core Enable. Must be '1' for any sub-modules to operate. \\
+\bottomrule
+\end{tabularx}
+
+% Section 4: Interface Protocols & Timing

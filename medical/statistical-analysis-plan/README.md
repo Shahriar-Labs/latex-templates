@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Statistical Analysis Plan (SAP) LaTeX template — "statistical analysis plan latex template". Elegant, compile-tested, editable online at letx.app.**
+**Statistical Analysis Plan (SAP) LaTeX template — Statistical Analysis Plan (SAP). Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/medical/statistical-analysis-plan)**, with real-time collaboration and one-second compiles.
 
@@ -12,23 +12,22 @@ Edit and compile this template instantly in your browser — no LaTeX install �
 
 ## Features
 - Elegant, modern design
-- Compile-tested (zero errors)
-- Realistic sample content
-- Editable online in your browser
+- Compile-tested
+- Fully editable sample content
 
 ## Use it online (recommended)
 Open **[Statistical Analysis Plan (SAP) on LetX »](https://letx.app/templates/medical/statistical-analysis-plan)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/statistical-analysis-plan
+git clone https://github.com/Shahriar-Labs/statistical-analysis-plan.git
+cd statistical-analysis-plan
 latexmk -pdf main.tex
 ```
 Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — medical and clinical templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates) — medical templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
 MIT — free for personal and commercial use. See [LICENSE](LICENSE).

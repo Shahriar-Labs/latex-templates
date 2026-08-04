@@ -1,0 +1,94 @@
+\section{Evaluation on Dual-Task Paradigms}
+
+We evaluated APCA-WM on three dual-task paradigms:
+
+\begin{description}[leftmargin=2em, style=nextline]
+  \item[Task A (N-back + tracking)] Participants (or the model) performed a 2-back letter
+        task concurrently with a visual tracking task.
+  \item[Task B (Mental arithmetic + listening)] Participants added sequences of
+        single-digit numbers while monitoring a spoken narrative for target words.
+  \item[Task C (Spatial planning + categorisation)] A Tower-of-Hanoi variant was
+        interleaved with picture categorisation.
+\end{description}
+
+Table~\ref{tab:wm-results} shows accuracy on the primary (WM) component of each task.
+
+\begin{table}[H]
+\centering
+\caption{Dual-task WM accuracy (\% correct, higher is better).  Human norms are from
+  the DU Cognitive Battery (DUCB-2022, $n = 148$).  $p$-values from Wilcoxon signed-rank
+  tests comparing APCA with each baseline.}
+\label{tab:wm-results}
+\begin{tabularx}{\linewidth}{@{}>{\raggedright\arraybackslash}Xcccc@{}}
+\toprule
+\textbf{Paradigm} & \textbf{Human norm} & \textbf{ACT-R\,5.0}
+  & \textbf{GRU baseline} & \textbf{APCA (ours)} \\
+\midrule
+Task A (N-back)          & $81.3 \pm 6.1$ & $74.2$ & $76.8$ & $\mathbf{80.1}$ \\
+Task B (Arithmetic)      & $77.6 \pm 7.4$ & $69.5$ & $72.3$ & $\mathbf{76.2}$ \\
+Task C (Spatial)         & $72.4 \pm 8.3$ & $65.1$ & $68.9$ & $\mathbf{71.8}$ \\
+\midrule
+\textbf{Mean}            & $77.1$         & $69.6$ & $72.7$ & $\mathbf{76.0}$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.92]
+  % Radar / bar chart approximated as grouped bars in TikZ
+  % Simple grouped bar chart: 3 tasks, 3 models
+  \pgfmathsetmacro{\W}{0.55}   % bar width
+
+  % Axes
+  \draw[-Stealth, line width=0.7pt, dupurple] (0,0) -- (10.5,0)
+    node[right, font=\small]{Paradigm};
+  \draw[-Stealth, line width=0.7pt, dupurple] (0,0) -- (0,5.2)
+    node[above, font=\small]{Accuracy (\%)};
+
+  % Y gridlines and labels
+  \foreach \y/\lab in {0/60, 1/65, 2/70, 3/75, 4/80, 5/85}{
+    \draw[dupurple!25, line width=0.3pt] (0.05,\y) -- (10.2,\y);
+    \node[left, font=\scriptsize, color=neutralgrey] at (0,\y) {\lab};
+  }
+
+  % Task labels
+  \foreach \x/\lbl in {2.0/Task A, 5.4/Task B, 8.8/Task C}{
+    \node[below=6pt, font=\small] at (\x,0) {\lbl};
+  }
+
+  % Bars: ACT-R (neutralgrey), GRU (dugold!60), APCA (dupurple)
+  % Task A: ACT-R=74.2->2.84, GRU=76.8->3.36, APCA=80.1->4.02, Human=81.3->4.26
+  \fill[neutralgrey!60] (0.8,0) rectangle ++(0.5, 2.84);
+  \fill[dugold!70]      (1.35,0) rectangle ++(0.5, 3.36);
+  \fill[dupurple!80]    (1.90,0) rectangle ++(0.5, 4.02);
+  \draw[black, dashed, line width=0.6pt] (0.75,4.26) -- (2.45,4.26)
+    node[right, font=\scriptsize]{human};
+
+  % Task B: ACT-R=69.5->1.9, GRU=72.3->2.46, APCA=76.2->3.24, Human=77.6->3.52
+  \fill[neutralgrey!60] (4.2,0) rectangle ++(0.5, 1.90);
+  \fill[dugold!70]      (4.75,0) rectangle ++(0.5, 2.46);
+  \fill[dupurple!80]    (5.30,0) rectangle ++(0.5, 3.24);
+  \draw[black, dashed, line width=0.6pt] (4.15,3.52) -- (5.85,3.52)
+    node[right, font=\scriptsize]{human};
+
+  % Task C: ACT-R=65.1->1.02, GRU=68.9->1.78, APCA=71.8->2.36, Human=72.4->2.48
+  \fill[neutralgrey!60] (7.6,0) rectangle ++(0.5, 1.02);
+  \fill[dugold!70]      (8.15,0) rectangle ++(0.5, 1.78);
+  \fill[dupurple!80]    (8.70,0) rectangle ++(0.5, 2.36);
+  \draw[black, dashed, line width=0.6pt] (7.55,2.48) -- (9.25,2.48)
+    node[right, font=\scriptsize]{human};
+
+  % Legend
+  \fill[neutralgrey!60] (0.2,4.8) rectangle ++(0.4,0.3);
+  \node[right, font=\scriptsize] at (0.65,4.95) {ACT-R 5.0};
+  \fill[dugold!70] (2.3,4.8) rectangle ++(0.4,0.3);
+  \node[right, font=\scriptsize] at (2.75,4.95) {GRU baseline};
+  \fill[dupurple!80] (4.4,4.8) rectangle ++(0.4,0.3);
+  \node[right, font=\scriptsize] at (4.85,4.95) {APCA (ours)};
+\end{tikzpicture}
+\caption{Working-memory accuracy on three dual-task paradigms.  Dashed horizontal lines
+  indicate human normative accuracy from the DUCB-2022 dataset.  APCA most closely
+  matches human performance across all tasks.}
+\label{fig:wm-bars}
+\end{figure}

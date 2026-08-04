@@ -1,0 +1,113 @@
+\section{Results and Discussion}
+\label{sec:results}
+%------------------------------------------------------------------
+
+\subsection{Reference Trajectory}
+
+Table~\ref{tab:trajectory} summarizes key parameters for the reference
+360-day transfer departing April~15, 2033.  The trajectory achieves Earth
+departure $C_3 = 0.22$~km$^2$/s$^2$ (consistent with a direct SEP spiral
+escape) and delivers 30.4 metric tons to the 500~km Mars orbit.
+
+\begin{table}[h]
+  \centering
+  \caption{Reference 2033 Mars cargo transfer trajectory parameters.}
+  \label{tab:trajectory}
+  \begin{tabular}{lcc}
+    \toprule
+    Parameter & Value & Units \\
+    \midrule
+    Launch epoch          & 15 Apr 2033  & --- \\
+    Arrival epoch         & 10 Mar 2034  & --- \\
+    Transfer duration     & 360          & days \\
+    Departure $C_3$       & 0.22         & km$^2$/s$^2$ \\
+    Initial spacecraft mass & 72.8       & metric ton \\
+    Xenon propellant consumed & 42.4     & metric ton \\
+    Delivered payload mass  & 30.4       & metric ton \\
+    Propellant mass fraction & 0.582     & --- \\
+    Peak thrust (1 AU)    & 4.85         & N \\
+    Mean $I_{sp}$         & 3\,840       & s \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\subsection{Pareto Front: Propellant vs.\ Transfer Time}
+
+Figure~\ref{fig:pareto} displays the Pareto front of propellant mass fraction
+versus transfer time for the 2033 launch window.  As transit time decreases
+below 300~days, propellant mass fraction rises sharply, reflecting diminishing
+returns from reduced gravity-loss penalties.  Mission planners targeting a
+30-metric-ton payload with the 72.8-metric-ton wet mass budget should select
+transfer times in the 320–360-day range.
+
+\begin{figure}[h]
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+        width  = 0.75\linewidth,
+        height = 0.52\linewidth,
+        xlabel = {Transfer Time (days)},
+        ylabel = {Propellant Mass Fraction},
+        xmin = 260, xmax = 400,
+        ymin = 0.40, ymax = 0.75,
+        xtick = {260,280,300,320,340,360,380,400},
+        ytick = {0.40,0.45,0.50,0.55,0.60,0.65,0.70,0.75},
+        grid  = both,
+        grid style = {line width=0.3pt, draw=gray!30},
+        major grid style = {line width=0.6pt, draw=gray!60},
+        tick label style = {font=\small},
+        label style = {font=\small},
+        legend style = {font=\small, at={(0.97,0.97)},
+                        anchor=north east},
+        mark size = 1.8pt,
+    ]
+      % BOL (no degradation)
+      \addplot[
+        color=blue, mark=*, thick,
+        smooth,
+      ] coordinates {
+        (265, 0.720)
+        (280, 0.675)
+        (300, 0.630)
+        (320, 0.592)
+        (340, 0.570)
+        (360, 0.562)
+        (380, 0.558)
+        (395, 0.557)
+      };
+      \addlegendentry{BOL ($\eta_{\mathrm{deg}}=1.00$)}
+
+      % 5-yr degradation
+      \addplot[
+        color=red, mark=square*, thick,
+        smooth, dashed,
+      ] coordinates {
+        (270, 0.735)
+        (285, 0.695)
+        (305, 0.653)
+        (325, 0.618)
+        (345, 0.596)
+        (365, 0.588)
+        (385, 0.582)
+        (398, 0.581)
+      };
+      \addlegendentry{5-yr degraded ($\eta_{\mathrm{deg}}=0.85$)}
+
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Pareto front of xenon propellant mass fraction versus transfer time
+           for the April 2033 Earth--Mars cargo mission.  Beginning-of-life
+           (solid) and 5-year degraded (dashed) array power cases are shown.}
+  \label{fig:pareto}
+\end{figure}
+
+\subsection{Sensitivity to Thruster Degradation}
+
+The dashed curve in Fig.~\ref{fig:pareto} corresponds to a 15\% reduction in
+solar array power representing five years of on-orbit degradation
+($\eta_{\text{deg}} = 0.85$).  The propellant mass fraction penalty is 2–3\%
+across all transfer times, confirming that the mission concept retains positive
+margin even at end-of-life power levels.  Trip-time penalties for the degraded
+case at fixed propellant allocation are 12–18~days.
+
+%------------------------------------------------------------------

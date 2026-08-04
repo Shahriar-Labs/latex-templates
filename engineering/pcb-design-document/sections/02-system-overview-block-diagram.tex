@@ -1,0 +1,81 @@
+\section{System Overview \& Block Diagram}
+The Project Apex-X processor board acts as the central controller for high-speed edge computing applications. It relies on the Synapse-X SoC, which integrates FPGA fabric with quad-core ARM processing units, flanked by DDR4 SDRAM and eMMC storage.
+
+\vspace{0.4cm}
+\begin{center}
+\begin{tikzpicture}[
+    node distance=0.8cm and 1.5cm,
+    block/.style={
+        rectangle,
+        draw=primary,
+        fill=lightbg,
+        thick,
+        minimum width=2.4cm,
+        minimum height=1.0cm,
+        align=center,
+        font=\small\bfseries,
+        rounded corners
+    },
+    soc/.style={
+        rectangle,
+        draw=primary,
+        fill=secondary!15,
+        thick,
+        minimum width=3.2cm,
+        minimum height=3.2cm,
+        align=center,
+        font=\bfseries\color{primary},
+        rounded corners
+    },
+    conn/.style={
+        draw=secondary,
+        thick,
+        <->,
+        >=latex
+    },
+    pwr/.style={
+        draw=warning!80!black,
+        dashed,
+        thick,
+        ->,
+        >=latex
+    }
+]
+
+% Center SoC
+\node[soc] (soc) {Synapse-X SoC\\(FPGA + ARM)};
+
+% Right Side: Memory and Storage
+\node[block, right=of soc, yshift=1.0cm] (ddr) {DDR4 SDRAM\\8 GB (32-bit)};
+\node[block, right=of soc, yshift=-1.0cm] (flash) {eMMC Storage\\32 GB (HS400)};
+
+% Left Side: Interfaces
+\node[block, left=of soc, yshift=1.0cm] (usb) {USB 3.2 Gen2\\Type-C Interface};
+\node[block, left=of soc, yshift=-10mm] (pcie) {PCIe Gen3 x4\\M.2 Key-M Slot};
+
+% Top: Power
+\node[block, above=of soc] (pmic) {Meridian PMIC\\V4-Power};
+
+% Bottom: Analog / Sensors
+\node[block, below=of soc] (sensor) {IMU \& Telemetry\\Sensors (SPI/I2C)};
+
+% Draw lines
+\draw[conn] ($(soc.east)+(0,0.8)$) -- (ddr.west);
+\draw[conn] ($(soc.east)+(0,-0.8)$) -- (flash.west);
+\draw[conn] ($(soc.west)+(0,0.8)$) -- (usb.east);
+\draw[conn] ($(soc.west)+(0,-0.8)$) -- (pcie.east);
+\draw[pwr] (pmic.south) -- (soc.north);
+\draw[conn] (soc.south) -- (sensor.north);
+
+% Label the buses
+\node[font=\scriptsize\color{darktext}, above] at ($(soc.east)!0.5!(ddr.west)$) {DDR Bus};
+\node[font=\scriptsize\color{darktext}, below] at ($(soc.east)!0.5!(flash.west)$) {eMMC};
+\node[font=\scriptsize\color{darktext}, above] at ($(soc.west)!0.5!(usb.east)$) {USB 3.2};
+\node[font=\scriptsize\color{darktext}, below] at ($(soc.west)!0.5!(pcie.east)$) {PCIe x4};
+
+\end{tikzpicture}
+\end{center}
+
+\newpage
+
+% --- Section 3: Stackup Details ---

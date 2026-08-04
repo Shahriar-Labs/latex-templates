@@ -1,0 +1,43 @@
+\section{Deep Neural Network Architectures}
+
+The foundational architecture of modern deep learning is the multilayer
+perceptron (MLP), in which each layer applies an affine transformation
+followed by a non-linear activation function:
+
+\begin{equation}
+\mathbf{h}^{(l)} = \sigma\!\bigl(\mathbf{W}^{(l)}\mathbf{h}^{(l-1)}
++ \mathbf{b}^{(l)}\bigr),
+\label{eq:mlp}
+\end{equation}
+
+where $\mathbf{h}^{(l)} \in \mathbb{R}^{d_l}$ denotes the activations
+at layer $l$, $\mathbf{W}^{(l)} \in \mathbb{R}^{d_l \times d_{l-1}}$ is
+the weight matrix, $\mathbf{b}^{(l)} \in \mathbb{R}^{d_l}$ is the bias
+vector, and $\sigma(\cdot)$ is a non-linear activation function such as
+the rectified linear unit (ReLU).
+
+Convolutional neural networks (CNNs)~\cite{he2016deep} extend this
+paradigm by replacing dense matrix multiplications with spatially
+localised convolution operations, dramatically reducing the parameter
+count for image-based tasks. A convolutional layer with $C_{\text{in}}$
+input channels, $C_{\text{out}}$ output channels, and kernels of size
+$K \times K$ requires only $C_{\text{in}} C_{\text{out}} K^2$
+parameters, independent of the spatial dimensions of the input.
+
+More recently, the Transformer architecture~\cite{vaswani2017attention}
+has emerged as the dominant paradigm for sequence modelling tasks. The
+core innovation is the self-attention mechanism:
+
+\begin{equation}
+\operatorname{Attention}(\mathbf{Q},\mathbf{K},\mathbf{V}) =
+\operatorname{softmax}\!\left(\frac{\mathbf{Q}\mathbf{K}^{\mathsf{T}}}
+{\sqrt{d_k}}\right)\mathbf{V},
+\label{eq:attention}
+\end{equation}
+
+where $\mathbf{Q}$, $\mathbf{K}$, and $\mathbf{V}$ are the query, key,
+and value matrices derived from the input sequence, and $d_k$ is the
+dimensionality of the key vectors. Self-attention has quadratic
+complexity in the sequence length $n$, specifically $\mathcal{O}(n^2
+d)$, which poses challenges for deployment on devices with limited
+memory.

@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**IP Assignment Agreement LaTeX template — ip assignment latex template. Elegant, compile-tested, editable online at letx.app.**
+**IP Assignment Agreement LaTeX template — IP Assignment Agreement. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/legal/ip-assignment-agreement)**, with real-time collaboration and one-second compiles.
 

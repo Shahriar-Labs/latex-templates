@@ -1,0 +1,18 @@
+\section{Risks}
+
+\begin{tabularx}{\linewidth}{@{}llllX@{}}
+  \toprule
+  \textbf{ID} & \textbf{Risk} & \textbf{Likelihood} & \textbf{Impact} & \textbf{Mitigation} \\
+  \midrule
+  R-01 & Plugin ABI instability   & Medium & High     &
+        Pin Go plugin build tags; integration-test every plugin in CI. \\[3pt]
+  R-02 & etcd watch storm         & Low    & Medium   &
+        Jitter propagation; circuit-breaker on watch re-subscribe. \\[3pt]
+  R-03 & Kafka lag spike          & Medium & High     &
+        Auto-scale consumers; DLQ with exponential backoff replay. \\[3pt]
+  R-04 & Schema Registry outage   & Low    & High     &
+        Local LRU cache (5\,min TTL); fail-open configurable per pipeline. \\[3pt]
+  R-05 & PII leakage in traces    & Low    & Critical &
+        Trace data redacted by \texttt{mask\_pii} before storage; field-level ACLs. \\
+  \bottomrule
+\end{tabularx}

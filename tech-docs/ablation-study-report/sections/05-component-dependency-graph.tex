@@ -1,0 +1,89 @@
+\section{Component Dependency Graph}
+% ═══════════════════════════════════════════════════════════════
+
+The dependency graph below captures the modular architecture of \modelname, showing
+how each component feeds into the next. Solid arrows denote mandatory data-flow
+dependencies; dashed arrows denote optional (learned) pathways.
+
+\vspace{6pt}
+
+\begin{figure}[ht]
+\centering
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[
+  >=Latex,
+  node distance=1.2cm and 1.6cm,
+  block/.style={
+    draw=accent!60,
+    fill=accent!5,
+    rounded corners=3pt,
+    minimum width=2.6cm,
+    minimum height=0.75cm,
+    font=\footnotesize\bfseries,
+    align=center,
+    inner sep=4pt,
+  },
+  smallblock/.style={
+    draw=accent!40,
+    fill=accent!3,
+    rounded corners=2pt,
+    minimum width=2.0cm,
+    minimum height=0.65cm,
+    font=\footnotesize,
+    align=center,
+    inner sep=3pt,
+  },
+  arr/.style={->,line width=0.7pt,color=accent!70},
+  dasarr/.style={->,dashed,line width=0.5pt,color=slatelight!60},
+]
+
+  % ── Nodes (left to right, top to bottom) ──
+  \node[block] (feat)               {Atomic\\Features};
+  \node[block,right=of feat] (rbf)  {RBF Distance\\Encoding};
+  \node[block,right=of rbf]  (edge) {Edge\\Features};
+
+  \node[smallblock,below=0.8cm of feat] (embed) {Node\\Embeddings};
+  \node[block,right=of embed,xshift=0.8cm] (mp) {Equivariant\\Message-Passing};
+  \node[block,right=of mp] (attn)  {Attention\\Aggregation};
+  \node[smallblock,right=of attn] (res)  {Residual\\+ LayerNorm};
+
+  \node[smallblock,below=0.9cm of mp] (eup)  {Edge Feature\\Update};
+  \node[block,right=of eup,xshift=0.8cm] (pool) {Global\\Readout};
+  \node[smallblock,right=of pool] (pred)  {MLP\\Predictor};
+  \node[block,right=of pred] (loss)  {MAE Loss\\+ Aux.\ Denoising};
+
+  % ── Arrows ──
+  \draw[arr] (feat) -- (rbf);
+  \draw[arr] (rbf)  -- (edge);
+  \draw[arr] (feat) -- (embed);
+  \draw[arr] (embed) -- (mp);
+  \draw[arr] (edge.east) -- ++(0.4,0) |- (mp.north);
+  \draw[arr] (mp)   -- (attn);
+  \draw[arr] (attn) -- (res);
+  \draw[arr] (mp.south) -- ++(0,-0.35) -| (eup.north);
+  \draw[arr] (eup.east) -- ++(0.4,0) |- (mp.south east);
+  \draw[arr] (res.south) -- ++(0,-0.35) -| (pool.north);
+  \draw[arr] (attn.south) -- ++(0,-0.35) -| (pool.north west);
+  \draw[arr] (pool) -- (pred);
+  \draw[arr] (pred) -- (loss);
+
+  % ── Global context injection (dashed) ──
+  \node[smallblock,fill=amber!8,draw=amber!50,below=1.1cm of rbf] (gctx)
+    {Global Context\\(optional)};
+  \draw[dasarr] (gctx.north) -- (edge.south);
+  \draw[dasarr] (gctx.east) -- ++(0.6,0) |- (mp.south west);
+
+  % ── Legend ──
+  \node[font=\footnotesize\color{slatelight},anchor=north west]
+    at (current bounding box.south west|-0,-0.7) {
+    \textcolor{accent!70}{\textbf{---}} mandatory data flow \quad
+    \textcolor{slatelight!60}{\textbf{-\,-}} optional / learned pathway
+  };
+
+\end{tikzpicture}}
+\caption*{\footnotesize\color{slatelight}Modular component dependency graph for \modelname.
+Solid arrows indicate hard data-flow dependencies; the global-context pathway (dashed)
+is a learned injection that the attention mechanism can optionally attend to.}
+\end{figure}
+
+% ═══════════════════════════════════════════════════════════════

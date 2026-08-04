@@ -1,0 +1,170 @@
+% Packages, colours and custom commands for this template.
+% Engineering Specification Document — LaTeX Template
+% Compile with: latexmk -pdf main.tex  (pdflatex, zero errors)
+% Edit & compile online at: https://letx.app
+%-----------------------------------------------------------------------
+\usepackage{gensymb}
+
+% --- Fonts & Encoding ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lato}
+\renewcommand{\familydefault}{\sfdefault}
+
+% --- Page Geometry ---
+\usepackage[top=20mm,bottom=22mm,left=22mm,right=20mm,headheight=16pt]{geometry}
+
+% --- Colors ---
+\usepackage[table]{xcolor}
+\definecolor{accent}{HTML}{1B3A5C}
+\definecolor{accentlight}{HTML}{3A5F80}
+\definecolor{graydark}{HTML}{5A6A7A}
+\definecolor{grayrule}{HTML}{B0BAC5}
+\definecolor{tableheadbg}{HTML}{DCE4EC}
+\definecolor{pagebg}{HTML}{F9FAFB}
+\definecolor{revodd}{HTML}{F4F6F8}
+
+% --- Graphics ---
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric,arrows.meta,positioning,calc,fit,backgrounds}
+
+% --- Coloured Boxes ---
+\usepackage[skins,breakable]{tcolorbox}
+\tcbuselibrary{skins,breakable}
+\usetikzlibrary{shadows}
+
+% --- Tables ---
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+
+% --- Headers / Footers ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{grayrule}\leaders\hrule height\headrulewidth\hfill}}
+\fancyhead[L]{\footnotesize\color{graydark}ENG-SPEC-2026-0147\,--\,Rev.\ B}
+\fancyhead[R]{\footnotesize\color{graydark}\today}
+\fancyfoot[C]{\footnotesize\color{graydark}\thepage}
+\fancyfoot[L]{\footnotesize\color{graydark}I-5 Columbia River Crossing}
+\setlength{\footskip}{14pt}
+
+% --- Section Formatting ---
+\usepackage{titlesec}
+\titleformat{\section}
+  {\Large\bfseries\color{accent}}
+  {\thesection}{1em}{}[\vspace{-0.4em}\titlerule\vspace{0.6em}]
+\titleformat{\subsection}
+  {\large\bfseries\color{accentlight}}
+  {\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{graydark}}
+  {\thesubsubsection}{1em}{}
+
+% --- Lists ---
+\usepackage{enumitem}
+\setlist{nosep,leftmargin=*,itemsep=2pt,topsep=4pt}
+
+% --- Math ---
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% --- Captions ---
+\usepackage[font={footnotesize,color=graydark},labelfont={bf,color=accent}]{caption}
+
+% --- Icons ---
+\usepackage{fontawesome5}
+
+% --- Hyperlinks (load last) ---
+\usepackage[hidelinks]{hyperref}
+
+% --- Paragraph Spacing ---
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt plus 1pt minus 1pt}
+
+%=======================================================================
+% HELPER MACROS
+%=======================================================================
+\newcommand{\docctrl}[5]{%
+  \noindent%
+  \begin{tcolorbox}[
+    enhanced,
+    sharp corners,
+    colback=accent,
+    colframe=accent,
+    boxrule=0pt,
+    left=0pt,right=0pt,top=0pt,bottom=0pt,
+    before skip=0pt,after skip=14pt,
+  ]%
+  \begin{tikzpicture}
+    \node[inner sep=0pt,outer sep=0pt,anchor=north west] (box) at (0,0) {%
+      \begin{minipage}{\dimexpr\linewidth-10pt\relax}
+        \vspace{10pt}
+        \begin{minipage}{0.62\linewidth}
+          \color{white}\LARGE\bfseries #1
+          \par\vspace{2pt}
+          \color{accentlight!50!white}\normalsize #2
+        \end{minipage}%
+        \hfill%
+        \begin{minipage}{0.34\linewidth}
+          \raggedleft
+          \color{white}\footnotesize
+          \textbf{Document:} #3\\[1pt]
+          \textbf{Revision:} #4\\[1pt]
+          \textbf{Date:} #5
+        \end{minipage}
+        \vspace{10pt}
+      \end{minipage}%
+    };
+    \draw[accentlight,line width=4pt] (box.south west) -- (box.south east);
+  \end{tikzpicture}
+  \end{tcolorbox}%
+}
+
+\newcommand{\doctitleblock}[3]{%
+  \noindent%
+  \begin{tcolorbox}[
+    enhanced,
+    sharp corners,
+    colback=white,
+    colframe=grayrule,
+    boxrule=0.5pt,
+    left=12pt,right=12pt,top=10pt,bottom=10pt,
+    before skip=0pt,after skip=14pt,
+  ]%
+  \begin{minipage}{0.45\linewidth}
+    \footnotesize\color{graydark}
+    \faUser\ \textbf{Originator:} #1\\[2pt]
+    \faBuilding\ \textbf{Discipline:} #2
+  \end{minipage}%
+  \hfill%
+  \begin{minipage}{0.50\linewidth}
+    \raggedleft\footnotesize\color{graydark}
+    \faCheckCircle\ \textbf{Status:} #3\\[2pt]
+    \faLock\ \textbf{Classification:} Proprietary
+  \end{minipage}
+  \end{tcolorbox}%
+}
+
+\newcommand{\revheader}{%
+  \toprule
+  \rowcolor{accent}%
+  \color{white}\bfseries Rev. & \color{white}\bfseries Date & \color{white}\bfseries Author & \color{white}\bfseries Description & \color{white}\bfseries Approved \\
+  \midrule
+}
+
+\newcommand{\reventry}[5]{%
+  #1 & #2 & #3 & #4 & #5 \\
+  \midrule
+}
+
+\newcommand{\reqrow}[4]{%
+  \texttt{\small #1} & #2 & #3 & #4 \\
+}
+
+\newcommand{\vermethod}[1]{%
+  \textsf{\footnotesize #1}%
+}
+
+%=======================================================================

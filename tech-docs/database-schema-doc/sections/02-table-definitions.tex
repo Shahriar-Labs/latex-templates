@@ -1,0 +1,146 @@
+\section{Table Definitions}
+
+% --- customers ---
+\tableheader{customers}{\textasciitilde{}2.1M rows}
+\begin{tcolorbox}[schemaframe]
+  \renewcommand{\arraystretch}{1.05}
+  \begin{tabularx}{\linewidth}{p{2cm} p{1.6cm} X p{2cm}}
+    \toprule
+    \rowcolor{primary!10}\textbf{Column} & \textbf{Type} & \textbf{Constraints / Notes} \\
+    \midrule
+    id              & \tttype{BIGSERIAL}   & \pkbadge\ surrogate key. \\
+    external\_id    & \tttype{UUID}        & \uqbadge\ API identifier. \\
+    email           & \tttype{VARCHAR(255)}& \uqbadge\ Login; UNIQUE WHERE deleted\_at IS NULL. \\
+    full\_name      & \tttype{VARCHAR(150)}& Display name. \\
+    password\_hash  & \tttype{TEXT}        & bcrypt/argon2 digest. \\
+    phone           & \tttype{VARCHAR(20)} & E.164, nullable; indexed. \\
+    default\_currency& \tttype{CHAR(3)}    & Default \texttt{`USD'}. \\
+    email\_verified\_at&\tttype{TIMESTAMPTZ}&NULL until confirmed. \\
+    created\_at     & \tttype{TIMESTAMPTZ} & Default \texttt{now()}; indexed DESC. \\
+    updated\_at     & \tttype{TIMESTAMPTZ} & Auto-updated. \\
+    deleted\_at     & \tttype{TIMESTAMPTZ} & Soft-delete, nullable. \\
+    \bottomrule
+  \end{tabularx}
+\end{tcolorbox}
+
+% --- merchants ---
+\tableheader{merchants}{\textasciitilde{}48K rows}
+\begin{tcolorbox}[schemaframe]
+  \renewcommand{\arraystretch}{1.05}
+  \begin{tabularx}{\linewidth}{p{2cm} p{1.6cm} X p{2cm}}
+    \toprule
+    \rowcolor{primary!10}\textbf{Column} & \textbf{Type} & \textbf{Constraints / Notes} \\
+    \midrule
+    id                 & \tttype{BIGSERIAL}   & \pkbadge\ surrogate key. \\
+    external\_id       & \tttype{UUID}        & \uqbadge\ Public storefront ID. \\
+    store\_name        & \tttype{VARCHAR(200)}& \uqbadge\ Display name. \\
+    slug               & \tttype{VARCHAR(200)}& \uqbadge\ URL-safe; UNIQUE WHERE deleted\_at IS NULL. \\
+    owner\_email       & \tttype{VARCHAR(255)}& \uqbadge\ Contact / login. \\
+    payout\_method     & \tttype{VARCHAR(30)} & stripe \textbar{} wise \textbar{} bank\_transfer. \\
+    payout\_destination& \tttype{VARCHAR(255)}& Stripe acct ID or IBAN. \\
+    commission\_bps    & \tttype{SMALLINT}    & Default 500 (5.00\%). \\
+    status             & \tttype{VARCHAR(20)} & pending \textbar{} active \textbar{} suspended \textbar{} closed. \\
+    created\_at        & \tttype{TIMESTAMPTZ} & Default \texttt{now()}; indexed. \\
+    updated\_at        & \tttype{TIMESTAMPTZ} & Auto-updated. \\
+    deleted\_at        & \tttype{TIMESTAMPTZ} & Soft-delete, nullable. \\
+    \bottomrule
+  \end{tabularx}
+\end{tcolorbox}
+
+% --- products ---
+\tableheader{products}{\textasciitilde{}1.9M rows}
+\begin{tcolorbox}[schemaframe]
+  \renewcommand{\arraystretch}{1.05}
+  \begin{tabularx}{\linewidth}{p{2cm} p{1.6cm} X p{2cm}}
+    \toprule
+    \rowcolor{primary!10}\textbf{Column} & \textbf{Type} & \textbf{Constraints / Notes} \\
+    \midrule
+    id               & \tttype{BIGSERIAL}   & \pkbadge\ surrogate key. \\
+    merchant\_id     & \tttype{BIGINT}      & \fkbadge\ FK \textrightarrow{} merchants.id; indexed. \\
+    external\_id     & \tttype{UUID}        & \uqbadge\ Public identifier. \\
+    title            & \tttype{VARCHAR(300)}& Indexed; GIN trigram (pg\_trgm) for search. \\
+    description      & \tttype{TEXT}        & Markdown body. \\
+    category         & \tttype{VARCHAR(80)} & Indexed; electronics \textbar{} fashion \textbar{} home \textbar{} … \\
+    base\_price\_cents& \tttype{BIGINT}     & Smallest currency unit. \\
+    currency         & \tttype{CHAR(3)}     & Default \texttt{`USD'}. \\
+    is\_digital      & \tttype{BOOLEAN}     & Default FALSE. \\
+    tags             & \tttype{TEXT[]}      & PG array for search. \\
+    created\_at      & \tttype{TIMESTAMPTZ} & Default \texttt{now()}. \\
+    updated\_at      & \tttype{TIMESTAMPTZ} & Auto-updated. \\
+    deleted\_at      & \tttype{TIMESTAMPTZ} & Soft-delete, nullable. \\
+    \bottomrule
+  \end{tabularx}
+\end{tcolorbox}
+
+% --- inventory ---
+\tableheader{inventory}{\textasciitilde{}4.3M rows}
+\begin{tcolorbox}[schemaframe]
+  \renewcommand{\arraystretch}{1.05}
+  \begin{tabularx}{\linewidth}{p{2cm} p{1.6cm} X p{2cm}}
+    \toprule
+    \rowcolor{primary!10}\textbf{Column} & \textbf{Type} & \textbf{Constraints / Notes} \\
+    \midrule
+    id                  & \tttype{BIGSERIAL}   & \pkbadge\ surrogate key. \\
+    product\_id         & \tttype{BIGINT}      & \fkbadge\ FK \textrightarrow{} products.id; CASCADE. \\
+    sku                 & \tttype{VARCHAR(64)} & \uqbadge\ Merchant-defined. \\
+    variant\_label      & \tttype{VARCHAR(200)}& e.g.\ \texttt{`Size~L~/~Blue'}. \\
+    quantity\_available & \tttype{INTEGER}     & Default 0; CHECK >= 0. \\
+    quantity\_reserved  & \tttype{INTEGER}     & Pending-order hold; CHECK >= 0. \\
+    warehouse\_location & \tttype{VARCHAR(100)}& Bin ref, nullable. \\
+    low\_stock\_threshold& \tttype{INTEGER}    & Default 5. \\
+    created\_at         & \tttype{TIMESTAMPTZ} & Default \texttt{now()}. \\
+    updated\_at         & \tttype{TIMESTAMPTZ} & Auto-updated. \\
+    \bottomrule
+  \end{tabularx}
+\end{tcolorbox}
+
+% --- orders ---
+\tableheader{orders}{\textasciitilde{}6.1M rows}
+\begin{tcolorbox}[schemaframe]
+  \renewcommand{\arraystretch}{1.05}
+  \begin{tabularx}{\linewidth}{p{2cm} p{1.6cm} X p{2cm}}
+    \toprule
+    \rowcolor{primary!10}\textbf{Column} & \textbf{Type} & \textbf{Constraints / Notes} \\
+    \midrule
+    id                  & \tttype{BIGSERIAL}   & \pkbadge\ surrogate key. \\
+    customer\_id        & \tttype{BIGINT}      & \fkbadge\ FK \textrightarrow{} customers.id; RESTRICT. \\
+    external\_id        & \tttype{UUID}        & \uqbadge\ Customer-facing order \#. \\
+    status              & \tttype{VARCHAR(20)} & pending \textbar{} confirmed \textbar{} shipped \textbar{} delivered \textbar{} cancelled; indexed (partial WHERE pending). \\
+    subtotal\_cents     & \tttype{BIGINT}      & Line items sum. \\
+    tax\_cents          & \tttype{BIGINT}      & Default 0. \\
+    shipping\_cents     & \tttype{BIGINT}      & Default 0. \\
+    total\_cents        & \tttype{BIGINT}      & subtotal + tax + shipping. \\
+    currency            & \tttype{CHAR(3)}     & Default \texttt{`USD'}. \\
+    shipping\_address\_id& \tttype{BIGINT}     & \fkbadge\ FK \textrightarrow{} addresses.id; SET NULL. \\
+    placed\_at          & \tttype{TIMESTAMPTZ} & Default \texttt{now()}; indexed DESC. \\
+    updated\_at         & \tttype{TIMESTAMPTZ} & Auto-updated. \\
+    \bottomrule
+  \end{tabularx}
+\end{tcolorbox}
+
+% --- transactions ---
+\tableheader{transactions}{\textasciitilde{}5.9M rows}
+\begin{tcolorbox}[schemaframe]
+  \renewcommand{\arraystretch}{1.05}
+  \begin{tabularx}{\linewidth}{p{2cm} p{1.6cm} X p{2cm}}
+    \toprule
+    \rowcolor{primary!10}\textbf{Column} & \textbf{Type} & \textbf{Constraints / Notes} \\
+    \midrule
+    id                   & \tttype{BIGSERIAL}   & \pkbadge\ surrogate key. \\
+    order\_id            & \tttype{BIGINT}      & \fkbadge, \uqbadge\ FK \textrightarrow{} orders.id (1:1); RESTRICT. \\
+    merchant\_id         & \tttype{BIGINT}      & \fkbadge\ FK \textrightarrow{} merchants.id; RESTRICT. \\
+    external\_id         & \tttype{UUID}        & \uqbadge\ Payment reference. \\
+    provider             & \tttype{VARCHAR(30)} & stripe \textbar{} wise \textbar{} paypal. \\
+    provider\_txn\_id    & \tttype{VARCHAR(255)}& \uqbadge\ Gateway ref; nullable; UNIQUE WHERE NOT NULL. \\
+    amount\_cents        & \tttype{BIGINT}      & Total charged. \\
+    platform\_fee\_cents & \tttype{BIGINT}      & Nexa cut. \\
+    merchant\_payout\_cents&\tttype{BIGINT}    & amount minus platform\_fee. \\
+    currency             & \tttype{CHAR(3)}     & Default \texttt{`USD'}. \\
+    status               & \tttype{VARCHAR(20)} & pending \textbar{} authorized \textbar{} captured \textbar{} refunded \textbar{} failed; indexed (partial WHERE pending). \\
+    captured\_at         & \tttype{TIMESTAMPTZ} & Populated on capture. \\
+    created\_at          & \tttype{TIMESTAMPTZ} & Default \texttt{now()}; indexed DESC. \\
+    \bottomrule
+  \end{tabularx}
+\end{tcolorbox}
+
+% ── ENUMS + FK ────────────────────────────────────────────────────────

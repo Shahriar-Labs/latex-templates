@@ -1,0 +1,34 @@
+\section{System Architecture}
+\textsc{Meridian-Beam} operates as a two-stage control loop at each base
+station. The coarse stage performs a reduced hierarchical codebook sweep to
+narrow the candidate beam set; the refinement stage then applies a compact
+policy network, trained via reinforcement learning, to select a fine-grained
+beam offset based on recent received-signal-strength history and user
+trajectory estimates. Figure~\ref{fig:architecture} illustrates the data flow
+between the two stages and the scheduler.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  node distance=10mm and 14mm,
+  box/.style={draw=kucrimson, thick, rounded corners=2pt, fill=kupale,
+              minimum width=32mm, minimum height=11mm, align=center, font=\small},
+  arr/.style={->, kugray, thick}
+]
+\node[box] (ue) {User Equipment\\Channel Reports};
+\node[box, right=of ue] (coarse) {Coarse Codebook\\Sweep};
+\node[box, right=of coarse] (refine) {RL Refinement\\Policy};
+\node[box, below=of refine] (sched) {Scheduler \&\\Beam Selection};
+\node[box, below=of coarse] (log) {Measurement\\Logging};
+
+\draw[arr] (ue) -- (coarse);
+\draw[arr] (coarse) -- (refine);
+\draw[arr] (refine) -- (sched);
+\draw[arr] (coarse) -- (log);
+\draw[arr] (sched.west) -- ++(-1.9,0) |- (ue.south);
+\end{tikzpicture}
+\caption{\textsc{Meridian-Beam} control loop: coarse codebook sweeping narrows
+the beam candidates before a learned refinement policy selects the final beam
+offset each scheduling interval.}
+\label{fig:architecture}
+\end{figure}

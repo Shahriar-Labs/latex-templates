@@ -1,0 +1,82 @@
+\section{Literature Review}
+
+\subsection{Traditional Approaches to Plant Disease Detection}
+
+Early automated plant disease detection systems relied on hand-crafted
+feature extraction followed by classical machine learning classifiers.
+Commonly extracted features included colour histograms in HSV and CIELAB
+colour spaces, texture descriptors such as Gray-Level Co-occurrence Matrix
+(GLCM) and Local Binary Patterns (LBP), and morphological characteristics
+like leaf shape and vein patterns. Support Vector Machines (SVMs),
+$k$-Nearest Neighbours, and Random Forest classifiers were then trained on
+these engineered features.
+
+\parsp
+Pydipati et al.\ (2006) achieved 95\% accuracy on citrus disease
+classification using colour co-occurrence features with an SVM classifier.
+However, these systems required meticulous manual feature engineering and
+performed poorly when deployed on crops or diseases not represented in the
+training data. The features were brittle — a change in lighting or camera
+angle often rendered the classifier ineffective.
+
+\subsection{Deep Learning for Crop Disease Classification}
+
+The landmark work by Mohanty et al.\ (2016) demonstrated that deep
+convolutional neural networks could classify 26 diseases across 14 crop
+species using the PlantVillage dataset, achieving 99.35\% accuracy with a
+fine-tuned GoogLeNet architecture. This study catalysed a shift from
+hand-crafted features to end-to-end deep learning in the agricultural
+computer vision community.
+
+\parsp
+Subsequent work explored various architectures and training strategies.
+Sladojevic et al.\ (2016) developed CaffeNet-based models reaching 96.3\%
+accuracy on 13 disease classes. Ferentinos (2018) conducted an extensive
+comparison of five deep learning architectures (AlexNet, AlexNetOWTBn,
+GoogLeNet, OverFeat, VGG) on an expanded 87\,848-image dataset, reporting
+99.53\% top accuracy with VGG. Too et al.\ (2019) systematically compared
+DenseNet-121, ResNet-50, InceptionV4, and VGG-16, concluding that DenseNets
+offer the best accuracy-to-parameter-efficiency tradeoff for plant disease
+tasks.
+
+\parsp
+Transfer learning emerged as the dominant paradigm. Rather than training CNNs
+from scratch on limited agricultural datasets, researchers initialised
+networks with ImageNet-pretrained weights and fine-tuned on plant images.
+This approach consistently outperformed training from scratch, especially
+when target-domain data was scarce. Brahimi et al.\ (2017) demonstrated that
+fine-tuning pre-trained models on as few as 500 tomato leaf images per class
+achieved over 97\% accuracy.
+
+\subsection{Mobile and Edge Deployment}
+
+A critical gap in early research was the lack of accessible deployment
+solutions. Models achieving 99\%+ accuracy in the lab (e.g., ensembles of
+VGG and ResNet) required gigabytes of GPU memory, precluding on-device
+inference. Ramcharan et al.\ (2017) deployed a MobileNet-based cassava
+disease classifier on a smartphone, demonstrating 93\% accuracy with
+inference latency under 200\,ms. This work highlighted the viability of
+lightweight architectures for real-world agricultural deployment.
+
+\subsection{Identified Research Gaps}
+
+\begin{defbox}
+\textbf{Gap Analysis.} Despite significant progress, three gaps remain
+unaddressed in the literature:
+
+\begin{enumerate}[label=\textcolor{accent}{\textbullet}, leftmargin=2em, itemsep=3pt]
+  \item \textbf{No unified benchmark} comparing custom lightweight CNNs
+        against transfer-learned models on identical preprocessing
+        pipelines and evaluation protocols.
+  \item \textbf{Limited real-time deployment} — most studies report offline
+        accuracy; few provide end-to-end systems with measured inference
+        latency on commodity hardware.
+  \item \textbf{Insufficient attention to robustness} — models are rarely
+        stress-tested under data shifts (lighting, background, resolution)
+        that occur in field conditions.
+\end{enumerate}
+
+This project addresses all three gaps.
+\end{defbox}
+
+% ── 3. Methodology ────────────────────────────────────────────────────────

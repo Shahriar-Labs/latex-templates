@@ -1,0 +1,24 @@
+\section{Algorithm}
+
+Algorithm~\ref{alg:rjmcmc} sketches the main loop. At each iteration, with probabilities $b_K$, $d_K$, and $1-b_K-d_K$, we propose a birth, death, or within-model move respectively.
+
+\begin{table}[H]
+\centering
+\caption{Reversible-jump MCMC for regime-switching HMM.}
+\label{tab:algorithm}
+\begin{tabularx}{0.92\textwidth}{@{}l >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Step} & \textbf{Operation} \\
+\midrule
+1 & Initialize $K^{(0)}$, $\boldsymbol{\theta}^{(0)} = \{\boldsymbol{\mu}_k, \boldsymbol{\Sigma}_k, \mathbf{Q}\}$, and $s_{1:T}^{(0)}$ \\{}
+2 & \textbf{for} $m = 1,\dots,M$ \textbf{do} \\{}
+3 & \quad Sample $u \sim \operatorname{Uniform}(0,1)$ \\{}
+4 & \quad \textbf{if} $u < b_K$: propose birth move, accept with prob.\ $\alpha_{\text{birth}}$ \\{}
+5 & \quad \textbf{else if} $u < b_K + d_K$: propose death move, accept with prob.\ $\alpha_{\text{death}}$ \\{}
+6 & \quad \textbf{else}: update $\boldsymbol{\theta}$ via Gibbs, sample $s_{1:T}$ via forward-filtering backward-sampling \\{}
+7 & \textbf{end for} \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The birth move draws a new state $(K+1)$ by splitting an existing regime randomly; the death move merges two adjacent regimes. Acceptance probabilities are derived from the usual Metropolis--Hastings--Green ratio, with the Jacobian of the dimension-changing transformation absorbed into the proposal ratio~\cite{green1995}.

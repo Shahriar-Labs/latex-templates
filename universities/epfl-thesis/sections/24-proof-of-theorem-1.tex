@@ -1,0 +1,177 @@
+\chapter{Proof of Theorem~1}\label{app:proofs}
+
+We provide a detailed proof of Theorem~\ref{thm:convergence}. Recall the standing assumptions:
+$\mathcal{L}$ is $L$-smooth (Assumption~1), gradients are unbiased with bounded variance
+(Assumptions~2--3), and $\mathcal{L}$ is bounded below (Assumption~4).
+
+\begin{proof}
+From the $L$-smoothness of $\mathcal{L}$ and the NPG update $\theta_{t+1} = \theta_t -
+\eta_t P_t^{-1/2}\Psi_t$, a standard quadratic upper bound yields
+\begin{equation}
+  \mathcal{L}(\theta_{t+1}) \leq \mathcal{L}(\theta_t)
+    - \eta_t \langle\nabla\mathcal{L}(\theta_t),\, P_t^{-1/2}\Psi_t\rangle
+    + \frac{L\eta_t^2}{2}\|P_t^{-1/2}\Psi_t\|^2.
+  \label{eq:pf1}
+\end{equation}
+
+Let $\mathbb{E}_t[\cdot] = \mathbb{E}[\cdot \mid \theta_t, P_t]$ denote the conditional
+expectation. Taking $\mathbb{E}_t$ of both sides of~(\ref{eq:pf1}) and applying the tower
+property:
+\begin{align}
+  \mathbb{E}_t[\mathcal{L}(\theta_{t+1})]
+    &\leq \mathcal{L}(\theta_t)
+      - \eta_t \mathbb{E}_t\bigl[\langle\nabla\mathcal{L}(\theta_t),\,
+        P_t^{-1/2}\Psi_t\rangle\bigr]
+      + \frac{L\eta_t^2}{2}\mathbb{E}_t\bigl[\|P_t^{-1/2}\Psi_t\|^2\bigr].
+  \label{eq:pf2}
+\end{align}
+
+By the construction of the preconditioner, $P_t \succ 0$, so $P_t^{-1/2}$ is well-defined.
+Moreover, by the boundedness condition on $\Psi_t$, there exist constants $C_1, C_2 > 0$ such
+that
+\begin{equation}
+  \mathbb{E}_t[\|\Psi_t\|^2] \leq C_1 + C_2\|\nabla\mathcal{L}(\theta_t)\|^2.
+  \label{eq:pf3}
+\end{equation}
+
+The critical step is bounding the inner product. Since $P_t^{-1/2}$ is $\mathcal{F}_{t-1}$-measurable
+(it depends only on gradients up to $t-1$), and $\Psi_t$ is an unbiased estimator of the
+normalized gradient direction, we have:
+\begin{align}
+  \mathbb{E}_t\bigl[\langle\nabla\mathcal{L}(\theta_t),\, P_t^{-1/2}\Psi_t\rangle\bigr]
+    &= \langle\nabla\mathcal{L}(\theta_t),\,
+        P_t^{-1/2}\,\mathbb{E}_t[\Psi_t]\rangle \nonumber\\
+    &\geq \frac{\lambda_{\min}(P_t^{-1/2})}{2}\|\nabla\mathcal{L}(\theta_t)\|^2
+        - \frac{1}{2}\|P_t^{-1/2}\|\,\mathbb{E}_t[\|\Psi_t - \mathbb{E}_t[\Psi_t]\|^2],
+  \label{eq:pf4}
+\end{align}
+where $\lambda_{\min}(P_t^{-1/2})$ is the minimum eigenvalue of $P_t^{-1/2}$. By the
+normalization property of NPG, $P_t^{-1/2}$ is bounded both above and away from zero
+uniformly in $t$, so $\lambda_{\min}(P_t^{-1/2}) \geq \gamma$ for some $\gamma > 0$.
+
+Substituting (\ref{eq:pf3}) and (\ref{eq:pf4}) into (\ref{eq:pf2}), setting $\eta_t =
+\eta/\sqrt{T}$, and summing from $t=1$ to $T$:
+\begin{align}
+  \sum_{t=1}^{T} \mathbb{E}\bigl[\|\nabla\mathcal{L}(\theta_t)\|^2\bigr]
+    &\leq \frac{2(\mathcal{L}(\theta_1) - \mathcal{L}_*)}{\gamma\eta\sqrt{T}}
+        + \mathcal{O}(1),
+\end{align}
+where we have used the telescoping property and the lower bound $\mathcal{L}_*$. Dividing by
+$T$ yields the claimed $\mathcal{O}(1/\sqrt{T})$ rate.
+\end{proof}
+
+\null\vfill
+\begin{center}
+\rule{0.3\textwidth}{0.4pt}\\[8pt]
+{\small\textit{End of proof.}}
+\end{center}
+
+
+% ══════════════════════════════════════════════════════════════════════
+%  BIBLIOGRAPHY
+% ══════════════════════════════════════════════════════════════════════
+
+\begin{thebibliography}{99}
+
+\bibitem{robbins1951}
+H.~Robbins and S.~Monro.
+\newblock A stochastic approximation method.
+\newblock \emph{Annals of Mathematical Statistics}, 22(3):400--407, 1951.
+
+\bibitem{polyak1964}
+B.~T.~Polyak.
+\newblock Some methods of speeding up the convergence of iteration methods.
+\newblock \emph{USSR Computational Mathematics and Mathematical Physics},
+  4(5):1--17, 1964.
+
+\bibitem{nesterov1983}
+Y.~Nesterov.
+\newblock A method for solving the convex programming problem with convergence
+  rate $\mathcal{O}(1/k^2)$.
+\newblock \emph{Soviet Mathematics Doklady}, 27:372--376, 1983.
+
+\bibitem{duchi2011}
+J.~Duchi, E.~Hazan, and Y.~Singer.
+\newblock Adaptive subgradient methods for online learning and stochastic
+  optimization.
+\newblock \emph{Journal of Machine Learning Research}, 12:2121--2159, 2011.
+
+\bibitem{tieleman2012}
+T.~Tieleman and G.~Hinton.
+\newblock Lecture 6.5---RMSProp: Divide the gradient by a running average of
+  its recent magnitude.
+\newblock \emph{COURSERA: Neural Networks for Machine Learning}, 2012.
+
+\bibitem{kingma2015}
+D.~P.~Kingma and J.~Ba.
+\newblock Adam: A method for stochastic optimization.
+\newblock In \emph{Proceedings of the 3rd International Conference on Learning
+  Representations (ICLR)}, 2015.
+
+\bibitem{reddi2018}
+S.~J.~Reddi, S.~Kale, and S.~Kumar.
+\newblock On the convergence of Adam and beyond.
+\newblock In \emph{Proceedings of the 6th International Conference on Learning
+  Representations (ICLR)}, 2018.
+
+\bibitem{loshchilov2019}
+I.~Loshchilov and F.~Hutter.
+\newblock Decoupled weight decay regularization.
+\newblock In \emph{Proceedings of the 7th International Conference on Learning
+  Representations (ICLR)}, 2019.
+
+\bibitem{ghadimi2013}
+S.~Ghadimi and G.~Lan.
+\newblock Stochastic first- and zeroth-order methods for nonconvex stochastic
+  programming.
+\newblock \emph{SIAM Journal on Optimization}, 23(4):2341--2368, 2013.
+
+\bibitem{goodfellow2016}
+I.~Goodfellow, Y.~Bengio, and A.~Courville.
+\newblock \emph{Deep Learning}.
+\newblock MIT Press, 2016.
+
+\bibitem{krizhevsky2012}
+A.~Krizhevsky, I.~Sutskever, and G.~E.~Hinton.
+\newblock ImageNet classification with deep convolutional neural networks.
+\newblock In \emph{Advances in Neural Information Processing Systems (NeurIPS)},
+  2012.
+
+\bibitem{vaswani2017}
+A.~Vaswani, N.~Shazeer, N.~Parmar, J.~Uszkoreit, L.~Jones, A.~N.~Gomez,
+  L.~Kaiser, and I.~Polosukhin.
+\newblock Attention is all you need.
+\newblock In \emph{Advances in Neural Information Processing Systems (NeurIPS)},
+  2017.
+
+\bibitem{jumper2021}
+J.~Jumper, R.~Evans, A.~Pritzel, \emph{et al.}
+\newblock Highly accurate protein structure prediction with AlphaFold.
+\newblock \emph{Nature}, 596:583--589, 2021.
+
+\bibitem{he2016}
+K.~He, X.~Zhang, S.~Ren, and J.~Sun.
+\newblock Deep residual learning for image recognition.
+\newblock In \emph{Proceedings of the IEEE Conference on Computer Vision and
+  Pattern Recognition (CVPR)}, 2016.
+
+\bibitem{cobbe2020}
+K.~Cobbe, C.~Hesse, J.~Hilton, and J.~Schulman.
+\newblock Leveraging procedural generation to benchmark reinforcement learning.
+\newblock In \emph{Proceedings of the 37th International Conference on Machine
+  Learning (ICML)}, 2020.
+
+\bibitem{you2020}
+Y.~You, J.~Li, S.~Reddi, \emph{et al.}
+\newblock Large batch optimization for deep learning: Training BERT in 76
+  minutes.
+\newblock In \emph{Proceedings of the 8th International Conference on Learning
+  Representations (ICLR)}, 2020.
+
+\bibitem{bernstein2018}
+J.~Bernstein, Y.-X.~Wang, K.~Azizzadenesheli, and A.~Anandkumar.
+\newblock SignSGD: Compressed optimisation for non-convex problems.
+\newblock In \emph{Proceedings of the 35th International Conference on Machine
+  Learning (ICML)}, 2018.
+
+\end{thebibliography}

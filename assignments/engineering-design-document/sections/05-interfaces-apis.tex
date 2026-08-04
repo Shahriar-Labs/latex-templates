@@ -1,0 +1,21 @@
+\section{Interfaces \& APIs}
+
+\begin{tabularx}{\linewidth}{@{}llX@{}}
+  \toprule
+  \textbf{Endpoint} & \textbf{Method} & \textbf{Description} \\
+  \midrule
+  \texttt{/v1/ingest}             & POST   & Ingest a single event or batch ($\leq 1000$). \\[2pt]
+  \texttt{/v1/pipelines}          & GET    & List all declared pipelines. \\[2pt]
+  \texttt{/v1/pipelines/\{id\}}   & PUT    & Create or update a pipeline definition. \\[2pt]
+  \texttt{/v1/pipelines/\{id\}}   & DELETE & Drain and deactivate a pipeline. \\[2pt]
+  \texttt{/v1/trace/\{event\_id\}} & GET   & Retrieve the routing trace for a past event. \\[2pt]
+  \texttt{/metrics}               & GET    & Prometheus text exposition (internal only). \\[2pt]
+  \texttt{/healthz}               & GET    & Liveness probe; \texttt{/readyz} for readiness. \\
+  \bottomrule
+\end{tabularx}
+
+\vspace{4pt}
+\textbf{gRPC:} \texttt{EventIngester.Publish(stream EventEnvelope) returns (AckResponse)}
+\textendash{} bidirectional streaming; backpressure via flow-control window.
+
+%% ─────────────────────────────────────────────────────────────────────────────

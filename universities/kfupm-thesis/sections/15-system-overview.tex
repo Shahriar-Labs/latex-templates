@@ -1,0 +1,24 @@
+\section{System Overview}
+Figure~\ref{fig:arch} illustrates the overall control architecture. The MPC scheduler receives
+forecasted driver arrival/departure data, real-time feeder telemetry, and time-of-use price
+signals, and outputs per-charger power set-points at each 15-minute control interval.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+  block/.style={rectangle,rounded corners=3pt,draw=kfupmgreen,thick,fill=kfupmsand,
+                minimum width=3.1cm,minimum height=1.1cm,align=center,font=\small},
+  arr/.style={-Latex,thick,color=kfupmslate}
+]
+\node[block] (fc) {Demand \&\\ Price Forecast};
+\node[block, right=1.6cm of fc] (mpc) {MPC\\ Optimizer};
+\node[block, right=1.6cm of mpc] (chg) {Charger\\ Set-points};
+\node[block, below=1.1cm of mpc] (feed) {Feeder State\\ Estimator};
+\draw[arr] (fc) -- (mpc);
+\draw[arr] (mpc) -- (chg);
+\draw[arr] (feed) -- (mpc);
+\draw[arr] (chg.south) |- ++(0,-0.7) -| (feed.south);
+\end{tikzpicture}
+\caption{Closed-loop MPC scheduling architecture}
+\label{fig:arch}
+\end{figure}

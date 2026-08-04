@@ -1,0 +1,95 @@
+\section{Introduction}
+\label{sec:intro}
+
+Long-range dependency modelling lies at the heart of tasks ranging from
+scientific document understanding~\cite{lo2020s2orc} to genomic sequence
+analysis~\cite{ji2021dnabert}. While the Transformer~\cite{vaswani2017attention}
+has become the dominant architecture, its self-attention mechanism incurs
+$\mathcal{O}(n^2)$ time and memory complexity with respect to sequence length $n$.
+
+Recent efforts to mitigate this bottleneck fall into three camps:
+\begin{itemize}
+  \item \emph{Sparse attention patterns} (\eg~Longformer~\cite{beltagy2020longformer},
+        BigBird~\cite{zaheer2020bigbird}) restrict attention to local windows plus
+        global tokens.
+  \item \emph{Linear attention approximations} (\eg~Performer~\cite{choromanski2020rethinking})
+        replace the softmax kernel with low-rank feature maps.
+  \item \emph{Recurrent hybrids} (\eg~RWKV~\cite{peng2023rwkv}) blend attention
+        with recurrent dynamics.
+\end{itemize}
+
+Each strategy trades off expressiveness, hardware efficiency, or training
+stability. \modelname{} takes a complementary approach: rather than altering the
+attention kernel itself, we impose a \emph{dynamic information bottleneck} at the
+inter-layer boundary, enabling each token to selectively draw from a compressed
+but globally informed context buffer.
+
+\subsection{Contributions}
+
+Our main contributions are:
+
+\begin{enumerate}[label=\textbf{\arabic*.}]
+  \item We propose the \textbf{Context Gateway (CG)} layer, a differentiable
+        module that routes token representations to a fixed-size context bank via
+        top-$k$ selection (\S\ref{sec:method}).
+  \item We provide a theoretical analysis showing that \modelname{} with $k$
+        selected contexts achieves an effective attention span of
+        $\mathcal{O}(kn)$ with $\mathcal{O}(kn)$ complexity (\S\ref{sec:theory}).
+  \item We demonstrate consistent improvements across eight benchmarks with a
+        single set of hyperparameters (\S\ref{sec:experiments}).
+\end{enumerate}
+
+% ── Architecture diagram (TikZ, self-contained) ─────────────
+\begin{figure}[!t]
+\centering
+\begin{tikzpicture}[
+    font=\small\sffamily,
+    box/.style={draw=accent, fill=accentlt, rounded corners=3pt,
+                minimum width=2.0cm, minimum height=0.55cm,
+                align=center, text=neutraldark, line width=0.7pt},
+    gate/.style={draw=headbg, fill=headbg!15, rounded corners=3pt,
+                 minimum width=2.2cm, minimum height=0.55cm,
+                 align=center, text=neutraldark, line width=0.7pt},
+    arr/.style={-{Stealth[length=5pt]}, color=accent, line width=0.8pt},
+    every node/.style={font=\small\sffamily}
+  ]
+
+  % Nodes
+  \node[box] (tok)  at (0, 0)    {Token Embed.};
+  \node[box] (enc1) at (0, 1.1)  {Encoder $\ell$};
+  \node[gate](cg)   at (0, 2.2)  {Context Gateway};
+  \node[box] (enc2) at (0, 3.3)  {Encoder $\ell{+}1$};
+  \node[box] (out)  at (0, 4.4)  {Output};
+
+  % Context bank on the right
+  \node[draw=rule, fill=white, rounded corners=3pt,
+        minimum width=1.4cm, minimum height=1.6cm,
+        align=center, text=neutralmid, line width=0.7pt]
+       (bank) at (2.6, 2.2) {Context\\Bank\\$C \in \mathbb{R}^{k \times d}$};
+
+  % Arrows (main path)
+  \draw[arr] (tok)  -- (enc1);
+  \draw[arr] (enc1) -- (cg);
+  \draw[arr] (cg)   -- (enc2);
+  \draw[arr] (enc2) -- (out);
+
+  % Arrows (gateway <-> bank)
+  \draw[arr, dashed, color=rule]
+    (cg.east) -- ++(0.4,0) |- (bank.west);
+  \draw[arr, dashed, color=accent]
+    (bank.west) -- ++(-0.4,0) |- (cg.east);
+
+  % Label on dashed arrows
+  \node[font=\tiny\sffamily, color=neutralmid, align=center]
+    at (1.8, 2.8) {write};
+  \node[font=\tiny\sffamily, color=neutralmid, align=center]
+    at (1.8, 1.65) {read};
+
+\end{tikzpicture}
+\caption{\textbf{\modelname{} architecture.} A Context Gateway sits between
+         consecutive encoder layers, reading from and writing to a compact
+         Context Bank via differentiable top-$k$ routing.}
+\label{fig:arch}
+\end{figure}
+
+% ============================================================

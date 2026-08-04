@@ -1,0 +1,15 @@
+\section{Adaptive Scheduling Model}
+
+The scheduler uses a compact gradient-boosted regression model to predict the next appropriate
+sampling interval $\Delta t$ for each sensor, subject to a minimum interval $\Delta t_{\min}=10$s
+and maximum interval $\Delta t_{\max}=300$s:
+
+\begin{equation}
+\Delta t = \mathrm{clip}\left(\lambda \cdot f(\mathbf{x}), \; \Delta t_{\min}, \; \Delta t_{\max}\right)
+\label{eq:scheduler}
+\end{equation}
+
+\noindent where $f(\mathbf{x})$ is the model's predicted stability score for feature vector
+$\mathbf{x}$, and $\lambda$ is a tunable aggressiveness coefficient calibrated on a validation
+split. The model was selected for its low inference latency relative to recurrent alternatives,
+making it suitable for deployment on constrained edge gateway hardware.

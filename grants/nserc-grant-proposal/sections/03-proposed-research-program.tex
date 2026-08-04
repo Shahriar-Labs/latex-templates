@@ -1,0 +1,17 @@
+\section{Proposed Research Program}
+The proposed research is structured around three interconnected thrusts, mapping directly to our core objectives.
+
+\subsection{Thrust 1: Neural-Symbolic Perception under Uncertainty (Objective 1)}
+Current deep learning models produce point-estimate predictions without reliable uncertainty quantification. In safety-critical contexts, a system must know when its perception is unreliable. We will design deep neural networks that output parameter distributions over symbolic states rather than deterministic labels. 
+
+Using conformal prediction and Bayesian neural networks within the Synapse Framework, we will map high-dimensional sensor inputs to bounding boxes or logical relations (e.g., $\text{Obstacle}(x, y) \land \text{Distance} < 5\text{m}$) accompanied by rigorous statistical confidence intervals. The primary challenge is maintaining real-time inference rates ($>30$\,Hz) on embedded systems. We propose to resolve this by training compact student networks via knowledge distillation, using large, computationally heavy Bayesian ensembles as teachers.
+
+\subsection{Thrust 2: Continuous Verification under Uncertainty (Objective 2)}
+Once the perception system produces a symbolic state with confidence bounds, the system must verify that all candidate actions are safe. Traditional verification is offline and static. The Meridian Engine will be extended to support online, continuous verification. We will model the decision-making process as a Markov Decision Process (MDP) with parametric uncertainties. 
+
+We will develop a novel interval-arithmetic solver that checks safety properties (e.g., collision avoidance) over the entire confidence interval of the symbolic state within a moving horizon of 2.0 seconds. By caching intermediate verification results and utilizing parallel execution on multi-core architectures, we aim to reduce the verification cycle to under 10\,ms.
+
+\subsection{Thrust 3: Hardware-in-the-Loop Evaluation on Edge Devices (Objective 3)}
+To prove the practical viability of our methods, we will deploy the unified Synapse-Meridian stack onto physical edge hardware. The target platform will be the Apex Edge Controller, which features an ARM-based CPU paired with an integrated GPU. 
+
+We will construct a laboratory-scale testbed consisting of autonomous ground vehicles navigating dynamic, cluttered environments. The evaluation will measure: (a) CPU/GPU utilization, (b) latency of the perception-verification-control loop, and (c) the rate of safety violations under adversarial scenarios. This hardware validation will demonstrate that neural-symbolic systems can run within the strict power budgets (under 15\,W) typical of autonomous robots.

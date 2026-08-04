@@ -1,0 +1,48 @@
+\section{System Design}
+
+ATS operates in three stages executed once per scheduling epoch
+($\Delta\tau = 250$\,ms in our deployment): (1) load forecasting,
+(2) priority-feedback adjustment, and (3) constrained task assignment.
+
+\subsection{Load Forecasting}
+
+Each node $v_j$ reports its instantaneous utilization $u_j(\tau)$ once per
+epoch. The forecast module maintains an exponentially smoothed estimate:
+
+\begin{equation}
+\hat{c}_j(\tau + \Delta\tau) = \alpha \, u_j(\tau) + (1-\alpha)\, \hat{c}_j(\tau), \qquad \alpha = 0.35
+\label{eq:forecast}
+\end{equation}
+
+The smoothing factor $\alpha = 0.35$ was chosen via grid search over
+$\{0.1, 0.2, \dots, 0.9\}$ to minimize forecast RMSE on a held-out trace
+segment (Section~4.2).
+
+\subsection{Priority-Feedback Controller}
+
+Tasks are assigned a base priority by workload class, then adjusted by a
+bounded feedback term proportional to the forecast error observed on the
+candidate node in the previous epoch:
+
+\begin{equation}
+p_i(\tau) = p_i^{\text{base}} + \text{clip}\big(\beta \cdot e_j(\tau - \Delta\tau),\, -\delta,\, \delta\big)
+\label{eq:feedback}
+\end{equation}
+
+where $e_j = u_j - \hat{c}_j$ is the forecast error, $\beta = 0.6$ is the
+feedback gain, and $\delta = 2.0$ bounds the correction to prevent
+reschedule storms when several nodes fail simultaneously.
+
+\begin{keyboxblue}
+\textbf{\color{yonseiblue}Design Note}\\{}
+[Clipping the feedback term in Equation~\ref{eq:feedback} is the single
+change that stabilized ATS under the 12\% node-failure injection scenario
+described in Section~4.4 --- unclipped feedback produced oscillating
+reassignments that amplified rather than absorbed the failure.]
+\end{keyboxblue}
+
+\subsection{Constrained Assignment}
+
+Given adjusted priorities, tasks are assigned to the highest-priority
+feasible node via a greedy pass with capacity backtracking, guaranteeing
+the capacity constraint in Equation~\ref{eq:objective} is never violated.

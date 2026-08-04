@@ -1,0 +1,22 @@
+\section{Experimental Procedure}
+
+Listing~\ref{lst:scheduler} shows a simplified pseudocode excerpt of the scheduling loop executed
+on each edge gateway.
+
+\begin{lstlisting}[language=Python,caption={Simplified adaptive scheduling loop},label={lst:scheduler}]
+def next_interval(sensor_id, feature_window):
+    # f(x): predicted stability score from gradient-boosted model
+    stability = model.predict(feature_window)
+    interval = LAMBDA * stability
+    return clip(interval, MIN_INTERVAL, MAX_INTERVAL)
+
+def scheduling_loop(sensor_id):
+    while True:
+        window = collect_features(sensor_id)
+        dt = next_interval(sensor_id, window)
+        sample_and_transmit(sensor_id)
+        sleep(dt)
+\end{lstlisting}
+
+Each baseline and the proposed scheduler were run over an identical 14-day held-out evaluation
+window, with results aggregated per building zone to control for occupancy differences.

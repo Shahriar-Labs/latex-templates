@@ -4,7 +4,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Medical Case Presentation LaTeX template — beamer medical template. Elegant, compile-tested, editable online at letx.app.**
+**Medical Case Presentation LaTeX template — Medical Case Presentation. Elegant, compile-tested, editable online at letx.app.**
 
 Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/presentations/beamer-medical-case)**, with real-time collaboration and one-second compiles.
 
