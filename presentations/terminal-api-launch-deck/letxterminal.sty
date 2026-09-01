@@ -1,0 +1,74 @@
+\ProvidesPackage{letxterminal}[2026/09/02 LetX terminal deck theme]
+
+% For engineering rooms: near-black, monospace, one signal colour. Built for
+% slides that carry logs, diffs and commands without them looking pasted in.
+\RequirePackage{tikz}
+\RequirePackage{inconsolata}
+\RequirePackage{tgheros}
+\renewcommand{\familydefault}{\sfdefault}
+\usetikzlibrary{positioning}
+
+% Not named bg and fg. Those are beamer's own colour-spec keys, so
+% \setbeamercolor{...}{bg=bg} silently does the wrong thing and the deck renders
+% on a white ground with the body text still dark, which looks like the theme
+% failing to load rather than a name collision.
+\definecolor{term}{HTML}{0D1117}
+\definecolor{panel}{HTML}{161B22}
+\definecolor{wash}{HTML}{E6EDF3}
+\definecolor{signal}{HTML}{3FB950}
+\definecolor{warn}{HTML}{D29922}
+\definecolor{crit}{HTML}{F85149}
+\definecolor{muted}{HTML}{8B949E}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\setbeamercolor{background canvas}{bg=term}
+\setbeamercolor{normal text}{fg=wash}
+\setbeamercolor{structure}{fg=signal}
+
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamertemplate{frametitle}{%
+  \vspace{1.1em}%
+  {\ttfamily\color{signal}\$\ }{\usebeamerfont{frametitle}\color{wash}\insertframetitle}\par
+  \vspace{0.4em}}
+
+% A block that looks like output because it is set like output. Colour the
+% severity, never the whole block: a wall of red says nothing.
+% Named console, not output: \output is a TeX primitive (the output routine) and
+% redefining it fails with "Command \output already defined", which reads like a
+% package clash rather than a name collision with the engine itself.
+\newenvironment{console}
+  {\begin{tikzpicture}
+     \node[fill=panel, rounded corners=4pt, inner sep=12pt, text=wash,
+           text width=0.88\textwidth, align=left, font=\ttfamily\small]
+     \bgroup}
+  {\egroup;\end{tikzpicture}}
+
+\newcommand{\sev}[2]{{\ttfamily\bfseries\color{#1}#2}}
+\newcommand{\ok}[1]{\sev{signal}{#1}}
+\newcommand{\warns}[1]{\sev{warn}{#1}}
+\newcommand{\crits}[1]{\sev{crit}{#1}}
+
+\newcommand{\bignumber}[2]{%
+  \vspace{0.4em}
+  {\fontsize{58}{62}\selectfont\ttfamily\bfseries\color{signal}#1}\par\vspace{0.5em}
+  {\small\color{muted}\parbox{0.8\textwidth}{#2}}}
+
+\newcommand{\titleslide}{%
+  \begin{frame}[plain]
+    \vfill
+    {\ttfamily\color{signal}\$\ }{\ttfamily\color{muted}\insertsubtitle}\par\vspace{0.8em}
+    {\fontsize{36}{40}\selectfont\bfseries\color{wash}\inserttitle}\par\vspace{1.6em}
+    {\small\ttfamily\color{muted}\insertauthor\ \textbullet\ \insertdate}
+    \vfill
+  \end{frame}}
+
+\newcommand{\sectionslide}[1]{%
+  \begin{frame}[plain]
+    \vfill
+    {\ttfamily\color{signal}\#\ }{\fontsize{28}{32}\selectfont\bfseries\color{wash}#1}
+    \vfill
+  \end{frame}}
+
+\endinput

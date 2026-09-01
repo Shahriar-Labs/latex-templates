@@ -1,0 +1,82 @@
+\ProvidesPackage{letxglass}[2026/09/02 LetX glass and gradient deck theme]
+
+\RequirePackage{tikz}
+% TeX Gyre Heros rather than a system font, deliberately. A deck that names Lato or Helvetica
+% compiles on the machine that wrote it and fails on a build server that does not have them,
+% which is a support ticket the author never sees. Heros ships with TeX Live everywhere and is
+% metrically Helvetica.
+\RequirePackage{tgheros}
+\renewcommand{\familydefault}{\sfdefault}
+\usetikzlibrary{fadings,positioning,shadings}
+
+% ── palette ──────────────────────────────────────────────────────────────────
+\definecolor{deep}{HTML}{101B33}
+\definecolor{mid}{HTML}{1E3566}
+\definecolor{accent}{HTML}{5B8DEF}
+\definecolor{paper}{HTML}{F7F9FC}
+
+% ── no furniture ─────────────────────────────────────────────────────────────
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\setbeamercolor{normal text}{fg=paper}
+\setbeamercolor{structure}{fg=accent}
+\setbeamerfont{frametitle}{size=\Large,series=\bfseries}
+\setbeamertemplate{frametitle}{%
+  \vspace{1.4em}\hspace{0.2em}\usebeamerfont{frametitle}%
+  \color{paper}\insertframetitle\par\vspace{0.2em}}
+
+% ── the background: a two-tone diagonal wash, not a rainbow ──────────────────
+\setbeamertemplate{background}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \shade[upper left=deep, upper right=mid, lower left=deep, lower right=deep]
+      (current page.south west) rectangle (current page.north east);
+    % One soft bloom, off centre. Two would be a lava lamp.
+    \fill[accent, opacity=0.16, path fading=circle with fuzzy edge 20 percent]
+      ([shift={(2.2cm,-1.4cm)}]current page.north west) circle (4.2cm);
+  \end{tikzpicture}}
+
+% ── the panel ────────────────────────────────────────────────────────────────
+% PDF cannot blur what sits behind a shape, so this is not frosted glass and
+% does not pretend to be. It is a translucent fill with a hairline border, which
+% reads the same at slide size. text opacity=1 keeps the words solid.
+\newenvironment{glass}
+  {\begin{tikzpicture}
+     \node[rounded corners=8pt, fill=white, fill opacity=0.10,
+           draw=white, draw opacity=0.25, line width=0.4pt,
+           inner sep=16pt, text opacity=1, text=paper,
+           text width=0.86\textwidth, align=left]
+     \bgroup}
+  {\egroup;\end{tikzpicture}}
+
+% ── one number, large, with its caveat underneath ────────────────────────────
+\newcommand{\bignumber}[2]{%
+  \vspace{0.6em}
+  {\fontsize{62}{66}\selectfont\bfseries\color{accent}#1}\par
+  \vspace{0.5em}
+  {\small\color{paper!85}\parbox{0.8\textwidth}{#2}}}
+
+\newcommand{\metric}[2]{%
+  \vspace{0.4em}
+  {\Large\bfseries\color{paper}#1}\;{\small\color{paper!70}#2}\par}
+
+% ── slides that carry the treatment ──────────────────────────────────────────
+\newcommand{\titleslide}{%
+  \begin{frame}[plain]
+    \vfill
+    {\fontsize{40}{44}\selectfont\bfseries\color{paper}\inserttitle}\par
+    \vspace{0.4em}
+    {\large\color{accent}\insertsubtitle}\par
+    \vspace{1.6em}
+    {\small\color{paper!70}\insertauthor\quad\textbullet\quad\insertdate}
+    \vfill
+  \end{frame}}
+
+\newcommand{\sectionslide}[1]{%
+  \begin{frame}[plain]
+    \vfill\centering
+    {\fontsize{34}{38}\selectfont\bfseries\color{paper}#1}
+    \vfill
+  \end{frame}}
+
+\endinput

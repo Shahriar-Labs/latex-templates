@@ -1,0 +1,69 @@
+\ProvidesPackage{letxeditorial}[2026/09/02 LetX editorial deck theme]
+
+% An editorial deck: light ground, a serif with real contrast, generous margins,
+% and a hairline rule doing the work a coloured bar usually does badly.
+\RequirePackage{tikz}
+\RequirePackage{tgpagella}   % Palatino-class serif, ships with TeX Live everywhere
+\RequirePackage{tgheros}     % for the small caps labels only
+\usetikzlibrary{positioning}
+
+\definecolor{ink}{HTML}{16161A}
+\definecolor{paper}{HTML}{FBFAF7}
+\definecolor{accent}{HTML}{9A3412}
+\definecolor{muted}{HTML}{6B6B72}
+
+% Beamer defaults to sans for everything, so loading a serif does nothing until
+% this line. Without it the deck silently renders in the sans and the whole
+% reason for choosing Pagella is lost.
+\usefonttheme{serif}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{headline}{}
+\setbeamertemplate{footline}{}
+\setbeamercolor{background canvas}{bg=paper}
+\setbeamercolor{normal text}{fg=ink}
+\setbeamercolor{structure}{fg=accent}
+
+% Frame titles sit under a hairline rule rather than in a coloured block.
+\setbeamerfont{frametitle}{size=\LARGE,series=\bfseries}
+\setbeamertemplate{frametitle}{%
+  \vspace{1.1em}%
+  {\usebeamerfont{frametitle}\color{ink}\insertframetitle}\par
+  \vspace{0.35em}\textcolor{accent}{\rule{2.2em}{1.2pt}}\par\vspace{0.5em}}
+
+% An eyebrow label, in the sans, spaced out. Use it to say what KIND of slide
+% this is when that is genuinely information, not as decoration on every page.
+\newcommand{\eyebrow}[1]{%
+  {\fontsize{8}{10}\selectfont\sffamily\bfseries\color{muted}%
+   \MakeUppercase{#1}}\par\vspace{0.4em}}
+
+% A pull quote. The rule on the left is the whole treatment.
+\newenvironment{pullquote}
+  {\begin{tikzpicture}
+     \node[inner sep=0pt] \bgroup\begin{minipage}{0.82\textwidth}
+     {\color{accent}\rule{2pt}{1em}}\hspace{0.6em}\itshape\large\color{ink}}
+  {\end{minipage}\egroup;\end{tikzpicture}}
+
+\newcommand{\bignumber}[2]{%
+  \vspace{0.4em}
+  {\fontsize{58}{62}\selectfont\bfseries\color{accent}#1}\par\vspace{0.4em}
+  {\small\color{muted}\parbox{0.78\textwidth}{#2}}}
+
+\newcommand{\titleslide}{%
+  \begin{frame}[plain]
+    \vspace{2.2em}
+    {\fontsize{15}{18}\selectfont\sffamily\bfseries\color{muted}\MakeUppercase{\insertsubtitle}}\par
+    \vspace{0.8em}
+    {\fontsize{40}{46}\selectfont\bfseries\color{ink}\inserttitle}\par
+    \vspace{0.9em}\textcolor{accent}{\rule{4em}{1.4pt}}\par\vspace{0.9em}
+    {\small\color{muted}\insertauthor\quad\textbullet\quad\insertdate}
+  \end{frame}}
+
+\newcommand{\sectionslide}[1]{%
+  \begin{frame}[plain]
+    \vfill
+    \textcolor{accent}{\rule{2.2em}{1.4pt}}\par\vspace{0.6em}
+    {\fontsize{32}{36}\selectfont\bfseries\color{ink}#1}
+    \vfill
+  \end{frame}}
+
+\endinput
