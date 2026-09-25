@@ -1,33 +1,31 @@
-# Game Developer Resume — Free LaTeX Template
+# Game Developer Resume LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/cvs-resumes/game-developer-resume)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/cvs-resumes/game-developer-resume/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Game Developer Resume LaTeX template — game developer latex cv template. Elegant, compile-tested, editable online at letx.app.**
+A game developer resume with skills grouped as Engines & APIs (Unreal Engine 5, Unity), Programming Languages and Tools & Workflows, two studio roles, and named engine and physics projects.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/cvs-resumes/game-developer-resume)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/cvs-resumes/game-developer-resume/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Game Developer Resume preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `10pt`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Game Developer Resume on LetX »](https://letx.app/templates/cvs-resumes/game-developer-resume)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Game Developer Resume on LetX](https://letx.app/templates/cvs-resumes/game-developer-resume/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/game-developer-resume.git
-cd game-developer-resume
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/cvs-resumes/game-developer-resume
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — cvs resumes templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): CV and résumé templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

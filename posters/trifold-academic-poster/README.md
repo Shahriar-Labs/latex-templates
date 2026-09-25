@@ -1,33 +1,31 @@
-# Tri-Fold Academic Poster — Free LaTeX Template
+# Tri-Fold Academic Poster LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/posters/trifold-academic-poster)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/posters/trifold-academic-poster/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Tri-Fold Academic Poster LaTeX template — trifold poster latex template. Elegant, compile-tested, editable online at letx.app.**
+A tri-fold academic poster with keywords, motivation, the research gap, objectives, contributions, three research questions and the dataset.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/posters/trifold-academic-poster)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/posters/trifold-academic-poster/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Tri-Fold Academic Poster preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `10pt`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Tri-Fold Academic Poster on LetX »](https://letx.app/templates/posters/trifold-academic-poster)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Tri-Fold Academic Poster on LetX](https://letx.app/templates/posters/trifold-academic-poster/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/trifold-academic-poster.git
-cd trifold-academic-poster
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/posters/trifold-academic-poster
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — posters templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): poster templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

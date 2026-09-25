@@ -1,0 +1,19 @@
+\chapter{方法}
+\label{ch:method}
+
+本文使用一个按类别簇组织的记忆库提供负样本，并在分布式训练中对梯度进行分层压缩：
+节点内先做全精度规约，节点间只传输压缩后的梯度。
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[node distance=5mm and 7mm,
+      box/.style={draw=accent, rounded corners=2pt, minimum height=9mm, align=center, font=\small}]
+    \node[box] (x) {输入样本};
+    \node[box, right=of x] (e) {编码器};
+    \node[box, right=of e] (m) {记忆库负样本};
+    \node[box, right=of m] (g) {分层梯度压缩};
+    \draw[-{Stealth}] (x) -- (e); \draw[-{Stealth}] (e) -- (m); \draw[-{Stealth}] (m) -- (g);
+  \end{tikzpicture}
+  \caption{本文方法的整体流程}
+  \label{fig:pipeline}
+\end{figure}

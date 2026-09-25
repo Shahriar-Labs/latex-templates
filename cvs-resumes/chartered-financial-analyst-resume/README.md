@@ -1,33 +1,31 @@
-# Chartered Financial Analyst (CFA) Resume — Free LaTeX Template
+# Chartered Financial Analyst (CFA) Resume LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/cvs-resumes/chartered-financial-analyst-resume)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/cvs-resumes/chartered-financial-analyst-resume/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Chartered Financial Analyst (CFA) Resume LaTeX template — cfa resume latex template. Elegant, compile-tested, editable online at letx.app.**
+A CFA charterholder's resume on letter paper, kept to five plain sections: Summary, Experience, Education, Certifications and Skills.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/cvs-resumes/chartered-financial-analyst-resume)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/cvs-resumes/chartered-financial-analyst-resume/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Chartered Financial Analyst (CFA) Resume preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `10pt, letterpaper`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Chartered Financial Analyst (CFA) Resume on LetX »](https://letx.app/templates/cvs-resumes/chartered-financial-analyst-resume)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Chartered Financial Analyst (CFA) Resume on LetX](https://letx.app/templates/cvs-resumes/chartered-financial-analyst-resume/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/chartered-financial-analyst-resume.git
-cd chartered-financial-analyst-resume
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/cvs-resumes/chartered-financial-analyst-resume
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — cvs resumes templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): CV and résumé templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

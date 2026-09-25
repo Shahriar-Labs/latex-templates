@@ -1,33 +1,31 @@
-# Teacher Observation Report — Free LaTeX Template
+# Teacher Observation Report LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/education/teacher-observation-report)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/education/teacher-observation-report/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Teacher Observation Report LaTeX template — teacher observation latex template. Elegant, compile-tested, editable online at letx.app.**
+A teacher observation report on A4 naming the teacher, observer, date, class, lesson topic and students present, with observation criteria and notes.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/education/teacher-observation-report)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/education/teacher-observation-report/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Teacher Observation Report preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `11pt, a4paper`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Teacher Observation Report on LetX »](https://letx.app/templates/education/teacher-observation-report)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Teacher Observation Report on LetX](https://letx.app/templates/education/teacher-observation-report/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/teacher-observation-report.git
-cd teacher-observation-report
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/education/teacher-observation-report
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — education templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): teaching and education templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

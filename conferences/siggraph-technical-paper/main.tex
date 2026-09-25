@@ -1,43 +1,89 @@
-\documentclass[10pt,twocolumn]{article}
+% SIGGRAPH technical paper on ACM's acmart class, acmtog format (ACM Transactions on
+% Graphics, two columns).
+%
+% Format checked 2026-09-25 against the SIGGRAPH 2026 technical papers pages:
+%   https://s2026.siggraph.org/program/technical-papers/
+%   - For the anonymized initial submission the page gives this line:
+%     \documentclass[acmtog,anonymous,review]{acmart}
+%     and asks you to add your assigned paper ID with \acmSubmissionID, below. Every page
+%     must be numbered and carry that ID; `review` does both.
+%   - Two tracks. Journal track (published in ACM TOG): no maximum or minimum length.
+%     Conference track: at most 7 pages, not counting references and figures-only pages.
+%     References are unlimited, and at most two figures-only pages may follow them.
+%     Appendices go in the supplemental material, not in the paper.
+%   - Every package you load must be on ACM's TAPS list of accepted LaTeX packages.
+% The rules change every year. Read the current call before you submit.
+%
+% After acceptance: follow the format instructions SIGGRAPH sends you, delete the notice
+% box below \maketitle, and paste in the rights lines ACM provides.
+\documentclass[acmtog,anonymous,review]{acmart}
 
-% Packages and styling live in preamble.tex; each section has its own file under
-% sections/. Edit those directly — this file is the outline of the document.
+% The paper ID from the SIGGRAPH submission form. Replace 123 with yours.
+\acmSubmissionID{123}
+
+% Extra packages and colours live in preamble.tex; each section has its own file under
+% sections/.
 \input{preamble}
 
 \begin{document}
 
+\title{Neural Inverse Rendering of Complex Refractive Media with Differentiable Path
+Tracing}
 
-\twocolumn[
-  \noindent
-  \begingroup
-  \setlength{\fboxrule}{0.6pt}%
-  \setlength{\fboxsep}{8pt}%
-  \color{accentcolor!80!black}%
-  \fcolorbox{accentcolor!80!black}{accentcolor!5}{%
-    \color{secondarycolor}%
-    \begin{minipage}{\dimexpr\textwidth-2\fboxsep-2\fboxrule\relax}
-      \small\centering
-      \textbf{UNOFFICIAL TEMPLATE NOTE}: This is an unofficial template for computer graphics technical papers, not affiliated with or endorsed by ACM SIGGRAPH or any conference. Authors must check the official call for papers for the current year's style files.
-    \end{minipage}%
-  }%
-  \endgroup
-  \vspace{1.5em}
-  \begin{center}
-    {\LARGE\bfseries\sffamily Neural Inverse Rendering of Complex Refractive Media \\ with Differentiable Path Tracing \par}
-    \vspace{1.5em}
-    {\large John E. Adams$^{1}$ \quad Sarah Jenkins$^{2}$ \quad Alan R. Mercer$^{1}$ \par}
-    \vspace{0.8em}
-    {\small $^{1}$Vertex Graphics Lab \quad $^{2}$Synapse AI Research \par}
-    \vspace{0.4em}
-    {\small \texttt{\{adams, mercer\}@vertex.org} \quad \texttt{s.jenkins@synapse.ai} \par}
-    \vspace{1.5em}
-  \end{center}
-  
-  \begin{abstract}
-    Reconstructing the spatial variation of the index of refraction within transparent or refractive media remains a formidable challenge in computer graphics and vision. Traditional methods rely on simplified grid-based representations or restrictive ray-bending models, which struggle to scale to high-frequency refractive fields. In this paper, we present Vertex-Net, a novel coordinate-based neural representation that parameterizes the continuous index of refraction field $\eta(x)$ alongside a differentiable path tracer. By integrating a multi-resolution hash grid with a coordinate MLP, Vertex-Net captures both macro-scale geometries and sub-millimeter refractive details. Our differentiable path tracer solves the eikonal equation to simulate non-linear ray propagation, allowing the gradients of a photometric loss to propagate directly to the neural field parameters. We evaluate our method on the synthetic Nimbus Refractive Benchmark and demonstrate significant improvements in both reconstruction fidelity and geometric accuracy compared to existing state-of-the-art volumetric representations.
-  \end{abstract}
-  \vspace{2.0em}
-]
+\author{John E. Adams}
+\affiliation{%
+  \institution{Vertex Graphics Lab}
+  \city{Vancouver}
+  \country{Canada}}
+\email{adams@vertex-graphics.example}
+
+\author{Sarah Jenkins}
+\affiliation{%
+  \institution{Synapse AI Research}
+  \city{Zurich}
+  \country{Switzerland}}
+\email{s.jenkins@synapse-ai.example}
+
+\author{Alan R. Mercer}
+\affiliation{%
+  \institution{Vertex Graphics Lab}
+  \city{Vancouver}
+  \country{Canada}}
+\email{mercer@vertex-graphics.example}
+
+\renewcommand{\shortauthors}{Adams et al.}
+
+\begin{abstract}
+Reconstructing the spatial variation of the index of refraction within transparent or
+refractive media remains a formidable challenge in computer graphics and vision. Traditional
+methods rely on simplified grid-based representations or restrictive ray-bending models,
+which struggle to scale to high-frequency refractive fields. In this paper, we present
+Vertex-Net, a novel coordinate-based neural representation that parameterizes the
+continuous index of refraction field $\eta(x)$ alongside a differentiable path tracer. By
+integrating a multi-resolution hash grid with a coordinate MLP, Vertex-Net captures both
+macro-scale geometries and sub-millimeter refractive details. Our differentiable path tracer
+solves the eikonal equation to simulate non-linear ray propagation, allowing the gradients
+of a photometric loss to propagate directly to the neural field parameters. We evaluate our
+method on the synthetic Nimbus Refractive Benchmark and demonstrate significant improvements
+in both reconstruction fidelity and geometric accuracy compared to existing
+state-of-the-art volumetric representations.
+\end{abstract}
+
+% ACM Computing Classification System concepts. Pick yours at https://dl.acm.org/ccs
+\ccsdesc[500]{Computing methodologies~Ray tracing}
+\ccsdesc[300]{Computing methodologies~Reconstruction}
+\ccsdesc[100]{Computing methodologies~Neural networks}
+
+\keywords{inverse rendering, refraction, differentiable rendering, neural fields}
+
+\maketitle
+
+\noindent\fbox{\parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule\relax}{\footnotesize
+\textbf{Unofficial template. Delete this box before you submit.} It is built on ACM's own
+\texttt{acmart} class with the class line the SIGGRAPH~2026 technical papers pages give,
+and it is not affiliated with or endorsed by ACM, ACM SIGGRAPH or the conference
+organizers. The authors, institutions, results and references in this sample are
+fictional.}}
 
 \input{sections/01-introduction}
 \input{sections/02-related-work}
@@ -46,4 +92,15 @@
 \input{sections/05-results}
 \input{sections/06-discussion}
 \input{sections/07-conclusion}
+
+\begin{acks}
+We thank the Vertex Foundation for their generous funding support, and Nexa Compute Cloud
+for providing the computational resources necessary to train our models. We also thank the
+members of the Synapse AI Research group for their valuable feedback and discussions
+throughout this project.
+\end{acks}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{main}
+
 \end{document}

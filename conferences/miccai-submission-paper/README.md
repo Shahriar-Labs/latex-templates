@@ -1,33 +1,31 @@
-# MICCAI Submission Paper — Free LaTeX Template
+# MICCAI Submission Paper LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/miccai-submission-paper)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/miccai-submission-paper/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**MICCAI Submission Paper LaTeX template — miccai latex template. Elegant, compile-tested, editable online at letx.app.**
+A MICCAI medical imaging submission on Springer's llncs class with running heads, with Method, Experiments and five results tables.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/conferences/miccai-submission-paper)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/conferences/miccai-submission-paper/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![MICCAI Submission Paper preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `llncs` with `runningheads`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, and 6 section files under `sections/`
 
-## Use it online (recommended)
-Open **[MICCAI Submission Paper on LetX »](https://letx.app/templates/conferences/miccai-submission-paper)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[MICCAI Submission Paper on LetX](https://letx.app/templates/conferences/miccai-submission-paper/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/miccai-submission-paper.git
-cd miccai-submission-paper
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/conferences/miccai-submission-paper
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — conferences templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): conference paper templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

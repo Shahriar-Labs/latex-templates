@@ -1,79 +1,62 @@
-\documentclass[11pt,twoside,openright]{book}
-
-% Packages and styling live in preamble.tex; each section has its own file under
-% sections/. Edit those directly — this file is the outline of the document.
+% Yale University (Graduate School of Arts and Sciences) thesis template.
+%
+% Format checked 2026-09-25 against:
+%   https://registrar.yale.edu/sites/default/files/2026-02/Formatting%20the%20Doctoral%20Dissertation%20(2026).pdf
+%   - Letter paper, 1in margins on every side (1.5in on the left if you will order softbound copies).
+%   - Double spaced and single sided; block quotations, bibliography entries, captions and footnotes
+%   -   single spaced with a blank line between entries. 10 to 12pt, one font throughout.
+%   - Order: Abstract, Title Page, Copyright Page, Table of Contents, front matter, body, back matter.
+%   - The abstract comes first, before the title page. The title and copyright pages are counted but
+%   -   not numbered; the page after the copyright page is iii. The body starts at Arabic 1.
+%   - Page numbers at least 0.5in from any edge. Month and year are those of conferral.
+% These rules change. Check your school's current guide, and your department's own
+% rules, before you submit.
+\documentclass[12pt,oneside]{report}
 \input{preamble}
 
 \begin{document}
 
-
-% ── Title page ───────────────────────────────────────────────────────
-\begin{titlepage}
-\thispagestyle{empty}
+% 1. Abstract: placed immediately before the title page, not numbered.
+\pagenumbering{gobble}
 \begin{center}
-
-\vspace*{0.15\textheight}
-
-{\Huge\bfseries Statistical Inference for High-Dimensional Genomic Data}\\[36pt]
-
-{\LARGE Thesis by}\\[18pt]
-
-{\LARGE Benjamin Foster}\\[48pt]
-
-{\large\textit{In Partial Fulfillment of the Requirements\\[4pt]
-for the Degree of}}\\[18pt]
-
-{\LARGE Doctor of Philosophy}\\[48pt]
-
-{\large Yale University}\\[6pt]
-{\large New Haven, Connecticut}\\[30pt]
-
-{\large 2026}\\[18pt]
-
-{\normalsize\color{MidGray}(Defended April~18, 2026)}
-
-\vfill
-{\footnotesize\itshape Unofficial template --- not affiliated with, endorsed by, or an official publication of the named institution. Sample content only.}
+  Abstract\\[1.5\baselineskip]
+  \MYtitle\\[\baselineskip]
+  \MYauthor\\[\baselineskip]
+  \MYyear
 \end{center}
-\end{titlepage}
+\input{sections/abstract-text}
+\clearpage
 
-% ── Copyright page ──────────────────────────────────────────────────
-\cleardoublepage
-\thispagestyle{empty}
-\vspace*{0.4\textheight}
+% 2. Title page (counted as i, not numbered).
+\pagenumbering{roman}
+\input{front/title}
+\setcounter{page}{2}% the titlepage environment resets the counter; the title page is i
 
-\begin{center}
-{\large\copyright\ 2026}\\[12pt]
-{\large Benjamin Foster}\\[12pt]
-{\normalsize ORCID: \faOrcid\ 0000-0002-3847-1926}\\[24pt]
-{\normalsize All Rights Reserved}
-\end{center}
+% 3. Copyright page (ii, not numbered).
+\input{front/copyright}
 
-% ── Acknowledgments ─────────────────────────────────────────────────
-\cleardoublepage
+% 4. Table of contents, then the other front matter. The first printed number is iii.
+\tableofcontents
+\clearpage
+\chapter*{Acknowledgments}
+\addcontentsline{toc}{chapter}{Acknowledgments}
+\input{sections/acknowledgments-text}
+\listoffigures
+\listoftables
 
-\input{sections/01-acknowledgments}
-\input{sections/02-abstract}
-\input{sections/03-introduction}
-\input{sections/04-the-optimization-challenge-in-modern-mac}
-\input{sections/05-the-rise-of-adaptive-methods}
-\input{sections/06-the-theory-practice-gap}
-\input{sections/07-contributions-of-this-thesis}
-\input{sections/08-organization-of-the-thesis}
-\input{sections/09-background-and-related-work}
-\input{sections/10-preliminaries-and-notation}
-\input{sections/11-classical-stochastic-gradient-descent}
-\input{sections/12-adaptive-gradient-methods}
-\input{sections/13-the-normalized-preconditioned-gradient-f}
-\input{sections/14-motivation-and-intuition}
-\input{sections/15-the-npg-abstraction}
-\input{sections/16-convergence-analysis}
-\input{sections/17-the-nadam-algorithm}
-\input{sections/18-experimental-validation}
-\input{sections/19-discussion-and-practical-recommendations}
-\input{sections/20-conclusion-and-future-work}
-\input{sections/21-summary-of-contributions}
-\input{sections/22-limitations}
-\input{sections/23-future-directions}
-\input{sections/24-proof-of-theorem-1}
+% 5. Body, then back matter: appendices, then bibliography.
+\clearpage
+\pagenumbering{arabic}
+\input{sections/01-introduction}
+\input{sections/02-background}
+\input{sections/03-method}
+\input{sections/04-results}
+\input{sections/05-conclusion}
+
+\appendix
+\input{sections/appendix}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
 \end{document}

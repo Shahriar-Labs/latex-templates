@@ -1,0 +1,20 @@
+\chapter{A Two-Sided Zero-Skipping Processing Element}
+\label{ch:design}
+
+Our processing element buffers compressed weight and activation fibres and uses a small
+intersection unit to emit only coordinate-matched pairs to the multiplier. A load-balancing
+network redistributes work between neighbouring elements when one runs out of effectual pairs.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[node distance=5mm and 7mm,
+      box/.style={draw=accent, rounded corners=2pt, minimum height=9mm, align=center, font=\small}]
+    \node[box] (w) {Weight\\fibre};
+    \node[box, below=of w] (a) {Activation\\fibre};
+    \node[box, right=12mm of $(w)!0.5!(a)$] (i) {Intersection\\unit};
+    \node[box, right=of i] (m) {Multiplier and\\accumulator};
+    \draw[-{Stealth}] (w) -- (i); \draw[-{Stealth}] (a) -- (i); \draw[-{Stealth}] (i) -- (m);
+  \end{tikzpicture}
+  \caption{The processing element matches non-zero coordinates before multiplying.}
+  \label{fig:pe}
+\end{figure}

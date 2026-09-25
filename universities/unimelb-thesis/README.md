@@ -1,33 +1,31 @@
-# UniMelb Thesis — Free LaTeX Template
+# UniMelb Thesis LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/universities/unimelb-thesis)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/universities/unimelb-thesis/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**UniMelb Thesis LaTeX template — UniMelb Thesis. Elegant, compile-tested, editable online at letx.app.**
+An unofficial University of Melbourne PhD thesis template with the total-fulfilment title page, a 300 to 500 word abstract, the three-part declaration and a preface on contributions.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/universities/unimelb-thesis)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/universities/unimelb-thesis/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![UniMelb Thesis preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `report` with `12pt, oneside, a4paper`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 9 section files under `front/`, `sections/`
 
-## Use it online (recommended)
-Open **[UniMelb Thesis on LetX »](https://letx.app/templates/universities/unimelb-thesis)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[UniMelb Thesis on LetX](https://letx.app/templates/universities/unimelb-thesis/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/unimelb-thesis.git
-cd unimelb-thesis
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/universities/unimelb-thesis
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — universities templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): university and thesis templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

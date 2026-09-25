@@ -1,0 +1,21 @@
+\chapter{Loss-Minimizing Predictive Control}
+\label{ch:method}
+
+We approximate the combined inverter and machine losses by a convex quadratic in the currents
+of both units, fitted to bench measurements. The controller solves a small quadratic program
+at every control period, tracking the demanded total torque while minimizing predicted losses
+under current and voltage limits.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[node distance=5mm and 7mm,
+      box/.style={draw=accent, rounded corners=2pt, minimum height=9mm, align=center, font=\small}]
+    \node[box] (d) {Torque\\demand};
+    \node[box, right=of d] (q) {Quadratic\\program};
+    \node[box, right=of q] (i) {Current\\references};
+    \node[box, right=of i] (m) {Two drive\\units};
+    \draw[-{Stealth}] (d) -- (q); \draw[-{Stealth}] (q) -- (i); \draw[-{Stealth}] (i) -- (m);
+  \end{tikzpicture}
+  \caption{The predictive controller computes current references for both drive units.}
+  \label{fig:mpc}
+\end{figure}

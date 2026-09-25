@@ -1,34 +1,31 @@
-# Purchase Order — Free LaTeX Template
+# Purchase Order LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/miscellaneous/purchase-order)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/miscellaneous/purchase-order/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Purchase Order LaTeX template — purchase order template. Elegant, compile-tested, editable online at letx.app.**
+A purchase order form in Lato with a PO number, supplier and delivery details, a table of line items, and an authorized-by signature and date.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/miscellaneous/purchase-order)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/miscellaneous/purchase-order/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Purchase Order preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested (zero errors)
-- Realistic sample content
-- Editable online in your browser
+## What is in it
+- Document class: `article` with `11pt`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Purchase Order on LetX »](https://letx.app/templates/miscellaneous/purchase-order)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Purchase Order on LetX](https://letx.app/templates/miscellaneous/purchase-order/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
 git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/purchase-order
+cd latex-templates/miscellaneous/purchase-order
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — general templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): general-purpose templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

@@ -1,33 +1,31 @@
-# Sample Retention and Disposal Schedule — Free LaTeX Template
+# Sample Retention and Disposal Schedule LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/lab-documents/sample-retention-and-disposal-schedule)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/lab-documents/sample-retention-and-disposal-schedule/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Sample Retention and Disposal Schedule LaTeX template — sample retention schedule template. Elegant, compile-tested, editable online at letx.app.**
+A sample retention and disposal schedule on A4 with sample class definitions, a retention matrix, disposal methods, a revision history and an authorisation record.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/lab-documents/sample-retention-and-disposal-schedule)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/lab-documents/sample-retention-and-disposal-schedule/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Sample Retention and Disposal Schedule preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `11pt, a4paper`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 7 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Sample Retention and Disposal Schedule on LetX »](https://letx.app/templates/lab-documents/sample-retention-and-disposal-schedule)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Sample Retention and Disposal Schedule on LetX](https://letx.app/templates/lab-documents/sample-retention-and-disposal-schedule/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/sample-retention-and-disposal-schedule.git
-cd sample-retention-and-disposal-schedule
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/lab-documents/sample-retention-and-disposal-schedule
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — lab documents templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): lab document templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

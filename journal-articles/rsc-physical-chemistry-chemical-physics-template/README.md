@@ -1,33 +1,31 @@
-# RSC Physical Chemistry Chemical Physics (PCCP) Template — Free LaTeX Template
+# RSC Physical Chemistry Chemical Physics (PCCP) Template LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/journal-articles/rsc-physical-chemistry-chemical-physics-template)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/journal-articles/rsc-physical-chemistry-chemical-physics-template/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**RSC Physical Chemistry Chemical Physics (PCCP) Template LaTeX template — rsc pccp journal latex template. Elegant, compile-tested, editable online at letx.app.**
+An RSC PCCP-style two-column article in 9pt with chemfig structures, mhchem and siunitx, experimental methods and pgfplots results, on extarticle rather than RSC's class.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/journal-articles/rsc-physical-chemistry-chemical-physics-template)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/journal-articles/rsc-physical-chemistry-chemical-physics-template/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![RSC Physical Chemistry Chemical Physics (PCCP) Template preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `extarticle` with `twoside, twocolumn, 9pt`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 5 section files under `sections/`
 
-## Use it online (recommended)
-Open **[RSC Physical Chemistry Chemical Physics (PCCP) Template on LetX »](https://letx.app/templates/journal-articles/rsc-physical-chemistry-chemical-physics-template)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[RSC Physical Chemistry Chemical Physics (PCCP) Template on LetX](https://letx.app/templates/journal-articles/rsc-physical-chemistry-chemical-physics-template/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/rsc-physical-chemistry-chemical-physics-template.git
-cd rsc-physical-chemistry-chemical-physics-template
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/journal-articles/rsc-physical-chemistry-chemical-physics-template
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — journal articles templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): journal article templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

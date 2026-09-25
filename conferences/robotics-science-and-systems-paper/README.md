@@ -1,33 +1,31 @@
-# Robotics Science and Systems Paper — Free LaTeX Template
+# Robotics Science and Systems Paper LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/robotics-science-and-systems-paper)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/robotics-science-and-systems-paper/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Robotics Science and Systems Paper LaTeX template — rss robotics latex template. Elegant, compile-tested, editable online at letx.app.**
+A Robotics: Science and Systems-style paper in two columns with Problem Formulation, a named method, Experimental Design, pgfplots charts and eight equations.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/conferences/robotics-science-and-systems-paper)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/conferences/robotics-science-and-systems-paper/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Robotics Science and Systems Paper preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `10pt, twocolumn`
+- Compiler: pdflatex
+- Files: `main.bib`, `main.tex`, `preamble.tex`, and 9 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Robotics Science and Systems Paper on LetX »](https://letx.app/templates/conferences/robotics-science-and-systems-paper)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Robotics Science and Systems Paper on LetX](https://letx.app/templates/conferences/robotics-science-and-systems-paper/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/robotics-science-and-systems-paper.git
-cd robotics-science-and-systems-paper
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/conferences/robotics-science-and-systems-paper
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — conferences templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): conference paper templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

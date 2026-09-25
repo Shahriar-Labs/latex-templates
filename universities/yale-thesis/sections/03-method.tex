@@ -1,0 +1,32 @@
+\chapter{Block-Debiased Inference}
+\label{ch:method}
+
+Let the variants be partitioned into $B$ linkage blocks $G_1, \dots, G_B$, estimated from a
+reference panel. Rather than debiasing each coefficient separately, we correct the lasso
+estimate $\hat\beta$ one block at a time,
+\begin{equation}
+  \tilde\beta_{G_b} = \hat\beta_{G_b} + \frac{1}{n}\,\hat\Theta_{G_b} X^{\top}
+  \bigl(y - X\hat\beta\bigr),
+  \label{eq:blockdebias}
+\end{equation}
+where $\hat\Theta_{G_b}$ approximates the rows of the inverse covariance for block $b$. Because
+the correction uses the whole block, the resulting test statistic asks whether \emph{any}
+variant in the block is associated with the trait, a question that remains answerable when the
+variants within it cannot be told apart.
+
+Figure~\ref{fig:pipeline} summarizes the procedure. The block statistics feed a knockoff filter
+built on the same partition, so discoveries are reported as blocks.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[node distance=6mm and 8mm,
+      box/.style={draw=accent, rounded corners=2pt, minimum height=9mm, align=center, font=\small}]
+    \node[box] (g) {Genotypes\\and trait};
+    \node[box, right=of g] (b) {Linkage\\blocks};
+    \node[box, right=of b] (d) {Block-debiased\\statistics};
+    \node[box, right=of d] (k) {Block knockoff\\filter};
+    \draw[-{Stealth}] (g) -- (b); \draw[-{Stealth}] (b) -- (d); \draw[-{Stealth}] (d) -- (k);
+  \end{tikzpicture}
+  \caption{The block-debiased inference pipeline.}
+  \label{fig:pipeline}
+\end{figure}

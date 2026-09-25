@@ -1,33 +1,31 @@
-# Hospital Discharge Summary — Free LaTeX Template
+# Hospital Discharge Summary LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/medical/discharge-summary-report)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/medical/discharge-summary-report/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Hospital Discharge Summary LaTeX template — discharge summary latex template. Elegant, compile-tested, editable online at letx.app.**
+A hospital discharge summary on letter paper with patient demographics and admission details, the hospital course, discharge medications and follow-up instructions.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/medical/discharge-summary-report)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/medical/discharge-summary-report/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Hospital Discharge Summary preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `10pt, letterpaper`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Hospital Discharge Summary on LetX »](https://letx.app/templates/medical/discharge-summary-report)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Hospital Discharge Summary on LetX](https://letx.app/templates/medical/discharge-summary-report/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/discharge-summary-report.git
-cd discharge-summary-report
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/medical/discharge-summary-report
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — medical templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): medical and clinical templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

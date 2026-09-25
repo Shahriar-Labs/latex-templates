@@ -1,33 +1,31 @@
-# Indian Standard Resume — Free LaTeX Template
+# Indian Standard Resume LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/cvs-resumes/indian-standard-resume)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/cvs-resumes/indian-standard-resume/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Indian Standard Resume LaTeX template — india resume latex template. Elegant, compile-tested, editable online at letx.app.**
+An Indian-format resume on A4 for graduates, with Career Objective, Education, Internships, Projects, Technical Skills, Achievements & Leadership and Personal Details.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/cvs-resumes/indian-standard-resume)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/cvs-resumes/indian-standard-resume/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Indian Standard Resume preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `a4paper, 10pt`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Indian Standard Resume on LetX »](https://letx.app/templates/cvs-resumes/indian-standard-resume)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Indian Standard Resume on LetX](https://letx.app/templates/cvs-resumes/indian-standard-resume/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/indian-standard-resume.git
-cd indian-standard-resume
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/cvs-resumes/indian-standard-resume
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — cvs resumes templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): CV and résumé templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

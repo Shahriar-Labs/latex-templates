@@ -1,46 +1,99 @@
-\documentclass[10pt,twocolumn]{article}
+% MobiCom paper on ACM's acmart class, sigconf format at 10pt.
+%
+% Format checked 2026-09-25 against the MobiCom 2027 call for papers:
+%   https://www.sigmobile.org/mobicom/2027/cfp.html
+%   - The call gives this line: \documentclass[sigconf,10pt]{acmart}
+%   - It also says authors' names must not appear anywhere in the paper or the PDF file.
+%     This template adds `anonymous` for that: it hides the author block without changing
+%     the layout.
+%   - At most 12 single-spaced, numbered pages, then as many pages of references as you
+%     need. Appendices go after the references, must start on a new page, do not count
+%     toward the 12 pages, and reviewers are not required to read them.
+%   - The PDF must not contain embedded hyperlinks. The \PassOptionsToPackage{draft} line
+%     below keeps every \ref and \cite working but writes no links into the PDF.
+%   - Keep the file under 15 MB.
+% The rules change every year. Read the current call before you submit.
+%
+% Camera-ready: delete the `draft` line, change the class line to
+% \documentclass[sigconf,10pt]{acmart}, delete the notice box below \maketitle, and paste
+% in the \setcopyright, \acmConference, \acmDOI and \acmISBN lines ACM sends you.
+\PassOptionsToPackage{draft}{hyperref}
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[sigconf,10pt,anonymous]{acmart}
 
-% Packages and styling live in preamble.tex; each section has its own file under
-% sections/. Edit those directly — this file is the outline of the document.
+% Extra packages, colours and \eq live in preamble.tex; each section has its own file under
+% sections/.
 \input{preamble}
 
 \begin{document}
 
+\title{TrailBeam: Motion-Predictive Beam Steering for Millimeter-Wave Wearable Networks}
 
-\twocolumn[
-{
-\begin{center}
-{\LARGE\bfseries\color{steelblue} TrailBeam: Motion-Predictive Beam Steering\\ for Millimeter-Wave Wearable Networks\par}
-\vspace{0.7em}
-{\large Elena Marchetti$^{1}$ \quad David Okafor$^{2}$ \quad Priya Raghunathan$^{3}$ \quad Thomas Berger$^{1}$\par}
-\vspace{0.4em}
-{\normalsize\itshape\color{papergray}
-$^{1}$Department of Computer Science, Vertex University \quad
-$^{2}$School of Electrical Engineering, Meridian Institute of Technology \quad
-$^{3}$Nimbus Labs, Mobile Systems Group\par}
-\vspace{0.3em}
-{\small\ttfamily\color{papergray}
-\{e.marchetti, t.berger\}@vertex.edu \quad d.okafor@meridian-tech.edu \quad p.raghunathan@nimbuslabs.io\par}
-\end{center}
-}
+\author{Elena Marchetti}
+\affiliation{%
+  \institution{Vertex University}
+  \department{Department of Computer Science}
+  \city{Turin}
+  \country{Italy}}
+\email{e.marchetti@vertex-university.example}
 
-\vspace{0.7em}
+\author{David Okafor}
+\affiliation{%
+  \institution{Meridian Institute of Technology}
+  \department{School of Electrical Engineering}
+  \city{Enugu}
+  \country{Nigeria}}
+\email{d.okafor@meridian-tech.example}
 
-{\begin{tcolorbox}[colback=gray!6,colframe=steelblue,boxrule=0.6pt,arc=1.5pt,left=6pt,right=6pt,top=4pt,bottom=4pt]
-\footnotesize\textbf{Unofficial template.} This document is an independently produced LaTeX template inspired by the general look of ACM MobiCom paper submissions. It is \textbf{not affiliated with, endorsed by, or sponsored by} ACM, SIGMOBILE, or the MobiCom Steering Committee. Author-formatting rules, page limits, and required style files change from year to year --- always obtain the current official templates and Call for Papers from the official ACM/SIGMOBILE MobiCom website before submitting.
-\end{tcolorbox}}
+\author{Priya Raghunathan}
+\affiliation{%
+  \institution{Nimbus Labs}
+  \department{Mobile Systems Group}
+  \city{Bengaluru}
+  \country{India}}
+\email{p.raghunathan@nimbuslabs.example}
 
-\vspace{0.7em}
+\author{Thomas Berger}
+\affiliation{%
+  \institution{Vertex University}
+  \department{Department of Computer Science}
+  \city{Turin}
+  \country{Italy}}
+\email{t.berger@vertex-university.example}
+
+\renewcommand{\shortauthors}{Marchetti et al.}
 
 \begin{abstract}
-\noindent Millimeter-wave (mmWave) links on body-worn devices lose alignment whenever the wearer's torso or wrist rotates, and re-sweeping the beam codebook after every micro-motion burns power and stalls throughput. We present \textsc{TrailBeam}, a motion-predictive beam steering system that fuses low-rate inertial measurements with a lightweight gait-phase model to forecast beam misalignment before it happens, rather than reacting to it after a link outage. TrailBeam runs a second-order angular predictor at 50~Hz on a wrist-worn microcontroller and issues codebook-narrowed re-alignment requests only when predicted drift exceeds the antenna's half-power beamwidth. We build a 28~GHz phased-array testbed with eight volunteers walking across three indoor routes and compare TrailBeam against a periodic full-sweep baseline and an inertial-only Kalman tracker. TrailBeam cuts median beam-realignment latency by 41\% and per-realignment energy by 34\% relative to the periodic baseline, while holding link-alignment accuracy within 2.1 percentage points of a genie-aided oracle. We release our gait-phase traces and predictor implementation to support follow-up work on mobility-aware mmWave access.
+Millimeter-wave (mmWave) links on body-worn devices lose alignment whenever the wearer's
+torso or wrist rotates, and re-sweeping the beam codebook after every micro-motion burns
+power and stalls throughput. We present \textsc{TrailBeam}, a motion-predictive beam
+steering system that fuses low-rate inertial measurements with a lightweight gait-phase model
+to forecast beam misalignment before it happens, rather than reacting to it after a link
+outage. TrailBeam runs a second-order angular predictor at 50~Hz on a wrist-worn
+microcontroller and issues codebook-narrowed re-alignment requests only when predicted drift
+exceeds the antenna's half-power beamwidth. We build a 28~GHz phased-array testbed with eight
+volunteers walking across three indoor routes and compare TrailBeam against a periodic
+full-sweep baseline and an inertial-only Kalman tracker. TrailBeam cuts median
+beam-realignment latency by 41\% and per-realignment energy by 34\% relative to the periodic
+baseline, while holding link-alignment accuracy within 2.1 percentage points of a
+genie-aided oracle. We release our gait-phase traces and predictor implementation to support
+follow-up work on mobility-aware mmWave access.
 \end{abstract}
 
-\vspace{0.3em}
-\noindent{\small\textbf{Keywords:} millimeter-wave, beam tracking, wearable networks, gait sensing, mobile computing, energy efficiency}
+% ACM Computing Classification System concepts. Pick yours at https://dl.acm.org/ccs
+\ccsdesc[500]{Networks~Mobile networks}
+\ccsdesc[300]{Hardware~Wireless devices}
+\ccsdesc[100]{Human-centered computing~Ubiquitous and mobile computing}
 
-\vspace{1em}
-]
+\keywords{millimeter-wave, beam tracking, wearable networks, gait sensing, energy efficiency}
+
+\maketitle
+
+\noindent\fbox{\parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule\relax}{\footnotesize
+\textbf{Unofficial template. Delete this box before you submit.} It is built on ACM's own
+\texttt{acmart} class with the class line the MobiCom~2027 call gives, and it is not
+affiliated with or endorsed by ACM, SIGMOBILE or the MobiCom organizers. The authors,
+institutions, results and references in this sample are fictional.}}
 
 \input{sections/01-introduction}
 \input{sections/02-related-work}
@@ -49,4 +102,13 @@ $^{3}$Nimbus Labs, Mobile Systems Group\par}
 \input{sections/05-results}
 \input{sections/06-discussion}
 \input{sections/07-conclusion}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{trailbeam-refs}
+
+% Appendices go here, after the references. MobiCom requires them to start on a new page:
+% \clearpage
+% \appendix
+% \section{Testbed hardware}
+
 \end{document}

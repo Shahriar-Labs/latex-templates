@@ -1,33 +1,31 @@
-# Bill of Materials (BOM) — Free LaTeX Template
+# Bill of Materials (BOM) LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/engineering/bill-of-materials-bom)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/engineering/bill-of-materials-bom/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Bill of Materials (BOM) LaTeX template — bill of materials latex template. Elegant, compile-tested, editable online at letx.app.**
+A bill of materials (BOM) on letter paper with the document ID, release status and lead engineer, a sourcing summary, a cost dashboard, and risk and lead time columns.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/engineering/bill-of-materials-bom)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/engineering/bill-of-materials-bom/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Bill of Materials (BOM) preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `10pt, letterpaper`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Bill of Materials (BOM) on LetX »](https://letx.app/templates/engineering/bill-of-materials-bom)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Bill of Materials (BOM) on LetX](https://letx.app/templates/engineering/bill-of-materials-bom/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/bill-of-materials-bom.git
-cd bill-of-materials-bom
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/engineering/bill-of-materials-bom
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — engineering templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): engineering templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

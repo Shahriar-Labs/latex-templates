@@ -1,33 +1,31 @@
-# Postdoctoral Fellowship Interview Presentation — Free LaTeX Template
+# Postdoctoral Fellowship Interview Presentation LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/presentations/postdoctoral-fellowship-interview-presentation)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/presentations/postdoctoral-fellowship-interview-presentation/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Postdoctoral Fellowship Interview Presentation LaTeX template — Postdoctoral Fellowship Interview Presentation. Elegant, compile-tested, editable online at letx.app.**
+A postdoctoral fellowship interview talk in Beamer: doctoral research, fit with the host lab, the proposed project and its aims, and broader impact, with pgfplots charts.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/presentations/postdoctoral-fellowship-interview-presentation)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/presentations/postdoctoral-fellowship-interview-presentation/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Postdoctoral Fellowship Interview Presentation preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `beamer` with `aspectratio=169`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, and 6 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Postdoctoral Fellowship Interview Presentation on LetX »](https://letx.app/templates/presentations/postdoctoral-fellowship-interview-presentation)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Postdoctoral Fellowship Interview Presentation on LetX](https://letx.app/templates/presentations/postdoctoral-fellowship-interview-presentation/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/postdoctoral-fellowship-interview-presentation.git
-cd postdoctoral-fellowship-interview-presentation
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/presentations/postdoctoral-fellowship-interview-presentation
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — presentations templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): presentation templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

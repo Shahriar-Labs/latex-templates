@@ -1,33 +1,31 @@
-# eCTD Module 2 Summary — Free LaTeX Template
+# eCTD Module 2 Summary LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/medical/ectd-module-2-summary)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/medical/ectd-module-2-summary/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**eCTD Module 2 Summary LaTeX template — eCTD Module 2 Summary. Elegant, compile-tested, editable online at letx.app.**
+An eCTD Module 2 clinical summary in Lato with the development program, biopharmaceutics and clinical pharmacology, efficacy and safety overviews, and a benefit-risk assessment.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/medical/ectd-module-2-summary)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/medical/ectd-module-2-summary/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![eCTD Module 2 Summary preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `11pt, a4paper`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, and 7 section files under `sections/`
 
-## Use it online (recommended)
-Open **[eCTD Module 2 Summary on LetX »](https://letx.app/templates/medical/ectd-module-2-summary)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[eCTD Module 2 Summary on LetX](https://letx.app/templates/medical/ectd-module-2-summary/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/ectd-module-2-summary.git
-cd ectd-module-2-summary
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/medical/ectd-module-2-summary
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — medical templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): medical and clinical templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

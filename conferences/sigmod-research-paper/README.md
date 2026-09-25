@@ -1,33 +1,31 @@
-# SIGMOD Research Paper — Free LaTeX Template
+# SIGMOD Research Paper LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/sigmod-research-paper)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/sigmod-research-paper/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**SIGMOD Research Paper LaTeX template — sigmod latex template. Elegant, compile-tested, editable online at letx.app.**
+A SIGMOD paper on acmart in sigconf, anonymous and review mode, with System Overview, an Adaptive Join Design, Correctness and Cost Bounds, and Evaluation Methodology.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/conferences/sigmod-research-paper)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/conferences/sigmod-research-paper/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![SIGMOD Research Paper preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `acmart` with `sigconf, anonymous, review`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, and 11 section files under `sections/`
 
-## Use it online (recommended)
-Open **[SIGMOD Research Paper on LetX »](https://letx.app/templates/conferences/sigmod-research-paper)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[SIGMOD Research Paper on LetX](https://letx.app/templates/conferences/sigmod-research-paper/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/sigmod-research-paper.git
-cd sigmod-research-paper
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/conferences/sigmod-research-paper
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — conferences templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): conference paper templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

@@ -1,33 +1,31 @@
-# Qualifying Exam Presentation — Free LaTeX Template
+# Qualifying Exam Presentation LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/presentations/qualifying-exam-presentation)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/presentations/qualifying-exam-presentation/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Qualifying Exam Presentation LaTeX template — qualifying exam presentation template. Elegant, compile-tested, editable online at letx.app.**
+A qualifying exam presentation in 16:9 Beamer: problem statement, research questions, a literature synthesis, proposed work, timeline and a methods appendix, with twelve tables.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/presentations/qualifying-exam-presentation)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/presentations/qualifying-exam-presentation/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Qualifying Exam Presentation preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `beamer` with `aspectratio=169, xcolor={table}`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 6 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Qualifying Exam Presentation on LetX »](https://letx.app/templates/presentations/qualifying-exam-presentation)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Qualifying Exam Presentation on LetX](https://letx.app/templates/presentations/qualifying-exam-presentation/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/qualifying-exam-presentation.git
-cd qualifying-exam-presentation
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/presentations/qualifying-exam-presentation
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — presentations templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): presentation templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

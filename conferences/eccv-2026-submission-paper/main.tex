@@ -1,57 +1,76 @@
-\documentclass[10pt,twocolumn]{article}
+% ECCV paper on Springer's llncs class with ECCV's own eccv package.
+%
+% Format checked 2026-09-25 against the ECCV 2026 submission policies and the paper
+% template they link to:
+%   https://eccv.ecva.net/Conferences/2026/SubmissionPolicies
+%   https://github.com/paolo-favaro/paper-template
+%   - LaTeX papers must use ECCV's template: llncs.cls with the eccv package, which adds
+%     line numbers for review and anonymizes the paper. llncs.cls, splncs04.bst, eccv.sty
+%     and eccvabbrv.sty in this folder are the kit's own files (eccv.sty and eccvabbrv.sty
+%     carry the kit's MIT licence notice at the top; llncs.cls is Springer's, CC BY 4.0).
+%   - At most 14 pages, not counting references. Longer papers are rejected without
+%     review. Do not change the font or the format.
+%   - The paper ID must be on every page of the review version: set ID= below.
+%   - Review is double-blind.
+% The rules change every year. Read the current policies before you submit.
+%
+% Camera-ready: change `review` to `final` in the eccv options below and delete the notice
+% box after \maketitle.
+\documentclass[runningheads]{llncs}
 
-% Packages and styling live in preamble.tex; each section has its own file under
-% sections/. Edit those directly — this file is the outline of the document.
+% ECCV's options: review or final, the year, and your paper ID from the submission system.
+\usepackage[review,year=2026,ID=*****]{eccv}
+\usepackage{eccvabbrv}
+
+% The packages ECCV's own template loads.
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage[accsupp]{axessibility}  % more readable PDFs for readers with disabilities
+\usepackage{hyperref}
+\usepackage{orcidlink}               % \orcidlink{0000-...} after an author's name
+
+% Extra packages, colours and \methodname live in preamble.tex; each section has its own
+% file under sections/.
 \input{preamble}
 
 \begin{document}
 
+\title{\methodname: Cross-Modal Sparse Attention for Efficient Video Object Segmentation}
+\titlerunning{\methodname}
 
-% --- Unofficial-template notice (required: this is not an official ECCV file) ---
-\noindent\fbox{\parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule\relax}{%
-  \footnotesize\textbf{Unofficial template.} This layout is provided for convenience and is
-  \textbf{not} affiliated with, endorsed by, or sponsored by ECCV or its organisers.
-  Always check the official call for papers and use the current year's official style files
-  for a real submission.}}
-\vspace{0.8em}
+% In review mode eccv.sty replaces these with an anonymous header and the paper ID.
+\author{Elena Voss\inst{1} \and Marcus Adebayo\inst{2} \and Priya Nathan\inst{1} \and
+Thomas Reyes\inst{3}}
+\authorrunning{E.~Voss et al.}
+\institute{Meridian Institute of Vision Science, Leuven, Belgium\\
+\email{\{e.voss,p.nathan\}@meridian-ivs.example} \and
+Vertex Research Labs, Kraków, Poland\\
+\email{m.adebayo@vertexlabs.example} \and
+Nimbus AI, Tallinn, Estonia\\
+\email{t.reyes@nimbus-ai.example}}
 
+\maketitle
 
+\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\footnotesize
+\textbf{Unofficial template. Delete this box before you submit.} It is built on Springer's
+llncs class and the eccv package from the ECCV~2026 paper template, and it is not affiliated
+with or endorsed by ECCV, the European Computer Vision Association or Springer. The authors,
+institutions, results and references in this sample are fictional.}}
 
-\twocolumn[
-  {\centering
-   {\Large\bfseries\color{meridianblue} \methodname: Cross-Modal Sparse Attention for Efficient Video Object Segmentation\par}
-   \vspace{10pt}
-   {\normalsize
-    Elena Voss$^{1}$ \quad Marcus Adebayo$^{2}$ \quad Priya Nathan$^{1}$ \quad Thomas Reyes$^{3}$ \par}
-   \vspace{4pt}
-   {\small\itshape
-    $^{1}$Meridian Institute of Vision Science \quad
-    $^{2}$Vertex Research Labs \quad
-    $^{3}$Nimbus AI\par}
-   \vspace{2pt}
-   {\small\ttfamily \{e.voss,p.nathan\}@meridian-ivs.edu \quad m.adebayo@vertexlabs.ai \quad t.reyes@nimbus.ai\par}
-   \vspace{12pt}
-  }
-  \begin{center}
-  \begin{minipage}{0.94\textwidth}
-  \small
-  {\bfseries\color{apexteal} Abstract.}
-  Video object segmentation methods that rely on dense frame-to-memory attention scale poorly with sequence length, since every query location attends to every stored feature regardless of relevance. We introduce \methodname{}, a cross-modal sparse attention mechanism that restricts memory lookups to a dynamically predicted neighborhood, cutting attention floating-point operations by an order of magnitude while retaining segmentation accuracy. \methodname{} couples a lightweight relevance predictor with a similarity-gated attention kernel, and further fuses appearance and motion cues through a shared sparse index rather than two independent branches. On two video segmentation benchmarks, \methodname{} matches or exceeds the mean intersection-over-union of dense-attention baselines while running at $2.6\times$ the frame rate on a single accelerator. We release ablations isolating the contribution of sparsity scheduling, cross-modal fusion, and memory-bank pruning.
-  \end{minipage}
-  \end{center}
-  \vspace{10pt}
-]
-
-\begin{tcolorbox}[
-  colback=paperbg,
-  colframe=apexteal,
-  boxrule=0.6pt,
-  arc=2pt,
-  left=6pt,right=6pt,top=4pt,bottom=4pt
-]
-\footnotesize
-\textbf{Unofficial template --- not an official ECCV publication.} This document is an independent, community-produced \LaTeX{} template that follows the general visual conventions of computer vision conference submissions. It is \textbf{not} produced, reviewed, or endorsed by the European Conference on Computer Vision (ECCV), its organizing committee, or any sponsoring body, and it carries no association with the official proceedings. Authors preparing a real submission \textbf{must} download the current year's official style files and formatting instructions from the official ECCV call for papers before use.
-\end{tcolorbox}
+\begin{abstract}
+Video object segmentation methods that rely on dense frame-to-memory attention scale poorly
+with sequence length, since every query location attends to every stored feature regardless
+of relevance. We introduce \methodname{}, a cross-modal sparse attention mechanism that
+restricts memory lookups to a dynamically predicted neighborhood, cutting attention
+floating-point operations by an order of magnitude while retaining segmentation accuracy.
+\methodname{} couples a lightweight relevance predictor with a similarity-gated attention
+kernel, and further fuses appearance and motion cues through a shared sparse index rather
+than two independent branches. On two video segmentation benchmarks, \methodname{} matches
+or exceeds the mean intersection-over-union of dense-attention baselines while running at
+$2.6\times$ the frame rate on a single accelerator. We release ablations isolating the
+contribution of sparsity scheduling, cross-modal fusion, and memory-bank pruning.
+\keywords{video object segmentation \and sparse attention \and memory networks}
+\end{abstract}
 
 \input{sections/01-introduction}
 \input{sections/02-related-work}
@@ -61,4 +80,8 @@
 \input{sections/06-discussion}
 \input{sections/07-conclusion}
 \input{sections/08-acknowledgments}
+
+\bibliographystyle{splncs04}
+\bibliography{references}
+
 \end{document}

@@ -1,33 +1,31 @@
-# Telecommunications Network Link Budget Calculator — Free LaTeX Template
+# Telecommunications Network Link Budget Calculator LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/engineering/telecommunications-network-link-budget-calculator)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/engineering/telecommunications-network-link-budget-calculator/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Telecommunications Network Link Budget Calculator LaTeX template — telecommunications link budget calculator latex. Elegant, compile-tested, editable online at letx.app.**
+A telecommunications link budget worksheet with the governing equations, an input register, a worked link budget, propagation and availability screening and design sensitivities.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/engineering/telecommunications-network-link-budget-calculator)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/engineering/telecommunications-network-link-budget-calculator/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Telecommunications Network Link Budget Calculator preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `10pt, a4paper`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, and 9 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Telecommunications Network Link Budget Calculator on LetX »](https://letx.app/templates/engineering/telecommunications-network-link-budget-calculator)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Telecommunications Network Link Budget Calculator on LetX](https://letx.app/templates/engineering/telecommunications-network-link-budget-calculator/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/telecommunications-network-link-budget-calculator.git
-cd telecommunications-network-link-budget-calculator
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/engineering/telecommunications-network-link-budget-calculator
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — engineering templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): engineering templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

@@ -1,0 +1,21 @@
+\chapter{Streaming Community Detection}
+\label{ch:streaming}
+
+Our streaming method processes edges in arrival order and keeps, for each vertex, only its
+current community label and degree. When an edge $(u, v)$ arrives, it evaluates the change in
+Equation~\eqref{eq:modularity} from moving $u$ into $v$'s community, using running totals of
+community volume. A second pass refines the labels with the standard local-move step.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[node distance=5mm and 7mm,
+      box/.style={draw=accent, rounded corners=2pt, minimum height=9mm, align=center, font=\small}]
+    \node[box] (s) {Edge\\stream};
+    \node[box, right=of s] (l) {Label\\update};
+    \node[box, right=of l] (r) {Local-move\\refinement};
+    \node[box, right=of r] (c) {Contracted\\graph};
+    \draw[-{Stealth}] (s) -- (l); \draw[-{Stealth}] (l) -- (r); \draw[-{Stealth}] (r) -- (c);
+  \end{tikzpicture}
+  \caption{The two-pass streaming community detection method.}
+  \label{fig:stream}
+\end{figure}

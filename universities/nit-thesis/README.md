@@ -1,33 +1,31 @@
-# NIT Thesis — Free LaTeX Template
+# NIT Thesis LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/universities/nit-thesis)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/universities/nit-thesis/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**NIT Thesis LaTeX template — NIT Thesis. Elegant, compile-tested, editable online at letx.app.**
+An unofficial NIT Tiruchirappalli PhD thesis template from the institute's guidelines: cover in capitals, thesis certificate, Times 12pt at 1.5 spacing, and the papers, CV and committee pages.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/universities/nit-thesis)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/universities/nit-thesis/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![NIT Thesis preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `report` with `12pt, oneside`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 9 section files under `front/`, `sections/`
 
-## Use it online (recommended)
-Open **[NIT Thesis on LetX »](https://letx.app/templates/universities/nit-thesis)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[NIT Thesis on LetX](https://letx.app/templates/universities/nit-thesis/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/nit-thesis.git
-cd nit-thesis
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/universities/nit-thesis
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — universities templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): university and thesis templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

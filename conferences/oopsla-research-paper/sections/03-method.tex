@@ -10,7 +10,7 @@ Let $\Gamma$ represent the typing environment. The syntax of Synapse is shown be
 
 In this rule, the send operation consumes an actor $a$ in state $S$ and a message $m$ of type $T$. The function $\text{Transitions}(S, S')$ determines whether state $S'$ is reachable from state $S$ via message $T$. If the transition is valid, the operation returns a new linear reference to the actor in state $S'$, along with a unit value. This linear consumption prevents the programmer from sending subsequent messages to $a$ under the assumption that it is still in state $S$.
 
-\begin{figure}[h]
+\begin{figure}[t]
 \centering
 \resizebox{\linewidth}{!}{%
 \begin{tikzpicture}[node distance=2.2cm and 2.4cm]
@@ -26,5 +26,8 @@ In this rule, the send operation consumes an actor $a$ in state $S$ and a messag
     (ready) edge node[right] {close()} (term);
 \end{tikzpicture}}
 \caption{The lifecycle state machine of an actor protocol in Synapse. Edges represent transition-triggering actions.}
+\Description{A state machine with four states: Uninit, Ready, Proc and Term. init() moves
+Uninit to Ready, send(msg) moves Ready to Proc, process() returns Proc to Ready, and close()
+moves Ready to Term.}
 \label{fig:statemachine}
 \end{figure}

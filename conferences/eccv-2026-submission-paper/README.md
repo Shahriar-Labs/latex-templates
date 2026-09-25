@@ -1,33 +1,31 @@
-# ECCV 2026 Submission Paper — Free LaTeX Template
+# ECCV 2026 Submission Paper LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/eccv-2026-submission-paper)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/eccv-2026-submission-paper/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**ECCV 2026 Submission Paper LaTeX template — eccv latex template. Elegant, compile-tested, editable online at letx.app.**
+An ECCV paper on Springer's llncs class with the eccv package from ECCV's 2026 template, bundled: line numbers, the paper ID on every page and an anonymous header for review.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/conferences/eccv-2026-submission-paper)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/conferences/eccv-2026-submission-paper/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![ECCV 2026 Submission Paper preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `llncs` with `runningheads`
+- Compiler: pdflatex
+- Files: `eccv.sty`, `eccvabbrv.sty`, `llncs.cls`, `main.tex`, `preamble.tex`, `references.bib`, `splncs04.bst`, and 8 section files under `sections/`
 
-## Use it online (recommended)
-Open **[ECCV 2026 Submission Paper on LetX »](https://letx.app/templates/conferences/eccv-2026-submission-paper)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[ECCV 2026 Submission Paper on LetX](https://letx.app/templates/conferences/eccv-2026-submission-paper/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/eccv-2026-submission-paper.git
-cd eccv-2026-submission-paper
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/conferences/eccv-2026-submission-paper
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — conferences templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): conference paper templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

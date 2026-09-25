@@ -1,33 +1,31 @@
-# Chinese Standard Resume — Free LaTeX Template
+# Chinese Standard Resume LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/cvs-resumes/chinese-standard-resume)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/cvs-resumes/chinese-standard-resume/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Chinese Standard Resume LaTeX template — china resume latex template. Elegant, compile-tested, editable online at letx.app.**
+A Chinese-language resume (简历) on the ctexart class with Fandol fonts, in five sections: 个人简介, 工作经历, 项目经历, 教育背景 and 专业技能.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/cvs-resumes/chinese-standard-resume)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/cvs-resumes/chinese-standard-resume/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Chinese Standard Resume preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `ctexart` with `10pt, a4paper, fontset=fandol`
+- Compiler: xelatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Chinese Standard Resume on LetX »](https://letx.app/templates/cvs-resumes/chinese-standard-resume)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Chinese Standard Resume on LetX](https://letx.app/templates/cvs-resumes/chinese-standard-resume/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/chinese-standard-resume.git
-cd chinese-standard-resume
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/cvs-resumes/chinese-standard-resume
 latexmk -xelatex main.tex
 ```
-Compiler: **xelatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — cvs resumes templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): CV and résumé templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

@@ -1,33 +1,31 @@
-# Grant Renewal Progress Slides — Free LaTeX Template
+# Grant Renewal Progress Slides LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/presentations/grant-renewal-progress-slides)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/presentations/grant-renewal-progress-slides/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Grant Renewal Progress Slides LaTeX template — grant progress presentation template. Elegant, compile-tested, editable online at letx.app.**
+Grant renewal progress slides in 16:9 Beamer with an aims-against-progress table, a field pilot status slide, budget allocated against spent, and next-period objectives.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/presentations/grant-renewal-progress-slides)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/presentations/grant-renewal-progress-slides/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Grant Renewal Progress Slides preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `beamer` with `aspectratio=169`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 8 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Grant Renewal Progress Slides on LetX »](https://letx.app/templates/presentations/grant-renewal-progress-slides)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Grant Renewal Progress Slides on LetX](https://letx.app/templates/presentations/grant-renewal-progress-slides/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/grant-renewal-progress-slides.git
-cd grant-renewal-progress-slides
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/presentations/grant-renewal-progress-slides
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — presentations templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): presentation templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

@@ -1,79 +1,93 @@
-\documentclass[11pt,twoside,openright]{book}
-
-% Packages and styling live in preamble.tex; each section has its own file under
-% sections/. Edit those directly — this file is the outline of the document.
+% KU Leuven (Arenberg Doctoral School) thesis template.
+%
+% Format checked 2026-09-25 against:
+%   https://set.kuleuven.be/phd/researchers/template_kaft/guidelines_PhDthesis.htm and the official ADS LaTeX template phd.tex
+%   - Manuscripts are printed at 16 x 24 cm (Geology: A4); the text block here is the 12.5 x
+%   -   18.5 cm of the ADS LaTeX template. There is no mandatory font, spacing or margin, but
+%   -   the layout must be consistent throughout.
+%   - Cover: only the supervisors, under the header Supervisors; company logos go on the inner
+%   -   title page, never on the cover, spine or back.
+%   - Both a popularized abstract (about one page) and a scientific abstract (about two pages)
+%   -   are required, in English and in Dutch. Include lists of abbreviations and symbols.
+%   - A legal deposit number and ISBN are not required.
+% These rules change. Check your school's current guide, and your department's own
+% rules, before you submit.
+\documentclass[10pt,twoside,openright]{report}
 \input{preamble}
 
 \begin{document}
+\pagenumbering{gobble}
+\input{front/cover}
+\input{front/titlepage}
+\input{front/copyright}
 
-
-% ── Title page ───────────────────────────────────────────────────────
-\begin{titlepage}
-\thispagestyle{empty}
-\begin{center}
-
-\vspace*{0.15\textheight}
-
-{\Huge\bfseries Federated Learning for Privacy-Preserving Healthcare}\\[36pt]
-
-{\LARGE Thesis by}\\[18pt]
-
-{\LARGE Thomas Peeters}\\[48pt]
-
-{\large\textit{In Partial Fulfillment of the Requirements\\[4pt]
-for the Degree of}}\\[18pt]
-
-{\LARGE Doctor of Philosophy}\\[48pt]
-
-{\large KU Leuven}\\[6pt]
-{\large Leuven, Belgium}\\[30pt]
-
-{\large 2026}\\[18pt]
-
-{\normalsize\color{MidGray}(Defended June~05, 2026)}
-
-\vfill
-{\footnotesize\itshape Unofficial template --- not affiliated with, endorsed by, or an official publication of the named institution. Sample content only.}
-\end{center}
-\end{titlepage}
-
-% ── Copyright page ──────────────────────────────────────────────────
+\pagenumbering{roman}
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+\input{sections/acknowledgments-text}
 \cleardoublepage
-\thispagestyle{empty}
-\vspace*{0.4\textheight}
-
-\begin{center}
-{\large\copyright\ 2026}\\[12pt]
-{\large Thomas Peeters}\\[12pt]
-{\normalsize ORCID: \faOrcid\ 0000-0002-3847-1926}\\[24pt]
-{\normalsize All Rights Reserved}
-\end{center}
-
-% ── Acknowledgments ─────────────────────────────────────────────────
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\input{sections/abstract-text}
 \cleardoublepage
+\chapter*{Popular Abstract}
+\addcontentsline{toc}{chapter}{Popular Abstract}
+Computer models that predict, for example, which patients risk complications work better when
+they learn from many hospitals. Hospitals cannot simply share patient records. This thesis
+shows how models can learn from many hospitals while the records stay where they are: each
+hospital trains the model locally and only shares mathematical updates, which are further
+protected so that no individual patient can be recognized. The resulting models are almost as
+good as models that see all the data at once.
+\cleardoublepage
+\begin{otherlanguage}{dutch}
+\chapter*{Beknopte samenvatting}
+\addcontentsline{toc}{chapter}{Beknopte samenvatting}
+Klinische voorspellingsmodellen worden beter met gegevens uit veel ziekenhuizen, maar
+privacywetgeving maakt het samenvoegen van dossiers moeilijk. Dit proefschrift bestudeert
+gefedereerd leren voor tabellarische klinische gegevens en stelt een herweging van de
+bijdragen van ziekenhuizen voor, gecombineerd met differentieel private aggregatie. Over elf
+gesimuleerde ziekenhuizen haalt de methode 96\% van de discriminatie van een model dat op alle
+gegevens samen is getraind.
+\cleardoublepage
+\chapter*{Populaire samenvatting}
+\addcontentsline{toc}{chapter}{Populaire samenvatting}
+Computermodellen die voorspellen welke patiënten risico lopen, werken beter als ze leren uit
+veel ziekenhuizen. Dit proefschrift toont hoe dat kan zonder dat patiëntgegevens het
+ziekenhuis verlaten: elk ziekenhuis traint het model lokaal en deelt alleen beschermde
+wiskundige aanpassingen.
+\end{otherlanguage}
+\cleardoublepage
+\chapter*{List of Abbreviations}
+\addcontentsline{toc}{chapter}{List of Abbreviations}
+\begin{tabular}{@{}ll@{}}
+AUROC & area under the receiver operating characteristic curve\\
+DP & differential privacy\\
+FL & federated learning\\
+\end{tabular}
+\cleardoublepage
+\chapter*{List of Symbols}
+\addcontentsline{toc}{chapter}{List of Symbols}
+\begin{tabular}{@{}ll@{}}
+$\epsilon, \delta$ & privacy parameters\\
+$K$ & number of hospitals\\
+$w_k$ & weight of hospital $k$\\
+\end{tabular}
+\cleardoublepage
+\tableofcontents
+\listoffigures
+\listoftables
+\cleardoublepage
+\pagenumbering{arabic}
+\input{sections/01-introduction}
+\input{sections/02-background}
+\input{sections/03-method}
+\input{sections/04-results}
+\input{sections/05-conclusion}
 
-\input{sections/01-acknowledgments}
-\input{sections/02-abstract}
-\input{sections/03-introduction}
-\input{sections/04-the-optimization-challenge-in-modern-mac}
-\input{sections/05-the-rise-of-adaptive-methods}
-\input{sections/06-the-theory-practice-gap}
-\input{sections/07-contributions-of-this-thesis}
-\input{sections/08-organization-of-the-thesis}
-\input{sections/09-background-and-related-work}
-\input{sections/10-preliminaries-and-notation}
-\input{sections/11-classical-stochastic-gradient-descent}
-\input{sections/12-adaptive-gradient-methods}
-\input{sections/13-the-normalized-preconditioned-gradient-f}
-\input{sections/14-motivation-and-intuition}
-\input{sections/15-the-npg-abstraction}
-\input{sections/16-convergence-analysis}
-\input{sections/17-the-nadam-algorithm}
-\input{sections/18-experimental-validation}
-\input{sections/19-discussion-and-practical-recommendations}
-\input{sections/20-conclusion-and-future-work}
-\input{sections/21-summary-of-contributions}
-\input{sections/22-limitations}
-\input{sections/23-future-directions}
-\input{sections/24-proof-of-theorem-1}
+\appendix
+\input{sections/appendix}
+
+\bibliographystyle{plainnat}
+\bibliography{references}
+
 \end{document}

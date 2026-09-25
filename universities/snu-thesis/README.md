@@ -1,33 +1,31 @@
-# SNU Thesis — Free LaTeX Template
+# SNU Thesis LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/universities/snu-thesis)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/universities/snu-thesis/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**SNU Thesis LaTeX template — SNU Thesis. Elegant, compile-tested, editable online at letx.app.**
+An unofficial Seoul National University dissertation template at 19 x 26 cm, with cover, approval page for five examiners, and a Korean abstract at the end. Compiles with XeLaTeX.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/universities/snu-thesis)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/universities/snu-thesis/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![SNU Thesis preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `report` with `11pt, twoside, openany`
+- Compiler: xelatex
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 9 section files under `front/`, `sections/`
 
-## Use it online (recommended)
-Open **[SNU Thesis on LetX »](https://letx.app/templates/universities/snu-thesis)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[SNU Thesis on LetX](https://letx.app/templates/universities/snu-thesis/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/snu-thesis.git
-cd snu-thesis
-latexmk -pdf main.tex
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/universities/snu-thesis
+latexmk -xelatex main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — universities templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): university and thesis templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

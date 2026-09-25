@@ -1,34 +1,31 @@
-# DIY Zine — Free LaTeX Template
+# DIY Zine LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/posters/zine-template)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/posters/zine-template/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**DIY Zine LaTeX template — zine template. Elegant, compile-tested, editable online at letx.app.**
+A DIY zine on landscape A3 in Lato for folding, with an editor's note, short pieces, a cut-and-paste page, things we loved, and a call for submissions.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/posters/zine-template)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/posters/zine-template/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![DIY Zine preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested (zero errors)
-- Realistic sample content
-- Editable online in your browser
+## What is in it
+- Document class: `article` with `10pt, a3paper, landscape`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[DIY Zine on LetX »](https://letx.app/templates/posters/zine-template)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[DIY Zine on LetX](https://letx.app/templates/posters/zine-template/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
 git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/zine-template
+cd latex-templates/posters/zine-template
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — poster and print templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): poster templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

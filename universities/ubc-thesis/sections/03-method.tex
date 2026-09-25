@@ -1,0 +1,22 @@
+\chapter{A Constrained Graph Scheduler}
+\label{ch:method}
+
+We encode the cluster as a bipartite graph between queued jobs and machines, and a graph neural
+network produces a score for every feasible job-machine pair, following the design of
+\citet{mao2019}. A constraint layer masks any pair that would exceed a machine's capacity
+before the softmax, so infeasible actions have probability zero rather than being penalized
+after the fact.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[node distance=5mm and 7mm,
+      box/.style={draw=accent, rounded corners=2pt, minimum height=9mm, align=center, font=\small}]
+    \node[box] (s) {Cluster\\state graph};
+    \node[box, right=of s] (g) {Graph neural\\network};
+    \node[box, right=of g] (m) {Capacity\\mask};
+    \node[box, right=of m] (a) {Allocation};
+    \draw[-{Stealth}] (s) -- (g); \draw[-{Stealth}] (g) -- (m); \draw[-{Stealth}] (m) -- (a);
+  \end{tikzpicture}
+  \caption{The masked scheduling policy.}
+  \label{fig:policy}
+\end{figure}

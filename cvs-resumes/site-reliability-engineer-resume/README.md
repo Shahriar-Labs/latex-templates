@@ -1,33 +1,31 @@
-# Site Reliability Engineer (SRE) Resume — Free LaTeX Template
+# Site Reliability Engineer (SRE) Resume LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/cvs-resumes/site-reliability-engineer-resume)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/cvs-resumes/site-reliability-engineer-resume/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Site Reliability Engineer (SRE) Resume LaTeX template — site reliability engineer resume latex. Elegant, compile-tested, editable online at letx.app.**
+A site reliability engineer resume on A4 with Technical Core Competencies, Professional Experience, a Key Projects section, Education and Certifications.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/cvs-resumes/site-reliability-engineer-resume)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/cvs-resumes/site-reliability-engineer-resume/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Site Reliability Engineer (SRE) Resume preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `10pt, a4paper`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Site Reliability Engineer (SRE) Resume on LetX »](https://letx.app/templates/cvs-resumes/site-reliability-engineer-resume)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Site Reliability Engineer (SRE) Resume on LetX](https://letx.app/templates/cvs-resumes/site-reliability-engineer-resume/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/site-reliability-engineer-resume.git
-cd site-reliability-engineer-resume
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/cvs-resumes/site-reliability-engineer-resume
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — cvs resumes templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): CV and résumé templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

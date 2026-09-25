@@ -1,55 +1,75 @@
-\documentclass[10pt,twocolumn]{article}
+% IROS paper on ieeeconf.cls, the IEEE conference class the IEEE Robotics and Automation
+% Society's PaperCept system provides for its conferences.
+%
+% Format checked 2026-09-25 against the IROS 2026 call for papers and the PaperCept LaTeX
+% support page:
+%   https://2026.ieee-iros.org/contribute/call-for-papers/
+%   https://ras.papercept.net/conferences/support/tex.php
+%   - Use the provided templates. ieeeconf.cls ships in this folder unchanged (it is not in
+%     TeX Live). The three lines below the class are the ones PaperCept's sample root.tex
+%     uses.
+%   - Up to 8 pages on US Letter, counting references and appendices. This replaced the
+%     old 6+2 model, and extra pages cannot be bought.
+%   - Review is double-anonymous: author names and affiliations are redacted, and the call
+%     suggests the censor package for it. \censor prints a black bar of the same width, so
+%     the layout does not move when you uncensor for the camera-ready.
+% The IROS 2027 call was not published yet when this was checked, and the rules change
+% every year. Read the current call before you submit.
+%
+% Camera-ready: uncomment \StopCensoring below, delete the notice box, and follow the final
+% submission instructions in PaperPlaza.
+\documentclass[letterpaper, 10 pt, conference]{ieeeconf}
+\IEEEoverridecommandlockouts  % needed for \thanks
+\overrideIEEEmargins          % from PaperCept's sample: needed to meet printer requirements
 
-% Packages and styling live in preamble.tex; each section has its own file under
-% sections/. Edit those directly — this file is the outline of the document.
+% Extra packages and colours live in preamble.tex; each section has its own file under
+% sections/.
 \input{preamble}
+
+% \StopCensoring  % uncomment for the camera-ready version
+
+\title{\LARGE \bf
+Contact-Aware Foothold Refinement for Quadrupedal Locomotion on Unstructured Terrain}
+
+% \censor prints a black bar the width of its text. Inside \thanks it needs \protect.
+\author{\censor{Femi Oyelaran}$^{1}$, \censor{Ingrid Roos}$^{2}$, \censor{Sora Tanaka}$^{1}$
+and \censor{Manon Delacroix}$^{3}$%
+\thanks{$^{1}$\protect\censor{Department of Robotics Engineering},
+  \protect\censor{Nimbus Institute of Technology}, \protect\censor{Rindalen, Norway},
+  {\tt\small \protect\censor{f.oyelaran@nimbus-tech.example}}}%
+\thanks{$^{2}$\protect\censor{Vertex Robotics Laboratory}, \protect\censor{Meridian University},
+  \protect\censor{Coimbra, Portugal}, {\tt\small \protect\censor{i.roos@meridian-univ.example}}}%
+\thanks{$^{3}$\protect\censor{Applied Autonomy Group}, \protect\censor{Synapse Research},
+  \protect\censor{Lyon, France}, {\tt\small \protect\censor{m.delacroix@synapse.example}}}%
+}
 
 \begin{document}
 
+\maketitle
+\thispagestyle{empty}
+\pagestyle{empty}
 
-\twocolumn[
-\noindent\fcolorbox{irosamber}{irosbg}{%
-\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{%
-\footnotesize\color{irosgray}
-\textbf{Unofficial template.} This document is an independent, community-produced LaTeX
-template inspired by the general look of IROS (IEEE/RSJ International Conference on
-Intelligent Robots and Systems) submissions. It is \textbf{not affiliated with, endorsed by,
-or sourced from IEEE, RSJ, or the IROS organizing committee}. Always download the current
-year's official style files and author kit from the official IROS call for papers before
-submitting, and verify formatting, page limits, and policies against that source.%
-}}
-\vspace{8pt}
-\begin{center}
-{\LARGE\bfseries\color{irosnavy} Contact-Aware Foothold Refinement for Quadrupedal Locomotion on Unstructured Terrain\par}
-\vspace{10pt}
-{\large Femi Oyelaran$^{1}$, Ingrid Roos$^{2}$, Sora Tanaka$^{1}$, and Manon Delacroix$^{3}$\par}
-\vspace{6pt}
-{\normalsize
-$^{1}$Department of Robotics Engineering, Nimbus Institute of Technology, Rindalen, Norway\\
-$^{2}$Vertex Robotics Laboratory, Meridian University, Coimbra, Portugal\\
-$^{3}$Applied Autonomy Group, Synapse Research, Lyon, France\\
-\small\texttt{\{f.oyelaran, s.tanaka\}@nimbus-institute.edu}, \texttt{i.roos@meridian-univ.pt}, \texttt{m.delacroix@synapse-research.fr}
-\par}
-\vspace{10pt}
-\end{center}
-]
+\noindent\fbox{\parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule\relax}{\footnotesize
+\textbf{Unofficial template. Delete this box before you submit.} It is built on PaperCept's
+ieeeconf class with the settings of PaperCept's sample paper, and it is not affiliated with
+or endorsed by IEEE, RSJ or the IROS organizers. The results and references in this sample
+are fictional.}}
 
 \begin{abstract}
-\noindent\textbf{Abstract} --- Quadrupedal robots traversing rubble, loose gravel, and
-staircases frequently mis-place footholds when relying on elevation maps alone, since map
-noise near occlusion boundaries corrupts the terrain estimate exactly where safe contact
-points are scarcest. We present \textsc{ContactRefine}, a lightweight foothold refinement
-module that consumes a coarse elevation map together with per-leg contact force history and
-outputs a corrected stance point within a $4\,\text{cm}$ search radius of the planner's
-nominal foothold. The module is trained with a contrastive objective that pulls refined
-footholds toward regions of historically low slip and pushes them away from geometry that
-previously produced contact-force spikes. Across $1{,}400$ trials on a physical quadruped
-crossing five terrain classes -- rubble, loose gravel, wet tile, staircases, and root-covered
-trail -- \textsc{ContactRefine} reduces the stumble rate from $17.9\%$ to $6.2\%$ and lowers
-mean cost of transport by $11.4\%$ relative to a strong elevation-map-only baseline, while
-adding only $1.8\,\text{ms}$ of latency to the $500\,\text{Hz}$ control loop.
+Quadrupedal robots traversing rubble, loose gravel, and staircases frequently mis-place
+footholds when relying on elevation maps alone, since map noise near occlusion boundaries
+corrupts the terrain estimate exactly where safe contact points are scarcest. We present
+\textsc{ContactRefine}, a lightweight foothold refinement module that consumes a coarse
+elevation map together with per-leg contact force history and outputs a corrected stance
+point within a $4\,\text{cm}$ search radius of the planner's nominal foothold. The module is
+trained with a contrastive objective that pulls refined footholds toward regions of
+historically low slip and pushes them away from geometry that previously produced contact-
+force spikes. Across $1{,}400$ trials on a physical quadruped crossing five terrain classes
+(rubble, loose gravel, wet tile, staircases, and root-covered trail), \textsc{ContactRefine}
+reduces the stumble rate from $17.9\%$ to $6.2\%$ and lowers mean cost of transport by
+$11.4\%$ relative to a strong elevation-map-only baseline, while adding only
+$1.8\,\text{ms}$ of latency to the $500\,\text{Hz}$ control loop.
 \end{abstract}
-\vspace{6pt}
 
 \input{sections/01-introduction}
 \input{sections/02-related-work}
@@ -58,4 +78,9 @@ adding only $1.8\,\text{ms}$ of latency to the $500\,\text{Hz}$ control loop.
 \input{sections/05-results}
 \input{sections/06-discussion}
 \input{sections/07-conclusion}
+
+\balance
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
+
 \end{document}

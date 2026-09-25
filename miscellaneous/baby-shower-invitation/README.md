@@ -1,34 +1,31 @@
-# Baby Shower Invitation — Free LaTeX Template
+# Baby Shower Invitation LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/miscellaneous/baby-shower-invitation)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/miscellaneous/baby-shower-invitation/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Baby Shower Invitation LaTeX template — baby shower invitation template. Elegant, compile-tested, editable online at letx.app.**
+A baby shower invitation on letter paper in pastels and gold, set in Lato, celebrating the expected arrival, with a QR code for the RSVP.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/miscellaneous/baby-shower-invitation)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/miscellaneous/baby-shower-invitation/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Baby Shower Invitation preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested (zero errors)
-- Realistic sample content
-- Editable online in your browser
+## What is in it
+- Document class: `article` with `11pt, letterpaper`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Baby Shower Invitation on LetX »](https://letx.app/templates/miscellaneous/baby-shower-invitation)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Baby Shower Invitation on LetX](https://letx.app/templates/miscellaneous/baby-shower-invitation/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
 git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/baby-shower-invitation
+cd latex-templates/miscellaneous/baby-shower-invitation
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — general templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): general-purpose templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

@@ -1,59 +1,91 @@
-\documentclass[10pt,twocolumn]{article}
+% SIGIR full paper on ACM's acmart class, sigconf format.
+%
+% Format checked 2026-09-25 against the SIGIR 2026 full papers call:
+%   https://sigir2026.org/en-AU/pages/submissions/full-papers-track
+%   - acmart, sigconf (the ACM 2-column proceedings format).
+%   - At most 9 pages, not counting references, which are unlimited.
+%   - Review is double-anonymous and runs on OpenReview. `anonymous` hides the author block
+%     and the acknowledgments without changing the layout, and `review` adds line numbers.
+% The SIGIR 2027 call was not published yet when this was checked, and the rules change
+% every year. Read the current call before you submit.
+%
+% Camera-ready: change the first line to \documentclass[sigconf]{acmart}, delete the notice
+% box below \maketitle, and paste in the \setcopyright, \acmConference, \acmDOI and \acmISBN
+% lines ACM sends you after the rights form.
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[sigconf,anonymous,review]{acmart}
 
-% Packages and styling live in preamble.tex; each section has its own file under
-% sections/. Edit those directly — this file is the outline of the document.
+% Extra packages and colours live in preamble.tex; each section has its own file under
+% sections/.
 \input{preamble}
 
 \begin{document}
 
+\title{Cross-Attention Distillation for Lightweight Passage Re-ranking in Dense Retrieval
+Pipelines}
 
-\twocolumn[
-\begin{@twocolumnfalse}
+\author{Elena Vasquez}
+\affiliation{%
+  \institution{Meridian Institute of Technology}
+  \city{Madrid}
+  \country{Spain}}
+\email{e.vasquez@meridian-tech.example}
+
+\author{Daniel Osei}
+\affiliation{%
+  \institution{Vertex University}
+  \department{Department of Computer Science}
+  \city{Accra}
+  \country{Ghana}}
+\email{d.osei@vertex-university.example}
+
+\author{Priya Ramanathan}
+\affiliation{%
+  \institution{Nimbus Information Retrieval Lab}
+  \city{Hyderabad}
+  \country{India}}
+\email{p.ramanathan@nimbus-ir.example}
+
+\author{Marcus Lindqvist}
+\affiliation{%
+  \institution{Apex College of Computing}
+  \city{Uppsala}
+  \country{Sweden}}
+\email{m.lindqvist@apex-college.example}
+
+\renewcommand{\shortauthors}{Vasquez et al.}
+
+\begin{abstract}
+Cross-encoder re-rankers deliver the strongest relevance quality in multi-stage retrieval
+pipelines but are too slow to score every document a first-stage retriever returns. We
+introduce \textbf{CARD} (Cross-Attention Re-ranking Distillation), a lightweight re-ranking
+head that is trained to mimic a full cross-encoder teacher while operating on pre-computed
+bi-encoder representations, avoiding the joint query--document forward pass that makes
+cross-encoders expensive at serving time. CARD attaches a shallow cross-attention block on
+top of frozen dense query and passage embeddings and is trained with a temperature-scaled
+distillation objective that combines soft-label matching against the teacher with the
+original relevance labels. Across three retrieval benchmarks, CARD recovers 97.8\% of the
+teacher's nDCG@10 while reducing re-ranking latency by 6.5$\times$, and it consistently
+outperforms bi-encoder-only and late-interaction baselines at comparable serving cost. We
+release ablations isolating the contribution of distillation temperature, cross-attention
+depth, and teacher choice, and discuss where the distilled head still departs measurably
+from teacher behavior.
+\end{abstract}
+
+% ACM Computing Classification System concepts. Pick yours at https://dl.acm.org/ccs
+\ccsdesc[500]{Information systems~Retrieval models and ranking}
+\ccsdesc[300]{Information systems~Language models}
+\ccsdesc[100]{Computing methodologies~Machine learning}
+
+\keywords{dense retrieval, passage re-ranking, knowledge distillation, cross-encoders}
+
 \maketitle
 
-\begin{center}
-\fcolorbox{sigirblue}{sigirlight}{%
-  \begin{minipage}{0.9\textwidth}
-  \small\color{sigirblue}
-  \textbf{Unofficial template.} This document is an unofficial \LaTeX{} template
-  inspired by the general two-column style of information retrieval conference
-  submissions and is \textbf{not affiliated with, endorsed by, or produced by
-  SIGIR} or its organizing committee. Author names, affiliations, results, and
-  citations below are fictional and provided for layout demonstration only.
-  Before submitting a real paper, always download the current year's official
-  style files and author instructions from the official SIGIR call for papers,
-  as formatting requirements (margins, page limits, anonymization policy) change
-  year to year.
-  \end{minipage}%
-}
-\end{center}
-
-\vspace{0.6em}
-\begin{center}
-\begin{minipage}{0.92\textwidth}
-\small
-\textbf{Abstract.} Cross-encoder re-rankers deliver the strongest relevance
-quality in multi-stage retrieval pipelines but are too slow to score every
-document a first-stage retriever returns. We introduce \textbf{CARD}
-(Cross-Attention Re-ranking Distillation), a lightweight re-ranking head that
-is trained to mimic a full cross-encoder teacher while operating on
-pre-computed bi-encoder representations, avoiding the joint query--document
-forward pass that makes cross-encoders expensive at serving time. CARD
-attaches a shallow cross-attention block on top of frozen dense query and
-passage embeddings and is trained with a temperature-scaled distillation
-objective that combines soft-label matching against the teacher with the
-original relevance labels. Across three retrieval benchmarks, CARD recovers
-97.8\% of the teacher's nDCG@10 while reducing re-ranking latency by
-6.5$\times$, and it consistently outperforms bi-encoder-only and
-late-interaction baselines at comparable serving cost. We release ablations
-isolating the contribution of distillation temperature, cross-attention
-depth, and teacher choice, and discuss where the distilled head still departs
-measurably from teacher behavior.
-\end{minipage}
-\end{center}
-\vspace{0.9em}
-\end{@twocolumnfalse}
-]
+\noindent\fbox{\parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule\relax}{\footnotesize
+\textbf{Unofficial template. Delete this box before you submit.} It is built on ACM's own
+\texttt{acmart} class in the sigconf format SIGIR uses, and it is not affiliated with or
+endorsed by ACM, SIGIR or the SIGIR organizers. The authors, institutions, results and
+references in this sample are fictional.}}
 
 \input{sections/01-introduction}
 \input{sections/02-related-work}
@@ -63,4 +95,8 @@ measurably from teacher behavior.
 \input{sections/06-discussion}
 \input{sections/07-conclusion}
 \input{sections/08-acknowledgments}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
 \end{document}

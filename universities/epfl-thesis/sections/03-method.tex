@@ -1,0 +1,21 @@
+\chapter{A Hierarchical Controller}
+\label{ch:method}
+
+A policy network observes proprioception and a local height map and outputs footholds and a
+body trajectory at 50~Hz. A model-predictive controller at 500~Hz computes contact forces that
+track the trajectory while satisfying Equation~\eqref{eq:centroidal} and the friction
+constraints.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[node distance=5mm and 7mm,
+      box/.style={draw=accent, rounded corners=2pt, minimum height=9mm, align=center, font=\small}]
+    \node[box] (o) {Observations};
+    \node[box, right=of o] (p) {Learned policy\\(50 Hz)};
+    \node[box, right=of p] (m) {Predictive control\\(500 Hz)};
+    \node[box, right=of m] (r) {Joint\\torques};
+    \draw[-{Stealth}] (o) -- (p); \draw[-{Stealth}] (p) -- (m); \draw[-{Stealth}] (m) -- (r);
+  \end{tikzpicture}
+  \caption{The learned policy plans; the predictive controller enforces physics.}
+  \label{fig:hier}
+\end{figure}

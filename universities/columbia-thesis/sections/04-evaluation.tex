@@ -1,0 +1,23 @@
+\chapter{Evaluation}
+\label{ch:evaluation}
+
+We ran an iterative graph computation on 512 nodes and injected machine failures at increasing
+rates. Table~\ref{tab:throughput} reports throughput as a fraction of the failure-free run.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Throughput relative to a failure-free run.}
+  \label{tab:throughput}
+  \begin{tabular}{lccc}
+    \toprule
+    Failures per hour & Checkpointing & Full replication & This design \\
+    \midrule
+    1  & 0.93 & 0.81 & 0.99 \\
+    8  & 0.84 & 0.80 & 0.97 \\
+    32 & 0.71 & 0.78 & 0.94 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Checkpointing degrades fastest because each failure rolls work back to the last checkpoint;
+full replication pays its cost even when nothing fails.
