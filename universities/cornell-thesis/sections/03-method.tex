@@ -1,0 +1,26 @@
+\chapter{Uncertainty-Aware Detection and Planning}
+\label{ch:method}
+
+We extend the detector to predict, for each box, a Gaussian over its corner coordinates. The
+predicted standard deviation $\sigma$ inflates the obstacle when the planner checks for
+collisions, and the planner caps the commanded speed at
+\begin{equation}
+  v_{\max} = \min\Bigl(v_{\mathrm{nom}},\; \sqrt{2 a_{\max} (d - k\sigma)}\Bigr),
+  \label{eq:speed}
+\end{equation}
+where $d$ is the distance to the obstacle, $a_{\max}$ the braking limit and $k$ a safety
+factor. Uncertain detections therefore slow the vehicle rather than being discarded.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[node distance=5mm and 7mm,
+      box/.style={draw=accent, rounded corners=2pt, minimum height=9mm, align=center, font=\small}]
+    \node[box] (c) {Camera};
+    \node[box, right=of c] (d) {Detector with\\uncertainty};
+    \node[box, right=of d] (p) {Speed-limited\\planner};
+    \node[box, right=of p] (v) {Vehicle};
+    \draw[-{Stealth}] (c) -- (d); \draw[-{Stealth}] (d) -- (p); \draw[-{Stealth}] (p) -- (v);
+  \end{tikzpicture}
+  \caption{Detection uncertainty flows into the planner's speed limit.}
+  \label{fig:loop}
+\end{figure}

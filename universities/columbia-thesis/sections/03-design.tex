@@ -1,0 +1,20 @@
+\chapter{Design}
+\label{ch:design}
+
+The system keeps its task table in a replicated log managed by a consensus group of five
+machines. Data partitions are not replicated; when a machine fails, the scheduler recomputes
+its lost partitions from their lineage, placing the recomputation on machines that have not
+failed recently.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[node distance=5mm and 7mm,
+      box/.style={draw=accent, rounded corners=2pt, minimum height=9mm, align=center, font=\small}]
+    \node[box] (c) {Consensus group\\(task table)};
+    \node[box, right=of c] (s) {Failure-aware\\scheduler};
+    \node[box, right=of s] (w) {Workers\\(partitions)};
+    \draw[-{Stealth}] (c) -- (s); \draw[-{Stealth}] (s) -- (w);
+  \end{tikzpicture}
+  \caption{Coordination state is replicated; data is recomputed.}
+  \label{fig:design}
+\end{figure}

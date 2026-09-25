@@ -3,16 +3,16 @@
 [![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/universities/rwth-aachen-thesis/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-An unofficial RWTH Aachen University thesis template on the two-sided book layout these university theses share, in TeX Gyre Pagella with the school's colour and name on the title page. Check the school's own guide before submitting.
+An unofficial RWTH Aachen dissertation template with the model title page (genehmigte Dissertation, Berichter, Tag der mündlichen Prüfung), a German Kurzfassung and DIN A4 pages.
 
 Edit and compile it in your browser at **[letx.app](https://letx.app/templates/universities/rwth-aachen-thesis/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![RWTH Aachen Thesis preview](preview.png)
 
 ## What is in it
-- Document class: `book` with `11pt, twoside, openright`
+- Document class: `report` with `11pt, oneside, a4paper`
 - Compiler: pdflatex
-- Files: `main.tex`, `preamble.tex`, and 24 section files under `sections/`
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 9 section files under `front/`, `sections/`
 
 ## Use it online
 Open **[RWTH Aachen Thesis on LetX](https://letx.app/templates/universities/rwth-aachen-thesis/)** and click *Open as Template*. It is free.

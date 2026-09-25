@@ -1,0 +1,22 @@
+\chapter{Content-Aware View Selection}
+\label{ch:method}
+
+Random crops often produce views that share little content, such as two patches of sky from a
+photograph of a boat, and Equation~\eqref{eq:nce} then asks the encoder to match unrelated
+patches. We train a lightweight scorer that predicts the semantic overlap of a candidate crop
+pair from a low-resolution saliency map, and sample pairs with probability proportional to the
+predicted overlap, tempered so that some hard pairs remain.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[node distance=5mm and 7mm,
+      box/.style={draw=accent, rounded corners=2pt, minimum height=9mm, align=center, font=\small}]
+    \node[box] (i) {Image};
+    \node[box, right=of i] (c) {Candidate\\crops};
+    \node[box, right=of c] (s) {Overlap\\scorer};
+    \node[box, right=of s] (e) {Encoder and\\loss};
+    \draw[-{Stealth}] (i) -- (c); \draw[-{Stealth}] (c) -- (s); \draw[-{Stealth}] (s) -- (e);
+  \end{tikzpicture}
+  \caption{View selection places a scorer between cropping and the encoder.}
+  \label{fig:views}
+\end{figure}

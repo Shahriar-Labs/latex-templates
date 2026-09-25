@@ -1,0 +1,21 @@
+\chapter{A Stiffness-Informed Robin Coupling}
+\label{ch:method}
+
+We replace the Dirichlet condition on the fluid with a Robin condition that combines velocity
+and traction with a coefficient $\alpha$. Choosing $\alpha$ close to the wall's effective
+impedance makes each sub-iteration nearly exact; we estimate it element by element from the
+local wall thickness and stiffness, following the analysis of \citet{badia2008}.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[node distance=5mm and 8mm,
+      box/.style={draw=accent, rounded corners=2pt, minimum height=9mm, align=center, font=\small}]
+    \node[box] (f) {Fluid solve\\(Robin interface)};
+    \node[box, right=of f] (s) {Structure\\solve};
+    \node[box, right=of s] (c) {Converged?};
+    \draw[-{Stealth}] (f) -- (s); \draw[-{Stealth}] (s) -- (c);
+    \draw[-{Stealth}] (c.south) -- ++(0,-0.5) -| node[pos=0.25, below, font=\footnotesize] {no} (f.south);
+  \end{tikzpicture}
+  \caption{One time step of the partitioned Robin-Neumann scheme.}
+  \label{fig:loop}
+\end{figure}

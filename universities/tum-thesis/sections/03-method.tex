@@ -1,0 +1,26 @@
+\chapter{A Hybrid Contact Model}
+\label{ch:method}
+
+We write the predicted next state as the sum of an analytical step and a learned residual,
+\begin{equation}
+  q_{t+1} = f_{\mathrm{phys}}(q_t, u_t; \phi) + g_\theta(q_t, u_t),
+  \label{eq:hybrid}
+\end{equation}
+where $\phi$ are physical parameters estimated online and $g_\theta$ is a small neural network
+trained on the residual error. The analytical term guarantees plausible behaviour far from the
+data; the residual corrects systematic errors near it.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[node distance=5mm and 8mm,
+      box/.style={draw=accent, rounded corners=2pt, minimum height=9mm, align=center, font=\small}]
+    \node[box] (x) {State and\\action};
+    \node[box, above right=2mm and 10mm of x] (f) {Physics\\step};
+    \node[box, below right=2mm and 10mm of x] (g) {Neural\\residual};
+    \node[box, right=26mm of x] (s) {Sum};
+    \draw[-{Stealth}] (x) -- (f); \draw[-{Stealth}] (x) -- (g);
+    \draw[-{Stealth}] (f) -- (s); \draw[-{Stealth}] (g) -- (s);
+  \end{tikzpicture}
+  \caption{The hybrid model adds a learned residual to a physics step.}
+  \label{fig:hybrid}
+\end{figure}

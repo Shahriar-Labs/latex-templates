@@ -1,0 +1,21 @@
+\chapter{Prevalence-Aware Private Aggregation}
+\label{ch:method}
+
+Weighting clients by size alone lets large hospitals with low outcome prevalence dominate the
+model. We instead weight each client by its effective number of positive and negative cases,
+and add calibrated Gaussian noise to the clipped updates before aggregation so that the whole
+training run satisfies differential privacy.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[node distance=5mm and 7mm,
+      box/.style={draw=accent, rounded corners=2pt, minimum height=9mm, align=center, font=\small}]
+    \node[box] (h) {Hospitals train\\locally};
+    \node[box, right=of h] (c) {Clip and\\add noise};
+    \node[box, right=of c] (a) {Prevalence-aware\\weighting};
+    \node[box, right=of a] (m) {Shared\\model};
+    \draw[-{Stealth}] (h) -- (c); \draw[-{Stealth}] (c) -- (a); \draw[-{Stealth}] (a) -- (m);
+  \end{tikzpicture}
+  \caption{One round of private, prevalence-aware federated training.}
+  \label{fig:round}
+\end{figure}

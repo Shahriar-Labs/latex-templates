@@ -1,0 +1,21 @@
+\chapter{Safe Reinforcement Learning for Volt-Var Control}
+\label{ch:method}
+
+A penalty in the reward discourages violations but does not prevent them. We add a safety layer
+that projects each proposed action onto the set of actions predicted by the linearized power
+flow to keep all voltages within limits \citep{dalal2018}. The projection is a small quadratic
+program solved at every step.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[node distance=5mm and 7mm,
+      box/.style={draw=accent, rounded corners=2pt, minimum height=9mm, align=center, font=\small}]
+    \node[box] (s) {Grid\\measurements};
+    \node[box, right=of s] (a) {Actor\\network};
+    \node[box, right=of a] (p) {Safety\\projection};
+    \node[box, right=of p] (i) {Inverter\\set-points};
+    \draw[-{Stealth}] (s) -- (a); \draw[-{Stealth}] (a) -- (p); \draw[-{Stealth}] (p) -- (i);
+  \end{tikzpicture}
+  \caption{The actor's proposal is projected onto the safe set before it reaches the inverters.}
+  \label{fig:safe}
+\end{figure}

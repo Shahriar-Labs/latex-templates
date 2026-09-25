@@ -3,16 +3,16 @@
 [![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/universities/princeton-thesis/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-An unofficial Princeton University thesis template on the two-sided book layout these university theses share, in TeX Gyre Pagella with the school's colour and name on the title page. Check the school's own guide before submitting.
+An unofficial Princeton dissertation template with the Title Page Format wording, the copyright page, the abstract on page 3 and Arabic numbering throughout, double spaced in Times.
 
 Edit and compile it in your browser at **[letx.app](https://letx.app/templates/universities/princeton-thesis/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Princeton Thesis preview](preview.png)
 
 ## What is in it
-- Document class: `book` with `11pt, twoside, openright`
+- Document class: `report` with `12pt, oneside`
 - Compiler: pdflatex
-- Files: `main.tex`, `preamble.tex`, and 24 section files under `sections/`
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 10 section files under `front/`, `sections/`
 
 ## Use it online
 Open **[Princeton Thesis on LetX](https://letx.app/templates/universities/princeton-thesis/)** and click *Open as Template*. It is free.

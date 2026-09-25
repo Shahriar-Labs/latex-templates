@@ -3,16 +3,16 @@
 [![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/universities/tum-thesis/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-An unofficial TU Munich thesis template on the two-sided book layout these university theses share, in TeX Gyre Pagella with the school's colour and name on the title page. Check the school's own guide before submitting.
+An unofficial TUM dissertation template with the model title page in German (Vorsitz, Prüfende der Dissertation), an English abstract and a German Zusammenfassung.
 
 Edit and compile it in your browser at **[letx.app](https://letx.app/templates/universities/tum-thesis/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![TUM Thesis preview](preview.png)
 
 ## What is in it
-- Document class: `book` with `11pt, twoside, openright`
+- Document class: `report` with `11pt, oneside, a4paper`
 - Compiler: pdflatex
-- Files: `main.tex`, `preamble.tex`, and 24 section files under `sections/`
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 9 section files under `front/`, `sections/`
 
 ## Use it online
 Open **[TUM Thesis on LetX](https://letx.app/templates/universities/tum-thesis/)** and click *Open as Template*. It is free.

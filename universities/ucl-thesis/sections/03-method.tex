@@ -1,0 +1,21 @@
+\chapter{Anatomy-Conditioned Diffusion}
+\label{ch:method}
+
+We condition the denoiser on a segmentation map $c$ injected at every resolution through
+spatially adaptive normalization, so that each synthetic image follows the given anatomy.
+Label maps can be taken from real scans or edited to create new configurations, for example to
+move or resize a tumour.
+
+\begin{figure}[htbp]
+  \centering
+  \begin{tikzpicture}[node distance=5mm and 7mm,
+      box/.style={draw=accent, rounded corners=2pt, minimum height=9mm, align=center, font=\small}]
+    \node[box] (m) {Segmentation\\map};
+    \node[box, right=of m] (d) {Conditioned\\denoiser};
+    \node[box, right=of d] (x) {Synthetic\\scan};
+    \node[box, right=of x] (e) {Segmentation-based\\evaluation};
+    \draw[-{Stealth}] (m) -- (d); \draw[-{Stealth}] (d) -- (x); \draw[-{Stealth}] (x) -- (e);
+  \end{tikzpicture}
+  \caption{Generation is conditioned on anatomy and evaluated on anatomy.}
+  \label{fig:cond}
+\end{figure}
