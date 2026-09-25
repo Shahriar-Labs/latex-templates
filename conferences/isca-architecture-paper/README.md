@@ -3,14 +3,14 @@
 [![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/isca-architecture-paper/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-An ISCA-style computer architecture paper in two columns with a named engine architecture section, Evaluation Methodology, and pgfplots results charts.
+An ISCA paper on the IEEEtran conference class with the settings of ISCA's own template: letter paper, numbered pages, and the submission banner in place of the author list.
 
 Edit and compile it in your browser at **[letx.app](https://letx.app/templates/conferences/isca-architecture-paper/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![ISCA Architecture Paper preview](preview.png)
 
 ## What is in it
-- Document class: `article` with `10pt, twocolumn`
+- Document class: `IEEEtran` with `conference`
 - Compiler: pdflatex
 - Files: `main.tex`, `preamble.tex`, `references.bib`, and 7 section files under `sections/`
 

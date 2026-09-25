@@ -3,14 +3,14 @@
 [![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/dac-design-automation-paper/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-A DAC-style design automation paper in two columns on the article class, with Proposed Method, Experimental Setup, and Results and Analysis sections.
+A DAC research manuscript on the IEEEtran conference class, with an anonymous author block, an abstract of about 100 words, IEEE keywords and PDF metadata that names no authors.
 
 Edit and compile it in your browser at **[letx.app](https://letx.app/templates/conferences/dac-design-automation-paper/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![DAC Design Automation Paper preview](preview.png)
 
 ## What is in it
-- Document class: `article` with `10pt, twocolumn`
+- Document class: `IEEEtran` with `conference`
 - Compiler: pdflatex
 - Files: `main.tex`, `preamble.tex`, `references.bib`, and 7 section files under `sections/`
 

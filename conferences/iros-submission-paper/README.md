@@ -3,16 +3,16 @@
 [![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/iros-submission-paper/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-An IROS-style robotics paper in two columns with numbered cite references, pgfplots charts and balanced final columns, on the article class.
+An IROS paper on PaperCept's ieeeconf class, bundled, with authors and affiliations blacked out by the censor package the IROS call suggests, and a pgfplots results chart.
 
 Edit and compile it in your browser at **[letx.app](https://letx.app/templates/conferences/iros-submission-paper/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![IROS Submission Paper preview](preview.png)
 
 ## What is in it
-- Document class: `article` with `10pt, twocolumn`
+- Document class: `ieeeconf` with `letterpaper, 10 pt, conference`
 - Compiler: pdflatex
-- Files: `main.tex`, `preamble.tex`, `refs.bib`, and 7 section files under `sections/`
+- Files: `ieeeconf.cls`, `main.tex`, `preamble.tex`, `refs.bib`, and 7 section files under `sections/`
 
 ## Use it online
 Open **[IROS Submission Paper on LetX](https://letx.app/templates/conferences/iros-submission-paper/)** and click *Open as Template*. It is free.

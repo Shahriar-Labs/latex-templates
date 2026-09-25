@@ -1,32 +1,72 @@
-\documentclass[10pt,twocolumn]{article}
+% MICRO paper on ACM's acmart class, in the sigconf format of MICRO's own template.
+%
+% Format checked 2026-09-25 against the MICRO 2026 submission guidelines and template:
+%   https://www.microarch.org/micro59/submit/guidelines.php
+%   - MICRO's template is acmart with \documentclass[sigconf, screen, review]{acmart}. It
+%     sets \setcopyright{none}, numbers the pages and leaves out the ACM reference block,
+%     as below. MICRO asks you not to change the template's settings or squeeze space.
+%   - At most 11 pages, not counting references. No appendix. References are unlimited, and
+%     every reference must list all of its authors, with no "et al.".
+%   - Review is double-blind and the paper has no author list: the submission number and
+%     a confidentiality notice sit under the title instead. Set \microsubmissionnumber.
+%   - No acknowledgments at submission. Add them after acceptance.
+% The rules change every year. Read the current guidelines before you submit.
+\documentclass[sigconf, screen, review]{acmart}
 
-% Packages and styling live in preamble.tex; each section has its own file under
-% sections/. Edit those directly — this file is the outline of the document.
+% The settings from MICRO's template.
+\setcopyright{none}
+\copyrightyear{2026}
+\acmYear{2026}
+\acmConference[MICRO 2026]{The 59th IEEE/ACM International Symposium on
+  Microarchitecture}{October 31--November 4, 2026}{Athens, Greece}
+\settopmatter{printfolios=true}
+\settopmatter{printacmref=false}
+
+% Your submission number from the submission site.
+\newcommand{\microsubmissionnumber}{NaN}
+
+% Extra packages and colours live in preamble.tex; each section has its own file under
+% sections/.
 \input{preamble}
 
 \begin{document}
 
-
-\twocolumn[{
-  \begin{tcolorbox}[colback=red!5,colframe=red!60!black,arc=1mm,boxrule=0.5pt,top=4pt,bottom=4pt,left=6pt,right=6pt]
-    \centering\footnotesize\color{red!60!black}
-    \textbf{UNOFFICIAL TEMPLATE:} This is an unofficial, community-produced template inspired by the general formatting conventions of microarchitecture conference proceedings (e.g., MICRO). It is NOT affiliated with, endorsed by, or reviewed by ACM, IEEE, or the MICRO conference organizers or steering committee. Author instructions, page limits, and required style files change every year --- always download the current official templates and call for papers from the sponsoring society before submitting your work.
-  \end{tcolorbox}
-  \vspace{0.3cm}
-  \begin{center}
-    {\LARGE\bfseries SpecGate: Confidence-Gated Speculative Prefetching \\ for Irregular Memory Access Patterns \par}
-    \vspace{0.4cm}
-    {\large Elena Voss$^{\dagger}$, Marcus Chen$^{\ddagger}$, Priya Raghunathan$^{\S}$ \par}
-    \vspace{0.2cm}
-    {\small $^{\dagger}$Vertex Institute of Technology \quad $^{\ddagger}$Meridian University \quad $^{\S}$Nimbus Microarchitecture Lab \par}
-    {\small Email: \{e.voss\}@vertex.edu, m.chen@meridian.edu, p.raghunathan@nimbus-lab.org \par}
-  \end{center}
-  \vspace{0.6cm}
-}]
+\title{SpecGate: Confidence-Gated Speculative Prefetching for Irregular Memory Access
+Patterns}
+\subtitle{\normalsize{MICRO 2026 Submission \textbf{\#\microsubmissionnumber} --
+  Confidential Draft -- Do NOT Distribute!!}}
 
 \begin{abstract}
-Irregular memory access patterns produced by graph traversal, sparse linear algebra, and hash-based kernels remain a dominant source of stall cycles in out-of-order cores, because stride and stream prefetchers cannot model the non-linear address deltas these workloads generate. Aggressively firing correlation-based prefetchers on such traffic often backfires: low-confidence predictions pollute the L1D and L2, displacing useful demand lines and wasting scarce off-chip bandwidth. We present SpecGate, a lightweight prefetch trigger table paired with a per-entry confidence counter that gates speculative requests before they are issued to the memory hierarchy. SpecGate tracks the recent hit history of each trigger-delta pair, updates a bounded confidence estimate on every resolution, and suppresses issuance whenever the estimate falls below a tunable threshold. Implemented as a 2 KB structure sitting between the L1D miss path and the L2 prefetch queue, SpecGate requires no changes to the core pipeline or the coherence protocol. Across six irregular-access kernels evaluated on a cycle-accurate simulator, SpecGate improves IPC by 24.5\% (geometric mean) over a baseline stride prefetcher, while reducing L2 misses per kilo-instruction (MPKI) by 4.1 on average and cutting speculative traffic that misses by more than half.
+Irregular memory access patterns produced by graph traversal, sparse linear algebra, and
+hash-based kernels remain a dominant source of stall cycles in out-of-order cores, because
+stride and stream prefetchers cannot model the non-linear address deltas these workloads
+generate. Aggressively firing correlation-based prefetchers on such traffic often backfires:
+low-confidence predictions pollute the L1D and L2, displacing useful demand lines and
+wasting scarce off-chip bandwidth. We present SpecGate, a lightweight prefetch trigger table
+paired with a per-entry confidence counter that gates speculative requests before they are
+issued to the memory hierarchy. SpecGate tracks the recent hit history of each trigger-delta
+pair, updates a bounded confidence estimate on every resolution, and suppresses issuance
+whenever the estimate falls below a tunable threshold. Implemented as a 2 KB structure
+sitting between the L1D miss path and the L2 prefetch queue, SpecGate requires no changes to
+the core pipeline or the coherence protocol. Across six irregular-access kernels evaluated
+on a cycle-accurate simulator, SpecGate improves IPC by 24.5\% (geometric mean) over a
+baseline stride prefetcher, while reducing L2 misses per kilo-instruction (MPKI) by 4.1 on
+average and cutting speculative traffic that misses by more than half.
 \end{abstract}
+
+% ACM Computing Classification System concepts. Pick yours at https://dl.acm.org/ccs
+\ccsdesc[500]{Computer systems organization~Superscalar architectures}
+\ccsdesc[300]{Computer systems organization~Multicore architectures}
+
+\keywords{prefetching, memory hierarchy, irregular workloads, speculation}
+
+\maketitle
+
+\noindent\fbox{\parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule\relax}{\footnotesize
+\textbf{Unofficial template. Delete this box before you submit.} It is built on ACM's own
+\texttt{acmart} class with the settings of the MICRO~2026 template, and it is not affiliated
+with or endorsed by IEEE, ACM or the MICRO organizers. The results and references in this
+sample are fictional.}}
 
 \input{sections/01-introduction}
 \input{sections/02-related-work}
@@ -36,4 +76,8 @@ Irregular memory access patterns produced by graph traversal, sparse linear alge
 \input{sections/06-discussion}
 \input{sections/07-conclusion}
 \input{sections/08-acknowledgments}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{references}
+
 \end{document}

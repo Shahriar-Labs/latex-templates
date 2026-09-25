@@ -3,16 +3,16 @@
 [![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/icra-submission-paper/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-An ICRA-style robotics paper in two columns on the article class, with balanced final columns and Method, Experiments and Results sections.
+An ICRA paper on PaperCept's ieeeconf class, bundled, with the class lines of PaperCept's sample paper and the authors blacked out with censor for double-anonymous review.
 
 Edit and compile it in your browser at **[letx.app](https://letx.app/templates/conferences/icra-submission-paper/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![ICRA Submission Paper preview](preview.png)
 
 ## What is in it
-- Document class: `article` with `10pt, twocolumn`
+- Document class: `ieeeconf` with `letterpaper, 10 pt, conference`
 - Compiler: pdflatex
-- Files: `main.bib`, `main.tex`, `preamble.tex`, and 7 section files under `sections/`
+- Files: `ieeeconf.cls`, `main.bib`, `main.tex`, `preamble.tex`, and 7 section files under `sections/`
 
 ## Use it online
 Open **[ICRA Submission Paper on LetX](https://letx.app/templates/conferences/icra-submission-paper/)** and click *Open as Template*. It is free.

@@ -3,16 +3,16 @@
 [![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/ase-technical-paper/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-An ASE-style technical paper in two columns set in newtx Times, on the article class, with Approach, Experimental Setup and Results sections and pgfplots charts.
+An ASE research paper on ACM's acmart class with the sigconf, review and anonymous options the ASE 2026 call gives, and the data availability statement ASE asks for.
 
 Edit and compile it in your browser at **[letx.app](https://letx.app/templates/conferences/ase-technical-paper/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![ASE Technical Paper preview](preview.png)
 
 ## What is in it
-- Document class: `article` with `10pt, twocolumn`
+- Document class: `acmart` with `sigconf, review, anonymous`
 - Compiler: pdflatex
-- Files: `main.tex`, `preamble.tex`, `refs.bib`, and 8 section files under `sections/`
+- Files: `main.tex`, `preamble.tex`, `refs.bib`, and 9 section files under `sections/`
 
 ## Use it online
 Open **[ASE Technical Paper on LetX](https://letx.app/templates/conferences/ase-technical-paper/)** and click *Open as Template*. It is free.

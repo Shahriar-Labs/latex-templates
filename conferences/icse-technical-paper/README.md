@@ -3,14 +3,14 @@
 [![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/icse-technical-paper/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-An ICSE-style technical paper in two columns on letter paper, in Times with code listings, and a Data Availability section after the conclusion.
+An ICSE research paper on the IEEEtran class with the 10pt conference line the ICSE 2027 call gives, an anonymous author block, IEEE keywords and a data availability section.
 
 Edit and compile it in your browser at **[letx.app](https://letx.app/templates/conferences/icse-technical-paper/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![ICSE Technical Paper preview](preview.png)
 
 ## What is in it
-- Document class: `article` with `10pt, twocolumn, letterpaper`
+- Document class: `IEEEtran` with `10pt, conference`
 - Compiler: pdflatex
 - Files: `main.tex`, `preamble.tex`, and 8 section files under `sections/`
 

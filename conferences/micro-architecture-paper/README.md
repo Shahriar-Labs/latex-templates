@@ -3,14 +3,14 @@
 [![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/micro-architecture-paper/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-A MICRO-style microarchitecture paper in two columns with a named architecture section, Evaluation Methodology and pgfplots charts, on the article class.
+A MICRO paper on ACM's acmart class in sigconf with the settings of MICRO's own template: no copyright block, numbered pages and the submission banner under the title.
 
 Edit and compile it in your browser at **[letx.app](https://letx.app/templates/conferences/micro-architecture-paper/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![MICRO Architecture Paper preview](preview.png)
 
 ## What is in it
-- Document class: `article` with `10pt, twocolumn`
+- Document class: `acmart` with `sigconf, screen, review`
 - Compiler: pdflatex
 - Files: `main.tex`, `preamble.tex`, `references.bib`, and 8 section files under `sections/`
 
