@@ -1,83 +1,93 @@
-\documentclass[10pt,twocolumn]{article}
+% WSDM full paper on ACM's acmart class, sigconf format.
+%
+% Format checked 2026-09-25 against the WSDM 2027 call for full papers:
+%   https://wsdm-conference.org/2027/cffp.html
+%   - The call gives this line: \documentclass[sigconf,anonymous,review]{acmart}
+%     Review is anonymized. `anonymous` hides the author block and the acknowledgments
+%     without changing the layout, and `review` adds line numbers.
+%   - At most 9 pages including diagrams, tables and appendices. References and the
+%     ethical considerations section are not counted.
+% The rules change every year. Read the current call before you submit.
+%
+% Camera-ready: change the first line to \documentclass[sigconf]{acmart}, delete the notice
+% box below \maketitle, and paste in the \setcopyright, \acmConference, \acmDOI and \acmISBN
+% lines ACM sends you after the rights form.
+\PassOptionsToPackage{table}{xcolor}
+\documentclass[sigconf,anonymous,review]{acmart}
 
-% Packages and styling live in preamble.tex; each section has its own file under
-% sections/. Edit those directly — this file is the outline of the document.
+% Extra packages and colours live in preamble.tex; each section has its own file under
+% sections/.
 \input{preamble}
 
 \begin{document}
 
+\title{Contrastive Session Graphs for Long-Tail Query Reformulation in Web Search}
 
-\twocolumn[
-  \begin{@twocolumnfalse}
-  \begin{center}
-    {\LARGE\bfseries\color{wsdmblue}
-      Contrastive Session Graphs for Long-Tail Query Reformulation in Web Search
-    \par}
-    \vspace{10pt}
-    {\large
-      Elena Marsh\textsuperscript{1} \quad
-      Kavi Rajan\textsuperscript{2} \quad
-      Dorothea Lindqvist\textsuperscript{1} \quad
-      Marcus Feld\textsuperscript{3}
-    \par}
-    \vspace{4pt}
-    {\small\color{wsdmgray}
-      \textsuperscript{1}Search \& Discovery Group, Nexa Research \quad
-      \textsuperscript{2}Department of Computer Science, Vertex University \quad
-      \textsuperscript{3}Data Systems Lab, Meridian Institute of Technology
-    \par}
-    \vspace{2pt}
-    {\small\ttfamily\color{wsdmgray}
-      \{e.marsh,d.lindqvist\}@nexaresearch.example \quad
-      k.rajan@vertex.edu \quad
-      m.feld@meridian-tech.example
-    \par}
-  \end{center}
-  \vspace{6pt}
+\author{Elena Marsh}
+\affiliation{%
+  \institution{Nexa Research}
+  \department{Search and Discovery Group}
+  \city{Toronto}
+  \country{Canada}}
+\email{e.marsh@nexaresearch.example}
 
-  \noindent
-  \begin{center}
-  \begin{minipage}{0.96\linewidth}
-    \small\raggedright
-    {\color{wsdmaccent!75!black}\rule{\linewidth}{0.7pt}}
-    \par\vspace{4pt}
-    \faFile\ \textbf{Unofficial template.} This document is an independent,
-    community-produced \LaTeX{} template inspired by the general style of web search and
-    data mining conference submissions. It is \textbf{not affiliated with, endorsed by, or
-    derived from official ACM WSDM style files}. Authors preparing a real submission
-    \textbf{must} download the current-year official style package from the WSDM call for
-    papers and follow its formatting instructions exactly.
-    \par\vspace{4pt}
-    {\color{wsdmaccent!75!black}\rule{\linewidth}{0.7pt}}
-  \end{minipage}
-  \end{center}
-  \vspace{4pt}
+\author{Kavi Rajan}
+\affiliation{%
+  \institution{Vertex University}
+  \department{Department of Computer Science}
+  \city{Chennai}
+  \country{India}}
+\email{k.rajan@vertex-university.example}
 
-  \begin{abstract}
-  \noindent
-  Search sessions for long-tail queries are dominated by sparse, noisy click signals,
-  which makes learning reliable query reformulation policies difficult for standard
-  learning-to-rank pipelines. We propose \textbf{CSG} (Contrastive Session Graphs), a
-  framework that represents each search session as a heterogeneous graph over queries,
-  clicked results, and reformulation edges, and trains a graph encoder with a
-  session-level contrastive objective to pull semantically equivalent reformulations
-  together while pushing apart unrelated queries sharing only surface tokens. A
-  lightweight scoring head then ranks candidate reformulations conditioned on the
-  session encoding. On two web-scale session benchmarks, CSG improves NDCG@10 by
-  \textbf{6.1--8.4} points and MRR by \textbf{5.3--7.0} points over strong graph and
-  transformer baselines, with the largest gains concentrated on queries observed fewer
-  than five times in training. We release ablations isolating the contribution of the
-  graph structure, the contrastive objective, and session length, and discuss failure
-  modes on adversarially reformulated queries.
-  \end{abstract}
+\author{Dorothea Lindqvist}
+\affiliation{%
+  \institution{Nexa Research}
+  \department{Search and Discovery Group}
+  \city{Toronto}
+  \country{Canada}}
+\email{d.lindqvist@nexaresearch.example}
 
-  \vspace{2pt}
-  \noindent{\small\textbf{Keywords:} query reformulation, session modeling, contrastive
-  learning, graph neural networks, long-tail search}
+\author{Marcus Feld}
+\affiliation{%
+  \institution{Meridian Institute of Technology}
+  \department{Data Systems Lab}
+  \city{Hamburg}
+  \country{Germany}}
+\email{m.feld@meridian-tech.example}
 
-  \vspace{10pt}
-  \end{@twocolumnfalse}
-]
+\renewcommand{\shortauthors}{Marsh et al.}
+
+\begin{abstract}
+Search sessions for long-tail queries are dominated by sparse, noisy click signals, which
+makes learning reliable query reformulation policies difficult for standard learning-to-rank
+pipelines. We propose \textbf{CSG} (Contrastive Session Graphs), a framework that represents
+each search session as a heterogeneous graph over queries, clicked results, and reformulation
+edges, and trains a graph encoder with a session-level contrastive objective to pull
+semantically equivalent reformulations together while pushing apart unrelated queries sharing
+only surface tokens. A lightweight scoring head then ranks candidate reformulations
+conditioned on the session encoding. On two web-scale session benchmarks, CSG improves
+NDCG@10 by 6.1--8.4 points and MRR by 5.3--7.0 points over strong graph and transformer
+baselines, with the largest gains concentrated on queries observed fewer than five times in
+training. We release ablations isolating the contribution of the graph structure, the
+contrastive objective, and session length, and discuss failure modes on adversarially
+reformulated queries.
+\end{abstract}
+
+% ACM Computing Classification System concepts. Pick yours at https://dl.acm.org/ccs
+\ccsdesc[500]{Information systems~Query reformulation}
+\ccsdesc[300]{Information systems~Learning to rank}
+\ccsdesc[100]{Computing methodologies~Neural networks}
+
+\keywords{query reformulation, session modeling, contrastive learning, graph neural
+networks, long-tail search}
+
+\maketitle
+
+\noindent\fbox{\parbox{\dimexpr\columnwidth-2\fboxsep-2\fboxrule\relax}{\footnotesize
+\textbf{Unofficial template. Delete this box before you submit.} It is built on ACM's own
+\texttt{acmart} class with the options the WSDM~2027 call asks for, and it is not affiliated
+with or endorsed by ACM or the WSDM organizers. The authors, institutions, results and
+references in this sample are fictional.}}
 
 \input{sections/01-introduction}
 \input{sections/02-related-work}
@@ -86,5 +96,10 @@
 \input{sections/05-results}
 \input{sections/06-discussion}
 \input{sections/07-conclusion}
-\input{sections/08-acknowledgments}
+\input{sections/08-ethical-considerations}
+\input{sections/09-acknowledgments}
+
+\bibliographystyle{ACM-Reference-Format}
+\bibliography{wsdmrefs}
+
 \end{document}
