@@ -1,33 +1,31 @@
-# PLDI Research Paper — Free LaTeX Template
+# PLDI Research Paper LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/pldi-research-paper)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/pldi-research-paper/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**PLDI Research Paper LaTeX template — pldi latex template. Elegant, compile-tested, editable online at letx.app.**
+A PLDI research paper on acmart with the sigplan, review and anonymous options, with a Motivating Example, Formal Model, Correctness theorems, Implementation and code listings.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/conferences/pldi-research-paper)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/conferences/pldi-research-paper/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![PLDI Research Paper preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `acmart` with `sigplan, screen, review, anonymous`
+- Compiler: pdflatex
+- Files: `main.bib`, `main.tex`, `preamble.tex`, and 10 section files under `sections/`
 
-## Use it online (recommended)
-Open **[PLDI Research Paper on LetX »](https://letx.app/templates/conferences/pldi-research-paper)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[PLDI Research Paper on LetX](https://letx.app/templates/conferences/pldi-research-paper/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/pldi-research-paper.git
-cd pldi-research-paper
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/conferences/pldi-research-paper
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — conferences templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): conference paper templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

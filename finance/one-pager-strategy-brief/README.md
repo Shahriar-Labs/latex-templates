@@ -1,34 +1,31 @@
-# One-Pager Strategy Brief — Free LaTeX Template
+# One-Pager Strategy Brief LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/finance/one-pager-strategy-brief)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/finance/one-pager-strategy-brief/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**One-Pager Strategy Brief LaTeX template — "strategy one pager latex". Elegant, compile-tested, editable online at letx.app.**
+A one-page strategy brief on letter paper in Lato with headline figures, a quarterly financial summary table and a revenue trend chart in pgfplots.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/finance/one-pager-strategy-brief)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/finance/one-pager-strategy-brief/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![One-Pager Strategy Brief preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested (zero errors)
-- Realistic sample content
-- Editable online in your browser
+## What is in it
+- Document class: `article` with `10pt, letterpaper`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[One-Pager Strategy Brief on LetX »](https://letx.app/templates/finance/one-pager-strategy-brief)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[One-Pager Strategy Brief on LetX](https://letx.app/templates/finance/one-pager-strategy-brief/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
 git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/one-pager-strategy-brief
+cd latex-templates/finance/one-pager-strategy-brief
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — finance templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): finance and business templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

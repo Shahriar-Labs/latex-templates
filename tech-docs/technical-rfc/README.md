@@ -1,33 +1,31 @@
-# Technical RFC — Free LaTeX Template
+# Technical RFC LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/tech-docs/technical-rfc)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/tech-docs/technical-rfc/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Technical RFC LaTeX template — Technical RFC. Elegant, compile-tested, editable online at letx.app.**
+A technical RFC in the IETF memo style, with a status of this memo, frame format, flow control, error handling, and security and IANA considerations sections.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/tech-docs/technical-rfc)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/tech-docs/technical-rfc/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Technical RFC preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `11pt`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, and 8 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Technical RFC on LetX »](https://letx.app/templates/tech-docs/technical-rfc)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Technical RFC on LetX](https://letx.app/templates/tech-docs/technical-rfc/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/technical-rfc.git
-cd technical-rfc
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/tech-docs/technical-rfc
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — tech docs templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): technical documentation templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

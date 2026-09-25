@@ -1,33 +1,31 @@
-# Medical Case Presentation — Free LaTeX Template
+# Medical Case Presentation LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/presentations/beamer-medical-case)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/presentations/beamer-medical-case/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Medical Case Presentation LaTeX template — Medical Case Presentation. Elegant, compile-tested, editable online at letx.app.**
+A medical case presentation in 16:9 Beamer: patient history, physical examination and vitals, imaging, laboratory results, differential diagnosis, treatment plan and discharge.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/presentations/beamer-medical-case)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/presentations/beamer-medical-case/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Medical Case Presentation preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `beamer` with `10pt, aspectratio=169`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, and 7 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Medical Case Presentation on LetX »](https://letx.app/templates/presentations/beamer-medical-case)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Medical Case Presentation on LetX](https://letx.app/templates/presentations/beamer-medical-case/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/beamer-medical-case.git
-cd beamer-medical-case
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/presentations/beamer-medical-case
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — presentations templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): presentation templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

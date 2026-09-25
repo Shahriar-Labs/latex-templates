@@ -1,34 +1,31 @@
-# Habit Tracker — Free LaTeX Template
+# Habit Tracker LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/calendars/habit-tracker)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/calendars/habit-tracker/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Habit Tracker LaTeX template — habit tracker printable. Elegant, compile-tested, editable online at letx.app.**
+A monthly habit tracker in Lato with a grid of habits by day, goals and streak columns, and boxes for wins this month and areas to improve.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/calendars/habit-tracker)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/calendars/habit-tracker/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Habit Tracker preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested (zero errors)
-- Realistic sample content
-- Editable online in your browser
+## What is in it
+- Document class: `article` with `10pt`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Habit Tracker on LetX »](https://letx.app/templates/calendars/habit-tracker)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Habit Tracker on LetX](https://letx.app/templates/calendars/habit-tracker/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
 git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/habit-tracker
+cd latex-templates/calendars/habit-tracker
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — calendar and planner templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): calendar templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

@@ -1,33 +1,31 @@
-# Statement of Work (SOW) — Free LaTeX Template
+# Statement of Work (SOW) LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/finance/statement-of-work)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/finance/statement-of-work/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Statement of Work (SOW) LaTeX template — statement of work template. Elegant, compile-tested, editable online at letx.app.**
+A statement of work (SOW) with the project overview, scope of work, deliverables, milestones and compensation, and governance with assumptions.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/finance/statement-of-work)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/finance/statement-of-work/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Statement of Work (SOW) preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `11pt`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 5 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Statement of Work (SOW) on LetX »](https://letx.app/templates/finance/statement-of-work)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Statement of Work (SOW) on LetX](https://letx.app/templates/finance/statement-of-work/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/statement-of-work.git
-cd statement-of-work
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/finance/statement-of-work
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — finance templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): finance and business templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

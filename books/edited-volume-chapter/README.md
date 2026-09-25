@@ -1,33 +1,31 @@
-# Edited Volume Chapter — Free LaTeX Template
+# Edited Volume Chapter LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/books/edited-volume-chapter)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/books/edited-volume-chapter/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Edited Volume Chapter LaTeX template — book chapter latex template. Elegant, compile-tested, editable online at letx.app.**
+A chapter for an edited volume on two-sided letter paper in Palatino, with introduction, methodology, results and conclusion, and natbib references.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/books/edited-volume-chapter)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/books/edited-volume-chapter/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Edited Volume Chapter preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `11pt, letterpaper, twoside`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 5 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Edited Volume Chapter on LetX »](https://letx.app/templates/books/edited-volume-chapter)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Edited Volume Chapter on LetX](https://letx.app/templates/books/edited-volume-chapter/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/edited-volume-chapter.git
-cd edited-volume-chapter
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/books/edited-volume-chapter
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — books templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): book templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

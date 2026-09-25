@@ -1,33 +1,31 @@
-# FPGA Design Specification — Free LaTeX Template
+# FPGA Design Specification LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/engineering/fpga-design-spec)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/engineering/fpga-design-spec/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**FPGA Design Specification LaTeX template — FPGA Design Specification. Elegant, compile-tested, editable online at letx.app.**
+An FPGA design specification on letter paper with the system architecture, a CSR register map, interface protocols and timing handshakes, and a resource utilisation summary.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/engineering/fpga-design-spec)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/engineering/fpga-design-spec/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![FPGA Design Specification preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `10pt, letterpaper`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, and 6 section files under `sections/`
 
-## Use it online (recommended)
-Open **[FPGA Design Specification on LetX »](https://letx.app/templates/engineering/fpga-design-spec)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[FPGA Design Specification on LetX](https://letx.app/templates/engineering/fpga-design-spec/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/fpga-design-spec.git
-cd fpga-design-spec
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/engineering/fpga-design-spec
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — engineering templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): engineering templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

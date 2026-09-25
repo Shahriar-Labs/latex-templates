@@ -1,34 +1,31 @@
-# Internship Certificate — Free LaTeX Template
+# Internship Certificate LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/miscellaneous/internship-certificate)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/miscellaneous/internship-certificate/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Internship Certificate LaTeX template — internship certificate template. Elegant, compile-tested, editable online at letx.app.**
+An internship certificate in Lato with a bordered layout, the company name and line of business, a certificate ID and a verification link.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/miscellaneous/internship-certificate)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/miscellaneous/internship-certificate/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Internship Certificate preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested (zero errors)
-- Realistic sample content
-- Editable online in your browser
+## What is in it
+- Document class: `article` with `10pt`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Internship Certificate on LetX »](https://letx.app/templates/miscellaneous/internship-certificate)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Internship Certificate on LetX](https://letx.app/templates/miscellaneous/internship-certificate/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
 git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/internship-certificate
+cd latex-templates/miscellaneous/internship-certificate
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — general templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): general-purpose templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

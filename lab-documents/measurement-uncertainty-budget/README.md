@@ -1,33 +1,31 @@
-# Measurement Uncertainty Budget — Free LaTeX Template
+# Measurement Uncertainty Budget LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/lab-documents/measurement-uncertainty-budget)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/lab-documents/measurement-uncertainty-budget/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Measurement Uncertainty Budget LaTeX template — uncertainty budget template. Elegant, compile-tested, editable online at letx.app.**
+A measurement uncertainty budget on A4 with the measurement model, sources of uncertainty, the budget table, combined and expanded uncertainty, and a statement of compliance.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/lab-documents/measurement-uncertainty-budget)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/lab-documents/measurement-uncertainty-budget/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Measurement Uncertainty Budget preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `11pt, a4paper`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 7 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Measurement Uncertainty Budget on LetX »](https://letx.app/templates/lab-documents/measurement-uncertainty-budget)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Measurement Uncertainty Budget on LetX](https://letx.app/templates/lab-documents/measurement-uncertainty-budget/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/measurement-uncertainty-budget.git
-cd measurement-uncertainty-budget
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/lab-documents/measurement-uncertainty-budget
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — lab documents templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): lab document templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

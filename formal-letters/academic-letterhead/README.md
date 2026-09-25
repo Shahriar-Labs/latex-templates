@@ -1,35 +1,31 @@
-# Academic Letterhead — Free LaTeX Template
+# Academic Letterhead LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/formal-letters/academic-letterhead)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/formal-letters/academic-letterhead/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Elegant academic letterhead + letter LaTeX template — name, department & university header with a thin accent rule, date, recipient block, and a formal letter body with signature. Ideal for recommendation and formal letters.**
+Elegant academic letterhead + letter LaTeX template, name, department & university header with a thin accent rule, date, recipient block, and a formal letter body with signature. Ideal for recommendation and formal letters.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/formal-letters/academic-letterhead)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/formal-letters/academic-letterhead/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Academic Letterhead preview](preview.png)
 
-## Features
-- Name, department & university header block
-- Contact details separated by a thin accent rule
-- Date, recipient block, salutation, body, signature
-- Realistic recommendation-letter sample
-- Clean serif typography; one page
+## What is in it
+- Document class: `article` with `11pt, letterpaper`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Academic Letterhead on LetX »](https://letx.app/templates/formal-letters/academic-letterhead)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Academic Letterhead on LetX](https://letx.app/templates/formal-letters/academic-letterhead/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
 git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/academic-letterhead
+cd latex-templates/formal-letters/academic-letterhead
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — formal letter templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): formal letter templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

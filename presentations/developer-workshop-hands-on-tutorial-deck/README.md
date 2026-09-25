@@ -1,33 +1,31 @@
-# Developer Workshop Hands-on Tutorial Deck — Free LaTeX Template
+# Developer Workshop Hands-on Tutorial Deck LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/presentations/developer-workshop-hands-on-tutorial-deck)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/presentations/developer-workshop-hands-on-tutorial-deck/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Developer Workshop Hands-on Tutorial Deck LaTeX template — developer workshop tutorial slides latex beamer. Elegant, compile-tested, editable online at letx.app.**
+A hands-on developer workshop deck in 16:9 Beamer that walks through installing a CLI, initializing a workspace, declarative route configuration and benchmarks, with code listings.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/presentations/developer-workshop-hands-on-tutorial-deck)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/presentations/developer-workshop-hands-on-tutorial-deck/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Developer Workshop Hands-on Tutorial Deck preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `beamer` with `aspectratio=169, 11pt`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 6 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Developer Workshop Hands-on Tutorial Deck on LetX »](https://letx.app/templates/presentations/developer-workshop-hands-on-tutorial-deck)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Developer Workshop Hands-on Tutorial Deck on LetX](https://letx.app/templates/presentations/developer-workshop-hands-on-tutorial-deck/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/developer-workshop-hands-on-tutorial-deck.git
-cd developer-workshop-hands-on-tutorial-deck
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/presentations/developer-workshop-hands-on-tutorial-deck
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — presentations templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): presentation templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

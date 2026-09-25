@@ -1,33 +1,31 @@
-# Frontiers in Neuroscience Template — Free LaTeX Template
+# Frontiers in Neuroscience Template LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/journal-articles/frontiers-in-neuroscience-template)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/journal-articles/frontiers-in-neuroscience-template/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Frontiers in Neuroscience Template LaTeX template — frontiers in neuroscience latex template. Elegant, compile-tested, editable online at letx.app.**
+A Frontiers in Neuroscience-style two-sided article on A4 with data availability, ethics, author contributions, funding and conflict of interest statements, on the article class.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/journal-articles/frontiers-in-neuroscience-template)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/journal-articles/frontiers-in-neuroscience-template/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Frontiers in Neuroscience Template preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `11pt, a4paper, twoside`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, and 12 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Frontiers in Neuroscience Template on LetX »](https://letx.app/templates/journal-articles/frontiers-in-neuroscience-template)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Frontiers in Neuroscience Template on LetX](https://letx.app/templates/journal-articles/frontiers-in-neuroscience-template/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/frontiers-in-neuroscience-template.git
-cd frontiers-in-neuroscience-template
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/journal-articles/frontiers-in-neuroscience-template
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — journal articles templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): journal article templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

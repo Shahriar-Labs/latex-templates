@@ -1,33 +1,31 @@
-# Investment Tearsheet — Free LaTeX Template
+# Investment Tearsheet LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/finance/investment-tearsheet)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/finance/investment-tearsheet/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Investment Tearsheet LaTeX template — Investment Tearsheet. Elegant, compile-tested, editable online at letx.app.**
+An investment tearsheet on A4 in Lato with NAV performance against a benchmark, top ten holdings, sector allocation, peer quartile rankings and risk characteristics.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/finance/investment-tearsheet)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/finance/investment-tearsheet/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Investment Tearsheet preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `10pt, a4paper`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, and 5 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Investment Tearsheet on LetX »](https://letx.app/templates/finance/investment-tearsheet)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Investment Tearsheet on LetX](https://letx.app/templates/finance/investment-tearsheet/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/investment-tearsheet.git
-cd investment-tearsheet
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/finance/investment-tearsheet
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — finance templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): finance and business templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

@@ -1,33 +1,31 @@
-# Product Requirements Document — Free LaTeX Template
+# Product Requirements Document LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/tech-docs/product-requirements-document)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/tech-docs/product-requirements-document/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Product Requirements Document LaTeX template — product requirements document template. Elegant, compile-tested, editable online at letx.app.**
+A product requirements document (PRD) with the problem statement, goals, target users, scope, functional requirements, a release plan, and risks and open questions.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/tech-docs/product-requirements-document)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/tech-docs/product-requirements-document/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Product Requirements Document preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `11pt, a4paper`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 12 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Product Requirements Document on LetX »](https://letx.app/templates/tech-docs/product-requirements-document)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Product Requirements Document on LetX](https://letx.app/templates/tech-docs/product-requirements-document/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/product-requirements-document.git
-cd product-requirements-document
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/tech-docs/product-requirements-document
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — tech docs templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): technical documentation templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

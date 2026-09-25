@@ -1,33 +1,31 @@
-# Co-op Work Term Report — Free LaTeX Template
+# Co-op Work Term Report LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/academic-career/co-op-work-term-report)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/academic-career/co-op-work-term-report/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Co-op Work Term Report LaTeX template — work term report template. Elegant, compile-tested, editable online at letx.app.**
+A co-op work term report on letter paper in Palatino with an employer profile, technical contributions, an engineering competency mapping, and a confidentiality disclaimer.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/academic-career/co-op-work-term-report)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/academic-career/co-op-work-term-report/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Co-op Work Term Report preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `11pt, letterpaper`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 7 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Co-op Work Term Report on LetX »](https://letx.app/templates/academic-career/co-op-work-term-report)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Co-op Work Term Report on LetX](https://letx.app/templates/academic-career/co-op-work-term-report/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/co-op-work-term-report.git
-cd co-op-work-term-report
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/academic-career/co-op-work-term-report
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — academic career templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): academic career templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

@@ -1,34 +1,31 @@
-# Quote Estimate — Free LaTeX Template
+# Quote Estimate LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/miscellaneous/quote-estimate)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/miscellaneous/quote-estimate/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Quote Estimate LaTeX template — quote template free. Elegant, compile-tested, editable online at letx.app.**
+A quote and estimate on A4 in Lato with itemised pricing and terms for the payment schedule, validity, revisions, timeline, ownership and late payment.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/miscellaneous/quote-estimate)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/miscellaneous/quote-estimate/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Quote Estimate preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested (zero errors)
-- Realistic sample content
-- Editable online in your browser
+## What is in it
+- Document class: `article` with `a4paper, 11pt`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Quote Estimate on LetX »](https://letx.app/templates/miscellaneous/quote-estimate)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Quote Estimate on LetX](https://letx.app/templates/miscellaneous/quote-estimate/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
 git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/quote-estimate
+cd latex-templates/miscellaneous/quote-estimate
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — general templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): general-purpose templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

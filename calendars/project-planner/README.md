@@ -1,34 +1,31 @@
-# Project Planner — Free LaTeX Template
+# Project Planner LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/calendars/project-planner)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/calendars/project-planner/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Project Planner LaTeX template — project planner template. Elegant, compile-tested, editable online at letx.app.**
+A project planner in Lato with a task and milestone table showing targets and status, and a simple board of done, in progress and to do items.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/calendars/project-planner)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/calendars/project-planner/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Project Planner preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested (zero errors)
-- Realistic sample content
-- Editable online in your browser
+## What is in it
+- Document class: `article` with `11pt`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Project Planner on LetX »](https://letx.app/templates/calendars/project-planner)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Project Planner on LetX](https://letx.app/templates/calendars/project-planner/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
 git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/project-planner
+cd latex-templates/calendars/project-planner
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — calendar and planner templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): calendar templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

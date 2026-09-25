@@ -1,34 +1,31 @@
-# Save the Date Card — Free LaTeX Template
+# Save the Date Card LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/miscellaneous/save-the-date)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/miscellaneous/save-the-date/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Save the Date Card LaTeX template — save the date template. Elegant, compile-tested, editable online at letx.app.**
+A save the date card in Lato with a gold double border, the couple's names in large type, and the wedding announcement line beneath.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/miscellaneous/save-the-date)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/miscellaneous/save-the-date/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Save the Date Card preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested (zero errors)
-- Realistic sample content
-- Editable online in your browser
+## What is in it
+- Document class: `article` with `11pt`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Save the Date Card on LetX »](https://letx.app/templates/miscellaneous/save-the-date)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Save the Date Card on LetX](https://letx.app/templates/miscellaneous/save-the-date/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
 git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/save-the-date
+cd latex-templates/miscellaneous/save-the-date
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — general templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): general-purpose templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

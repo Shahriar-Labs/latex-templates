@@ -1,33 +1,31 @@
-# Spanish Curriculum Vitae — Free LaTeX Template
+# Spanish Curriculum Vitae LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/cvs-resumes/spanish-curriculum-vitae)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/cvs-resumes/spanish-curriculum-vitae/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Spanish Curriculum Vitae LaTeX template — spain cv latex template. Elegant, compile-tested, editable online at letx.app.**
+A Spanish curriculum vitae written in Spanish on A4, with a monogram drawn in TikZ and a Datos personales block giving address, phone, email and date of birth.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/cvs-resumes/spanish-curriculum-vitae)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/cvs-resumes/spanish-curriculum-vitae/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Spanish Curriculum Vitae preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `10pt, a4paper`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Spanish Curriculum Vitae on LetX »](https://letx.app/templates/cvs-resumes/spanish-curriculum-vitae)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Spanish Curriculum Vitae on LetX](https://letx.app/templates/cvs-resumes/spanish-curriculum-vitae/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/spanish-curriculum-vitae.git
-cd spanish-curriculum-vitae
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/cvs-resumes/spanish-curriculum-vitae
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — cvs resumes templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): CV and résumé templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

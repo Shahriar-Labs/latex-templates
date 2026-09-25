@@ -1,33 +1,31 @@
-# WACV 2026 Submission Paper — Free LaTeX Template
+# WACV 2026 Submission Paper LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/wacv-2026-submission-paper)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/wacv-2026-submission-paper/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**WACV 2026 Submission Paper LaTeX template — wacv latex template. Elegant, compile-tested, editable online at letx.app.**
+A WACV 2026-style computer vision paper in two columns with numbered cite references, on the article class rather than the WACV style kit.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/conferences/wacv-2026-submission-paper)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/conferences/wacv-2026-submission-paper/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![WACV 2026 Submission Paper preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `10pt, twocolumn`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 7 section files under `sections/`
 
-## Use it online (recommended)
-Open **[WACV 2026 Submission Paper on LetX »](https://letx.app/templates/conferences/wacv-2026-submission-paper)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[WACV 2026 Submission Paper on LetX](https://letx.app/templates/conferences/wacv-2026-submission-paper/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/wacv-2026-submission-paper.git
-cd wacv-2026-submission-paper
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/conferences/wacv-2026-submission-paper
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — conferences templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): conference paper templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

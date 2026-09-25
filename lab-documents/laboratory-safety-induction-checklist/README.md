@@ -1,33 +1,31 @@
-# Laboratory Safety Induction Checklist — Free LaTeX Template
+# Laboratory Safety Induction Checklist LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/lab-documents/laboratory-safety-induction-checklist)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/lab-documents/laboratory-safety-induction-checklist/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Laboratory Safety Induction Checklist LaTeX template — lab safety checklist template. Elegant, compile-tested, editable online at letx.app.**
+A laboratory safety induction checklist on A4 with the items a new member must complete and an emergency contacts panel, from the lab safety officer to the chemical exposure hotline.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/lab-documents/laboratory-safety-induction-checklist)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/lab-documents/laboratory-safety-induction-checklist/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Laboratory Safety Induction Checklist preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `10pt, a4paper`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Laboratory Safety Induction Checklist on LetX »](https://letx.app/templates/lab-documents/laboratory-safety-induction-checklist)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Laboratory Safety Induction Checklist on LetX](https://letx.app/templates/lab-documents/laboratory-safety-induction-checklist/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/laboratory-safety-induction-checklist.git
-cd laboratory-safety-induction-checklist
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/lab-documents/laboratory-safety-induction-checklist
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — lab documents templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): lab document templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

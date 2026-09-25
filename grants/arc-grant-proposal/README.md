@@ -1,33 +1,31 @@
-# ARC Grant Proposal — Free LaTeX Template
+# ARC Grant Proposal LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/grants/arc-grant-proposal)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/grants/arc-grant-proposal/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**ARC Grant Proposal LaTeX template — ARC Grant Proposal. Elegant, compile-tested, editable online at letx.app.**
+An ARC-style grant proposal on A4 in newtx Times with project quality and innovation, feasibility and research environment, and a budget with justification.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/grants/arc-grant-proposal)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/grants/arc-grant-proposal/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![ARC Grant Proposal preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `12pt, a4paper`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, and 4 section files under `sections/`
 
-## Use it online (recommended)
-Open **[ARC Grant Proposal on LetX »](https://letx.app/templates/grants/arc-grant-proposal)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[ARC Grant Proposal on LetX](https://letx.app/templates/grants/arc-grant-proposal/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/arc-grant-proposal.git
-cd arc-grant-proposal
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/grants/arc-grant-proposal
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — grants templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): grant and proposal templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

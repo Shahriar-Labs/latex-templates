@@ -1,33 +1,31 @@
-# Registered Report (Stage 1) — Free LaTeX Template
+# Registered Report (Stage 1) LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/journal-articles/registered-report-stage-one)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/journal-articles/registered-report-stage-one/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Registered Report (Stage 1) LaTeX template — registered report template. Elegant, compile-tested, editable online at letx.app.**
+A Stage 1 registered report on A4 with the rationale, hypotheses, methodology, an analysis plan with a power calculation, and a project timeline.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/journal-articles/registered-report-stage-one)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/journal-articles/registered-report-stage-one/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Registered Report (Stage 1) preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `11pt, a4paper`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, `references.bib`, and 7 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Registered Report (Stage 1) on LetX »](https://letx.app/templates/journal-articles/registered-report-stage-one)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Registered Report (Stage 1) on LetX](https://letx.app/templates/journal-articles/registered-report-stage-one/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/registered-report-stage-one.git
-cd registered-report-stage-one
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/journal-articles/registered-report-stage-one
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — journal articles templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): journal article templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

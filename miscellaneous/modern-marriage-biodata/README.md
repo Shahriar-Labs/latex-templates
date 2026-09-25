@@ -1,35 +1,31 @@
-# Modern Marriage Biodata — Free LaTeX Template
+# Modern Marriage Biodata LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/miscellaneous/modern-marriage-biodata)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/miscellaneous/modern-marriage-biodata/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Modern, minimal marriage biodata LaTeX template — soft teal & rose palette, clean sans type, photo placeholder, personal/family/contact sections. One page. A contemporary alternative to ornate biodatas.**
+Modern, minimal marriage biodata LaTeX template, soft teal & rose palette, clean sans type, photo placeholder, personal/family/contact sections. One page. A contemporary alternative to ornate biodatas.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/miscellaneous/modern-marriage-biodata)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/miscellaneous/modern-marriage-biodata/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Modern Marriage Biodata preview](preview.png)
 
-## Features
-- Modern, minimal alternative to ornate biodatas
-- Soft teal & rose palette on off-white
-- Photo placeholder + name/quote header band
-- Perfectly aligned key/value detail tables
-- Personal, family & contact sections; one page
+## What is in it
+- Document class: `article` with `a4paper, 11pt`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Modern Marriage Biodata on LetX »](https://letx.app/templates/miscellaneous/modern-marriage-biodata)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Modern Marriage Biodata on LetX](https://letx.app/templates/miscellaneous/modern-marriage-biodata/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
 git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/modern-marriage-biodata
+cd latex-templates/miscellaneous/modern-marriage-biodata
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — miscellaneous templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): general-purpose templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

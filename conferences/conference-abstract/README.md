@@ -1,35 +1,31 @@
-# Conference Abstract — Free LaTeX Template
+# Conference Abstract LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/conference-abstract)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/conference-abstract/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Conference abstract submission LaTeX template — title, authors with superscript affiliations, a structured Background/Methods/Results/Conclusions abstract, keywords and a submission-details box.**
+Conference abstract submission LaTeX template, title, authors with superscript affiliations, a structured Background/Methods/Results/Conclusions abstract, keywords and a submission-details box.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/conferences/conference-abstract)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/conferences/conference-abstract/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Conference Abstract preview](preview.png)
 
-## Features
-- Title + authors with superscript affiliations
-- Structured Background/Methods/Results/Conclusions
-- Keywords line
-- Submission-details box (track, type, topic)
-- Realistic sample; one page
+## What is in it
+- Document class: `article` with `11pt, a4paper`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Conference Abstract on LetX »](https://letx.app/templates/conferences/conference-abstract)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Conference Abstract on LetX](https://letx.app/templates/conferences/conference-abstract/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
 git clone https://github.com/Shahriar-Labs/latex-templates.git
-cd latex-templates/conference-abstract
+cd latex-templates/conferences/conference-abstract
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — conference templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): conference paper templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

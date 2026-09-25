@@ -1,33 +1,31 @@
-# Engineering Calculation Sheet — Free LaTeX Template
+# Engineering Calculation Sheet LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/engineering/engineering-calculation-sheet)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/engineering/engineering-calculation-sheet/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Engineering Calculation Sheet LaTeX template — Engineering Calculation Sheet. Elegant, compile-tested, editable online at letx.app.**
+An engineering calculation sheet on A4 in Source Sans Pro with design standards, notation, input parameters and material properties, the calculations, a results summary and sign-off.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/engineering/engineering-calculation-sheet)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/engineering/engineering-calculation-sheet/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Engineering Calculation Sheet preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `a4paper, 11pt`
+- Compiler: pdflatex
+- Files: `main.tex`, `preamble.tex`, and 7 section files under `sections/`
 
-## Use it online (recommended)
-Open **[Engineering Calculation Sheet on LetX »](https://letx.app/templates/engineering/engineering-calculation-sheet)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Engineering Calculation Sheet on LetX](https://letx.app/templates/engineering/engineering-calculation-sheet/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/engineering-calculation-sheet.git
-cd engineering-calculation-sheet
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/engineering/engineering-calculation-sheet
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — engineering templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): engineering templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

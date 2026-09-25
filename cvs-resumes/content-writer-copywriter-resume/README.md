@@ -1,33 +1,31 @@
-# Content Writer & Copywriter Resume — Free LaTeX Template
+# Content Writer & Copywriter Resume LaTeX Template
 
-[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/cvs-resumes/content-writer-copywriter-resume)
+[![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/cvs-resumes/content-writer-copywriter-resume/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Compile Tested](https://img.shields.io/badge/Compile-Tested-success.svg)](#compile)
 
-**Content Writer & Copywriter Resume LaTeX template — content writer copywriter resume latex. Elegant, compile-tested, editable online at letx.app.**
+A content writer and copywriter resume on A4 with three roles, from copywriter to content strategist to senior SEO copywriter, in a boxed, icon-led layout.
 
-Edit and compile this template instantly in your browser — no LaTeX install — at **[letx.app](https://letx.app/templates/cvs-resumes/content-writer-copywriter-resume)**, with real-time collaboration and one-second compiles.
+Edit and compile it in your browser at **[letx.app](https://letx.app/templates/cvs-resumes/content-writer-copywriter-resume/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![Content Writer & Copywriter Resume preview](preview.png)
 
-## Features
-- Elegant, modern design
-- Compile-tested
-- Fully editable sample content
+## What is in it
+- Document class: `article` with `10pt, a4paper`
+- Compiler: pdflatex
+- One self-contained `main.tex`
 
-## Use it online (recommended)
-Open **[Content Writer & Copywriter Resume on LetX »](https://letx.app/templates/cvs-resumes/content-writer-copywriter-resume)** and click *Open as Template* — it compiles in ~1 second, in your browser, free.
+## Use it online
+Open **[Content Writer & Copywriter Resume on LetX](https://letx.app/templates/cvs-resumes/content-writer-copywriter-resume/)** and click *Open as Template*. It is free.
 
 ## <a name="compile"></a>Compile locally
 ```bash
-git clone https://github.com/Shahriar-Labs/content-writer-copywriter-resume.git
-cd content-writer-copywriter-resume
+git clone https://github.com/Shahriar-Labs/latex-templates.git
+cd latex-templates/cvs-resumes/content-writer-copywriter-resume
 latexmk -pdf main.tex
 ```
-Compiler: **pdflatex** (see `metadata.json`).
 
 ## About
-Part of the free, open-source [LetX template library](https://letx.app/templates) — cvs resumes templates for students, researchers, and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
+Part of the free, open-source [LetX template library](https://letx.app/templates/): CV and résumé templates for students, researchers and professionals. Built by [Shahriar Labs](https://shahriarlabs.com).
 
 ## License
-MIT — free for personal and commercial use. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).
