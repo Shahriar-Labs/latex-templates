@@ -3,16 +3,16 @@
 [![Open in LetX](https://img.shields.io/badge/Open%20in-LetX-9333EA.svg)](https://letx.app/templates/conferences/eccv-2026-submission-paper/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-An ECCV 2026-style paper in two columns on the article class, not Springer's ECCV format, with Method, Experiments, Results and Discussion sections.
+An ECCV paper on Springer's llncs class with the eccv package from ECCV's 2026 template, bundled: line numbers, the paper ID on every page and an anonymous header for review.
 
 Edit and compile it in your browser at **[letx.app](https://letx.app/templates/conferences/eccv-2026-submission-paper/)**, with no LaTeX install and real-time collaboration. A compile takes a few seconds.
 
 ![ECCV 2026 Submission Paper preview](preview.png)
 
 ## What is in it
-- Document class: `article` with `10pt, twocolumn`
+- Document class: `llncs` with `runningheads`
 - Compiler: pdflatex
-- Files: `main.tex`, `preamble.tex`, `references.bib`, and 8 section files under `sections/`
+- Files: `eccv.sty`, `eccvabbrv.sty`, `llncs.cls`, `main.tex`, `preamble.tex`, `references.bib`, `splncs04.bst`, and 8 section files under `sections/`
 
 ## Use it online
 Open **[ECCV 2026 Submission Paper on LetX](https://letx.app/templates/conferences/eccv-2026-submission-paper/)** and click *Open as Template*. It is free.
